@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab",
+  "textures": {
+    "bottom": "clinker:blocks/scorstone/scorstone_slab",
+    "top": "clinker:blocks/scorstone/scorstone_slab",
+    "side": "clinker:blocks/scorstone/scorstone_slab"
+  }
+}

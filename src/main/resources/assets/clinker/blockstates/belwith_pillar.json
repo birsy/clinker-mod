@@ -1,0 +1,16 @@
+{
+    "variants": {
+        "axis=y,pillarcap=none":   { "model": "clinker:block/belwith_stone/belwith_pillar" },
+        "axis=z,pillarcap=none":   { "model": "clinker:block/belwith_stone/belwith_pillar", "x": 90 },
+        "axis=x,pillarcap=none":   { "model": "clinker:block/belwith_stone/belwith_pillar", "x": 90, "y": 90 },
+        "axis=y,pillarcap=up":     { "model": "clinker:block/belwith_stone/belwith_pillar_top" },
+        "axis=z,pillarcap=up":     { "model": "clinker:block/belwith_stone/belwith_pillar_top", "x": 90 },
+        "axis=x,pillarcap=up":     { "model": "clinker:block/belwith_stone/belwith_pillar_top", "x": 90, "y": 90 },
+        "axis=y,pillarcap=down":   { "model": "clinker:block/belwith_stone/belwith_pillar_bottom" },
+        "axis=z,pillarcap=down":   { "model": "clinker:block/belwith_stone/belwith_pillar_bottom", "x": 90 },
+        "axis=x,pillarcap=down":   { "model": "clinker:block/belwith_stone/belwith_pillar_bottom", "x": 90, "y": 90 },
+        "axis=y,pillarcap=both":   { "model": "clinker:block/belwith_stone/belwith_pillar_both" },
+        "axis=z,pillarcap=both":   { "model": "clinker:block/belwith_stone/belwith_pillar_both", "x": 90 },
+        "axis=x,pillarcap=both":   { "model": "clinker:block/belwith_stone/belwith_pillar_both", "x": 90, "y": 90 }
+    }
+}

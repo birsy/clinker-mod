@@ -1,0 +1,36 @@
+{
+    "variants": {
+        "rune=none":  { "model": "clinker:block/ancient_bricks/ancient_rune_none" },
+        "rune=a":  { "model": "clinker:block/ancient_bricks/ancient_rune_a" },
+        "rune=b":  { "model": "clinker:block/ancient_bricks/ancient_rune_b" },
+        "rune=c":  { "model": "clinker:block/ancient_bricks/ancient_rune_c" },
+        "rune=d":  { "model": "clinker:block/ancient_bricks/ancient_rune_d" },
+        "rune=e":  { "model": "clinker:block/ancient_bricks/ancient_rune_e" },
+        "rune=f":  { "model": "clinker:block/ancient_bricks/ancient_rune_f" },
+        "rune=g":  { "model": "clinker:block/ancient_bricks/ancient_rune_g" },
+        "rune=h":  { "model": "clinker:block/ancient_bricks/ancient_rune_h" },
+        "rune=i":  { "model": "clinker:block/ancient_bricks/ancient_rune_i" },
+        "rune=j":  { "model": "clinker:block/ancient_bricks/ancient_rune_j" },
+        "rune=k":  { "model": "clinker:block/ancient_bricks/ancient_rune_k" },
+        "rune=l":  { "model": "clinker:block/ancient_bricks/ancient_rune_l" },
+        "rune=m":  { "model": "clinker:block/ancient_bricks/ancient_rune_m" },
+        "rune=n":  { "model": "clinker:block/ancient_bricks/ancient_rune_n" },
+        "rune=o":  { "model": "clinker:block/ancient_bricks/ancient_rune_o" },
+        "rune=p":  { "model": "clinker:block/ancient_bricks/ancient_rune_p" },
+        "rune=q":  { "model": "clinker:block/ancient_bricks/ancient_rune_q" },
+        "rune=r":  { "model": "clinker:block/ancient_bricks/ancient_rune_r" },
+        "rune=s":  { "model": "clinker:block/ancient_bricks/ancient_rune_s" },
+        "rune=t":  { "model": "clinker:block/ancient_bricks/ancient_rune_t" },
+        "rune=u":  { "model": "clinker:block/ancient_bricks/ancient_rune_u" },
+        "rune=v":  { "model": "clinker:block/ancient_bricks/ancient_rune_v" },
+        "rune=w":  { "model": "clinker:block/ancient_bricks/ancient_rune_w" },
+        "rune=x":  { "model": "clinker:block/ancient_bricks/ancient_rune_x" },
+        "rune=y":  { "model": "clinker:block/ancient_bricks/ancient_rune_y" },
+        "rune=z":  { "model": "clinker:block/ancient_bricks/ancient_rune_z" },
+        "rune=random": [
+        	{ "model": "clinker:block/ancient_bricks/ancient_rune_random" },
+        	{ "model": "clinker:block/ancient_bricks/ancient_rune_random_1" },
+        	{ "model": "clinker:block/ancient_bricks/ancient_rune_random_2" }
+        ]
+    }
+}

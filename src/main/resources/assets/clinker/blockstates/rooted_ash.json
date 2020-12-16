@@ -1,0 +1,14 @@
+{
+    "variants": {
+        "": [
+            { "model": "clinker:block/ash/rooted_ash" },
+            { "model": "clinker:block/ash/rooted_ash", "y": 90 },
+            { "model": "clinker:block/ash/rooted_ash", "y": 180 },
+            { "model": "clinker:block/ash/rooted_ash", "y": 270 },
+            { "model": "clinker:block/ash/rooted_ash_1" },
+            { "model": "clinker:block/ash/rooted_ash_1", "y": 90 },
+            { "model": "clinker:block/ash/rooted_ash_1", "y": 180 },
+            { "model": "clinker:block/ash/rooted_ash_1", "y": 270 }
+        ]
+    }
+}

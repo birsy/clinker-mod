@@ -1,0 +1,10 @@
+{
+    "variants": {
+        "": [
+        {"model": "clinker:block/ancient_bricks/ancient_bricks"},
+        {"model": "clinker:block/ancient_bricks/ancient_bricks_1"},
+        {"model": "clinker:block/ancient_bricks/ancient_bricks_2"},
+        {"model": "clinker:block/ancient_bricks/ancient_bricks_3"}
+        ]
+    }
+}

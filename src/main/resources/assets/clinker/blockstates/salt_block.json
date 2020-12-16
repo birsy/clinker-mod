@@ -1,0 +1,10 @@
+{
+    "variants": {
+        "": [
+            { "model": "clinker:block/salt_block" },
+            { "model": "clinker:block/salt_block_mirrored" },
+            { "model": "clinker:block/salt_block", "y": 180 },
+            { "model": "clinker:block/salt_block_mirrored", "y": 180 }
+        ]
+    }
+}

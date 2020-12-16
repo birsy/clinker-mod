@@ -1,0 +1,7 @@
+{
+   "parent": "block/cube_column",
+   "textures": {
+       "end": "clinker:blocks/polished_shale",
+       "side": "clinker:blocks/polished_shale_slab"
+   }
+}

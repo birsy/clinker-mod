@@ -1,0 +1,6 @@
+{
+  "parent": "clinker:block/vine",
+  "textures": {
+    "texture": "clinker:blocks/brambles/bramble_vines"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab_top",
+  "textures": {
+    "bottom": "clinker:blocks/locust_wood/locust_planks",
+    "top": "clinker:blocks/locust_wood/locust_planks",
+    "side": "clinker:blocks/locust_wood/locust_planks"
+  }
+}

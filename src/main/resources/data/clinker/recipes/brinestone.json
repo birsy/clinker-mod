@@ -1,0 +1,23 @@
+{
+    "type": "minecraft:crafting_shaped",
+   
+    "pattern":
+    [
+        "SS",
+        "SS"
+    ],
+   
+    "key":
+    {
+        "S":
+        {
+            "item": "clinker:sulfur"
+        }
+    },
+   
+    "result":
+    {
+        "item": "clinker:brinestone",
+        "count": 1
+    }
+}

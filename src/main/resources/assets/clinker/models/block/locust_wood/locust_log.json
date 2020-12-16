@@ -1,0 +1,114 @@
+{
+    "__comment": "Model generated using MrCrayfish's Model Creator (https://mrcrayfish.com/tools?id=mc)",
+    "textures": {
+        "particle": "clinker:blocks/locust_wood/locust_log_thorny",
+        "honey_locust_log": "clinker:blocks/locust_wood/locust_log_thorny",
+        "honey_locust_log_thorns": "clinker:blocks/locust_wood/locust_thorns",
+        "honey_locust_log_top": "clinker:blocks/locust_wood/locust_log_top"
+    },
+    "display": {
+        "gui": {
+            "rotation": [ 30, 225, 0 ],
+            "translation": [ 0, 0, 0 ],
+            "scale": [ 0.625, 0.625, 0.625 ]
+        },
+        "ground": {
+            "rotation": [ 0, 0, 0 ],
+            "translation": [ 0, 3, 0 ],
+            "scale": [ 0.25, 0.25, 0.25 ]
+        },
+        "fixed": {
+            "rotation": [ 0, 0, 0 ],
+            "translation": [ 0, 0, 0 ],
+            "scale": [ 0.5, 0.5, 0.5 ]
+        },
+        "firstperson_righthand": {
+            "rotation": [ 0, 45, 0 ],
+            "translation": [ 0, 0, 0 ],
+            "scale": [ 0.4, 0.4, 0.4 ]
+        },
+        "thirdperson_righthand": {
+            "rotation": [ 75, 45, 0 ],
+            "translation": [ 0, 2.5, 0 ],
+            "scale": [ 0.375, 0.375, 0.375 ]
+        }
+    },
+    "elements": [
+        {
+            "from": [ 0, 0, 0 ], 
+            "to": [ 16, 16, 16 ], 
+            "faces": {
+                "north": { "texture": "#honey_locust_log", "uv": [ 0, 0, 16, 16 ] },
+                "east": { "texture": "#honey_locust_log", "uv": [ 0, 0, 16, 16 ] },
+                "south": { "texture": "#honey_locust_log", "uv": [ 0, 0, 16, 16 ] },
+                "west": { "texture": "#honey_locust_log", "uv": [ 0, 0, 16, 16 ] },
+                "up": { "texture": "#honey_locust_log_top", "uv": [ 0, 0, 16, 16 ] },
+                "down": { "texture": "#honey_locust_log_top", "uv": [ 0, 0, 16, 16 ] }
+            }
+        },
+        {
+            "from": [ 1, 0, 16 ], 
+            "to": [ 1, 16, 19 ], 
+            "faces": {
+                "east": { "texture": "#honey_locust_log_thorns", "uv": [ 13, 0, 16, 16 ] },
+                "west": { "texture": "#honey_locust_log_thorns", "uv": [ 0, 0, 3, 16 ] }
+            }
+        },
+        {
+            "from": [ 1, 0, -3 ], 
+            "to": [ 1, 16, 0 ], 
+            "faces": {
+                "east": { "texture": "#honey_locust_log_thorns", "uv": [ 0, 0, 3, 16 ] },
+                "west": { "texture": "#honey_locust_log_thorns", "uv": [ 13, 0, 16, 16 ] }
+            }
+        },
+        {
+            "from": [ -3, 0, 1 ], 
+            "to": [ 0, 16, 1 ], 
+            "faces": {
+                "north": { "texture": "#honey_locust_log_thorns", "uv": [ 0, 0, 3, 16 ] },
+                "south": { "texture": "#honey_locust_log_thorns", "uv": [ 13, 0, 16, 16 ] }
+            }
+        },
+        {
+            "from": [ 16, 0, 1 ], 
+            "to": [ 19, 16, 1 ], 
+            "faces": {
+                "north": { "texture": "#honey_locust_log_thorns", "uv": [ 13, 0, 16, 16 ] },
+                "south": { "texture": "#honey_locust_log_thorns", "uv": [ 0, 0, 3, 16 ] }
+            }
+        },
+        {
+            "from": [ -3, 0, 14 ], 
+            "to": [ 0, 16, 14 ], 
+            "faces": {
+                "north": { "texture": "#honey_locust_log_thorns", "uv": [ 0, 0, 3, 16 ] },
+                "south": { "texture": "#honey_locust_log_thorns", "uv": [ 13, 0, 16, 16 ] }
+            }
+        },
+        {
+            "from": [ 16, 0, 15 ], 
+            "to": [ 19, 16, 15 ], 
+            "faces": {
+                "north": { "texture": "#honey_locust_log_thorns", "uv": [ 13, 0, 16, 16 ] },
+                "south": { "texture": "#honey_locust_log_thorns", "uv": [ 0, 0, 3, 16 ] }
+            }
+        },
+        {
+            "from": [ 15, 0, -3 ], 
+            "to": [ 15, 16, 0 ], 
+            "faces": {
+                "east": { "texture": "#honey_locust_log_thorns", "uv": [ 0, 0, 3, 16 ] },
+                "west": { "texture": "#honey_locust_log_thorns", "uv": [ 13, 0, 16, 16 ] }
+            }
+        },
+        {
+            "from": [ 15, 0, 16 ], 
+            "to": [ 15, 16, 19 ], 
+            "faces": {
+                "east": { "texture": "#honey_locust_log_thorns", "uv": [ 13, 0, 16, 16 ] },
+                "west": { "texture": "#honey_locust_log_thorns", "uv": [ 0, 0, 3, 16 ] }
+            }
+        }
+    ]
+}

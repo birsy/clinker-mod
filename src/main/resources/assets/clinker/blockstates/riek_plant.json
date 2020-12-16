@@ -1,0 +1,7 @@
+{
+    "variants": {
+        "axis=y":  { "model": "clinker:block/riek_plant/riek_plant" },
+        "axis=z":   { "model": "clinker:block/riek_plant/riek_plant", "x": 90 },
+        "axis=x":   { "model": "clinker:block/riek_plant/riek_plant", "x": 90, "y": 90 }
+    }
+}

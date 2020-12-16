@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "clinker:block/chiseled_dry_soulsand",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "clinker:block/chiseled_dry_soulsand"
+    },
+    "facing=south": {
+      "model": "clinker:block/chiseled_dry_soulsand",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "clinker:block/chiseled_dry_soulsand",
+      "y": 270
+    }
+  }
+}

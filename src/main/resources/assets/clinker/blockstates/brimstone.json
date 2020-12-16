@@ -1,0 +1,10 @@
+{
+    "variants": {
+        "": [
+            { "model": "clinker:block/brimstone/brimstone" },
+            { "model": "clinker:block/brimstone/brimstone", "y": 180 },
+            { "model": "clinker:block/brimstone/brimstone1" },
+            { "model": "clinker:block/brimstone/brimstone1", "y": 180 }
+        ]
+    }
+}

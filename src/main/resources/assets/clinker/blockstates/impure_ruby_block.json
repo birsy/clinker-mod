@@ -1,0 +1,5 @@
+{
+    "variants": {
+        "": { "model": "clinker:block/impure_ruby_block" }
+    }
+}

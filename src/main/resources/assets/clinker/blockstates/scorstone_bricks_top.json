@@ -1,0 +1,10 @@
+{
+    "variants": {
+        "": [
+        {"model": "clinker:block/scorstone_bricks_top"},
+        {"model": "clinker:block/scorstone_bricks_top1"},
+        {"model": "clinker:block/scorstone_bricks_top2"},
+        {"model": "clinker:block/scorstone_bricks_top3"}
+        ]
+    }
+}

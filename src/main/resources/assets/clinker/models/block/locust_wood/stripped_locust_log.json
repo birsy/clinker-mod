@@ -1,0 +1,7 @@
+{
+   "parent": "block/cube_column",
+   "textures": {
+       "end": "clinker:blocks/locust_wood/stripped_locust_log_top",
+       "side": "clinker:blocks/locust_wood/stripped_locust_log"
+   }
+}

@@ -1,0 +1,13 @@
+  
+{
+  "replace": false,
+  "values": [
+    "clinker:brimstone",
+    "clinker:cobbled_brimstone",
+    "clinker:brimstone_bricks",
+    "clinker:scorstone",
+    "clinker:cobbled_scorstone",
+    "clinker:shale",
+    "clinker:smooth_shale"
+  ]
+}

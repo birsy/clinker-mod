@@ -1,0 +1,10 @@
+{
+    "variants": {
+        "": [
+            { "model": "clinker:block/ash/rooted_packed_ash" },
+            { "model": "clinker:block/ash/rooted_packed_ash", "y": 90 },
+            { "model": "clinker:block/ash/rooted_packed_ash", "y": 180 },
+            { "model": "clinker:block/ash/rooted_packed_ash", "y": 270 }
+        ]
+    }
+}

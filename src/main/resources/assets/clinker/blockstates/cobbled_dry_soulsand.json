@@ -1,0 +1,10 @@
+{
+    "variants": {
+        "": [
+            { "model": "clinker:block/cobbled_dry_soulsand" },
+            { "model": "clinker:block/cobbled_dry_soulsand1" },
+            { "model": "clinker:block/cobbled_dry_soulsand2" },
+            { "model": "clinker:block/cobbled_dry_soulsand3"}
+        ]
+    }
+}

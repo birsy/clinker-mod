@@ -1,0 +1,24 @@
+{
+    "type": "minecraft:crafting_shaped",
+   
+    "pattern":
+    [
+        "SSS",
+        "SSS",
+        "SSS"
+    ],
+   
+    "key":
+    {
+        "S":
+        {
+            "item": "clinker:sulfur"
+        }
+    },
+   
+    "result":
+    {
+        "item": "clinker:sulfur_block",
+        "count": 1
+    }
+}

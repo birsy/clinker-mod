@@ -1,0 +1,8 @@
+{
+    "variants": {
+        "": [
+        {"model": "clinker:block/riek_plant/fertile_riek_vine"}, 
+        {"model": "clinker:block/riek_plant/fertile_riek_vine_1"}
+        ]
+    }
+}

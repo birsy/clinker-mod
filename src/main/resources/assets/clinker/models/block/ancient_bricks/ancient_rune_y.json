@@ -1,0 +1,7 @@
+{
+   "parent": "block/cube_column",
+   "textures": {
+       "end": "clinker:blocks/ancient_bricks/ancient_stone",
+       "side": "clinker:blocks/ancient_bricks/ancient_rune_y"
+   }
+}

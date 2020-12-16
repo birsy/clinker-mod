@@ -1,0 +1,28 @@
+{
+    "type": "minecraft:crafting_shaped",
+   
+    "pattern":
+    [
+        "T",
+        "s",
+        "s"
+    ],
+   
+    "key":
+    {
+        "T":
+        {
+            "item": "clinker:lead_ingot"
+        },
+        "s":
+        {
+            "item": "minecraft:stick"
+        }
+    },
+   
+    "result":
+    {
+        "item": "clinker:lead_shovel",
+        "count": 1
+    }
+}

@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "clinker:block/scorstone_slab"
+    },
+    "type=double": {
+      "model": "clinker:block/scorstone_slab_combined"
+    },
+    "type=top": {
+      "model": "clinker:block/scorstone_slab_top"
+    }
+  }
+}

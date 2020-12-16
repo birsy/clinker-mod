@@ -1,0 +1,6 @@
+{
+  "parent": "clinker:block/bush",
+  "textures": {
+    "bush": "clinker:blocks/brambles/bramble1"
+  }
+}

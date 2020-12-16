@@ -1,0 +1,11 @@
+{
+    "variants": {
+        "": [
+        {"model": "clinker:block/witch_tiles", "weight": 4 },
+        {"model": "clinker:block/witch_tiles1", "weight": 1 },
+        {"model": "clinker:block/witch_tiles2", "weight": 1 },
+        {"model": "clinker:block/witch_tiles3", "weight": 1 },
+        {"model": "clinker:block/witch_tiles4", "weight": 4 }
+        ]
+    }
+}

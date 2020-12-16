@@ -1,0 +1,74 @@
+{
+    "__comment": "Model generated using MrCrayfish's Model Creator (https://mrcrayfish.com/tools?id=mc)",
+"ambientocclusion": false,
+    "textures": {
+        "particle": "clinker:blocks/interdimensional_urn_bottom",
+        "interdimensional_urn_bottom": "clinker:blocks/interdimensional_urn_bottom",
+        "interdimensional_urn": "clinker:blocks/interdimensional_urn",
+        "interdimensional_urn_top": "clinker:blocks/interdimensional_urn_top"
+    },
+    "display": {
+        "gui": {
+            "rotation": [ 30, 225, 0 ],
+            "translation": [ 0, 0, 0 ],
+            "scale": [ 0.625, 0.625, 0.625 ]
+        },
+        "ground": {
+            "rotation": [ 0, 0, 0 ],
+            "translation": [ 0, 3, 0 ],
+            "scale": [ 0.25, 0.25, 0.25 ]
+        },
+        "fixed": {
+            "rotation": [ 0, 0, 0 ],
+            "translation": [ 0, 0, 0 ],
+            "scale": [ 0.5, 0.5, 0.5 ]
+        },
+        "firstperson_righthand": {
+            "rotation": [ 0, 45, 0 ],
+            "translation": [ 0, 2.5, 0 ],
+            "scale": [ 0.4, 0.4, 0.4 ]
+        },
+        "thirdperson_righthand": {
+            "rotation": [ 75, 45, 0 ],
+            "translation": [ 0, 2.5, 0 ],
+            "scale": [ 0.375, 0.375, 0.375 ]
+        }
+    },
+    "elements": [
+        {
+            "from": [ 0, 3, 0 ], 
+            "to": [ 16, 7, 16 ], 
+            "faces": {
+                "north": { "texture": "#interdimensional_urn", "uv": [ 0, 9, 16, 13 ], "cullface": "north" },
+                "east": { "texture": "#interdimensional_urn", "uv": [ 0, 9, 16, 13 ], "cullface": "east" },
+                "south": { "texture": "#interdimensional_urn", "uv": [ 0, 9, 16, 13 ], "cullface": "south" },
+                "west": { "texture": "#interdimensional_urn", "uv": [ 0, 9, 16, 13 ], "cullface": "west" },
+                "up": { "texture": "#interdimensional_urn_top", "uv": [ 0, 0, 16, 16 ] },
+                "down": { "texture": "#interdimensional_urn_bottom", "uv": [ 0, 0, 16, 16 ] }
+            }
+        },
+        {
+            "from": [ 1, 0, 1 ], 
+            "to": [ 15, 11, 15 ], 
+            "faces": {
+                "north": { "texture": "#interdimensional_urn", "uv": [ 1, 5, 15, 16 ] },
+                "east": { "texture": "#interdimensional_urn", "uv": [ 1, 5, 15, 16 ] },
+                "south": { "texture": "#interdimensional_urn", "uv": [ 1, 5, 15, 16 ] },
+                "west": { "texture": "#interdimensional_urn", "uv": [ 1, 5, 15, 16 ] },
+                "up": { "texture": "#interdimensional_urn_top", "uv": [ 1, 1, 15, 15 ] },
+                "down": { "texture": "#interdimensional_urn_bottom", "uv": [ 1, 1, 15, 15 ], "cullface": "down" }
+            }
+        },
+        {
+            "from": [ 4, 11, 4 ], 
+            "to": [ 12, 13, 12 ], 
+            "faces": {
+                "north": { "texture": "#interdimensional_urn", "uv": [ 4, 3, 12, 5 ] },
+                "east": { "texture": "#interdimensional_urn", "uv": [ 4, 3, 12, 5 ] },
+                "south": { "texture": "#interdimensional_urn", "uv": [ 4, 3, 12, 5 ] },
+                "west": { "texture": "#interdimensional_urn", "uv": [ 4, 3, 12, 5 ] },
+                "up": { "texture": "#interdimensional_urn_top", "uv": [ 4, 4, 12, 12 ] }
+            }
+        }
+    ]
+}

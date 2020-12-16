@@ -1,0 +1,7 @@
+{
+   "parent": "block/cube_column",
+   "textures": {
+       "end": "clinker:blocks/belwith_stone/cyclopean_belwith_bricks_0",
+       "side": "clinker:blocks/belwith_stone/cyclopean_belwith_bricks_1"
+   }
+}

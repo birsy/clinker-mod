@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "clinker:block/dried_soulsand_slab"
+    },
+    "type=double": {
+      "model": "clinker:block/dried_soulsand_slab_combined"
+    },
+    "type=top": {
+      "model": "clinker:block/dried_soulsand_slab_top"
+    }
+  }
+}

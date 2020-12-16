@@ -1,0 +1,8 @@
+{
+    "variants": {
+        "": [
+        {"model": "clinker:block/brambles/bramble_vines"},
+        {"model": "clinker:block/brambles/bramble_vines1"}
+        ]
+    }
+}

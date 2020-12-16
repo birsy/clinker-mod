@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/wall_inventory",
+  "textures": {
+    "wall": "clinker:blocks/scorstone/scorstone_bricks_var/scorstone_bricks"
+  }
+}

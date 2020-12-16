@@ -1,0 +1,131 @@
+{
+    "__comment": "Model generated using MrCrayfish's Model Creator (https://mrcrayfish.com/tools?id=mc)",
+    "textures": {
+        "particle": "clinker:blocks/thornlog",
+        "thornlog": "clinker:blocks/thornlog",
+        "thornlog_top": "clinker:blocks/thornlog_top"
+    },
+    "display": {
+        "gui": {
+            "rotation": [ 30, 45, 0 ],
+            "translation": [ 0, 0, 0 ],
+            "scale": [ 0.625, 0.625, 0.625 ]
+        },
+        "ground": {
+            "rotation": [ 0, 0, 0 ],
+            "translation": [ 0, 3, 0 ],
+            "scale": [ 0.25, 0.25, 0.25 ]
+        },
+        "fixed": {
+            "rotation": [ 0, 180, 0 ],
+            "translation": [ 0, 0, 0 ],
+            "scale": [ 1, 1, 1 ]
+        },
+        "head": {
+            "rotation": [ 0, 180, 0 ],
+            "translation": [ 0, 0, 0 ],
+            "scale": [ 1, 1, 1 ]
+        },
+        "firstperson_righthand": {
+            "rotation": [ 0, 315, 0 ],
+            "translation": [ 0, 2.5, 0 ],
+            "scale": [ 0.4, 0.4, 0.4 ]
+        },
+        "thirdperson_righthand": {
+            "rotation": [ 75, 315, 0 ],
+            "translation": [ 0, 2.5, 0 ],
+            "scale": [ 0.375, 0.375, 0.375 ]
+        }
+    },
+    "elements": [
+        {
+            "name": "Thorn",
+            "from": [ 0, 0, 4 ], 
+            "to": [ 16, 16, 12 ], 
+            "faces": {
+                "north": { "texture": "#thornlog", "uv": [ 0, 0, 16, 16 ] },
+                "south": { "texture": "#thornlog", "uv": [ 0, 0, 16, 16 ] }
+            }
+        },
+        {
+            "name": "Thorn",
+            "from": [ 4, 0, 0 ], 
+            "to": [ 12, 16, 16 ], 
+            "faces": {
+                "east": { "texture": "#thornlog", "uv": [ 0, 0, 16, 16 ] },
+                "west": { "texture": "#thornlog", "uv": [ 0, 0, 16, 16 ] }
+            }
+        },
+        {
+            "name": "ThornBottom",
+            "from": [ 4, -3, 0 ], 
+            "to": [ 12, 0, 16 ], 
+            "faces": {
+                "east": { "texture": "#thornlog", "uv": [ 0, 0, 16, 3 ] },
+                "west": { "texture": "#thornlog", "uv": [ 0, 0, 16, 3 ] }
+            }
+        },
+        {
+            "name": "ThornBottom",
+            "from": [ 0, -3, 4 ], 
+            "to": [ 16, 0, 12 ], 
+            "faces": {
+                "north": { "texture": "#thornlog", "uv": [ 0, 0, 16, 3 ] },
+                "south": { "texture": "#thornlog", "uv": [ 0, 0, 16, 3 ] }
+            }
+        },
+        {
+            "name": "ThornTop",
+            "from": [ 0, 16, 4 ], 
+            "to": [ 16, 19, 12 ], 
+            "faces": {
+                "north": { "texture": "#thornlog", "uv": [ 0, 13, 16, 16 ] },
+                "south": { "texture": "#thornlog", "uv": [ 0, 13, 16, 16 ] }
+            }
+        },
+        {
+            "name": "ThornTop",
+            "from": [ 4, 16, 0 ], 
+            "to": [ 12, 19, 16 ], 
+            "faces": {
+                "east": { "texture": "#thornlog", "uv": [ 0, 13, 16, 16 ] },
+                "west": { "texture": "#thornlog", "uv": [ 0, 13, 16, 16 ] }
+            }
+        },
+        {
+            "name": "Log",
+            "from": [ 3, 0, 3 ], 
+            "to": [ 13, 16, 13 ], 
+            "faces": {
+                "north": { "texture": "#thornlog", "uv": [ 3, 0, 13, 16 ] },
+                "east": { "texture": "#thornlog", "uv": [ 3, 0, 13, 16 ] },
+                "south": { "texture": "#thornlog", "uv": [ 3, 0, 13, 16 ] },
+                "west": { "texture": "#thornlog", "uv": [ 3, 0, 13, 16 ] }
+            }
+        },
+        {
+            "name": "LogBottom",
+            "from": [ 3, -3, 3 ], 
+            "to": [ 13, 0, 13 ], 
+            "faces": {
+                "north": { "texture": "#thornlog", "uv": [ 3, 0, 13, 3 ] },
+                "east": { "texture": "#thornlog", "uv": [ 3, 0, 13, 3 ] },
+                "south": { "texture": "#thornlog", "uv": [ 3, 0, 13, 3 ] },
+                "west": { "texture": "#thornlog", "uv": [ 3, 0, 13, 3 ] },
+                "down": { "texture": "#thornlog_top", "uv": [ 3, 3, 13, 13 ] }
+            }
+        },
+        {
+            "name": "LogTop",
+            "from": [ 3, 16, 3 ], 
+            "to": [ 13, 19, 13 ], 
+            "faces": {
+                "north": { "texture": "#thornlog", "uv": [ 3, 13, 13, 16 ] },
+                "east": { "texture": "#thornlog", "uv": [ 3, 13, 13, 16 ] },
+                "south": { "texture": "#thornlog", "uv": [ 3, 13, 13, 16 ] },
+                "west": { "texture": "#thornlog", "uv": [ 3, 13, 13, 16 ] },
+                "up": { "texture": "#thornlog_top", "uv": [ 3, 3, 13, 13 ] }
+            }
+        }
+    ]
+}

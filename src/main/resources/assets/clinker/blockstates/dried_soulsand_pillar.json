@@ -1,0 +1,15 @@
+{
+    "variants": {
+        "axis=y": [
+        {"model": "clinker:block/dried_soulsand_pillar"}
+        ],
+
+        "axis=z": [
+        {"model": "clinker:block/dried_soulsand_pillar", "x": 90 }
+        ],
+        
+        "axis=x": [
+        {"model": "clinker:block/dried_soulsand_pillar", "x": 90, "y": 90  }
+        ]
+    }
+}

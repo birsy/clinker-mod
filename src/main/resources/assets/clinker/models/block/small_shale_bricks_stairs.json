@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/stairs",
+  "textures": {
+    "bottom": "clinker:blocks/small_shale_bricks",
+    "top": "clinker:blocks/small_shale_bricks",
+    "side": "clinker:blocks/small_shale_bricks"
+  }
+}

@@ -1,0 +1,10 @@
+{
+    "variants": {
+        "": [
+        {"model": "clinker:block/dried_soulsand"},
+        {"model": "clinker:block/dried_soulsand1"},
+        {"model": "clinker:block/dried_soulsand2"},
+        {"model": "clinker:block/dried_soulsand3"}
+        ]
+    }
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "block/cube_column",
+  "textures": {
+    "side": "clinker:blocks/riek_plant/riek_plant",
+    "end": "clinker:blocks/riek_plant/riek_plant_top"
+  }
+}

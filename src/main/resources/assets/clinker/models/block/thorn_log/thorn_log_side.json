@@ -1,0 +1,36 @@
+{
+    "__comment": "Model generated using MrCrayfish's Model Creator (https://mrcrayfish.com/tools?id=mc)",
+"ambientocclusion": false,
+    "textures": {
+        "particle": "clinker:blocks/thorn_log/thorn_log",
+        "thorn_log_thorns": "clinker:blocks/thorn_log/thorn_log_thorns",
+        "thorn_log": "clinker:blocks/thorn_log/thorn_log"
+    },
+    "elements": [
+        {
+            "from": [ 5, 5, 5 ], 
+            "to": [ 11, 11, 11 ], 
+            "faces": {
+                "north": { "texture": "#thorn_log", "uv": [ 5, 5, 11, 11 ] }
+            }
+        },
+        {
+            "from": [ 10.5, 5, 1 ], 
+            "to": [ 10.5, 11, 5 ], 
+            "faces": {
+               "north": { "texture": "#thorn_log_thorns", "uv": [ 0, 0, 0, 6 ] },
+                "east": { "texture": "#thorn_log_thorns", "uv": [ 11, 5, 15, 11 ] },
+                "west": { "texture": "#thorn_log_thorns", "uv": [ 1, 5, 5, 11 ] }
+            }
+        },
+        {
+            "from": [ 5.5, 5, 1 ], 
+            "to": [ 5.5, 11, 5 ], 
+            "faces": {
+                "north": { "texture": "#thorn_log_thorns", "uv": [ 0, 0, 0, 6 ] },
+                "east": { "texture": "#thorn_log_thorns", "uv": [ 1, 5, 5, 11 ], "rotation": 180 },
+                "west": { "texture": "#thorn_log_thorns", "uv": [ 11, 5, 15, 11 ], "rotation": 180 }
+            }
+        }
+    ]
+}

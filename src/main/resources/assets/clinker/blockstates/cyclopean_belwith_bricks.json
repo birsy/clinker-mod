@@ -1,0 +1,8 @@
+{
+    "variants": {
+        "y_even=true,z_even=true":   { "model": "clinker:block/belwith_stone/cyclopean_belwith_bricks_11"},
+        "y_even=false,z_even=true":   { "model": "clinker:block/belwith_stone/cyclopean_belwith_bricks_10"},
+        "y_even=true,z_even=false":   { "model": "clinker:block/belwith_stone/cyclopean_belwith_bricks_01"},
+        "y_even=false,z_even=false":   { "model": "clinker:block/belwith_stone/cyclopean_belwith_bricks_00"}
+    }
+}

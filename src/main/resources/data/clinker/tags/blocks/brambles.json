@@ -1,0 +1,11 @@
+  
+{
+  "replace": false,
+  "values": [
+    "clinker:bramble",
+    "clinker:bramble_vines",
+    "clinker:bramble_vines_top",
+    "clinker:bramble_roots",
+    "clinker:bramble_roots_bottom"
+  ]
+}

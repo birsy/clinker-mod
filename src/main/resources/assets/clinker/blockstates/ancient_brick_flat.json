@@ -1,0 +1,25 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "clinker:block/ancient_bricks/ancient_brick_flat_down"
+    },
+    "facing=east": {
+      "model": "clinker:block/ancient_bricks/ancient_brick_flat_east"
+    },
+    "facing=north": {
+      "model": "clinker:block/ancient_bricks/ancient_brick_flat_east",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "clinker:block/ancient_bricks/ancient_brick_flat_west",
+      "y": 90
+    },
+    "facing=up": {
+      "model": "clinker:block/ancient_bricks/ancient_brick_flat_up"
+    },
+    "facing=west": {
+      "model": "clinker:block/ancient_bricks/ancient_brick_flat_west"
+    }
+  }
+}
+

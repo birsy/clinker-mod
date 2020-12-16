@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab",
+  "textures": {
+    "bottom": "clinker:blocks/dried_soulsand/dried_soulsand_slab_var/dried_soulsand_slab",
+    "top": "clinker:blocks/dried_soulsand/dried_soulsand_slab_var/dried_soulsand_slab",
+    "side": "clinker:blocks/dried_soulsand/dried_soulsand_slab_var/dried_soulsand_slab"
+  }
+}

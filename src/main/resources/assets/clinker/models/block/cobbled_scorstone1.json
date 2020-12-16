@@ -1,0 +1,6 @@
+{
+   "parent": "block/cube_all",
+   "textures": {
+       "all": "clinker:blocks/scorstone/cobbled_scorstone_var/cobbled_scorstone_1"
+   }
+}

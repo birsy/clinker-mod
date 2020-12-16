@@ -1,0 +1,24 @@
+{
+    "type": "minecraft:crafting_shaped",
+   
+    "pattern":
+    [
+        "SSS",
+        "SSS",
+        "SSS"
+    ],
+   
+    "key":
+    {
+        "S":
+        {
+            "item": "clinker:impure_ruby"
+        }
+    },
+   
+    "result":
+    {
+        "item": "clinker:impure_ruby_block",
+        "count": 1
+    }
+}

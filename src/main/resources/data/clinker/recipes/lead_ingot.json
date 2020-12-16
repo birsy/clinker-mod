@@ -1,0 +1,24 @@
+{
+    "type": "minecraft:crafting_shaped",
+   
+    "pattern":
+    [
+        "LLL",
+        "LLL",
+        "LLL"
+    ],
+   
+    "key":
+    {
+        "L":
+        {
+            "item": "clinker:lead_nugget"
+        }
+    },
+   
+    "result":
+    {
+        "item": "clinker:lead_ingot",
+        "count": 1
+    }
+}

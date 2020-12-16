@@ -1,0 +1,8 @@
+{
+    "variants": {
+        "": [
+        {"model": "clinker:block/brambles/bramble_roots"},
+        {"model": "clinker:block/brambles/bramble_roots1"}
+        ]
+    }
+}

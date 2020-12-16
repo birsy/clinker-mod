@@ -1,0 +1,56 @@
+{
+    "__comment": "Model generated using MrCrayfish's Model Creator (https://mrcrayfish.com/tools?id=mc)",
+"ambientocclusion": false,
+    "textures": {
+        "particle": "clinker:blocks/thorn_log/thorn_log",
+        "thorn_log_top": "clinker:blocks/thorn_log/thorn_log_top",
+        "thorn_log_thorns": "clinker:blocks/thorn_log/thorn_log_thorns",
+        "thorn_log": "clinker:blocks/thorn_log/thorn_log"
+    },
+    "elements": [
+        {
+            "from": [ 5, 5, 0 ], 
+            "to": [ 11, 11, 5 ], 
+            "faces": {
+                "north": { "texture": "#thorn_log_top", "uv": [ 5, 5, 11, 11 ] },
+                "east": { "texture": "#thorn_log", "uv": [ 5, 11, 11, 16 ], "rotation": 90 },
+                "south": { "texture": "#thorn_log_top", "uv": [ 5, 5, 11, 11 ] },
+                "west": { "texture": "#thorn_log", "uv": [ 5, 11, 11, 16 ], "rotation": 90 },
+                "up": { "texture": "#thorn_log", "uv": [ 5, 11, 11, 16 ] },
+                "down": { "texture": "#thorn_log", "uv": [ 5, 11, 11, 16 ] }
+            }
+        },
+        {
+            "from": [ 5.5, 2, 0 ], 
+            "to": [ 5.5, 14, 5 ], 
+            "faces": {
+                "east": { "texture": "#thorn_log_thorns", "uv": [ 2, 0, 14, 5 ], "rotation": 90 },
+                "west": { "texture": "#thorn_log_thorns", "uv": [ 2, 11, 14, 16 ], "rotation": 90 }
+            }
+        },
+        {
+            "from": [ 10.5, 2, 0 ], 
+            "to": [ 10.5, 14, 5 ], 
+            "faces": {
+                "east": { "texture": "#thorn_log_thorns", "uv": [ 2, 11, 14, 16 ], "rotation": 90 },
+                "west": { "texture": "#thorn_log_thorns", "uv": [ 2, 11, 14, 16 ], "rotation": 270 }
+            }
+        },
+        {
+            "from": [ 2, 5.5, 0 ], 
+            "to": [ 14, 5.5, 5 ], 
+            "faces": {
+                "up": { "texture": "#thorn_log_thorns", "uv": [ 2, 11, 14, 16 ] },
+                "down": { "texture": "#thorn_log_thorns", "uv": [ 2, 11, 14, 16 ] }
+            }
+        },
+        {
+            "from": [ 2, 10.5, 0 ], 
+            "to": [ 14, 10.5, 5 ], 
+            "faces": {
+                "up": { "texture": "#thorn_log_thorns", "uv": [ 2, 11, 14, 16 ], "rotation": 180 },
+                "down": { "texture": "#thorn_log_thorns", "uv": [ 2, 11, 14, 16 ], "rotation": 180 }
+            }
+        }
+    ]
+}

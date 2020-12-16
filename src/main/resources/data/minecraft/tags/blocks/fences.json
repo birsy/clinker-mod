@@ -1,0 +1,14 @@
+{
+  "replace": false,
+  "values": [
+    "#minecraft:wooden_fences",
+    "minecraft:nether_brick_fence",
+    "clinker:small_shale_bricks_fence",
+    "clinker:scorstone_wall",
+    "clinker:scorstone_bricks_wall",
+    "clinker:smooth_shale_wall",
+    "clinker:polished_shale_wall",
+    "clinker:shale_bricks_wall",
+    "clinker:dried_soulsand_fence"
+  ]
+}

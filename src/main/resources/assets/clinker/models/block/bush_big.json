@@ -1,0 +1,69 @@
+{
+    "__comment": "thanks mr. crayfish :)",
+"ambientocclusion": true,
+    "textures": {
+        "particle": "#bush"
+    },
+    "elements": [
+        {
+            "from": [ -8, -8, 8 ], 
+            "to": [ 24, 24, 8 ], 
+            "shade": false,
+            "rotation": { "origin": [ 8, 8, 8 ], "axis": "y", "angle": 45.0},
+            "faces": {
+                "north": { "texture": "#bush", "uv": [ 0, 0, 16, 16 ] },
+                "south": { "texture": "#bush", "uv": [ 0, 0, 16, 16 ] }
+            }
+        },
+        {
+            "from": [ -8, -8, 8 ], 
+            "to": [ 24, 24, 8 ], 
+            "shade": false,
+            "rotation": { "origin": [ 8, 8, 8 ], "axis": "y", "angle": -45.0},
+            "faces": {
+                "north": { "texture": "#bush", "uv": [ 0, 0, 16, 16 ] },
+                "south": { "texture": "#bush", "uv": [ 0, 0, 16, 16 ] }
+            }
+        },
+        {
+            "from": [ -8, 8, -8 ], 
+            "to": [ 24, 8, 24 ], 
+            "shade": false,
+            "rotation": { "origin": [ 8, 8, 8 ], "axis": "x", "angle": -45.0},
+            "faces": {
+                "up": { "texture": "#bush", "uv": [ 0, 0, 16, 16 ] },
+                "down": { "texture": "#bush", "uv": [ 0, 0, 16, 16 ] }
+            }
+        },
+        {
+            "from": [ -8, 8, -8 ], 
+            "to": [ 24, 8, 24 ], 
+            "shade": false,
+            "rotation": { "origin": [ 8, 8, 8 ], "axis": "x", "angle": 45.0},
+            "faces": {
+                "up": { "texture": "#bush", "uv": [ 0, 0, 16, 16 ] },
+                "down": { "texture": "#bush", "uv": [ 0, 0, 16, 16 ] }
+            }
+        },
+        {
+            "from": [ -8, 8, -8 ], 
+            "to": [ 24, 8, 24 ], 
+            "shade": false,
+            "rotation": { "origin": [ 8, 8, 8 ], "axis": "z", "angle": 45.0},
+            "faces": {
+                "up": { "texture": "#bush", "uv": [ 0, 0, 16, 16 ] },
+                "down": { "texture": "#bush", "uv": [ 0, 0, 16, 16 ] }
+            }
+        },
+        {
+            "from": [ -8, 8, -8 ], 
+            "to": [ 24, 8, 24 ], 
+            "shade": false,
+            "rotation": { "origin": [ 8, 8, 8 ], "axis": "z", "angle": -45.0},
+            "faces": {
+                "up": { "texture": "#bush", "uv": [ 0, 0, 16, 16 ] },
+                "down": { "texture": "#bush", "uv": [ 0, 0, 16, 16 ] }
+            }
+        }
+    ]
+}

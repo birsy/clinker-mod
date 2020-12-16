@@ -1,0 +1,12 @@
+{
+  "config": {
+    "feature": "clinker:ash_dune",
+    "decorator": {
+      "config": {
+        "count": 3
+      },
+      "type": "minecraft:count"
+    }
+  },
+  "type": "minecraft:decorated"
+}

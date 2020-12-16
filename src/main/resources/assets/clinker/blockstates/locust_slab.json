@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "clinker:block/locust_wood/locust_slab"
+    },
+    "type=double": {
+      "model": "clinker:block/locust_wood/locust_planks"
+    },
+    "type=top": {
+      "model": "clinker:block/locust_wood/locust_slab_top"
+    }
+  }
+}

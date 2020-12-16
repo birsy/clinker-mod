@@ -1,0 +1,7 @@
+{
+   "parent": "block/cube_column",
+   "textures": {
+       "end": "clinker:blocks/ash/rocky_packed_ash_top",
+       "side": "clinker:blocks/ash/rocky_packed_ash"
+   }
+}

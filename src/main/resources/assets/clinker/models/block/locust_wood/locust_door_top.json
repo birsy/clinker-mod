@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/door_top",
+  "textures": {
+    "top": "clinker:blocks/locust_wood/locust_door_top",
+    "bottom": "clinker:blocks/locust_wood/locust_door_bottom"
+  }
+}

@@ -1,0 +1,16 @@
+[
+{
+  "modid": "clinker",
+  "name": "Clinker",
+  "description": "Adds snails, a new dimension, and other various things.",
+  "version": "0.1",
+  "mcversion": "1.16.1",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["birsy"],
+  "credits": "Thanks to TechnoVision for making great tutorials that allowed me to get started with Minecraft modding.",
+  "logoFile": "logo.png",
+  "screenshots": [],
+  "dependencies": []
+}
+]

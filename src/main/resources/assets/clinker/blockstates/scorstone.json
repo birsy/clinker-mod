@@ -1,0 +1,10 @@
+{
+    "variants": {
+        "": [
+        {"model": "clinker:block/scorstone"},
+        {"model": "clinker:block/scorstone1"},
+        {"model": "clinker:block/scorstone2"},
+        {"model": "clinker:block/scorstone3"}
+        ]
+    }
+}

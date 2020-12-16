@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "clinker:blocks/ash/rooted_ash_top_1",
+    "bottom": "clinker:blocks/ash/ash",
+    "side": "clinker:blocks/ash/rooted_ash_1"
+  }
+}

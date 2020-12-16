@@ -1,0 +1,26 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "clinker:block/riek_plant/riek_tubes",
+      "x": 180
+    },
+    "facing=east": {
+      "model": "clinker:block/riek_plant/riek_tubes_side",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "clinker:block/riek_plant/riek_tubes_side"
+    },
+    "facing=south": {
+      "model": "clinker:block/riek_plant/riek_tubes_side",
+      "y": 180
+    },
+    "facing=up": {
+      "model": "clinker:block/riek_plant/riek_tubes"
+    },
+    "facing=west": {
+      "model": "clinker:block/riek_plant/riek_tubes_side",
+      "y": 270
+    }
+  }
+}

@@ -1,0 +1,11 @@
+  
+{
+  "replace": false,
+  "values": [
+    "clinker:ash",
+    "clinker:rooted_ash",
+    "clinker:packed_ash",
+    "clinker:rooted_packed_ash",
+    "clinker:rocky_packed_ash"
+  ]
+}

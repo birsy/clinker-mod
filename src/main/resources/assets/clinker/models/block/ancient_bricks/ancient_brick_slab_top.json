@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab_top",
+  "textures": {
+    "bottom": "clinker:blocks/ancient_bricks/ancient_smooth_brick",
+    "top": "clinker:blocks/ancient_bricks/ancient_smooth_brick",
+    "side": "clinker:blocks/ancient_bricks/ancient_brick_slab"
+  }
+}

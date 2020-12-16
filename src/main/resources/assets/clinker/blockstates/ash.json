@@ -1,0 +1,10 @@
+{
+    "variants": {
+        "": [
+            { "model": "clinker:block/ash/ash" },
+            { "model": "clinker:block/ash/ash_mirrored" },
+            { "model": "clinker:block/ash/ash", "y": 180 },
+            { "model": "clinker:block/ash/ash_mirrored", "y": 180 }
+        ]
+    }
+}

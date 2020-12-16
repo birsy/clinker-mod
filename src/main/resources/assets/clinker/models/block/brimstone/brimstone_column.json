@@ -1,0 +1,7 @@
+{
+   "parent": "block/cube_column",
+   "textures": {
+       "end": "clinker:blocks/brimstone/brimstome_column_top",
+       "side": "clinker:blocks/brimstone/brimstome_column"
+   }
+}

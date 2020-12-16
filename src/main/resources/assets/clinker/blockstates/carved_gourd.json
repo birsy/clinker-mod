@@ -1,0 +1,8 @@
+{
+    "variants": {
+        "facing=north": { "model": "clinker:carved_gourd" },
+        "facing=south": { "model": "clinker:carved_gourd", "y": 180 },
+        "facing=west":  { "model": "clinker:carved_gourd", "y": 270 },
+        "facing=east":  { "model": "clinker:carved_gourd", "y": 90 }
+    }
+}

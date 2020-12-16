@@ -1,0 +1,123 @@
+{
+	//**ITEMS
+	"item.clinker.sulfur": "Sulfur",
+	"item.clinker.bismuth": "Bismuth",
+	"item.clinker.pyrite": "Pyrite",
+	"item.clinker.iron_pyrite": "Iron Pyrite",
+	"item.clinker.phosphor": "Phosphor",
+	"item.clinker.lead_ingot": "Lead Ingot",
+	"item.clinker.lead_nugget": "Lead Nugget",
+	"item.clinker.salt": "Sea Salt",
+
+	//tools
+	"item.clinker.lead_sword": "Lead Sword",
+	"item.clinker.lead_axe": "Lead Axe",
+	"item.clinker.lead_pickaxe": "Lead Pickaxe",
+	"item.clinker.lead_shovel": "Lead Shovel",
+	"item.clinker.lead_hoe": "Lead Hoe",
+	"item.clinker.ancient_shield": "Ancient Shield",
+	
+	//armor
+	"item.clinker.shell_helmet": "Centipede Plate Helmet",
+	"item.clinker.shell_chestplate": "Centipede Plate Chestplate",
+	"item.clinker.shell_leggings": "Centipede Plate Leggings",
+	"item.clinker.shell_boots": "Centipede Plate Boots",
+
+	//food
+	"item.clinker.gnomeat": "Gnomeat",
+	"item.gnomeat.lore": "Smells vaguely of piss...",
+	"item.clinker.gnomeat_jerky": "Gnomeat Jerky",
+
+	//**BLOCKS
+	"block.clinker.brimstone_bricks": "Brimstone Bricks",
+	"block.clinker.brimstone": "Brimstone",
+	"block.clinker.cobbled_brimstone": "Cobbled Brimstone",
+	"block.clinker.polished_brimstone": "Smooth Brimstone",
+	"block.clinker.brimstone_column": "Brimstone Pillar",
+
+	"block.clinker.witch_blocks": "Witch blocks",
+
+	"block.clinker.blue_stained_living_clay": "Blue Stained Living Clay",
+
+	"block.clinker.packed_ash": "Packed Ash",
+	"block.clinker.ash": "Ash",
+
+	"block.clinker.dried_soulsand": "Dried Soulsand",
+	"block.clinker.dried_soulsand_bricks": "Dried Soulsand Bricks",
+	"block.clinker.dried_soulsand_roof": "Dried Soulsand Roof",
+	"block.clinker.dried_soulsand_pillar": "Dried Soulsand Pillar",
+	"block.clinker.polished_dry_soulsand": "Polished Dry Soulsand",
+	"block.clinker.cobbled_dry_soulsand": "Cobbled Dry Soulsand",
+	"block.clinker.chiseled_dry_soulsand": "Chiseled Dry Soulsand",
+	"block.clinker.dried_soulsand_slab": "Dried Soulsand Slab",
+	"block.clinker.dried_soulsand_stairs": "Dried Soulsand Stairs",
+	"block.clinker.dried_soulsand_fence": "Dried Soulsand Fence",
+
+	"block.clinker.shale": "Shale",
+	
+	"block.clinker.smooth_shale": "Smooth Shale",
+	"block.clinker.smooth_shale_slab": "Smooth Shale Slab",
+	"block.clinker.smooth_shale_stairs": "Smooth Shale Stairs",
+	"block.clinker.smooth_shale_wall": "Smooth Shale Wall",
+	
+	"block.clinker.shale_bricks": "Shale Bricks",
+	"block.clinker.shale_bricks_slab": "Shale Brick Slab",
+	"block.clinker.shale_bricks_stairs": "Shale Brick Stairs",
+	"block.clinker.shale_bricks_wall": "Shale Brick Wall",
+	
+	"block.clinker.small_shale_bricks": "Small Shale Bricks",
+	"block.clinker.small_shale_bricks_slab": "Small Shale Brick Slab",
+	"block.clinker.small_shale_bricks_stairs": "Small Shale Brick Stairs",
+	"block.clinker.small_shale_bricks_fence": "Small Shale Brick Fence",
+	
+	"block.clinker.polished_shale": "Polished Shale",
+	"block.clinker.polished_shale_slab": "Polished Shale Slab",
+	"block.clinker.polished_shale_stairs": "Polished Shale Stairs",
+	"block.clinker.polished_shale_wall": "Polished Shale Wall",
+	
+	"block.clinker.shale_pillar": "Shale Pillar",
+	
+	"block.clinker.ancient_rune": "Ancient Rune",
+	"block.clinker.ancient_rune.carve": "Rune carved to %s",
+
+	//materialblocks
+	"block.clinker.sulfur_block": "Block of Sulfur",
+	"block.clinker.lead_block": "Block of Lead",
+	"block.clinker.bismuth_block": "Block of Bismuth",
+	"block.clinker.iron_pyrite_block": "Iron Pyrite Plates",
+	"block.clinker.impure_ruby_block": "Polished Rubystone",
+	"block.clinker.brinestone": "Brinestone",
+	"block.clinker.salt_block": "Sea Salt",
+	"block.clinker.brilliant_gemstone": "The Ruby Court's Most Brilliant Gemstone",
+
+	//ores
+	"block.clinker.lead_ore": "Lead Ore",
+	"block.clinker.overworld_lead_ore": "Lead Ore",
+	"block.clinker.nether_lead_ore": "Lead Ore",
+	"block.clinker.sulfur_ore": "Sulfur Ore",
+	"block.clinker.ruby_ore": "Rubystone",
+
+	//plants
+	"block.clinker.thorn_log": "Thorn Log",
+	"block.clinker.stripped_thorn_log": "Stripped Thorn Log",
+	"block.clinker.thorns": "Thorns",
+	"block.clinker.gourd": "Gourd",
+	"block.clinker.carved_gourd": "Carved Gourd",
+	"block.clinker.lit_gourd": "Gourd o' Lantern",
+
+
+	//**ENTITIES
+	"entity.clinker.gnomad": "Gnomad",
+	"entity.clinker.gnomad_shaman": "Gnomad Shaman",
+	"entity.clinker.snail": "Land Snail",
+	"entity.clinker.termite": "Termite Warrior",
+	"entity.clinker.witch_golem": "Witch Golem",
+	
+	//**CREATIVE TABS
+	"itemGroup.clinkerItems": "Clinker Items",
+	"itemGroup.clinkerBlocks": "Clinker Blocks",
+	
+	//**SUBTITLES
+	"subtitles.entity.gnome.ambient": "Gnome grunts",
+	"subtitles.entity.gnome.hurt": "Gnome hurts" 
+}

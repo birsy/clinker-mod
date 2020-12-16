@@ -1,0 +1,7 @@
+{
+    "variants": {
+        "axis=y":  { "model": "clinker:block/scorstone_pillar" },
+        "axis=z":   { "model": "clinker:block/scorstone_pillar", "x": 90 },
+        "axis=x":   { "model": "clinker:block/scorstone_pillar", "x": 90, "y": 90 }
+    }
+}

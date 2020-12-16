@@ -1,0 +1,89 @@
+{
+    "textures": {
+        "particle": "clinker:blocks/riek_plant/riek_fruit_vines_3",
+        "riek_fruit_vines_3": "clinker:blocks/riek_plant/riek_fruit_vines_3",
+        "riek_fruit": "clinker:blocks/riek_plant/riek_fruit"
+    },
+    "display": {
+        "gui": {
+            "rotation": [ 30, 225, 0 ],
+            "translation": [ 0, 0, 0 ],
+            "scale": [ 0.625, 0.625, 0.625 ]
+        },
+        "ground": {
+            "rotation": [ 0, 0, 0 ],
+            "translation": [ 0, 3, 0 ],
+            "scale": [ 0.25, 0.25, 0.25 ]
+        },
+        "fixed": {
+            "rotation": [ 0, 0, 0 ],
+            "translation": [ 0, 0, 0 ],
+            "scale": [ 0.5, 0.5, 0.5 ]
+        },
+        "firstperson_righthand": {
+            "rotation": [ 0, 45, 0 ],
+            "translation": [ 0, 1.5, 0 ],
+            "scale": [ 0.4, 0.4, 0.4 ]
+        },
+        "thirdperson_righthand": {
+            "rotation": [ 75, 45, 0 ],
+            "translation": [ 0, 2.5, 0 ],
+            "scale": [ 0.375, 0.375, 0.375 ]
+        }
+    },
+    "elements": [
+        {
+            "name": "Cube",
+            "from": [ 8, 0, 0 ], 
+            "to": [ 16, 16, 0 ], 
+            "rotation": { "origin": [ 8, 8, 0 ], "axis": "y", "angle": -22.5 },
+            "faces": {
+                "north": { "texture": "#riek_fruit_vines_3", "uv": [ 0, 0, 8, 16 ] },
+                "south": { "texture": "#riek_fruit_vines_3", "uv": [ 8, 0, 16, 16 ] }
+            }
+        },
+        {
+            "name": "Cube",
+            "from": [ 0, 0, 0 ], 
+            "to": [ 8, 16, 0 ], 
+            "rotation": { "origin": [ 8, 8, 0 ], "axis": "y", "angle": 22.5 },
+            "faces": {
+                "north": { "texture": "#riek_fruit_vines_3", "uv": [ 8, 0, 16, 16 ] },
+                "south": { "texture": "#riek_fruit_vines_3", "uv": [ 0, 0, 8, 16 ] }
+            }
+        },
+        {
+            "name": "Cube",
+            "from": [ 0, 0, 0 ], 
+            "to": [ 16, 8, 0 ], 
+            "rotation": { "origin": [ 8, 8, 0 ], "axis": "x", "angle": -22.5 },
+            "faces": {
+                "north": { "texture": "#riek_fruit_vines_3", "uv": [ 0, 8, 16, 16 ] },
+                "south": { "texture": "#riek_fruit_vines_3", "uv": [ 0, 8, 16, 16 ] }
+            }
+        },
+        {
+            "name": "Cube",
+            "from": [ 0, 8, 0 ], 
+            "to": [ 16, 16, 0 ], 
+            "rotation": { "origin": [ 8, 8, 0 ], "axis": "x", "angle": 22.5 },
+            "faces": {
+                "north": { "texture": "#riek_fruit_vines_3", "uv": [ 0, 0, 16, 8 ] },
+                "south": { "texture": "#riek_fruit_vines_3", "uv": [ 0, 0, 16, 8 ] }
+            }
+        },
+        {
+            "name": "Cube",
+            "from": [ 6, 6, 0 ], 
+            "to": [ 11, 11, 5 ], 
+            "faces": {
+                "north": { "texture": "#riek_fruit", "uv": [ 5, 5, 10, 10 ] },
+                "east": { "texture": "#riek_fruit", "uv": [ 10, 5, 15, 10 ] },
+                "south": { "texture": "#riek_fruit", "uv": [ 5, 5, 10, 10 ] },
+                "west": { "texture": "#riek_fruit", "uv": [ 0, 5, 5, 10 ] },
+                "up": { "texture": "#riek_fruit", "uv": [ 5, 0, 10, 5 ] },
+                "down": { "texture": "#riek_fruit", "uv": [ 5, 10, 10, 15 ] }
+            }
+        }
+    ]
+}

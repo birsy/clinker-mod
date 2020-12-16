@@ -1,0 +1,22 @@
+{
+    "type": "minecraft:crafting_shaped",
+   
+    "pattern":
+    [
+        "SSS",
+        "SSS"
+    ],
+   
+    "key":
+    {
+        "S":
+        {
+            "item": "clinker:dried_soulsand"
+        }
+    },
+   
+    "result":
+    {
+        "item": "clinker:dried_soulsand_roof",
+        "count": 6    }
+}

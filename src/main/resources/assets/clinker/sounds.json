@@ -1,0 +1,54 @@
+{
+	"entity.gnome.ambient": {
+		"category": "entity",
+		"subtitle": "subtitles.entity.gnome.ambient",
+		"sounds": [
+		{"name": "clinker:entity/gnome/idle1", "stream": true},
+		{"name": "clinker:entity/gnome/idle2", "stream": true},
+		{"name": "clinker:entity/gnome/idle3", "stream": true},
+		{"name": "clinker:entity/gnome/idle4", "stream": true},
+		{"name": "clinker:entity/gnome/idle5", "stream": true},
+		{"name": "clinker:entity/gnome/idle6", "stream": true}
+		]
+	},
+	"entity.gnome.hurt": {
+		"category": "entity",
+		"subtitle": "subtitles.entity.gnome.hurt",
+		"sounds": [
+		{"name": "clinker:entity/gnome/hurt1", "stream": true},
+		{"name": "clinker:entity/gnome/hurt2", "stream": true},
+		{"name": "clinker:entity/gnome/hurt3", "stream": true},
+		{"name": "clinker:entity/gnome/hurt4", "stream": true},
+		{"name": "clinker:entity/gnome/hurt5", "stream": true},
+		{"name": "clinker:entity/gnome/hurt6", "stream": true},
+		{"name": "clinker:entity/gnome/hurt7", "stream": true}
+		]
+	},
+	"entity.gnome.death": {
+		"category": "entity",
+		"subtitle": "subtitles.entity.gnome.death",
+		"sounds": [
+		{"name": "clinker:entity/gnome/death1", "stream": true},
+		{"name": "clinker:entity/gnome/death2", "stream": true},
+		{"name": "clinker:entity/gnome/death3", "stream": true},
+		{"name": "clinker:entity/gnome/death4", "stream": true}
+		]
+	},
+	"entity.gnome.chat": {
+		"category": "entity",
+		"subtitle": "subtitles.entity.gnome.chat",
+		"sounds": [
+		{"name": "clinker:entity/gnome/chat1", "stream": true},
+		{"name": "clinker:entity/gnome/chat2", "stream": true},
+		{"name": "clinker:entity/gnome/chat3", "stream": true}
+		]
+	},
+	"ambient.ash_plains.additions": {
+		"category": "ambient",
+		"sounds": [
+		{"name": "clinker:ambient/othershore/ash_plains/chimes1", "stream": true},
+		{"name": "clinker:ambient/othershore/ash_plains/chimes2", "stream": true},
+		{"name": "clinker:ambient/othershore/ash_plains/chimes3", "stream": true}
+		]
+	}
+}

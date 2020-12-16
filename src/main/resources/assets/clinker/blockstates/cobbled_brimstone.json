@@ -1,0 +1,10 @@
+{
+    "variants": {
+        "": [
+        {"model": "clinker:block/brimstone/cobbled_brimstone"},
+        {"model": "clinker:block/brimstone/cobbled_brimstone1"},
+        {"model": "clinker:block/brimstone/cobbled_brimstone2"},
+        {"model": "clinker:block/brimstone/cobbled_brimstone3"}
+        ]
+    }
+}

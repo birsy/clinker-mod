@@ -1,0 +1,75 @@
+//**ITEMS
+item.sulfur.name=Sulfur
+item.bismuth.name=Bismuth
+item.pyrite.name=Pyrite
+item.iron_pyrite.name=Iron Pyrite
+item.phosphor.name=Phosphor
+item.lead_ingot.name=Lead Ingot
+item.nugget_lead.name=Lead Nugget
+item.impure_ruby.name=Impure Ruby
+item.ruby.name=Ruby
+
+//tools
+item.lead_sword.name=Lead Sword
+item.lead_axe.name=Lead Axe
+item.lead_pickaxe.name=Lead Pickaxe
+item.lead_shovel.name=Lead Shovel
+item.lead_hoe.name=Lead Hoe
+
+//food
+item.gnomeat.name=Gnomeat
+item.gnomeat_jerky.name=Gnomeat Jerky
+
+//**BLOCKS
+tile.brimstone_bricks.name=Brimstone Bricks
+tile.brimstone.name=Brimstone
+tile.cobbled_brimstone.name=Cobbled Brimstone
+tile.polished_brimstone.name=Smooth Brimstone
+tile.brimstone_column.name=Brimstone Pillar
+tile.pebbles.name=Brimstone Pebbles
+tile.witch_tiles.name=Witch Tiles
+
+tile.blue_stained_living_clay.name=Blue Stained Living Clay
+
+tile.packed_ash.name=Packed Ash
+tile.ash.name=Ash
+
+tile.dried_soulsand.name=Dried Soulsand
+tile.dried_soulsand_bricks.name=Dried Soulsand Bricks
+tile.dried_soulsand_roof.name=Dried Soulsand Roof
+tile.dried_soulsand_pillar.name=Dried Soulsand Pillar
+tile.polished_dry_soulsand.name=Polished Dry Soulsand
+tile.cobbled_dry_soulsand.name=Cobbled Dry Soulsand
+tile.chiseled_dry_soulsand.name=Chiseled Dry Soulsand
+
+//materialblocks
+tile.sulfur_block.name=Block of Sulfur
+tile.lead_block.name=Block of Lead
+tile.bismuth_block.name=Block of Bismuth
+tile.iron_pyrite_block.name=Iron Pyrite Plates
+tile.impure_ruby_block.name=Polished Rubystone
+tile.brinestone.name=Brinestone
+tile.brilliant_gemstone.name=The Ruby Court's Most Brilliant Gemstone
+
+//ores
+tile.lead_ore.name=Lead Ore
+tile.overworld_lead_ore.name=Lead Ore
+tile.nether_lead_ore.name=Lead Ore
+tile.sulfur_ore.name=Sulfur Ore
+tile.ruby_ore.name=Rubystone
+
+//plants
+tile.thorn_log.name=Thorn Log
+tile.stripped_thorn_log.name=Stripped Thorn Log
+tile.thorns.name=Thorns
+tile.gourd.name=Gourd
+tile.carved_gourd.name=Carved Gourd
+tile.lit_gourd.name=Gourd o' Lantern
+
+
+//**ENTITIES
+entity.gnomad.name=Gnomad
+entity.gnomad_shaman.name=Gnomad Shaman
+entity.snail.name=Land Snail
+entity.termite.name=Termite Warrior
+entity.witch_golem.name=Witch Golem

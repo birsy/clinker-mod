@@ -1,0 +1,20 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        " P ",
+        "PiP",
+        " P "
+    ],
+    "key": {
+        "P": {
+            "item": "clinker:pyrite"
+        },
+        "i": {
+            "item": "minecraft:iron_ingot"
+        }
+    },
+    "result": {
+        "item": "clinker:iron_pyrite",
+        "count": 2
+    }
+}
