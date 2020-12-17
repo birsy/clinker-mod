@@ -1,4 +1,4 @@
-package birsy.clinker.common.entity.monster;
+package birsy.clinker.common.entity.monster.beetle;
 
 import java.util.List;
 import java.util.function.Predicate;
