@@ -50,6 +50,7 @@ public class GnomadShamanEntity extends AbstractGnomadEntity
 	    ((GroundPathNavigator)this.getNavigator()).setBreakDoors(true);
 	    this.getNavigator().setCanSwim(true);
 	    this.setCanPickUpLoot(true);
+	    this.gnomadRank = 1;
 	}	
 	
 	protected void registerGoals() {

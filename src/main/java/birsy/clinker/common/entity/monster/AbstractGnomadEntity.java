@@ -21,6 +21,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public abstract class AbstractGnomadEntity extends MonsterEntity
 {
 	public boolean isSitting;
+	public int gnomadRank = 0;
 	
 	protected AbstractGnomadEntity(EntityType<? extends AbstractGnomadEntity> type, World worldIn)
 	{
@@ -103,6 +104,7 @@ public abstract class AbstractGnomadEntity extends MonsterEntity
 			super.resetTask();
 		}
 	}
+
 	
 	//Sounds
 	@Override
