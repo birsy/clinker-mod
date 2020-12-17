@@ -41,8 +41,8 @@
     [],
     [],
     [
-      "clinker:brimstone_rock",
-      "clinker:ash_dune"
+      "clinker:brimstone_rock"
+     //"clinker:ash_dune"
     ],
     [],
     [],
@@ -52,7 +52,7 @@
     ],
     [],
     [
-      "clinker:bramble_roots"
+      //"clinker:bramble_roots"
     ],
     [
       "minecraft:freeze_top_layer"
