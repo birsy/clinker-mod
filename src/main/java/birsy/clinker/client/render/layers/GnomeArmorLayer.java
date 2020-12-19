@@ -39,10 +39,12 @@ public class GnomeArmorLayer<T extends GnomeEntity, M extends GnomeModel2<T>, A 
    }
 
    public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, T entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-      this.renderArmor(matrixStackIn, bufferIn, entitylivingbaseIn, EquipmentSlotType.CHEST, packedLightIn, this.armorRenderFetcher(EquipmentSlotType.CHEST));
-      this.renderArmor(matrixStackIn, bufferIn, entitylivingbaseIn, EquipmentSlotType.LEGS, packedLightIn, this.armorRenderFetcher(EquipmentSlotType.LEGS));
-      this.renderArmor(matrixStackIn, bufferIn, entitylivingbaseIn, EquipmentSlotType.FEET, packedLightIn, this.armorRenderFetcher(EquipmentSlotType.FEET));
-      this.renderArmor(matrixStackIn, bufferIn, entitylivingbaseIn, EquipmentSlotType.HEAD, packedLightIn, this.armorRenderFetcher(EquipmentSlotType.HEAD));
+	   modelArmor.setRotationAngles(entitylivingbaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+	   modelLeggings.setRotationAngles(entitylivingbaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+	   this.renderArmor(matrixStackIn, bufferIn, entitylivingbaseIn, EquipmentSlotType.CHEST, packedLightIn, this.armorRenderFetcher(EquipmentSlotType.CHEST));
+	   this.renderArmor(matrixStackIn, bufferIn, entitylivingbaseIn, EquipmentSlotType.LEGS, packedLightIn, this.armorRenderFetcher(EquipmentSlotType.LEGS));
+	   this.renderArmor(matrixStackIn, bufferIn, entitylivingbaseIn, EquipmentSlotType.FEET, packedLightIn, this.armorRenderFetcher(EquipmentSlotType.FEET));
+	   this.renderArmor(matrixStackIn, bufferIn, entitylivingbaseIn, EquipmentSlotType.HEAD, packedLightIn, this.armorRenderFetcher(EquipmentSlotType.HEAD));
    }
 
    private void renderArmor(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, T entityIn, EquipmentSlotType slotType, int packedLightIn, A modelIn) {

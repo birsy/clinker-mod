@@ -52,6 +52,7 @@ public class AncientBrickRunesBlock extends Block {
 		return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
 	}
 	
+	
 	public static <T extends Comparable<T>> BlockState cycleProperty(BlockState state, Property<T> propertyIn, boolean backwards) {
 		return state.with(propertyIn, getAdjacentValue(propertyIn.getAllowedValues(), state.get(propertyIn), backwards));
 	}

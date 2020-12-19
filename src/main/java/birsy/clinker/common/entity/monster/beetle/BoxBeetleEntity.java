@@ -50,6 +50,14 @@ public class BoxBeetleEntity extends MonsterEntity {
 	}
 	
 	@Override
+	public void tick() {
+		if(this.inFlight) {
+			this.setNoGravity(true);
+		}
+		super.tick();
+	}
+	
+	@Override
 	public boolean canCollide(Entity entity) {
 		return true;
 	}
