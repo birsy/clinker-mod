@@ -1,10 +1,14 @@
 {
     "variants": {
         "": [
-            { "model": "clinker:block/brimstone/brimstone" },
-            { "model": "clinker:block/brimstone/brimstone", "y": 180 },
-            { "model": "clinker:block/brimstone/brimstone1" },
-            { "model": "clinker:block/brimstone/brimstone1", "y": 180 }
+            { "model": "clinker:block/brimstone/brimstone/brimstone" },
+            { "model": "clinker:block/brimstone/brimstone/brimstone", "y": 180 },
+            { "model": "clinker:block/brimstone/brimstone/brimstone_mirrored"},
+            { "model": "clinker:block/brimstone/brimstone/brimstone_mirrored", "y": 180 },
+            { "model": "clinker:block/brimstone/brimstone/brimstone1" },
+            { "model": "clinker:block/brimstone/brimstone/brimstone1", "y": 180 },
+            { "model": "clinker:block/brimstone/brimstone/brimstone1_mirrored"},
+            { "model": "clinker:block/brimstone/brimstone/brimstone1_mirrored", "y": 180 }
         ]
     }
 }

@@ -1,13 +1,13 @@
 {
   "variants": {
     "type=bottom": {
-      "model": "clinker:block/small_shale_bricks_slab"
+      "model": "clinker:block/shale/small_shale_bricks_slab"
     },
     "type=double": {
-      "model": "clinker:block/small_shale_bricks"
+      "model": "clinker:block/shale/small_shale_bricks"
     },
     "type=top": {
-      "model": "clinker:block/small_shale_bricks_slab_top"
+      "model": "clinker:block/shale/small_shale_bricks_slab_top"
     }
   }
 }

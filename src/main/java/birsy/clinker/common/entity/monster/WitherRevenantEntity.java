@@ -14,7 +14,6 @@ import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.HurtByTargetGoal;
 import net.minecraft.entity.ai.goal.LookAtGoal;
 import net.minecraft.entity.ai.goal.LookRandomlyGoal;
-import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WaterAvoidingRandomWalkingGoal;
@@ -98,7 +97,7 @@ public class WitherRevenantEntity extends MonsterEntity
 		}
 		
 		if(debug == true) {
-			this.setCustomName(new StringTextComponent("AI Phase: ").append(new StringTextComponent(this.phase.toString()).mergeStyle(TextFormatting.BLUE)));
+			this.setCustomName(new StringTextComponent("AI Phase: ").append(new StringTextComponent(this.phase.toString()).mergeStyle(TextFormatting.RED)));
 		}
 		//(new StringTextComponent(this.phase.toString()).mergeStyle(TextFormatting.BLUE))
 		super.tick();

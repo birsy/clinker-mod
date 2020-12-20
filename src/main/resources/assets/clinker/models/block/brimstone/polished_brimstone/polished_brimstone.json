@@ -1,0 +1,8 @@
+{
+  "parent": "block/cube_bottom_top",
+  "textures": {
+    "top": "clinker:blocks/brimstone/polished_brimstone/polished_brimstone_top",
+    "side": "clinker:blocks/brimstone/polished_brimstone/polished_brimstone",
+    "bottom": "clinker:blocks/brimstone/polished_brimstone/polished_brimstone_bottom"
+  }
+}

@@ -1,7 +1,7 @@
 {
     "variants": {
-        "axis=y":  { "model": "clinker:block/shale_pillar" },
-        "axis=z":   { "model": "clinker:block/shale_pillar", "x": 90 },
-        "axis=x":   { "model": "clinker:block/shale_pillar", "x": 90, "y": 90 }
+        "axis=y":  { "model": "clinker:block/shale/shale_pillar" },
+        "axis=z":   { "model": "clinker:block/shale/shale_pillar", "x": 90 },
+        "axis=x":   { "model": "clinker:block/shale/shale_pillar", "x": 90, "y": 90 }
     }
 }

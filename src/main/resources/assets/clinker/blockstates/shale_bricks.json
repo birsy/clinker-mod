@@ -1,5 +1,5 @@
 {
     "variants": {
-        "": { "model": "clinker:block/shale_bricks" }
+        "": { "model": "clinker:block/shale/shale_bricks" }
     }
 }

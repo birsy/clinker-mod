@@ -1,5 +1,5 @@
 {
     "variants": {
-        "": { "model": "clinker:block/polished_shale" }
+        "": { "model": "clinker:block/shale/polished_shale" }
     }
 }

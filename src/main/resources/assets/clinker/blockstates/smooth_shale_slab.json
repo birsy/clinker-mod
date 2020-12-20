@@ -1,13 +1,13 @@
 {
   "variants": {
     "type=bottom": {
-      "model": "clinker:block/smooth_shale_slab"
+      "model": "clinker:block/shale/smooth_shale_slab"
     },
     "type=double": {
-      "model": "clinker:block/smooth_shale"
+      "model": "clinker:block/shale/smooth_shale"
     },
     "type=top": {
-      "model": "clinker:block/smooth_shale_slab_top"
+      "model": "clinker:block/shale/smooth_shale_slab_top"
     }
   }
 }
