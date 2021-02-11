@@ -1,23 +1,23 @@
 package birsy.clinker.core;
 
 
+import birsy.clinker.core.registry.world.*;
+import net.minecraft.world.biome.Biome;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.ClinkerEntities;
-import birsy.clinker.core.registry.ClinkerFeatures;
 import birsy.clinker.core.registry.ClinkerItems;
 import birsy.clinker.core.registry.ClinkerSounds;
-import birsy.clinker.core.registry.ClinkerSurfaceBuilders;
-import birsy.clinker.core.registry.ClinkerWorldCarvers;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.DeferredWorkQueue;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -34,14 +34,16 @@ public class Clinker
 	public Clinker() throws InterruptedException {
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
-        ClinkerSounds.init();
-        ClinkerItems.init();
-        ClinkerBlocks.init();
-        ClinkerEntities.init();
+        ClinkerSounds.SOUNDS.register(modEventBus);
+        ClinkerItems.ITEMS.register(modEventBus);
+        ClinkerBlocks.BLOCKS.register(modEventBus);
+        ClinkerBlocks.ITEMS.register(modEventBus);
+        ClinkerEntities.ENTITY_TYPES.register(modEventBus);
         
-        ClinkerWorldCarvers.init();
-        ClinkerSurfaceBuilders.init();
-        ClinkerFeatures.init();
+        ClinkerWorldCarvers.WORLD_CARVERS.register(modEventBus);
+        ClinkerSurfaceBuilders.SURFACE_BUILDERS.register(modEventBus);
+        ClinkerFeatures.FEATURES.register(modEventBus);
+        ClinkerBiomes.BIOMES.register(modEventBus);
         
         
 		modEventBus.addListener(this::setup);
@@ -51,11 +53,11 @@ public class Clinker
     }
 	
 	private void setup(final FMLCommonSetupEvent event)
-    {	
-    	ClinkerEntities.setup();
-    	DeferredWorkQueue.runLater(() -> {
-    		//ClinkerBiomes.applyBiomeInfo();
-    	});
+    {
+        event.enqueueWork(() -> {
+            ClinkerEntities.setup();
+            ClinkerConfiguredFeatures.registerConfiguredFeatures();
+        });
     }
 
     private void doClientStuff(final FMLClientSetupEvent event)
@@ -82,7 +84,15 @@ public class Clinker
     	
     	//mensionRenderInfo.field_239208_a_.put(ClinkerDimensions.OTHERSHORE, new OthershoreDimensionRenderInfo());
     }
-    
+
+    @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD, modid = Clinker.MOD_ID)
+    public static class RegistryEvents {
+        @SubscribeEvent
+        public static void onRegisterBiomes(final RegistryEvent.Register<Biome> event) {
+            ClinkerBiomes.registerBiomes();
+        }
+    }
+
     public static final ItemGroup CLINKER_MISC = new ItemGroup("clinkerItems")
     {
         @Override

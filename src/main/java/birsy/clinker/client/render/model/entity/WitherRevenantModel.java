@@ -159,9 +159,6 @@ public class WitherRevenantModel<T extends WitherRevenantEntity> extends BirsyBa
     	//IDLE
     	swing(this.witherRevenantRibs, 0.125F * globalSpeed, 0.03f * globalDegree, false, 0.0F, 0.1F, ageInTicks, 0.5F, Axis.X);
     	
-    	swing(this.witherRevenantRightLeg, 0.0F, 0.02f * globalDegree, false, 0.0F, 0.5F, ageInTicks, -f1 + 0.5F, Axis.Y);
-    	swing(this.witherRevenantLeftLeg, 0.0F, 0.02f * globalDegree, false, 0.0F, -0.5F, ageInTicks, -f1 + 0.5F, Axis.Y);
-    	
     	swing(this.witherRevenantRightArm, 0.125F * globalSpeed, 0.03f * globalDegree, false, 0.5F, 0.07F, ageInTicks, 0.5F, Axis.Z);
     	swing(this.witherRevenantLeftArm, 0.125F * globalSpeed, 0.03f * globalDegree, false, 1.5F, -0.07F, ageInTicks, 0.5F, Axis.Z);
     	swing(this.witherRevenantRightArm, 0.12F * globalSpeed, 0.03f * globalDegree, false, 0.5F, 0.0F, ageInTicks, 0.5F, Axis.X);
@@ -203,11 +200,11 @@ public class WitherRevenantModel<T extends WitherRevenantEntity> extends BirsyBa
     	this.witherRevenantRightArmHolder.rotateAngleZ = this.witherRevenantRightArm.rotateAngleZ + this.witherRevenantRibs.rotateAngleZ;
     	
     	this.witherRevenantRightArmHolder.rotationPointX = this.witherRevenantRightArm.rotationPointX + this.witherRevenantRibs.rotationPointX;
-    	this.witherRevenantRightArmHolder.rotationPointY = this.witherRevenantRightArm.rotationPointY + this.witherRevenantRibs.rotationPointY + 20.0F;
+    	this.witherRevenantRightArmHolder.rotationPointY = this.witherRevenantRightArm.rotationPointY + this.witherRevenantRibs.rotationPointY + 24.0F;
     	this.witherRevenantRightArmHolder.rotationPointZ = this.witherRevenantRightArm.rotationPointZ + this.witherRevenantRibs.rotationPointZ;
     	
     	this.witherRevenantLeftArmHolder.rotationPointX = this.witherRevenantLeftArm.rotationPointX + this.witherRevenantRibs.rotationPointX;
-    	this.witherRevenantLeftArmHolder.rotationPointY = this.witherRevenantLeftArm.rotationPointY + this.witherRevenantRibs.rotationPointY + 20.0F;
+    	this.witherRevenantLeftArmHolder.rotationPointY = this.witherRevenantLeftArm.rotationPointY + this.witherRevenantRibs.rotationPointY + 24.0F;
     	this.witherRevenantLeftArmHolder.rotationPointZ = this.witherRevenantLeftArm.rotationPointZ + this.witherRevenantRibs.rotationPointZ;
     	
     	look(this.witherRevenantHead, netHeadYaw, headPitch, 1.1F, 1.1F);

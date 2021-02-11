@@ -31,7 +31,6 @@ public abstract class BirsyBaseModel<T extends Entity> extends EntityModel<T>
         } else {
         	box.rotationPointY =+ bob;
         }
-        
     }
 	
 	/**
@@ -40,7 +39,6 @@ public abstract class BirsyBaseModel<T extends Entity> extends EntityModel<T>
 	 * @param box         the box to rotate
 	 * @param entityIn    the entity
 	 * @param minimum     the minimum of the variation.
-	 * @param maximum     the maximum of the variation.
 	 * @param axis        the axis of the variation.
 	 */
 	public void rotVar(BirsyModelRenderer box, T entityIn, float minimum, float range, Axis axis)
@@ -67,7 +65,6 @@ public abstract class BirsyBaseModel<T extends Entity> extends EntityModel<T>
 	 * @param box         the box to rotate
 	 * @param entityIn    the entity
 	 * @param minimum     the minimum of the variation.
-	 * @param maximum     the maximum of the variation.
 	 * @param axis        the axis of the variation.
 	 */
 	public void locVar(BirsyModelRenderer box, T entityIn, float minimum, float range, Axis axis)
@@ -117,21 +114,27 @@ public abstract class BirsyBaseModel<T extends Entity> extends EntityModel<T>
      * @param limbSwingAmount  the swing amount
      * @param axis             the axis to rotate on
      */
-	public void swing(BirsyModelRenderer box, float speed, float degree, boolean invert, float offset, float weight, float swing, float limbSwingAmount, Axis axis) {
-        switch(axis) {
-        	case X:
-        		box.rotateAngleX =+ this.calculateRotation(speed, degree, invert, offset, weight, swing, limbSwingAmount);
-        		break;
-        	case Y:
-        		box.rotateAngleY =+ this.calculateRotation(speed, degree, invert, offset, weight, swing, limbSwingAmount);
-        		break;
-        	case Z:
-        		box.rotateAngleZ =+ this.calculateRotation(speed, degree, invert, offset, weight, swing, limbSwingAmount);
-        		break;
-        	default: 
-        		box.rotateAngleX =+ this.calculateRotation(speed, degree, invert, offset, weight, swing, limbSwingAmount);
-        		throw new RuntimeException(box + "had no axis assigned for thier swing. Defaulting to X!");
-        }
+	public float swing(BirsyModelRenderer box, float speed, float degree, boolean invert, float offset, float weight, float swing, float limbSwingAmount, Axis axis) {
+		if (box == null) {
+			return this.calculateRotation(speed, degree, invert, offset, weight, swing, limbSwingAmount);
+		} else {
+			switch (axis) {
+				case X:
+					box.rotateAngleX = +this.calculateRotation(speed, degree, invert, offset, weight, swing, limbSwingAmount);
+					break;
+				case Y:
+					box.rotateAngleY = +this.calculateRotation(speed, degree, invert, offset, weight, swing, limbSwingAmount);
+					break;
+				case Z:
+					box.rotateAngleZ = +this.calculateRotation(speed, degree, invert, offset, weight, swing, limbSwingAmount);
+					break;
+				default:
+					box.rotateAngleX = +this.calculateRotation(speed, degree, invert, offset, weight, swing, limbSwingAmount);
+					throw new RuntimeException(box + "had no axis assigned for thier swing. Defaulting to X!");
+			}
+
+			return this.calculateRotation(speed, degree, invert, offset, weight, swing, limbSwingAmount);
+		}
     }
 	
 	public void swingLimbs(BirsyModelRenderer left, BirsyModelRenderer right, float speed, float degree, float offset, float weight, float swing, float limbSwingAmount)

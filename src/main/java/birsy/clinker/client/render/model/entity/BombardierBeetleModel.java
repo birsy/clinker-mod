@@ -1,4 +1,4 @@
-package birsy.clinker.client.render.entity;
+package birsy.clinker.client.render.model.entity;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;

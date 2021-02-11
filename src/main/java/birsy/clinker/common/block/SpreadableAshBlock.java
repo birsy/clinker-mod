@@ -2,7 +2,7 @@ package birsy.clinker.common.block;
 
 import java.util.Random;
 
-import birsy.clinker.core.registry.ClinkerDimensions;
+import birsy.clinker.core.registry.world.ClinkerDimensions;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;

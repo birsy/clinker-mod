@@ -1,0 +1,11 @@
+  
+{
+  "replace": false,
+  "values": [
+    "clinker:brimstone",
+    "clinker:cobbled_brimstone",
+    "clinker:scorstone",
+    "clinker:cobbled_scorstone",
+    "clinker:shale"
+  ]
+}

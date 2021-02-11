@@ -29,10 +29,10 @@ public class WitherRevenantEyesLayer<T extends WitherRevenantEntity, M extends W
 	@Override
  	public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, T entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
 		IVertexBuilder ivertexbuilder = bufferIn.getBuffer(RenderType.getEntityTranslucent(EYE_TEXTURE));
- 		float fade = 0;
+ 		float fade = MathHelper.clamp((0.5F * MathHelper.sin(ageInTicks * 0.1F) + 0.5F + 0.2F), 0.3F, 1);
  		
- 		if (entitylivingbaseIn.isAggressive()) {
- 			fade = (0.5F * MathHelper.sin(ageInTicks)) + 0.5F;
+ 		if (entitylivingbaseIn.phase != WitherRevenantEntity.AIPhase.WANDERING) {
+ 			fade = MathHelper.clamp((0.5F * MathHelper.sin(ageInTicks) + 0.5F + 0.2F), 0, 1);
  		}
  		
  		this.getEntityModel().render(matrixStackIn, ivertexbuilder, 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, fade);

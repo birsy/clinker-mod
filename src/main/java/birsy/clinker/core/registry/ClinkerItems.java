@@ -54,6 +54,9 @@ public class ClinkerItems
 	public static final RegistryObject<Item> PHOSPHER_BALL_ITEM = ITEMS.register("phospher_ball_item", PhospherBallItem::new);
 	
 	//Spawn Eggs
+	public static final RegistryObject<ClinkerSpawnEggItem> SHOGGOTH_SPAWN_EGG = ITEMS.register("shoggoth_spawn_egg",
+			() -> new ClinkerSpawnEggItem(ClinkerEntities.SHOGGOTH_HEAD, 0x85494C, 0x6E7058, new Item.Properties().group(Clinker.CLINKER_MISC)));
+
 	public static final RegistryObject<ClinkerSpawnEggItem> SNAIL_SPAWN_EGG = ITEMS.register("snail_spawn_egg",
 	() -> new ClinkerSpawnEggItem(ClinkerEntities.SNAIL, 0x85494C, 0x6E7058, new Item.Properties().group(Clinker.CLINKER_MISC)));
 	
@@ -74,9 +77,12 @@ public class ClinkerItems
 	
 	public static final RegistryObject<ClinkerSpawnEggItem> TOR_ANT_SPAWN_EGG = ITEMS.register("tor_ant_spawn_egg",
 	() -> new ClinkerSpawnEggItem(ClinkerEntities.TOR_ANT, 0xb9bf94, 0x3d413d, new Item.Properties().group(Clinker.CLINKER_MISC)));
+
+	public static final RegistryObject<ClinkerSpawnEggItem> BOX_BEETLE_SPAWN_EGG = ITEMS.register("box_beetle_spawn_egg",
+			() -> new ClinkerSpawnEggItem(ClinkerEntities.BOX_BEETLE, 0x33323a, 0x5f6352,  new Item.Properties().group(Clinker.CLINKER_MISC)));
 	
 	public static final RegistryObject<ClinkerSpawnEggItem> WITCH_BRICK_SPAWN_EGG = ITEMS.register("witch_brick_spawn_egg",
-	() -> new ClinkerSpawnEggItem(ClinkerEntities.WITCH_BRICK, 0x9aa8af, 593025, new Item.Properties().group(Clinker.CLINKER_MISC)));
+	() -> new ClinkerSpawnEggItem(ClinkerEntities.WITCH_BRICK, 0x9aa8af, 0x593025, new Item.Properties().group(Clinker.CLINKER_MISC)));
 	
 	/**
 	 * FOOD

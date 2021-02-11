@@ -375,6 +375,12 @@ public class GnomeModel2<T extends GnomeEntity> extends BirsyBaseModel<T> implem
 
 	@Override
 	public void translateHand(HandSide sideIn, MatrixStack matrixStackIn) {
+        if(sideIn == HandSide.RIGHT) {
+            matrixStackIn.translate(0.5, 0, 0);
+        } else {
+            matrixStackIn.translate(-0.5, 0, 0);
+        }
+        
 		this.getArmForSide(sideIn).translateRotate(matrixStackIn);
 	}
 	

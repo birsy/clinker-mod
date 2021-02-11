@@ -3,11 +3,7 @@ package birsy.clinker.common.entity.monster;
 import javax.annotation.Nullable;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ILivingEntityData;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.Goal;
@@ -19,6 +15,7 @@ import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WaterAvoidingRandomWalkingGoal;
 import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ProjectileHelper;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.BannerItem;
 import net.minecraft.item.DyeColor;
@@ -31,6 +28,8 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -54,12 +53,12 @@ public class WitherRevenantEntity extends MonsterEntity
 	protected void registerGoals()
 	{
 		super.registerGoals();
-		this.goalSelector.addGoal(0, new SwimGoal(this));
+		//this.goalSelector.addGoal(0, new SwimGoal(this));
 		this.goalSelector.addGoal(2, new DuelGoal(this));
-	    this.goalSelector.addGoal(5, new WaterAvoidingRandomWalkingGoal(this, 1.0D));
+	    //this.goalSelector.addGoal(5, new WaterAvoidingRandomWalkingGoal(this, 1.0D));
 	    this.goalSelector.addGoal(6, new LookAtGoal(this, PlayerEntity.class, 6.0F));
-	    this.goalSelector.addGoal(7, new LookRandomlyGoal(this));
-	    this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
+	    //this.goalSelector.addGoal(7, new LookRandomlyGoal(this));
+	    //this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
 	    this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true));
 	}
 	
@@ -98,6 +97,7 @@ public class WitherRevenantEntity extends MonsterEntity
 		
 		if(debug == true) {
 			this.setCustomName(new StringTextComponent("AI Phase: ").append(new StringTextComponent(this.phase.toString()).mergeStyle(TextFormatting.RED)));
+			this.setCustomNameVisible(true);
 		}
 		//(new StringTextComponent(this.phase.toString()).mergeStyle(TextFormatting.BLUE))
 		super.tick();
@@ -160,19 +160,25 @@ public class WitherRevenantEntity extends MonsterEntity
 			} else {
 				targetShieldUpTicks = 0;
 			}
-			
-			
+
+
 			/**
 			 * PHASE AI 
 			 * Decides what to do when pursuing, attacking, etc.
 			 */
-			
 			switch (phase) {
 				case PURSUING:
-					revenant.getNavigator().tryMoveToEntityLiving(target, 1.2);
+					//revenant.getNavigator().tryMoveToEntityLiving(target, 1.2);
 					break;
 					
 				case CIRCLING:
+					if (this.revenant.getHeldItemMainhand().getItem() == Items.SHIELD || this.revenant.getHeldItemOffhand().getItem() == Items.SHIELD) {
+						this.revenant.blockUsingShield(this.revenant);
+						this.revenant.setActiveHand(ProjectileHelper.getHandWith(this.revenant, Items.SHIELD));
+					}
+
+					strafeAroundTarget(target, 4.75F, 1.0F);
+					revenant.getLookController().setLookPosition(target.getPosX(), target.getPosY(), target.getPosZ());
 					break;
 					
 				case RECOVERING:
@@ -187,14 +193,16 @@ public class WitherRevenantEntity extends MonsterEntity
 				default:
 					break;
 			}
-			
+
 			
 			/**
 			 * PHASE CONTROLLER 
 			 * Decides what phase the entity should be in.
 			 */
-			
-			if (revenant.getDistanceSq(target) < 10.0F) {
+
+			if (revenant.getDistanceSq(target) < 5.0F) {
+				revenant.phase = AIPhase.CIRCLING;
+			} else if (revenant.getDistanceSq(target) < 10.0F) {
 				revenant.phase = AIPhase.PURSUING;
 			} else {
 				revenant.phase = AIPhase.WAITING;
@@ -207,8 +215,24 @@ public class WitherRevenantEntity extends MonsterEntity
 			
 			revenant.phase = AIPhase.WANDERING;
 		}
+
+		public void strafeAroundTarget(Entity target, float strafeSpeed, float moveSpeed) {
+			boolean rotationDirection = true;
+
+			if (revenant.rand.nextInt(80) == 0) {
+				if (rotationDirection) {
+					rotationDirection = false;
+				} else {
+					rotationDirection = true;
+				}
+			}
+
+			this.revenant.getMoveHelper().strafe(0.5F, rotationDirection ? 0.5F : -0.5F);
+			this.revenant.faceEntity(target, 30.0F, 30.0F);
+			revenant.getLookController().setLookPosition(target.getPosX(), target.getPosY(), target.getPosZ());
+		}
 	}
-	
+
 	public int getWindupTick() {return windupTick;}
 	public int getStunTick() {return stunTick;}
 	public void setWindupTick(int windupTickIn) {this.windupTick = windupTickIn;}

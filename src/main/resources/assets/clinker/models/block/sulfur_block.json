@@ -1,6 +1,6 @@
 {
    "parent": "block/cube_all",
    "textures": {
-       "all": "clinker:blocks/sulfur_block"
+       "": "clinker:blocks/sulfur_block"
    }
 }

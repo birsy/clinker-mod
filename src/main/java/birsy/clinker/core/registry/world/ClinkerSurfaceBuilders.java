@@ -1,4 +1,4 @@
-package birsy.clinker.core.registry;
+package birsy.clinker.core.registry.world;
 
 import birsy.clinker.common.world.gen.surfacebuilder.AshSteppesSurfaceBuilder;
 import birsy.clinker.core.Clinker;

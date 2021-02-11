@@ -5,7 +5,7 @@
         "feature": {
           "config": {
             "state": {
-              "Name": "clinker:brimstone_bricks"
+              "Name": "clinker:brimstone"
             }
           },
           "type": "minecraft:forest_rock"
@@ -30,7 +30,7 @@
       "config": {
         "count": {
           "base": 0,
-          "spread": 2
+          "spread": 5
         }
       },
       "type": "minecraft:count"
