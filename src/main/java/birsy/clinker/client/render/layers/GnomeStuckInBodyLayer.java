@@ -4,7 +4,7 @@ import java.util.Random;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 
-import birsy.clinker.client.render.model.entity.GnomeModel2;
+import birsy.clinker.client.render.model.entity.GnomeModel;
 import birsy.clinker.common.entity.merchant.GnomeEntity;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.LivingRenderer;
@@ -16,7 +16,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public abstract class GnomeStuckInBodyLayer<T extends GnomeEntity, M extends GnomeModel2<T>> extends LayerRenderer<T, M> {
+public abstract class GnomeStuckInBodyLayer<T extends GnomeEntity, M extends GnomeModel<T>> extends LayerRenderer<T, M> {
    public GnomeStuckInBodyLayer(LivingRenderer<T, M> p_i226041_1_) {
       super(p_i226041_1_);
    }

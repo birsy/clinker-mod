@@ -2,7 +2,7 @@ package birsy.clinker.client.render.layers;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 
-import birsy.clinker.client.render.model.entity.GnomeModel2;
+import birsy.clinker.client.render.model.entity.GnomeModel;
 import birsy.clinker.common.entity.merchant.GnomeEntity;
 import birsy.clinker.core.Clinker;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -13,10 +13,10 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class GnomeHatLayer extends LayerRenderer<GnomeEntity, GnomeModel2<GnomeEntity>> {
+public class GnomeHatLayer extends LayerRenderer<GnomeEntity, GnomeModel<GnomeEntity>> {
    private static final ResourceLocation GNOME_HAT = new ResourceLocation(Clinker.MOD_ID, "textures/entity/gnome/gnome_hat.png");
 
-   public GnomeHatLayer(IEntityRenderer<GnomeEntity, GnomeModel2<GnomeEntity>> rendererIn) {
+   public GnomeHatLayer(IEntityRenderer<GnomeEntity, GnomeModel<GnomeEntity>> rendererIn) {
       super(rendererIn);
    }
    

@@ -1,24 +1,12 @@
 package birsy.clinker.common.entity.monster;
 
-import java.util.EnumSet;
-import javax.annotation.Nullable;
-
 import birsy.clinker.common.entity.merchant.GnomeBratEntity;
 import birsy.clinker.common.entity.merchant.GnomeEntity;
 import birsy.clinker.core.registry.ClinkerItems;
 import birsy.clinker.core.registry.ClinkerSounds;
 import net.minecraft.command.arguments.EntityAnchorArgument;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.IRangedAttackMob;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.ai.goal.HurtByTargetGoal;
-import net.minecraft.entity.ai.goal.LookAtGoal;
-import net.minecraft.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
-import net.minecraft.entity.ai.goal.RandomWalkingGoal;
-import net.minecraft.entity.ai.goal.SwimGoal;
+import net.minecraft.entity.*;
+import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.monster.EndermanEntity;
 import net.minecraft.entity.monster.WitherSkeletonEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -29,9 +17,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.ShootableItem;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.pathfinding.GroundPathNavigator;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.Difficulty;
@@ -40,14 +32,22 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-public class GnomadAxemanEntity extends AbstractGnomadEntity implements IRangedAttackMob
+import java.util.EnumSet;
+
+public class GnomadAxemanEntity extends AbstractGnomadEntity
 {
-	@Nullable
-	private BlockPos boundOrigin;
-	
 	private boolean canCharge;
 	private boolean isCharging;
 	private int attackDelay;
+
+	public static final DataParameter<Integer> SHIELDS = EntityDataManager.createKey(GnomadAxemanEntity.class, DataSerializers.VARINT);
+	public int shieldTransitionAnimation;
+	public int shieldSizeRandomness;
+	public int shieldRandomness;
+
+	public static final DataParameter<Boolean> BUFFED = EntityDataManager.createKey(GnomadAxemanEntity.class, DataSerializers.BOOLEAN);
+	private float buffLength;
+
 	
 	public AbstractGnomadEntity.ArmPose armPose;
 	
@@ -79,9 +79,23 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity implements IRangedA
 		this.goalSelector.addGoal(12, new LookAtGoal(this, AbstractGnomadEntity.class, 3.0F, 1.0F));
 		this.goalSelector.addGoal(13, new LookAtGoal(this, MobEntity.class, 8.0F));
 	}
-	
+
 	protected void registerData() {
 		super.registerData();
+		this.dataManager.register(SHIELDS, 0);
+		this.dataManager.register(BUFFED, false);
+	}
+
+	public void writeAdditional(CompoundNBT compound) {
+		super.writeAdditional(compound);
+		compound.putInt("shields", this.getShieldNumber());
+		compound.putBoolean("buffed", this.isBuffed());
+	}
+
+	public void readAdditional(CompoundNBT compound) {
+		super.readAdditional(compound);
+		this.dataManager.set(SHIELDS, compound.getInt("shields"));
+		this.dataManager.set(BUFFED, compound.getBoolean("buffed"));
 	}
 	
 	@Override
@@ -92,28 +106,66 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity implements IRangedA
 		} else {
 			setArmPose(AbstractGnomadEntity.ArmPose.NEUTRAL);
 		}
+
+		if (this.shieldTransitionAnimation < 25) {
+			this.shieldTransitionAnimation++;
+		}
+
+		shieldSizeRandomness = this.rand.nextInt(5) + 15;
+		shieldRandomness = this.rand.nextInt(100);
+
 		this.attackDelay++;
 	}
 
-	/**
-	 * (abstract) Protected helper method to read subclass entity data from NBT.
-	 */
-	public void readAdditional(CompoundNBT compound) {
-		super.readAdditional(compound);
-		if (compound.contains("BoundX")) {
-			this.boundOrigin = new BlockPos(compound.getInt("BoundX"), compound.getInt("BoundY"), compound.getInt("BoundZ"));
+	@Override
+	public boolean hitByEntity(Entity entityIn) {
+		if (getShieldNumber() > 0) {
+			breakShield();
+			return true;
+		} else {
+			return super.hitByEntity(entityIn);
 		}
 	}
 
-	public void writeAdditional(CompoundNBT compound) {
-		super.writeAdditional(compound);
-		if (this.boundOrigin != null) {
-			compound.putInt("BoundX", this.boundOrigin.getX());
-			compound.putInt("BoundY", this.boundOrigin.getY());
-			compound.putInt("BoundZ", this.boundOrigin.getZ());
+	public int getShieldNumber() {
+		return this.dataManager.get(SHIELDS);
+	}
+
+	public void setShielded(int shieldNumber) {
+		boolean flag = this.dataManager.get(SHIELDS) == 0;
+		this.dataManager.set(SHIELDS, shieldNumber);
+		if (flag && shieldNumber > 0) {
+			this.shieldTransitionAnimation = 0;
+			this.playSound(SoundEvents.BLOCK_BEACON_POWER_SELECT, 1.0F, 1.0F);
 		}
 	}
-	
+
+	public void breakShield() {
+		if (getShieldNumber() > 0) {
+			if (getShieldNumber() == 1) {
+				this.playSound(SoundEvents.BLOCK_BEACON_DEACTIVATE, 1.0F, 1.0F);
+			}
+
+			this.playSound(SoundEvents.BLOCK_GLASS_BREAK, 1.0F, 1.0F);
+
+			this.dataManager.set(SHIELDS, getShieldNumber() - 1);
+			this.world.addParticle(ParticleTypes.POOF, this.getPosXRandom(0.5D), this.getPosYRandom(), this.getPosZRandom(0.5D), 0.0D, 0.0D, 0.0D);
+		}
+	}
+
+	public boolean isBuffed() {
+		return this.dataManager.get(BUFFED);
+	}
+
+	public void setBuffed(boolean buffed) {
+		this.dataManager.set(BUFFED, buffed);
+		if (buffed) {
+			this.playSound(SoundEvents.BLOCK_BEACON_ACTIVATE, 1.0F, 1.0F);
+		} else {
+			this.playSound(SoundEvents.BLOCK_BEACON_DEACTIVATE, 1.0F, 1.0F);
+		}
+	}
+
 	static class TargetStrafeGoal extends Goal {
 		private final GnomadAxemanEntity gnomad;
 		private final double moveSpeedAmp = 1.0D;
@@ -329,15 +381,6 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity implements IRangedA
 			
 		}
 	}
-	
-	@Nullable
-	public BlockPos getBoundOrigin() {
-		return this.boundOrigin;
-	}
-
-	public void setBoundOrigin(@Nullable BlockPos boundOriginIn) {
-		this.boundOrigin = boundOriginIn;
-	}
 
 	public boolean isCharging() {
 		return this.isCharging;
@@ -406,5 +449,14 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity implements IRangedA
 
 	public void setCanCharge(boolean canCharge) {
 		this.canCharge = canCharge;
+	}
+
+	@Override
+	protected boolean makeFlySound() {
+		if (isBuffed()) {
+			return true;
+		} else {
+			return super.makeFlySound();
+		}
 	}
 }

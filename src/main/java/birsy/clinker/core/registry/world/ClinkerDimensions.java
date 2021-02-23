@@ -10,7 +10,7 @@ import net.minecraft.world.World;
 public class ClinkerDimensions
 {	
     public static final RegistryKey<DimensionType> OTHERSHORE_TYPE = RegistryKey.getOrCreateKey(Registry.DIMENSION_TYPE_KEY, name("othershore_type"));
-    public static final RegistryKey<World> OTHERSHORE_WORLD = RegistryKey.getOrCreateKey(Registry.WORLD_KEY, name("othershore"));
+    public static final RegistryKey<World> OTHERSHORE = RegistryKey.getOrCreateKey(Registry.WORLD_KEY, name("clinker/othershore"));
 
     private static ResourceLocation name(String name) {
         return new ResourceLocation(Clinker.MOD_ID, name);

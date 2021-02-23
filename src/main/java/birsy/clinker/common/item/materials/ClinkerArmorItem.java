@@ -1,6 +1,6 @@
 package birsy.clinker.common.item.materials;
 
-import birsy.clinker.client.render.model.entity.GnomeModel2;
+import birsy.clinker.client.render.model.entity.GnomeModel;
 import birsy.clinker.core.Clinker;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -20,7 +20,7 @@ public class ClinkerArmorItem extends ArmorItem
 		return null;
 	}
 	
-	public <A extends GnomeModel2<?>> A getGnomeArmorModel(LivingEntity entityLiving, ItemStack itemStack, EquipmentSlotType armorSlot, A _default) {
+	public <A extends GnomeModel<?>> A getGnomeArmorModel(LivingEntity entityLiving, ItemStack itemStack, EquipmentSlotType armorSlot, A _default) {
 		return null;
 	}
 }

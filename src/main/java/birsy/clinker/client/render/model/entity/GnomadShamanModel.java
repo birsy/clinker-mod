@@ -3,107 +3,226 @@ package birsy.clinker.client.render.model.entity;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import net.minecraft.client.renderer.entity.model.EntityModel;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.entity.Entity;
+
+import birsy.clinker.client.render.model.BirsyBaseModel;
+import birsy.clinker.client.render.model.BirsyModelRenderer;
+import birsy.clinker.common.entity.monster.GnomadShamanEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
- * GnomadShaman - birsy
+ * NewNewshamanShamanModel - doclg
  * Created using Tabula 8.0.0
  */
 @OnlyIn(Dist.CLIENT)
-public class GnomadShamanModel<T extends Entity> extends EntityModel<T> {
-    public ModelRenderer ArmL;
-    public ModelRenderer ArmR;
-    public ModelRenderer Neck;
-    public ModelRenderer Torso;
-    public ModelRenderer MainHead;
-    public ModelRenderer Nose;
-    public ModelRenderer FaceMain;
-    public ModelRenderer FaceBottom;
-    public ModelRenderer FaceTop;
-    public ModelRenderer HatBottom;
-    public ModelRenderer Beard;
-    public ModelRenderer HatTop;
-    public ModelRenderer HatRim;
-    public ModelRenderer Back;
+public class GnomadShamanModel<T extends GnomadShamanEntity> extends BirsyBaseModel<T> {
+    public BirsyModelRenderer shamanBody;
+    public BirsyModelRenderer shamanTornBottom;
+    public BirsyModelRenderer legsJoint;
+    public BirsyModelRenderer armsJoint;
+    public BirsyModelRenderer neckJoint;
+    public BirsyModelRenderer shamanPouch;
+    public BirsyModelRenderer shamanLeftLeg;
+    public BirsyModelRenderer shamanRightLeg;
+    public BirsyModelRenderer shamanLeftArm;
+    public BirsyModelRenderer shamanRightArm;
+    public BirsyModelRenderer shamanStaff;
+    public BirsyModelRenderer shamanStaffRing;
+    public BirsyModelRenderer shamanStaffCross;
+    public BirsyModelRenderer shamanStaffLowerCross;
+    public BirsyModelRenderer shamanStaffRingInside;
+    public BirsyModelRenderer shamanNeck;
+    public BirsyModelRenderer headJoint;
+    public BirsyModelRenderer shamanHead;
+    public BirsyModelRenderer shamanFace;
+    public BirsyModelRenderer shamanHatBrim;
+    public BirsyModelRenderer shamanBeard;
+    public BirsyModelRenderer shamanNose;
+    public BirsyModelRenderer shamanFaceBottom;
+    public BirsyModelRenderer shamanFaceTop;
+    public BirsyModelRenderer shamanHat;
 
     public GnomadShamanModel() {
         this.textureWidth = 64;
         this.textureHeight = 64;
-        this.Beard = new ModelRenderer(this, 41, 40);
-        this.Beard.setRotationPoint(0.0F, -0.5F, 1.5F);
-        this.Beard.addBox(-4.0F, 0.0F, 0.0F, 8.0F, 5.0F, 1.0F, 0.0F, 0.0F, 0.0F);
-        this.ArmL = new ModelRenderer(this, 0, 0);
-        this.ArmL.setRotationPoint(5.25F, 4.0F, -1.0F);
-        this.ArmL.addBox(0.0F, -0.5F, -0.5F, 1.0F, 10.0F, 1.0F, 0.25F, 0.25F, 0.25F);
-        this.HatTop = new ModelRenderer(this, 0, 11);
-        this.HatTop.setRotationPoint(0.0F, -2.0F, 0.0F);
-        this.HatTop.addBox(-1.5F, -2.0F, -1.5F, 3.0F, 3.0F, 3.0F, 0.0F, 0.0F, 0.0F);
-        this.MainHead = new ModelRenderer(this, 0, 34);
-        this.MainHead.setRotationPoint(0.0F, -0.9F, -2.0F);
-        this.MainHead.addBox(-3.0F, -3.0F, -6.0F, 6.0F, 6.0F, 6.0F, 0.0F, 0.0F, 0.0F);
-        this.Nose = new ModelRenderer(this, 46, 0);
-        this.Nose.setRotationPoint(0.0F, -0.2F, -6.7F);
-        this.Nose.addBox(-1.0F, -1.0F, -1.0F, 2.0F, 2.0F, 2.0F, 0.0F, 0.0F, 0.0F);
-        this.setRotateAngle(Nose, -0.3441789165090569F, 0.0F, 0.0F);
-        this.FaceBottom = new ModelRenderer(this, 46, 4);
-        this.FaceBottom.setRotationPoint(0.0F, 3.5F, -7.0F);
-        this.FaceBottom.addBox(-3.0F, 0.0F, 0.0F, 6.0F, 2.0F, 1.0F, 0.0F, 0.0F, 0.0F);
-        this.HatRim = new ModelRenderer(this, 0, 46);
-        this.HatRim.setRotationPoint(0.0F, -1.0F, 0.0F);
-        this.HatRim.addBox(-4.5F, 0.0F, -3.5F, 9.0F, 1.0F, 7.0F, 0.0F, 0.0F, 0.0F);
-        this.Neck = new ModelRenderer(this, 8, 0);
-        this.Neck.setRotationPoint(0.0F, 1.0F, -5.0F);
-        this.Neck.addBox(-1.5F, -1.5F, -2.1F, 3.0F, 3.0F, 6.0F, 0.0F, 0.0F, 0.0F);
-        this.FaceTop = new ModelRenderer(this, 46, 7);
-        this.FaceTop.setRotationPoint(0.0F, -2.5F, -7.0F);
-        this.FaceTop.addBox(-3.0F, -1.0F, 0.0F, 6.0F, 1.0F, 1.0F, 0.0F, 0.0F, 0.0F);
-        this.Torso = new ModelRenderer(this, 14, 0);
-        this.Torso.setRotationPoint(0.0F, 20.0F, 1.0F);
-        this.Torso.addBox(-5.0F, -18.0F, -6.0F, 10.0F, 22.0F, 12.0F, 0.0F, 0.0F, 0.0F);
-        this.Back = new ModelRenderer(this, 24, 46);
-        this.Back.setRotationPoint(0.0F, -18.0F, -2.0F);
-        this.Back.addBox(-5.0F, -3.0F, -4.0F, 10.0F, 3.0F, 8.0F, 0.0F, 0.0F, 0.0F);
-        this.FaceMain = new ModelRenderer(this, 24, 34);
-        this.FaceMain.setRotationPoint(0.0F, 0.0F, -7.0F);
-        this.FaceMain.addBox(-4.0F, -2.5F, 0.0F, 8.0F, 6.0F, 1.0F, 0.0F, 0.0F, 0.0F);
-        this.ArmR = new ModelRenderer(this, 4, 0);
-        this.ArmR.setRotationPoint(-5.25F, 4.0F, -1.0F);
-        this.ArmR.addBox(-1.0F, -0.5F, -0.5F, 1.0F, 10.0F, 1.0F, 0.25F, 0.25F, 0.25F);
-        this.HatBottom = new ModelRenderer(this, 42, 34);
-        this.HatBottom.setRotationPoint(0.0F, -3.0F, -3.0F);
-        this.HatBottom.addBox(-2.0F, -2.0F, -2.0F, 4.0F, 2.0F, 4.0F, 0.0F, 0.0F, 0.0F);
-        this.FaceBottom.addChild(this.Beard);
-        this.HatBottom.addChild(this.HatTop);
-        this.Neck.addChild(this.MainHead);
-        this.MainHead.addChild(this.Nose);
-        this.MainHead.addChild(this.FaceBottom);
-        this.HatBottom.addChild(this.HatRim);
-        this.MainHead.addChild(this.FaceTop);
-        this.Torso.addChild(this.Back);
-        this.MainHead.addChild(this.FaceMain);
-        this.MainHead.addChild(this.HatBottom);
+        this.shamanStaff = new BirsyModelRenderer(this, 60, 37);
+        this.shamanStaff.setRotationPoint(0.0F, 10.25F, 0.0F);
+        this.shamanStaff.addBox(-0.5F, -16.0F, -0.5F, 1.0F, 26.0F, 1.0F, 0.0F, 0.0F, 0.0F);
+        this.setRotateAngle(shamanStaff, 1.5707963267948966F, 0.0F, 0.0F);
+        this.legsJoint = new BirsyModelRenderer(this, 0, 0);
+        this.legsJoint.setRotationPoint(0.0F, 3.0F, 0.0F);
+        this.legsJoint.addBox(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 8.0F, 0.0F, 0.0F, 0.0F);
+        this.setRotateAngle(legsJoint, -0.17453292519943295F, 0.0F, 0.0F);
+        this.shamanBeard = new BirsyModelRenderer(this, 28, 22);
+        this.shamanBeard.setRotationPoint(0.0F, 3.0F, -6.0F);
+        this.shamanBeard.addBox(-4.0F, 0.0F, -0.5F, 8.0F, 7.0F, 1.0F, -0.5F, 0.0F, 0.0F);
+        this.shamanStaffRingInside = new BirsyModelRenderer(this, 36, 36);
+        this.shamanStaffRingInside.setRotationPoint(0.0F, 0.0F, 0.0F);
+        this.shamanStaffRingInside.addBox(-1.5F, -4.0F, -0.5F, 3.0F, 3.0F, 1.0F, 0.0F, 0.0F, 0.0F);
+        this.shamanNeck = new BirsyModelRenderer(this, 46, 16);
+        this.shamanNeck.setRotationPoint(0.0F, 0.0F, 0.0F);
+        this.shamanNeck.addBox(-1.5F, -1.5F, -4.0F, 3.0F, 3.0F, 6.0F, 0.0F, 0.0F, 0.0F);
+        this.setRotateAngle(shamanNeck, -0.3490658503988659F, 0.0F, 0.0F);
+        this.shamanPouch = new BirsyModelRenderer(this, 19, 15);
+        this.shamanPouch.setRotationPoint(2.0F, -0.5F, 4.0F);
+        this.shamanPouch.addBox(-2.0F, -1.5F, 0.0F, 4.0F, 5.0F, 2.0F, 0.0F, 0.0F, 0.0F);
+        this.setRotateAngle(shamanPouch, 0.11728612207217244F, 0.0F, 0.0F);
+        this.shamanFaceTop = new BirsyModelRenderer(this, 33, 12);
+        this.shamanFaceTop.setRotationPoint(0.0F, -2.5F, 0.0F);
+        this.shamanFaceTop.addBox(-3.0F, -1.0F, 0.0F, 6.0F, 1.0F, 1.0F, 0.0F, 0.0F, 0.0F);
+        this.shamanFace = new BirsyModelRenderer(this, 32, 13);
+        this.shamanFace.setRotationPoint(0.0F, 0.0F, -7.0F);
+        this.shamanFace.addBox(-4.0F, -2.5F, 0.0F, 8.0F, 6.0F, 1.0F, 0.0F, 0.0F, 0.0F);
+        this.shamanTornBottom = new BirsyModelRenderer(this, 0, 46);
+        this.shamanTornBottom.setRotationPoint(0.0F, 3.0F, 4.0F);
+        this.shamanTornBottom.addBox(-5.0F, 0.0F, -8.0F, 10.0F, 10.0F, 8.0F, 0.0F, 0.0F, 0.0F);
+        this.setRotateAngle(shamanTornBottom, -0.17453292519943295F, 0.0F, 0.0F);
+        this.shamanLeftArm = new BirsyModelRenderer(this, 48, 25);
+        this.shamanLeftArm.mirror = true;
+        this.shamanLeftArm.setRotationPoint(5.35F, 0.0F, 0.0F);
+        this.shamanLeftArm.addBox(-1.0F, -0.5F, -1.0F, 2.0F, 12.0F, 2.0F, -0.25F, -0.5F, -0.25F);
+        this.shamanStaffRing = new BirsyModelRenderer(this, 36, 30);
+        this.shamanStaffRing.setRotationPoint(0.0F, -16.0F, 0.0F);
+        this.shamanStaffRing.addBox(-2.5F, -5.0F, -0.5F, 5.0F, 5.0F, 1.0F, 0.0F, 0.0F, 0.0F);
+        this.shamanBody = new BirsyModelRenderer(this, 0, 24);
+        this.shamanBody.setRotationPoint(0.0F, 13.0F, 0.0F);
+        this.shamanBody.addBox(-5.0F, -11.0F, -4.0F, 10.0F, 14.0F, 8.0F, 0.0F, 0.0F, 0.0F);
+        this.setRotateAngle(shamanBody, 0.17453292519943295F, 0.0F, 0.0F);
+        this.shamanRightArm = new BirsyModelRenderer(this, 48, 25);
+        this.shamanRightArm.setRotationPoint(-5.35F, 0.0F, 0.0F);
+        this.shamanRightArm.addBox(-1.0F, -0.5F, -1.0F, 2.0F, 12.0F, 2.0F, -0.25F, -0.5F, -0.25F);
+        this.shamanHatBrim = new BirsyModelRenderer(this, 0, 18);
+        this.shamanHatBrim.setRotationPoint(0.0F, -3.0F, -3.0F);
+        this.shamanHatBrim.addBox(-3.5F, -1.0F, -2.5F, 7.0F, 1.0F, 5.0F, 0.0F, 0.0F, 0.0F);
+        this.shamanHat = new BirsyModelRenderer(this, 0, 10);
+        this.shamanHat.setRotationPoint(0.0F, -1.0F, 0.0F);
+        this.shamanHat.addBox(-2.0F, -3.5F, -2.0F, 4.0F, 4.0F, 4.0F, 0.0F, 0.0F, 0.0F);
+        this.shamanLeftLeg = new BirsyModelRenderer(this, 56, 25);
+        this.shamanLeftLeg.mirror = true;
+        this.shamanLeftLeg.setRotationPoint(3.4F, 0.0F, 0.0F);
+        this.shamanLeftLeg.addBox(-1.0F, -0.15F, -1.0F, 2.0F, 9.0F, 2.0F, -0.25F, -0.5F, -0.25F);
+        this.headJoint = new BirsyModelRenderer(this, 0, 0);
+        this.headJoint.setRotationPoint(0.0F, 0.0F, -3.5F);
+        this.headJoint.addBox(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+        this.setRotateAngle(headJoint, 0.3490658503988659F, 0.0F, 0.0F);
+        this.armsJoint = new BirsyModelRenderer(this, 0, 0);
+        this.armsJoint.setRotationPoint(0.0F, -8.0F, 0.0F);
+        this.armsJoint.addBox(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 8.0F, 0.0F, 0.0F, 0.0F);
+        this.setRotateAngle(armsJoint, -0.17453292519943295F, 0.0F, 0.0F);
+        this.shamanRightLeg = new BirsyModelRenderer(this, 56, 25);
+        this.shamanRightLeg.setRotationPoint(-3.5F, 0.0F, 0.0F);
+        this.shamanRightLeg.addBox(-1.0F, -0.15F, -1.0F, 2.0F, 9.0F, 2.0F, -0.25F, -0.5F, -0.25F);
+        this.shamanStaffCross = new BirsyModelRenderer(this, 36, 40);
+        this.shamanStaffCross.setRotationPoint(0.0F, -14.0F, 0.0F);
+        this.shamanStaffCross.addBox(-2.5F, 0.0F, -0.5F, 5.0F, 1.0F, 1.0F, 0.0F, 0.0F, 0.0F);
+        this.neckJoint = new BirsyModelRenderer(this, 0, 0);
+        this.neckJoint.setRotationPoint(0.0F, -10.5F, -3.0F);
+        this.neckJoint.addBox(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 8.0F, 0.0F, 0.0F, 0.0F);
+        this.setRotateAngle(neckJoint, -0.17453292519943295F, 0.0F, 0.0F);
+        this.shamanFaceBottom = new BirsyModelRenderer(this, 33, 19);
+        this.shamanFaceBottom.setRotationPoint(0.0F, 3.5F, 0.0F);
+        this.shamanFaceBottom.addBox(-3.0F, 0.0F, 0.0F, 6.0F, 2.0F, 1.0F, 0.0F, 0.0F, 0.0F);
+        this.shamanStaffLowerCross = new BirsyModelRenderer(this, 36, 42);
+        this.shamanStaffLowerCross.setRotationPoint(0.0F, -11.0F, 0.0F);
+        this.shamanStaffLowerCross.addBox(-1.5F, 0.0F, -0.5F, 3.0F, 1.0F, 1.0F, 0.0F, 0.0F, 0.0F);
+        this.shamanNose = new BirsyModelRenderer(this, 50, 12);
+        this.shamanNose.setRotationPoint(0.0F, -1.5F, 0.0F);
+        this.shamanNose.addBox(-1.0F, -0.0F, 0.0F, 2.0F, 2.0F, 2.0F, 0.0F, 0.0F, 0.0F);
+        this.setRotateAngle(shamanNose, -0.3441789165090569F, 0.0F, 0.0F);
+        this.shamanHead = new BirsyModelRenderer(this, 32, 0);
+        this.shamanHead.setRotationPoint(0.0F, 0.0F, 1.0F);
+        this.shamanHead.addBox(-3.0F, -3.0F, -6.0F, 6.0F, 6.0F, 6.0F, 0.0F, 0.0F, 0.0F);
+        this.shamanRightArm.addChild(this.shamanStaff);
+        this.shamanBody.addChild(this.legsJoint);
+        this.shamanHead.addChild(this.shamanBeard);
+        this.shamanStaffRing.addChild(this.shamanStaffRingInside);
+        this.neckJoint.addChild(this.shamanNeck);
+        this.shamanBody.addChild(this.shamanPouch);
+        this.shamanFace.addChild(this.shamanFaceTop);
+        this.shamanHead.addChild(this.shamanFace);
+        this.shamanBody.addChild(this.shamanTornBottom);
+        this.armsJoint.addChild(this.shamanLeftArm);
+        this.shamanStaff.addChild(this.shamanStaffRing);
+        this.armsJoint.addChild(this.shamanRightArm);
+        this.shamanHead.addChild(this.shamanHatBrim);
+        this.shamanHatBrim.addChild(this.shamanHat);
+        this.legsJoint.addChild(this.shamanLeftLeg);
+        this.shamanNeck.addChild(this.headJoint);
+        this.shamanBody.addChild(this.armsJoint);
+        this.legsJoint.addChild(this.shamanRightLeg);
+        this.shamanStaff.addChild(this.shamanStaffCross);
+        this.shamanBody.addChild(this.neckJoint);
+        this.shamanFace.addChild(this.shamanFaceBottom);
+        this.shamanStaff.addChild(this.shamanStaffLowerCross);
+        this.shamanFace.addChild(this.shamanNose);
+        this.headJoint.addChild(this.shamanHead);
     }
 
     @Override
     public void render(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) { 
-        ImmutableList.of(this.ArmL, this.Neck, this.Torso, this.ArmR).forEach((modelRenderer) -> { 
+        ImmutableList.of(this.shamanBody).forEach((modelRenderer) -> { 
             modelRenderer.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
         });
     }
 
     @Override
-    public void setRotationAngles(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {}
-
-    /**
-     * This is a helper function from Tabula to set the rotation of model parts
-     */
-    public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z) {
-        modelRenderer.rotateAngleX = x;
-        modelRenderer.rotateAngleY = y;
-        modelRenderer.rotateAngleZ = z;
+    public void setRotationAngles(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) 
+    {
+    	resetParts(this.shamanBody, this.shamanTornBottom, this.legsJoint, this.armsJoint, this.neckJoint, this.shamanPouch, this.shamanLeftLeg, this.shamanRightLeg, this.shamanLeftArm, this.shamanRightArm, this.shamanStaff, this.shamanStaffRing, this.shamanStaffCross, this.shamanStaffLowerCross, this.shamanStaffRingInside, this.shamanNeck, this.headJoint, this.shamanHead, this.shamanFace, this.shamanHatBrim, this.shamanBeard, this.shamanNose, this.shamanFaceBottom, this.shamanFaceTop, this.shamanHat);
+    	
+    	float f = limbSwing;
+    	float f1 = limbSwingAmount * 2F;
+    	
+    	float globalSpeed = 1.25F;
+    	float globalHeight = 0.75F;
+    	float globalDegree = 1.25F;
+    	
+    	float walkSpeed = 0.5F * globalSpeed;
+    	
+    	//IDLE
+    	swing(this.shamanBody, 0.125F * globalSpeed, 0.1f * globalDegree, false, 0.0F, 0.0F, ageInTicks, 0.5F, Axis.X);
+    	
+    	swing(this.shamanRightArm, 0.125F * globalSpeed, 0.03f * globalDegree, false, 0.5F, 0.07F, ageInTicks, 0.5F, Axis.Z);
+    	swing(this.shamanLeftArm, 0.125F * globalSpeed, 0.03f * globalDegree, false, 1.5F, -0.07F, ageInTicks, 0.5F, Axis.Z);
+    	swing(this.shamanRightArm, 0.12F * globalSpeed, 0.03f * globalDegree, false, 0.5F, 0.0F, ageInTicks, 0.5F, Axis.X);
+    	swing(this.shamanLeftArm, 0.12F * globalSpeed, 0.03f * globalDegree, false, 1.5F, 0.0F, ageInTicks, 0.5F, Axis.X);
+    	
+    	bob(this.shamanRightArm, 0.125F * globalSpeed, 0.2f * globalDegree, false, ageInTicks, 0.5F, true);
+    	bob(this.shamanLeftArm, 0.125F * globalSpeed, 0.2f * globalDegree, false, ageInTicks, 0.5F, true);
+    	
+    	bob(this.neckJoint, 0.125F * globalSpeed, 0.2f * globalHeight, false, ageInTicks, 0.5F, true);
+    	bob(this.shamanBody, 0.5F * (0.125F * globalSpeed), 0.2f * globalHeight, true, ageInTicks, 0.5F, true);
+    	
+    	rotVar(this.shamanHat, entityIn, -0.01F, 0.01F, Axis.X);
+    	rotVar(this.shamanHat, entityIn, -0.01F, 0.01F, Axis.Y);
+    	rotVar(this.shamanHat, entityIn, -0.05F, 0.05F, Axis.Z);
+    	
+    	swing(this.shamanHat, 0.125F * walkSpeed, 0.05F * globalDegree, false, 1F, 0, ageInTicks, 0.5F, Axis.X);
+    	swing(this.shamanHat, 0.125F * walkSpeed, 0.05F * globalDegree, false, 1F, 0, ageInTicks, 0.5F, Axis.Z);
+    	
+    	//WALK
+    	swingLimbs(this.shamanLeftLeg, this.shamanRightLeg, walkSpeed, 0.6f * globalDegree, 0.0F, 0.0F, f, f1);
+    	swingLimbs(this.shamanRightArm, this.shamanLeftArm, walkSpeed, 0.6f * globalDegree, 0.0F, 0.0F, f, f1);
+    	
+    	swing(this.shamanRightArm, walkSpeed, 0.06f * globalDegree, false, 0.0F, 0.2F, f, f1, Axis.Z);
+    	swing(this.shamanLeftArm, walkSpeed, 0.06f * globalDegree, false, 0.0F, -0.2F, f, f1, Axis.Z);
+    	
+    	swing(this.shamanBody, walkSpeed, 0.06f * globalDegree, false, 0.0F, 0.2F, f, f1, Axis.X);
+    	swing(this.shamanBody, 0.5F * walkSpeed, 0.1f * globalDegree, false, 0.0F, 0.0F, f, f1, Axis.Y);
+    	
+    	bob(this.shamanBody, 2.0F * walkSpeed, 2 * globalHeight, true, f, f1, true);
+    	bob(this.shamanHead, 2.0F * walkSpeed, 0.5F * globalHeight, true, f, f1, true);
+    	
+    	look(this.shamanNeck, netHeadYaw, headPitch, 2.0F, 2.0F);
+    	look(this.shamanHead, netHeadYaw, headPitch, 2.0F, 2.0F);
+    	
+    	this.shamanBody.rotateAngleX += this.shamanBody.defaultRotateAngleX;
+    	this.shamanNeck.rotateAngleX += this.shamanNeck.defaultRotateAngleX;
+    	
+    	this.shamanTornBottom.rotateAngleX = -this.shamanBody.rotateAngleX;
+    	this.armsJoint.rotateAngleX = -this.shamanBody.rotateAngleX;
+    	this.legsJoint.rotateAngleX = -this.shamanBody.rotateAngleX;
+    	this.neckJoint.rotateAngleX = -this.shamanBody.rotateAngleX;
+    	this.headJoint.rotateAngleX = -this.shamanNeck.rotateAngleX;
     }
 }

@@ -46,7 +46,7 @@ public abstract class SpreadableAshBlock extends Block {
 	 * Performs a random tick on a block.
 	 */
 	public void randomTick(BlockState state, ServerWorld worldIn, BlockPos pos, Random random) {
-		if (worldIn.getDimensionKey() == ClinkerDimensions.OTHERSHORE_WORLD && worldIn.canSeeSky(pos)) {
+		if (worldIn.getDimensionKey() == ClinkerDimensions.OTHERSHORE && worldIn.canSeeSky(pos)) {
 			if (random.nextInt(5) == 1) {
 				worldIn.setBlockState(pos, grassBase.getDefaultState());
 			}

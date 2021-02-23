@@ -1,8 +1,8 @@
 package birsy.clinker.client.render.layers;
 
+import birsy.clinker.client.render.model.entity.GnomeModel;
 import com.mojang.blaze3d.matrix.MatrixStack;
 
-import birsy.clinker.client.render.model.entity.GnomeModel;
 import birsy.clinker.common.entity.merchant.GnomeEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;

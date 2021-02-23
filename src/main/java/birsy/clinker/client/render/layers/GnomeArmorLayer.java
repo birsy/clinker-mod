@@ -8,7 +8,7 @@ import com.google.common.collect.Maps;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 
-import birsy.clinker.client.render.model.entity.GnomeModel2;
+import birsy.clinker.client.render.model.entity.GnomeModel;
 import birsy.clinker.common.entity.merchant.GnomeEntity;
 import birsy.clinker.common.item.materials.ClinkerArmorItem;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -27,7 +27,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class GnomeArmorLayer<T extends GnomeEntity, M extends GnomeModel2<T>, A extends GnomeModel2<T>> extends LayerRenderer<T, M> {
+public class GnomeArmorLayer<T extends GnomeEntity, M extends GnomeModel<T>, A extends GnomeModel<T>> extends LayerRenderer<T, M> {
    private static final Map<String, ResourceLocation> ARMOR_TEXTURE_RES_MAP = Maps.newHashMap();
    private final A modelLeggings;
    private final A modelArmor;
@@ -105,7 +105,7 @@ public class GnomeArmorLayer<T extends GnomeEntity, M extends GnomeModel2<T>, A 
       return slotIn == EquipmentSlotType.LEGS;
    }
    
-   public static <A extends GnomeModel2<?>> A getGnomeArmorModel(LivingEntity entityLiving, ItemStack itemStack, EquipmentSlotType slot, A _default)
+   public static <A extends GnomeModel<?>> A getGnomeArmorModel(LivingEntity entityLiving, ItemStack itemStack, EquipmentSlotType slot, A _default)
    {
 	   A model;
 	   if (itemStack.getItem() instanceof ClinkerArmorItem) {

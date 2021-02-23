@@ -33,4 +33,7 @@ public class ClinkerSounds
 	//Ambient Sounds
 	public static final RegistryObject<SoundEvent> AMBIENT_ASH_PLAINS_ADDITIONS = SOUNDS.register("ambient.ash_plains.additions",
 			() -> new SoundEvent(new ResourceLocation(Clinker.MOD_ID, "ambient.ash_plains.additions")));
+
+	public static final RegistryObject<SoundEvent> AMBIENT_ASH_PLAINS_LOOP = SOUNDS.register("ambient.ash_plains.loop",
+			() -> new SoundEvent(new ResourceLocation(Clinker.MOD_ID, "ambient.ash_plains.loop")));
 }

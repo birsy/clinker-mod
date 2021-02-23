@@ -10,7 +10,7 @@
     },
     "additions_sound": {
       "sound": "clinker:ambient.ash_plains.additions",
-      "tick_chance": 0.0111
+      "tick_chance": 0.0003
     },
     "music": {
       "sound": "minecraft:music.nether.basalt_deltas",
@@ -24,7 +24,7 @@
       },
       "probability": 0.038093334
     },
-    "ambient_sound": "minecraft:ambient.basalt_deltas.loop",
+    "ambient_sound": "clinker:ambient.ash_plains.loop",
     "sky_color": 6118748,
     "fog_color": 9539938,
     "water_color": 6578522,

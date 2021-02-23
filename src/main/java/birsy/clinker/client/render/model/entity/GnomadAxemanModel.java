@@ -1,4 +1,5 @@
 package birsy.clinker.client.render.model.entity;
+
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
@@ -6,6 +7,7 @@ import com.mojang.blaze3d.vertex.IVertexBuilder;
 import birsy.clinker.client.render.model.BirsyBaseModel;
 import birsy.clinker.client.render.model.BirsyModelRenderer;
 import birsy.clinker.common.entity.monster.AbstractGnomadEntity;
+import birsy.clinker.common.entity.monster.GnomadAxemanEntity;
 import net.minecraft.client.renderer.entity.model.IHasArm;
 import net.minecraft.client.renderer.entity.model.IHasHead;
 import net.minecraft.client.renderer.model.ModelHelper;
@@ -15,186 +17,286 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-/**
- * Gnomad - birsy
- * Created using Tabula 8.0.0
- */
 @OnlyIn(Dist.CLIENT)
-public class GnomadAxemanModel<T extends AbstractGnomadEntity> extends BirsyBaseModel<T> implements IHasArm, IHasHead
-{
-    public BirsyModelRenderer leftArm;
-    public BirsyModelRenderer rightArm;
-    public BirsyModelRenderer rightLeg;
-    public BirsyModelRenderer leftLeg;
-    public BirsyModelRenderer Neck;
-    public BirsyModelRenderer Torso;
-    public BirsyModelRenderer MainHead;
-    public BirsyModelRenderer Nose;
-    public BirsyModelRenderer FaceMain;
-    public BirsyModelRenderer FaceBottom;
-    public BirsyModelRenderer FaceTop;
-    public BirsyModelRenderer HatBottom;
-    public BirsyModelRenderer HatTop;
-    public BirsyModelRenderer Back;
+public class GnomadAxemanModel<T extends GnomadAxemanEntity> extends BirsyBaseModel<T> implements IHasArm, IHasHead {
+	public BirsyModelRenderer gnomadBody;
+    public BirsyModelRenderer gnomadRightArmHolder;
+    public BirsyModelRenderer gnomadLeftArmHolder;
+    public BirsyModelRenderer gnomadTornBottom;
+    public BirsyModelRenderer legsJoint;
+    public BirsyModelRenderer armsJoint;
+    public BirsyModelRenderer neckJoint;
+    public BirsyModelRenderer gnomadGoldSack;
+    public BirsyModelRenderer gnomadLeftLeg;
+    public BirsyModelRenderer gnomadRightLeg;
+    public BirsyModelRenderer gnomadLeftArm;
+    public BirsyModelRenderer gnomadRightArm;
+    public BirsyModelRenderer gnomadNeck;
+    public BirsyModelRenderer headJoint;
+    public BirsyModelRenderer gnomadHead;
+    public BirsyModelRenderer gnomadFace;
+    public BirsyModelRenderer gnomadHat;
+    public BirsyModelRenderer gnomadNose;
+    public BirsyModelRenderer gnomadFaceBottom;
+    public BirsyModelRenderer gnomadFaceTop;
 
-    public GnomadAxemanModel() {
+    public GnomadAxemanModel(float modelSize) {
+        float scaleFactor = modelSize - 1F;
+        
         this.textureWidth = 64;
         this.textureHeight = 64;
-        this.MainHead = new BirsyModelRenderer(this, 36, 0);
-        this.MainHead.setRotationPoint(0.0F, -0.9F, -2.0F);
-        this.MainHead.addBox(-3.0F, -3.0F, -6.0F, 6.0F, 6.0F, 6.0F, 0.0F, 0.0F, 0.0F);
-        this.FaceTop = new BirsyModelRenderer(this, 28, 4);
-        this.FaceTop.setRotationPoint(0.0F, -2.5F, -7.0F);
-        this.FaceTop.addBox(-3.0F, -1.0F, 0.0F, 6.0F, 1.0F, 1.0F, 0.0F, 0.0F, 0.0F);
-        this.leftLeg = new BirsyModelRenderer(this, 12, 0);
-        this.leftLeg.setRotationPoint(2.5F, 13.75F, 2.0F);
-        this.leftLeg.addBox(-0.5F, 0.0F, -0.5F, 1.0F, 10.0F, 1.0F, 0.25F, 0.25F, 0.25F);
-        this.FaceBottom = new BirsyModelRenderer(this, 0, 11);
-        this.FaceBottom.setRotationPoint(0.0F, 3.5F, -7.0F);
-        this.FaceBottom.addBox(-3.0F, 0.0F, 0.0F, 6.0F, 2.0F, 1.0F, 0.0F, 0.0F, 0.0F);
-        this.Back = new BirsyModelRenderer(this, 0, 39);
-        this.Back.setRotationPoint(0.0F, -18.0F, -2.0F);
-        this.Back.addBox(-5.0F, -3.0F, -4.0F, 10.0F, 3.0F, 8.0F, 0.0F, 0.0F, 0.0F);
-        this.Neck = new BirsyModelRenderer(this, 16, 0);
-        this.Neck.setRotationPoint(0.0F, 1.0F, -5.0F);
-        this.Neck.addBox(-1.5F, -1.5F, -2.0F, 3.0F, 3.0F, 6.0F, 0.0F, 0.0F, 0.0F);
-        this.HatBottom = new BirsyModelRenderer(this, 0, 14);
-        this.HatBottom.setRotationPoint(0.0F, -3.0F, -3.5F);
-        this.HatBottom.addBox(-2.0F, -2.0F, -2.0F, 4.0F, 2.0F, 4.0F, 0.0F, 0.0F, 0.0F);
-        this.Torso = new BirsyModelRenderer(this, 4, 9);
-        this.Torso.setRotationPoint(0.0F, 20.0F, 1.0F);
-        this.Torso.addBox(-5.0F, -18.0F, -6.0F, 10.0F, 18.0F, 12.0F, 0.0F, 0.0F, 0.0F);
-        this.rightArm = new BirsyModelRenderer(this, 4, 0);
-        this.rightArm.setRotationPoint(-5.25F, 4.0F, -1.0F);
-        this.rightArm.addBox(-1.0F, -0.5F, -0.5F, 1.0F, 10.0F, 1.0F, 0.25F, 0.25F, 0.25F);
-        this.Nose = new BirsyModelRenderer(this, 28, 0);
-        this.Nose.setRotationPoint(0.0F, -0.2F, -6.7F);
-        this.Nose.addBox(-1.0F, -1.0F, -1.0F, 2.0F, 2.0F, 2.0F, 0.0F, 0.0F, 0.0F);
-        this.setRotateAngle(Nose, -0.3441789165090569F, 0.0F, 0.0F);
-        this.leftArm = new BirsyModelRenderer(this, 0, 0);
-        this.leftArm.setRotationPoint(5.25F, 4.0F, -1.0F);
-        this.leftArm.addBox(0.0F, -0.5F, -0.5F, 1.0F, 10.0F, 1.0F, 0.25F, 0.25F, 0.25F);
-        this.HatTop = new BirsyModelRenderer(this, 51, 16);
-        this.HatTop.setRotationPoint(0.0F, -2.0F, 0.0F);
-        this.HatTop.addBox(-1.5F, -2.0F, -1.5F, 3.0F, 3.0F, 3.0F, 0.0F, 0.0F, 0.0F);
-        this.setRotateAngle(HatTop, 0.0F, 0.0F, -0.17941984244448517F);
-        this.FaceMain = new BirsyModelRenderer(this, 36, 12);
-        this.FaceMain.setRotationPoint(0.0F, 0.0F, -7.0F);
-        this.FaceMain.addBox(-4.0F, -2.5F, 0.0F, 8.0F, 6.0F, 1.0F, 0.0F, 0.0F, 0.0F);
-        this.rightLeg = new BirsyModelRenderer(this, 8, 0);
-        this.rightLeg.setRotationPoint(-2.5F, 13.75F, 2.0F);
-        this.rightLeg.addBox(-0.5F, 0.0F, -0.5F, 1.0F, 10.0F, 1.0F, 0.25F, 0.25F, 0.25F);
-        this.Neck.addChild(this.MainHead);
-        this.MainHead.addChild(this.FaceTop);
-        this.MainHead.addChild(this.FaceBottom);
-        this.Torso.addChild(this.Back);
-        this.MainHead.addChild(this.HatBottom);
-        this.MainHead.addChild(this.Nose);
-        this.HatBottom.addChild(this.HatTop);
-        this.MainHead.addChild(this.FaceMain);
+
+        /**
+         * Head!
+         */
+        this.gnomadNose = new BirsyModelRenderer(this, 50, 12);
+        this.gnomadNose.setRotationPoint(0.0F, -1.5F, 0.0F);
+        this.gnomadNose.addBox(-1.0F, -0.0F, 0.0F, 2.0F, 2.0F, 2.0F, 0.0F + scaleFactor, 0.0F + scaleFactor, 0.0F + scaleFactor);
+        this.setRotateAngle(gnomadNose, -0.35F, 0.0F, 0.0F);
+
+        this.gnomadFaceTop = new BirsyModelRenderer(this, 33, 12);
+        this.gnomadFaceTop.setRotationPoint(0.0F, -2.5F, 0.0F);
+        this.gnomadFaceTop.addBox(-3.0F, -1.0F, 0.0F, 6.0F, 1.0F, 1.0F, 0.0F + scaleFactor, 0.0F + scaleFactor, 0.0F + scaleFactor);
+
+        this.gnomadFace = new BirsyModelRenderer(this, 32, 13);
+        this.gnomadFace.setRotationPoint(0.0F, 0.0F, -7.0F);
+        this.gnomadFace.addBox(-4.0F, -2.5F, 0.0F, 8.0F, 6.0F, 1.0F, 0.0F + scaleFactor, 0.0F + scaleFactor, 0.0F + scaleFactor);
+
+        this.gnomadFaceBottom = new BirsyModelRenderer(this, 33, 19);
+        this.gnomadFaceBottom.setRotationPoint(0.0F, 3.5F, 0.0F);
+        this.gnomadFaceBottom.addBox(-3.0F, 0.0F, 0.0F, 6.0F, 2.0F, 1.0F, 0.0F + scaleFactor, 0.0F + scaleFactor, 0.0F + scaleFactor);
+
+        this.gnomadHat = new BirsyModelRenderer(this, 32, 22);
+        this.gnomadHat.setRotationPoint(0.0F, -3.0F, -3.5F);
+        this.gnomadHat.addBox(-2.0F, -3.0F, -2.0F, 4.0F, 4.0F, 4.0F, 0.0F + scaleFactor, 0.0F + scaleFactor, 0.0F + scaleFactor);
+        this.setRotateAngle(gnomadHat, 0.19547687289441354F, 0.0F, 0.19547687289441354F);
+
+        this.gnomadHead = new BirsyModelRenderer(this, 32, 0);
+        this.gnomadHead.setRotationPoint(0.0F, 0.0F, 1.0F);
+        this.gnomadHead.addBox(-3.0F, -3.0F, -6.0F, 6.0F, 6.0F, 6.0F, 0.0F + scaleFactor, 0.0F + scaleFactor, 0.0F + scaleFactor);
+
+        this.headJoint = new BirsyModelRenderer(this, 0, 0);
+        this.headJoint.setRotationPoint(0.0F, 0.0F, -3.5F);
+        this.headJoint.addBox(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F + scaleFactor, 0.0F + scaleFactor, 0.0F + scaleFactor);
+
+        this.gnomadNeck = new BirsyModelRenderer(this, 46, 16);
+        this.gnomadNeck.setRotationPoint(0.0F, 0.0F, -0.0F);
+        this.gnomadNeck.addBox(-1.5F, -1.5F, -4.0F, 3.0F, 3.0F, 6.0F, 0.0F + scaleFactor, 0.0F + scaleFactor, 0.0F + scaleFactor);
+        this.setRotateAngle(gnomadNeck, -0.3F, 0.0F, 0.0F);
+
+        this.neckJoint = new BirsyModelRenderer(this, 0, 0);
+        this.neckJoint.setRotationPoint(0.0F, -10.5F, -3.0F);
+        this.neckJoint.addBox(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 8.0F, 0.0F + scaleFactor, 0.0F + scaleFactor, 0.0F + scaleFactor);
+
+
+        /**
+         * Body!
+         */
+        this.gnomadBody = new BirsyModelRenderer(this, 0, 24);
+        this.gnomadBody.setRotationPoint(0.0F, 13.0F, 0.0F);
+        this.gnomadBody.addBox(-5.0F, -11.0F, -4.0F, 10.0F, 14.0F, 8.0F, 0.0F + scaleFactor, 0.0F + scaleFactor, 0.0F + scaleFactor);
+        this.setRotateAngle(gnomadBody, 0.2F, 0.0F, 0.0F);
+
+        this.gnomadGoldSack = new BirsyModelRenderer(this, 0, 0);
+        this.gnomadGoldSack.setRotationPoint(0.0F, -4.0F, 4.0F);
+        this.gnomadGoldSack.addBox(-4.5F, -6.0F, 0.0F, 9.0F, 12.0F, 5.0F, 0.0F + scaleFactor, 0.0F + scaleFactor, 0.0F + scaleFactor);
+
+        this.gnomadTornBottom = new BirsyModelRenderer(this, 0, 46);
+        this.gnomadTornBottom.setRotationPoint(0.0F, 3.0F, 4.0F);
+        this.gnomadTornBottom.addBox(-5.0F, 0.0F, -8.0F, 10.0F, 10.0F, 8.0F, 0.0F + scaleFactor, 0.0F + scaleFactor, 0.0F + scaleFactor);
+
+
+        /**
+         * Arms!
+         */
+        this.armsJoint = new BirsyModelRenderer(this, 0, 0);
+        this.armsJoint.setRotationPoint(0.0F, -8.0F, 0.0F);
+        this.armsJoint.addBox(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 8.0F, 0.0F + scaleFactor, 0.0F + scaleFactor, 0.0F + scaleFactor);
+
+        this.gnomadLeftArm = new BirsyModelRenderer(this, 48, 25);
+        this.gnomadLeftArm.mirror = true;
+        this.gnomadLeftArm.setRotationPoint(5.35F, 0.0F, 0.0F);
+        this.gnomadLeftArm.addBox(-1.0F, -0.5F, -1.0F, 2.0F, 12.0F, 2.0F, -0.25F + scaleFactor, -0.5F + scaleFactor, -0.25F + scaleFactor);
+
+        this.gnomadLeftArmHolder = new BirsyModelRenderer(this, 40, 40);
+        this.gnomadLeftArmHolder.setRotationPoint(5.35F, 5.0F, 0.0F);
+        this.gnomadLeftArmHolder.addBox(-1.0F, -0.5F, -1.0F, 2.0F, 12.0F, 2.0F, -0.25F + scaleFactor, -0.5F + scaleFactor, -0.25F + scaleFactor);
+
+        this.gnomadRightArm = new BirsyModelRenderer(this, 48, 25);
+        this.gnomadRightArm.setRotationPoint(-5.35F, 0.0F, 0.0F);
+        this.gnomadRightArm.addBox(-1.0F, -0.5F, -1.0F, 2.0F, 12.0F, 2.0F, -0.25F, -0.5F, -0.25F);
+
+        this.gnomadRightArmHolder = new BirsyModelRenderer(this, 40, 40);
+        this.gnomadRightArmHolder.setRotationPoint(-5.35F, 5.0F, 0.0F);
+        this.gnomadRightArmHolder.addBox(-1.0F, -0.5F, -1.0F, 2.0F, 12.0F, 2.0F, -0.25F + scaleFactor, -0.5F + scaleFactor, -0.25F + scaleFactor);
+
+
+        /**
+         * Legs!
+         */
+        this.legsJoint = new BirsyModelRenderer(this, 0, 0);
+        this.legsJoint.setRotationPoint(0.0F, 3.0F, 0.0F);
+        this.legsJoint.addBox(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 8.0F, 0.0F + scaleFactor, 0.0F + scaleFactor, 0.0F + scaleFactor);
+
+        this.gnomadLeftLeg = new BirsyModelRenderer(this, 56, 25);
+        this.gnomadLeftLeg.mirror = true;
+        this.gnomadLeftLeg.setRotationPoint(3.4F, 0.0F, 0.0F);
+        this.gnomadLeftLeg.addBox(-1.0F, -0.15F, -1.0F, 2.0F, 9.0F, 2.0F, -0.25F + scaleFactor, -0.5F + scaleFactor, -0.25F + scaleFactor);
+
+        this.gnomadRightLeg = new BirsyModelRenderer(this, 56, 25);
+        this.gnomadRightLeg.setRotationPoint(-3.5F, 0.0F, 0.0F);
+        this.gnomadRightLeg.addBox(-1.0F, -0.15F, -1.0F, 2.0F, 9.0F, 2.0F, -0.25F, -0.5F, -0.25F);
+
+
+        /**
+         * Parenting!
+         */
+        this.neckJoint.addChild(this.gnomadNeck);
+        this.gnomadNeck.addChild(this.headJoint);
+        this.headJoint.addChild(this.gnomadHead);
+
+        this.gnomadHead.addChild(this.gnomadHat);
+        this.gnomadHead.addChild(this.gnomadFace);
+
+        this.gnomadFace.addChild(this.gnomadNose);
+        this.gnomadFace.addChild(this.gnomadFaceTop);
+        this.gnomadFace.addChild(this.gnomadFaceBottom);
+
+        this.gnomadBody.addChild(this.neckJoint);
+        this.gnomadBody.addChild(this.armsJoint);
+        this.gnomadBody.addChild(this.legsJoint);
+        this.gnomadBody.addChild(this.gnomadGoldSack);
+        this.gnomadBody.addChild(this.gnomadTornBottom);
+
+        this.legsJoint.addChild(this.gnomadLeftLeg);
+        this.legsJoint.addChild(this.gnomadRightLeg);
+
+        this.armsJoint.addChild(this.gnomadLeftArm);
+        this.armsJoint.addChild(this.gnomadRightArm);
     }
 
     @Override
     public void render(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) { 
-        ImmutableList.of(this.leftLeg, this.Neck, this.Torso, this.rightArm, this.leftArm, this.rightLeg).forEach((modelRenderer) -> { 
+        ImmutableList.of(this.gnomadBody).forEach((modelRenderer) -> { 
             modelRenderer.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
         });
     }
 
-    @Override
+	@Override
     public void setRotationAngles(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch)
     {
-    	resetParts(leftArm, rightArm, rightLeg, leftLeg, Neck, Torso, MainHead, Nose, FaceMain, FaceBottom, FaceTop, HatBottom, HatTop, Back);
+    	resetParts(this.gnomadBody, this.gnomadTornBottom, this.legsJoint, this.armsJoint, this.neckJoint, this.gnomadGoldSack, this.gnomadLeftLeg, this.gnomadRightLeg, this.gnomadLeftArm, this.gnomadRightArm, this.gnomadNeck, this.headJoint, this.gnomadHead, this.gnomadFace, this.gnomadHat, this.gnomadNose, this.gnomadFaceBottom, this.gnomadFaceTop);
     	
     	float f = limbSwing;
     	float f1 = limbSwingAmount * 2F;
     	
     	float globalSpeed = 1.25F;
-    	float globalHeight = 1;
+    	float globalHeight = 0.75F;
     	float globalDegree = 1.25F;
     	
     	float walkSpeed = 0.5F * globalSpeed;
-        
-    	bob(this.MainHead, 0.5F * walkSpeed, 1 * globalHeight, false, f, f1, false);
-    	bob(this.MainHead, 0.125F * globalSpeed, 0.5F * globalHeight, false, ageInTicks, 0.5F, false);
-    	swing(this.MainHead, 0.5F * walkSpeed, 0.05F * globalDegree, false, 1F, 0, f, f1, Axis.X);
     	
-    	swing(this.Neck, 0.5F * walkSpeed, 0.05F * globalDegree, false, 0.25F, 0, f, f1, Axis.X);
-    	swing(this.Back, 0.5F * walkSpeed, 0.05F * globalDegree, false, 0.5F, 0, f, f1, Axis.X);
+    	//IDLE
+    	swing(this.gnomadBody, 0.125F * globalSpeed, 0.1f * globalDegree, false, 0.0F, 0.0F, ageInTicks, 0.5F, Axis.X);
     	
-    	swing(this.Torso, 0.5F * walkSpeed, 0.05F * globalDegree, false, 1F, 0, f, f1, Axis.X);
+    	swing(this.gnomadRightArm, 0.125F * globalSpeed, 0.03f * globalDegree, false, 0.5F, 0.07F, ageInTicks, 0.5F, Axis.Z);
+    	swing(this.gnomadLeftArm, 0.125F * globalSpeed, 0.03f * globalDegree, false, 1.5F, -0.07F, ageInTicks, 0.5F, Axis.Z);
+    	swing(this.gnomadRightArm, 0.12F * globalSpeed, 0.03f * globalDegree, false, 0.5F, 0.0F, ageInTicks, 0.5F, Axis.X);
+    	swing(this.gnomadLeftArm, 0.12F * globalSpeed, 0.03f * globalDegree, false, 1.5F, 0.0F, ageInTicks, 0.5F, Axis.X);
     	
-    	swingLimbs(this.leftLeg, this.rightLeg, walkSpeed, 1.0f * globalDegree, 0.0F, 0.0F, f, f1);
-    	swingLimbs(this.rightArm, this.leftArm, walkSpeed, 1.0f * globalDegree, 0.1F, 0.5F, f, f1);
+    	bob(this.gnomadRightArm, 0.125F * globalSpeed, 0.2f * globalDegree, false, ageInTicks, 0.5F, true);
+    	bob(this.gnomadLeftArm, 0.125F * globalSpeed, 0.2f * globalDegree, false, ageInTicks, 0.5F, true);
     	
-    	swing(this.rightArm, 0.5F * globalSpeed, 0.25f * globalDegree, false, 1.0F, 0.25F, f, f1, Axis.Z);
-    	swing(this.leftArm, 0.5F * globalSpeed, 0.25f * globalDegree, false, 1.0F, -0.25F, f, f1, Axis.Z);
+    	bob(this.neckJoint, 0.125F * globalSpeed, 0.2f * globalHeight, false, ageInTicks, 0.5F, true);
+    	bob(this.gnomadBody, 0.5F * (0.125F * globalSpeed), 0.2f * globalHeight, true, ageInTicks, 0.5F, true);
     	
-    	swing(this.rightArm, 0.125F * globalSpeed, 0.125f * globalDegree, false, 0.5F, 0.25F, ageInTicks, 0.5F, Axis.Z);
-    	swing(this.leftArm, 0.125F * globalSpeed, 0.125f * globalDegree, false, 1.5F, -0.25F, ageInTicks, 0.5F, Axis.Z);
+    	rotVar(this.gnomadHat, entityIn, -0.01F, 0.01F, Axis.X);
+    	rotVar(this.gnomadHat, entityIn, -0.01F, 0.01F, Axis.Y);
+    	rotVar(this.gnomadHat, entityIn, -0.05F, 0.05F, Axis.Z);
     	
-    	swing(this.rightArm, 0.125F * globalSpeed, 0.125f * globalDegree, false, 0.5F, 0.0F, ageInTicks, 0.5F, Axis.X);
-    	swing(this.leftArm, 0.125F * globalSpeed, 0.125f * globalDegree, false, 1.5F, 0.0F, ageInTicks, 0.5F, Axis.X);
+    	swing(this.gnomadHat, 0.125F * walkSpeed, 0.05F * globalDegree, false, 1F, 0, ageInTicks, 0.5F, Axis.X);
+    	swing(this.gnomadHat, 0.125F * walkSpeed, 0.05F * globalDegree, false, 1F, 0, ageInTicks, 0.5F, Axis.Z);
     	
-    	rotVar(this.Nose, entityIn, -0.5F, 0.1F, Axis.X);
+    	//WALK
+    	swingLimbs(this.gnomadLeftLeg, this.gnomadRightLeg, walkSpeed, 0.6f * globalDegree, 0.0F, 0.0F, f, f1);
+    	swingLimbs(this.gnomadRightArm, this.gnomadLeftArm, walkSpeed, 0.6f * globalDegree, 0.0F, 0.0F, f, f1);
     	
-    	rotVar(this.HatBottom, entityIn, -0.01F, 0.01F, Axis.X);
-    	rotVar(this.HatBottom, entityIn, -0.01F, 0.01F, Axis.Y);
-    	rotVar(this.HatBottom, entityIn, -0.05F, 0.05F, Axis.Z);
+    	swing(this.gnomadRightArm, walkSpeed, 0.06f * globalDegree, false, 0.0F, 0.2F, f, f1, Axis.Z);
+    	swing(this.gnomadLeftArm, walkSpeed, 0.06f * globalDegree, false, 0.0F, -0.2F, f, f1, Axis.Z);
     	
-    	swing(this.HatBottom, 0.5F * walkSpeed, 0.05F * globalDegree, false, 1F, 0, f, f1, Axis.X);
-    	swing(this.HatBottom, 0.5F * walkSpeed, 0.05F * globalDegree, false, 1F, 0, f, f1, Axis.Z);
+    	swing(this.gnomadBody, walkSpeed, 0.06f * globalDegree, false, 0.0F, 0.2F, f, f1, Axis.X);
+    	swing(this.gnomadBody, 0.5F * walkSpeed, 0.1f * globalDegree, false, 0.0F, 0.0F, f, f1, Axis.Y);
     	
-    	rotVar(this.HatTop, entityIn, -0.01F, 0.01F, Axis.X);
-    	rotVar(this.HatTop, entityIn, -0.01F, 0.01F, Axis.Z);
+    	bob(this.gnomadBody, 2.0F * walkSpeed, 2 * globalHeight, true, f, f1, true);
+    	bob(this.gnomadHead, 2.0F * walkSpeed, 0.5F * globalHeight, true, f, f1, true);
     	
-    	look(this.Neck, netHeadYaw, headPitch, 2.0F, 2.0F);
-    	look(this.MainHead, netHeadYaw, headPitch, 2.0F, 2.0F);
-        
-        AbstractGnomadEntity.ArmPose AbstractGnomadEntity$armpose = entityIn.getArmPose();
+    	look(this.gnomadNeck, netHeadYaw, headPitch, 2.0F, 2.0F);
+    	look(this.gnomadHead, netHeadYaw, headPitch, 1.0F, 1.0F);
+    	
+    	AbstractGnomadEntity.ArmPose AbstractGnomadEntity$armpose = entityIn.getArmPose();
         if (AbstractGnomadEntity$armpose == AbstractGnomadEntity.ArmPose.ATTACKING) {
-           ModelHelper.func_239103_a_(this.rightArm, this.leftArm, entityIn, this.swingProgress, ageInTicks);
-        } else if (AbstractGnomadEntity$armpose == AbstractGnomadEntity.ArmPose.SPELLCASTING) {
-           this.rightArm.rotationPointZ = 0.0F;
-           this.rightArm.rotationPointX = -5.0F;
-           this.leftArm.rotationPointZ = 0.0F;
-           this.leftArm.rotationPointX = 5.0F;
-           this.rightArm.rotateAngleX = MathHelper.cos(ageInTicks * 0.6662F) * 0.25F;
-           this.leftArm.rotateAngleX = MathHelper.cos(ageInTicks * 0.6662F) * 0.25F;
-           this.rightArm.rotateAngleZ = 2.3561945F;
-           this.leftArm.rotateAngleZ = -2.3561945F;
-           this.rightArm.rotateAngleY = 0.0F;
-           this.leftArm.rotateAngleY = 0.0F;
+           ModelHelper.func_239103_a_(this.gnomadRightArm, this.gnomadLeftArm, entityIn, this.swingProgress, ageInTicks);
+        } else if (AbstractGnomadEntity$armpose == AbstractGnomadEntity.ArmPose.SPELLCASTING || AbstractGnomadEntity$armpose == AbstractGnomadEntity.ArmPose.CELEBRATING) {
+           this.gnomadRightArm.rotationPointZ =+ 0.0F;
+           this.gnomadRightArm.rotationPointX =+ -5.0F;
+           this.gnomadLeftArm.rotationPointZ =+ 0.0F;
+           this.gnomadLeftArm.rotationPointX =+ 5.0F;
+           this.gnomadRightArm.rotateAngleX =+ MathHelper.cos(ageInTicks * 0.6662F) * 0.25F;
+           this.gnomadLeftArm.rotateAngleX =+ MathHelper.cos(ageInTicks * 0.6662F) * 0.25F;
+           this.gnomadRightArm.rotateAngleZ =+ 2.3561945F;
+           this.gnomadLeftArm.rotateAngleZ =+ -2.3561945F;
+           this.gnomadRightArm.rotateAngleY =+ 0.0F;
+           this.gnomadLeftArm.rotateAngleY =+ 0.0F;
         } else if (AbstractGnomadEntity$armpose == AbstractGnomadEntity.ArmPose.BOW_AND_ARROW) {
-           this.rightArm.rotateAngleY = -0.1F + this.MainHead.rotateAngleY;
-           this.rightArm.rotateAngleX = (-(float)Math.PI / 2F) + this.MainHead.rotateAngleX;
-           this.leftArm.rotateAngleX = -0.9424779F + this.MainHead.rotateAngleX;
-           this.leftArm.rotateAngleY = this.MainHead.rotateAngleY - 0.4F;
-           this.leftArm.rotateAngleZ = ((float)Math.PI / 2F);
+           this.gnomadRightArm.rotateAngleY =+ -0.1F + this.gnomadHead.rotateAngleY;
+           this.gnomadRightArm.rotateAngleX =+ (-(float)Math.PI / 2F) + this.gnomadHead.rotateAngleX;
+           this.gnomadLeftArm.rotateAngleX =+ -0.9424779F + this.gnomadHead.rotateAngleX;
+           this.gnomadLeftArm.rotateAngleY =+ this.gnomadHead.rotateAngleY - 0.4F;
+           this.gnomadLeftArm.rotateAngleZ =+ ((float)Math.PI / 2F);
         } else if (AbstractGnomadEntity$armpose == AbstractGnomadEntity.ArmPose.CROSSBOW_HOLD) {
-           ModelHelper.func_239104_a_(this.rightArm, this.leftArm, this.MainHead, true);
+           ModelHelper.func_239104_a_(this.gnomadRightArm, this.gnomadLeftArm, this.gnomadHead, true);
         } else if (AbstractGnomadEntity$armpose == AbstractGnomadEntity.ArmPose.CROSSBOW_CHARGE) {
-           ModelHelper.func_239102_a_(this.rightArm, this.leftArm, entityIn, true);
-        } else if (AbstractGnomadEntity$armpose == AbstractGnomadEntity.ArmPose.CELEBRATING) {
-           this.rightArm.rotationPointZ = 0.0F;
-           this.rightArm.rotationPointX = -5.0F;
-           this.rightArm.rotateAngleX = MathHelper.cos(ageInTicks * 0.6662F) * 0.05F;
-           this.rightArm.rotateAngleZ = 2.670354F;
-           this.rightArm.rotateAngleY = 0.0F;
-           this.leftArm.rotationPointZ = 0.0F;
-           this.leftArm.rotationPointX = 5.0F;
-           this.leftArm.rotateAngleX = MathHelper.cos(ageInTicks * 0.6662F) * 0.05F;
-           this.leftArm.rotateAngleZ = -2.3561945F;
-           this.leftArm.rotateAngleY = 0.0F;
-        } else if (AbstractGnomadEntity$armpose == AbstractGnomadEntity.ArmPose.SHAKING) {
-           this.MainHead.rotateAngleZ = MathHelper.cos(ageInTicks * 0.6662F) * 0.05F;
-           this.FaceMain.rotateAngleZ = MathHelper.cos(ageInTicks * 0.6662F) * 0.05F;   
+           ModelHelper.func_239102_a_(this.gnomadRightArm, this.gnomadLeftArm, entityIn, true);
         }
+    	
+    	this.gnomadBody.rotateAngleX += this.gnomadBody.defaultRotateAngleX;
+    	this.gnomadNeck.rotateAngleX += this.gnomadNeck.defaultRotateAngleX;
+    	
+    	this.gnomadTornBottom.rotateAngleX = -this.gnomadBody.rotateAngleX;
+    	this.armsJoint.rotateAngleX = -this.gnomadBody.rotateAngleX;
+    	this.legsJoint.rotateAngleX = -this.gnomadBody.rotateAngleX;
+    	this.neckJoint.rotateAngleX = -this.gnomadBody.rotateAngleX;
+    	this.headJoint.rotateAngleX = -this.gnomadNeck.rotateAngleX;
+    	
+    	this.gnomadRightArmHolder.copyModelAngles(this.gnomadRightArm);
+    	this.gnomadRightArmHolder.rotationPointX = this.gnomadRightArm.rotationPointX + this.armsJoint.rotationPointX + this.gnomadBody.rotationPointX;
+    	this.gnomadRightArmHolder.rotationPointY = this.gnomadRightArm.rotationPointY + this.armsJoint.rotationPointY + this.gnomadBody.rotationPointY;
+    	this.gnomadRightArmHolder.rotationPointZ = this.gnomadRightArm.rotationPointZ + this.armsJoint.rotationPointZ + this.gnomadBody.rotationPointZ + -1.4F;
+    	
+    	this.gnomadLeftArmHolder.copyModelAngles(this.gnomadLeftArm);
+    	this.gnomadLeftArmHolder.rotationPointX = this.gnomadLeftArm.rotationPointX + this.armsJoint.rotationPointX + this.gnomadBody.rotationPointX;
+    	this.gnomadLeftArmHolder.rotationPointY = this.gnomadLeftArm.rotationPointY + this.armsJoint.rotationPointY + this.gnomadBody.rotationPointY;
+    	this.gnomadLeftArmHolder.rotationPointZ = this.gnomadLeftArm.rotationPointZ + this.armsJoint.rotationPointZ + this.gnomadBody.rotationPointZ + -1.4F;
+    	
+        if (this.isSitting) {
+            this.gnomadRightArm.rotateAngleX = (-(float)Math.PI / 5F);
+            this.gnomadRightArm.rotateAngleY = 0.0F;
+            this.gnomadRightArm.rotateAngleZ = 0.0F;
+            this.gnomadLeftArm.rotateAngleX = (-(float)Math.PI / 5F);
+            this.gnomadLeftArm.rotateAngleY = 0.0F;
+            this.gnomadLeftArm.rotateAngleZ = 0.0F;
+            this.gnomadRightLeg.rotateAngleX = -1.4137167F;
+            this.gnomadRightLeg.rotateAngleY = ((float)Math.PI / 10F);
+            this.gnomadRightLeg.rotateAngleZ = 0.07853982F;
+            this.gnomadLeftLeg.rotateAngleX = -1.4137167F;
+            this.gnomadLeftLeg.rotateAngleY = (-(float)Math.PI / 10F);
+            this.gnomadLeftLeg.rotateAngleZ = -0.07853982F;
+         }
     }
-    
-	@Override
+	
+    @Override
 	public ModelRenderer getModelHead() {
-		return this.MainHead;
+		return this.gnomadHead;
 	}
 
 	@Override
@@ -204,6 +306,6 @@ public class GnomadAxemanModel<T extends AbstractGnomadEntity> extends BirsyBase
 	
 	protected ModelRenderer getArmForSide(HandSide side)
 	{
-		return side == HandSide.LEFT ? this.leftArm : this.rightArm;
+		return side == HandSide.LEFT ? this.gnomadLeftArmHolder : this.gnomadRightArmHolder;
 	}
 }

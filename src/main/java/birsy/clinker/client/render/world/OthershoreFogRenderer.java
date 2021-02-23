@@ -1,6 +1,7 @@
 package birsy.clinker.client.render.world;
 
 import birsy.clinker.core.Clinker;
+import birsy.clinker.core.registry.world.ClinkerDimensions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -14,7 +15,9 @@ import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = Clinker.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class OthershoreFogRenderer {
-
+    private static final int fogHeight = 48;
+    private static final int fogEnd = fogHeight + 30;
+    
     @SubscribeEvent
     public static void onRenderFogDensity(EntityViewRenderEvent.FogDensity event)
     {
@@ -22,18 +25,21 @@ public class OthershoreFogRenderer {
         {
             final PlayerEntity player = (PlayerEntity) event.getInfo().getRenderViewEntity();
             final World world = player.world;
-            Vector3d playerVecPos = player.getEyePosition((float) event.getRenderPartialTicks());
-            BlockPos playerPos = new BlockPos(playerVecPos);
+            
+            if (world.getDimensionKey() == ClinkerDimensions.OTHERSHORE) {
+                Vector3d playerVecPos = player.getEyePosition((float) event.getRenderPartialTicks());
+                BlockPos playerPos = new BlockPos(playerVecPos);
 
-            final float heightMultiplier = MathHelper.clamp(mapRange(60, 90, 1, 0, (float) playerVecPos.y), 0, 1);
+                final float heightMultiplier = MathHelper.clamp(mapRange(fogHeight, fogEnd, 1, 0, (float) playerVecPos.y), 0, 1);
 
-            final float interpLight = calculateInterpolatedLight(world, playerPos, playerVecPos) * heightMultiplier;
+                final float interpolatedLight = calculateInterpolatedLight(world, playerPos, playerVecPos) * heightMultiplier;
 
-            final float density = MathHelper.clamp((interpLight - 3) * 0.25f / 13f, 0.02f, 1.0f);
+                final float density = MathHelper.clamp((interpolatedLight - 3) * 0.25f / 13f, 0.02f, 1.0f);
 
-            if (event.getInfo().getFluidState().isEmpty()) {
-                event.setCanceled(true);
-                event.setDensity(density);
+                if (event.getInfo().getFluidState().isEmpty()) {
+                    event.setCanceled(true);
+                    event.setDensity(density);
+                }
             }
         }
     }
@@ -44,23 +50,26 @@ public class OthershoreFogRenderer {
         if (event.getInfo().getRenderViewEntity() instanceof PlayerEntity) {
             final PlayerEntity player = (PlayerEntity) event.getInfo().getRenderViewEntity();
             final World world = player.world;
-            Vector3d playerVecPos = player.getEyePosition((float) event.getRenderPartialTicks());
-            BlockPos playerPos = new BlockPos(playerVecPos);
+            
+            if (world.getDimensionKey() == ClinkerDimensions.OTHERSHORE) {
+                Vector3d playerVecPos = player.getEyePosition((float) event.getRenderPartialTicks());
+                BlockPos playerPos = new BlockPos(playerVecPos);
 
-            final float heightMultiplier = MathHelper.clamp(mapRange(60, 90, 1, 0, (float) playerVecPos.y), 0, 1);
+                final float heightMultiplier = MathHelper.clamp(mapRange(fogHeight, fogEnd, 1, 0, (float) playerVecPos.y), 0, 1);
 
-            final float interpLight = calculateInterpolatedLight(world, playerPos, playerVecPos) * heightMultiplier;
+                final float interpolatedLight = calculateInterpolatedLight(world, playerPos, playerVecPos) * heightMultiplier;
 
-            final float density = MathHelper.clamp((interpLight - 3) * 0.25f / 13f, 0.02f, 1.0f);
+                final float density = MathHelper.clamp((interpolatedLight - 3) * 0.25f / 13f, 0.02f, 1.0f);
 
-            if (event.getInfo().getFluidState().isEmpty()) {
-                float red = MathHelper.lerp(density, event.getRed(), 0.00f);
-                float green = MathHelper.lerp(density, event.getGreen(), 0.00f);
-                float blue = MathHelper.lerp(density, event.getBlue(), 0.56f);
+                if (event.getInfo().getFluidState().isEmpty()) {
+                    float red = MathHelper.lerp(density, event.getRed(), 0.00f);
+                    float green = MathHelper.lerp(density, event.getGreen(), 0.00f);
+                    float blue = MathHelper.lerp(density, event.getBlue(), 0.56f);
 
-                event.setRed(red);
-                event.setGreen(green);
-                event.setBlue(blue);
+                    event.setRed(red);
+                    event.setGreen(green);
+                    event.setBlue(blue);
+                }
             }
         }
     }

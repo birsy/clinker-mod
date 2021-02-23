@@ -2,7 +2,7 @@ package birsy.clinker.client.render.layers;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 
-import birsy.clinker.client.render.model.entity.GnomeModel2;
+import birsy.clinker.client.render.model.entity.GnomeModel;
 import birsy.clinker.common.entity.merchant.GnomeEntity;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
@@ -14,7 +14,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class GnomeArrowLayer<T extends GnomeEntity, M extends GnomeModel2<T>> extends GnomeStuckInBodyLayer<T, M> {
+public class GnomeArrowLayer<T extends GnomeEntity, M extends GnomeModel<T>> extends GnomeStuckInBodyLayer<T, M> {
    private final EntityRendererManager field_215336_a;
    private ArrowEntity field_229130_b_;
 
