@@ -2,6 +2,7 @@ package birsy.clinker.common.block;
 
 import java.util.Random;
 
+import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.world.ClinkerDimensions;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -46,26 +47,26 @@ public abstract class SpreadableAshBlock extends Block {
 	 * Performs a random tick on a block.
 	 */
 	public void randomTick(BlockState state, ServerWorld worldIn, BlockPos pos, Random random) {
-		if (worldIn.getDimensionKey() == ClinkerDimensions.OTHERSHORE && worldIn.canSeeSky(pos)) {
-			if (random.nextInt(5) == 1) {
-				worldIn.setBlockState(pos, grassBase.getDefaultState());
+		if (!(worldIn.getBlockState(pos.up()).getBlock() == ClinkerBlocks.ROOTSTALK.get())) {
+			if (worldIn.getDimensionKey() == ClinkerDimensions.OTHERSHORE && worldIn.canSeeSky(pos)) {
+				if (random.nextInt(5) == 1) {
+					worldIn.setBlockState(pos, grassBase.getDefaultState());
+				}
 			}
-		}
-		
-		if (!isBlockCovered(state, worldIn, pos)) {
-			if (!worldIn.isAreaLoaded(pos, 3)) return; // Forge: prevent loading unloaded chunks when checking neighbor's light and spreading
+			if (!isBlockCovered(state, worldIn, pos)) {
+				if (!worldIn.isAreaLoaded(pos, 3))
+					return; // Forge: prevent loading unloaded chunks when checking neighbor's light and spreading
 				worldIn.setBlockState(pos, grassBase.getDefaultState());
-		} else if (!isDarkEnough(state, worldIn, pos)) {
-			worldIn.setBlockState(pos, grassBase.getDefaultState());
-		} else {
-			if (worldIn.getLight(pos.up()) >= 9) {
-				BlockState blockstate = this.getDefaultState();
-				for(int i = 0; i < 4; ++i)
-				{
-					BlockPos blockpos = pos.add(random.nextInt(3) - 1, random.nextInt(5) - 3, random.nextInt(3) - 1);
-					if (worldIn.getBlockState(blockpos).isIn(grassBase) && isBlockDrowned(blockstate, worldIn, blockpos))
-					{
-						worldIn.setBlockState(blockpos, blockstate);
+			} else if (!isDarkEnough(state, worldIn, pos)) {
+				worldIn.setBlockState(pos, grassBase.getDefaultState());
+			} else {
+				if (worldIn.getLight(pos.up()) >= 9) {
+					BlockState blockstate = this.getDefaultState();
+					for (int i = 0; i < 4; ++i) {
+						BlockPos blockpos = pos.add(random.nextInt(3) - 1, random.nextInt(5) - 3, random.nextInt(3) - 1);
+						if (worldIn.getBlockState(blockpos).isIn(grassBase) && isBlockDrowned(blockstate, worldIn, blockpos)) {
+							worldIn.setBlockState(blockpos, blockstate);
+						}
 					}
 				}
 			}

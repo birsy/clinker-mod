@@ -7,9 +7,13 @@ import birsy.clinker.client.render.layers.GnomeHeldItemLayer;
 import birsy.clinker.client.render.model.entity.GnomeModel;
 import birsy.clinker.common.entity.merchant.GnomeEntity;
 import birsy.clinker.core.Clinker;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3f;
 
 public class GnomeRenderer<T extends GnomeEntity, M extends GnomeModel<T>> extends MobRenderer<GnomeEntity, GnomeModel<GnomeEntity>>
 {

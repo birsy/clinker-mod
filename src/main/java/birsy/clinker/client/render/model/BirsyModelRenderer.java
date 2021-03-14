@@ -17,7 +17,9 @@ public class BirsyModelRenderer extends ModelRenderer
 	public Vector3d defaultModelRendererPosition = new Vector3d(this.defaultRotationPointX, this.defaultRotationPointY, this.defaultRotationPointZ);
 	public Vector3d modelRendererPosition = new Vector3d(this.rotationPointX, this.rotationPointY, this.rotationPointZ);
 	
-	public BirsyModelRenderer(Model model, int texOffX, int texOffY) {super(model, texOffX, texOffY);}
+	public BirsyModelRenderer(Model model, int texOffX, int texOffY) {
+		super(model, texOffX, texOffY);
+	}
 	
 	@Override
 	public void setRotationPoint(float rotationPointXIn, float rotationPointYIn, float rotationPointZIn) {

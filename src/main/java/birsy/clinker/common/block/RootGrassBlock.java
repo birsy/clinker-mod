@@ -56,6 +56,7 @@ public class RootGrassBlock extends BushBlock implements IGrowable, net.minecraf
 			|| state.isIn(ClinkerBlocks.PACKED_ASH.get()) 
 			|| state.isIn(ClinkerBlocks.ROOTED_PACKED_ASH.get())
 			|| state.isIn(ClinkerBlocks.ROCKY_PACKED_ASH.get())
+			|| state.isIn(ClinkerBlocks.ROOTSTALK.get())
 			|| state == ClinkerBlocks.ASH_LAYER.get().getDefaultState().with(AshLayerBlock.LAYERS, 8) 
 			&& super.isValidGround(state, worldIn, pos);
 	}

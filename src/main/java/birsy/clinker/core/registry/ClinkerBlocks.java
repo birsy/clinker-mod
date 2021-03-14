@@ -93,12 +93,13 @@ public class ClinkerBlocks
 	
 	public static final RegistryObject<Block> SALT_BLOCK = createBlock("salt_block", () -> new SandBlock(14406560, AbstractBlock.Properties.create(Material.SAND, MaterialColor.WHITE_TERRACOTTA).hardnessAndResistance(0.5F).sound(SoundType.GROUND).harvestTool(ToolType.SHOVEL)), Clinker.CLINKER_BLOCKS);
 	
-	
+	public static final RegistryObject<Block> ROOTSTALK = createBlock("rootstalk", () -> new Block(AbstractBlock.Properties.create(Material.ORGANIC, MaterialColor.ORANGE_TERRACOTTA).harvestTool(ToolType.HOE).hardnessAndResistance(0.1F).sound(SoundType.WART)), Clinker.CLINKER_BLOCKS);
+
 	//Brimstone
 	public static AbstractBlock.Properties getBrimstoneProperties() {
 		return AbstractBlock.Properties.create(Material.ROCK, MaterialColor.BROWN_TERRACOTTA)
 				  .hardnessAndResistance(2.75F, 75.0F)
-				  .sound(SoundType.STONE)
+				  .sound(SoundType.GILDED_BLACKSTONE)
 				  .harvestLevel(1)
 				  .harvestTool(ToolType.PICKAXE);
 	}

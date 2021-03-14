@@ -1,17 +1,19 @@
 package birsy.clinker.client.render.entity;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoField;
-
 import birsy.clinker.client.render.layers.GnomadAxemanBuffLayer;
 import birsy.clinker.client.render.layers.GnomadAxemanShieldLayer;
 import birsy.clinker.client.render.layers.GnomeHeldItemLayer;
 import birsy.clinker.client.render.model.entity.GnomadAxemanModel;
 import birsy.clinker.common.entity.monster.GnomadAxemanEntity;
 import birsy.clinker.core.Clinker;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.util.ResourceLocation;
+
+import java.time.LocalDate;
+import java.time.temporal.ChronoField;
 
 public class GnomadAxemanRenderer extends MobRenderer<GnomadAxemanEntity, GnomadAxemanModel<GnomadAxemanEntity>>
 {
@@ -33,8 +35,9 @@ public class GnomadAxemanRenderer extends MobRenderer<GnomadAxemanEntity, Gnomad
 		LocalDate localdate = LocalDate.now();
         int day = localdate.get(ChronoField.DAY_OF_MONTH);
         int month = localdate.get(ChronoField.MONTH_OF_YEAR);
-        
-        if(month == 12 && day > 0 && day < 30) {
+
+        //If it's between Dec. 22 and 28, the gnomads look like Santa!
+        if(month == 12 && day > 22 && day < 28) {
         	return SANTA_TEXTURE;
         }
         

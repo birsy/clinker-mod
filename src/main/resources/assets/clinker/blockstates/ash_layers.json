@@ -22,7 +22,7 @@
       "model": "clinker:block/ash/ash_height14"
     },
     "layers=8": {
-      "model": "clinker:block/ash/ash_block"
+      "model": "clinker:block/ash/ash"
     }
   }
 }

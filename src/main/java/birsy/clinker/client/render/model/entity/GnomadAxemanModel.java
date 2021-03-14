@@ -1,5 +1,6 @@
 package birsy.clinker.client.render.model.entity;
 
+import birsy.clinker.core.util.MathUtils;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
@@ -46,8 +47,8 @@ public class GnomadAxemanModel<T extends GnomadAxemanEntity> extends BirsyBaseMo
         this.textureWidth = 64;
         this.textureHeight = 64;
 
-        /**
-         * Head!
+        /*
+          Head!
          */
         this.gnomadNose = new BirsyModelRenderer(this, 50, 12);
         this.gnomadNose.setRotationPoint(0.0F, -1.5F, 0.0F);
@@ -89,7 +90,7 @@ public class GnomadAxemanModel<T extends GnomadAxemanEntity> extends BirsyBaseMo
         this.neckJoint.addBox(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 8.0F, 0.0F + scaleFactor, 0.0F + scaleFactor, 0.0F + scaleFactor);
 
 
-        /**
+        /*
          * Body!
          */
         this.gnomadBody = new BirsyModelRenderer(this, 0, 24);
@@ -106,7 +107,7 @@ public class GnomadAxemanModel<T extends GnomadAxemanEntity> extends BirsyBaseMo
         this.gnomadTornBottom.addBox(-5.0F, 0.0F, -8.0F, 10.0F, 10.0F, 8.0F, 0.0F + scaleFactor, 0.0F + scaleFactor, 0.0F + scaleFactor);
 
 
-        /**
+        /*
          * Arms!
          */
         this.armsJoint = new BirsyModelRenderer(this, 0, 0);
@@ -131,7 +132,7 @@ public class GnomadAxemanModel<T extends GnomadAxemanEntity> extends BirsyBaseMo
         this.gnomadRightArmHolder.addBox(-1.0F, -0.5F, -1.0F, 2.0F, 12.0F, 2.0F, -0.25F + scaleFactor, -0.5F + scaleFactor, -0.25F + scaleFactor);
 
 
-        /**
+        /*
          * Legs!
          */
         this.legsJoint = new BirsyModelRenderer(this, 0, 0);
@@ -148,7 +149,7 @@ public class GnomadAxemanModel<T extends GnomadAxemanEntity> extends BirsyBaseMo
         this.gnomadRightLeg.addBox(-1.0F, -0.15F, -1.0F, 2.0F, 9.0F, 2.0F, -0.25F, -0.5F, -0.25F);
 
 
-        /**
+        /*
          * Parenting!
          */
         this.neckJoint.addChild(this.gnomadNeck);
@@ -195,7 +196,7 @@ public class GnomadAxemanModel<T extends GnomadAxemanEntity> extends BirsyBaseMo
     	float globalDegree = 1.25F;
     	
     	float walkSpeed = 0.5F * globalSpeed;
-    	
+
     	//IDLE
     	swing(this.gnomadBody, 0.125F * globalSpeed, 0.1f * globalDegree, false, 0.0F, 0.0F, ageInTicks, 0.5F, Axis.X);
     	
@@ -232,68 +233,39 @@ public class GnomadAxemanModel<T extends GnomadAxemanEntity> extends BirsyBaseMo
     	
     	look(this.gnomadNeck, netHeadYaw, headPitch, 2.0F, 2.0F);
     	look(this.gnomadHead, netHeadYaw, headPitch, 1.0F, 1.0F);
-    	
-    	AbstractGnomadEntity.ArmPose AbstractGnomadEntity$armpose = entityIn.getArmPose();
-        if (AbstractGnomadEntity$armpose == AbstractGnomadEntity.ArmPose.ATTACKING) {
-           ModelHelper.func_239103_a_(this.gnomadRightArm, this.gnomadLeftArm, entityIn, this.swingProgress, ageInTicks);
-        } else if (AbstractGnomadEntity$armpose == AbstractGnomadEntity.ArmPose.SPELLCASTING || AbstractGnomadEntity$armpose == AbstractGnomadEntity.ArmPose.CELEBRATING) {
-           this.gnomadRightArm.rotationPointZ =+ 0.0F;
-           this.gnomadRightArm.rotationPointX =+ -5.0F;
-           this.gnomadLeftArm.rotationPointZ =+ 0.0F;
-           this.gnomadLeftArm.rotationPointX =+ 5.0F;
-           this.gnomadRightArm.rotateAngleX =+ MathHelper.cos(ageInTicks * 0.6662F) * 0.25F;
-           this.gnomadLeftArm.rotateAngleX =+ MathHelper.cos(ageInTicks * 0.6662F) * 0.25F;
-           this.gnomadRightArm.rotateAngleZ =+ 2.3561945F;
-           this.gnomadLeftArm.rotateAngleZ =+ -2.3561945F;
-           this.gnomadRightArm.rotateAngleY =+ 0.0F;
-           this.gnomadLeftArm.rotateAngleY =+ 0.0F;
-        } else if (AbstractGnomadEntity$armpose == AbstractGnomadEntity.ArmPose.BOW_AND_ARROW) {
-           this.gnomadRightArm.rotateAngleY =+ -0.1F + this.gnomadHead.rotateAngleY;
-           this.gnomadRightArm.rotateAngleX =+ (-(float)Math.PI / 2F) + this.gnomadHead.rotateAngleX;
-           this.gnomadLeftArm.rotateAngleX =+ -0.9424779F + this.gnomadHead.rotateAngleX;
-           this.gnomadLeftArm.rotateAngleY =+ this.gnomadHead.rotateAngleY - 0.4F;
-           this.gnomadLeftArm.rotateAngleZ =+ ((float)Math.PI / 2F);
-        } else if (AbstractGnomadEntity$armpose == AbstractGnomadEntity.ArmPose.CROSSBOW_HOLD) {
-           ModelHelper.func_239104_a_(this.gnomadRightArm, this.gnomadLeftArm, this.gnomadHead, true);
-        } else if (AbstractGnomadEntity$armpose == AbstractGnomadEntity.ArmPose.CROSSBOW_CHARGE) {
-           ModelHelper.func_239102_a_(this.gnomadRightArm, this.gnomadLeftArm, entityIn, true);
+
+
+        float rollAmount = (float) Math.toRadians(entityIn.getDodgeTime() * 1.5);
+        this.gnomadBody.rotateAngleZ =+ (entityIn.getDodgeDirection() ? rollAmount : -rollAmount);
+
+        if (entityIn.isAggressive()) {
+            ModelHelper.func_239103_a_(this.gnomadRightArm, this.gnomadLeftArm, entityIn, this.swingProgress, ageInTicks);
         }
-    	
-    	this.gnomadBody.rotateAngleX += this.gnomadBody.defaultRotateAngleX;
-    	this.gnomadNeck.rotateAngleX += this.gnomadNeck.defaultRotateAngleX;
-    	
-    	this.gnomadTornBottom.rotateAngleX = -this.gnomadBody.rotateAngleX;
-    	this.armsJoint.rotateAngleX = -this.gnomadBody.rotateAngleX;
-    	this.legsJoint.rotateAngleX = -this.gnomadBody.rotateAngleX;
-    	this.neckJoint.rotateAngleX = -this.gnomadBody.rotateAngleX;
-    	this.headJoint.rotateAngleX = -this.gnomadNeck.rotateAngleX;
-    	
-    	this.gnomadRightArmHolder.copyModelAngles(this.gnomadRightArm);
-    	this.gnomadRightArmHolder.rotationPointX = this.gnomadRightArm.rotationPointX + this.armsJoint.rotationPointX + this.gnomadBody.rotationPointX;
-    	this.gnomadRightArmHolder.rotationPointY = this.gnomadRightArm.rotationPointY + this.armsJoint.rotationPointY + this.gnomadBody.rotationPointY;
-    	this.gnomadRightArmHolder.rotationPointZ = this.gnomadRightArm.rotationPointZ + this.armsJoint.rotationPointZ + this.gnomadBody.rotationPointZ + -1.4F;
-    	
-    	this.gnomadLeftArmHolder.copyModelAngles(this.gnomadLeftArm);
-    	this.gnomadLeftArmHolder.rotationPointX = this.gnomadLeftArm.rotationPointX + this.armsJoint.rotationPointX + this.gnomadBody.rotationPointX;
-    	this.gnomadLeftArmHolder.rotationPointY = this.gnomadLeftArm.rotationPointY + this.armsJoint.rotationPointY + this.gnomadBody.rotationPointY;
-    	this.gnomadLeftArmHolder.rotationPointZ = this.gnomadLeftArm.rotationPointZ + this.armsJoint.rotationPointZ + this.gnomadBody.rotationPointZ + -1.4F;
-    	
-        if (this.isSitting) {
-            this.gnomadRightArm.rotateAngleX = (-(float)Math.PI / 5F);
-            this.gnomadRightArm.rotateAngleY = 0.0F;
-            this.gnomadRightArm.rotateAngleZ = 0.0F;
-            this.gnomadLeftArm.rotateAngleX = (-(float)Math.PI / 5F);
-            this.gnomadLeftArm.rotateAngleY = 0.0F;
-            this.gnomadLeftArm.rotateAngleZ = 0.0F;
-            this.gnomadRightLeg.rotateAngleX = -1.4137167F;
-            this.gnomadRightLeg.rotateAngleY = ((float)Math.PI / 10F);
-            this.gnomadRightLeg.rotateAngleZ = 0.07853982F;
-            this.gnomadLeftLeg.rotateAngleX = -1.4137167F;
-            this.gnomadLeftLeg.rotateAngleY = (-(float)Math.PI / 10F);
-            this.gnomadLeftLeg.rotateAngleZ = -0.07853982F;
-         }
+
+        applyJointRotation();
     }
-	
+
+    private void applyJointRotation() {
+        this.gnomadBody.rotateAngleX += this.gnomadBody.defaultRotateAngleX;
+        this.gnomadNeck.rotateAngleX += this.gnomadNeck.defaultRotateAngleX;
+
+        this.gnomadTornBottom.rotateAngleX = -this.gnomadBody.rotateAngleX;
+        this.armsJoint.rotateAngleX = -this.gnomadBody.rotateAngleX;
+        this.legsJoint.rotateAngleX = -this.gnomadBody.rotateAngleX;
+        this.neckJoint.rotateAngleX = -this.gnomadBody.rotateAngleX;
+        this.headJoint.rotateAngleX = -this.gnomadNeck.rotateAngleX;
+
+        this.gnomadRightArmHolder.copyModelAngles(this.gnomadRightArm);
+        this.gnomadRightArmHolder.rotationPointX = this.gnomadRightArm.rotationPointX + this.armsJoint.rotationPointX + this.gnomadBody.rotationPointX;
+        this.gnomadRightArmHolder.rotationPointY = this.gnomadRightArm.rotationPointY + this.armsJoint.rotationPointY + this.gnomadBody.rotationPointY;
+        this.gnomadRightArmHolder.rotationPointZ = this.gnomadRightArm.rotationPointZ + this.armsJoint.rotationPointZ + this.gnomadBody.rotationPointZ + -1.4F;
+
+        this.gnomadLeftArmHolder.copyModelAngles(this.gnomadLeftArm);
+        this.gnomadLeftArmHolder.rotationPointX = this.gnomadLeftArm.rotationPointX + this.armsJoint.rotationPointX + this.gnomadBody.rotationPointX;
+        this.gnomadLeftArmHolder.rotationPointY = this.gnomadLeftArm.rotationPointY + this.armsJoint.rotationPointY + this.gnomadBody.rotationPointY;
+        this.gnomadLeftArmHolder.rotationPointZ = this.gnomadLeftArm.rotationPointZ + this.armsJoint.rotationPointZ + this.gnomadBody.rotationPointZ + -1.4F;
+    }
+
     @Override
 	public ModelRenderer getModelHead() {
 		return this.gnomadHead;

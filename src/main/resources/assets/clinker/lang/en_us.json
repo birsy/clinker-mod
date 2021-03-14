@@ -33,14 +33,21 @@
 	"block.clinker.brimstone": "Brimstone",
 	"block.clinker.cobbled_brimstone": "Cobbled Brimstone",
 	"block.clinker.polished_brimstone": "Smooth Brimstone",
-	"block.clinker.brimstone_column": "Brimstone Pillar",
+	"block.clinker.brimstone_pillar": "Brimstone Pillar",
 
 	"block.clinker.witch_blocks": "Witch blocks",
 
 	"block.clinker.blue_stained_living_clay": "Blue Stained Living Clay",
 
 	"block.clinker.packed_ash": "Packed Ash",
+	"block.clinker.rocky_packed_ash": "Rocky Packed Ash",
+	"block.clinker.rooted_packed_ash": "Rooted Packed Ash",
+
 	"block.clinker.ash": "Ash",
+	"block.clinker.ash_layers": "Layered Ash",
+	"block.clinker.rooted_ash": "Rooted Ash",
+
+	"block.clinker.rootstalk": "Rootstalk",
 
 	"block.clinker.dried_soulsand": "Dried Soulsand",
 	"block.clinker.dried_soulsand_bricks": "Dried Soulsand Bricks",
@@ -105,10 +112,17 @@
 	"block.clinker.carved_gourd": "Carved Gourd",
 	"block.clinker.lit_gourd": "Gourd o' Lantern",
 
+	"block.clinker.locust_log": "Locust Log",
+	"block.clinker.trimmed_locust_log": "Trimmed Locust Log",
+	"block.clinker.stripped_locust_log": "Stripped Locust Log",
+	"block.clinker.locust_leaves": "Locust Leaves",
+	"block.clinker.locust_planks": "Locust Planks",
 
 	//**ENTITIES
-	"entity.clinker.gnomad": "Gnomad",
+	"entity.clinker.gnomad_axeman": "Gnomad Axeman",
+	"item.clinker.gnomad_axeman_spawn_egg": "Gnomad Axeman Spawn Egg",
 	"entity.clinker.gnomad_shaman": "Gnomad Shaman",
+	"item.clinker.gnomad_shaman_spawn_egg": "Gnomad Shaman Spawn Egg",
 	"entity.clinker.snail": "Land Snail",
 	"entity.clinker.termite": "Termite Warrior",
 	"entity.clinker.witch_golem": "Witch Golem",

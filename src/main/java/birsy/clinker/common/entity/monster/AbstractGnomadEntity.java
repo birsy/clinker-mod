@@ -1,7 +1,10 @@
 package birsy.clinker.common.entity.monster;
 
 import birsy.clinker.core.registry.ClinkerSounds;
+import birsy.clinker.core.util.MathUtils;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
@@ -48,6 +51,16 @@ public abstract class AbstractGnomadEntity extends MonsterEntity
 	protected SoundEvent getDeathSound() {
 		return ClinkerSounds.ENTITY_GNOME_DEATH.get();
 	}
+
+	@Override
+	protected float getSoundVolume() {
+		if (Minecraft.getInstance().player != null) {
+			return MathUtils.mapRange(0, 60, 1, 0, (float) this.getDistanceSq(Minecraft.getInstance().player));
+		} else {
+			return 1.0f;
+		}
+	}
+
 	protected void playStepSound(BlockPos pos, BlockState blockIn) {
 		this.playSound(SoundEvents.ENTITY_PIGLIN_STEP, 0.15F, 1.0F);
 	}

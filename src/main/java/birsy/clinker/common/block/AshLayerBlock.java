@@ -5,8 +5,12 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.IWaterLoggable;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.pathfinding.PathType;
+import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.IntegerProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
@@ -16,10 +20,13 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
 
-public class AshLayerBlock extends AshBlock
+public class AshLayerBlock extends AshBlock implements IWaterLoggable
 {
+	public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+
 	public static final IntegerProperty LAYERS = BlockStateProperties.LAYERS_1_8;
 	protected static final VoxelShape[] SHAPES = new VoxelShape[]{VoxelShapes.empty(), 
 			Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 2.0D, 16.0D), 
@@ -34,7 +41,7 @@ public class AshLayerBlock extends AshBlock
 	public AshLayerBlock()
 	{
 		super();
-		this.setDefaultState(this.stateContainer.getBaseState().with(LAYERS, Integer.valueOf(1)));
+		this.setDefaultState(this.stateContainer.getBaseState().with(LAYERS, Integer.valueOf(1)).with(WATERLOGGED, Boolean.valueOf(false)));
 	}
 	
 	public boolean allowsMovement(BlockState state, IBlockReader worldIn, BlockPos pos, PathType type) {
@@ -99,15 +106,30 @@ public class AshLayerBlock extends AshBlock
 	@Nullable
 	public BlockState getStateForPlacement(BlockItemUseContext context) {
 		BlockState blockstate = context.getWorld().getBlockState(context.getPos());
+
 		if (blockstate.isIn(this)) {
 			int i = blockstate.get(LAYERS);
 			return blockstate.with(LAYERS, Integer.valueOf(Math.min(8, i + 1)));
 		} else {
-			return super.getStateForPlacement(context);
-		}	}
+			FluidState fluidstate = context.getWorld().getFluidState(context.getPos());
+			return this.getDefaultState().with(WATERLOGGED, Boolean.valueOf(fluidstate.getFluid() == Fluids.WATER));
+		}
+	}
+
+	public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+		if (stateIn.get(WATERLOGGED)) {
+			worldIn.getPendingFluidTicks().scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickRate(worldIn));
+		}
+
+		return super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
+	}
+
+	public FluidState getFluidState(BlockState state) {
+		return state.get(WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
+	}
 
 	protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-		builder.add(LAYERS);
+		builder.add(LAYERS, WATERLOGGED);
 	}
 }
 

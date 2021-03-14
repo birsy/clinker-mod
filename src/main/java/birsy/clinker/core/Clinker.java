@@ -3,6 +3,7 @@ package birsy.clinker.core;
 
 import birsy.clinker.core.registry.world.*;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.carver.WorldCarver;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.apache.logging.log4j.LogManager;
@@ -64,9 +65,11 @@ public class Clinker
     {
     	RenderTypeLookup.setRenderLayer(ClinkerBlocks.THORN_LOG.get(), RenderType.getCutout());
     	RenderTypeLookup.setRenderLayer(ClinkerBlocks.STRIPPED_THORN_LOG.get(), RenderType.getCutout());
-    	RenderTypeLookup.setRenderLayer(ClinkerBlocks.ROOT_GRASS.get(), RenderType.getCutoutMipped());
-    	
-    	RenderTypeLookup.setRenderLayer(ClinkerBlocks.LOCUST_LOG.get(), RenderType.getCutout());
+
+    	RenderTypeLookup.setRenderLayer(ClinkerBlocks.ROOTSTALK.get(), RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(ClinkerBlocks.ROOT_GRASS.get(), RenderType.getCutoutMipped());
+
+        RenderTypeLookup.setRenderLayer(ClinkerBlocks.LOCUST_LOG.get(), RenderType.getCutout());
     	RenderTypeLookup.setRenderLayer(ClinkerBlocks.LOCUST_LEAVES.get(), RenderType.getCutoutMipped());
     	RenderTypeLookup.setRenderLayer(ClinkerBlocks.LOCUST_DOOR.get(), RenderType.getCutout());
     	RenderTypeLookup.setRenderLayer(ClinkerBlocks.LOCUST_SAPLING.get(), RenderType.getCutout());

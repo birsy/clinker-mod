@@ -1,0 +1,27 @@
+{
+    "parent": "block/block",
+    "textures": {
+        "rootstalk": "clinker:blocks/rootstalk",
+        "rootstalk_side": "clinker:blocks/rootstalk_side"
+    },
+    "elements": [
+        {
+            "from": [ -0.005, -8, -0.005 ],
+            "to": [ 16.010, 16, 16.010 ],
+            "faces": {
+                "north": { "texture": "#rootstalk_side", "uv": [ 0, 0, 8, 12 ] },
+                "east": { "texture": "#rootstalk_side", "uv": [ 0, 0, 8, 12 ] },
+                "south": { "texture": "#rootstalk_side", "uv": [ 0, 0, 8, 12 ] },
+                "west": { "texture": "#rootstalk_side", "uv": [ 0, 0, 8, 12 ] },
+                "up": { "texture": "#rootstalk", "uv": [ 0, 0, 16, 16 ] }
+            }
+        },
+        {
+            "from": [ -0.005, 0, -0.005 ],
+            "to": [ 16.010, 0, 16.010 ],
+            "faces": {
+                "down": { "texture": "#rootstalk", "uv": [ 0, 0, 16, 16 ] }
+            }
+        }
+    ]
+}

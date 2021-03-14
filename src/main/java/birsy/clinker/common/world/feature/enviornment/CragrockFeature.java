@@ -26,7 +26,7 @@ public class CragrockFeature extends Feature<ColumnConfig> {
 
    public boolean generate(ISeedReader reader, ChunkGenerator generator, Random rand, BlockPos pos, ColumnConfig config) {
       int i = generator.getSeaLevel();
-      if (!func_242762_a(reader, i, pos.toMutable())) {
+      if (!isValidColumn(reader, i, pos.toMutable())) {
          return false;
       } else {
          int j = config.func_242795_b().func_242259_a(rand);
@@ -38,7 +38,7 @@ public class CragrockFeature extends Feature<ColumnConfig> {
          for(BlockPos blockpos : BlockPos.getRandomPositions(rand, l, pos.getX() - k, pos.getY(), pos.getZ() - k, pos.getX() + k, pos.getY(), pos.getZ() + k)) {
             int i1 = j - blockpos.manhattanDistance(pos);
             if (i1 >= 0) {
-               flag1 |= this.func_236248_a_(reader, i, blockpos, i1, config.func_242794_am_().func_242259_a(rand), rand);
+               flag1 |= this.generateRocks(reader, i, blockpos, i1, config.func_242794_am_().func_242259_a(rand), rand);
             }
          }
 
@@ -46,12 +46,12 @@ public class CragrockFeature extends Feature<ColumnConfig> {
       }
    }
 
-   private boolean func_236248_a_(IWorld reader, int seaLevelIn, BlockPos blockposIn, int manhattanDistance, int featureSpreadIn, Random rand) {
+   private boolean generateRocks(IWorld reader, int seaLevelIn, BlockPos blockposIn, int manhattanDistance, int featureSpreadIn, Random rand) {
       boolean flag = false;
 
       for(BlockPos blockpos : BlockPos.getAllInBoxMutable(blockposIn.getX() - featureSpreadIn, blockposIn.getY(), blockposIn.getZ() - featureSpreadIn, blockposIn.getX() + featureSpreadIn, blockposIn.getY(), blockposIn.getZ() + featureSpreadIn)) {
          int i = blockpos.manhattanDistance(blockposIn);
-         BlockPos blockpos1 = isValidPosition(reader, seaLevelIn, blockpos) ? func_236246_a_(reader, seaLevelIn, blockpos.toMutable(), i) : func_236249_a_(reader, blockpos.toMutable(), i);
+         BlockPos blockpos1 = isValidPosition(reader, seaLevelIn, blockpos) ? iterateY(reader, seaLevelIn, blockpos.toMutable(), i) : func_236249_a_(reader, blockpos.toMutable(), i);
          if (blockpos1 != null) {
             int j = manhattanDistance - i / 2;
 
@@ -83,10 +83,10 @@ public class CragrockFeature extends Feature<ColumnConfig> {
    }
 
    @Nullable
-   private static BlockPos func_236246_a_(IWorld worldIn, int seaLevelIn, BlockPos.Mutable blockpos$mutable, int manhattanDistanceIn) {
+   private static BlockPos iterateY(IWorld worldIn, int seaLevelIn, BlockPos.Mutable blockpos$mutable, int manhattanDistanceIn) {
       while(blockpos$mutable.getY() > 1 && manhattanDistanceIn > 0) {
          --manhattanDistanceIn;
-         if (func_242762_a(worldIn, seaLevelIn, blockpos$mutable)) {
+         if (isValidColumn(worldIn, seaLevelIn, blockpos$mutable)) {
             return blockpos$mutable;
          }
 
@@ -96,12 +96,12 @@ public class CragrockFeature extends Feature<ColumnConfig> {
       return null;
    }
 
-   private static boolean func_242762_a(IWorld world, int p_242762_1_, BlockPos.Mutable p_242762_2_) {
-      if (!isValidPosition(world, p_242762_1_, p_242762_2_)) {
+   private static boolean isValidColumn(IWorld world, int seaLevel, BlockPos.Mutable blockpos$mutable) {
+      if (!isValidPosition(world, seaLevel, blockpos$mutable)) {
          return false;
       } else {
-         BlockState blockstate = world.getBlockState(p_242762_2_.move(Direction.DOWN));
-         p_242762_2_.move(Direction.UP);
+         BlockState blockstate = world.getBlockState(blockpos$mutable.move(Direction.DOWN));
+         blockpos$mutable.move(Direction.UP);
          return !blockstate.isAir() && !invalidBlocks.contains(blockstate.getBlock());
       }
    }

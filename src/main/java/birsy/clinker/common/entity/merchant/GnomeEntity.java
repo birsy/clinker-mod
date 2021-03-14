@@ -4,6 +4,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
+
+import birsy.clinker.common.entity.monster.GnomadAxemanEntity;
 import com.google.common.collect.Sets;
 
 import birsy.clinker.common.entity.monster.AbstractGnomadEntity;
@@ -97,7 +99,7 @@ public class GnomeEntity extends MonsterEntity implements IRangedAttackMob, INPC
 		this.goalSelector.addGoal(0, new SwimGoal(this));
 		this.goalSelector.addGoal(1, new GnomeEntity.BreakDoorGoal(this));
 		this.goalSelector.addGoal(4, new GnomeEntity.AttackGoal(this));
-		this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, AbstractGnomadEntity.class, true));
+		this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, GnomadAxemanEntity.class, true));
 		this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, HyenaEntity.class, true));
 		this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, WitherSkeletonEntity.class, true));
 		this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, EndermanEntity.class, true));

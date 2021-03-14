@@ -1,6 +1,7 @@
 package birsy.clinker.core.registry.world;
 
-import birsy.clinker.common.world.gen.carver.OthershoreCaveWorldCarver;
+import birsy.clinker.common.world.gen.carver.OthershoreCanyonCaveCarver;
+import birsy.clinker.common.world.gen.carver.OthershoreNoodleCaveCarver;
 import birsy.clinker.core.Clinker;
 import net.minecraft.world.gen.carver.WorldCarver;
 import net.minecraft.world.gen.feature.ProbabilityConfig;
@@ -16,5 +17,6 @@ public class ClinkerWorldCarvers {
 		WORLD_CARVERS.register(FMLJavaModLoadingContext.get().getModEventBus());
 	}
 	
-	public static final RegistryObject<WorldCarver<ProbabilityConfig>> LARGE_CANYON_CAVE = WORLD_CARVERS.register("large_canyon_cave", () -> new OthershoreCaveWorldCarver(ProbabilityConfig.CODEC, 256));
+	public static final RegistryObject<WorldCarver<ProbabilityConfig>> OTHERSHORE_NOODLE_CAVE = WORLD_CARVERS.register("othershore_noodle_cave", () -> new OthershoreNoodleCaveCarver(ProbabilityConfig.CODEC, 256));
+	public static final RegistryObject<WorldCarver<ProbabilityConfig>> OTHERSHORE_CANYON_CAVE = WORLD_CARVERS.register("othershore_canyon_cave", () -> new OthershoreCanyonCaveCarver(ProbabilityConfig.CODEC));
 }

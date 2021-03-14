@@ -43,8 +43,7 @@ public class BrambleBlock extends BushBlock implements net.minecraftforge.common
 	public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
 		BlockPos posUp = pos.up();
 		BlockPos posDown = pos.down();
-		if (worldIn.getBlockState(pos.north()).getBlock() == ClinkerBlocks.BRAMBLE.get() || worldIn.getBlockState(pos.south()).getBlock() == ClinkerBlocks.BRAMBLE.get() || worldIn.getBlockState(pos.east()).getBlock() == ClinkerBlocks.BRAMBLE.get() || worldIn.getBlockState(pos.west()).getBlock() == ClinkerBlocks.BRAMBLE.get())
-		{
+		if (worldIn.getBlockState(pos.north()).getBlock() == ClinkerBlocks.BRAMBLE.get() || worldIn.getBlockState(pos.south()).getBlock() == ClinkerBlocks.BRAMBLE.get() || worldIn.getBlockState(pos.east()).getBlock() == ClinkerBlocks.BRAMBLE.get() || worldIn.getBlockState(pos.west()).getBlock() == ClinkerBlocks.BRAMBLE.get()) {
 			return;
 		} else if (!worldIn.getBlockState(posUp).isSolid() && worldIn.getBlockState(posDown).isSolid()) {
 			worldIn.setBlockState(pos, ClinkerBlocks.BRAMBLE_VINES_TOP.get().getDefaultState(), 2);

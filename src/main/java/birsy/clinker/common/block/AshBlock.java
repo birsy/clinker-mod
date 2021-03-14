@@ -1,5 +1,6 @@
 package birsy.clinker.common.block;
 
+import birsy.clinker.core.registry.ClinkerBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FallingBlock;
@@ -13,9 +14,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolType;
+
+import java.util.Random;
 
 public class AshBlock extends FallingBlock
 {
@@ -27,10 +31,19 @@ public class AshBlock extends FallingBlock
 			  .hardnessAndResistance(0.5F)
 			  .sound(SoundType.SNOW)
 			  .harvestTool(ToolType.SHOVEL)
+				.tickRandomly()
 			  )));
 		this.dustColor = 8616308;
 	}
-	
+
+	@Override
+	public void randomTick(BlockState state, ServerWorld worldIn, BlockPos pos, Random random) {
+		super.randomTick(state, worldIn, pos, random);
+		if (worldIn.getBlockState(pos.up()).getBlock() == ClinkerBlocks.ROOTSTALK.get()) {
+			worldIn.setBlockState(pos, ClinkerBlocks.ROOTED_ASH.get().getDefaultState());
+		}
+	}
+
 	public void onEntityWalk(World worldIn, BlockPos pos, Entity entityIn) {
 		if (!entityIn.isAirBorne) {
 			spawnParticles(worldIn, pos, entityIn);

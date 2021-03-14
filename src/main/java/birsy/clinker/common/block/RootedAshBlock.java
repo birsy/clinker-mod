@@ -34,7 +34,7 @@ public class RootedAshBlock extends SpreadableAshBlock
 	      BlockPos blockpos = pos.up();
 	      createGrass(worldIn, rand, blockpos, ClinkerBiomeFeatures.ROOT_GRASS_FEATURE_CONFIG, 3, 1);
 	}
-	
+
 	public static boolean createGrass(IWorld worldIn, Random random, BlockPos blockPosIn, BlockStateProvidingFeatureConfig featureConfigIn, int min, int max) {
 		for(Block block = worldIn.getBlockState(blockPosIn.down()).getBlock(); !(block == ClinkerBlocks.ROOTED_ASH.get()) && blockPosIn.getY() > 0; block = worldIn.getBlockState(blockPosIn).getBlock()) {
 			blockPosIn = blockPosIn.down();

@@ -1,0 +1,32 @@
+{
+  "config": {
+    "feature": {
+      "config": {
+        "state": {
+          "Name": "clinker:rootstalk"
+        },
+        "radius": {
+          "base": 5,
+          "spread": 6
+        },
+        "half_height": 5,
+        "targets": [
+          {
+            "Name": "minecraft:cave_air"
+          },
+          {
+            "Name": "clinker:foul_air"
+          }
+        ]
+      },
+      "type": "minecraft:disk"
+    },
+    "decorator": {
+      "config": {
+        "chance": 30
+      },
+      "type": "minecraft:lava_lake"
+    }
+  },
+  "type": "minecraft:decorated"
+}

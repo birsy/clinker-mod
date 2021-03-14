@@ -1,5 +1,5 @@
 {
-  "parent": "minecraft:block/cross",
+  "parent": "clinker:block/thick_grass",
   "textures": {
     "cross": "clinker:blocks/root_grass"
   }

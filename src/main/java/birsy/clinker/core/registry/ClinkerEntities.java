@@ -59,7 +59,7 @@ public class ClinkerEntities
 	//Gnomes
 	public static final RegistryObject<EntityType<GnomeEntity>> GNOME = createLivingEntity("gnome",
 			() -> EntityType.Builder.create(GnomeEntity::new, EntityClassification.CREATURE)
-			.size(1.0f, 2.0f)
+			.size(1.0f, 1.5f)
 			.build(makeEntityPath("gnome")));
 	
 	public static final RegistryObject<EntityType<GnomeBratEntity>> GNOME_BRAT = createLivingEntity("gnome_brat",
@@ -71,12 +71,12 @@ public class ClinkerEntities
 	//Gnomads
 	public static final RegistryObject<EntityType<GnomadAxemanEntity>> GNOMAD_AXEMAN = createLivingEntity("gnomad_axeman",
 			() -> EntityType.Builder.create(GnomadAxemanEntity::new, EntityClassification.MONSTER)
-			.size(1.0f, 2.0f)
+			.size(1.0f, 1.5f)
 			.build(makeEntityPath("gnomad_axeman")));
 	
 	public static final RegistryObject<EntityType<GnomadShamanEntity>> GNOMAD_SHAMAN = createLivingEntity("gnomad_shaman",
 			() -> EntityType.Builder.create(GnomadShamanEntity::new, EntityClassification.MONSTER)
-			.size(1.0f, 2.0f)
+			.size(1.0f, 1.5f)
 			.build(makeEntityPath("gnomad_shaman")));
 	
 	public static final RegistryObject<EntityType<GnomadHelicopterEntity>> COPTER_GNOMAD = createLivingEntity("copter_gnomad",

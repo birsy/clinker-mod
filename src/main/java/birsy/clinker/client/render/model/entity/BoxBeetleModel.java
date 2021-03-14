@@ -1,6 +1,7 @@
 package birsy.clinker.client.render.model.entity;
 
 import birsy.clinker.common.entity.monster.beetle.BoxBeetleEntity;
+import birsy.clinker.core.util.MathUtils;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
@@ -133,12 +134,12 @@ public class BoxBeetleModel<T extends BoxBeetleEntity> extends BirsyBaseModel<T>
         swing(this.boxBeetleLeftElytra, 0.12F * globalSpeed, 0.03f * globalDegree, false, 1.5F, 0.07F, ageInTicks, 0.5F, Axis.X);
 
         if (entityIn.getFlying() || entityIn.isAirBorne) {
-            float flightTransition = mapRange(0, 10, 1, 0, entityIn.flightOpenTransitionTicks);
+            float flightTransition = MathUtils.mapRange(0, 10, 1, 0, entityIn.flightOpenTransitionTicks);
 
             this.bodyPitch = entityIn.getBodyPitch(0.5F);
             flyAnimation(entityIn, flightTransition, globalSpeed, globalDegree, ageInTicks, netHeadYaw, headPitch);
         } else {
-            float flightTransition = mapRange(0, 10, 0, 1, entityIn.flightCloseTransitionTicks);
+            float flightTransition = MathUtils.mapRange(0, 10, 0, 1, entityIn.flightCloseTransitionTicks);
 
             flyAnimation(entityIn, flightTransition, globalSpeed, globalDegree, ageInTicks, netHeadYaw, headPitch);
 
@@ -192,11 +193,7 @@ public class BoxBeetleModel<T extends BoxBeetleEntity> extends BirsyBaseModel<T>
             MathHelper.lerp(flightTransition, this.boxBeetleBody.defaultRotateAngleX, currentBodyPitch);
         }
     }
-
-    private float mapRange(float a1, float a2, float b1, float b2, float s) {
-        return  b1+(((s-a1) * (b2-b1))/(a2-a1));
-    }
-
+    
     public void setLivingAnimations(T entityIn, float limbSwing, float limbSwingAmount, float partialTick) {
         super.setLivingAnimations(entityIn, limbSwing, limbSwingAmount, partialTick);
         this.bodyPitch = entityIn.getBodyPitch(partialTick);
