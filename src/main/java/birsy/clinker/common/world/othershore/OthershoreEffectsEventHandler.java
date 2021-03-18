@@ -21,7 +21,12 @@ public class OthershoreEffectsEventHandler {
                     }
                 }
             }
+
+            for (ItemStack itemStack : event.player.getArmorInventoryList()) {
+                if (itemStack.getEquipmentSlot() != null) {
+                    itemStack.damageItem(1, event.player, (consumer) -> consumer.sendBreakAnimation(itemStack.getEquipmentSlot()));
+                }
+            }
         }
-        //Yay. It works.
     }
 }

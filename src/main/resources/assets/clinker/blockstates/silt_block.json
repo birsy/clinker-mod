@@ -1,0 +1,14 @@
+{
+    "variants": {
+        "": [
+            { "model": "clinker:block/silt_block" },
+            { "model": "clinker:block/silt_block", "y": 90 },
+            { "model": "clinker:block/silt_block", "y": 180 },
+            { "model": "clinker:block/silt_block", "y": 270 },
+	        { "model": "clinker:block/silt_block2" },
+            { "model": "clinker:block/silt_block2", "y": 90 },
+            { "model": "clinker:block/silt_block2", "y": 180 },
+            { "model": "clinker:block/silt_block2", "y": 270 }
+        ]
+    }
+}

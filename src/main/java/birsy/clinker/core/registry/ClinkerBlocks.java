@@ -4,19 +4,7 @@ import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 
-import birsy.clinker.common.block.AncientBrickFlatBlock;
-import birsy.clinker.common.block.AncientBrickRunesBlock;
-import birsy.clinker.common.block.AshBlock;
-import birsy.clinker.common.block.AshLayerBlock;
-import birsy.clinker.common.block.DustStalagmiteBlock;
-import birsy.clinker.common.block.FoulAirBlock;
-import birsy.clinker.common.block.MaterialBlock;
-import birsy.clinker.common.block.MetalMaterialBlock;
-import birsy.clinker.common.block.OreClinkerBlock;
-import birsy.clinker.common.block.PoisonLogBlock;
-import birsy.clinker.common.block.RootGrassBlock;
-import birsy.clinker.common.block.RootedAshBlock;
-import birsy.clinker.common.block.ThornLogConnectedBlock;
+import birsy.clinker.common.block.*;
 import birsy.clinker.common.block.belwithstone.BelwithPillarBlock;
 import birsy.clinker.common.block.belwithstone.CyclopeanBelwithBricksBlock;
 import birsy.clinker.common.block.belwithstone.MonolithicBelwithBricksBlock;
@@ -94,6 +82,11 @@ public class ClinkerBlocks
 	public static final RegistryObject<Block> SALT_BLOCK = createBlock("salt_block", () -> new SandBlock(14406560, AbstractBlock.Properties.create(Material.SAND, MaterialColor.WHITE_TERRACOTTA).hardnessAndResistance(0.5F).sound(SoundType.GROUND).harvestTool(ToolType.SHOVEL)), Clinker.CLINKER_BLOCKS);
 	
 	public static final RegistryObject<Block> ROOTSTALK = createBlock("rootstalk", () -> new Block(AbstractBlock.Properties.create(Material.ORGANIC, MaterialColor.ORANGE_TERRACOTTA).harvestTool(ToolType.HOE).hardnessAndResistance(0.1F).sound(SoundType.WART)), Clinker.CLINKER_BLOCKS);
+
+	public static final RegistryObject<Block> SILT_BLOCK = createBlock("silt_block", () -> new Block(AbstractBlock.Properties.create(Material.CLAY, MaterialColor.GREEN_TERRACOTTA).harvestTool(ToolType.SHOVEL).hardnessAndResistance(0.1F).sound(SoundType.WET_GRASS)), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> WITTLEBULB =          createBlock("wittlebulb",          () -> new WittlebulbBlock(AbstractBlock.Properties.create(Material.PLANTS, MaterialColor.GREEN_TERRACOTTA).zeroHardnessAndResistance().notSolid().doesNotBlockMovement().sound(SoundType.WET_GRASS)), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> BLOOMING_WITTLEBULB = createBlock("blooming_wittlebulb", () -> new WittlebulbBlock(AbstractBlock.Properties.create(Material.PLANTS, MaterialColor.GREEN_TERRACOTTA).zeroHardnessAndResistance().notSolid().doesNotBlockMovement().sound(SoundType.WET_GRASS).setLightLevel((state) -> 8)), Clinker.CLINKER_BLOCKS);
+
 
 	//Brimstone
 	public static AbstractBlock.Properties getBrimstoneProperties() {

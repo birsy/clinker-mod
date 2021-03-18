@@ -1,5 +1,5 @@
 {
     "variants": {
-        "normal": { "model": "clinker:block/sulfur_block" }
+        "": { "model": "clinker:block/sulfur_block" }
     }
 }

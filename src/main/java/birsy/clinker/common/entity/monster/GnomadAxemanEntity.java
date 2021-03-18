@@ -3,13 +3,10 @@ package birsy.clinker.common.entity.monster;
 import birsy.clinker.common.entity.merchant.GnomeBratEntity;
 import birsy.clinker.common.entity.merchant.GnomeEntity;
 import birsy.clinker.core.registry.ClinkerItems;
-import birsy.clinker.core.registry.ClinkerSounds;
-import net.minecraft.command.arguments.EntityAnchorArgument;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.monster.EndermanEntity;
 import net.minecraft.entity.monster.WitherSkeletonEntity;
@@ -28,7 +25,6 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.IndirectEntityDamageSource;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.World;
@@ -37,9 +33,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class GnomadAxemanEntity extends AbstractGnomadEntity
 {
-	private boolean canCharge;
-	private boolean isCharging;
-	private int attackDelay;
 	public int stamina;
 
 	public static final DataParameter<Boolean> ATTACKING = EntityDataManager.createKey(GnomadAxemanEntity.class, DataSerializers.BOOLEAN);
@@ -71,8 +64,8 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 		super.registerGoals();
 		this.goalSelector.addGoal(0, new SwimGoal(this));
 
-		this.goalSelector.addGoal(3, new LeapAtTargetGoal(this, 0.2F));
-		this.goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.0D, false));
+		//this.goalSelector.addGoal(3, new LeapAtTargetGoal(this, 0.2F));
+		//this.goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.0D, false));
 
 		this.targetSelector.addGoal(2, new HurtByTargetGoal(this).setCallsForHelp(AbstractGnomadEntity.class));
 		this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, GnomeEntity.class, true));
@@ -129,6 +122,7 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 	@Override
 	public void tick() {
 		super.tick();
+
 		if (stamina < 100) {
 			stamina++;
 		}
@@ -160,8 +154,6 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 
 		shieldSizeRandomness = this.rand.nextInt(5) + 15;
 		shieldRandomness = this.rand.nextInt(100);
-
-		this.attackDelay++;
 	}
 
 	@Override
@@ -254,9 +246,9 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 				vector3d1 = vector3d1.normalize();
 				double d1 = lookVector.dotProduct(vector3d1);
 				if (flag) {
-					return d1 > 1.0D - 0.15D / d0 && this.getAttackTarget().canEntityBeSeen(this) && !this.isCharging();
+					return d1 > 1.0D - 0.15D / d0 && this.getAttackTarget().canEntityBeSeen(this);
 				} else {
-					return d1 > 1.0D - 0.15D / d0 && this.getAttackTarget().canEntityBeSeen(this) && !this.isCharging() && this.rand.nextInt(3) == 0;
+					return d1 > 1.0D - 0.15D / d0 && this.getAttackTarget().canEntityBeSeen(this) && this.rand.nextInt(3) == 0;
 				}
 			}
 		}
@@ -347,7 +339,6 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 
 			if (gnomad.getWindupTicks() == damageFrame && gnomad.getBoundingBox().offset(gnomad.getLookVec().normalize().mul(0.5, 0.5, 0.5)).intersects(livingentity.getBoundingBox())) {
 				this.gnomad.attackEntityAsMob(livingentity);
-				this.gnomad.attackDelay = 0;
 			}
 		}
 
@@ -378,91 +369,6 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 	public void setWindupTicks(int ticks) {
 		this.dataManager.set(WINDUP_TICKS, ticks);
 	}
-
-	class ChargeAttackGoal extends Goal {
-		private final GnomadAxemanEntity gnomad;
-		private int attackTimer;
-		
-		public ChargeAttackGoal(GnomadAxemanEntity mob) {
-			this.gnomad = mob;
-		}
-
-		public boolean shouldExecute() {
-			if(this.gnomad.isCharging() == true) {
-				return true;
-			}
-			
-			if (this.gnomad.attackDelay < 30) {
-				return false;
-			} else if (this.gnomad.getAttackTarget() == null) {
-				return false;
-			} else if (this.gnomad.getAttackTarget().isAlive() == false) {
-				return false;
-			} else if (this.attackTimer > 0) {
-				return false;
-			} else if (this.gnomad.getRNG().nextInt(120) == 0 || this.gnomad.getAttackTarget().getDistance(this.gnomad) < 1) {
-				return true;
-			} else {
-				return false;
-			}
-		}
-
-		public boolean shouldContinueExecuting() {
-			if (this.gnomad.getAttackTarget() == null || this.gnomad.getAttackTarget().isAlive() == false || this.gnomad.isAlive() == false) {
-				return false;
-			} else if (this.gnomad.isCharging == false) {
-				return false;
-			} else if (this.attackTimer > 75) {
-				return false;
-			} else {
-				return true;
-			}
-		}
-
-		public void startExecuting() {
-			this.gnomad.setAggroed(true);
-			this.gnomad.setCharging(true);
-			this.gnomad.setCanCharge(false);
-			this.gnomad.playSound(SoundEvents.ENTITY_EVOKER_PREPARE_WOLOLO, 1.0F, 1.0F);
-			this.gnomad.attackDelay = 0;
-		}
-
-		public void resetTask() {
-			this.gnomad.setCharging(false);
-			this.attackTimer = 0;
-			this.gnomad.attackDelay = 0;
-		}
-
-		public void tick() {
-			LivingEntity livingentity = this.gnomad.getAttackTarget();
-			Vector3d vector3d = livingentity.getEyePosition(1.0F);
-			this.gnomad.moveController.setMoveTo(vector3d.x, vector3d.y, vector3d.z, 1.2D);
-			this.gnomad.setCharging(true);
-			this.gnomad.faceEntity(livingentity, 30.0F, 30.0F);
-			this.gnomad.lookAt(EntityAnchorArgument.Type.EYES, vector3d);
-			this.gnomad.setArmPose(ArmPose.ATTACKING);
-			this.attackTimer++;
-			if (this.attackTimer > 74) {
-				this.gnomad.playSound(ClinkerSounds.ENTITY_GNOME_CHAT.get(), 1.0F, 1.0F);
-				this.gnomad.setCharging(false);
-				this.gnomad.attackDelay = 0;
-			}
-			if (this.gnomad.getBoundingBox().intersects(livingentity.getBoundingBox())) {
-				this.gnomad.attackEntityAsMob(livingentity);
-				this.gnomad.attackDelay = 0;
-				this.gnomad.setCharging(false);
-			}
-			
-		}
-	}
-
-	public boolean isCharging() {
-		return this.isCharging;
-	}
-
-	public void setCharging(boolean charging) {
-		this.isCharging = charging;
-	}
 	
 	@OnlyIn(Dist.CLIENT)
 	public AbstractGnomadEntity.ArmPose getArmPose() {
@@ -485,23 +391,6 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 			}
 		} else {
 			this.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(ClinkerItems.LEAD_AXE.get()));
-		}
-	}
-
-	public boolean getCanCharge() {
-		return canCharge;
-	}
-
-	public void setCanCharge(boolean canCharge) {
-		this.canCharge = canCharge;
-	}
-
-	@Override
-	protected boolean makeFlySound() {
-		if (isBuffed()) {
-			return true;
-		} else {
-			return super.makeFlySound();
 		}
 	}
 }

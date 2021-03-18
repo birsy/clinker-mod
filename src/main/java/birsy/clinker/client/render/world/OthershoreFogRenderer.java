@@ -19,8 +19,6 @@ public class OthershoreFogRenderer {
     private static final int fogHeight = 48;
     private static final int fogEnd = fogHeight + 30;
 
-    //Shoot man! I gotta make CLOUDS ugh
-
     @SubscribeEvent
     public static void onRenderFogDensity(EntityViewRenderEvent.FogDensity event)
     {
@@ -64,7 +62,6 @@ public class OthershoreFogRenderer {
                 final float interpolatedLightWithoutHeight = calculateInterpolatedLight(world, playerPos, playerVecPos, LightType.SKY);
 
                 final float density = MathHelper.clamp((interpolatedLight - 3) * 0.25f / 13f, 0.02f, 1.0f);
-                final float densityWithoutHeight = MathHelper.clamp((interpolatedLightWithoutHeight - 3) * 0.25f / 13f, 0.02f, 1.0f);
 
 
                 if (event.getInfo().getFluidState().isEmpty()) {
@@ -72,14 +69,9 @@ public class OthershoreFogRenderer {
                     float outsideGreen = MathHelper.lerp(density, event.getGreen(), 200f / 256);
                     float outsideBlue = MathHelper.lerp(density, event.getBlue(), 200f / 256);
 
-                    //Makes the fog dark underground.
-                    float red = MathHelper.lerp(densityWithoutHeight, 0.00f, outsideRed);
-                    float green = MathHelper.lerp(densityWithoutHeight, 0.00f, outsideGreen);
-                    float blue = MathHelper.lerp(densityWithoutHeight, 0.00f, outsideBlue);
-
-                    event.setRed(red);
-                    event.setGreen(green);
-                    event.setBlue(blue);
+                    event.setRed(outsideRed);
+                    event.setGreen(outsideGreen);
+                    event.setBlue(outsideBlue);
                 }
             }
         }
@@ -125,7 +117,15 @@ public class OthershoreFogRenderer {
         return ((((xLight + zLight) - light) + yLight) - light);
     }
 
-    private static float getLight(World worldIn, BlockPos posIn, LightType lightType) {
+    private static float calculateInterpolatedLight(World world, BlockPos playerPos, Vector3d playerVecPos, LightType lightType, boolean returnsNormalized) {
+        if (!returnsNormalized) {
+            return calculateInterpolatedLight(world, playerPos, playerVecPos, lightType);
+        } else {
+            return MathUtils.mapRange(0, 16, 0, 1, calculateInterpolatedLight(world, playerPos, playerVecPos, lightType));
+        }
+    }
+
+        private static float getLight(World worldIn, BlockPos posIn, LightType lightType) {
         return (float) worldIn.getLightFor(lightType, posIn);
     }
 }

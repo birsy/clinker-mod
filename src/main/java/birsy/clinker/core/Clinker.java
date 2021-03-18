@@ -1,11 +1,17 @@
 package birsy.clinker.core;
 
 
+import birsy.clinker.client.render.world.OthershoreDimensionRenderInfo;
 import birsy.clinker.core.registry.world.*;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import net.minecraft.client.world.DimensionRenderInfo;
+import net.minecraft.item.SpawnEggItem;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.carver.WorldCarver;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -84,8 +90,14 @@ public class Clinker
     	//RenderTypeLookup.setRenderLayer(ClinkerBlocks.RIEK_FRUIT.get(), RenderType.getCutout());
     	RenderTypeLookup.setRenderLayer(ClinkerBlocks.RIEK_VINES.get(), RenderType.getCutout());
     	RenderTypeLookup.setRenderLayer(ClinkerBlocks.FERTILE_RIEK_VINES.get(), RenderType.getCutout());
-    	
-    	//mensionRenderInfo.field_239208_a_.put(ClinkerDimensions.OTHERSHORE, new OthershoreDimensionRenderInfo());
+
+        RenderTypeLookup.setRenderLayer(ClinkerBlocks.WITTLEBULB.get(), RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(ClinkerBlocks.BLOOMING_WITTLEBULB.get(), RenderType.getCutout());
+
+        DimensionRenderInfo.field_239208_a_.put(new ResourceLocation(Clinker.MOD_ID, "othershore"), new OthershoreDimensionRenderInfo());
+
+        Object2ObjectMap<ResourceLocation, DimensionRenderInfo> dimension_renderers = ObfuscationReflectionHelper.getPrivateValue(DimensionRenderInfo.class, null, "field_239208_a_");
+        dimension_renderers.put(new ResourceLocation(Clinker.MOD_ID, "othershore"), new OthershoreDimensionRenderInfo());
     }
 
     @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD, modid = Clinker.MOD_ID)

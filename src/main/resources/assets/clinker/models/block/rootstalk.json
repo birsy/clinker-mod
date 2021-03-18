@@ -2,7 +2,8 @@
     "parent": "block/block",
     "textures": {
         "rootstalk": "clinker:blocks/rootstalk",
-        "rootstalk_side": "clinker:blocks/rootstalk_side"
+        "rootstalk_side": "clinker:blocks/rootstalk_side",
+        "particle": "#rootstalk"
     },
     "elements": [
         {

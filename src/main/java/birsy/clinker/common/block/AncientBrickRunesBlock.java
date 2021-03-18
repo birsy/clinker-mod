@@ -44,7 +44,7 @@ public class AncientBrickRunesBlock extends Block {
 			}
 			Property<?> property = state.getBlock().getStateContainer().getProperty("rune");
 			BlockState blockstate = cycleProperty(state, property, player.isSecondaryUseActive());
-			String name = property.getName();
+			String name = property.toString().toUpperCase();
 			worldIn.setBlockState(pos, blockstate, 18);
 			worldIn.playSound(player, pos, SoundEvents.BLOCK_GRINDSTONE_USE, SoundCategory.BLOCKS, 1.0F, 1.0F);
 			player.sendStatusMessage(new TranslationTextComponent("block.clinker.ancient_rune.carve", name.substring(0, 1).toUpperCase() + name.substring(1)), true);
