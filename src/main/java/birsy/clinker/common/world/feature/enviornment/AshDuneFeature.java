@@ -22,7 +22,7 @@ import net.minecraft.world.gen.feature.NoFeatureConfig;
  * Generates a dune of ash out of the "ash layer" block. Who knew this would be so difficult?
  * I took a few glances at Atum's stuff, but it didn't help much. Oh well, I'll include it in the comment anyway!
  *
- * TO DO - Figure out a way to get these generating dynamically? - If you leave a window open or something. Could look pretty sweet.
+ * TODO - Figure out a way to get these generating dynamically? - If you leave a window open or something. Could look pretty sweet.
  */
 public class AshDuneFeature extends Feature<NoFeatureConfig> {
 
@@ -32,90 +32,47 @@ public class AshDuneFeature extends Feature<NoFeatureConfig> {
 
 	@Override
 	public boolean generate(ISeedReader reader, ChunkGenerator generator, Random rand, BlockPos pos, NoFeatureConfig config) {
-		if (pos.getY() < 5) {
+		if (pos.getY() < 1) {
 			return false;
 		} else {
 			int baseHeight = MathHelper.clamp(rand.nextInt(8), 2, 8);
-			reader.setBlockState(pos, ClinkerBlocks.ASH_LAYER.get().getDefaultState().with(AshLayerBlock.LAYERS, baseHeight), 2);
-			STUPIDWONTWORKUGHHH(reader, generator, rand, pos, baseHeight);
+			this.setBlockState(reader, pos, ClinkerBlocks.ASH_LAYER.get().getDefaultState().with(AshLayerBlock.LAYERS, baseHeight));
+
+			this.fillWithAsh(reader, rand, pos, baseHeight);
+
 			return true;
 		}
 	}
 
-	public void STUPIDWONTWORKUGHHH(ISeedReader worldIn, ChunkGenerator chunkIn, Random rand, BlockPos pos, int baseHeightIn) {
-		BlockPos.Mutable blockPos = pos.toMutable();
-		boolean bool = false;
-		int timesThrough = 1;
-
-		for (int i = 1; i < (baseHeightIn * baseHeightIn) - 1; i++) {
-			if (!(i % 2 == 0)) {
-				blockPos.add(bool ? timesThrough : -timesThrough, 0, 0);
-				blockPos.setY(getPlacementY(worldIn, blockPos));
-
-				int height = MathHelper.clamp(getAshLayerHeight(worldIn, blockPos) + (rand.nextInt(2) - 1), 0, 8);
-				setAshLayer(worldIn, blockPos, height);
-
-			} else {
-				blockPos.add(0, bool ? timesThrough : -timesThrough, 0);
-				blockPos.setY(getPlacementY(worldIn, blockPos));
-
-				int height = MathHelper.clamp(getAshLayerHeight(worldIn, blockPos) + (rand.nextInt(2) - 1), 0, 8);
-				setAshLayer(worldIn, blockPos, height);
-
-
-				bool = !bool;
-				timesThrough++;
-			}
-		}
-	}
-
 	public void setAshLayer(ISeedReader worldIn, BlockPos blockPos, int height) {
-		if (height > 0) {
-			boolean isWaterlogged = worldIn.getFluidState(blockPos).getFluid() == Fluids.WATER;
+		int clampedHeight = MathHelper.clamp(height, 0, 8);
+
+		if (clampedHeight > 0) {
+			boolean isWaterlogged = worldIn.getBlockState(blockPos).getBlock() == Blocks.WATER;
 			if (worldIn.getBlockState(blockPos).getBlock() == ClinkerBlocks.ASH_LAYER.get()) {
-				worldIn.setBlockState(blockPos, ClinkerBlocks.ASH_LAYER.get().getDefaultState().with(AshLayerBlock.LAYERS, Integer.valueOf(Math.max(height, worldIn.getBlockState(blockPos).get(AshLayerBlock.LAYERS)))).with(AshLayerBlock.WATERLOGGED, Boolean.valueOf(isWaterlogged)), 2);
-			} else if (!worldIn.getBlockState(blockPos).isSolid()) {
-				worldIn.setBlockState(blockPos, ClinkerBlocks.ASH_LAYER.get().getDefaultState().with(AshLayerBlock.LAYERS, Integer.valueOf(height)).with(AshLayerBlock.WATERLOGGED, Boolean.valueOf(isWaterlogged)), 2);
+				if (worldIn.getBlockState(blockPos).get(AshLayerBlock.LAYERS) < clampedHeight) {
+					this.setBlockState(worldIn, blockPos, ClinkerBlocks.ASH_LAYER.get().getDefaultState().with(AshLayerBlock.LAYERS, clampedHeight).with(AshLayerBlock.WATERLOGGED, isWaterlogged));
+				}
+			} else if (worldIn.getBlockState(blockPos).getMaterial().isReplaceable()) {
+				this.setBlockState(worldIn, blockPos, ClinkerBlocks.ASH_LAYER.get().getDefaultState().with(AshLayerBlock.LAYERS, clampedHeight).with(AshLayerBlock.WATERLOGGED, isWaterlogged));
 			}
 		}
 	}
 
-	public void fillWithAsh(ISeedReader worldIn, ChunkGenerator chunkIn, Random rand, BlockPos pos, int baseHeightIn) {
+	public void fillWithAsh(ISeedReader worldIn, Random rand, BlockPos pos, int baseHeightIn) {
 		BlockPos.Mutable blockPos = pos.toMutable();
 
-		for (int x = 0; x < (baseHeightIn * 2) - 1; x++) {
-			for (int z = 0; z < (baseHeightIn * 2) - 1; z++) {
-				blockPos.setX((x + pos.getX()) - (baseHeightIn - 1));
-				blockPos.setZ((z + pos.getZ()) - (baseHeightIn - 1));
+		for (int x = -baseHeightIn; x < baseHeightIn + 1; x++) {
+			for (int z = -baseHeightIn; z < baseHeightIn + 1; z++) {
+				blockPos.setX(x);
+				blockPos.setZ(z);
 
-				for (int i = 0; i < baseHeightIn; i++) {
-					int height = MathHelper.clamp(getAshLayerHeight(worldIn, blockPos) + (rand.nextInt(2) - 1), 0, 8);
-					blockPos.setY(getPlacementY(worldIn, blockPos));
+				int height = (int) MathHelper.clamp(baseHeightIn - (blockPos.manhattanDistance(pos)), 0, 8);
+				int variation = rand.nextInt(2) - 1;
 
-					if (!(blockPos.getY() == -1) && height > 0) {
-						boolean isWaterlogged = worldIn.getFluidState(blockPos).getFluid() == Fluids.WATER;
-						if (worldIn.getBlockState(blockPos).getBlock() == ClinkerBlocks.ASH_LAYER.get()) {
-							worldIn.setBlockState(blockPos, ClinkerBlocks.ASH_LAYER.get().getDefaultState().with(AshLayerBlock.LAYERS, Integer.valueOf(Math.max(height, worldIn.getBlockState(blockPos).get(AshLayerBlock.LAYERS)))).with(AshLayerBlock.WATERLOGGED, Boolean.valueOf(isWaterlogged)), 2);
-						} else if (!worldIn.getBlockState(blockPos).isSolid()) {
-							worldIn.setBlockState(blockPos, ClinkerBlocks.ASH_LAYER.get().getDefaultState().with(AshLayerBlock.LAYERS, Integer.valueOf(height)).with(AshLayerBlock.WATERLOGGED, Boolean.valueOf(isWaterlogged)), 2);
-						}
-					}
-				}
+				blockPos.setY(getPlacementY(worldIn, new BlockPos(x, pos.getY(), z)));
 
-				//int distanceFromMiddle = blockPos.manhattanDistance(pos);
-				//int height = MathHelper.clamp((distanceFromMiddle - baseHeightIn) * -2, 0, 8);
-
-				/**
-				if (!(blockPos.getY() == -1) && !(height == 0)) {
-					boolean isWaterlogged = worldIn.getFluidState(blockPos).getFluid() == Fluids.WATER;
-					if (worldIn.getBlockState(blockPos).getBlock() == ClinkerBlocks.ASH_LAYER.get()) {
-						worldIn.setBlockState(blockPos, ClinkerBlocks.ASH_LAYER.get().getDefaultState().with(AshLayerBlock.LAYERS, Integer.valueOf(Math.max(height, worldIn.getBlockState(blockPos).get(AshLayerBlock.LAYERS)))).with(AshLayerBlock.WATERLOGGED, Boolean.valueOf(isWaterlogged)), 2);
-					} else if (!worldIn.getBlockState(blockPos).isSolid()) {
-						worldIn.setBlockState(blockPos, ClinkerBlocks.ASH_LAYER.get().getDefaultState().with(AshLayerBlock.LAYERS, Integer.valueOf(height)).with(AshLayerBlock.WATERLOGGED, Boolean.valueOf(isWaterlogged)), 2);
-					}
-				}
-				 */
-
+				this.setAshLayer(worldIn, blockPos, height + variation);
 			}
 		}
 	}
@@ -147,17 +104,5 @@ public class AshDuneFeature extends Feature<NoFeatureConfig> {
 		} else {
 			return placementPos.getY();
 		}
-	}
-
-	private int getAshLayerHeight(IWorld worldIn, BlockPos pos) {
-		Direction[] directionArray = {Direction.EAST, Direction.WEST, Direction.NORTH, Direction.SOUTH};
-
-		for (Direction direction : directionArray) {
-			if (worldIn.getBlockState(pos.offset(direction)).getBlock() == ClinkerBlocks.ASH_LAYER.get()) {
-				return worldIn.getBlockState(pos.offset(direction)).get(AshLayerBlock.LAYERS) - 1;
-			}
-		}
-
-		return 0;
 	}
 }

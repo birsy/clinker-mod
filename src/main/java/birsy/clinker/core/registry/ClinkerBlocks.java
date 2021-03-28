@@ -22,6 +22,9 @@ import birsy.clinker.common.block.driedsoulsand.DriedSoulsandStairsBlock;
 import birsy.clinker.common.block.riekplant.RiekPlantBlock;
 import birsy.clinker.common.block.riekplant.RiekTubeBlock;
 import birsy.clinker.common.block.riekplant.RiekVinesBlock;
+import birsy.clinker.common.block.silt.SiltscarVineBlock;
+import birsy.clinker.common.block.silt.SiltscarVineMouthBlock;
+import birsy.clinker.common.block.silt.WittlebulbBlock;
 import birsy.clinker.common.block.trees.LocustTree;
 import birsy.clinker.core.Clinker;
 import net.minecraft.block.AbstractBlock;
@@ -87,6 +90,8 @@ public class ClinkerBlocks
 	public static final RegistryObject<Block> WITTLEBULB =          createBlock("wittlebulb",          () -> new WittlebulbBlock(AbstractBlock.Properties.create(Material.PLANTS, MaterialColor.GREEN_TERRACOTTA).zeroHardnessAndResistance().notSolid().doesNotBlockMovement().sound(SoundType.WET_GRASS)), Clinker.CLINKER_BLOCKS);
 	public static final RegistryObject<Block> BLOOMING_WITTLEBULB = createBlock("blooming_wittlebulb", () -> new WittlebulbBlock(AbstractBlock.Properties.create(Material.PLANTS, MaterialColor.GREEN_TERRACOTTA).zeroHardnessAndResistance().notSolid().doesNotBlockMovement().sound(SoundType.WET_GRASS).setLightLevel((state) -> 8)), Clinker.CLINKER_BLOCKS);
 
+	//public static final RegistryObject<Block> SILTSCAR_VINE = createBlock("siltscar_vine", () -> new SiltscarVineBlock(AbstractBlock.Properties.create(Material.PLANTS, MaterialColor.GREEN_TERRACOTTA).hardnessAndResistance(0.3F).notSolid().doesNotBlockMovement().sound(SoundType.WET_GRASS)), Clinker.CLINKER_BLOCKS);
+	//public static final RegistryObject<Block> SILTSCAR_VINE_MOUTH = createBlock("siltscar_vine_mouth", () -> new SiltscarVineMouthBlock(AbstractBlock.Properties.create(Material.PLANTS, MaterialColor.GREEN_TERRACOTTA).hardnessAndResistance(0.3F).notSolid().doesNotBlockMovement().sound(SoundType.WET_GRASS)), Clinker.CLINKER_BLOCKS);
 
 	//Brimstone
 	public static AbstractBlock.Properties getBrimstoneProperties() {

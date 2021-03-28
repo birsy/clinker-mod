@@ -1,6 +1,6 @@
 package birsy.clinker.client.render.entity;
 
-import birsy.clinker.client.render.model.entity.GnomadShamanModel;
+import birsy.clinker.client.render.entity.model.GnomadShamanModel;
 import birsy.clinker.common.entity.monster.GnomadShamanEntity;
 import birsy.clinker.core.Clinker;
 import net.minecraft.client.renderer.entity.EntityRendererManager;

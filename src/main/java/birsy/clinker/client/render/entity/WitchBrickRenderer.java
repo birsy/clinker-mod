@@ -2,7 +2,7 @@ package birsy.clinker.client.render.entity;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 
-import birsy.clinker.client.render.model.entity.WitchBrickModel;
+import birsy.clinker.client.render.entity.model.WitchBrickModel;
 import birsy.clinker.common.entity.monster.WitchBrickEntity;
 import birsy.clinker.core.Clinker;
 import net.minecraft.client.renderer.entity.EntityRendererManager;

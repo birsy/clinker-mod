@@ -1,6 +1,6 @@
 package birsy.clinker.client.render.entity;
 
-import birsy.clinker.client.render.model.entity.HyenaModel;
+import birsy.clinker.client.render.entity.model.HyenaModel;
 import birsy.clinker.common.entity.monster.HyenaEntity;
 import birsy.clinker.core.Clinker;
 import net.minecraft.client.renderer.entity.EntityRendererManager;

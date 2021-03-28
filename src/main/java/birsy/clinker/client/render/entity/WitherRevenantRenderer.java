@@ -2,8 +2,8 @@ package birsy.clinker.client.render.entity;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 
-import birsy.clinker.client.render.layers.WitherRevenantEyesLayer;
-import birsy.clinker.client.render.model.entity.WitherRevenantModel;
+import birsy.clinker.client.render.entity.layers.WitherRevenantEyesLayer;
+import birsy.clinker.client.render.entity.model.WitherRevenantModel;
 import birsy.clinker.common.entity.monster.WitherRevenantEntity;
 import birsy.clinker.core.Clinker;
 import net.minecraft.client.renderer.entity.EntityRendererManager;

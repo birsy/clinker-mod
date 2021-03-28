@@ -1,6 +1,6 @@
 package birsy.clinker.client.render.entity;
 
-import birsy.clinker.client.render.model.entity.GnomeBratModel;
+import birsy.clinker.client.render.entity.model.GnomeBratModel;
 import birsy.clinker.common.entity.merchant.GnomeBratEntity;
 import birsy.clinker.core.Clinker;
 import net.minecraft.client.renderer.entity.EntityRendererManager;

@@ -2,22 +2,31 @@
   "config": {
     "feature": {
       "config": {
-        "reach": {
-          "base": 2,
-          "spread": 1
+        "feature": {
+          "config": {},
+          "type": "clinker:ash_dune"
         },
-        "height": {
-          "base": 5,
-          "spread": 5
+        "decorator": {
+          "config": {
+            "outer": {
+              "config": {},
+              "type": "minecraft:square"
+            },
+            "inner": {
+              "config": {},
+              "type": "minecraft:heightmap"
+            }
+          },
+          "type": "minecraft:decorated"
         }
       },
-      "type": "clinker:ash_dune"
+      "type": "minecraft:decorated"
     },
     "decorator": {
       "config": {
-        "count": 1
+        "count": 6
       },
-      "type": "minecraft:count_multilayer"
+      "type": "minecraft:count"
     }
   },
   "type": "minecraft:decorated"

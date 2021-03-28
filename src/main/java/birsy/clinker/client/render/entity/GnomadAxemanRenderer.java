@@ -1,13 +1,11 @@
 package birsy.clinker.client.render.entity;
 
-import birsy.clinker.client.render.layers.GnomadAxemanBuffLayer;
-import birsy.clinker.client.render.layers.GnomadAxemanShieldLayer;
-import birsy.clinker.client.render.layers.GnomeHeldItemLayer;
-import birsy.clinker.client.render.model.entity.GnomadAxemanModel;
+import birsy.clinker.client.render.entity.layers.GnomadAxemanBuffLayer;
+import birsy.clinker.client.render.entity.layers.GnomadAxemanShieldLayer;
+import birsy.clinker.client.render.entity.layers.GnomeHeldItemLayer;
+import birsy.clinker.client.render.entity.model.GnomadAxemanModel;
 import birsy.clinker.common.entity.monster.GnomadAxemanEntity;
 import birsy.clinker.core.Clinker;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.util.ResourceLocation;

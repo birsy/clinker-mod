@@ -1,7 +1,7 @@
 package birsy.clinker.client.render.entity;
 
-import birsy.clinker.client.render.layers.TorAntEyesLayer;
-import birsy.clinker.client.render.model.entity.TorAntModel;
+import birsy.clinker.client.render.entity.layers.TorAntEyesLayer;
+import birsy.clinker.client.render.entity.model.TorAntModel;
 import birsy.clinker.common.entity.passive.TorAntEntity;
 import birsy.clinker.core.Clinker;
 import net.minecraft.client.renderer.entity.EntityRendererManager;

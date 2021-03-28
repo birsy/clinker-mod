@@ -1,7 +1,6 @@
 package birsy.clinker.client.render.entity;
 
-import birsy.clinker.client.render.model.armModel;
-import birsy.clinker.client.render.model.entity.SnailModel;
+import birsy.clinker.client.render.entity.model.SnailModel;
 import birsy.clinker.common.entity.passive.SnailEntity;
 import birsy.clinker.core.Clinker;
 import net.minecraft.client.renderer.entity.EntityRendererManager;

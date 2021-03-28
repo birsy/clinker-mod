@@ -7,6 +7,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -37,9 +38,12 @@ public class OthershoreFogRenderer {
 
                 final float density = MathHelper.clamp((interpolatedLight - 3) * 0.25f / 13f, 0.02f, 1.0f);
 
+                //Make it a little foggier when it's darker....
+                final float darknessMultiplier = 1 + calculateInterpolatedLight(world, playerPos, playerVecPos, LightType.SKY, true);
+
                 if (event.getInfo().getFluidState().isEmpty()) {
                     event.setCanceled(true);
-                    event.setDensity(density);
+                    event.setDensity(density * darknessMultiplier);
                 }
             }
         }
@@ -48,31 +52,23 @@ public class OthershoreFogRenderer {
     @SubscribeEvent
     public static void onRenderFogColors(EntityViewRenderEvent.FogColors event)
     {
-        if (event.getInfo().getRenderViewEntity() instanceof PlayerEntity) {
+        if (event.getInfo().getRenderViewEntity() instanceof PlayerEntity)
+        {
             final PlayerEntity player = (PlayerEntity) event.getInfo().getRenderViewEntity();
             final World world = player.world;
-            
+
             if (world.getDimensionKey() == ClinkerDimensions.OTHERSHORE) {
                 Vector3d playerVecPos = player.getEyePosition((float) event.getRenderPartialTicks());
                 BlockPos playerPos = new BlockPos(playerVecPos);
 
-                final float heightMultiplier = MathHelper.clamp(MathUtils.mapRange(fogHeight, fogEnd, 1, 0, (float) playerVecPos.y), 0, 1);
+                final float interpolatedLight = calculateInterpolatedLight(world, playerPos, playerVecPos, LightType.SKY, true);
 
-                final float interpolatedLight = calculateInterpolatedLight(world, playerPos, playerVecPos, LightType.SKY) * heightMultiplier;
-                final float interpolatedLightWithoutHeight = calculateInterpolatedLight(world, playerPos, playerVecPos, LightType.SKY);
+                float brightness = 0.25f;
+                Vector3f fogColor = new Vector3f(0.179f * brightness, 0.179f * brightness, 0.167f * brightness);
 
-                final float density = MathHelper.clamp((interpolatedLight - 3) * 0.25f / 13f, 0.02f, 1.0f);
-
-
-                if (event.getInfo().getFluidState().isEmpty()) {
-                    float outsideRed = MathHelper.lerp(density, event.getRed(), 190f / 256);
-                    float outsideGreen = MathHelper.lerp(density, event.getGreen(), 200f / 256);
-                    float outsideBlue = MathHelper.lerp(density, event.getBlue(), 200f / 256);
-
-                    event.setRed(outsideRed);
-                    event.setGreen(outsideGreen);
-                    event.setBlue(outsideBlue);
-                }
+                event.setRed  (MathHelper.lerp(interpolatedLight, event.getRed(),   fogColor.getX()));
+                event.setGreen(MathHelper.lerp(interpolatedLight, event.getGreen(), fogColor.getY()));
+                event.setBlue (MathHelper.lerp(interpolatedLight, event.getBlue(),  fogColor.getZ()));
             }
         }
     }
@@ -121,11 +117,11 @@ public class OthershoreFogRenderer {
         if (!returnsNormalized) {
             return calculateInterpolatedLight(world, playerPos, playerVecPos, lightType);
         } else {
-            return MathUtils.mapRange(0, 16, 0, 1, calculateInterpolatedLight(world, playerPos, playerVecPos, lightType));
+            return MathUtils.mapRange(0, 15, 1, 0, calculateInterpolatedLight(world, playerPos, playerVecPos, lightType));
         }
     }
 
-        private static float getLight(World worldIn, BlockPos posIn, LightType lightType) {
+    private static float getLight(World worldIn, BlockPos posIn, LightType lightType) {
         return (float) worldIn.getLightFor(lightType, posIn);
     }
 }

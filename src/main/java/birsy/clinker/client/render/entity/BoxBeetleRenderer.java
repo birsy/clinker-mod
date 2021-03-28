@@ -1,6 +1,6 @@
 package birsy.clinker.client.render.entity;
 
-import birsy.clinker.client.render.model.entity.BoxBeetleModel;
+import birsy.clinker.client.render.entity.model.BoxBeetleModel;
 import birsy.clinker.common.entity.monster.beetle.BoxBeetleEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.matrix.MatrixStack;

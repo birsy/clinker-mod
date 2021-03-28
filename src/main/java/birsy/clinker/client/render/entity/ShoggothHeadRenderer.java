@@ -1,6 +1,6 @@
 package birsy.clinker.client.render.entity;
 
-import birsy.clinker.client.render.model.entity.LesserShoggothHeadModel;
+import birsy.clinker.client.render.entity.model.LesserShoggothHeadModel;
 import birsy.clinker.common.entity.monster.ShoggothHeadEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.matrix.MatrixStack;

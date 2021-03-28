@@ -1,6 +1,6 @@
 package birsy.clinker.common.item.materials;
 
-import birsy.clinker.client.render.model.entity.GnomeModel;
+import birsy.clinker.client.render.entity.model.GnomeModel;
 import birsy.clinker.core.Clinker;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;

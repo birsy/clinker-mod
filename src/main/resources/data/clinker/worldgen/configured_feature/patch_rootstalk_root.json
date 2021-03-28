@@ -1,0 +1,36 @@
+{
+  "config": {
+    "feature": {
+      "config": {
+        "can_replace": true,
+        "project": true,
+        "need_water": false,
+        "xspread": 10,
+        "yspread": 10,
+        "zspread": 10,
+        "whitelist": [],
+        "blacklist": [],
+        "tries": 128,
+        "state_provider": {
+          "state": {
+            "Name": "clinker:rootstalk"
+          },
+          "type": "minecraft:simple_state_provider"
+        },
+        "block_placer": {
+          "type": "minecraft:simple_block_placer"
+        }
+      },
+      "type": "minecraft:random_patch"
+    },
+    "decorator": {
+      "config": {
+        "bottom_offset": 0,
+        "top_offset": 0,
+        "maximum": 256
+      },
+      "type": "minecraft:range"
+    }
+  },
+  "type": "minecraft:decorated"
+}

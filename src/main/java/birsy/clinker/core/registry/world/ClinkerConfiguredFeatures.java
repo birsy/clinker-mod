@@ -7,6 +7,8 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.WorldGenRegistries;
+import net.minecraft.world.gen.blockplacer.SimpleBlockPlacer;
+import net.minecraft.world.gen.blockstateprovider.SimpleBlockStateProvider;
 import net.minecraft.world.gen.feature.*;
 import net.minecraft.world.gen.feature.template.BlockMatchRuleTest;
 import net.minecraft.world.gen.feature.template.RuleTest;
@@ -29,6 +31,9 @@ public class ClinkerConfiguredFeatures {
     public static final ConfiguredFeature<?, ?> LARGE_CRAGROCK = ClinkerFeatures.CRAGROCK.get().withConfiguration(new ColumnConfig(FeatureSpread.func_242253_a(2, 1), FeatureSpread.func_242253_a(5, 5))).withPlacement(Placement.COUNT_MULTILAYER.configure(new FeatureSpreadConfig(1)));
     public static final ConfiguredFeature<?, ?> BOULDER = ClinkerFeatures.BOULDER.get().withConfiguration(new BlockStateFeatureConfig(ClinkerBlocks.BRIMSTONE.get().getDefaultState())).withPlacement(Placement.COUNT_MULTILAYER.configure(new FeatureSpreadConfig(5)));
 
+    public static final ConfiguredFeature<?, ?> PATCH_ROOTSTALK_ROOTS = Feature.RANDOM_PATCH.withConfiguration((new BlockClusterFeatureConfig.Builder(new SimpleBlockStateProvider(ClinkerBlocks.ROOTSTALK.get().getDefaultState()), new SimpleBlockPlacer())).tries(64).func_227317_b_().build()).range(128);
+
+
     //Temporary - will try to find a better way to make it fill caves more, as it can currently have big gaps. Might just make it larger.
     public static final ConfiguredFeature<?, ?> BRAMBLE_CAVE = Feature.DISK.withConfiguration(new SphereReplaceConfig(ClinkerBlocks.BRAMBLE.get().getDefaultState(), FeatureSpread.func_242253_a(5, 6), 5, ImmutableList.of(Blocks.CAVE_AIR.getDefaultState(), ClinkerBlocks.FOUL_AIR.get().getDefaultState()))).withPlacement(Placement.LAVA_LAKE.configure(new ChanceConfig(3)));
     public static final ConfiguredFeature<?, ?> ROOTSTALK_CAVE = Feature.DISK.withConfiguration(new SphereReplaceConfig(ClinkerBlocks.ROOTSTALK.get().getDefaultState(), FeatureSpread.func_242253_a(5, 6), 5, ImmutableList.of(Blocks.CAVE_AIR.getDefaultState(), ClinkerBlocks.FOUL_AIR.get().getDefaultState()))).withPlacement(Placement.LAVA_LAKE.configure(new ChanceConfig(3)));
@@ -40,6 +45,8 @@ public class ClinkerConfiguredFeatures {
         Registry.register(registry, new ResourceLocation(Clinker.MOD_ID, "cave_puddle"), CAVE_PUDDLE);
         Registry.register(registry, new ResourceLocation(Clinker.MOD_ID, "cave_floor"), CAVE_FLOOR);
         Registry.register(registry, new ResourceLocation(Clinker.MOD_ID, "ash_geode"), ASH_GEODE);
+
+        Registry.register(registry, new ResourceLocation(Clinker.MOD_ID, "patch_rootstalk_root"), ASH_GEODE);
 
         Registry.register(registry, new ResourceLocation(Clinker.MOD_ID, "ash_dune"), ASH_DUNE);
 

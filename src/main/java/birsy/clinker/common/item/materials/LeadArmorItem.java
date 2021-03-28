@@ -1,6 +1,6 @@
 package birsy.clinker.common.item.materials;
 
-import birsy.clinker.client.render.model.item.LeadArmorModel;
+import birsy.clinker.client.render.entity.model.LeadArmorModel;
 import birsy.clinker.common.item.materials.enums.ClinkerArmorMaterial;
 import birsy.clinker.core.Clinker;
 import net.minecraft.client.renderer.entity.model.BipedModel;
