@@ -1,0 +1,19 @@
+{
+  "config": {
+    "ore": {
+      "Name": "clinker:lead_ore"
+    },
+    "filler": {
+      "Name": "clinker:shale"
+    },
+    "probability": 0.14285715,
+    "vein_size": 0.9,
+    "density": 0.6,
+    "minHeight": 10,
+    "minFalloffHeight": 8,
+    "maxHeight": 60,
+    "maxFalloffHeight": 40
+  },
+  "type": "clinker:lead_ore_vein"
+}
+

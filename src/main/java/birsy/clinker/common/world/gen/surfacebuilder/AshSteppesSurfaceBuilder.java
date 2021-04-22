@@ -1,5 +1,7 @@
 package birsy.clinker.common.world.gen.surfacebuilder;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.stream.IntStream;
 
@@ -11,18 +13,20 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.material.Material;
+import net.minecraft.util.Direction;
 import net.minecraft.util.SharedSeedRandom;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.IChunk;
+import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.PerlinNoiseGenerator;
 import net.minecraft.world.gen.SimplexNoiseGenerator;
 import net.minecraft.world.gen.surfacebuilders.ISurfaceBuilderConfig;
+import net.minecraft.world.gen.surfacebuilders.NetherForestsSurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilders.SurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilders.SurfaceBuilderConfig;
 
-public class AshSteppesSurfaceBuilder extends SurfaceBuilder<SurfaceBuilderConfig> {
-	private SimplexNoiseGenerator noiseGenerator;
+public class AshSteppesSurfaceBuilder extends NetherForestsSurfaceBuilder {
 
 	public AshSteppesSurfaceBuilder(Codec<SurfaceBuilderConfig> surfaceBuilderConfig) {
 		super(surfaceBuilderConfig);
@@ -30,27 +34,29 @@ public class AshSteppesSurfaceBuilder extends SurfaceBuilder<SurfaceBuilderConfi
 
 	@Override
 	public void buildSurface(Random random, IChunk chunkIn, Biome biomeIn, int x, int z, int startHeight, double noise, BlockState defaultBlock, BlockState defaultFluid, int seaLevel, long seed, SurfaceBuilderConfig config) {
-		if (noise > 1.75D) {
-			if (noiseGenerator.getValue(x, z) > -0.95D) {
-				SurfaceBuilder.DEFAULT.buildSurface(random, chunkIn, biomeIn, x, z, startHeight, noise, defaultBlock, defaultFluid, seaLevel, seed, ClinkerSurfaceBuilderConfigs.ASH_CONFIG);
-			} else {
-				SurfaceBuilder.DEFAULT.buildSurface(random, chunkIn, biomeIn, x, z, startHeight, noise, defaultBlock, defaultFluid, seaLevel, seed, ClinkerSurfaceBuilderConfigs.ROOTED_ASH_CONFIG);
-			}
-		} else {
-			if (noiseGenerator.getValue(x, z) > -0.95D) {
-				SurfaceBuilder.DEFAULT.buildSurface(random, chunkIn, biomeIn, x, z, startHeight, noise, defaultBlock, defaultFluid, seaLevel, seed, ClinkerSurfaceBuilderConfigs.ASH_STEPPES_CONFIG);
-			} else {
-				SurfaceBuilder.DEFAULT.buildSurface(random, chunkIn, biomeIn, x, z, startHeight, noise, defaultBlock, defaultFluid, seaLevel, seed, ClinkerSurfaceBuilderConfigs.ASH_STEPPES_ROOTED_CONFIG);
+		super.buildSurface(random, chunkIn, biomeIn, x, z, startHeight, noise, defaultBlock, defaultFluid, seaLevel, seed, config);
+
+		for (int y = startHeight; y >= 0; y--) {
+			BlockPos pos = new BlockPos(x, y, z);
+
+			if (isCliffside(chunkIn, pos)) {
+				for (int h = 0; h < random.nextInt(2); h++) {
+					chunkIn.setBlockState(pos.up(h), defaultBlock, false);
+				}
 			}
 		}
 	}
 
-	@Override
-	public void setSeed(long seed) {
-		if (this.noiseGenerator == null) {
-			SharedSeedRandom sharedseedrandom = new SharedSeedRandom(seed + 30);
-			this.noiseGenerator = new SimplexNoiseGenerator(sharedseedrandom);
+	private boolean isCliffside(IChunk chunkIn, BlockPos pos) {
+		boolean flag = false;
+
+		for (Direction direction : Direction.Plane.HORIZONTAL) {
+			BlockState state = chunkIn.getBlockState(pos.offset(direction).down());
+			if (!state.isIn(Blocks.VOID_AIR) && !chunkIn.getBlockState(pos.offset(direction)).isIn(Blocks.VOID_AIR)) {
+				flag = state.isSolid() && !chunkIn.getBlockState(pos.offset(direction)).isSolid();
+			}
 		}
-		super.setSeed(seed);
+
+		return flag && chunkIn.getBlockState(pos).isSolid();
 	}
 }

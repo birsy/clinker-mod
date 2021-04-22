@@ -2,10 +2,10 @@ package birsy.clinker.common.block;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.IWaterLoggable;
+import birsy.clinker.core.registry.ClinkerBlocks;
+import net.minecraft.block.*;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.material.MaterialColor;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.BlockItemUseContext;
@@ -16,12 +16,15 @@ import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
+import net.minecraft.world.World;
+import net.minecraftforge.common.ToolType;
 
 public class AshLayerBlock extends AshBlock implements IWaterLoggable
 {
@@ -40,7 +43,10 @@ public class AshLayerBlock extends AshBlock implements IWaterLoggable
 	
 	public AshLayerBlock()
 	{
-		super();
+		super(Block.Properties.create(Material.SNOW, MaterialColor.GRAY)
+				.hardnessAndResistance(0.5F)
+				.sound(SoundType.SNOW)
+				.harvestTool(ToolType.SHOVEL).tickRandomly());
 		this.setDefaultState(this.stateContainer.getBaseState().with(LAYERS, Integer.valueOf(1)).with(WATERLOGGED, Boolean.valueOf(false)));
 	}
 	
@@ -130,6 +136,18 @@ public class AshLayerBlock extends AshBlock implements IWaterLoggable
 
 	protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
 		builder.add(LAYERS, WATERLOGGED);
+	}
+
+	@Override
+	public void addAshLayer(World worldIn, BlockPos pos, int amount) {
+		BlockState blockState = worldIn.getBlockState(pos);
+		if (!blockState.isSolid()) {
+			if (!blockState.isIn(ClinkerBlocks.ASH_LAYER.get())) {
+				worldIn.setBlockState(pos, ClinkerBlocks.ASH_LAYER.get().getDefaultState().with(AshLayerBlock.LAYERS, MathHelper.clamp(amount, 0, 8)), 1);
+			} else {
+				worldIn.setBlockState(pos, blockState.with(AshLayerBlock.LAYERS, MathHelper.clamp(amount + blockState.get(AshLayerBlock.LAYERS), 0, 8)), 1);
+			}
+		}
 	}
 }
 

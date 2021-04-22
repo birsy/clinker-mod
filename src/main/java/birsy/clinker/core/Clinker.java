@@ -1,24 +1,27 @@
 package birsy.clinker.core;
 
 
+import birsy.clinker.client.render.tileentity.HeatedIronCauldronRenderer;
+import birsy.clinker.client.render.tileentity.MitesoilDiffuserRenderer;
 import birsy.clinker.client.render.world.OthershoreDimensionRenderInfo;
+import birsy.clinker.core.registry.*;
 import birsy.clinker.core.registry.world.*;
+import com.google.common.collect.Maps;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import net.minecraft.client.world.DimensionRenderInfo;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Util;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.carver.WorldCarver;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import birsy.clinker.core.registry.ClinkerBlocks;
-import birsy.clinker.core.registry.ClinkerEntities;
-import birsy.clinker.core.registry.ClinkerItems;
-import birsy.clinker.core.registry.ClinkerSounds;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.item.ItemGroup;
@@ -30,7 +33,8 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
-@SuppressWarnings("deprecation")
+import java.util.Map;
+
 @Mod(Clinker.MOD_ID)
 public class Clinker
 {
@@ -42,12 +46,15 @@ public class Clinker
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
         ClinkerSounds.SOUNDS.register(modEventBus);
+        ClinkerFluids.FLUIDS.register(modEventBus);
         ClinkerItems.ITEMS.register(modEventBus);
         ClinkerBlocks.BLOCKS.register(modEventBus);
         ClinkerBlocks.ITEMS.register(modEventBus);
         ClinkerEntities.ENTITY_TYPES.register(modEventBus);
-        
+        ClinkerTileEntities.TILE_ENTITY_TYPES.register(modEventBus);
+
         ClinkerWorldCarvers.WORLD_CARVERS.register(modEventBus);
+        ClinkerOreVeins.ORE_VEINS.register(modEventBus);
         ClinkerSurfaceBuilders.SURFACE_BUILDERS.register(modEventBus);
         ClinkerFeatures.FEATURES.register(modEventBus);
         ClinkerBiomes.BIOMES.register(modEventBus);
@@ -69,7 +76,10 @@ public class Clinker
 
     private void doClientStuff(final FMLClientSetupEvent event)
     {
-    	RenderTypeLookup.setRenderLayer(ClinkerBlocks.THORN_LOG.get(), RenderType.getCutout());
+        ClientRegistry.bindTileEntityRenderer(ClinkerTileEntities.HEATED_IRON_CAULDRON.get(), HeatedIronCauldronRenderer::new);
+        ClientRegistry.bindTileEntityRenderer(ClinkerTileEntities.MITESOIL_DIFFUSER.get(), MitesoilDiffuserRenderer::new);
+
+        RenderTypeLookup.setRenderLayer(ClinkerBlocks.THORN_LOG.get(), RenderType.getCutout());
     	RenderTypeLookup.setRenderLayer(ClinkerBlocks.STRIPPED_THORN_LOG.get(), RenderType.getCutout());
 
     	RenderTypeLookup.setRenderLayer(ClinkerBlocks.ROOTSTALK.get(), RenderType.getCutout());
@@ -93,6 +103,17 @@ public class Clinker
 
         RenderTypeLookup.setRenderLayer(ClinkerBlocks.WITTLEBULB.get(), RenderType.getCutout());
         RenderTypeLookup.setRenderLayer(ClinkerBlocks.BLOOMING_WITTLEBULB.get(), RenderType.getCutout());
+
+        RenderTypeLookup.setRenderLayer(ClinkerBlocks.BRINE.get(), RenderType.getTranslucent());
+        event.enqueueWork(() -> {
+            final Map<Fluid, RenderType> TYPES_BY_FLUID = Util.make(Maps.newHashMap(), (map) -> {
+                final RenderType translucent = RenderType.getTranslucent();
+                map.put(ClinkerFluids.BRINE_SOURCE.get(), translucent);
+                map.put(ClinkerFluids.BRINE_FLOWING.get(), translucent);
+            });
+
+            TYPES_BY_FLUID.forEach(RenderTypeLookup::setRenderLayer);
+        });
 
         DimensionRenderInfo.field_239208_a_.put(new ResourceLocation(Clinker.MOD_ID, "othershore"), new OthershoreDimensionRenderInfo());
 

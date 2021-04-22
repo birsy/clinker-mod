@@ -19,6 +19,7 @@ import birsy.clinker.common.block.driedsoulsand.DriedSoulsandFenceBlock;
 import birsy.clinker.common.block.driedsoulsand.DriedSoulsandPillarBlock;
 import birsy.clinker.common.block.driedsoulsand.DriedSoulsandSlabBlock;
 import birsy.clinker.common.block.driedsoulsand.DriedSoulsandStairsBlock;
+import birsy.clinker.common.block.mitesoil.MitesoilDiffuserBlock;
 import birsy.clinker.common.block.riekplant.RiekPlantBlock;
 import birsy.clinker.common.block.riekplant.RiekTubeBlock;
 import birsy.clinker.common.block.riekplant.RiekVinesBlock;
@@ -27,22 +28,7 @@ import birsy.clinker.common.block.silt.SiltscarVineMouthBlock;
 import birsy.clinker.common.block.silt.WittlebulbBlock;
 import birsy.clinker.common.block.trees.LocustTree;
 import birsy.clinker.core.Clinker;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.DoorBlock;
-import net.minecraft.block.FenceBlock;
-import net.minecraft.block.FenceGateBlock;
-import net.minecraft.block.LeavesBlock;
-import net.minecraft.block.PressurePlateBlock;
-import net.minecraft.block.RotatedPillarBlock;
-import net.minecraft.block.SandBlock;
-import net.minecraft.block.SaplingBlock;
-import net.minecraft.block.SlabBlock;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.StairsBlock;
-import net.minecraft.block.TrapDoorBlock;
-import net.minecraft.block.WallBlock;
-import net.minecraft.block.WoodButtonBlock;
+import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
 import net.minecraft.item.BlockItem;
@@ -67,14 +53,18 @@ public class ClinkerBlocks
 	}
 	
 	// Blocks
-	
+	//Fluids
+	public static final RegistryObject<FlowingFluidBlock> BRINE = createBlock("brine", () -> new FlowingFluidBlock(
+			ClinkerFluids.BRINE_SOURCE, AbstractBlock.Properties.create(Material.WATER)), null);
+
+
 	//Material Blocks
-	public static final RegistryObject<Block> LEAD_BLOCK = createBlock("lead_block", () -> new MetalMaterialBlock(), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> SULFUR_BLOCK = createBlock("sulfur_block", () -> new MaterialBlock(), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> IRON_PYRITE_BLOCK = createBlock("iron_pyrite_block", () -> new MetalMaterialBlock(), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> LEAD_BLOCK = createBlock("lead_block", MetalMaterialBlock::new, Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> SULFUR_BLOCK = createBlock("sulfur_block", MaterialBlock::new, Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> IRON_PYRITE_BLOCK = createBlock("iron_pyrite_block", MetalMaterialBlock::new, Clinker.CLINKER_BLOCKS);
 	
 	//Soils
-	public static final RegistryObject<Block> ASH = createBlock("ash", AshBlock::new, Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> ASH = createBlock("ash", () -> new AshBlock(Block.Properties.create(Material.SNOW_BLOCK, MaterialColor.GRAY).hardnessAndResistance(0.5F).sound(SoundType.SNOW).harvestTool(ToolType.SHOVEL).tickRandomly()), Clinker.CLINKER_BLOCKS);
 	public static final RegistryObject<Block> ASH_LAYER = createBlock("ash_layers", AshLayerBlock::new, Clinker.CLINKER_BLOCKS);
 	public static final RegistryObject<Block> ROOTED_ASH = createBlock("rooted_ash", () -> new RootedAshBlock(ASH.get()), Clinker.CLINKER_BLOCKS);
 	
@@ -90,8 +80,12 @@ public class ClinkerBlocks
 	public static final RegistryObject<Block> WITTLEBULB =          createBlock("wittlebulb",          () -> new WittlebulbBlock(AbstractBlock.Properties.create(Material.PLANTS, MaterialColor.GREEN_TERRACOTTA).zeroHardnessAndResistance().notSolid().doesNotBlockMovement().sound(SoundType.WET_GRASS)), Clinker.CLINKER_BLOCKS);
 	public static final RegistryObject<Block> BLOOMING_WITTLEBULB = createBlock("blooming_wittlebulb", () -> new WittlebulbBlock(AbstractBlock.Properties.create(Material.PLANTS, MaterialColor.GREEN_TERRACOTTA).zeroHardnessAndResistance().notSolid().doesNotBlockMovement().sound(SoundType.WET_GRASS).setLightLevel((state) -> 8)), Clinker.CLINKER_BLOCKS);
 
+	public static final RegistryObject<Block> MITESOIL_DIFFUSER = createBlock("mitesoil_diffuser", MitesoilDiffuserBlock::new, Clinker.CLINKER_BLOCKS);
+
 	//public static final RegistryObject<Block> SILTSCAR_VINE = createBlock("siltscar_vine", () -> new SiltscarVineBlock(AbstractBlock.Properties.create(Material.PLANTS, MaterialColor.GREEN_TERRACOTTA).hardnessAndResistance(0.3F).notSolid().doesNotBlockMovement().sound(SoundType.WET_GRASS)), Clinker.CLINKER_BLOCKS);
 	//public static final RegistryObject<Block> SILTSCAR_VINE_MOUTH = createBlock("siltscar_vine_mouth", () -> new SiltscarVineMouthBlock(AbstractBlock.Properties.create(Material.PLANTS, MaterialColor.GREEN_TERRACOTTA).hardnessAndResistance(0.3F).notSolid().doesNotBlockMovement().sound(SoundType.WET_GRASS)), Clinker.CLINKER_BLOCKS);
+
+	public static final RegistryObject<Block> HEATED_IRON_CAULDRON = createBlock("heated_iron_cauldron", HeatedIronCauldronBlock::new, null);
 
 	//Brimstone
 	public static AbstractBlock.Properties getBrimstoneProperties() {

@@ -1,13 +1,13 @@
 {
   "config": {
     "top_material": {
-      "Name": "clinker:packed_ash"
+      "Name": "clinker:ash"
     },
     "under_material": {
-      "Name": "clinker:rocky_packed_ash"
+      "Name": "clinker:packed_ash"
     },
     "underwater_material": {
-      "Name": "clinker:packed_ash"
+      "Name": "clinker:rocky_packed_ash"
     }
   },
   "type": "clinker:ash_steppes_builder"

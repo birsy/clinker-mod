@@ -64,8 +64,8 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 		super.registerGoals();
 		this.goalSelector.addGoal(0, new SwimGoal(this));
 
-		//this.goalSelector.addGoal(3, new LeapAtTargetGoal(this, 0.2F));
-		//this.goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.0D, false));
+		this.goalSelector.addGoal(3, new LeapAtTargetGoal(this, 0.2F));
+		this.goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.0D, false));
 
 		this.targetSelector.addGoal(2, new HurtByTargetGoal(this).setCallsForHelp(AbstractGnomadEntity.class));
 		this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, GnomeEntity.class, true));

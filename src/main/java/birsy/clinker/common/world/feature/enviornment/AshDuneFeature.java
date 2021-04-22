@@ -38,7 +38,32 @@ public class AshDuneFeature extends Feature<NoFeatureConfig> {
 			int baseHeight = MathHelper.clamp(rand.nextInt(8), 2, 8);
 			this.setBlockState(reader, pos, ClinkerBlocks.ASH_LAYER.get().getDefaultState().with(AshLayerBlock.LAYERS, baseHeight));
 
-			this.fillWithAsh(reader, rand, pos, baseHeight);
+			BlockPos.Mutable blockPos = pos.toMutable();
+
+			for (int x = -(baseHeight + 1); x < baseHeight + 1; x++) {
+				for (int z = -(baseHeight + 1); z < baseHeight + 1; z++) {
+					blockPos.setX(x);
+					blockPos.setZ(z);
+
+					/**
+					while(!reader.getBlockState(blockPos).isSolid() && blockPos.getY() < 2) {
+						blockPos.down();
+					}
+					 */
+
+					int height = MathHelper.clamp(baseHeight - (blockPos.manhattanDistance(pos)), 0, 8);
+					int variation = rand.nextInt(2) - 1;
+
+					if (height > 0) {
+						this.setBlockState(reader, blockPos, ClinkerBlocks.ASH_LAYER.get().getDefaultState().with(AshLayerBlock.LAYERS, height));//.with(AshLayerBlock.WATERLOGGED, isWaterlogged));
+					}
+					/**
+					if (reader.getBlockState(blockPos).getMaterial().isReplaceable() || reader.isAirBlock(blockPos)) {
+						boolean isWaterlogged = reader.getBlockState(blockPos).getBlock() == Blocks.WATER;
+					}
+					 */
+				}
+			}
 
 			return true;
 		}
@@ -70,8 +95,6 @@ public class AshDuneFeature extends Feature<NoFeatureConfig> {
 				int height = (int) MathHelper.clamp(baseHeightIn - (blockPos.manhattanDistance(pos)), 0, 8);
 				int variation = rand.nextInt(2) - 1;
 
-				blockPos.setY(getPlacementY(worldIn, new BlockPos(x, pos.getY(), z)));
-
 				this.setAshLayer(worldIn, blockPos, height + variation);
 			}
 		}
@@ -89,9 +112,10 @@ public class AshDuneFeature extends Feature<NoFeatureConfig> {
 	
 	private int getPlacementY(IWorld worldIn, BlockPos pos) {
 		BlockPos.Mutable placementPos = pos.toMutable();
-
 		for(int i = 0; i < 20; i++) {
-			if(!worldIn.getBlockState(placementPos.down()).isSolid()) {
+			if (placementPos.getY() <= 0) {
+				break;
+			} else if (!worldIn.getBlockState(placementPos.down()).isSolid()) {
 				placementPos.setPos(placementPos.down());
 			} else {
 				break;
@@ -100,7 +124,7 @@ public class AshDuneFeature extends Feature<NoFeatureConfig> {
 
 		//If the block below it isn't solid, or the block itself isn't solid, return an invalid position.
 		if (!worldIn.getBlockState(placementPos.down()).isSolid() || worldIn.getBlockState(placementPos).isSolid()) {
-			return -1;
+			return 0;
 		} else {
 			return placementPos.getY();
 		}

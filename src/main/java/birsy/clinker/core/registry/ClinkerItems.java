@@ -9,14 +9,7 @@ import birsy.clinker.common.item.materials.enums.ClinkerArmorMaterial;
 import birsy.clinker.common.item.materials.enums.ClinkerItemTier;
 import birsy.clinker.core.Clinker;
 import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ArmorItem;
-import net.minecraft.item.AxeItem;
-import net.minecraft.item.HoeItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.PickaxeItem;
-import net.minecraft.item.ShieldItem;
-import net.minecraft.item.ShovelItem;
-import net.minecraft.item.SwordItem;
+import net.minecraft.item.*;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
@@ -48,8 +41,8 @@ public class ClinkerItems
 	public static final RegistryObject<Item> SALT = ITEMS.register("salt", () -> new Item(new Item.Properties().group(Clinker.CLINKER_MISC)));
 	
 	//Buckets
-	//public static final RegistryObject<Item> BRINE_BUCKET = ITEMS.register("brine_bucket", () -> new BucketItem(() -> ClinkerFluids.BRINE_FLUID.get(), new Item.Properties().group(Clinker.CLINKER_MISC)));
-	
+	public static final RegistryObject<Item> BRINE_BUCKET = ITEMS.register("brine_bucket", () -> new BucketItem(
+			ClinkerFluids.BRINE_SOURCE, (new Item.Properties()).group(Clinker.CLINKER_MISC).maxStackSize(1)));
 	//Projectiles
 	public static final RegistryObject<Item> PHOSPHER_BALL_ITEM = ITEMS.register("phospher_ball_item", PhospherBallItem::new);
 	

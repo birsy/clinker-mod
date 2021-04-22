@@ -1,0 +1,22 @@
+{
+    "parent": "block/block",
+    "textures": {
+        "mitesoil_diffuser_side": "clinker:blocks/mitesoil/mitesoil_diffuser_side",
+        "mitesoil_diffuser_top": "clinker:blocks/mitesoil/mitesoil_diffuser_top",
+        "particle": "clinker:blocks/mitesoil/mitesoil_diffuser_top"
+    },
+    "elements": [
+        {
+            "from": [ 1, 0, 1 ], 
+            "to": [ 15, 16, 15 ], 
+            "faces": {
+                "north": { "texture": "#mitesoil_diffuser_side", "uv": [ 1, 0, 15, 16 ] },
+                "east": { "texture": "#mitesoil_diffuser_side", "uv": [ 1, 0, 15, 16 ] },
+                "south": { "texture": "#mitesoil_diffuser_side", "uv": [ 1, 0, 15, 16 ] },
+                "west": { "texture": "#mitesoil_diffuser_side", "uv": [ 1, 0, 15, 16 ] },
+                "up": { "texture": "#mitesoil_diffuser_top", "uv": [ 1, 1, 15, 15 ], "cullface": "up" },
+                "down": { "texture": "#mitesoil_diffuser_top", "uv": [ 1, 1, 15, 15 ], "cullface": "down" }
+            }
+        }
+    ]
+}

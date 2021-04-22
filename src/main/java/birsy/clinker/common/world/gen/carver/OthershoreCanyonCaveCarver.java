@@ -22,7 +22,6 @@ import java.util.function.Function;
 
 public class OthershoreCanyonCaveCarver extends WorldCarver<ProbabilityConfig> {
     protected Set<Block> carvableBlocks = ImmutableSet.of(Blocks.STONE, ClinkerBlocks.BRIMSTONE.get(), Blocks.GRANITE, Blocks.DIORITE, Blocks.ANDESITE, Blocks.DIRT, Blocks.COARSE_DIRT, Blocks.PODZOL, Blocks.GRASS_BLOCK, Blocks.TERRACOTTA, Blocks.WHITE_TERRACOTTA, Blocks.ORANGE_TERRACOTTA, Blocks.MAGENTA_TERRACOTTA, Blocks.LIGHT_BLUE_TERRACOTTA, Blocks.YELLOW_TERRACOTTA, Blocks.LIME_TERRACOTTA, Blocks.PINK_TERRACOTTA, Blocks.GRAY_TERRACOTTA, Blocks.LIGHT_GRAY_TERRACOTTA, Blocks.CYAN_TERRACOTTA, Blocks.PURPLE_TERRACOTTA, Blocks.BLUE_TERRACOTTA, Blocks.BROWN_TERRACOTTA, Blocks.GREEN_TERRACOTTA, Blocks.RED_TERRACOTTA, Blocks.BLACK_TERRACOTTA, Blocks.SANDSTONE, Blocks.RED_SANDSTONE, Blocks.MYCELIUM, Blocks.SNOW, Blocks.PACKED_ICE);
-    private int waterLevel;
     private final float[] field_202536_i = new float[1024];
 
     public OthershoreCanyonCaveCarver(Codec<ProbabilityConfig> p_i231916_1_) {
@@ -38,11 +37,10 @@ public class OthershoreCanyonCaveCarver extends WorldCarver<ProbabilityConfig> {
     }
 
     public boolean carveRegion(IChunk chunk, Function<BlockPos, Biome> biomePos, Random rand, int seaLevel, int chunkXOffset, int chunkZOffset, int chunkX, int chunkZ, BitSet carvingMask, ProbabilityConfig config) {
-        waterLevel = rand.nextInt(16) + 16;
         int i = (this.func_222704_c() * 2 - 1) * 16;
-        double d0 = (double)(chunkXOffset * 16 + rand.nextInt(16));
-        double d1 = (double)(rand.nextInt(rand.nextInt(40) + 8) + 20);
-        double d2 = (double)(chunkZOffset * 16 + rand.nextInt(16));
+        double d0 = chunkXOffset * 16 + rand.nextInt(16);
+        double d1 = rand.nextInt(rand.nextInt(40) + 8) + 20;
+        double d2 = chunkZOffset * 16 + rand.nextInt(16);
         float f = rand.nextFloat() * ((float)Math.PI * 2F);
         float f1 = (rand.nextFloat() - 0.5F) * 2.0F / 8.0F;
         double d3 = 3.0D;
@@ -53,8 +51,8 @@ public class OthershoreCanyonCaveCarver extends WorldCarver<ProbabilityConfig> {
         return true;
     }
 
-    private void func_227204_a_(IChunk chunk, Function<BlockPos, Biome> biomePos, long p_227204_3_, int seaLevel, int chunkX, int chunkZ, double p_227204_8_, double p_227204_10_, double p_227204_12_, float p_227204_14_, float p_227204_15_, float p_227204_16_, int p_227204_17_, int p_227204_18_, double p_227204_19_, BitSet p_227204_21_) {
-        Random random = new Random(p_227204_3_);
+    private void func_227204_a_(IChunk chunk, Function<BlockPos, Biome> biomePos, long seed, int seaLevel, int chunkX, int chunkZ, double p_227204_8_, double p_227204_10_, double p_227204_12_, float p_227204_14_, float p_227204_15_, float p_227204_16_, int p_227204_17_, int p_227204_18_, double p_227204_19_, BitSet p_227204_21_) {
+        Random random = new Random(seed);
         float f = 1.0F;
 
         for(int i = 0; i < 256; ++i) {
@@ -90,7 +88,7 @@ public class OthershoreCanyonCaveCarver extends WorldCarver<ProbabilityConfig> {
                     return;
                 }
 
-                this.func_227208_a_(chunk, biomePos, p_227204_3_, seaLevel, chunkX, chunkZ, p_227204_8_, p_227204_10_, p_227204_12_, d0, d1, p_227204_21_);
+                this.func_227208_a_(chunk, biomePos, seed, seaLevel, chunkX, chunkZ, p_227204_8_, p_227204_10_, p_227204_12_, d0, d1, p_227204_21_);
             }
         }
 
@@ -101,7 +99,7 @@ public class OthershoreCanyonCaveCarver extends WorldCarver<ProbabilityConfig> {
     }
 
     @Override
-    protected boolean carveBlock(IChunk chunk, Function<BlockPos, Biome> p_230358_2_, BitSet carvingMask, Random rand, BlockPos.Mutable p_230358_5_, BlockPos.Mutable p_230358_6_, BlockPos.Mutable p_230358_7_, int p_230358_8_, int p_230358_9_, int p_230358_10_, int posX, int posZ, int p_230358_13_, int posY, int p_230358_15_, MutableBoolean isSurface) {
+    protected boolean carveBlock(IChunk chunk, Function<BlockPos, Biome> biomePos, BitSet carvingMask, Random rand, BlockPos.Mutable p_230358_5_, BlockPos.Mutable p_230358_6_, BlockPos.Mutable p_230358_7_, int p_230358_8_, int p_230358_9_, int p_230358_10_, int posX, int posZ, int p_230358_13_, int posY, int p_230358_15_, MutableBoolean isSurface) {
         int i = p_230358_13_ | p_230358_15_ << 4 | posY << 8;
         if (carvingMask.get(i)) {
             return false;
@@ -118,14 +116,14 @@ public class OthershoreCanyonCaveCarver extends WorldCarver<ProbabilityConfig> {
             if (!this.canCarveBlock(blockstate, blockstate1)) {
                 return false;
             } else {
-                if (posY < 10) {
+                if (posY < 16) {
                     chunk.setBlockState(p_230358_5_, Blocks.WATER.getDefaultState(), false);
                 } else {
                     chunk.setBlockState(p_230358_5_, CAVE_AIR, false);
                     if (isSurface.isTrue()) {
                         p_230358_7_.setAndMove(p_230358_5_, Direction.DOWN);
                         if (chunk.getBlockState(p_230358_7_).isIn(ClinkerBlocks.PACKED_ASH.get())) {
-                            chunk.setBlockState(p_230358_7_, p_230358_2_.apply(p_230358_5_).getGenerationSettings().getSurfaceBuilderConfig().getTop(), false);
+                            chunk.setBlockState(p_230358_7_, biomePos.apply(p_230358_5_).getGenerationSettings().getSurfaceBuilderConfig().getTop(), false);
                         }
                     }
                 }

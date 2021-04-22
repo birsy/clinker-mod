@@ -26,15 +26,11 @@ public class OthershoreDimensionRenderInfo extends DimensionRenderInfo {
         return true;
     }
 
+
+
     @Nullable
     @Override
     public ISkyRenderHandler getSkyRenderHandler() {
         return new OthershoreSkyRenderer(mc);
-    }
-
-    @Nullable
-    @Override
-    public ICloudRenderHandler getCloudRenderHandler() {
-        return new OthershoreCloudRenderer(mc);
     }
 }

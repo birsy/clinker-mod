@@ -1,11 +1,13 @@
 package birsy.clinker.common.world.gen.carver.worleyimplementation;
 
+import birsy.clinker.core.registry.world.ClinkerDimensions;
 import com.google.common.base.MoreObjects;
 import com.mojang.serialization.Codec;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.biome.Biome;
@@ -48,36 +50,21 @@ public class WorleyCarver extends WorldCarver<ProbabilityConfig>
     private static int HAS_CAVES_FLAG = 129;
 
     private final float size;
-    private final float frequency1;
-    private final float frequency2;
 
-    private long seed = 0;
-
-    public WorleyCarver(Codec<ProbabilityConfig> config, int maxHeight, float size, float frequency1, float frequency2)
+    public WorleyCarver(Codec<ProbabilityConfig> config, int maxHeight, float size)
     {
         super(config, maxHeight);
         this.size = size; //-0.25f;
-        this.frequency1 = frequency1; //0.016f;
-        this.frequency2 = frequency2; //0.05f;
     }
-
-    private void debugValueAdjustments()
-    {
-        // lavaDepth = 10;
-        // noiseCutoff = 0.18F;
-        // warpAmplifier = 8.0F;
-        // easeInDepth = 15;
-    }
-
 
     public void init(long worldSeed)
     {
         worleyF1divF3 = new WorleyUtil((int) worldSeed);
-        worleyF1divF3.SetFrequency(frequency1);
+        worleyF1divF3.SetFrequency(0.016f);
 
         displacementNoisePerlin = new WorleyFastNoise((int) worldSeed);
         displacementNoisePerlin.SetNoiseType(WorleyFastNoise.NoiseType.Perlin);
-        displacementNoisePerlin.SetFrequency(frequency2);
+        displacementNoisePerlin.SetFrequency(0.05f);
 
         maxCaveHeight = 255;
         minCaveHeight = 1;
@@ -96,7 +83,8 @@ public class WorleyCarver extends WorldCarver<ProbabilityConfig>
     @Override
     public boolean carveRegion(IChunk chunkIn, Function<BlockPos, Biome> getBiomeFunction, Random rand, int seaLevel, int chunkXOffset, int chunkZOffset, int chunkX, int chunkZ, BitSet carvingMask, ProbabilityConfig config)
     {
-        init(12345);
+        init(1234);
+
         return carve(chunkIn, getBiomeFunction, rand, seaLevel, chunkX, chunkZ, chunkXOffset, chunkZOffset, carvingMask, config);
     }
 
@@ -107,7 +95,6 @@ public class WorleyCarver extends WorldCarver<ProbabilityConfig>
             return false;
         }
 
-        debugValueAdjustments();
         boolean logTime = false; //TODO turn off
         long start = 0;
         if (logTime)

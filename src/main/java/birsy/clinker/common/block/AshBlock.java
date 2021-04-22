@@ -1,6 +1,7 @@
 package birsy.clinker.common.block;
 
 import birsy.clinker.core.registry.ClinkerBlocks;
+import birsy.clinker.core.util.MathUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FallingBlock;
@@ -8,9 +9,13 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.FallingBlockEntity;
+import net.minecraft.particles.BlockParticleData;
 import net.minecraft.particles.ParticleTypes;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
@@ -25,14 +30,8 @@ public class AshBlock extends FallingBlock
 {
 	private final int dustColor;
 	
-	public AshBlock()
-	{
-		super(((Block.Properties.create(Material.EARTH, MaterialColor.GRAY)
-			  .hardnessAndResistance(0.5F)
-			  .sound(SoundType.SNOW)
-			  .harvestTool(ToolType.SHOVEL)
-				.tickRandomly()
-			  )));
+	public AshBlock(Properties properties) {
+		super(properties);
 		this.dustColor = 8616308;
 	}
 
@@ -63,7 +62,36 @@ public class AshBlock extends FallingBlock
 			}
 		}
 	}
-	
+
+	@Override
+	public void onEndFalling(World worldIn, BlockPos pos, BlockState fallingState, BlockState hitState, FallingBlockEntity fallingBlock) {
+		super.onEndFalling(worldIn, pos, fallingState, hitState, fallingBlock);
+		for (Direction direction : Direction.Plane.HORIZONTAL) {
+			this.addAshLayer(worldIn, pos.offset(direction), worldIn.getRandom().nextInt(3 - 1) + 1);
+			final float velocityMultiplier = 20;
+			for (int i = 0; i < 5; i++) {
+				worldIn.addParticle(new BlockParticleData(ParticleTypes.FALLING_DUST, fallingState),
+						MathUtils.getRandomFloatBetween(worldIn.getRandom(), pos.getX(), pos.getX() + 1),
+						pos.getY(),
+						MathUtils.getRandomFloatBetween(worldIn.getRandom(), pos.getZ(), pos.getZ() + 1),
+						MathUtils.getRandomFloatBetween(worldIn.getRandom(), 3, 6) * velocityMultiplier,
+						MathUtils.getRandomFloatBetween(worldIn.getRandom(), 3, 6) * velocityMultiplier,
+						MathUtils.getRandomFloatBetween(worldIn.getRandom(), 3, 6) * velocityMultiplier);
+			}
+		}
+	}
+
+	public void addAshLayer(World worldIn, BlockPos pos, int amount) {
+		BlockState blockState = worldIn.getBlockState(pos);
+		if (!blockState.isSolid()) {
+			if (blockState.isIn(ClinkerBlocks.ASH_LAYER.get())) {
+				worldIn.setBlockState(pos, blockState.with(AshLayerBlock.LAYERS, MathHelper.clamp(amount + blockState.get(AshLayerBlock.LAYERS), 0, 8)), 1);
+			} else {
+				worldIn.setBlockState(pos, ClinkerBlocks.ASH_LAYER.get().getDefaultState().with(AshLayerBlock.LAYERS, MathHelper.clamp(amount, 0, 8)), 1);
+			}
+		}
+	}
+
 	@OnlyIn(Dist.CLIENT)
 	public int getDustColor(BlockState state, IBlockReader p_189876_2_, BlockPos p_189876_3_) {
 	   return this.dustColor;

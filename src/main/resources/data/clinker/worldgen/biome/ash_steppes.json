@@ -33,7 +33,8 @@
   "surface_builder": "clinker:ash_steppes_builder",
   "carvers": {
     "air": [
-      "clinker:othershore_large_caves",
+      "clinker:lead_ore_vein",
+      "clinker:othershore_noodle_caves",
       "clinker:othershore_canyon_cave"
     ]
   },
@@ -50,18 +51,15 @@
     [
     ],
     [
+      "clinker:large_speleothem",
       "clinker:cave_puddle",
       "clinker:cave_floor",
       "clinker:cobbled_brimstone_vein"
     ],
     [],
     [
-      "clinker:bramble_cave",
-      "clinker:rootstalk_cave",
       "clinker:ash_dune",
-      "clinker:rooted_ash_ore",
-      "clinker:rooted_packed_ash_ore",
-      "clinker:patch_rootstalk_root"
+      "clinker:rooted_ash"
     ],
     [
       "minecraft:freeze_top_layer"
