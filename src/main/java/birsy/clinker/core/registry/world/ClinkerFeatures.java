@@ -1,5 +1,6 @@
 package birsy.clinker.core.registry.world;
 import birsy.clinker.common.world.feature.enviornment.*;
+import birsy.clinker.common.world.feature.plant.BrambleBlobFeature;
 import birsy.clinker.common.world.feature.plant.BrambleRootsFeature;
 import birsy.clinker.common.world.feature.plant.RootedAshFeature;
 import birsy.clinker.core.Clinker;
@@ -20,8 +21,7 @@ public class ClinkerFeatures
 		PLACEMENT.register(FMLJavaModLoadingContext.get().getModEventBus());
 	}
 
-	// Soon, my sweet prince...!
-	public static final RegistryObject<Feature<NoFeatureConfig>> BRAMBLE_ROOTS = FEATURES.register("bramble_roots", () -> new BrambleRootsFeature(NoFeatureConfig.field_236558_a_));
+	public static final RegistryObject<Feature<NoFeatureConfig>> BRAMBLE_BLOB = FEATURES.register("bramble_blob", () -> new BrambleBlobFeature(NoFeatureConfig.field_236558_a_));
 	public static final RegistryObject<Feature<NoFeatureConfig>> ROOTED_ASH = FEATURES.register("rooted_ash", () -> new RootedAshFeature(NoFeatureConfig.field_236558_a_));
 
 	public static final RegistryObject<Feature<ColumnConfig>> CRAGROCK = FEATURES.register("cragrock", () -> new CragrockFeature(ColumnConfig.CODEC));

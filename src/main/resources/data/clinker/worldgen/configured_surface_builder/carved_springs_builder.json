@@ -1,0 +1,14 @@
+{
+  "config": {
+    "top_material": {
+      "Name": "clinker:ash"
+    },
+    "under_material": {
+      "Name": "clinker:packed_ash"
+    },
+    "underwater_material": {
+      "Name": "clinker:rocky_packed_ash"
+    }
+  },
+  "type": "clinker:carved_springs_builder"
+}

@@ -1,0 +1,80 @@
+{
+  "scale": 0.07,
+  "depth": 2.1,
+  "effects": {
+    "mood_sound": {
+      "sound": "minecraft:ambient.basalt_deltas.mood",
+      "tick_delay": 6000,
+      "block_search_extent": 8,
+      "offset": 2.0
+    },
+    "additions_sound": {
+      "sound": "clinker:ambient.ash_plains.additions",
+      "tick_chance": 0.0003
+    },
+    "music": {
+      "sound": "minecraft:music.nether.basalt_deltas",
+      "min_delay": 12000,
+      "max_delay": 24000,
+      "replace_current_music": false
+    },
+    "particle": {
+      "options": {
+        "type": "minecraft:ash"
+      },
+      "probability": 0.038093334
+    },
+    "ambient_sound": "clinker:ambient.ash_plains.loop",
+    "sky_color": 6118748,
+    "fog_color": 9539975,
+    "water_color": 6578522,
+    "water_fog_color": 723467
+  },
+  "surface_builder": "clinker:carved_springs_builder",
+  "carvers": {
+    "air": [
+      "clinker:lead_ore_vein",
+      "clinker:othershore_noodle_caves",
+      "clinker:othershore_canyon_cave"
+    ]
+  },
+  "features": [
+    [],
+    [
+    ],
+    [],
+    [],
+    [],
+    [
+    ],
+    [
+      "clinker:large_speleothem",
+      "clinker:cave_puddle",
+      "clinker:cave_floor",
+      "clinker:cobbled_brimstone_vein"
+    ],
+    [],
+    [
+      "clinker:ash_dune",
+      "clinker:rooted_ash",
+      "clinker:bramble_blob"
+    ],
+    [
+      "minecraft:freeze_top_layer"
+    ]
+  ],
+  "starts": [],
+  "spawners": {
+    "monster": [],
+    "creature": [],
+    "water_creature": [],
+    "water_ambient": [],
+    "misc": []
+  },
+  "spawn_costs": {},
+  "player_spawn_friendly": false,
+  "precipitation": "none",
+  "temperature": 0.6,
+  "downfall": 0.6,
+  "category": "none"
+}

@@ -5,10 +5,10 @@ import java.util.Set;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 
-import birsy.clinker.common.entity.monster.GnomadAxemanEntity;
+import birsy.clinker.common.entity.monster.gnomad.GnomadAxemanEntity;
 import com.google.common.collect.Sets;
 
-import birsy.clinker.common.entity.monster.AbstractGnomadEntity;
+import birsy.clinker.common.entity.monster.gnomad.AbstractGnomadEntity;
 import birsy.clinker.common.entity.monster.HyenaEntity;
 import birsy.clinker.core.registry.ClinkerSounds;
 import net.minecraft.block.BlockState;

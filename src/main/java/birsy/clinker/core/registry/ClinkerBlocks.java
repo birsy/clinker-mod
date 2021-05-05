@@ -91,7 +91,7 @@ public class ClinkerBlocks
 	public static AbstractBlock.Properties getBrimstoneProperties() {
 		return AbstractBlock.Properties.create(Material.ROCK, MaterialColor.BROWN_TERRACOTTA)
 				  .hardnessAndResistance(2.75F, 75.0F)
-				  .sound(SoundType.GILDED_BLACKSTONE)
+				  .sound(SoundType.BASALT)
 				  .harvestLevel(1)
 				  .harvestTool(ToolType.PICKAXE);
 	}
@@ -103,10 +103,10 @@ public class ClinkerBlocks
 	
 	public static final RegistryObject<Block> BRIMSTONE_PILLAR = createBlock("brimstone_pillar", () -> new RotatedPillarBlock(getBrimstoneProperties()), Clinker.CLINKER_BLOCKS);
 	
-	public static final RegistryObject<Block> COBBLED_BRIMSTONE = createBlock("cobbled_brimstone", () -> new Block(getBrimstoneProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> COBBLED_BRIMSTONE_SLAB = createBlock("cobbled_brimstone_slab", () -> new SlabBlock(getBrimstoneProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> COBBLED_BRIMSTONE_STAIRS = createBlock("cobbled_brimstone_stairs", () -> new StairsBlock(() -> COBBLED_BRIMSTONE.get().getDefaultState(), getBrimstoneProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> COBBLED_BRIMSTONE_WALL = createBlock("cobbled_brimstone_wall", () -> new WallBlock(getBrimstoneProperties()), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> COBBLED_BRIMSTONE = createBlock("cobbled_brimstone", () -> new Block(getBrimstoneProperties().sound(SoundType.GILDED_BLACKSTONE)), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> COBBLED_BRIMSTONE_SLAB = createBlock("cobbled_brimstone_slab", () -> new SlabBlock(getBrimstoneProperties().sound(SoundType.GILDED_BLACKSTONE)), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> COBBLED_BRIMSTONE_STAIRS = createBlock("cobbled_brimstone_stairs", () -> new StairsBlock(() -> COBBLED_BRIMSTONE.get().getDefaultState(), getBrimstoneProperties().sound(SoundType.GILDED_BLACKSTONE)), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> COBBLED_BRIMSTONE_WALL = createBlock("cobbled_brimstone_wall", () -> new WallBlock(getBrimstoneProperties().sound(SoundType.GILDED_BLACKSTONE)), Clinker.CLINKER_BLOCKS);
 	
 	public static final RegistryObject<Block> POLISHED_BRIMSTONE = createBlock("polished_brimstone", () -> new Block(getBrimstoneProperties()), Clinker.CLINKER_BLOCKS);
 	public static final RegistryObject<Block> POLISHED_BRIMSTONE_SLAB = createBlock("polished_brimstone_slab", () -> new SlabBlock(getBrimstoneProperties()), Clinker.CLINKER_BLOCKS);
@@ -257,8 +257,10 @@ public class ClinkerBlocks
 	public static final RegistryObject<Block> STRIPPED_THORN_LOG = createBlock("stripped_thorn_log", ThornLogConnectedBlock::new, Clinker.CLINKER_BLOCKS);
 	
 	public static final RegistryObject<Block> ROOT_GRASS = createBlock("root_grass", RootGrassBlock::new, Clinker.CLINKER_BLOCKS);
-	
-	
+
+	public static final RegistryObject<Block> CAVE_MOSS = createBlock("cave_moss", CaveMossBlock::new, Clinker.CLINKER_BLOCKS);
+
+
 	//Riek Plant
 	public static final RegistryObject<Block> RIEK_PLANT = createBlock("riek_plant", RiekPlantBlock::new, Clinker.CLINKER_BLOCKS);
 	public static final RegistryObject<Block> RIEK_TUBE = createBlock("riek_tube", RiekTubeBlock::new, Clinker.CLINKER_BLOCKS);

@@ -7,33 +7,64 @@ import birsy.clinker.common.entity.merchant.GnomeEntity;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.LivingRenderer;
+import net.minecraft.client.renderer.entity.layers.LayerRenderer;
+import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import java.util.Random;
+
 @OnlyIn(Dist.CLIENT)
-public class GnomeArrowLayer<T extends GnomeEntity, M extends GnomeModel<T>> extends GnomeStuckInBodyLayer<T, M> {
-   private final EntityRendererManager field_215336_a;
-   private ArrowEntity field_229130_b_;
+public class GnomeArrowLayer<T extends GnomeEntity, M extends GnomeModel<T>> extends LayerRenderer<T, M> {
+   private final EntityRendererManager renderManager;
+   private ArrowEntity arrowEntity;
 
    public GnomeArrowLayer(LivingRenderer<T, M> rendererIn) {
       super(rendererIn);
-      this.field_215336_a = rendererIn.getRenderManager();
+      this.renderManager = rendererIn.getRenderManager();
    }
 
-   protected int func_225631_a_(T p_225631_1_) {
-      return p_225631_1_.getArrowCountInEntity();
+   private int getArrowsInEntity(T entity) {
+      return entity.getArrowCountInEntity();
    }
 
-   protected void func_225632_a_(MatrixStack p_225632_1_, IRenderTypeBuffer p_225632_2_, int p_225632_3_, Entity p_225632_4_, float p_225632_5_, float p_225632_6_, float p_225632_7_, float p_225632_8_) {
-      float f = MathHelper.sqrt(p_225632_5_ * p_225632_5_ + p_225632_7_ * p_225632_7_);
-      this.field_229130_b_ = new ArrowEntity(p_225632_4_.world, p_225632_4_.getPosX(), p_225632_4_.getPosY(), p_225632_4_.getPosZ());
-      this.field_229130_b_.rotationYaw = (float)(Math.atan2((double)p_225632_5_, (double)p_225632_7_) * (double)(180F / (float)Math.PI));
-      this.field_229130_b_.rotationPitch = (float)(Math.atan2((double)p_225632_6_, (double)f) * (double)(180F / (float)Math.PI));
-      this.field_229130_b_.prevRotationYaw = this.field_229130_b_.rotationYaw;
-      this.field_229130_b_.prevRotationPitch = this.field_229130_b_.rotationPitch;
-      this.field_215336_a.renderEntityStatic(this.field_229130_b_, 0.0D, 0.0D, 0.0D, 0.0F, p_225632_8_, p_225632_1_, p_225632_2_, p_225632_3_);
+   private void func_225632_a_(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, Entity entitylivingbaseIn, float xRand, float yRand, float zRand, float partialTicksIn) {
+      float f = MathHelper.sqrt(xRand * xRand + zRand * zRand);
+      this.arrowEntity = new ArrowEntity(entitylivingbaseIn.world, entitylivingbaseIn.getPosX(), entitylivingbaseIn.getPosY(), entitylivingbaseIn.getPosZ());
+      this.arrowEntity.rotationYaw = (float)(Math.atan2(xRand, zRand) * (double) (180F / (float)Math.PI));
+      this.arrowEntity.rotationPitch = (float)(Math.atan2(yRand, f) * (double) (180F / (float)Math.PI));
+      this.arrowEntity.prevRotationYaw = this.arrowEntity.rotationYaw;
+      this.arrowEntity.prevRotationPitch = this.arrowEntity.rotationPitch;
+      this.renderManager.renderEntityStatic(this.arrowEntity, 0.0D, 0.0D, 0.0D, 0.0F, partialTicksIn, matrixStackIn, bufferIn, packedLightIn);
+   }
+
+   public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, T entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+      int i = this.getArrowsInEntity(entitylivingbaseIn);
+      Random random = new Random(entitylivingbaseIn.getEntityId());
+      if (i > 0) {
+         for(int j = 0; j < i; ++j) {
+            matrixStackIn.push();
+            ModelRenderer modelrenderer = this.getEntityModel().getRandomModelRenderer(random);
+            ModelRenderer.ModelBox modelBox = modelrenderer.getRandomCube(random);
+            modelrenderer.translateRotate(matrixStackIn);
+            float xRand = random.nextFloat();
+            float yRand = random.nextFloat();
+            float zRand = random.nextFloat();
+            
+            float arrowPosX = MathHelper.lerp(xRand, modelBox.posX1, modelBox.posX2) / 16.0F;
+            float arrowPosY = MathHelper.lerp(yRand, modelBox.posY1, modelBox.posY2) / 16.0F;
+            float arrowPosZ = MathHelper.lerp(zRand, modelBox.posZ1, modelBox.posZ2) / 16.0F;
+            matrixStackIn.translate(arrowPosX, arrowPosY, arrowPosZ);
+            xRand = -1.0F * (xRand * 2.0F - 1.0F);
+            yRand = -1.0F * (yRand * 2.0F - 1.0F);
+            zRand = -1.0F * (zRand * 2.0F - 1.0F);
+            this.func_225632_a_(matrixStackIn, bufferIn, packedLightIn, entitylivingbaseIn, xRand, yRand, zRand, partialTicks);
+            matrixStackIn.pop();
+         }
+
+      }
    }
 }

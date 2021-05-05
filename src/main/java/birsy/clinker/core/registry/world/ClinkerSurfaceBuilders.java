@@ -1,6 +1,7 @@
 package birsy.clinker.core.registry.world;
 
 import birsy.clinker.common.world.gen.surfacebuilder.AshSteppesSurfaceBuilder;
+import birsy.clinker.common.world.gen.surfacebuilder.CarvedSpringsSurfaceBuilder;
 import birsy.clinker.core.Clinker;
 import net.minecraft.world.gen.surfacebuilders.SurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilders.SurfaceBuilderConfig;
@@ -18,4 +19,5 @@ public class ClinkerSurfaceBuilders
 	}
 	
 	public static final RegistryObject<SurfaceBuilder<SurfaceBuilderConfig>> ASH_STEPPES_BUILDER = SURFACE_BUILDERS.register("ash_steppes_builder", () -> new AshSteppesSurfaceBuilder(SurfaceBuilderConfig.field_237203_a_));
+	public static final RegistryObject<SurfaceBuilder<SurfaceBuilderConfig>> CARVED_SPRINGS_BUILDER = SURFACE_BUILDERS.register("carved_springs_builder", () -> new CarvedSpringsSurfaceBuilder(SurfaceBuilderConfig.field_237203_a_));
 }

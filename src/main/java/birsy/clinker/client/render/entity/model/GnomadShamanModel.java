@@ -6,7 +6,7 @@ import com.mojang.blaze3d.vertex.IVertexBuilder;
 
 import birsy.clinker.client.render.util.BirsyBaseModel;
 import birsy.clinker.client.render.util.BirsyModelRenderer;
-import birsy.clinker.common.entity.monster.GnomadShamanEntity;
+import birsy.clinker.common.entity.monster.gnomad.GnomadShamanEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 

@@ -1,0 +1,23 @@
+{
+  "config": {
+    "can_replace": false,
+    "project": false,
+    "need_water": false,
+    "xspread": 8,
+    "yspread": 3,
+    "zspread": 8,
+    "whitelist": [],
+    "blacklist": [],
+    "tries": 128,
+    "state_provider": {
+      "state": {
+        "Name": "clinker:cave_moss"
+      },
+      "type": "minecraft:simple_state_provider"
+    },
+    "block_placer": {
+      "type": "minecraft:simple_block_placer"
+    }
+  },
+  "type": "minecraft:random_patch"
+}

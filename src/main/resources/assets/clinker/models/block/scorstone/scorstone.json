@@ -1,0 +1,7 @@
+{
+  "parent": "block/cube_column",
+  "textures": {
+    "end": "clinker:blocks/scorstone/cobbled_scorstone",
+    "side": "clinker:blocks/scorstone/scorstone"
+  }
+}

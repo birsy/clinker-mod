@@ -1,0 +1,6 @@
+{
+  "parent": "block/cross",
+  "textures": {
+    "cross": "clinker:blocks/cave_moss"
+  }
+}

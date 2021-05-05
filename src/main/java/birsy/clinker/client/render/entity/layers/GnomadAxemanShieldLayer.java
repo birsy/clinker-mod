@@ -2,7 +2,7 @@ package birsy.clinker.client.render.entity.layers;
 
 import birsy.clinker.client.render.entity.model.GnomadAxemanModel;
 import birsy.clinker.client.render.entity.model.GnomadShieldModel;
-import birsy.clinker.common.entity.monster.GnomadAxemanEntity;
+import birsy.clinker.common.entity.monster.gnomad.GnomadAxemanEntity;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;

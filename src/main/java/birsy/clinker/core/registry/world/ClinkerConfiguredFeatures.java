@@ -40,6 +40,12 @@ public class ClinkerConfiguredFeatures {
     public static final ConfiguredFeature<?, ?> BRAMBLE_CAVE = Feature.DISK.withConfiguration(new SphereReplaceConfig(ClinkerBlocks.BRAMBLE.get().getDefaultState(), FeatureSpread.func_242253_a(5, 6), 5, ImmutableList.of(Blocks.CAVE_AIR.getDefaultState(), ClinkerBlocks.FOUL_AIR.get().getDefaultState()))).withPlacement(Placement.LAVA_LAKE.configure(new ChanceConfig(3)));
     public static final ConfiguredFeature<?, ?> ROOTSTALK_CAVE = Feature.DISK.withConfiguration(new SphereReplaceConfig(ClinkerBlocks.ROOTSTALK.get().getDefaultState(), FeatureSpread.func_242253_a(5, 6), 5, ImmutableList.of(Blocks.CAVE_AIR.getDefaultState(), ClinkerBlocks.FOUL_AIR.get().getDefaultState()))).withPlacement(Placement.LAVA_LAKE.configure(new ChanceConfig(3)));
 
+    //plants
+    public static final ConfiguredFeature<?, ?> CAVE_MOSS_PATCH = Feature.RANDOM_PATCH.withConfiguration((new BlockClusterFeatureConfig.Builder(new SimpleBlockStateProvider(ClinkerBlocks.CAVE_MOSS.get().getDefaultState()), SimpleBlockPlacer.PLACER)).tries(128).func_227317_b_().build());
+    public static final ConfiguredFeature<?, ?> CAVE_MOSS_NORMAL = CAVE_MOSS_PATCH.withPlacement(Features.Placements.PATCH_PLACEMENT).chance(8);
+
+    public static final ConfiguredFeature<?, ?> BRAMBLE_BLOB = ClinkerFeatures.BRAMBLE_BLOB.get().withConfiguration(IFeatureConfig.NO_FEATURE_CONFIG).range(128).square().func_242731_b(30);
+
     public static void registerConfiguredFeatures() {
         Registry<ConfiguredFeature<?, ?>> registry = WorldGenRegistries.CONFIGURED_FEATURE;
 
@@ -61,6 +67,11 @@ public class ClinkerConfiguredFeatures {
 
         Registry.register(registry, new ResourceLocation(Clinker.MOD_ID, "bramble_cave"), BRAMBLE_CAVE);
         Registry.register(registry, new ResourceLocation(Clinker.MOD_ID, "rootstalk_cave"), ROOTSTALK_CAVE);
+
+        Registry.register(registry, new ResourceLocation(Clinker.MOD_ID, "cave_moss_patch"), CAVE_MOSS_PATCH);
+        Registry.register(registry, new ResourceLocation(Clinker.MOD_ID, "cave_moss_normal"), CAVE_MOSS_NORMAL);
+
+        Registry.register(registry, new ResourceLocation(Clinker.MOD_ID, "bramble_blob"), BRAMBLE_BLOB);
 
     }
 }

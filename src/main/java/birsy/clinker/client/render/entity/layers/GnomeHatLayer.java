@@ -22,8 +22,8 @@ public class GnomeHatLayer extends LayerRenderer<GnomeEntity, GnomeModel<GnomeEn
    
    public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, GnomeEntity entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
       if (!entitylivingbaseIn.isInvisible()) {
-         float[] afloat = entitylivingbaseIn.getHatColor(entitylivingbaseIn).getColorComponentValues();
-         renderCutoutModel(this.getEntityModel(), GNOME_HAT, matrixStackIn, bufferIn, packedLightIn, entitylivingbaseIn, afloat[0], afloat[1], afloat[2]);
+         float[] color = entitylivingbaseIn.getHatColor(entitylivingbaseIn).getColorComponentValues();
+         renderCutoutModel(this.getEntityModel(), GNOME_HAT, matrixStackIn, bufferIn, packedLightIn, entitylivingbaseIn, color[0], color[1], color[2]);
       }
    }
 }

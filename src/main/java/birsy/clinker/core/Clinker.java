@@ -104,6 +104,8 @@ public class Clinker
         RenderTypeLookup.setRenderLayer(ClinkerBlocks.WITTLEBULB.get(), RenderType.getCutout());
         RenderTypeLookup.setRenderLayer(ClinkerBlocks.BLOOMING_WITTLEBULB.get(), RenderType.getCutout());
 
+        RenderTypeLookup.setRenderLayer(ClinkerBlocks.CAVE_MOSS.get(), RenderType.getCutout());
+
         RenderTypeLookup.setRenderLayer(ClinkerBlocks.BRINE.get(), RenderType.getTranslucent());
         event.enqueueWork(() -> {
             final Map<Fluid, RenderType> TYPES_BY_FLUID = Util.make(Maps.newHashMap(), (map) -> {

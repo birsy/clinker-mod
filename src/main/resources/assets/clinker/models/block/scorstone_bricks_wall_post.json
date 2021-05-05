@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:block/template_wall_post",
-  "textures": {
-    "wall": "clinker:blocks/scorstone/scorstone_bricks_var/scorstone_bricks"
-  }
-}

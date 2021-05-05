@@ -1,13 +1,20 @@
 package birsy.clinker.client.render.entity;
 
+import birsy.clinker.client.render.entity.layers.GnomadAxemanArmorLayer;
 import birsy.clinker.client.render.entity.layers.GnomadAxemanBuffLayer;
 import birsy.clinker.client.render.entity.layers.GnomadAxemanShieldLayer;
 import birsy.clinker.client.render.entity.layers.GnomeHeldItemLayer;
+import birsy.clinker.client.render.entity.model.GnomadArmorModel;
 import birsy.clinker.client.render.entity.model.GnomadAxemanModel;
-import birsy.clinker.common.entity.monster.GnomadAxemanEntity;
+import birsy.clinker.common.entity.monster.gnomad.GnomadAxemanEntity;
 import birsy.clinker.core.Clinker;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.ResourceLocation;
 
 import java.time.LocalDate;
@@ -17,8 +24,10 @@ public class GnomadAxemanRenderer extends MobRenderer<GnomadAxemanEntity, Gnomad
 {
 	protected static final ResourceLocation TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/entity/gnomad/axeman/gnomad_axeman.png");
 	protected static final ResourceLocation SANTA_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/entity/gnomad/axeman/gnomad_axeman_santa.png");
-	protected static final ResourceLocation BUFF_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/entity/gnomad/axeman/gnomad_axeman_armor.png");
+
+	protected static final ResourceLocation BUFF_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/entity/gnomad/axeman/gnomad_axeman_healing.png");
 	protected static final ResourceLocation SHIELD_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/entity/gnomad/axeman/gnomad_axeman_shield.png");
+
 
 	public GnomadAxemanRenderer(EntityRendererManager renderManagerIn) {
 		super(renderManagerIn, new GnomadAxemanModel<>(1), 0.7F);
@@ -40,5 +49,11 @@ public class GnomadAxemanRenderer extends MobRenderer<GnomadAxemanEntity, Gnomad
         }
         
         return TEXTURE;
+	}
+
+	@Override
+	public void render(GnomadAxemanEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
+		this.entityModel.setArmorVisibility(entityIn);
+		super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
 	}
 }

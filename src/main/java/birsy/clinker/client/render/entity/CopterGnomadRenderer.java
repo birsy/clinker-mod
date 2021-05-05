@@ -2,7 +2,7 @@ package birsy.clinker.client.render.entity;
 
 import birsy.clinker.client.render.entity.layers.GnomeHeldItemLayer;
 import birsy.clinker.client.render.entity.model.CopterGnomadModel;
-import birsy.clinker.common.entity.monster.GnomadHelicopterEntity;
+import birsy.clinker.common.entity.monster.gnomad.GnomadHelicopterEntity;
 import birsy.clinker.core.Clinker;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.MobRenderer;

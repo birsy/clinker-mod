@@ -1,9 +1,0 @@
-{
-  "parent": "minecraft:block/cube_bottom_top",
-  "textures": {
-    "top": "clinker:blocks/scorstone/scorstone_bricks_var/scorstone_bricks_top_top",
-    "bottom": "clinker:blocks/scorstone/scorstone_bricks_var/scorstone_bricks",
-    "side": "clinker:blocks/scorstone/scorstone_bricks_var/scorstone_bricks_top",
-    "particle": "clinker:blocks/scorstone/scorstone_bricks_var/scorstone_bricks"
-  }
-}

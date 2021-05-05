@@ -3,7 +3,7 @@ package birsy.clinker.common.entity.legacy;
 import java.util.EnumSet;
 import java.util.function.Predicate;
 
-import birsy.clinker.common.entity.monster.AbstractGnomadEntity;
+import birsy.clinker.common.entity.monster.gnomad.AbstractGnomadEntity;
 import birsy.clinker.common.entity.monster.HyenaEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;

@@ -1,10 +1,5 @@
 {
     "variants": {
-        "": [
-        {"model": "clinker:block/cobbled_scorstone"},
-        {"model": "clinker:block/cobbled_scorstone1"},
-        {"model": "clinker:block/cobbled_scorstone2"},
-        {"model": "clinker:block/cobbled_scorstone3"}
-        ]
+        "": {"model": "clinker:block/scorstone/cobbled_scorstone"}
     }
 }
