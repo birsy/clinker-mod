@@ -7,6 +7,8 @@ import birsy.clinker.client.render.entity.layers.GnomeHeldItemLayer;
 import birsy.clinker.client.render.entity.model.GnomeModel;
 import birsy.clinker.common.entity.merchant.GnomeEntity;
 import birsy.clinker.core.Clinker;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.util.ResourceLocation;
@@ -26,6 +28,16 @@ public class GnomeRenderer<T extends GnomeEntity, M extends GnomeModel<T>> exten
 	@Override
 	public ResourceLocation getEntityTexture(GnomeEntity entity) {
 		return TEXTURE;
+	}
+
+	@Override
+	public void render(GnomeEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
+		if (entityIn.hasCustomName()) {
+			if (entityIn.getCustomName().getString().equalsIgnoreCase("chrinkla")) {
+				matrixStackIn.scale(0.75F, 0.75F, 0.75F);
+			}
+		}
+		super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
 	}
 }
 

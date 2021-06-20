@@ -5,10 +5,7 @@ import birsy.clinker.common.entity.merchant.GnomeEntity;
 import birsy.clinker.common.entity.monster.HyenaEntity;
 import birsy.clinker.core.registry.ClinkerItems;
 import birsy.clinker.core.util.MathUtils;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.monster.EndermanEntity;
@@ -30,9 +27,12 @@ import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.IServerWorld;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+
+import javax.annotation.Nullable;
 
 public class GnomadAxemanEntity extends AbstractGnomadEntity
 {

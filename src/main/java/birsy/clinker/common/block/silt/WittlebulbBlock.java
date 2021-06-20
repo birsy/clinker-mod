@@ -36,7 +36,7 @@ public class WittlebulbBlock extends Block implements IGrowable, net.minecraftfo
     @Nullable
     public BlockState getStateForPlacement(BlockItemUseContext context) {
         BlockState blockstate = context.getWorld().getBlockState(context.getPos().offset(Direction.UP));
-        return blockstate.isIn(ClinkerBlocks.SILT_BLOCK.get()) ? this.grow(context.getWorld()) : ClinkerBlocks.WITTLEBULB.get().getDefaultState();
+        return blockstate.matchesBlock(ClinkerBlocks.SILT_BLOCK.get()) ? this.grow(context.getWorld()) : ClinkerBlocks.WITTLEBULB.get().getDefaultState();
     }
 
     public BlockState grow(IWorld world) {

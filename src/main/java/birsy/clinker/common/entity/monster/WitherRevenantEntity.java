@@ -96,7 +96,7 @@ public class WitherRevenantEntity extends MonsterEntity
 		}
 		
 		if(debug == true) {
-			this.setCustomName(new StringTextComponent("AI Phase: ").append(new StringTextComponent(this.phase.toString()).mergeStyle(TextFormatting.RED)));
+			this.setCustomName(new StringTextComponent("AI Phase: ").appendSibling(new StringTextComponent(this.phase.toString()).mergeStyle(TextFormatting.RED)));
 			this.setCustomNameVisible(true);
 		}
 		//(new StringTextComponent(this.phase.toString()).mergeStyle(TextFormatting.BLUE))

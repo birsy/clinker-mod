@@ -46,7 +46,7 @@ public class RootedAshBlock extends SpreadableAshBlock
 
 			for(int k = 0; k < min * min; ++k) {
 				BlockPos blockpos = blockPosIn.add(random.nextInt(min) - random.nextInt(min), random.nextInt(max) - random.nextInt(max), random.nextInt(min) - random.nextInt(min));
-				BlockState blockstate = featureConfigIn.field_227268_a_.getBlockState(random, blockpos);
+				BlockState blockstate = featureConfigIn.stateProvider.getBlockState(random, blockpos);
 				if (worldIn.isAirBlock(blockpos) && blockpos.getY() > 0 && blockstate.isValidPosition(worldIn, blockpos)) {
 					worldIn.setBlockState(blockpos, blockstate, 2);
 					++j;

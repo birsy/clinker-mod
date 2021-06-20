@@ -11,6 +11,7 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.pathfinding.PathType;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Direction;
@@ -68,7 +69,12 @@ public class BrambleBlock extends BushBlock implements net.minecraftforge.common
 	protected boolean isValidGround(BlockState state, IBlockReader worldIn, BlockPos pos) {
 		return true;
 	}
-	
+
+	public boolean allowsMovement(BlockState state, IBlockReader worldIn, BlockPos pos, PathType type)
+	{
+		return false;
+	}
+
 	public AbstractBlock.OffsetType getOffsetType() {
 		return AbstractBlock.OffsetType.XYZ;
 	}

@@ -32,6 +32,8 @@ public class BoxBeetleModel<T extends BoxBeetleEntity> extends BirsyBaseModel<T>
     private float bodyPitch;
     private float currentBodyPitch = 0;
 
+    public float flightTransition;
+
     public BoxBeetleModel() {
         this.textureWidth = 128;
         this.textureHeight = 128;
@@ -132,14 +134,10 @@ public class BoxBeetleModel<T extends BoxBeetleEntity> extends BirsyBaseModel<T>
         swing(this.boxBeetleRightElytra, 0.12F * globalSpeed, 0.03f * globalDegree, false, 0.5F, 0.07F, ageInTicks, 0.5F, Axis.X);
         swing(this.boxBeetleLeftElytra, 0.12F * globalSpeed, 0.03f * globalDegree, false, 1.5F, 0.07F, ageInTicks, 0.5F, Axis.X);
 
-        if (entityIn.getFlying() || entityIn.isAirBorne) {
-            float flightTransition = MathUtils.mapRange(0, 10, 1, 0, entityIn.flightOpenTransitionTicks);
-
+        if (entityIn.inFlight() || entityIn.isAirBorne) {
             this.bodyPitch = entityIn.getBodyPitch(0.5F);
             flyAnimation(entityIn, flightTransition, globalSpeed, globalDegree, ageInTicks, netHeadYaw, headPitch);
         } else {
-            float flightTransition = MathUtils.mapRange(0, 10, 0, 1, entityIn.flightCloseTransitionTicks);
-
             flyAnimation(entityIn, flightTransition, globalSpeed, globalDegree, ageInTicks, netHeadYaw, headPitch);
 
             bob(this.boxBeetleBody, 2.0F * walkSpeed, 2 * globalHeight, true, f, f1, true);
@@ -155,10 +153,6 @@ public class BoxBeetleModel<T extends BoxBeetleEntity> extends BirsyBaseModel<T>
             swing(this.boxBeetleRightArm, walkSpeed, 0.2f * globalDegree, false, 0.0F, 0.0F, f, f1, Axis.Y);
 
             bob(this.boxBeetleHead, 2.0F * walkSpeed, 2 * globalHeight, true, f + 5, f1, true);
-        }
-
-        if (entityIn.getBashing()) {
-            this.boxBeetleBody.rotateAngleX = 0.69F;
         }
     }
 
@@ -184,13 +178,6 @@ public class BoxBeetleModel<T extends BoxBeetleEntity> extends BirsyBaseModel<T>
         bob(this.boxBeetleBody, 0.5F * globalSpeed, 3 * 0.75F, false, ageInTicks, 0.5F, true);
 
         boxBeetleBody.rotationPointY =+ MathHelper.lerp(flightTransition, boxBeetleBody.defaultRotationPointY, (float)(boxBeetleBody.defaultRotationPointY + (Math.sin(ageInTicks * 0.5F * globalSpeed) * 0.5F * 3 * 0.75F - 0.5F * 3 * 0.75F)));
-
-        if (this.bodyPitch > 0.0F) {
-            this.bodyPitch = entityIn.getBodyPitch(0.5F);
-            currentBodyPitch = ModelUtils.func_228283_a_(currentBodyPitch, 3.0915928F, this.bodyPitch);
-
-            MathHelper.lerp(flightTransition, this.boxBeetleBody.defaultRotateAngleX, currentBodyPitch);
-        }
     }
     
     public void setLivingAnimations(T entityIn, float limbSwing, float limbSwingAmount, float partialTick) {

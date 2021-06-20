@@ -28,7 +28,7 @@ public class CaveFloorFeature extends Feature<BlobReplacementConfig> {
         if (blockpos == null) {
             return false;
         } else {
-            int i = config.func_242823_b().func_242259_a(rand);
+            int i = config.getRadius().getSpread(rand);
             boolean flag = false;
 
             for (BlockPos blockpos1 : BlockPos.getProximitySortedBoxPositionsIterator(blockpos, i, i, i)) {
@@ -38,7 +38,7 @@ public class CaveFloorFeature extends Feature<BlobReplacementConfig> {
                 if (!reader.getBlockState(blockpos1.up()).isSolid()) {
                     for (int j = 0; j < height; j++) {
                         BlockState blockstate = reader.getBlockState(blockPos$mutable);
-                        if (blockstate.isIn(ClinkerBlocks.BRIMSTONE.get()) || blockstate.isIn(ClinkerBlocks.COBBLED_BRIMSTONE.get()) || blockstate.isIn(Blocks.STONE)) {
+                        if (blockstate.matchesBlock(ClinkerBlocks.BRIMSTONE.get()) || blockstate.matchesBlock(ClinkerBlocks.COBBLED_BRIMSTONE.get()) || blockstate.matchesBlock(Blocks.STONE)) {
                             this.setBlockState(reader, blockPos$mutable, ClinkerBlocks.COBBLED_BRIMSTONE.get().getDefaultState());
 
                             blockPos$mutable.setY(blockpos1.getY() - j);
@@ -57,7 +57,7 @@ public class CaveFloorFeature extends Feature<BlobReplacementConfig> {
     private static BlockPos getValidYPos(IWorld worldIn, BlockPos.Mutable pos, Block block) {
         while (pos.getY() > 1) {
             BlockState blockstate = worldIn.getBlockState(pos);
-            if (blockstate.isIn(ClinkerBlocks.BRIMSTONE.get()) || blockstate.isIn(ClinkerBlocks.COBBLED_BRIMSTONE.get()) || blockstate.isIn(Blocks.STONE)) {
+            if (blockstate.matchesBlock(ClinkerBlocks.BRIMSTONE.get()) || blockstate.matchesBlock(ClinkerBlocks.COBBLED_BRIMSTONE.get()) || blockstate.matchesBlock(Blocks.STONE)) {
                 return pos;
             }
 

@@ -85,8 +85,8 @@ public class AshLayerBlock extends AshBlock implements IWaterLoggable
 
 	public boolean isValidPosition(BlockState state, IWorldReader worldIn, BlockPos pos) {
 		BlockState blockstate = worldIn.getBlockState(pos.down());
-		if (!blockstate.isIn(Blocks.ICE) && !blockstate.isIn(Blocks.PACKED_ICE) && !blockstate.isIn(Blocks.BARRIER)) {
-			if (!blockstate.isIn(Blocks.HONEY_BLOCK)) {
+		if (!blockstate.matchesBlock(Blocks.ICE) && !blockstate.matchesBlock(Blocks.PACKED_ICE) && !blockstate.matchesBlock(Blocks.BARRIER)) {
+			if (!blockstate.matchesBlock(Blocks.HONEY_BLOCK)) {
 				return Block.doesSideFillSquare(blockstate.getCollisionShape(worldIn, pos.down()), Direction.UP) || blockstate.getBlock() == this && blockstate.get(LAYERS) == 8;
 			} else {
 		           return true;
@@ -113,7 +113,7 @@ public class AshLayerBlock extends AshBlock implements IWaterLoggable
 	public BlockState getStateForPlacement(BlockItemUseContext context) {
 		BlockState blockstate = context.getWorld().getBlockState(context.getPos());
 
-		if (blockstate.isIn(this)) {
+		if (blockstate.matchesBlock(this)) {
 			int i = blockstate.get(LAYERS);
 			return blockstate.with(LAYERS, Integer.valueOf(Math.min(8, i + 1)));
 		} else {
@@ -136,18 +136,6 @@ public class AshLayerBlock extends AshBlock implements IWaterLoggable
 
 	protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
 		builder.add(LAYERS, WATERLOGGED);
-	}
-
-	@Override
-	public void addAshLayer(World worldIn, BlockPos pos, int amount) {
-		BlockState blockState = worldIn.getBlockState(pos);
-		if (!blockState.isSolid()) {
-			if (!blockState.isIn(ClinkerBlocks.ASH_LAYER.get())) {
-				worldIn.setBlockState(pos, ClinkerBlocks.ASH_LAYER.get().getDefaultState().with(AshLayerBlock.LAYERS, MathHelper.clamp(amount, 0, 8)), 1);
-			} else {
-				worldIn.setBlockState(pos, blockState.with(AshLayerBlock.LAYERS, MathHelper.clamp(amount + blockState.get(AshLayerBlock.LAYERS), 0, 8)), 1);
-			}
-		}
 	}
 }
 

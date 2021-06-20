@@ -1,15 +1,635 @@
+Build: 1.16.5-36.1.16 - Fri Apr 30 17:59:06 GMT 2021
+	trikzon:
+		Add barrels and barrels/wooden block and item tag (#7676)
+
+=========
+Build: 1.16.5-36.1.15 - Fri Apr 30 17:52:19 GMT 2021
+	knightminer4:
+		Fix shears not properly breaking tripwire (MC-129055) (#7718)
+
+=========
+Build: 1.16.5-36.1.14 - Fri Apr 30 17:42:34 GMT 2021
+	cpw:
+		try gradleVersion
+
+	cpw:
+		trim?
+
+	cpw:
+		toString?
+
+	cpw:
+		fiddle
+
+	cpw:
+		split ?
+
+	cpw:
+		try better?
+
+	cpw:
+		with
+
+	cpw:
+		debug
+
+	cpw:
+		debug
+
+	cpw:
+		debug
+
+	cpw:
+		debug
+
+	cpw:
+		tokenize
+
+	cpw:
+		map
+
+	cpw:
+		trims
+
+	cpw:
+		tidy
+
+	cpw:
+		try passing in env
+
+	cpw:
+		try passing in env
+
+	s8johost:
+		Fix Line endings in tooltips not handled properly in multiplayer screen Closes #7738 (#7739)
+
+=========
+Build: 1.16.5-36.1.13 - Fri Apr 23 20:28:12 GMT 2021
+	github:
+		Fix cats, phantoms and pillagers saying they're at BlockPos.ZERO during LivingSpawnEvent.CheckSpawn (#7722)
+
+=========
+Build: 1.16.5-36.1.12 - Fri Apr 23 05:59:08 GMT 2021
+	xfacthd:
+		Pass BlockPos to BlockParticleData used for "fall impact" particle (#7705)
+
+	matthrewp:
+		[1.16] Add missing Multipart Blockstate Builder feature: Nested condition groups (#7677)
+
+=========
+Build: 1.16.5-36.1.10 - Fri Apr 23 05:52:41 GMT 2021
+	sciwhiz12:
+		Check version ranges of optional dependencies when present (#7710)
+		
+		If an optional dependency is present, but it does not conform to the version range,
+		it will now error out in the same fashion as missing required dependencies, instead
+		of a more cryptic error down the line due to a missing method/class/field/etc.
+		
+		Implements and closes #7696
+
+=========
+Build: 1.16.5-36.1.9 - Fri Apr 23 05:45:51 GMT 2021
+	diesieben07:
+		Fix ClientVisualization crashing on systems without monitors (#7719)
+
+=========
+Build: 1.16.5-36.1.8 - Fri Apr 23 05:34:56 GMT 2021
+	atkarimarton:
+		Fix Furnace Minecarts going faster then vanilla (#7725)
+
+=========
+Build: 1.16.5-36.1.7 - Fri Apr 23 05:28:36 GMT 2021
+	ateranimavis:
+		Update for Forge's new maven (#7723)
+
+=========
+Build: 1.16.5-36.1.6 - Sun Apr 18 15:47:08 GMT 2021
+	cpw:
+		A bloody quote FFS
+		
+		Signed-off-by: cpw <cpw+github@weeksfamily.ca>
+
+	cpw:
+		Update for new maven
+		
+		Signed-off-by: cpw <cpw+github@weeksfamily.ca>
+
+=========
+Build: 1.16.5-36.1.4 - Fri Apr 02 18:31:07 GMT 2021
+	cpw:
+		Fix broken java9hacks for j16 handling..
+		
+		Signed-off-by: cpw <cpw+github@weeksfamily.ca>
+
+=========
+Build: 1.16.5-36.1.3 - Tue Mar 30 01:05:30 GMT 2021
+	SizableShrimp:
+		Add generic EntityTeleportEvent (#7694)
+
+=========
+Build: 1.16.5-36.1.2 - Mon Mar 22 06:24:40 GMT 2021
+	covers1624:
+		Restore SS version, fixes findFieldInstanceChecks
+
+=========
+Build: 1.16.5-36.1.1 - Wed Mar 17 17:04:46 GMT 2021
+	diesieben07:
+		Fix sign textures being stitched onto every texture atlas (#7690)
+
+=========
+Build: 1.16.5-36.1.0 - Mon Mar 15 22:11:58 GMT 2021
+	lexmanos:
+		Fix AT order, missed exec line and bump for RB.
+
+=========
+Build: 1.16.5-36.0.63 - Mon Mar 15 21:08:56 GMT 2021
+	diesieben07:
+		Fix wrong eye height when entity size changes (esp. baby animals) (#7628)
+
+=========
+Build: 1.16.5-36.0.62 - Mon Mar 15 21:02:36 GMT 2021
+	diesieben07:
+		Allow ITeleporter to override the vanilla teleport sound (#7682)
+
+=========
+Build: 1.16.5-36.0.61 - Mon Mar 15 20:20:21 GMT 2021
+	SizableShrimp:
+		Fix datapack exception related to EnumArgument with siblings (#7686)
+		
+		Invalid enum constants are now properly thrown as a CommandSyntaxException
+
+=========
+Build: 1.16.5-36.0.60 - Mon Mar 15 19:29:01 GMT 2021
+	42383791+kaydogz:
+		Add support for custom WoodTypes (#7623)
+
+=========
+Build: 1.16.5-36.0.59 - Mon Mar 15 19:19:16 GMT 2021
+	lexmanos:
+		Use JGit instead of GrGit now that jcenter is going away.
+		Update missed mapped name in MDK.
+
+=========
+Build: 1.16.5-36.0.58 - Sat Mar 13 19:07:24 GMT 2021
+	diesieben07:
+		Fix incorrectly replaced SRG names
+
+	gigaherz:
+		Fix yet another copypasta.
+
+	gigaherz:
+		Bump nashorn wrapper version.
+
+=========
+Build: 1.16.5-36.0.55 - Fri Mar 12 18:51:48 GMT 2021
+	ateranimavis:
+		Fix potential Deadlock when using custom Item entities. (#7532)
+		
+		Be careful when adding Entities during Chunk Load (#7519) 
+
+=========
+Build: 1.16.5-36.0.54 - Fri Mar 12 02:04:32 GMT 2021
+	gigaherz:
+		Fix copypasta.
+
+=========
+Build: 1.16.5-36.0.53 - Fri Mar 12 00:11:22 GMT 2021
+	curle:
+		Automatically fix some issues with configurations deemed invalid for simple reasons (#7671)
+
+=========
+Build: 1.16.5-36.0.52 - Thu Mar 11 20:59:54 GMT 2021
+	gigaherz:
+		Introduce a new feature that lets mods know if optional mods and optional network channels are present in the remote.
+		Allow connections from forge versions that don't have the vanilla splitter.
+
+	gigaherz:
+		Bulk update license year, and use replacement variable so that the current year is always used.
+
+	gigaherz:
+		Bump SpecialSource
+
+	gigaherz:
+		Add coremod that injects bouncer methods to work around name conflicts with official names.
+		Fixes a binary break.
+
+=========
+Build: 1.16.5-36.0.48 - Tue Mar 09 22:22:20 GMT 2021
+	lexmanos:
+		Update to FG4, and Gradle 6.8.
+
+	lexmanos:
+		Regenerate patches with relative headers. This should lower conflicts in future PRs.
+		Convert Forge to use Official mappings.
+		Mojang released their obfuscation mappings but we have not used them up until now due to wanting to get their license to be more explicitly permissive.
+		It is clear that their intent is to allow us to use their names for developing mods like this.
+		See the full wording, and our interpretation here: https://github.com/MinecraftForge/MCPConfig/blob/master/Mojang.md
+
+=========
+Build: 1.16.5-36.0.46 - Thu Mar 04 20:15:10 GMT 2021
+	diesieben07:
+		Support splitting vanilla packets that are too large on forge<->forge connections (#7485)
+		
+		Currently only for SUpdateRecipesPacket and STagsListPacket that blow up with huge datapacks
+
+=========
+Build: 1.16.5-36.0.45 - Wed Mar 03 20:50:47 GMT 2021
+	pupnewfster:
+		Fix a few places where the vanilla method was being called instead of the forge one (#7535)
+		
+		Cleanup javadocs references slightly, fix a couple spots not using the proper forge hooks, and remove a couple unneeded patches
+		Update deprecation comment on isAir
+
+=========
+Build: 1.16.5-36.0.44 - Wed Mar 03 05:29:04 GMT 2021
+	usfirepilot123:
+		Add Opacity to ForgeHooksClient#renderMainMenu (#7660)
+
+=========
+Build: 1.16.5-36.0.43 - Thu Feb 25 02:37:09 GMT 2021
+	oriondevelopment:
+		Add support for caching of configuration values. (#7608)
+
+=========
+Build: 1.16.5-36.0.42 - Tue Feb 16 02:43:01 GMT 2021
+	kovac1066:
+		Added entity attribute setup and creation events
+
+=========
+Build: 1.16.5-36.0.41 - Tue Feb 16 01:28:51 GMT 2021
+	knightminer4:
+		Fix updateItemStackNBT not properly being called (#7646)
+		
+		Re-added ItemStack delegate redirect transformer
+
+=========
+Build: 1.16.5-36.0.40 - Tue Feb 16 01:08:21 GMT 2021
+	pupnewfster:
+		Fix a few FluidUtil issues that were causing DispenseFluidContainer to not function properly (#7422)
+
+=========
+Build: 1.16.5-36.0.39 - Tue Feb 16 00:49:27 GMT 2021
+	daemonumbra:
+		Fixed Configs not correcting when hot-loaded from changes on disk (#7427)
+
+	ichttt:
+		Add a way to specify a custom background texture with namespaces in the Creative GUI. (#7404)
+
+=========
+Build: 1.16.5-36.0.37 - Tue Feb 16 00:39:15 GMT 2021
+	xzk0701:
+		Reduce default logging markers in the MDK. Modders can re-enable these for better debugging.  (#7432)
+		
+		Modders PLEASE read your damn log, and fix the errors we point out. Spamming modpacks with stack traces is just lazy programming.
+
+=========
+Build: 1.16.5-36.0.36 - Tue Feb 16 00:19:30 GMT 2021
+	sciwhiz12:
+		Deprecate Forge's setdimension command, vanilla execute command can do this now. (#7459)
+
+=========
+Build: 1.16.5-36.0.35 - Mon Feb 15 23:38:35 GMT 2021
+	spb.max2:
+		Fix ItemTextureQuadConverter.convertTexture generating wrong quads, fixes #7620 (#7650)
+
+=========
+Build: 1.16.5-36.0.34 - Mon Feb 15 23:22:40 GMT 2021
+	florian:
+		Added MultipartBakedModel.getModelData(). (#7595)
+		
+		This allows custom IBakedModel implementations to use the IModelData provided by their IBakedModel.getModelData() when used in the context of a multipart model.
+
+=========
+Build: 1.16.5-36.0.33 - Mon Feb 15 23:15:50 GMT 2021
+	cyborgmas18:
+		fix global cache not being a block render type (#7648)
+
+=========
+Build: 1.16.5-36.0.32 - Mon Feb 15 22:52:15 GMT 2021
+	35673674+alcatrazescapee:
+		Allow mods to use additional custom LootParameter when querying existing loot tables (#7515)
+
+=========
+Build: 1.16.5-36.0.31 - Mon Feb 15 21:40:16 GMT 2021
+	github:
+		Add ForgeHooks.canEntitySpawn to Cat, Phantom, and Patrol spawners. (#7569)
+
+=========
+Build: 1.16.5-36.0.30 - Mon Feb 15 21:26:11 GMT 2021
+	dev:
+		Fix/Replace player visibility event (#7573)
+
+=========
+Build: 1.16.5-36.0.29 - Mon Feb 15 21:16:26 GMT 2021
+	ateranimavis:
+		Fix: Clear the last error from glfwInit to prevent vanilla from throwing an exception later in the chain when glfw errors. (#7587)
+
+=========
+Build: 1.16.5-36.0.28 - Mon Feb 15 20:56:51 GMT 2021
+	55965249+seymourimadeit:
+		Fix MC-181464 persisting for modded shields (#7602)
+
+=========
+Build: 1.16.5-36.0.27 - Mon Feb 15 20:11:46 GMT 2021
+	malte0811:
+		FIx race condition in LazyOptional (#7611)
+
+=========
+Build: 1.16.5-36.0.26 - Mon Feb 15 03:16:02 GMT 2021
+	xfacthd:
+		[1.16.5] Fix shaders breaking almost every overlay that uses textures, fixes #7575 (#7624)
+
+=========
+Build: 1.16.5-36.0.25 - Mon Feb 15 03:10:24 GMT 2021
+	40846040+telepathicgrunt:
+		Disable syncing of Feature and Biome registries  (#7639)
+
+=========
+Build: 1.16.5-36.0.24 - Mon Feb 15 03:04:46 GMT 2021
+	drullkus:
+		Add IExtensibleEnum to GrassColorModifier (#7641)
+
+=========
+Build: 1.16.5-36.0.23 - Mon Feb 15 02:36:26 GMT 2021
+	github:
+		Log stacktraces in NettyPacketEncoder. (#7654)
+
+=========
+Build: 1.16.5-36.0.22 - Wed Feb 10 19:05:16 GMT 2021
+	xfacthd:
+		Lower logging level for datafixer warning to debug (#7636)
+
+=========
+Build: 1.16.5-36.0.21 - Tue Feb 09 22:19:29 GMT 2021
+	pupnewfster:
+		Reintroduce forge's chunk manager to allow mods to force chunks with either a block position or entity (UUID) "owner" and have them properly persist between restarts (#7642)
+
+=========
+Build: 1.16.5-36.0.20 - Tue Feb 09 21:28:24 GMT 2021
+	pupnewfster:
+		Fix two places where querying an object for the new "valid" capability from a capability invalidation listener could cause the object to return the old invalid capability. (#7643)
+
+=========
+Build: 1.16.5-36.0.19 - Tue Feb 09 21:21:44 GMT 2021
+	cyborgmas18:
+		Fix config spec in cases of enum class discrepancies (#7635)
+
+=========
+Build: 1.16.5-36.0.18 - Tue Feb 09 21:06:36 GMT 2021
+	diesieben07:
+		Fix onBlockAdded being called twice for ItemEntity placing non-TE blocks (#7607)
+
+=========
+Build: 1.16.5-36.0.17 - Tue Feb 09 21:00:57 GMT 2021
+	due:
+		Prevent NullPointerException when adding new loot pool. (#7605)
+
+=========
+Build: 1.16.5-36.0.16 - Tue Feb 09 20:53:48 GMT 2021
+	brandon4261:
+		Added generic multi part entity API (#7554)
+
+=========
+Build: 1.16.5-36.0.15 - Sun Feb 07 03:41:41 GMT 2021
+	cyborgmas18:
+		Fix IAngerable entities crashing when reading nbt on client (#7618)
+
+=========
+Build: 1.16.5-36.0.14 - Tue Feb 02 20:28:08 GMT 2021
+	thesilkminer:
+		[1.16.x] Add loot table ID in Global Loot Modifiers (#7428)
+
+	thesilkminer:
+		[1.16.x] Add loot table ID in Global Loot Modifiers (#7428)
+
+=========
+Build: 1.16.5-36.0.13 - Sat Jan 30 02:07:17 GMT 2021
+	pupnewfster:
+		Add a block tag to allow mods to blacklist blocks endermen should not be able to place blocks on top of, similar to how vanilla hardcodes against them being able to place things on bedrock (#7548)
+
+=========
+Build: 1.16.5-36.0.12 - Sat Jan 30 02:01:35 GMT 2021
+	7419378+hellfirepvp:
+		Fix translucent model parts of MultiLayerModels rendering as missing models due to differing rendertypes when rendering block model (#7579)
+		
+		Signed-off-by: HellFirePvP <7419378+HellFirePvP@users.noreply.github.com>
+
+=========
+Build: 1.16.5-36.0.11 - Sat Jan 30 01:35:10 GMT 2021
+	pupnewfster:
+		Fix existing file tag provider support looking in the wrong folder for custom tag types (#7576)
+
+=========
+Build: 1.16.5-36.0.10 - Thu Jan 28 21:07:30 GMT 2021
+	cyborgmas18:
+		Propery re-encode registries (#7629)
+
+=========
+Build: 1.16.5-36.0.9 - Thu Jan 28 01:23:13 GMT 2021
+	cyborgmas18:
+		Properly encode registries. (#7626)
+
+=========
+Build: 1.16.5-36.0.8 - Thu Jan 28 00:00:43 GMT 2021
+	cyborgmas18:
+		Inject vanilla dimensions inside worlds missing them (#7599)
+
+=========
+Build: 1.16.5-36.0.7 - Wed Jan 27 00:32:53 GMT 2021
+	lexmanos:
+		Update Coremods, ASM, and include standalone Nashorn to load on J15.
+
+	lexmanos:
+		Introduce a new field_to_instanceof transformer to reduce some simple patches.
+
+=========
+Build: 1.16.5-36.0.4 - Tue Jan 26 02:53:10 GMT 2021
+	lexmanos:
+		Fix broken build.
+
+	dev:
+		Add modded biomes to overworld biome list (#7360)
+
+=========
+Build: 1.16.5-36.0.2 - Tue Jan 26 02:25:10 GMT 2021
+	lexmanos:
+		Fix dynamic registries not getting ids assigned correctly from old worlds in specific unordered value insertions. Closes #7586
+
+=========
+Build: 1.16.5-36.0.1 - Sun Jan 17 21:05:36 GMT 2021
+	knightminer4:
+		Optionally add a milk fluid to the vanilla bucket (#7294)
+		
+		Fixes the previous broken code that was supposed to make mod registered milk returned by the vanilla bucket by allowing mods to enable a milk fluid.
+
+=========
+Build: 1.16.5-36.0.0 - Fri Jan 15 19:42:24 GMT 2021
+	lexmanos:
+		1.16.5 Initial Update.
+
+=========
+Build: 1.16.4-35.1.37 - Thu Jan 14 23:58:35 GMT 2021
+	lexmanos:
+		Update Coremods, ASM, and include standalone Nashorn to load on J15.
+
+=========
+Build: 1.16.4-35.1.36 - Thu Jan 07 20:24:49 GMT 2021
+	ian.rehwinkel:
+		Added IWeatherParticleRenderHandler to allow a mod to take control over weather particles and sounds. (#7522)
+
+=========
+Build: 1.16.4-35.1.35 - Thu Jan 07 20:16:03 GMT 2021
+	covers1624:
+		Allow Chunk loading Tickets to opt-into forcing chunk ticks. (#7525)
+
+=========
+Build: 1.16.4-35.1.34 - Thu Jan 07 20:10:18 GMT 2021
+	malte0811:
+		Fix crash when mods add goals to skeleton horses (MC-206338) (#7509)
+
+=========
+Build: 1.16.4-35.1.33 - Thu Jan 07 20:03:59 GMT 2021
+	diesieben07:
+		Set WM_CLASS and WM_INSTANCE_NAME for early progress window (#7534)
+
+=========
+Build: 1.16.4-35.1.32 - Wed Jan 06 03:17:35 GMT 2021
+	35673674+alcatrazescapee:
+		Make UnboundedMapCodec more lenient in decoding dimensions. Fixes MC-197860 (#7527)
+
+=========
+Build: 1.16.4-35.1.31 - Tue Jan 05 19:59:52 GMT 2021
+	lexmanos:
+		Prevent NPE and deprecated MissingMappings.getMappings function. Closes #6252
+
+	lexmanos:
+		Fix FML's Config Sync packet not allowing same length filenames in encoder and decoder. Closes #7584
+
+=========
+Build: 1.16.4-35.1.29 - Sun Jan 03 11:02:59 GMT 2021
+	lexmanos:
+		Fix entities not correctly being able to be ridden under water.
+
+=========
+Build: 1.16.4-35.1.28 - Mon Dec 28 21:56:51 GMT 2020
+	git:
+		Fix crash when beehive is broken by fake player (#7566)
+
+=========
+Build: 1.16.4-35.1.27 - Mon Dec 28 21:46:04 GMT 2020
+	35673674+alcatrazescapee:
+		Add supplier variant to `AbstractBlock.Properties#lootFrom` (#7563)
+
+=========
+Build: 1.16.4-35.1.26 - Mon Dec 28 21:40:18 GMT 2020
+	diesieben07:
+		Fix missing serializers when deserializing global loot modifiers (#7561)
+
+	diesieben07:
+		Fix ModFileResourcePack.getAllResourceLocations ignoring resourceNamespace. (#7562)
+		
+		Fixes #7405
+
+=========
+Build: 1.16.4-35.1.24 - Mon Dec 28 21:34:39 GMT 2020
+	diesieben07:
+		Fix VanillaConnectionNetworkFilter sending out invalid entity properties packets without an entity ID (#7560)
+
+=========
+Build: 1.16.4-35.1.23 - Mon Dec 28 21:17:01 GMT 2020
+	richard:
+		Make shear interactions extend to subclasses (#7544)
+
+=========
+Build: 1.16.4-35.1.22 - Mon Dec 28 21:09:38 GMT 2020
+	sciwhiz12:
+		Add a SoundType subclass that uses suppliers (#7538)
+
+=========
+Build: 1.16.4-35.1.21 - Mon Dec 28 21:03:56 GMT 2020
+	sciwhiz12:
+		Fix compound ingredient in shapeless recipes (#7537) Fixes #7530
+
+=========
+Build: 1.16.4-35.1.20 - Mon Dec 28 20:19:04 GMT 2020
+	matthrewp:
+		Fix modded PointOfInterestType's not populating blockstate map when registered (#7503)
+
+	35673674+alcatrazescapee:
+		Fix potential NPE in ForgeHooks.onItemPlaceIntoWorld when passing in null player. (#7505)
+
+=========
+Build: 1.16.4-35.1.18 - Mon Dec 28 20:13:15 GMT 2020
+	48399898+poopoodice:
+		Add new LivingConversionEvent to control mobs turning into other mobs. (#7386)
+
+=========
+Build: 1.16.4-35.1.17 - Mon Dec 28 20:01:42 GMT 2020
+	knightminer4:
+		Add ItemAttributeModifierEvent (#7484)
+
+=========
+Build: 1.16.4-35.1.16 - Mon Dec 28 19:54:38 GMT 2020
+	bward7864:
+		Fix RightClickBlock ALLOW not being implemented (#7426)
+
+=========
+Build: 1.16.4-35.1.15 - Sat Dec 26 19:39:35 GMT 2020
+	lexmanos:
+		Make mod data packs able to be disabled. It'll break things, but that's on you. Closes #6776
+
+	lexmanos:
+		Quiet down errors related to modders not changing their update urls from the default.
+
+=========
+Build: 1.16.4-35.1.13 - Sat Dec 12 17:34:07 GMT 2020
+	tterrag:
+		Add generated resource tracking to ExistingFileHelper
+
+=========
+Build: 1.16.4-35.1.12 - Fri Dec 11 02:39:41 GMT 2020
+	tterrag:
+		Fix BlockStateProvider item models not knowing about block models
+		
+		Add tests for this case
+
+=========
+Build: 1.16.4-35.1.11 - Tue Dec 08 19:54:40 GMT 2020
+	richard:
+		Override invalidateCaps instead of remove for vanilla TE capability invalidation (#7536)
+		
+		Properly invalidate patched in vanilla TE caps in invalidateCaps instead of remove so that they get invalidated on chunk unload
+
+=========
+Build: 1.16.4-35.1.10 - Sat Dec 05 20:07:14 GMT 2020
+	richard:
+		Make TEs invalidate capabilities when the chunk they are in unloads (#7529)
+		
+		Fixed LazyOptional potentially notifying invalidation listeners multiple times.
+
+=========
+Build: 1.16.4-35.1.9 - Sat Dec 05 20:01:00 GMT 2020
+	cordonfreeman:
+		Fixed entity navigation to stop entities spinning - MC-94054 (#7520)
+
+=========
+Build: 1.16.4-35.1.8 - Sat Dec 05 19:52:56 GMT 2020
+	20846147+unbekannt1998:
+		Fix wrong function call in BlockStateProvider::horizontalFaceBlock (#7514)
+
+=========
 Build: 1.16.4-35.1.7 - Sun Nov 29 02:11:08 GMT 2020
 	tterrag:
 		Fix datagen order of multipart conditions being unstable
 
 =========
 Build: 1.16.4-35.1.6 - Sat Nov 28 02:56:55 GMT 2020
-	35673674+alcatrazEscapee:
+	35673674+alcatrazescapee:
 		Fix forge config option for default world type not applying unless you change the default world type (#7521)
 
 =========
 Build: 1.16.4-35.1.5 - Fri Nov 27 23:57:23 GMT 2020
-	David Quintana:
+	gigaherz:
 		Implement feature for mods to define new world types (#7448)
 		
 		* Mods can now register world types via a new forge registry, and optionally register a settings screen to tweak them.
@@ -41,12 +661,12 @@ Build: 1.16.4-35.1.1 - Sat Nov 21 19:57:45 GMT 2020
 
 =========
 Build: 1.16.4-35.1.0 - Fri Nov 20 20:54:30 GMT 2020
-	lex:
+	lexmanos:
 		Bump version for RB.
 
 =========
 Build: 1.16.4-35.0.22 - Fri Nov 20 18:24:46 GMT 2020
-	35673674+alcatrazEscapee:
+	35673674+alcatrazescapee:
 		Fix MC-194811 - Removing structures causes chunk save errors.
 
 	diesieben07:
@@ -59,7 +679,7 @@ Build: 1.16.4-35.0.20 - Fri Nov 20 18:18:37 GMT 2020
 
 =========
 Build: 1.16.4-35.0.19 - Fri Nov 20 18:11:25 GMT 2020
-	35673674+alcatrazEscapee:
+	35673674+alcatrazescapee:
 		Fix forge registry types that have private constructors (BlockStateProviderType, BlockPlacerType, FoliagePlacerType, TreeDecoratorType) (#7482)
 
 =========
@@ -96,7 +716,7 @@ Build: 1.16.4-35.0.14 - Tue Nov 10 20:24:33 GMT 2020
 
 =========
 Build: 1.16.4-35.0.13 - Tue Nov 10 20:13:34 GMT 2020
-	Bward7864:
+	bward7864:
 		Add Player context to AnvilUpdateEvent (#7442)
 
 =========
@@ -119,12 +739,12 @@ Build: 1.16.4-35.0.11 - Tue Nov 10 19:46:01 GMT 2020
 
 =========
 Build: 1.16.4-35.0.10 - Tue Nov 10 19:36:40 GMT 2020
-	Boy132:
+	boy132:
 		Call Harvest check event even if the block doesn't require any tool (#7414)
 
 =========
 Build: 1.16.4-35.0.9 - Tue Nov 10 19:25:26 GMT 2020
-	lex:
+	lexmanos:
 		Use linked collections to stabilize order when adding new registry entries.
 
 	xfacthd:
@@ -154,7 +774,7 @@ Build: 1.16.4-35.0.5 - Sun Nov 08 01:48:22 GMT 2020
 
 =========
 Build: 1.16.4-35.0.4 - Sat Nov 07 20:10:44 GMT 2020
-	David Quintana:
+	gigaherz:
 		Add FluidStack codec, and a test mod that verifies its behaviour matches the existing write/read logic.
 		Add missing license headers.
 
@@ -208,17 +828,17 @@ Build: 1.16.4-35.0.1 - Mon Nov 02 19:57:45 GMT 2020
 
 =========
 Build: 1.16.4-35.0.0 - Mon Nov 02 19:15:50 GMT 2020
-	lex:
+	lexmanos:
 		1.16.4 Initial Update
 
 =========
 Build: 1.16.3-34.1.42 - Mon Nov 02 04:30:53 GMT 2020
-	lex:
+	lexmanos:
 		Fix Biomes not properly copying over ids loaded from the save to the new Dynamic Registry.
 
 =========
 Build: 1.16.3-34.1.41 - Mon Nov 02 01:09:57 GMT 2020
-	David Quintana:
+	gigaherz:
 		Introduce custom loader additions to the model data generators. (#7450)
 		
 		Currently implemented loaders:
@@ -270,12 +890,12 @@ Build: 1.16.3-34.1.35 - Thu Oct 29 17:09:31 GMT 2020
 
 =========
 Build: 1.16.3-34.1.34 - Thu Oct 29 00:12:09 GMT 2020
-	David Quintana:
+	gigaherz:
 		Update forge mappings to 20201028-1.16.3 (#7435)
 
 =========
 Build: 1.16.3-34.1.33 - Tue Oct 27 16:01:02 GMT 2020
-	35673674+alcatrazEscapee:
+	35673674+alcatrazescapee:
 		Fix breaking changes from the Biome rename PR #7434 (#7439)
 
 =========
@@ -285,7 +905,7 @@ Build: 1.16.3-34.1.32 - Mon Oct 26 23:52:47 GMT 2020
 
 =========
 Build: 1.16.3-34.1.31 - Mon Oct 26 22:07:02 GMT 2020
-	35673674+alcatrazEscapee:
+	35673674+alcatrazescapee:
 		Fix data pack biomes failing to load in SingleBiomeProvider (#7434)
 
 =========
@@ -325,12 +945,12 @@ Build: 1.16.3-34.1.27 - Mon Oct 26 02:27:48 GMT 2020
 
 =========
 Build: 1.16.3-34.1.25 - Tue Oct 20 19:32:40 GMT 2020
-	lex:
+	lexmanos:
 		Fix mcp_snapshot mapping issue causing unneeded patches. Closes #7424
 
 =========
 Build: 1.16.3-34.1.24 - Tue Oct 20 11:26:03 GMT 2020
-	David Quintana:
+	gigaherz:
 		Fix resource leak in the OBJ loader.
 
 =========
@@ -345,12 +965,12 @@ Build: 1.16.3-34.1.22 - Thu Oct 15 19:49:26 GMT 2020
 
 =========
 Build: 1.16.3-34.1.21 - Thu Oct 15 19:43:33 GMT 2020
-	lex:
+	lexmanos:
 		Resuscitate BiomeDictionary using RegistryKeys instead of biome references.
 
 =========
 Build: 1.16.3-34.1.20 - Thu Oct 15 17:15:15 GMT 2020
-	FinntheRaider:
+	finntheraider:
 		Add event for player changing game mode (#7355)
 
 =========
@@ -374,25 +994,25 @@ Build: 1.16.3-34.1.17 - Sat Oct 10 16:45:26 GMT 2020
 
 =========
 Build: 1.16.3-34.1.16 - Fri Oct 09 19:57:26 GMT 2020
-	lex:
+	lexmanos:
 		Fix typo causing potential error in vine growth. Closes #7406
 		Sort missing registry dumps by name, making it easier to read.
 
 =========
 Build: 1.16.3-34.1.15 - Fri Oct 09 13:58:36 GMT 2020
-	David Quintana:
+	gigaherz:
 		Fixed conditional advancement loading when using the "advancements" array.
 		Added automatic generation of conditional advancements from the criteria in the conditional recipe entries.
 		Added advancement name calculation from the recipe ID.
 
 =========
 Build: 1.16.3-34.1.14 - Thu Oct 08 21:08:45 GMT 2020
-	32142731+Flanks255:
+	32142731+flanks255:
 		Additions to the mdk build.gradle to accommodate datagens. (#7398)
 
 =========
 Build: 1.16.3-34.1.13 - Thu Oct 08 21:02:59 GMT 2020
-	Colby Prince:
+	daemonumbra:
 		Added Basic Class-Level SAS Capability to checkSAS, added Vector4f to SAS (#7385)
 
 =========
@@ -440,7 +1060,7 @@ Build: 1.16.3-34.1.7 - Sun Oct 04 19:51:37 GMT 2020
 
 =========
 Build: 1.16.3-34.1.5 - Fri Oct 02 23:40:14 GMT 2020
-	Colby Prince:
+	daemonumbra:
 		Added "Bukkit Plugin" to InvalidModIdentifier (#7384)
 
 =========
@@ -465,7 +1085,7 @@ Build: 1.16.3-34.1.1 - Mon Sep 28 18:02:11 GMT 2020
 
 =========
 Build: 1.16.3-34.1.0 - Thu Sep 24 07:05:13 GMT 2020
-	lex:
+	lexmanos:
 		Prep new RB.
 
 =========
@@ -475,12 +1095,12 @@ Build: 1.16.3-34.0.21 - Thu Sep 24 06:46:57 GMT 2020
 
 =========
 Build: 1.16.3-34.0.20 - Thu Sep 24 06:41:41 GMT 2020
-	35673674+alcatrazEscapee:
+	35673674+alcatrazescapee:
 		Accessors for inspecting and removal of biome generation settings. Fixed carvers still being immutable. (#7339)
 
 =========
 Build: 1.16.3-34.0.19 - Thu Sep 24 06:36:25 GMT 2020
-	lex:
+	lexmanos:
 		Revive BiomeManager and BiomeLayer hooks.
 
 =========
@@ -495,7 +1115,7 @@ Build: 1.16.3-34.0.17 - Wed Sep 23 22:10:11 GMT 2020
 
 =========
 Build: 1.16.3-34.0.16 - Wed Sep 23 21:34:47 GMT 2020
-	Yunus1903:
+	yunus1903:
 		Updated build badge versions to 1.16.3 in readme (#7325)
 
 	diesieben07:
@@ -518,17 +1138,17 @@ Build: 1.16.3-34.0.12 - Tue Sep 22 19:06:10 GMT 2020
 
 =========
 Build: 1.16.3-34.0.11 - Tue Sep 22 18:58:28 GMT 2020
-	17338378+Nightenom:
+	17338378+nightenom:
 		[1.16] Fix possible crash when using rendering regionCache (#7207)
 
 =========
 Build: 1.16.3-34.0.10 - Tue Sep 22 18:41:16 GMT 2020
-	35673674+alcatrazEscapee:
+	35673674+alcatrazescapee:
 		[1.16] Reimplement ICloudRenderHandler, ISkyRenderHandler and IWeatherRenderHandler (#6994)
 
 =========
 Build: 1.16.3-34.0.9 - Fri Sep 18 00:58:08 GMT 2020
-	35673674+alcatrazEscapee:
+	35673674+alcatrazescapee:
 		Make Biome.Climate and BiomeAmbiance fields accessible (#7336)
 
 =========
@@ -556,34 +1176,34 @@ Build: 1.16.3-34.0.5 - Tue Sep 15 16:51:58 GMT 2020
 
 =========
 Build: 1.16.3-34.0.4 - Tue Sep 15 14:18:16 GMT 2020
-	David Quintana:
+	gigaherz:
 		Fix inconsistencies in how the values from the model are passed into the baked model.
 		This puts them in line with vanilla, as intended.
 
 =========
 Build: 1.16.3-34.0.3 - Tue Sep 15 13:23:05 GMT 2020
-	Yunus1903:
+	yunus1903:
 		Reimplemented drawHoveringText (#7268)
 
 =========
 Build: 1.16.3-34.0.2 - Tue Sep 15 00:43:19 GMT 2020
-	lex:
+	lexmanos:
 		New BiomeLoadingEvent that allows modders to edit biomes as they are being deserialized.
 
 =========
 Build: 1.16.3-34.0.1 - Fri Sep 11 15:55:28 GMT 2020
-	lex:
+	lexmanos:
 		Bump MCP version for lambda issue.
 
 =========
 Build: 1.16.3-34.0.0 - Thu Sep 10 19:10:33 GMT 2020
-	lex:
+	lexmanos:
 		1.16.3 Update
 		Also included a bunch of warning cleanups.
 
 =========
 Build: 1.16.2-33.0.61 - Thu Sep 10 18:54:56 GMT 2020
-	42962686+RedstoneDubstep:
+	42962686+redstonedubstep:
 		Fix tile entities being replaced when not needed. (#7318)
 
 =========
@@ -647,7 +1267,7 @@ Build: 1.16.2-33.0.49 - Tue Sep 08 20:14:58 GMT 2020
 	sciwhiz12:
 		Bump resource pack version to 6 (#7299)
 
-	Edwin.mindcraft:
+	edwin.mindcraft:
 		[1.16.x] Fixes for Bamboo, Enchantments and Conduits, small adjustments to bring some patches closer to the vanilla code. (#7239)
 
 =========
@@ -717,7 +1337,7 @@ Build: 1.16.2-33.0.36 - Thu Sep 03 12:40:52 GMT 2020
 
 =========
 Build: 1.16.2-33.0.35 - Thu Sep 03 04:15:27 GMT 2020
-	lex:
+	lexmanos:
 		Dirty casting hacks to fix eclipse compiler inference issue. I'm sorry cpw.
 
 =========
@@ -787,13 +1407,13 @@ Build: 1.16.2-33.0.23 - Sun Aug 30 23:05:24 GMT 2020
 
 =========
 Build: 1.16.2-33.0.22 - Wed Aug 26 16:50:02 GMT 2020
-	lex:
+	lexmanos:
 		Wrap vanilla's 'default' biome registry in ForgeRegistry.
 		This should allow registering mod dimensions like in 1.16.1, while the data driven system is fleshed out.
 
 =========
 Build: 1.16.2-33.0.21 - Tue Aug 25 01:11:38 GMT 2020
-	David Quintana:
+	gigaherz:
 		Clarify in the LazyOptional which methods carry the lazyness over to the returned value and which don't. (#6750)
 		
 		For consistency, this meant making a few changes:
@@ -859,7 +1479,7 @@ Build: 1.16.2-33.0.11 - Fri Aug 21 17:23:30 GMT 2020
 
 =========
 Build: 1.16.2-33.0.10 - Fri Aug 21 09:47:23 GMT 2020
-	lex:
+	lexmanos:
 		Cleanup Forge's build script, fix some unneeded patches.
 		Add checkExcscheckAll tasks.
 
@@ -875,7 +1495,7 @@ Build: 1.16.2-33.0.8 - Fri Aug 21 04:29:10 GMT 2020
 
 =========
 Build: 1.16.2-33.0.7 - Wed Aug 19 05:47:46 GMT 2020
-	Yunus1903:
+	yunus1903:
 		Removed HarvestDropsEvent (#7193)
 
 =========
@@ -885,10 +1505,10 @@ Build: 1.16.2-33.0.6 - Wed Aug 19 05:22:45 GMT 2020
 
 =========
 Build: 1.16.2-33.0.5 - Fri Aug 14 19:05:15 GMT 2020
-	lex:
+	lexmanos:
 		Fix creating nether portals.
 
-	lex:
+	lexmanos:
 		New method for creating modded tag references, fix connecting to vanilla servers.
 
 =========
@@ -901,22 +1521,22 @@ Build: 1.16.2-33.0.2 - Thu Aug 13 19:26:22 GMT 2020
 	cyborgmas18:
 		Fix server connection, misapplied patch (#7245)
 
-	Yunus1903:
+	yunus1903:
 		Updated MDK and README for 1.16.2 (#7243)
 
 =========
 Build: 1.16.2-33.0.0 - Thu Aug 13 07:37:04 GMT 2020
-	lex:
+	lexmanos:
 		Initial 1.16.2 Update
 
 =========
 Build: 1.16.1-32.0.108 - Sun Aug 09 20:05:01 GMT 2020
-	David Quintana:
+	gigaherz:
 		Fix ModelRegistryEvent firing every time resources reload instead of just once.
 
 =========
 Build: 1.16.1-32.0.107 - Sat Aug 08 01:00:42 GMT 2020
-	David Quintana:
+	gigaherz:
 		Move ModelRegistryEvent invocation to when the model loading is about to start.
 		Freeze the ModelLoaderRegistry right after this event happens, just before model loading actually begins.
 		This means ModelRegistryEvent is now the correct place to register loaders, as it was intended.
@@ -963,27 +1583,27 @@ Build: 1.16.1-32.0.98 - Thu Jul 30 03:18:00 GMT 2020
 
 =========
 Build: 1.16.1-32.0.97 - Tue Jul 28 23:44:41 GMT 2020
-	lex:
+	lexmanos:
 		Fix another case of swallowed errors not shutting down mods.
 
 =========
 Build: 1.16.1-32.0.96 - Tue Jul 28 21:40:06 GMT 2020
-	lex:
+	lexmanos:
 		Shut down all other mod handlers if the loading cycle errors.
 		This prevents other mods from throwing errors and being blamed for initial cause.
 		This is a temporary hack until cpw re-writes the mod event dispatcher.
 
 =========
 Build:  - Tue Jul 28 19:01:27 GMT 2020
-	lex:
+	lexmanos:
 		Properly shutdown FMLModContainer's event bus when an error in a lifecycle event is detected.
 
-	lex:
+	lexmanos:
 		Enable EventBus type check during ForgeDev, and add IModBusEvent marker to ModelRegistryEvent.
 
 =========
 Build: 1.16.1-32.0.93 - Tue Jul 28 07:16:31 GMT 2020
-	lex:
+	lexmanos:
 		Make license toml entry optional during 1.16.1
 		There are to many existing mods to make this required.
 		Yes, we are technically before a RB and can do breaking changes. However this is too large.
@@ -1028,7 +1648,7 @@ Build: 1.16.1-32.0.88 - Mon Jul 27 23:35:24 GMT 2020
 
 =========
 Build: 1.16.1-32.0.86 - Mon Jul 27 22:56:16 GMT 2020
-	lex:
+	lexmanos:
 		Fix Biome generation error.
 
 =========
@@ -1038,7 +1658,7 @@ Build: 1.16.1-32.0.85 - Mon Jul 27 21:36:07 GMT 2020
 
 =========
 Build: 1.16.1-32.0.84 - Mon Jul 27 21:30:24 GMT 2020
-	Yunus1903:
+	yunus1903:
 		Fix ClimberPathNavigator spinning when width is small. Closes #6993 (#6997)
 
 =========
@@ -1066,7 +1686,7 @@ Build: 1.16.1-32.0.79 - Mon Jul 27 20:46:11 GMT 2020
 	diesieben07:
 		Re-add patch for PlayerSetSpawnEvent (#6977)
 
-	Yunus1903:
+	yunus1903:
 		Updated versions in README and removed flocker.tv mentions (#6978)
 
 =========
@@ -1088,7 +1708,7 @@ Build: 1.16.1-32.0.75 - Wed Jul 22 01:26:19 GMT 2020
 
 =========
 Build: 1.16.1-32.0.74 - Wed Jul 22 00:34:43 GMT 2020
-	lex:
+	lexmanos:
 		Run Forge's data generators to sync 1.16 vanilla changes.
 
 =========
@@ -1124,7 +1744,7 @@ Build: 1.16.1-32.0.69 - Fri Jul 17 17:35:47 GMT 2020
 
 =========
 Build: 1.16.1-32.0.68 - Thu Jul 16 21:56:30 GMT 2020
-	lex:
+	lexmanos:
 		Fixed Forge commands. Closes #6973 Closes #6974 Closes #6976
 
 =========
@@ -1144,7 +1764,7 @@ Build: 1.16.1-32.0.65 - Mon Jul 13 22:44:53 GMT 2020
 
 =========
 Build: 1.16.1-32.0.64 - Mon Jul 13 22:17:58 GMT 2020
-	lex:
+	lexmanos:
 		Fix checkPatches task. Closes #6956
 		Fix patched in method using srg name. Closes #6965
 		Fix capabilities not being collected for ClientWorld. Closes #6966
@@ -1179,15 +1799,15 @@ Build: 1.16.1-32.0.60 - Wed Jul 08 21:13:18 GMT 2020
 
 =========
 Build: 1.16.1-32.0.59 - Wed Jul 08 14:56:39 GMT 2020
-	David Quintana:
+	gigaherz:
 		Fix particles sometimes "losing" the lightmap and drawing fullbright.
 
-	David Quintana:
+	gigaherz:
 		Fix misaligned patch causing LivingEquipmentChangeEvent to never be posted.
 
 =========
 Build: 1.16.1-32.0.57 - Mon Jul 06 21:32:33 GMT 2020
-	JDLogic:
+	jdlogic:
 		Add simple patch checker and cleanup patches (#6851)
 		
 		* Add simple patch checker and cleanup patches
@@ -1215,7 +1835,7 @@ Build: 1.16.1-32.0.54 - Mon Jul 06 20:46:01 GMT 2020
 
 =========
 Build: 1.16.1-32.0.53 - Mon Jul 06 20:39:37 GMT 2020
-	40738104+Mysterious-Dev:
+	40738104+mysterious-dev:
 		Add function to add items with the same behavior as the pumpkin for enderman (#6890)
 
 =========
@@ -1245,21 +1865,21 @@ Build: 1.16.1-32.0.48 - Mon Jul 06 19:42:07 GMT 2020
 
 =========
 Build: 1.16.1-32.0.47 - Fri Jul 03 12:40:42 GMT 2020
-	David Quintana:
+	gigaherz:
 		Attempt to use a more compatible method to initialize stencil support.
 		In case the separate attachments don't work for everyone, there's a new setting to choose the combined attachment.
 
 =========
 Build: 1.16.1-32.0.46 - Fri Jul 03 04:00:22 GMT 2020
-	David Quintana:
+	gigaherz:
 		Update copyright year to 2020.
 
-	David Quintana:
+	gigaherz:
 		Fix multi-layer item rendering.
 
 =========
 Build: 1.16.1-32.0.44 - Thu Jul 02 17:17:45 GMT 2020
-	David Quintana:
+	gigaherz:
 		Model system improvements:
 		- Port some things I did in 1.14 which I couldn't do in 1.15 due to breaking changes.
 		- Fix multi-layer block models not working (1.16 RenderType doesn't override toString the same way anymore)
@@ -1268,7 +1888,7 @@ Build: 1.16.1-32.0.44 - Thu Jul 02 17:17:45 GMT 2020
 
 =========
 Build: 1.16.1-32.0.43 - Thu Jul 02 12:54:03 GMT 2020
-	MartijnvandenBrand:
+	martijnvandenbrand:
 		Include model data in getQuads call (#6884)
 		
 		The model data wasn't included when getting quads from specific sides, but was when getting quads for side = null.
@@ -1285,7 +1905,7 @@ Build: 1.16.1-32.0.41 - Thu Jul 02 05:54:25 GMT 2020
 
 =========
 Build: 1.16.1-32.0.40 - Thu Jul 02 01:59:30 GMT 2020
-	richard:
+	pupnewfster:
 		Fix FMLServerAboutToStartEvent being fired too late on the integrated server https://github.com/MinecraftForge/MinecraftForge/issues/6859
 
 =========
@@ -1310,7 +1930,7 @@ Build: 1.16.1-32.0.35 - Tue Jun 30 19:57:32 GMT 2020
 
 =========
 Build: 1.16.1-32.0.34 - Tue Jun 30 02:33:58 GMT 2020
-	lex:
+	lexmanos:
 		Re-write checkATs function and automate making Items/Blocks public.
 
 =========
@@ -1343,7 +1963,7 @@ Build: 1.16.1-32.0.30 - Mon Jun 29 22:58:30 GMT 2020
 
 =========
 Build: 1.16.1-32.0.29 - Mon Jun 29 21:08:55 GMT 2020
-	lex:
+	lexmanos:
 		Fix missed patch in PlayerList and EntitySelectioonContext. Closes #6846 Closes #6850
 
 =========
@@ -1353,18 +1973,18 @@ Build: 1.16.1-32.0.27 - Mon Jun 29 20:09:12 GMT 2020
 
 =========
 Build: 1.16.1-32.0.26 - Mon Jun 29 19:42:50 GMT 2020
-	lex:
+	lexmanos:
 		Fix tag related issues when connecting to a vanilla server.
 
 =========
 Build: 1.16.1-32.0.25 - Sun Jun 28 22:08:15 GMT 2020
-	lex:
+	lexmanos:
 		Fix Forge's internal handler being registered in wrong place.
 		Fix double call to loader end.
 
 =========
 Build: 1.16.1-32.0.24 - Sat Jun 27 22:50:54 GMT 2020
-	David Quintana:
+	gigaherz:
 		Add a model loader that lets mods specify different models for different perspectives.
 		Allow custom models to reference vanilla item models as child models.
 
@@ -1377,12 +1997,12 @@ Build: 1.16.1-32.0.23 - Fri Jun 26 23:55:23 GMT 2020
 
 =========
 Build: 1.16.1-32.0.21 - Fri Jun 26 22:40:19 GMT 2020
-	lex:
+	lexmanos:
 		Fix blocks being harvested with incorrect tools.
 
 =========
 Build: 1.16.1-32.0.20 - Fri Jun 26 19:53:02 GMT 2020
-	lex:
+	lexmanos:
 		Make installer use MCPConfig version to identify MC assets.
 
 =========
@@ -1395,18 +2015,18 @@ Build: 1.16.1-32.0.19 - Fri Jun 26 18:27:49 GMT 2020
 
 =========
 Build: 1.16.1-32.0.18 - Fri Jun 26 16:56:37 GMT 2020
-	lex:
+	lexmanos:
 		Fix dedicated server loading by constructing mods before data packs are created.
 
 =========
 Build: 1.16.1-32.0.17 - Fri Jun 26 15:20:37 GMT 2020
-	David Quintana:
+	gigaherz:
 		Fix create method.
 		Fix test mods not loading correctly.
 
 =========
 Build: 1.16.1-32.0.16 - Fri Jun 26 14:43:19 GMT 2020
-	David Quintana:
+	gigaherz:
 		Reintroduce missed patch in EntityClassification.
 
 =========
@@ -1435,7 +2055,7 @@ Build: 1.16.1-32.0.12 - Fri Jun 26 12:59:19 GMT 2020
 	thpetuaudletang:
 		Fixed creative screen arrows (#6827)
 
-	Yunus1903:
+	yunus1903:
 		Added call to method for tooltip with FontRenderer (#6831)
 
 =========
@@ -1449,7 +2069,7 @@ Build: 1.16.1-32.0.10 - Fri Jun 26 12:36:59 GMT 2020
 
 =========
 Build: 1.16.1-32.0.9 - Fri Jun 26 12:31:37 GMT 2020
-	Yunus1903:
+	yunus1903:
 		Fixed sneaking while swimming (#6817)
 
 =========
@@ -1477,7 +2097,7 @@ Build: 1.16.1-32.0.6 - Fri Jun 26 01:52:19 GMT 2020
 		
 		Adds the missed patch back
 
-	Yunus1903:
+	yunus1903:
 		Updated MDK mods.toml versions (#6808)
 
 	thpetuaudletang:
@@ -1491,7 +2111,7 @@ Build: 1.16.1-32.0.6 - Fri Jun 26 01:52:19 GMT 2020
 		
 		Adds the missed patch back
 
-	Yunus1903:
+	yunus1903:
 		Updated MDK mods.toml versions (#6808)
 
 	thpetuaudletang:
@@ -1505,15 +2125,15 @@ Build: 1.16.1-32.0.6 - Fri Jun 26 01:52:19 GMT 2020
 		
 		Adds the missed patch back
 
-	Yunus1903:
+	yunus1903:
 		Updated MDK mods.toml versions (#6808)
 
 =========
 Build: 1.16.1-32.0.2 - Fri Jun 26 01:41:51 GMT 2020
-	lex:
+	lexmanos:
 		Rework BlockSnapshot and fix client notifications. Closes #6807
 
 =========
 Build: 1.16.1-32.0.1 - Thu Jun 25 23:24:48 GMT 2020
-	lex:
+	lexmanos:
 		Bump MCPConfig version.

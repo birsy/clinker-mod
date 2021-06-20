@@ -56,7 +56,7 @@ public class MitesoilDiffuserTileEntity extends TileEntity implements ITickableT
     }
 
     public void initiateBurst(int time) {
-        if (!this.getWorld().getBlockState(pos.up()).isSolid() || !this.getWorld().getBlockState(pos.up()).isIn(ClinkerBlocks.MITESOIL_DIFFUSER.get())) {
+        if (!this.getWorld().getBlockState(pos.up()).isSolid() || !(this.getWorld().getBlockState(pos.up()).getBlock() == ClinkerBlocks.MITESOIL_DIFFUSER.get())) {
             this.bursting = true;
             this.burstLength = time;
         }

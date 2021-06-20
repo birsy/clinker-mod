@@ -63,7 +63,7 @@ public class WorleyCarver extends WorldCarver<ProbabilityConfig>
         worleyF1divF3.SetFrequency(0.016f);
 
         displacementNoisePerlin = new WorleyFastNoise((int) worldSeed);
-        displacementNoisePerlin.SetNoiseType(WorleyFastNoise.NoiseType.Perlin);
+        displacementNoisePerlin.SetNoiseType(WorleyFastNoise.NoiseType.Cubic);
         displacementNoisePerlin.SetFrequency(0.05f);
 
         maxCaveHeight = 255;
@@ -71,8 +71,8 @@ public class WorleyCarver extends WorldCarver<ProbabilityConfig>
         noiseCutoff = size;
         warpAmplifier = 16;
         easeInDepth = 12;
-        yCompression = 1.75f;
-        xzCompression = 1.0f;
+        yCompression = 2.0f;
+        xzCompression = 0.9f;
         surfaceCutoff = -0.081f;
         lavaDepth = 16;
 
@@ -84,7 +84,6 @@ public class WorleyCarver extends WorldCarver<ProbabilityConfig>
     public boolean carveRegion(IChunk chunkIn, Function<BlockPos, Biome> getBiomeFunction, Random rand, int seaLevel, int chunkXOffset, int chunkZOffset, int chunkX, int chunkZ, BitSet carvingMask, ProbabilityConfig config)
     {
         init(1234);
-
         return carve(chunkIn, getBiomeFunction, rand, seaLevel, chunkX, chunkZ, chunkXOffset, chunkZOffset, carvingMask, config);
     }
 

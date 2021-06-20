@@ -8,6 +8,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.PlantBlockHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.pathfinding.PathType;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Direction;
@@ -35,7 +36,12 @@ public abstract class AbstractBrambleTopBlock extends AbstractTopPlantBlock impl
 	protected boolean canGrowIn(BlockState state) {
 		return PlantBlockHelper.isAir(state);
 	}
-	
+
+	public boolean allowsMovement(BlockState state, IBlockReader worldIn, BlockPos pos, PathType type)
+	{
+		return false;
+	}
+
 	@Override
 	public boolean isTransparent(BlockState state) {
 		return true;

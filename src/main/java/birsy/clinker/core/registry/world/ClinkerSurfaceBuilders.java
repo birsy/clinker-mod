@@ -18,6 +18,6 @@ public class ClinkerSurfaceBuilders
 		SURFACE_BUILDERS.register(FMLJavaModLoadingContext.get().getModEventBus());
 	}
 	
-	public static final RegistryObject<SurfaceBuilder<SurfaceBuilderConfig>> ASH_STEPPES_BUILDER = SURFACE_BUILDERS.register("ash_steppes_builder", () -> new AshSteppesSurfaceBuilder(SurfaceBuilderConfig.field_237203_a_));
-	public static final RegistryObject<SurfaceBuilder<SurfaceBuilderConfig>> CARVED_SPRINGS_BUILDER = SURFACE_BUILDERS.register("carved_springs_builder", () -> new CarvedSpringsSurfaceBuilder(SurfaceBuilderConfig.field_237203_a_));
+	public static final RegistryObject<SurfaceBuilder<SurfaceBuilderConfig>> ASH_STEPPES_BUILDER = SURFACE_BUILDERS.register("ash_steppes_builder", () -> new AshSteppesSurfaceBuilder(SurfaceBuilderConfig.CODEC));
+	public static final RegistryObject<SurfaceBuilder<SurfaceBuilderConfig>> CARVED_SPRINGS_BUILDER = SURFACE_BUILDERS.register("carved_springs_builder", () -> new CarvedSpringsSurfaceBuilder(SurfaceBuilderConfig.CODEC));
 }

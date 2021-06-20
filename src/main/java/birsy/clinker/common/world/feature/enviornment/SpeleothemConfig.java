@@ -10,7 +10,7 @@ public class SpeleothemConfig implements IFeatureConfig {
     public static final Codec<birsy.clinker.common.world.feature.enviornment.SpeleothemConfig> CODEC = RecordCodecBuilder.create((speleothemConfig) -> {
         return speleothemConfig.group(BlockState.CODEC.fieldOf("state").forGetter((speleothemConfigState) -> {
             return speleothemConfigState.state;
-        }), FeatureSpread.func_242254_a(0, 4, 4).fieldOf("radius").forGetter((speleothemConfigRadius) -> {
+        }), FeatureSpread.createCodec(0, 4, 4).fieldOf("radius").forGetter((speleothemConfigRadius) -> {
             return speleothemConfigRadius.radius;
         }), Codec.intRange(0, 64).fieldOf("minHeight").forGetter((speleothemConfigMinHeight) -> {
             return speleothemConfigMinHeight.minHeight;

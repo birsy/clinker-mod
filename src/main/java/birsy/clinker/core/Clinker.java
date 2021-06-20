@@ -3,6 +3,7 @@ package birsy.clinker.core;
 
 import birsy.clinker.client.render.tileentity.HeatedIronCauldronRenderer;
 import birsy.clinker.client.render.tileentity.MitesoilDiffuserRenderer;
+import birsy.clinker.client.render.tileentity.SoulWellRenderer;
 import birsy.clinker.client.render.world.OthershoreDimensionRenderInfo;
 import birsy.clinker.core.registry.*;
 import birsy.clinker.core.registry.world.*;
@@ -76,6 +77,7 @@ public class Clinker
 
     private void doClientStuff(final FMLClientSetupEvent event)
     {
+        ClientRegistry.bindTileEntityRenderer(ClinkerTileEntities.SOUL_WELL.get(), SoulWellRenderer::new);
         ClientRegistry.bindTileEntityRenderer(ClinkerTileEntities.HEATED_IRON_CAULDRON.get(), HeatedIronCauldronRenderer::new);
         ClientRegistry.bindTileEntityRenderer(ClinkerTileEntities.MITESOIL_DIFFUSER.get(), MitesoilDiffuserRenderer::new);
 

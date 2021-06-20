@@ -127,7 +127,7 @@ public class OthershoreSkyRenderer implements ISkyRenderHandler {
         RenderSystem.disableAlphaTest();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        float[] afloat = world.func_239132_a_().func_230492_a_(world.func_242415_f(partialTicks), partialTicks);
+        float[] afloat = world.getDimensionRenderInfo().func_230492_a_(world.func_242415_f(partialTicks), partialTicks);
         if (afloat != null) {
             RenderSystem.disableTexture();
             RenderSystem.shadeModel(7425);

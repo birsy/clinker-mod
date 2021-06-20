@@ -5,6 +5,7 @@ import birsy.clinker.core.util.MathUtils;
 import com.mojang.serialization.Codec;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.ISeedReader;
 import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.feature.Feature;
@@ -85,7 +86,7 @@ public class SpeleothemFeature extends Feature<NoFeatureConfig> {
 
     private void placeBlock(ISeedReader worldIn, BlockPos pos) {
         if (worldIn.getBlockState(pos).getMaterial().isReplaceable() && !worldIn.getBlockState(pos).getMaterial().isSolid()) {
-            this.setBlockState(worldIn, pos, ClinkerBlocks.BRIMSTONE.get().getDefaultState());
+            this.setBlockState(worldIn, pos.up((int) (MathHelper.sin((pos.getX() * 0.3F) * 4))), ClinkerBlocks.BRIMSTONE.get().getDefaultState());
         }
     }
 }

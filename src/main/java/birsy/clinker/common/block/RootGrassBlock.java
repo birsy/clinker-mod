@@ -51,12 +51,12 @@ public class RootGrassBlock extends BushBlock implements IGrowable, net.minecraf
 	
 	@Override
 	protected boolean isValidGround(BlockState state, IBlockReader worldIn, BlockPos pos) {
-		return state.isIn(ClinkerBlocks.ROOTED_ASH.get()) 
-			|| state.isIn(ClinkerBlocks.ASH.get()) 
-			|| state.isIn(ClinkerBlocks.PACKED_ASH.get()) 
-			|| state.isIn(ClinkerBlocks.ROOTED_PACKED_ASH.get())
-			|| state.isIn(ClinkerBlocks.ROCKY_PACKED_ASH.get())
-			|| state.isIn(ClinkerBlocks.ROOTSTALK.get())
+		return state.matchesBlock(ClinkerBlocks.ROOTED_ASH.get()) 
+			|| state.matchesBlock(ClinkerBlocks.ASH.get()) 
+			|| state.matchesBlock(ClinkerBlocks.PACKED_ASH.get()) 
+			|| state.matchesBlock(ClinkerBlocks.ROOTED_PACKED_ASH.get())
+			|| state.matchesBlock(ClinkerBlocks.ROCKY_PACKED_ASH.get())
+			|| state.matchesBlock(ClinkerBlocks.ROOTSTALK.get())
 			|| state == ClinkerBlocks.ASH_LAYER.get().getDefaultState().with(AshLayerBlock.LAYERS, 8) 
 			&& super.isValidGround(state, worldIn, pos);
 	}

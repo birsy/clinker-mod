@@ -5,6 +5,7 @@ import net.minecraft.block.AbstractBodyPlantBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.pathfinding.PathType;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Direction;
@@ -51,7 +52,12 @@ public abstract class AbstractBrambleBodyBlock extends AbstractBodyPlantBlock im
 		}
 		return 60;
 	}
-	
+
+	public boolean allowsMovement(BlockState state, IBlockReader worldIn, BlockPos pos, PathType type)
+	{
+		return false;
+	}
+
 	@Override
 	public boolean isLadder(BlockState state, IWorldReader world, BlockPos pos, net.minecraft.entity.LivingEntity entity) { return true; }
 	

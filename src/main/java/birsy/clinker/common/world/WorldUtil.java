@@ -28,7 +28,7 @@ public class WorldUtil {
         float worldTemp = 0;
         BlockState blockstate = world.getBlockState(pos.down());
 
-        if (blockstate.getFluidState().getFluid() == Fluids.LAVA || blockstate.getFluidState().getFluid() == Fluids.FLOWING_LAVA || blockstate.isIn(BlockTags.FIRE) || blockstate.isIn(BlockTags.CAMPFIRES) || blockstate.isIn(Blocks.MAGMA_BLOCK)) {
+        if (blockstate.getFluidState().getFluid() == Fluids.LAVA || blockstate.getFluidState().getFluid() == Fluids.FLOWING_LAVA || blockstate.isIn(BlockTags.FIRE) || blockstate.isIn(BlockTags.CAMPFIRES) || blockstate.matchesBlock(Blocks.MAGMA_BLOCK)) {
             worldTemp += 30;
         }
 

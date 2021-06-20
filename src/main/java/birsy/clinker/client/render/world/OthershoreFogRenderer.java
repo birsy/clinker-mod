@@ -20,6 +20,8 @@ public class OthershoreFogRenderer {
     private static final int fogHeight = 48;
     private static final int fogEnd = fogHeight + 30;
 
+
+
     @SubscribeEvent
     public static void onRenderFogDensity(EntityViewRenderEvent.FogDensity event)
     {

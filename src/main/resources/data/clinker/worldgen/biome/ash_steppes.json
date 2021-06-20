@@ -43,8 +43,6 @@
     [
     ],
     [
-      "clinker:boulder",
-      "clinker:small_cragrock"
     ],
     [],
     [],
@@ -58,9 +56,6 @@
     ],
     [],
     [
-      "clinker:ash_dune",
-      "clinker:rooted_ash",
-      "clinker:bramble_blob"
     ],
     [
       "minecraft:freeze_top_layer"

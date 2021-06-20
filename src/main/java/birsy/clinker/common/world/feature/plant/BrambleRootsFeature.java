@@ -29,7 +29,7 @@ public class BrambleRootsFeature extends Feature<NoFeatureConfig> {
 			return false;
 		} else {
 			BlockState blockstate = seedReaderIn.getBlockState(blockPosIn.up());
-			if (!blockstate.isIn(ClinkerBlocks.BRIMSTONE.get()) && !blockstate.isIn(ClinkerBlocks.PACKED_ASH.get())) {
+			if (!blockstate.matchesBlock(ClinkerBlocks.BRIMSTONE.get()) && !blockstate.matchesBlock(ClinkerBlocks.PACKED_ASH.get())) {
 				return false;
 			} else {
 				this.func_236428_a_(seedReaderIn, random, blockPosIn);
@@ -51,7 +51,7 @@ public class BrambleRootsFeature extends Feature<NoFeatureConfig> {
 
 				for(Direction direction : directionArray) {
 					BlockState blockstate = worldIn.getBlockState(blockpos$mutable1.setAndMove(blockpos$mutable, direction));
-					if (blockstate.isIn(ClinkerBlocks.BRIMSTONE.get()) || blockstate.isIn(ClinkerBlocks.PACKED_ASH.get())) {
+					if (blockstate.matchesBlock(ClinkerBlocks.BRIMSTONE.get()) || blockstate.matchesBlock(ClinkerBlocks.PACKED_ASH.get())) {
 						++j;
 					}
 
@@ -74,7 +74,7 @@ public class BrambleRootsFeature extends Feature<NoFeatureConfig> {
 			blockpos$mutable.setAndOffset(blockPosIn, random.nextInt(8) - random.nextInt(8), random.nextInt(2) - random.nextInt(7), random.nextInt(8) - random.nextInt(8));
 			if (worldIn.isAirBlock(blockpos$mutable)) {
 				BlockState blockstate = worldIn.getBlockState(blockpos$mutable.up());
-				if (blockstate.isIn(ClinkerBlocks.BRIMSTONE.get()) || blockstate.isIn(ClinkerBlocks.PACKED_ASH.get())) {
+				if (blockstate.matchesBlock(ClinkerBlocks.BRIMSTONE.get()) || blockstate.matchesBlock(ClinkerBlocks.PACKED_ASH.get())) {
 					int j = MathHelper.nextInt(random, 1, 8);
 					if (random.nextInt(6) == 0) {
 						j *= 2;

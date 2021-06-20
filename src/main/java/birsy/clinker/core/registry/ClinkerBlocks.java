@@ -8,11 +8,7 @@ import birsy.clinker.common.block.*;
 import birsy.clinker.common.block.belwithstone.BelwithPillarBlock;
 import birsy.clinker.common.block.belwithstone.CyclopeanBelwithBricksBlock;
 import birsy.clinker.common.block.belwithstone.MonolithicBelwithBricksBlock;
-import birsy.clinker.common.block.bramble.BrambleBlock;
-import birsy.clinker.common.block.bramble.BrambleRootsBlock;
-import birsy.clinker.common.block.bramble.BrambleRootsBottomBlock;
-import birsy.clinker.common.block.bramble.BrambleVinesBlock;
-import birsy.clinker.common.block.bramble.BrambleVinesTopBlock;
+import birsy.clinker.common.block.bramble.*;
 import birsy.clinker.common.block.driedsoulsand.ChiseledDrySoulsandBlock;
 import birsy.clinker.common.block.driedsoulsand.DriedSoulsandBlock;
 import birsy.clinker.common.block.driedsoulsand.DriedSoulsandFenceBlock;
@@ -251,7 +247,10 @@ public class ClinkerBlocks
 	public static final RegistryObject<Block> BRAMBLE_VINES_TOP = createBlock("bramble_vines_top", BrambleVinesTopBlock::new, null);
 	public static final RegistryObject<Block> BRAMBLE_ROOTS = createBlock("bramble_roots", BrambleRootsBlock::new, null);
 	public static final RegistryObject<Block> BRAMBLE_ROOTS_BOTTOM = createBlock("bramble_roots_bottom", BrambleRootsBottomBlock::new, null);
-	
+
+	public static final RegistryObject<Block> BRAMBOO_LOG = createBlock("bramboo_log", BrambooLogBlock::new, Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> BRAMBOO_STALK = createBlock("bramboo_stalk", BrambooStalkBlock::new, Clinker.CLINKER_BLOCKS);
+
 	public static final RegistryObject<Block> THORN_LOG = createBlock("thorn_log", ThornLogConnectedBlock::new, Clinker.CLINKER_BLOCKS);
 	
 	public static final RegistryObject<Block> STRIPPED_THORN_LOG = createBlock("stripped_thorn_log", ThornLogConnectedBlock::new, Clinker.CLINKER_BLOCKS);
@@ -272,9 +271,9 @@ public class ClinkerBlocks
 	//Special
 	public static final RegistryObject<Block> FOUL_AIR = createBlock("foul_air", FoulAirBlock::new, null);
 	public static final RegistryObject<Block> DUST_STALAGMITE = createBlock("dust_stalagmite", DustStalagmiteBlock::new, null);
-	
-	
-	
+
+	public static final RegistryObject<Block> SOUL_WELL = createBlock("soul_well", SoulWellBlock::new, Clinker.CLINKER_BLOCKS);
+
 	public static <B extends Block> RegistryObject<B> createBlock(String name, final Supplier<? extends B> supplier, @Nullable ItemGroup group) {
 		RegistryObject<B> block = BLOCKS.register(name, supplier);
 		if (group != null) {

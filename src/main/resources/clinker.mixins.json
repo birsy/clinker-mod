@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "birsy.clinker.core.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "clinker.refmap.json",
+  "mixins": [],
+  "client": [
+    "LightTextureMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

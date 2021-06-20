@@ -23,7 +23,7 @@ public class BrambleBlobFeature extends Feature<NoFeatureConfig> {
          return false;
       } else {
          BlockState blockstate = reader.getBlockState(pos.up());
-         if (!blockstate.isIn(ClinkerBlocks.BRIMSTONE.get()) && !blockstate.isIn(ClinkerBlocks.COBBLED_BRIMSTONE.get()) && !blockstate.isIn(ClinkerBlocks.SILT_BLOCK.get())) {
+         if (!blockstate.matchesBlock(ClinkerBlocks.BRIMSTONE.get()) && !blockstate.matchesBlock(ClinkerBlocks.COBBLED_BRIMSTONE.get()) && !blockstate.matchesBlock(ClinkerBlocks.SILT_BLOCK.get())) {
             return false;
          } else {
             this.setBlockState(reader, pos, ClinkerBlocks.BRAMBLE.get().getDefaultState());
@@ -35,7 +35,7 @@ public class BrambleBlobFeature extends Feature<NoFeatureConfig> {
                   boolean isNearSolid = false;
 
                   for(Direction direction : Direction.values()) {
-                     if (reader.getBlockState(blockpos.offset(direction)).isIn(ClinkerBlocks.BRAMBLE.get())) {
+                     if (reader.getBlockState(blockpos.offset(direction)).matchesBlock(ClinkerBlocks.BRAMBLE.get())) {
                         ++j;
                      }
 

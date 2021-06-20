@@ -158,7 +158,7 @@ public class HyenaEntity extends AnimalEntity implements IAngerable
 	}
 
 	@Override
-	public AgeableEntity func_241840_a(ServerWorld p_241840_1_, AgeableEntity p_241840_2_) {
+	public AgeableEntity createChild(ServerWorld p_241840_1_, AgeableEntity p_241840_2_) {
 		return ClinkerEntities.HYENA.get().create(this.world);
 	}
 

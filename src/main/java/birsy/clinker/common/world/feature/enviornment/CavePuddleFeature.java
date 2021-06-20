@@ -32,12 +32,12 @@ public class CavePuddleFeature extends Feature<BlobReplacementConfig> {
 		if (blockpos == null) {
 			return false;
 		} else {
-			int i = config.func_242823_b().func_242259_a(rand);
+			int i = config.getRadius().getSpread(rand);
 			boolean flag = false;
 
 			for (BlockPos blockpos1 : BlockPos.getProximitySortedBoxPositionsIterator(blockpos, i, i, i)) {
 				BlockState blockstate = reader.getBlockState(blockpos1);
-				if (blockstate.isIn(ClinkerBlocks.BRIMSTONE.get()) || blockstate.isIn(ClinkerBlocks.COBBLED_BRIMSTONE.get()) || blockstate.isIn(Blocks.STONE)) {
+				if (blockstate.matchesBlock(ClinkerBlocks.BRIMSTONE.get()) || blockstate.matchesBlock(ClinkerBlocks.COBBLED_BRIMSTONE.get()) || blockstate.matchesBlock(Blocks.STONE)) {
 					//If the above it isn't solid, isn't water, and the block itself can hold water, then the puddle block will generate.
 					if (!reader.getBlockState(blockpos1.up()).isSolid() && !(reader.getBlockState(blockpos1.up()).getBlock() == Blocks.WATER) && canHoldLiquid(reader, blockpos1, rand)) {
 						reader.setBlockState(blockpos1, rand.nextBoolean() ? Blocks.WATER.getDefaultState() : ClinkerBlocks.BRIMSTONE_SLAB.get().getDefaultState().with(SlabBlock.WATERLOGGED, true), 1);
@@ -71,7 +71,7 @@ public class CavePuddleFeature extends Feature<BlobReplacementConfig> {
 	private static BlockPos func_236329_a_(IWorld worldIn, BlockPos.Mutable pos, Block block) {
 		while (pos.getY() > 1) {
 			BlockState blockstate = worldIn.getBlockState(pos);
-			if (blockstate.isIn(ClinkerBlocks.BRIMSTONE.get()) || blockstate.isIn(ClinkerBlocks.COBBLED_BRIMSTONE.get()) || blockstate.isIn(Blocks.STONE)) {
+			if (blockstate.matchesBlock(ClinkerBlocks.BRIMSTONE.get()) || blockstate.matchesBlock(ClinkerBlocks.COBBLED_BRIMSTONE.get()) || blockstate.matchesBlock(Blocks.STONE)) {
 				return pos;
 			}
 

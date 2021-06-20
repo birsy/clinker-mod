@@ -140,7 +140,7 @@ public class WitchBrickEntity extends MonsterEntity
 				this.witchBrick.getMoveHelper().strafe(1.0F, 0.0F);
 				 */
 
-				navigator.setPath(navigator.getPathToEntity(livingEntity, (int) witchBrick.getDistanceSq(livingEntity)), 1.5F);
+				navigator.setPath(navigator.pathfind(livingEntity, (int) witchBrick.getDistanceSq(livingEntity)), 1.5F);
 
 				if (this.witchBrick.getBoundingBox().intersects(livingEntity.getBoundingBox())) {
 					this.witchBrick.attackEntityAsMob(livingEntity);

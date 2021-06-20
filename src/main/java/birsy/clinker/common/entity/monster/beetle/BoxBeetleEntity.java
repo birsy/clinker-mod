@@ -3,6 +3,8 @@ package birsy.clinker.common.entity.monster.beetle;
 import birsy.clinker.common.entity.merchant.GnomeBratEntity;
 import birsy.clinker.common.entity.merchant.GnomeEntity;
 import birsy.clinker.common.entity.monster.ShoggothHeadEntity;
+import birsy.clinker.common.entity.monster.gnomad.GnomadAxemanEntity;
+import birsy.clinker.core.util.MathUtils;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
@@ -12,11 +14,17 @@ import net.minecraft.entity.ai.controller.MovementController;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.IServerWorld;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -27,8 +35,9 @@ import javax.annotation.Nullable;
 import java.util.EnumSet;
 
 public class BoxBeetleEntity extends MonsterEntity {
-	private boolean isBashing;
-	private boolean inFlight;
+	public static final DataParameter<Boolean> FLYING = EntityDataManager.createKey(BoxBeetleEntity.class, DataSerializers.BOOLEAN);
+	public static final DataParameter<Boolean> BASHING = EntityDataManager.createKey(BoxBeetleEntity.class, DataSerializers.BOOLEAN);
+
 	private boolean wasInFlightLastTick;
 
 	public int ticksInFlight;
@@ -39,8 +48,15 @@ public class BoxBeetleEntity extends MonsterEntity {
 	private float rollAmount;
 	private float rollAmountO;
 
-	public int flightOpenTransitionTicks;
-	public int flightCloseTransitionTicks;
+	@OnlyIn(Dist.CLIENT)
+	private int prevFlightOpenTicks;
+	public static final DataParameter<Integer> FLIGHT_OPEN_TICKS = EntityDataManager.createKey(BoxBeetleEntity.class, DataSerializers.VARINT);
+
+	@OnlyIn(Dist.CLIENT)
+	private int prevFlightCloseTicks;
+	public static final DataParameter<Integer> FLIGHT_CLOSE_TICKS = EntityDataManager.createKey(BoxBeetleEntity.class, DataSerializers.VARINT);
+
+	public static final DataParameter<Float> SIZE = EntityDataManager.createKey(BoxBeetleEntity.class, DataSerializers.FLOAT);
 
 	private final MovementController walkingMoveController = new MovementController(this);
 	private final MovementController flyingMoveController = new FlyingMovementController(this, 50, true);
@@ -79,8 +95,41 @@ public class BoxBeetleEntity extends MonsterEntity {
 				.createMutableAttribute(Attributes.ATTACK_KNOCKBACK, 3.0D);
 	}
 
+	protected void registerData() {
+		super.registerData();
+		this.dataManager.register(FLYING, false);
+		this.dataManager.register(BASHING, false);
+
+		this.dataManager.register(FLIGHT_OPEN_TICKS, 0);
+		this.dataManager.register(FLIGHT_CLOSE_TICKS, 0);
+
+		this.dataManager.register(SIZE, 1.0F);
+	}
+
+	public void writeAdditional(CompoundNBT compound) {
+		super.writeAdditional(compound);
+		compound.putBoolean("Flying", this.inFlight());
+		compound.putBoolean("Bashing", this.isBashing());
+
+		compound.putInt("Flight_Open_Ticks", this.getFlightOpenTransitionTicks());
+		compound.putInt("Flight_Close_Ticks", this.getFlightCloseTransitionTicks());
+
+		compound.putFloat("Size", this.getSize());
+	}
+
+	public void readAdditional(CompoundNBT compound) {
+		super.readAdditional(compound);
+		this.dataManager.set(FLYING, compound.getBoolean("Flying"));
+		this.dataManager.set(BASHING, compound.getBoolean("Bashing"));
+
+		this.dataManager.set(FLIGHT_OPEN_TICKS, compound.getInt("Flight_Open_Ticks"));
+		this.dataManager.set(FLIGHT_CLOSE_TICKS, compound.getInt("Flight_Close_Ticks"));
+
+		this.dataManager.set(SIZE, compound.getFloat("Size"));
+	}
+
 	public float getBlockPathWeight(BlockPos pos, IWorldReader worldIn) {
-		if (this.inFlight) {
+		if (this.inFlight()) {
 			return worldIn.getBlockState(pos).isAir() ? 10.0F : 0.0F;
 		} else {
 			return super.getBlockPathWeight(pos, worldIn);
@@ -90,11 +139,13 @@ public class BoxBeetleEntity extends MonsterEntity {
 	@Override
 	public void livingTick() {
 		//If it's not currently transitioning from flying, then it may start to fly.
-		if (this.rand.nextInt(100) == 0 && this.flightCloseTransitionTicks == 0 && this.flightOpenTransitionTicks == 0 ) {
-			if (this.getFlying()) {
-				this.setFlying(false);
-			} else {
+		if (this.rand.nextInt(600) == 0 && this.getFlightCloseTransitionTicks() == 0 && this.getFlightOpenTransitionTicks() == 0 ) {
+			if (!this.inFlight()) {
 				this.setFlying(true);
+			}
+		} else if (this.rand.nextInt(100) == 0 && this.getFlightCloseTransitionTicks() == 0 && this.getFlightOpenTransitionTicks() == 0) {
+			if (this.inFlight()) {
+				this.setFlying(false);
 			}
 		}
 
@@ -103,16 +154,20 @@ public class BoxBeetleEntity extends MonsterEntity {
 
 	@Override
 	public void tick() {
+		this.prevFlightOpenTicks = this.getFlightOpenTransitionTicks();
+		this.prevFlightCloseTicks = this.getFlightCloseTransitionTicks();
+
 		//Sets the transition ticks for the elytra unfullering animation.
-		if (flightOpenTransitionTicks > 0) {
-			flightOpenTransitionTicks--;
+		if (this.getFlightCloseTransitionTicks() > 0) {
+			this.setFlightCloseTransitionTicks(this.getFlightCloseTransitionTicks() - 1);
 		}
 
-		if (flightCloseTransitionTicks > 0) {
-			flightCloseTransitionTicks--;
+		if (this.getFlightOpenTransitionTicks() > 0) {
+			this.setFlightOpenTransitionTicks(this.getFlightOpenTransitionTicks() - 1);
 		}
 
-		if(this.isBashing) {
+
+		if(this.isBashing()) {
 			this.attackTimer++;
 		} else {
 			this.attackTimer = 0;
@@ -122,7 +177,7 @@ public class BoxBeetleEntity extends MonsterEntity {
 			this.attackDelay--;
 		}
 
-		if(this.getFlying()) {
+		if (this.inFlight()) {
 			updateBodyPitch();
 		}
 
@@ -130,13 +185,13 @@ public class BoxBeetleEntity extends MonsterEntity {
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	public float getBodyPitch(float p_226455_1_) {
-		return MathHelper.lerp(p_226455_1_, this.rollAmountO, this.rollAmount);
+	public float getBodyPitch(float partialTicks) {
+		return MathHelper.lerp(partialTicks, this.rollAmountO, this.rollAmount);
 	}
 
 	private void updateBodyPitch() {
 		this.rollAmountO = this.rollAmount;
-		if (this.isBashing) {
+		if (this.isBashing()) {
 			this.rollAmount = Math.min(1.0F, this.rollAmount + 0.2F);
 		} else {
 			this.rollAmount = Math.max(0.0F, this.rollAmount - 0.24F);
@@ -144,28 +199,55 @@ public class BoxBeetleEntity extends MonsterEntity {
 	}
 
 	public void setBashing(Boolean bool) {
-		this.isBashing = bool;
+		this.dataManager.set(BASHING, bool);
 	}
-	
-	public boolean getBashing() {
-		return this.isBashing;
+	public boolean isBashing() {
+		return this.dataManager.get(FLYING);
 	}
 
 	public void setFlying(Boolean bool) {
-		this.inFlight = bool;
+		this.dataManager.set(FLYING, bool);
 		if (bool) {
 			this.moveController = flyingMoveController;
 			this.setNoGravity(true);
-			this.flightOpenTransitionTicks = 10;
+			this.setFlightOpenTransitionTicks(10);
 		} else {
 			this.moveController = walkingMoveController;
 			this.setNoGravity(false);
-			this.flightCloseTransitionTicks = 10;
+			this.setFlightCloseTransitionTicks(10);
 		}
 	}
-	
-	public boolean getFlying() {
-		return this.inFlight;
+	public boolean inFlight() {
+		return this.dataManager.get(FLYING);
+	}
+
+	@OnlyIn(Dist.CLIENT)
+	public float getFlightOpenTransitionTicks(float partialTicks) {
+		return MathHelper.lerp(partialTicks, prevFlightOpenTicks, this.dataManager.get(FLIGHT_OPEN_TICKS));
+	}
+	public int getFlightOpenTransitionTicks() {
+		return this.dataManager.get(FLIGHT_OPEN_TICKS);
+	}
+	public void setFlightOpenTransitionTicks(int time) {
+		this.dataManager.set(FLIGHT_OPEN_TICKS, time);
+	}
+
+	@OnlyIn(Dist.CLIENT)
+	public float getFlightCloseTransitionTicks(float partialTicks) {
+		return MathHelper.lerp(partialTicks, prevFlightCloseTicks, this.dataManager.get(FLIGHT_CLOSE_TICKS));
+	}
+	public int getFlightCloseTransitionTicks() {
+		return this.dataManager.get(FLIGHT_CLOSE_TICKS);
+	}
+	public void setFlightCloseTransitionTicks(int time) {
+		this.dataManager.set(FLIGHT_CLOSE_TICKS, time);
+	}
+
+	public float getSize() {
+		return this.dataManager.get(SIZE);
+	}
+	public void setSize(float size) {
+		this.dataManager.set(SIZE, size);
 	}
 
 	public class GroundAttackGoal extends Goal {
@@ -201,7 +283,7 @@ public class BoxBeetleEntity extends MonsterEntity {
 
 		public void startExecuting() {
 			//Sets it to track the player, and makes it mad while it does so.
-			this.path = this.beetle.getNavigator().getPathToEntity(this.beetle.getAttackTarget(), 0);
+			this.path = this.beetle.getNavigator().pathfind(this.beetle.getAttackTarget(), 0);
 
 			this.beetle.getNavigator().setPath(this.path, 1.0D);
 			this.beetle.setAggroed(true);
@@ -215,11 +297,11 @@ public class BoxBeetleEntity extends MonsterEntity {
 			LivingEntity livingentity = this.beetle.getAttackTarget();
 
 			//If it's not already bashing, within 9 blocks of the player, and isn't recovering from an attack, then it has a 1 in 3 chance to begin bashing.
-			if (!this.beetle.getBashing() && this.beetle.getDistance(livingentity) < 4.0D && this.beetle.attackDelay <= 0) {
+			if (!this.beetle.isBashing() && this.beetle.getDistance(livingentity) < 4.0D && this.beetle.attackDelay <= 0) {
 				this.beetle.setBashing(this.beetle.rand.nextInt(3) == 0);
 			}
 
-			if (this.beetle.getBashing() && this.beetle.attackDelay <= 0) {
+			if (this.beetle.isBashing() && this.beetle.attackDelay <= 0) {
 				if (this.beetle.getBoundingBox().intersects(livingentity.getBoundingBox())) {
 					this.beetle.attackEntityAsMob(livingentity);
 
@@ -259,11 +341,11 @@ public class BoxBeetleEntity extends MonsterEntity {
 		}
 
 		public boolean shouldExecute() {
-			return this.beetle.inFlight && this.beetle.navigator.noPath();
+			return this.beetle.inFlight() && this.beetle.navigator.noPath();
 		}
 
 		public boolean shouldContinueExecuting() {
-			return this.beetle.inFlight && this.beetle.navigator.hasPath() && !this.beetle.isAggressive();
+			return this.beetle.inFlight() && this.beetle.navigator.hasPath() && !this.beetle.isAggressive();
 		}
 
 		public void startExecuting() {
@@ -294,7 +376,7 @@ public class BoxBeetleEntity extends MonsterEntity {
 
 		@Override
 		public boolean shouldExecute() {
-			if (beetle.getFlying()) {
+			if (beetle.inFlight()) {
 				return false;
 			} else {
 				return super.shouldExecute();
@@ -303,7 +385,7 @@ public class BoxBeetleEntity extends MonsterEntity {
 	}
 
 	public boolean attackEntityFrom(DamageSource source, float amount) {
-		if ((super.attackEntityFrom(source, amount) && source.isProjectile() && this.inFlight) || (super.attackEntityFrom(source, amount) && this.rand.nextInt(3) == 0 && this.inFlight)) {
+		if ((super.attackEntityFrom(source, amount) && source.isProjectile() && this.inFlight()) || (super.attackEntityFrom(source, amount) && this.rand.nextInt(3) == 0 && this.inFlight())) {
 			this.setFlying(false);
 			this.setBashing(false);
 			this.attackDelay = 50;
@@ -317,14 +399,23 @@ public class BoxBeetleEntity extends MonsterEntity {
 
 	@Override
 	protected boolean makeFlySound() {
-		return this.inFlight;
+		return this.inFlight();
 	}
 
 	protected void collideWithEntity(Entity entityIn) {
-		if (entityIn == this.getAttackTarget() && this.getBashing()) {
+		if (entityIn == this.getAttackTarget() && this.isBashing()) {
 			return;
 		} else {
 			super.collideWithEntity(entityIn);
 		}
+	}
+
+	@Nullable
+	@Override
+	public ILivingEntityData onInitialSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
+		if (reason != SpawnReason.COMMAND) {
+			this.setSize(MathUtils.getRandomFloatBetween(rand, 0.8F,1.3F));
+		}
+		return super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
 	}
 }

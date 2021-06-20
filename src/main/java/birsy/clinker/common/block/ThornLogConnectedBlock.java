@@ -66,7 +66,7 @@ public class ThornLogConnectedBlock extends SixWayBlock implements IWaterLoggabl
 			worldIn.getPendingBlockTicks().scheduleTick(currentPos, this, 1);
 			return super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
 		} else {
-			boolean flag = facingState.getBlock() == this || facingState.isIn(Blocks.CHORUS_FLOWER) || facing == Direction.DOWN && facingState.isIn(Blocks.END_STONE);
+			boolean flag = facingState.getBlock() == this || facingState.matchesBlock(Blocks.CHORUS_FLOWER) || facing == Direction.DOWN && facingState.matchesBlock(Blocks.END_STONE);
 			return stateIn.with(FACING_TO_PROPERTY_MAP.get(facing), Boolean.valueOf(flag));
 		}
 	}

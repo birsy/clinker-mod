@@ -28,7 +28,7 @@ public abstract class SpreadableAshBlock extends Block {
 	private static boolean isBlockCovered(BlockState blockStateIn, IWorldReader worldIn, BlockPos blockPosIn) {
 		BlockPos blockpos = blockPosIn.up();
 		BlockState blockstate = worldIn.getBlockState(blockpos);
-		if (blockstate.isIn(Blocks.SNOW) && blockstate.get(SnowBlock.LAYERS) == 1) {
+		if (blockstate.matchesBlock(Blocks.SNOW) && blockstate.get(SnowBlock.LAYERS) == 1) {
 			return true;
 		} else if (blockstate.getFluidState().getLevel() == 8) {
 			return false;
@@ -64,7 +64,7 @@ public abstract class SpreadableAshBlock extends Block {
 					BlockState blockstate = this.getDefaultState();
 					for (int i = 0; i < 4; ++i) {
 						BlockPos blockpos = pos.add(random.nextInt(3) - 1, random.nextInt(5) - 3, random.nextInt(3) - 1);
-						if (worldIn.getBlockState(blockpos).isIn(grassBase) && isBlockDrowned(blockstate, worldIn, blockpos)) {
+						if (worldIn.getBlockState(blockpos).matchesBlock(grassBase) && isBlockDrowned(blockstate, worldIn, blockpos)) {
 							worldIn.setBlockState(blockpos, blockstate);
 						}
 					}

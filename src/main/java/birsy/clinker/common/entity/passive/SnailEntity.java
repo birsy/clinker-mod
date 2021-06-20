@@ -106,7 +106,7 @@ public class SnailEntity extends AnimalEntity
 	}
 
 	@Override
-	public AgeableEntity func_241840_a(ServerWorld p_241840_1_, AgeableEntity p_241840_2_) {
+	public AgeableEntity createChild(ServerWorld p_241840_1_, AgeableEntity p_241840_2_) {
 		return ClinkerEntities.SNAIL.get().create(this.world);
 	}
 }

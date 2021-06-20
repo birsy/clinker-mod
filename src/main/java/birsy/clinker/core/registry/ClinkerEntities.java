@@ -9,7 +9,6 @@ import birsy.clinker.common.entity.monster.gnomad.GnomadAxemanEntity;
 import birsy.clinker.common.entity.monster.gnomad.GnomadHelicopterEntity;
 import birsy.clinker.common.entity.monster.gnomad.GnomadShamanEntity;
 import birsy.clinker.common.entity.passive.SnailEntity;
-import birsy.clinker.common.entity.passive.TorAntEntity;
 import birsy.clinker.core.Clinker;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
@@ -87,11 +86,6 @@ public class ClinkerEntities
 			.size(1.8f, 1.5f)
 			.build(makeEntityPath("hyena")));
 	
-	public static final RegistryObject<EntityType<TorAntEntity>> TOR_ANT = createLivingEntity("tor_ant",
-			() -> EntityType.Builder.create(TorAntEntity::new, EntityClassification.MONSTER)
-			.size(3.0f, 2.5f)
-			.build(makeEntityPath("tor_ant")));
-	
 	public static final RegistryObject<EntityType<WitherRevenantEntity>> WITHER_REVENANT = createLivingEntity("wither_revenant",
 			() -> EntityType.Builder.create(WitherRevenantEntity::new, EntityClassification.MONSTER)
 			.size(1.3f, 2.6f)
@@ -126,7 +120,6 @@ public class ClinkerEntities
 		GlobalEntityTypeAttributes.put(ClinkerEntities.COPTER_GNOMAD.get(), GnomadHelicopterEntity.setCustomAttributes().create());
 
 		GlobalEntityTypeAttributes.put(ClinkerEntities.HYENA.get(), HyenaEntity.setCustomAttributes().create());
-		GlobalEntityTypeAttributes.put(ClinkerEntities.TOR_ANT.get(), TorAntEntity.setCustomAttributes().create());
 		GlobalEntityTypeAttributes.put(ClinkerEntities.WITHER_REVENANT.get(), WitherRevenantEntity.setCustomAttributes().create());
 
 		GlobalEntityTypeAttributes.put(ClinkerEntities.BOX_BEETLE.get(), BoxBeetleEntity.setCustomAttributes().create());
@@ -148,7 +141,6 @@ public class ClinkerEntities
 		RenderingRegistry.registerEntityRenderingHandler(ClinkerEntities.COPTER_GNOMAD.get(), CopterGnomadRenderer::new);
 
 		RenderingRegistry.registerEntityRenderingHandler(ClinkerEntities.HYENA.get(), HyenaRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ClinkerEntities.TOR_ANT.get(), TorAntRenderer::new);
 		RenderingRegistry.registerEntityRenderingHandler(ClinkerEntities.WITHER_REVENANT.get(), WitherRevenantRenderer::new);
 
 		RenderingRegistry.registerEntityRenderingHandler(ClinkerEntities.BOX_BEETLE.get(), BoxBeetleRenderer::new);

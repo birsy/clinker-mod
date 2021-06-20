@@ -22,7 +22,7 @@ public class AncientBrickFlatBlock extends DirectionalBlock {
 	public BlockState getStateForPlacement(BlockItemUseContext context) {
 		Direction direction = context.getFace();
 		BlockState blockstate = context.getWorld().getBlockState(context.getPos().offset(direction.getOpposite()));
-		return blockstate.isIn(this) && blockstate.get(FACING) == direction ? this.getDefaultState().with(FACING, direction.getOpposite()) : this.getDefaultState().with(FACING, direction);
+		return blockstate.matchesBlock(this) && blockstate.get(FACING) == direction ? this.getDefaultState().with(FACING, direction.getOpposite()) : this.getDefaultState().with(FACING, direction);
 	}
 	
 	protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {

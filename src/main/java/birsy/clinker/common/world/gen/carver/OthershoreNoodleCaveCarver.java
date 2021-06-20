@@ -146,8 +146,8 @@ public class OthershoreNoodleCaveCarver extends WorldCarver<ProbabilityConfig> {
             p_230358_5_.setPos(posX, posY, posZ);
             BlockState blockstate = chunk.getBlockState(p_230358_5_);
             BlockState blockstate1 = chunk.getBlockState(p_230358_6_.setAndMove(p_230358_5_, Direction.UP));
-            if (blockstate.isIn(ClinkerBlocks.ASH.get()) || blockstate.isIn(ClinkerBlocks.ROOTED_ASH.get()) || blockstate.isIn(ClinkerBlocks.ASH_LAYER.get()) ||
-                    blockstate.isIn(ClinkerBlocks.PACKED_ASH.get()) || blockstate.isIn(ClinkerBlocks.ROOTED_PACKED_ASH.get())) {
+            if (blockstate.matchesBlock(ClinkerBlocks.ASH.get()) || blockstate.matchesBlock(ClinkerBlocks.ROOTED_ASH.get()) || blockstate.matchesBlock(ClinkerBlocks.ASH_LAYER.get()) ||
+                    blockstate.matchesBlock(ClinkerBlocks.PACKED_ASH.get()) || blockstate.matchesBlock(ClinkerBlocks.ROOTED_PACKED_ASH.get())) {
                 isSurface.setTrue();
             }
 
@@ -160,7 +160,7 @@ public class OthershoreNoodleCaveCarver extends WorldCarver<ProbabilityConfig> {
                     chunk.setBlockState(p_230358_5_, CAVE_AIR, false);
                     if (isSurface.isTrue()) {
                         p_230358_7_.setAndMove(p_230358_5_, Direction.DOWN);
-                        if (chunk.getBlockState(p_230358_7_).isIn(ClinkerBlocks.PACKED_ASH.get())) {
+                        if (chunk.getBlockState(p_230358_7_).matchesBlock(ClinkerBlocks.PACKED_ASH.get())) {
                             chunk.setBlockState(p_230358_7_, p_230358_2_.apply(p_230358_5_).getGenerationSettings().getSurfaceBuilderConfig().getTop(), false);
                         }
                     }

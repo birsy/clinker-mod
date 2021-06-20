@@ -28,12 +28,12 @@ public class LayeredBlobFeature extends Feature<BlobReplacementConfig> {
         if (blockpos == null) {
             return false;
         } else {
-            int i = config.func_242823_b().func_242259_a(rand);
+            int i = config.getRadius().getSpread(rand);
             boolean flag = false;
             for (BlockPos blockpos1 : BlockPos.getProximitySortedBoxPositionsIterator(blockpos, i, i, i)) {
                 BlockState blockstate = reader.getBlockState(blockpos1);
                 if (!(blockpos1.distanceSq(pos) < i)) {
-                    if (blockstate.isIn(ClinkerBlocks.BRIMSTONE.get()) || blockstate.isIn(ClinkerBlocks.COBBLED_BRIMSTONE.get()) || blockstate.isIn(Blocks.STONE)) {
+                    if (blockstate.matchesBlock(ClinkerBlocks.BRIMSTONE.get()) || blockstate.matchesBlock(ClinkerBlocks.COBBLED_BRIMSTONE.get()) || blockstate.matchesBlock(Blocks.STONE)) {
                         this.setBlockState(reader, blockpos1, ClinkerBlocks.SHALE.get().getDefaultState());
                         flag = true;
                     }
@@ -58,7 +58,7 @@ public class LayeredBlobFeature extends Feature<BlobReplacementConfig> {
     private static BlockPos getValidYPos(IWorld worldIn, BlockPos.Mutable pos) {
         while (pos.getY() > 1) {
             BlockState blockstate = worldIn.getBlockState(pos);
-            if (blockstate.isIn(ClinkerBlocks.BRIMSTONE.get()) || blockstate.isIn(ClinkerBlocks.COBBLED_BRIMSTONE.get()) || blockstate.isIn(Blocks.STONE)) {
+            if (blockstate.matchesBlock(ClinkerBlocks.BRIMSTONE.get()) || blockstate.matchesBlock(ClinkerBlocks.COBBLED_BRIMSTONE.get()) || blockstate.matchesBlock(Blocks.STONE)) {
                 return pos;
             }
 

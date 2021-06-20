@@ -52,7 +52,10 @@ public class ClinkerItems
 
 	public static final RegistryObject<ClinkerSpawnEggItem> SNAIL_SPAWN_EGG = ITEMS.register("snail_spawn_egg",
 	() -> new ClinkerSpawnEggItem(ClinkerEntities.SNAIL, 0x85494C, 0x6E7058, new Item.Properties().group(Clinker.CLINKER_MISC)));
-	
+
+	public static final RegistryObject<ClinkerSpawnEggItem> BOX_BEETLE_SPAWN_EGG = ITEMS.register("box_beetle_spawn_egg",
+	() -> new ClinkerSpawnEggItem(ClinkerEntities.BOX_BEETLE, 0x1d1d23, 0x6b715d, new Item.Properties().group(Clinker.CLINKER_MISC)));
+
 	public static final RegistryObject<ClinkerSpawnEggItem> GNOME_SPAWN_EGG = ITEMS.register("gnome_spawn_egg",
 	() -> new ClinkerSpawnEggItem(ClinkerEntities.GNOME, 0x735d57, 0x763a3e, new Item.Properties().group(Clinker.CLINKER_MISC)));
 	
@@ -67,12 +70,6 @@ public class ClinkerItems
 	
 	public static final RegistryObject<ClinkerSpawnEggItem> HYENA_SPAWN_EGG = ITEMS.register("hyena_spawn_egg",
 	() -> new ClinkerSpawnEggItem(ClinkerEntities.HYENA, 0x735d57, 0x763a3e, new Item.Properties().group(Clinker.CLINKER_MISC)));
-	
-	public static final RegistryObject<ClinkerSpawnEggItem> TOR_ANT_SPAWN_EGG = ITEMS.register("tor_ant_spawn_egg",
-	() -> new ClinkerSpawnEggItem(ClinkerEntities.TOR_ANT, 0xb9bf94, 0x3d413d, new Item.Properties().group(Clinker.CLINKER_MISC)));
-
-	public static final RegistryObject<ClinkerSpawnEggItem> BOX_BEETLE_SPAWN_EGG = ITEMS.register("box_beetle_spawn_egg",
-			() -> new ClinkerSpawnEggItem(ClinkerEntities.BOX_BEETLE, 0x33323a, 0x5f6352,  new Item.Properties().group(Clinker.CLINKER_MISC)));
 	
 	public static final RegistryObject<ClinkerSpawnEggItem> WITCH_BRICK_SPAWN_EGG = ITEMS.register("witch_brick_spawn_egg",
 	() -> new ClinkerSpawnEggItem(ClinkerEntities.WITCH_BRICK, 0x9aa8af, 0x593025, new Item.Properties().group(Clinker.CLINKER_MISC)));

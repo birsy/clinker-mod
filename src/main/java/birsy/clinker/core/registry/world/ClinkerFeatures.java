@@ -21,17 +21,17 @@ public class ClinkerFeatures
 		PLACEMENT.register(FMLJavaModLoadingContext.get().getModEventBus());
 	}
 
-	public static final RegistryObject<Feature<NoFeatureConfig>> BRAMBLE_BLOB = FEATURES.register("bramble_blob", () -> new BrambleBlobFeature(NoFeatureConfig.field_236558_a_));
-	public static final RegistryObject<Feature<NoFeatureConfig>> ROOTED_ASH = FEATURES.register("rooted_ash", () -> new RootedAshFeature(NoFeatureConfig.field_236558_a_));
+	public static final RegistryObject<Feature<NoFeatureConfig>> BRAMBLE_BLOB = FEATURES.register("bramble_blob", () -> new BrambleBlobFeature(NoFeatureConfig.CODEC));
+	public static final RegistryObject<Feature<NoFeatureConfig>> ROOTED_ASH = FEATURES.register("rooted_ash", () -> new RootedAshFeature(NoFeatureConfig.CODEC));
 
 	public static final RegistryObject<Feature<ColumnConfig>> CRAGROCK = FEATURES.register("cragrock", () -> new CragrockFeature(ColumnConfig.CODEC));
-	public static final RegistryObject<Feature<BlockStateFeatureConfig>> BOULDER = FEATURES.register("boulder", () -> new BoulderFeature(BlockStateFeatureConfig.field_236455_a_));
+	public static final RegistryObject<Feature<BlockStateFeatureConfig>> BOULDER = FEATURES.register("boulder", () -> new BoulderFeature(BlockStateFeatureConfig.CODEC));
 
-	public static final RegistryObject<Feature<NoFeatureConfig>> ASH_DUNE = FEATURES.register("ash_dune", () -> new AshDuneFeature(NoFeatureConfig.field_236558_a_));
+	public static final RegistryObject<Feature<NoFeatureConfig>> ASH_DUNE = FEATURES.register("ash_dune", () -> new AshDuneFeature(NoFeatureConfig.CODEC));
 	public static final RegistryObject<Feature<BlobReplacementConfig>> CAVE_PUDDLE = FEATURES.register("cave_puddle", () -> new CavePuddleFeature(BlobReplacementConfig.CODEC));
 	public static final RegistryObject<Feature<BlobReplacementConfig>> CAVE_FLOOR = FEATURES.register("cave_floor", () -> new CaveFloorFeature(BlobReplacementConfig.CODEC));
 	public static final RegistryObject<Feature<BlobReplacementConfig>> ASH_GEODE = FEATURES.register("ash_geode", () -> new LayeredBlobFeature(BlobReplacementConfig.CODEC));
-	public static final RegistryObject<Feature<BlockStateFeatureConfig>> AQUIFER = FEATURES.register("aquifer", () -> new AquiferFeature(BlockStateFeatureConfig.field_236455_a_));
+	public static final RegistryObject<Feature<BlockStateFeatureConfig>> AQUIFER = FEATURES.register("aquifer", () -> new AquiferFeature(BlockStateFeatureConfig.CODEC));
 
-	public static final RegistryObject<Feature<NoFeatureConfig>> SPELEOTHEM = FEATURES.register("speleothem", () -> new SpeleothemFeature(NoFeatureConfig.field_236558_a_));
+	public static final RegistryObject<Feature<NoFeatureConfig>> SPELEOTHEM = FEATURES.register("speleothem", () -> new SpeleothemFeature(NoFeatureConfig.CODEC));
 }

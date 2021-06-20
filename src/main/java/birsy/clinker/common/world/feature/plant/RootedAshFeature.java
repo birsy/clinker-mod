@@ -34,9 +34,9 @@ public class RootedAshFeature extends Feature<NoFeatureConfig> {
             if (blockPos.distanceSq(pos) < radius) {
                 BlockState blockstate = reader.getBlockState(blockPos);
                 if (blockstate.isSolid()) {
-                    if (blockstate.isIn(ClinkerBlocks.ASH.get())) {
+                    if (blockstate.matchesBlock(ClinkerBlocks.ASH.get())) {
                         this.setBlockState(reader, blockPos, ClinkerBlocks.ROOTED_ASH.get().getDefaultState());
-                    } else if (blockstate.isIn(ClinkerBlocks.PACKED_ASH.get()) || blockstate.isIn(ClinkerBlocks.ROCKY_PACKED_ASH.get())) {
+                    } else if (blockstate.matchesBlock(ClinkerBlocks.PACKED_ASH.get()) || blockstate.matchesBlock(ClinkerBlocks.ROCKY_PACKED_ASH.get())) {
                         this.setBlockState(reader, blockPos, ClinkerBlocks.ROOTED_PACKED_ASH.get().getDefaultState());
                     }
 

@@ -81,16 +81,7 @@ public class AshBlock extends FallingBlock
 		}
 	}
 
-	public void addAshLayer(World worldIn, BlockPos pos, int amount) {
-		BlockState blockState = worldIn.getBlockState(pos);
-		if (!blockState.isSolid()) {
-			if (blockState.isIn(ClinkerBlocks.ASH_LAYER.get())) {
-				worldIn.setBlockState(pos, blockState.with(AshLayerBlock.LAYERS, MathHelper.clamp(amount + blockState.get(AshLayerBlock.LAYERS), 0, 8)), 1);
-			} else {
-				worldIn.setBlockState(pos, ClinkerBlocks.ASH_LAYER.get().getDefaultState().with(AshLayerBlock.LAYERS, MathHelper.clamp(amount, 0, 8)), 1);
-			}
-		}
-	}
+	public void addAshLayer(World worldIn, BlockPos pos, int amount) { }
 
 	@OnlyIn(Dist.CLIENT)
 	public int getDustColor(BlockState state, IBlockReader p_189876_2_, BlockPos p_189876_3_) {

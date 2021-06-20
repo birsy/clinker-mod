@@ -63,14 +63,31 @@ public class MathUtils {
         return mapRange(0, 1, min, max, rand.nextFloat());
     }
 
-    public static float terrace (float height, float width) {
-        float k = (float) Math.floor(height / width);
-        float f = (height - k * width) / width;
+    /**
+     * Applies a series of distinct stairs (terraces) to a number. Very useful for terrain.
+     * @param height A float between 0 and 1. The input height that you want to be terraced.
+     * @param width A float between 0 and 1. The width of each "step" on the terrace.
+     * @param erosion A float between 0 and 1. The factor of influence for the terrace.
+     * @return The inputted height with the terraced step effect applied.
+     */
+    public static float terrace (float height, float width, float erosion) {
+        float terraceWidth = width * 0.5f;
+        if (terraceWidth == 0) {
+            terraceWidth += 0.0001f;
+        }
+
+        float k = (float) Math.floor(height / terraceWidth);
+        float f = (height - k * terraceWidth) / terraceWidth;
         float s = Math.min(2.0f * f, 1.0f);
-        return (k + s) * width;
+        return MathHelper.lerp(erosion,(k + s) * terraceWidth, height);
     }
 
-    public static float smoothTerrace (float height, float steepness) {
-        return (float) (Math.pow(MathHelper.sin((height - Math.round(height)) * 2.45f), steepness) + Math.round(height));
+    public static float minMaxSin (float value, float min, float max) {
+        return (((MathHelper.sin(value) + 1) * 0.5F) * (max - min)) + min;
+    }
+
+    public static float smoothMin (float value1, float value2, float smoothness) {
+        float h = Math.max(smoothness - Math.abs(value1-value2), 0) / smoothness;
+        return Math.min(value1, value2) - h * h * h * smoothness * 1 / 6.0F;
     }
 }

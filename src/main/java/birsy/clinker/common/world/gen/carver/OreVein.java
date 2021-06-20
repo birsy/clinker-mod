@@ -141,8 +141,8 @@ public class OreVein extends WorldCarver<OreVeinConfig> {
             placementPos.setPos(posX, posY, posZ);
             BlockState blockstate = chunk.getBlockState(placementPos);
             BlockState blockstate1 = chunk.getBlockState(p_230358_6_.setAndMove(placementPos, Direction.UP));
-            if (blockstate.isIn(ClinkerBlocks.ASH.get()) || blockstate.isIn(ClinkerBlocks.ROOTED_ASH.get()) || blockstate.isIn(ClinkerBlocks.ASH_LAYER.get()) ||
-                    blockstate.isIn(ClinkerBlocks.PACKED_ASH.get()) || blockstate.isIn(ClinkerBlocks.ROOTED_PACKED_ASH.get())) {
+            if (blockstate.matchesBlock(ClinkerBlocks.ASH.get()) || blockstate.matchesBlock(ClinkerBlocks.ROOTED_ASH.get()) || blockstate.matchesBlock(ClinkerBlocks.ASH_LAYER.get()) ||
+                    blockstate.matchesBlock(ClinkerBlocks.PACKED_ASH.get()) || blockstate.matchesBlock(ClinkerBlocks.ROOTED_PACKED_ASH.get())) {
                 isSurface.setTrue();
             }
 
@@ -157,7 +157,7 @@ public class OreVein extends WorldCarver<OreVeinConfig> {
                     }
                     if (isSurface.isTrue()) {
                         p_230358_7_.setAndMove(placementPos, Direction.DOWN);
-                        if (chunk.getBlockState(p_230358_7_).isIn(ClinkerBlocks.PACKED_ASH.get())) {
+                        if (chunk.getBlockState(p_230358_7_).matchesBlock(ClinkerBlocks.PACKED_ASH.get())) {
                             chunk.setBlockState(p_230358_7_, p_230358_2_.apply(placementPos).getGenerationSettings().getSurfaceBuilderConfig().getTop(), false);
                         }
                     }

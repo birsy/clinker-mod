@@ -18,7 +18,7 @@ public class ClinkerWorldCarvers {
 		WORLD_CARVERS.register(FMLJavaModLoadingContext.get().getModEventBus());
 	}
 	
-	public static final RegistryObject<WorldCarver<ProbabilityConfig>> OTHERSHORE_NOODLE_CAVES = WORLD_CARVERS.register("othershore_noodle_caves", () -> new WorleyCarver(ProbabilityConfig.CODEC, 256, -0.3f));
+	public static final RegistryObject<WorldCarver<ProbabilityConfig>> OTHERSHORE_NOODLE_CAVES = WORLD_CARVERS.register("othershore_noodle_caves", () -> new WorleyCarver(ProbabilityConfig.CODEC, 256, -0.22f));
 
 	public static final RegistryObject<WorldCarver<ProbabilityConfig>> OTHERSHORE_CANYON_CAVE = WORLD_CARVERS.register("othershore_canyon_cave", () -> new OthershoreCanyonCaveCarver(ProbabilityConfig.CODEC));
 }

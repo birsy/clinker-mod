@@ -1,0 +1,7 @@
+{
+    "variants": {
+        "axis=y":  { "model": "clinker:block/brambles/bramboo/bramboo_stalk" },
+        "axis=z":   { "model": "clinker:block/brambles/bramboo/bramboo_stalk", "x": 90 },
+        "axis=x":   { "model": "clinker:block/brambles/bramboo/bramboo_stalk", "x": 90, "y": 90 }
+    }
+}
