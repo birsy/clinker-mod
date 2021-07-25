@@ -41,7 +41,7 @@ public class TerracedTerrainSurfaceBuilder extends NetherForestsSurfaceBuilder {
     @Override
     public void buildSurface(Random random, IChunk chunkIn, Biome biomeIn, int x, int z, int startHeight, double noise, BlockState defaultBlock, BlockState defaultFluid, int seaLevel, long seed, SurfaceBuilderConfig config) {
         //double baseNoise = (terrainNoiseGenerator.noiseAt(x * 0.06f, z * 0.06f, false) + 1) * 0.5;
-        double baseNoise = (worleyNoise.getNoise(x * 0.005f, z * 0.005f) + 1) * 0.5;
+        double baseNoise = ((terrainNoiseGenerator.noiseAt(x * 0.005f, z * 0.005f, false) + 1) * 0.5;
         double terraceNoise = MathUtils.mapRange(-1, 1, 0.07F, 0.6F, (float) terraceNoiseGenerator.noiseAt(x * 0.00625f, z * 0.00625f, false));
         double erosionNoise = MathUtils.mapRange(-1, 1, 0.05F, 0.5F, (float) erosionNoiseGenerator.noiseAt(x * 0.05f, z * 0.05f, false));
 
