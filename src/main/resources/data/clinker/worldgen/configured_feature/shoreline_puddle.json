@@ -1,0 +1,48 @@
+{
+  "config": {
+    "feature": {
+      "config": {
+        "feature": {
+          "config": {
+            "feature": {
+              "config": {
+                "target": {
+                  "Name": "clinker:brimstone"
+                },
+                "state": {
+                  "Name": "clinker:brimstone"
+                },
+                "radius": {
+                  "base": 3,
+                  "spread": 3
+                }
+              },
+              "type": "clinker:shoreline_puddle"
+            },
+            "decorator": {
+              "config": {
+                "bottom_offset": 0,
+                "top_offset": 0,
+                "maximum": 70
+              },
+              "type": "minecraft:range"
+            }
+          },
+          "type": "minecraft:decorated"
+        },
+        "decorator": {
+          "config": {},
+          "type": "minecraft:square"
+        }
+      },
+      "type": "minecraft:decorated"
+    },
+    "decorator": {
+      "config": {
+        "count": 6
+      },
+      "type": "minecraft:count"
+    }
+  },
+  "type": "minecraft:decorated"
+}

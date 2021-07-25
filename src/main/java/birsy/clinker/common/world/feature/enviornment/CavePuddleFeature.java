@@ -27,7 +27,7 @@ public class CavePuddleFeature extends Feature<BlobReplacementConfig> {
 
 	public boolean generate(ISeedReader reader, ChunkGenerator generator, Random rand, BlockPos pos, BlobReplacementConfig config) {
 		Block block = ClinkerBlocks.BRIMSTONE.get();
-		BlockPos blockpos = func_236329_a_(reader, pos.toMutable().clampAxisCoordinate(Direction.Axis.Y, 1, reader.getHeight() - 1), block);
+		BlockPos blockpos = getValidPosition(reader, pos.toMutable().clampAxisCoordinate(Direction.Axis.Y, 1, reader.getHeight() - 1), block);
 
 		if (blockpos == null) {
 			return false;
@@ -63,12 +63,12 @@ public class CavePuddleFeature extends Feature<BlobReplacementConfig> {
 				flag = false;
 			}
 		}
-		//There is a 1 in 30 chance that it'll return false, which will allow some waterfalls to rarely form.
-		return flag && !(rand.nextInt(30) == 0);
+
+		return flag;
 	}
 
 	@Nullable
-	private static BlockPos func_236329_a_(IWorld worldIn, BlockPos.Mutable pos, Block block) {
+	private static BlockPos getValidPosition(IWorld worldIn, BlockPos.Mutable pos, Block block) {
 		while (pos.getY() > 1) {
 			BlockState blockstate = worldIn.getBlockState(pos);
 			if (blockstate.matchesBlock(ClinkerBlocks.BRIMSTONE.get()) || blockstate.matchesBlock(ClinkerBlocks.COBBLED_BRIMSTONE.get()) || blockstate.matchesBlock(Blocks.STONE)) {

@@ -52,7 +52,6 @@
       "sea_level": 48,
       "disable_mob_generation": false,
       "structures": {
-        "stronghold": {},
         "structures": {}
       },
       "noise": {
@@ -72,7 +71,7 @@
           "xz_scale": 0.9999999814507745,
           "y_scale": 0.9999999814507745,
           "xz_factor": 80.0,
-          "y_factor": 160.0
+          "y_factor": 800.0
         },
         "top_slide": {
           "target": -10,

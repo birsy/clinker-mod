@@ -28,6 +28,7 @@ public class HeatedIronCauldronRenderer<T extends HeatedIronCauldronTileEntity> 
     @Override
     public void render(T tileEntityIn, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
         cauldronModel.setSpoonRotation(tileEntityIn.getSpoonRotation(partialTicks));
+        cauldronModel.setCauldronShake(MathUtils.bias(tileEntityIn.getCauldronShakeAmount(partialTicks), 0.5F), tileEntityIn.ageInTicks + partialTicks);
         cauldronModel.render(matrixStackIn, bufferIn.getBuffer(RenderType.getEntityCutout(TEXTURE)), combinedLightIn, combinedOverlayIn, 1.0f, 1.0f, 1.0f, 1.0f);
 
         final float intensity = 0.1f;

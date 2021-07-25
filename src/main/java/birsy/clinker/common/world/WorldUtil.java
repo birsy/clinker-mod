@@ -1,6 +1,9 @@
 package birsy.clinker.common.world;
 
+import birsy.clinker.common.tileentity.HeaterTileEntity;
 import birsy.clinker.core.Clinker;
+import birsy.clinker.core.registry.ClinkerBlocks;
+import birsy.clinker.core.registry.ClinkerTileEntities;
 import birsy.clinker.core.registry.world.ClinkerBiomes;
 import birsy.clinker.core.registry.world.ClinkerDimensions;
 import net.minecraft.block.BlockState;
@@ -28,8 +31,14 @@ public class WorldUtil {
         float worldTemp = 0;
         BlockState blockstate = world.getBlockState(pos.down());
 
-        if (blockstate.getFluidState().getFluid() == Fluids.LAVA || blockstate.getFluidState().getFluid() == Fluids.FLOWING_LAVA || blockstate.isIn(BlockTags.FIRE) || blockstate.isIn(BlockTags.CAMPFIRES) || blockstate.matchesBlock(Blocks.MAGMA_BLOCK)) {
+        if (blockstate.getFluidState().getFluid() == Fluids.LAVA || blockstate.getFluidState().getFluid() == Fluids.FLOWING_LAVA || blockstate.isIn(BlockTags.FIRE) || blockstate.isIn(BlockTags.CAMPFIRES) || blockstate.matchesBlock(ClinkerBlocks.HEATER.get())) {
             worldTemp += 30;
+        }
+
+
+
+        if (world.getTileEntity(pos) instanceof HeaterTileEntity) {
+            worldTemp += ((HeaterTileEntity) world.getTileEntity(pos)).getHeatOverlayStrength(0.5F);
         }
 
         float ambientTemp = world.getBiome(pos).getTemperature(pos);

@@ -4,6 +4,7 @@ import birsy.clinker.core.registry.ClinkerSounds;
 import birsy.clinker.core.util.MathUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
@@ -12,15 +13,24 @@ import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class AbstractGnomadEntity extends MonsterEntity
 {
 	public int gnomadRank = 0;
-	
+
+	private final double maxSquadDistance = 20.0F;
+	private final double squadAddDistance = maxSquadDistance * 0.5F;
+	private List<AbstractGnomadEntity> squadron = new ArrayList<>();
+
 	protected AbstractGnomadEntity(EntityType<? extends AbstractGnomadEntity> type, World worldIn)
 	{
 		super(type, worldIn);
@@ -38,8 +48,27 @@ public abstract class AbstractGnomadEntity extends MonsterEntity
 
 	@Override
 	public void tick() {
-
+		//Updates the gnomad's squadron.
+		squadron.removeIf(gnomad -> this.getPosition().manhattanDistance(gnomad.getPosition()) >= maxSquadDistance);
+		if (squadron.size() > 10) {
+			for (Entity entity : this.world.getEntitiesWithinAABB(AbstractGnomadEntity.class, new AxisAlignedBB(this.getPositionVec().add(squadAddDistance, squadAddDistance, squadAddDistance), this.getPositionVec().add(-squadAddDistance, -squadAddDistance, -squadAddDistance)))) {
+				if (entity instanceof AbstractGnomadEntity && !squadron.contains(entity)) {
+					squadron.add((AbstractGnomadEntity) entity);
+				}
+			}
+		}
 		super.tick();
+	}
+
+	protected Vector3d getSquadCenter() {
+		Vector3d squadCenter = new Vector3d(this.getPosX(), this.getPosY(), this.getPosZ());
+
+		if (squadron.size() > 1) {
+			for (AbstractGnomadEntity gnomad : squadron) {
+				squadCenter.add(gnomad.getPosX(), gnomad.getPosY(), gnomad.getPosZ());
+			}
+		}
+		return new Vector3d(squadCenter.getX() / squadron.size(), squadCenter.getY() / squadron.size(), squadCenter.getZ() / squadron.size());
 	}
 
 	//Sounds

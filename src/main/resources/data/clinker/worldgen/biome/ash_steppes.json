@@ -1,5 +1,5 @@
 {
-  "scale": 0.01,
+  "scale": 0.5,
   "depth": 2.0,
   "effects": {
     "mood_sound": {
@@ -25,8 +25,8 @@
       "probability": 0.038093334
     },
     "ambient_sound": "clinker:ambient.ash_plains.loop",
-    "sky_color": 6118748,
-    "fog_color": 9539938,
+    "sky_color": 4209726,
+    "fog_color": 9139549,
     "water_color": 6578522,
     "water_fog_color": 723467
   },
@@ -49,13 +49,14 @@
     [
     ],
     [
-      "clinker:large_speleothem",
       "clinker:cave_puddle",
       "clinker:cave_floor",
-      "clinker:cobbled_brimstone_vein"
+      "clinker:cobbled_brimstone_vein",
+      "clinker:shoreline_puddle"
     ],
     [],
     [
+      "clinker:rooted_ash"
     ],
     [
       "minecraft:freeze_top_layer"

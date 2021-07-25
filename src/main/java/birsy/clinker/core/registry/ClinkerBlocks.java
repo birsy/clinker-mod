@@ -82,6 +82,7 @@ public class ClinkerBlocks
 	//public static final RegistryObject<Block> SILTSCAR_VINE_MOUTH = createBlock("siltscar_vine_mouth", () -> new SiltscarVineMouthBlock(AbstractBlock.Properties.create(Material.PLANTS, MaterialColor.GREEN_TERRACOTTA).hardnessAndResistance(0.3F).notSolid().doesNotBlockMovement().sound(SoundType.WET_GRASS)), Clinker.CLINKER_BLOCKS);
 
 	public static final RegistryObject<Block> HEATED_IRON_CAULDRON = createBlock("heated_iron_cauldron", HeatedIronCauldronBlock::new, null);
+	public static final RegistryObject<Block> HEATER = createBlock("heater", HeaterBlock::new, Clinker.CLINKER_BLOCKS);
 
 	//Brimstone
 	public static AbstractBlock.Properties getBrimstoneProperties() {
@@ -114,7 +115,46 @@ public class ClinkerBlocks
 	public static final RegistryObject<Block> BRIMSTONE_BRICKS_STAIRS = createBlock("brimstone_bricks_stairs", () -> new StairsBlock(() -> BRIMSTONE_BRICKS.get().getDefaultState(), getBrimstoneProperties()), Clinker.CLINKER_BLOCKS);
 	public static final RegistryObject<Block> BRIMSTONE_BRICKS_WALL = createBlock("brimstone_bricks_wall", () -> new WallBlock(getBrimstoneProperties()), Clinker.CLINKER_BLOCKS);
 	
-	
+	//Capstone
+	public static AbstractBlock.Properties getCapstoneProperties() {
+		return AbstractBlock.Properties.create(Material.ROCK, MaterialColor.CYAN_TERRACOTTA)
+				.hardnessAndResistance(1.5F, 6.0F)
+				.sound(SoundType.NETHER_BRICK)
+				.harvestLevel(1)
+				.harvestTool(ToolType.PICKAXE);
+	}
+
+	public static final RegistryObject<Block> CAPSTONE = createBlock("capstone", () -> new Block(getCapstoneProperties()), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> CAPSTONE_SLAB = createBlock("capstone_slab", () -> new SlabBlock(getCapstoneProperties()), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> CAPSTONE_STAIRS = createBlock("capstone_stairs", () -> new StairsBlock(() -> CAPSTONE.get().getDefaultState(), getCapstoneProperties()), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> CAPSTONE_WALL = createBlock("capstone_wall", () -> new WallBlock(getCapstoneProperties()), Clinker.CLINKER_BLOCKS);
+
+	public static final RegistryObject<Block> CAPSTONE_SULFUR__ORE = createBlock("capstone_sulfur_ore", () -> new OreClinkerBlock(1.5F, 6.0F, 2, 2, 3, SoundType.NETHER_BRICK), Clinker.CLINKER_BLOCKS);
+
+	public static final RegistryObject<Block> POLISHED_CAPSTONE = createBlock("polished_capstone", () -> new Block(getCapstoneProperties()), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> POLISHED_CAPSTONE_SLAB = createBlock("polished_capstone_slab", () -> new SlabBlock(getCapstoneProperties()), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> POLISHED_CAPSTONE_STAIRS = createBlock("polished_capstone_stairs", () -> new StairsBlock(() -> POLISHED_CAPSTONE.get().getDefaultState(), getCapstoneProperties()), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> POLISHED_CAPSTONE_WALL = createBlock("polished_capstone_wall", () -> new WallBlock(getCapstoneProperties()), Clinker.CLINKER_BLOCKS);
+
+	public static final RegistryObject<Block> CAPSTONE_BRICKS = createBlock("capstone_bricks", () -> new Block(getCapstoneProperties()), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> CAPSTONE_BRICKS_SLAB = createBlock("capstone_bricks_slab", () -> new SlabBlock(getCapstoneProperties()), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> CAPSTONE_BRICKS_STAIRS = createBlock("capstone_bricks_stairs", () -> new StairsBlock(() -> CAPSTONE_BRICKS.get().getDefaultState(), getCapstoneProperties()), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> CAPSTONE_BRICKS_WALL = createBlock("capstone_bricks_wall", () -> new WallBlock(getCapstoneProperties()), Clinker.CLINKER_BLOCKS);
+
+	//Sulfur
+	public static final RegistryObject<Block> SULFUR_CRYSTAL_BLOCK = createBlock("sulfur_crystal_block", () -> new Block(AbstractBlock.Properties.create(Material.ROCK, MaterialColor.GOLD)
+			.hardnessAndResistance(1.5F, 6.0F)
+			.sound(SoundType.GLASS)
+			.harvestLevel(1)
+			.harvestTool(ToolType.PICKAXE)), Clinker.CLINKER_BLOCKS);
+
+	public static final RegistryObject<Block> SULFUR_ROCK_BLOCK = createBlock("sulfur_rock_block", () -> new Block(AbstractBlock.Properties.create(Material.ROCK, MaterialColor.GOLD)
+			.hardnessAndResistance(1.5F, 6.0F)
+			.sound(SoundType.GILDED_BLACKSTONE)
+			.harvestLevel(1)
+			.harvestTool(ToolType.PICKAXE)), Clinker.CLINKER_BLOCKS);
+
+
 	//Scorstone
 	public static AbstractBlock.Properties getScorstoneProperties() {
 		return AbstractBlock.Properties.create(Material.ROCK, MaterialColor.WHITE_TERRACOTTA)

@@ -16,7 +16,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public class GnomadAxemanBuffLayer extends LayerRenderer<GnomadAxemanEntity, GnomadAxemanModel<GnomadAxemanEntity>> {
     private ResourceLocation BUFF_TEXTURE;
-    private final GnomadAxemanModel<GnomadAxemanEntity> gnomadAxemanModel = new GnomadAxemanModel<>(2.0F);
+    private final GnomadAxemanModel<GnomadAxemanEntity> gnomadAxemanModel = new GnomadAxemanModel<>(1.0F);
 
     public GnomadAxemanBuffLayer(IEntityRenderer<GnomadAxemanEntity, GnomadAxemanModel<GnomadAxemanEntity>> renderer, ResourceLocation buffTexture) {
         super(renderer);

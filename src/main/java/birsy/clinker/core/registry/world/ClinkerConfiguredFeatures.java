@@ -25,6 +25,8 @@ public class ClinkerConfiguredFeatures {
     public static final ConfiguredFeature<?, ?> ASH_GEODE = ClinkerFeatures.ASH_GEODE.get().withConfiguration(new BlobReplacementConfig(ClinkerBlocks.BRIMSTONE.get().getDefaultState(), ClinkerBlocks.ASH.get().getDefaultState(), FeatureSpread.create(2, 2))).range(128).square().count(4);
     public static final ConfiguredFeature<?, ?> LARGE_SPELEOTHEM = ClinkerFeatures.SPELEOTHEM.get().withConfiguration(IFeatureConfig.NO_FEATURE_CONFIG).range(128).square().count(120);
 
+    public static final ConfiguredFeature<?, ?> SHORELINE_PUDDLE = ClinkerFeatures.SHORELINE_PUDDLE.get().withConfiguration(new BlobReplacementConfig(ClinkerBlocks.SCORSTONE.get().getDefaultState(), Blocks.WATER.getDefaultState(), FeatureSpread.create(5, 5))).range(128).square().count(5);
+
     // Will definitely try to come up with a better system for this - something with the carvers, perhaps?
     public static final ConfiguredFeature<?, ?> AQUIFER = ClinkerFeatures.AQUIFER.get().withConfiguration(new BlockStateFeatureConfig(Blocks.WATER.getDefaultState())).withPlacement(Placement.WATER_LAKE.configure(new ChanceConfig(4)));
 
@@ -54,6 +56,8 @@ public class ClinkerConfiguredFeatures {
         Registry.register(registry, new ResourceLocation(Clinker.MOD_ID, "cave_floor"), CAVE_FLOOR);
         Registry.register(registry, new ResourceLocation(Clinker.MOD_ID, "ash_geode"), ASH_GEODE);
         Registry.register(registry, new ResourceLocation(Clinker.MOD_ID, "large_speleothem"), LARGE_SPELEOTHEM);
+
+        Registry.register(registry, new ResourceLocation(Clinker.MOD_ID, "shoreline_puddle"), SHORELINE_PUDDLE);
 
         Registry.register(registry, new ResourceLocation(Clinker.MOD_ID, "patch_rootstalk_root"), ASH_GEODE);
 

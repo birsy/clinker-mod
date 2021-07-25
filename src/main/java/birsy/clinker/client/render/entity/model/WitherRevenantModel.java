@@ -31,8 +31,6 @@ public class WitherRevenantModel<T extends WitherRevenantEntity> extends BirsyBa
     public BirsyModelRenderer witherRevenantTorso;
     public BirsyModelRenderer witherRevenantLeftArm;
     public BirsyModelRenderer witherRevenantRightArm;
-    public BirsyModelRenderer witherRevenantLeftArmHolder;
-    public BirsyModelRenderer witherRevenantRightArmHolder;
     public BirsyModelRenderer neckJoint;
     public BirsyModelRenderer witherRevenantChestplate;
     public BirsyModelRenderer witherRevenantLeftPad;
@@ -45,13 +43,6 @@ public class WitherRevenantModel<T extends WitherRevenantEntity> extends BirsyBa
     public WitherRevenantModel() {
         this.textureWidth = 64;
         this.textureHeight = 64;
-
-        this.witherRevenantRightArmHolder = new BirsyModelRenderer(this, 40, 40);
-        this.witherRevenantRightArmHolder.setRotationPoint(-5.0F, 10.0F, 0.0F);
-        this.witherRevenantRightArmHolder.addBox(-2.0F, -2.0F, -1.0F, 2.0F, 12.0F, 2.0F, 0.0F, 0.0F, 0.0F);
-        this.witherRevenantLeftArmHolder = new BirsyModelRenderer(this, 40, 40);
-        this.witherRevenantLeftArmHolder.setRotationPoint(5.0F, 10.0F, 0.0F);
-        this.witherRevenantLeftArmHolder.addBox(-0.0F, -2.0F, -1.0F, 2.0F, 12.0F, 2.0F, 0.0F, 0.0F, 0.0F);
         
         this.witherRevenantLeftFoot = new BirsyModelRenderer(this, 32, 33);
         this.witherRevenantLeftFoot.mirror = true;
@@ -130,8 +121,6 @@ public class WitherRevenantModel<T extends WitherRevenantEntity> extends BirsyBa
         this.movementBase.addChild(this.witherRevenantRibs);
         this.witherRevenantRibs.addChild(this.witherRevenantLeftArm);
         this.witherRevenantRibs.addChild(this.neckJoint);
-        this.witherRevenantRibs.addChild(this.witherRevenantLeftArmHolder);
-        this.witherRevenantRibs.addChild(this.witherRevenantRightArmHolder);
         this.witherRevenantLeftArm.addChild(this.witherRevenantLeftPad);
         this.movementBase.addChild(this.witherRevenantRightLeg);
         this.movementBase.addChild(this.witherRevenantLeftLeg);
@@ -191,22 +180,6 @@ public class WitherRevenantModel<T extends WitherRevenantEntity> extends BirsyBa
     	bob(this.movementBase, 2.0F * walkSpeed, 2 * globalHeight, true, f, f1, true);
     	bob(this.witherRevenantHead, 2.0F * walkSpeed, 0.5F * globalHeight, true, f, f1, true);
     	
-    	this.witherRevenantLeftArmHolder.rotateAngleX = this.witherRevenantLeftArm.rotateAngleX + this.witherRevenantRibs.rotateAngleX;
-    	this.witherRevenantLeftArmHolder.rotateAngleY = this.witherRevenantLeftArm.rotateAngleY + this.witherRevenantRibs.rotateAngleY;
-    	this.witherRevenantLeftArmHolder.rotateAngleZ = this.witherRevenantLeftArm.rotateAngleZ + this.witherRevenantRibs.rotateAngleZ;
-    	
-    	this.witherRevenantRightArmHolder.rotateAngleX = this.witherRevenantRightArm.rotateAngleX + this.witherRevenantRibs.rotateAngleX;
-    	this.witherRevenantRightArmHolder.rotateAngleY = this.witherRevenantRightArm.rotateAngleY + this.witherRevenantRibs.rotateAngleY;
-    	this.witherRevenantRightArmHolder.rotateAngleZ = this.witherRevenantRightArm.rotateAngleZ + this.witherRevenantRibs.rotateAngleZ;
-    	
-    	this.witherRevenantRightArmHolder.rotationPointX = this.witherRevenantRightArm.rotationPointX + this.witherRevenantRibs.rotationPointX;
-    	this.witherRevenantRightArmHolder.rotationPointY = this.witherRevenantRightArm.rotationPointY + this.witherRevenantRibs.rotationPointY + 24.0F;
-    	this.witherRevenantRightArmHolder.rotationPointZ = this.witherRevenantRightArm.rotationPointZ + this.witherRevenantRibs.rotationPointZ;
-    	
-    	this.witherRevenantLeftArmHolder.rotationPointX = this.witherRevenantLeftArm.rotationPointX + this.witherRevenantRibs.rotationPointX;
-    	this.witherRevenantLeftArmHolder.rotationPointY = this.witherRevenantLeftArm.rotationPointY + this.witherRevenantRibs.rotationPointY + 24.0F;
-    	this.witherRevenantLeftArmHolder.rotationPointZ = this.witherRevenantLeftArm.rotationPointZ + this.witherRevenantRibs.rotationPointZ;
-    	
     	look(this.witherRevenantHead, netHeadYaw, headPitch, 1.1F, 1.1F);
     	look(this.witherRevenantRibs, netHeadYaw, headPitch, 6.0F, 6.0F);
     }
@@ -218,12 +191,10 @@ public class WitherRevenantModel<T extends WitherRevenantEntity> extends BirsyBa
 
 	@Override
 	public void translateHand(HandSide sideIn, MatrixStack matrixStackIn) {
-		this.getArmForSide(sideIn).translateRotate(matrixStackIn);
+		this.getArmForSide(sideIn).matrixStackFromModel(matrixStackIn);
 	}
 	
-	protected ModelRenderer getArmForSide(HandSide side)
-	{
-		return side == HandSide.LEFT ? this.witherRevenantLeftArmHolder : this.witherRevenantRightArmHolder;
+	protected BirsyModelRenderer getArmForSide(HandSide side) {
+		return side == HandSide.LEFT ? this.witherRevenantLeftArm : this.witherRevenantRightArm;
 	}
-
 }

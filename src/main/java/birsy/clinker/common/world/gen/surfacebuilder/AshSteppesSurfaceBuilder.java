@@ -39,9 +39,9 @@ public class AshSteppesSurfaceBuilder extends NetherForestsSurfaceBuilder {
 
 		double duneHeight = 2.8;
 
-		double terrainHeight = MathUtils.terrace((float) bigDuneNoiseGenerator.noiseAt(x * 0.00125, z * 0.00125, false), (float) distortX / 15.0F, (float) distortZ / 15.0F) * 18.0F;
+		double terrainHeight = MathUtils.terrace((float) bigDuneNoiseGenerator.noiseAt(x * 0.00125, z * 0.00125, false), (float) distortX / 15.0F, (float) distortZ / 15.0F,  1.0F).first * 18.0F;
 
-		double finalDuneHeight = (duneNoise * duneHeight) + 110 + terrainHeight;
+		double finalDuneHeight = (duneNoise * duneHeight) + 60 + terrainHeight;
 
 		for (int y = startHeight; y >= 0; y--) {
 			BlockPos pos = new BlockPos(x, y, z);

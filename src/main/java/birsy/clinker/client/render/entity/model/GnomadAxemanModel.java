@@ -337,11 +337,12 @@ public class GnomadAxemanModel<T extends GnomadAxemanEntity> extends BirsyBaseMo
 
 	@Override
 	public void translateHand(HandSide sideIn, MatrixStack matrixStackIn) {
-		this.getArmForSide(sideIn).translateRotate(matrixStackIn);
+        matrixStackIn.translate(sideIn == HandSide.RIGHT ? 0.075 : -0.075, 0.075, -0.1);
+		this.getArmForSide(sideIn).matrixStackFromModel(matrixStackIn);
 	}
 	
-	protected ModelRenderer getArmForSide(HandSide side)
+	protected BirsyModelRenderer getArmForSide(HandSide side)
 	{
-		return side == HandSide.LEFT ? this.gnomadLeftArmHolder : this.gnomadRightArmHolder;
+		return side == HandSide.LEFT ? this.gnomadLeftArm : this.gnomadRightArm;
 	}
 }

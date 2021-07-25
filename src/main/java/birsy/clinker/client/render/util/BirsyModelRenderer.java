@@ -7,6 +7,8 @@ import net.minecraft.util.math.vector.Vector3d;
 
 public class BirsyModelRenderer extends ModelRenderer
 {
+	BirsyModelRenderer parent = null;
+
 	public float defaultRotationPointX;
 	public float defaultRotationPointY;
 	public float defaultRotationPointZ;
@@ -86,5 +88,27 @@ public class BirsyModelRenderer extends ModelRenderer
 		this.defaultScaleX = modelRendererIn.scaleX;
 		this.defaultScaleY = modelRendererIn.scaleY;
 		this.defaultScaleZ = modelRendererIn.scaleZ;
+	}
+
+	public void addChild(BirsyModelRenderer renderer) {
+		renderer.setParent(this);
+		super.addChild(renderer);
+	}
+
+	public void setParent(BirsyModelRenderer parent) {
+		this.parent = parent;
+	}
+
+	public BirsyModelRenderer getParent() {
+		return parent;
+	}
+
+	//Thanks to BobMowzie for this clever bit of code.
+	public void matrixStackFromModel(MatrixStack matrixStack) {
+		BirsyModelRenderer parent = this.getParent();
+		if (parent != null) {
+			parent.matrixStackFromModel(matrixStack);
+		}
+		this.translateRotate(matrixStack);
 	}
 }	

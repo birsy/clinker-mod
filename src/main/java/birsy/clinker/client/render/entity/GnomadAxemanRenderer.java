@@ -54,6 +54,9 @@ public class GnomadAxemanRenderer extends MobRenderer<GnomadAxemanEntity, Gnomad
 	@Override
 	public void render(GnomadAxemanEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
 		this.entityModel.setArmorVisibility(entityIn);
+		matrixStackIn.push();
+		matrixStackIn.scale(entityIn.getSize(), entityIn.getSize(), entityIn.getSize());
 		super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
+		matrixStackIn.pop();
 	}
 }

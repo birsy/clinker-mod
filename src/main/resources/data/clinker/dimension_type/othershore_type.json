@@ -10,7 +10,7 @@
   "natural": false,
   "coordinate_scale": 8.0,
   "piglin_safe": false,
-  "fixed_time": 24000,
+  "fixed_time": 23360,
   "has_skylight": true,
   "has_ceiling": false
 }

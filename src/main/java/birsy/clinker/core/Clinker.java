@@ -2,6 +2,7 @@ package birsy.clinker.core;
 
 
 import birsy.clinker.client.render.tileentity.HeatedIronCauldronRenderer;
+import birsy.clinker.client.render.tileentity.HeaterRenderer;
 import birsy.clinker.client.render.tileentity.MitesoilDiffuserRenderer;
 import birsy.clinker.client.render.tileentity.SoulWellRenderer;
 import birsy.clinker.client.render.world.OthershoreDimensionRenderInfo;
@@ -13,6 +14,7 @@ import net.minecraft.client.world.DimensionRenderInfo;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SharedConstants;
 import net.minecraft.util.Util;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.carver.WorldCarver;
@@ -40,7 +42,8 @@ import java.util.Map;
 public class Clinker
 {
 	public static final String MOD_ID = "clinker";
-	
+	public static boolean devmode = true;
+
 	public static final Logger LOGGER = LogManager.getLogger(MOD_ID.toUpperCase());
 	
 	public Clinker() throws InterruptedException {
@@ -79,6 +82,7 @@ public class Clinker
     {
         ClientRegistry.bindTileEntityRenderer(ClinkerTileEntities.SOUL_WELL.get(), SoulWellRenderer::new);
         ClientRegistry.bindTileEntityRenderer(ClinkerTileEntities.HEATED_IRON_CAULDRON.get(), HeatedIronCauldronRenderer::new);
+        ClientRegistry.bindTileEntityRenderer(ClinkerTileEntities.HEATER.get(), HeaterRenderer::new);
         ClientRegistry.bindTileEntityRenderer(ClinkerTileEntities.MITESOIL_DIFFUSER.get(), MitesoilDiffuserRenderer::new);
 
         RenderTypeLookup.setRenderLayer(ClinkerBlocks.THORN_LOG.get(), RenderType.getCutout());
@@ -120,9 +124,6 @@ public class Clinker
         });
 
         DimensionRenderInfo.field_239208_a_.put(new ResourceLocation(Clinker.MOD_ID, "othershore"), new OthershoreDimensionRenderInfo());
-
-        Object2ObjectMap<ResourceLocation, DimensionRenderInfo> dimension_renderers = ObfuscationReflectionHelper.getPrivateValue(DimensionRenderInfo.class, null, "field_239208_a_");
-        dimension_renderers.put(new ResourceLocation(Clinker.MOD_ID, "othershore"), new OthershoreDimensionRenderInfo());
     }
 
     @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD, modid = Clinker.MOD_ID)

@@ -50,7 +50,7 @@ public class RootGrassBlock extends BushBlock implements IGrowable, net.minecraf
 	}
 	
 	@Override
-	protected boolean isValidGround(BlockState state, IBlockReader worldIn, BlockPos pos) {
+	public boolean isValidGround(BlockState state, IBlockReader worldIn, BlockPos pos) {
 		return state.matchesBlock(ClinkerBlocks.ROOTED_ASH.get()) 
 			|| state.matchesBlock(ClinkerBlocks.ASH.get()) 
 			|| state.matchesBlock(ClinkerBlocks.PACKED_ASH.get()) 
@@ -60,7 +60,17 @@ public class RootGrassBlock extends BushBlock implements IGrowable, net.minecraf
 			|| state == ClinkerBlocks.ASH_LAYER.get().getDefaultState().with(AshLayerBlock.LAYERS, 8) 
 			&& super.isValidGround(state, worldIn, pos);
 	}
-	
+
+	public static boolean isValidGround(BlockState state) {
+		return state.matchesBlock(ClinkerBlocks.ROOTED_ASH.get())
+				|| state.matchesBlock(ClinkerBlocks.ASH.get())
+				|| state.matchesBlock(ClinkerBlocks.PACKED_ASH.get())
+				|| state.matchesBlock(ClinkerBlocks.ROOTED_PACKED_ASH.get())
+				|| state.matchesBlock(ClinkerBlocks.ROCKY_PACKED_ASH.get())
+				|| state.matchesBlock(ClinkerBlocks.ROOTSTALK.get())
+				|| state == ClinkerBlocks.ASH_LAYER.get().getDefaultState().with(AshLayerBlock.LAYERS, 8);
+	}
+
 	/**
 	 * Get the OffsetType for this Block. Determines if the model is rendered slightly offset.
 	 */

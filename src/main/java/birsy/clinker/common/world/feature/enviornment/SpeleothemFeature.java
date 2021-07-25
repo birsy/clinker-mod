@@ -86,7 +86,9 @@ public class SpeleothemFeature extends Feature<NoFeatureConfig> {
 
     private void placeBlock(ISeedReader worldIn, BlockPos pos) {
         if (worldIn.getBlockState(pos).getMaterial().isReplaceable() && !worldIn.getBlockState(pos).getMaterial().isSolid()) {
-            this.setBlockState(worldIn, pos.up((int) (MathHelper.sin((pos.getX() * 0.3F) * 4))), ClinkerBlocks.BRIMSTONE.get().getDefaultState());
+            if (worldIn.canBlockSeeSky(pos)) {
+                this.setBlockState(worldIn, pos.up((int) (MathHelper.sin((pos.getX() * 0.3F) * 4))), ClinkerBlocks.BRIMSTONE.get().getDefaultState());
+            }
         }
     }
 }

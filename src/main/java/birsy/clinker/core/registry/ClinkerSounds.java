@@ -16,7 +16,11 @@ public class ClinkerSounds
 	{
 		SOUNDS.register(FMLJavaModLoadingContext.get().getModEventBus());
 	}
-	
+
+	//Block Sounds
+	public static final RegistryObject<SoundEvent> BLOCK_HEATER_LOOP = SOUNDS.register("block.heater.loop",
+			() -> new SoundEvent(new ResourceLocation(Clinker.MOD_ID, "block.heater.loop")));
+
 	//Entity Sounds
 	public static final RegistryObject<SoundEvent> ENTITY_GNOME_AMBIENT = SOUNDS.register("entity.gnome.ambient",
 			() -> new SoundEvent(new ResourceLocation(Clinker.MOD_ID, "entity.gnome.ambient")));
@@ -36,4 +40,6 @@ public class ClinkerSounds
 
 	public static final RegistryObject<SoundEvent> AMBIENT_ASH_PLAINS_LOOP = SOUNDS.register("ambient.ash_plains.loop",
 			() -> new SoundEvent(new ResourceLocation(Clinker.MOD_ID, "ambient.ash_plains.loop")));
+
+
 }

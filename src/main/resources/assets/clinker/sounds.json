@@ -1,4 +1,11 @@
 {
+	"block.heater.loop": {
+		"category": "block",
+		"sounds": [
+			{"name": "clinker:block/heater/heater1", "stream": true},
+			{"name": "clinker:block/heater/heater2", "stream": true}
+		]
+	},
 	"entity.gnome.ambient": {
 		"category": "entity",
 		"subtitle": "subtitles.entity.gnome.ambient",

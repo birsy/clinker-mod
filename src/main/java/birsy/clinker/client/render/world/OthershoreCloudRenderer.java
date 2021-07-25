@@ -1,9 +1,11 @@
 package birsy.clinker.client.render.world;
 
 import birsy.clinker.core.Clinker;
+import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import de.articdive.jnoise.JNoise;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
@@ -22,21 +24,17 @@ import javax.annotation.Nullable;
 public class OthershoreCloudRenderer implements ICloudRenderHandler {
     private final TextureManager textureManager;
     private final Minecraft mc;
+    private final JNoise noise = JNoise.newBuilder().fastSimplex().setSeed(16).build();
 
     private boolean cloudsNeedUpdate = true;
     @Nullable
     private VertexBuffer cloudsVBO;
+    private static final ResourceLocation CLOUD_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/environment/cloud.png");
 
-    private int cloudsCheckX = Integer.MIN_VALUE;
-    private int cloudsCheckY = Integer.MIN_VALUE;
-    private int cloudsCheckZ = Integer.MIN_VALUE;
-    private Vector3d cloudsCheckColor = Vector3d.ZERO;
-    private CloudOption cloudOption;
-    
-    protected static final ResourceLocation CLOUDS_TEXTURES = new ResourceLocation(Clinker.MOD_ID, "textures/environment/cloud_map.png");
-
+    //2 Clouds peer chunk.
     private static final float cloudWidth = 8;
-    private static final float cloudHeight = 60;
+    private static final float maxCloudHeight = 150;
+    private static final float cloudHeight = 120;
 
     public OthershoreCloudRenderer(Minecraft mc) {
         this.mc = mc;
@@ -44,134 +42,85 @@ public class OthershoreCloudRenderer implements ICloudRenderHandler {
     }
 
     @Override
-    public void render(int ticks, float partialTicks, MatrixStack matrixStackIn, ClientWorld world, Minecraft mc, double viewEntityX, double viewEntityY, double viewEntityZ) {}
+    public void render(int ticks, float partialTicks, MatrixStack matrixStackIn, ClientWorld world, Minecraft mc, double viewEntityX, double viewEntityY, double viewEntityZ) {
+        RenderSystem.disableCull();
+        RenderSystem.enableBlend();
+        RenderSystem.enableAlphaTest();
+        RenderSystem.enableDepthTest();
+        RenderSystem.defaultAlphaFunc();
+        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        RenderSystem.enableFog();
+        RenderSystem.depthMask(true);
 
-    private void drawClouds(BufferBuilder bufferIn, double cloudsX, double cloudsY, double cloudsZ, Vector3d cloudsColor) {
-        float f3 = (float) MathHelper.floor(cloudsX) * 0.00390625F;
-        float f4 = (float) MathHelper.floor(cloudsZ) * 0.00390625F;
-        float f5 = (float) cloudsColor.x;
-        float f6 = (float) cloudsColor.y;
-        float f7 = (float) cloudsColor.z;
-        float f8 = f5 * 0.9F;
-        float f9 = f6 * 0.9F;
-        float f10 = f7 * 0.9F;
-        float f11 = f5 * 0.7F;
-        float f12 = f6 * 0.7F;
-        float f13 = f7 * 0.7F;
-        float f14 = f5 * 0.8F;
-        float f15 = f6 * 0.8F;
-        float f16 = f7 * 0.8F;
-        bufferIn.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL);
+        Vector3d cloudColor = world.getCloudColor(partialTicks);
 
-        final int fogDensity = 10;
-        
-        for (int i = 0; i < fogDensity; i++) {
-            float cloudHeight = (float) Math.floor(cloudsY / 4.0D) * 4.0F - i;
-            
-            for (int k = -3; k <= 4; ++k) {
-                for (int l = -3; l <= 4; ++l) {
-                    float cloudXPos = (float) (k * 8);
-                    float cloudZPos = (float) (l * 8);
-                    if (cloudHeight > -5.0F) {
-                        bufferIn.pos(cloudXPos + 0.0F, cloudHeight + 0.0F, cloudZPos + 8.0F).tex((cloudXPos + 0.0F) * 0.00390625F + f3, (cloudZPos + 8.0F) * 0.00390625F + f4).color(f11, f12, f13,0.095F).normal(0.0F, -1.0F, 0.0F).endVertex();
-                        bufferIn.pos(cloudXPos + 8.0F, cloudHeight + 0.0F, cloudZPos + 8.0F).tex((cloudXPos + 8.0F) * 0.00390625F + f3, (cloudZPos + 8.0F) * 0.00390625F + f4).color(f11, f12, f13,0.095F).normal(0.0F, -1.0F, 0.0F).endVertex();
-                        bufferIn.pos(cloudXPos + 8.0F, cloudHeight + 0.0F, cloudZPos + 0.0F).tex((cloudXPos + 8.0F) * 0.00390625F + f3, (cloudZPos + 0.0F) * 0.00390625F + f4).color(f11, f12, f13,0.095F).normal(0.0F, -1.0F, 0.0F).endVertex();
-                        bufferIn.pos(cloudXPos + 0.0F, cloudHeight + 0.0F, cloudZPos + 0.0F).tex((cloudXPos + 0.0F) * 0.00390625F + f3, (cloudZPos + 0.0F) * 0.00390625F + f4).color(f11, f12, f13,0.095F).normal(0.0F, -1.0F, 0.0F).endVertex();
-                    }
-
-                    if (cloudHeight <= 5.0F) {
-                        bufferIn.pos(cloudXPos + 0.0F, cloudHeight + 4.0F - 9.765625E-4F, cloudZPos + 8.0F).tex((cloudXPos + 0.0F) * 0.00390625F + f3, (cloudZPos + 8.0F) * 0.00390625F + f4).color(f5, f6, f7,0.095F).normal(0.0F, 1.0F, 0.0F).endVertex();
-                        bufferIn.pos(cloudXPos + 8.0F, cloudHeight + 4.0F - 9.765625E-4F, cloudZPos + 8.0F).tex((cloudXPos + 8.0F) * 0.00390625F + f3, (cloudZPos + 8.0F) * 0.00390625F + f4).color(f5, f6, f7,0.095F).normal(0.0F, 1.0F, 0.0F).endVertex();
-                        bufferIn.pos(cloudXPos + 8.0F, cloudHeight + 4.0F - 9.765625E-4F, cloudZPos + 0.0F).tex((cloudXPos + 8.0F) * 0.00390625F + f3, (cloudZPos + 0.0F) * 0.00390625F + f4).color(f5, f6, f7,0.095F).normal(0.0F, 1.0F, 0.0F).endVertex();
-                        bufferIn.pos(cloudXPos + 0.0F, cloudHeight + 4.0F - 9.765625E-4F, cloudZPos + 0.0F).tex((cloudXPos + 0.0F) * 0.00390625F + f3, (cloudZPos + 0.0F) * 0.00390625F + f4).color(f5, f6, f7,0.095F).normal(0.0F, 1.0F, 0.0F).endVertex();
-                    }
-
-                    if (k > -1) {
-                        for (int i1 = 0; i1 < 8; ++i1) {
-                            bufferIn.pos(cloudXPos + (float) i1 + 0.0F, cloudHeight + 0.0F, cloudZPos + 8.0F).tex((cloudXPos + (float) i1 + 0.5F) * 0.00390625F + f3, (cloudZPos + 8.0F) * 0.00390625F + f4).color(f8, f9, f10,0.095F).normal(-1.0F, 0.0F, 0.0F).endVertex();
-                            bufferIn.pos(cloudXPos + (float) i1 + 0.0F, cloudHeight + 4.0F, cloudZPos + 8.0F).tex((cloudXPos + (float) i1 + 0.5F) * 0.00390625F + f3, (cloudZPos + 8.0F) * 0.00390625F + f4).color(f8, f9, f10,0.095F).normal(-1.0F, 0.0F, 0.0F).endVertex();
-                            bufferIn.pos(cloudXPos + (float) i1 + 0.0F, cloudHeight + 4.0F, cloudZPos + 0.0F).tex((cloudXPos + (float) i1 + 0.5F) * 0.00390625F + f3, (cloudZPos + 0.0F) * 0.00390625F + f4).color(f8, f9, f10,0.095F).normal(-1.0F, 0.0F, 0.0F).endVertex();
-                            bufferIn.pos(cloudXPos + (float) i1 + 0.0F, cloudHeight + 0.0F, cloudZPos + 0.0F).tex((cloudXPos + (float) i1 + 0.5F) * 0.00390625F + f3, (cloudZPos + 0.0F) * 0.00390625F + f4).color(f8, f9, f10,0.095F).normal(-1.0F, 0.0F, 0.0F).endVertex();
-                        }
-                    }
-
-                    if (k <= 1) {
-                        for (int j2 = 0; j2 < 8; ++j2) {
-                            bufferIn.pos(cloudXPos + (float) j2 + 1.0F - 9.765625E-4F, cloudHeight + 0.0F, cloudZPos + 8.0F).tex((cloudXPos + (float) j2 + 0.5F) * 0.00390625F + f3, (cloudZPos + 8.0F) * 0.00390625F + f4).color(f8, f9, f10,0.095F).normal(1.0F, 0.0F, 0.0F).endVertex();
-                            bufferIn.pos(cloudXPos + (float) j2 + 1.0F - 9.765625E-4F, cloudHeight + 4.0F, cloudZPos + 8.0F).tex((cloudXPos + (float) j2 + 0.5F) * 0.00390625F + f3, (cloudZPos + 8.0F) * 0.00390625F + f4).color(f8, f9, f10,0.095F).normal(1.0F, 0.0F, 0.0F).endVertex();
-                            bufferIn.pos(cloudXPos + (float) j2 + 1.0F - 9.765625E-4F, cloudHeight + 4.0F, cloudZPos + 0.0F).tex((cloudXPos + (float) j2 + 0.5F) * 0.00390625F + f3, (cloudZPos + 0.0F) * 0.00390625F + f4).color(f8, f9, f10,0.095F).normal(1.0F, 0.0F, 0.0F).endVertex();
-                            bufferIn.pos(cloudXPos + (float) j2 + 1.0F - 9.765625E-4F, cloudHeight + 0.0F, cloudZPos + 0.0F).tex((cloudXPos + (float) j2 + 0.5F) * 0.00390625F + f3, (cloudZPos + 0.0F) * 0.00390625F + f4).color(f8, f9, f10,0.095F).normal(1.0F, 0.0F, 0.0F).endVertex();
-                        }
-                    }
-
-                    if (l > -1) {
-                        for (int k2 = 0; k2 < 8; ++k2) {
-                            bufferIn.pos(cloudXPos + 0.0F, cloudHeight + 4.0F, cloudZPos + (float) k2 + 0.0F).tex((cloudXPos + 0.0F) * 0.00390625F + f3, (cloudZPos + (float) k2 + 0.5F) * 0.00390625F + f4).color(f14, f15, f16,0.095F).normal(0.0F, 0.0F, -1.0F).endVertex();
-                            bufferIn.pos(cloudXPos + 8.0F, cloudHeight + 4.0F, cloudZPos + (float) k2 + 0.0F).tex((cloudXPos + 8.0F) * 0.00390625F + f3, (cloudZPos + (float) k2 + 0.5F) * 0.00390625F + f4).color(f14, f15, f16,0.095F).normal(0.0F, 0.0F, -1.0F).endVertex();
-                            bufferIn.pos(cloudXPos + 8.0F, cloudHeight + 0.0F, cloudZPos + (float) k2 + 0.0F).tex((cloudXPos + 8.0F) * 0.00390625F + f3, (cloudZPos + (float) k2 + 0.5F) * 0.00390625F + f4).color(f14, f15, f16,0.095F).normal(0.0F, 0.0F, -1.0F).endVertex();
-                            bufferIn.pos(cloudXPos + 0.0F, cloudHeight + 0.0F, cloudZPos + (float) k2 + 0.0F).tex((cloudXPos + 0.0F) * 0.00390625F + f3, (cloudZPos + (float) k2 + 0.5F) * 0.00390625F + f4).color(f14, f15, f16,0.095F).normal(0.0F, 0.0F, -1.0F).endVertex();
-                        }
-                    }
-
-                    if (l <= 1) {
-                        for (int l2 = 0; l2 < 8; ++l2) {
-                            bufferIn.pos(cloudXPos + 0.0F, cloudHeight + 4.0F, cloudZPos + (float) l2 + 1.0F - 9.765625E-4F).tex((cloudXPos + 0.0F) * 0.00390625F + f3, (cloudZPos + (float) l2 + 0.5F) * 0.00390625F + f4).color(f14, f15, f16,0.095F).normal(0.0F, 0.0F, 1.0F).endVertex();
-                            bufferIn.pos(cloudXPos + 8.0F, cloudHeight + 4.0F, cloudZPos + (float) l2 + 1.0F - 9.765625E-4F).tex((cloudXPos + 8.0F) * 0.00390625F + f3, (cloudZPos + (float) l2 + 0.5F) * 0.00390625F + f4).color(f14, f15, f16,0.095F).normal(0.0F, 0.0F, 1.0F).endVertex();
-                            bufferIn.pos(cloudXPos + 8.0F, cloudHeight + 0.0F, cloudZPos + (float) l2 + 1.0F - 9.765625E-4F).tex((cloudXPos + 8.0F) * 0.00390625F + f3, (cloudZPos + (float) l2 + 0.5F) * 0.00390625F + f4).color(f14, f15, f16,0.095F).normal(0.0F, 0.0F, 1.0F).endVertex();
-                            bufferIn.pos(cloudXPos + 0.0F, cloudHeight + 0.0F, cloudZPos + (float) l2 + 1.0F - 9.765625E-4F).tex((cloudXPos + 0.0F) * 0.00390625F + f3, (cloudZPos + (float) l2 + 0.5F) * 0.00390625F + f4).color(f14, f15, f16,0.095F).normal(0.0F, 0.0F, 1.0F).endVertex();
-                        }
-                    }
-                }
-            }
+        BufferBuilder bufferbuilder = Tessellator.getInstance().getBuffer();
+        if (this.cloudsVBO != null) {
+            this.cloudsVBO.close();
+        } else {
+            this.cloudsVBO = new VertexBuffer(DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL);
         }
+        this.drawClouds(bufferbuilder, mc.getRenderViewEntity().getPosX(), mc.getRenderViewEntity().getPosY(), mc.getRenderViewEntity().getPosZ(), cloudColor);
+        bufferbuilder.finishDrawing();
+        this.cloudsVBO.upload(bufferbuilder);
+
+        this.textureManager.bindTexture(CLOUD_TEXTURE);
+        matrixStackIn.push();
+        if (this.cloudsVBO != null) {
+            this.cloudsVBO.bindBuffer();
+            DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL.setupBufferState(0L);
+
+            for(int l = 0; l < 2; ++l) {
+                if (l == 0) {
+                    RenderSystem.colorMask(false, false, false, false);
+                } else {
+                    RenderSystem.colorMask(true, true, true, true);
+                }
+
+                this.cloudsVBO.draw(matrixStackIn.getLast().getMatrix(), 7);
+            }
+
+            VertexBuffer.unbindBuffer();
+            DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL.clearBufferState();
+        }
+
+        matrixStackIn.pop();
+        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.disableAlphaTest();
+        RenderSystem.enableCull();
+        RenderSystem.disableBlend();
+        RenderSystem.disableFog();
     }
 
-    //Does this work? Probably not!
-    //Too bad!
-    private void createCloud(BufferBuilder bufferIn, Vector3d cloudPosition, Vector3d cloudsColor) {
-        double x = cloudPosition.getX();
-        double y = cloudPosition.getY();
-        double z = cloudPosition.getZ();
+    private void drawClouds(BufferBuilder bufferIn, double cloudsX, double cloudsY, double cloudsZ, Vector3d cloudsColor) {
+        float cloudHeight = 1.0F;
+        float cloudWidth = 1.0F;
 
-        float r = (float) cloudsColor.getX();
-        float g = (float) cloudsColor.getY();
-        float b = (float) cloudsColor.getZ();
-        float a = 1.0F;
+        float r = (float) cloudsColor.x;
+        float g = (float) cloudsColor.y;
+        float b = (float) cloudsColor.z;
+        float alpha = 0.8F;
+        
+        bufferIn.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL);
+        for(int x = -3; x <= 4; ++x) {
+            for(int z = -3; z <= 4; ++z) {
+                float cloudX = (float) ((x * cloudWidth) + cloudsX);
+                float cloudY = (float) cloudsY;
+                float cloudZ = (float) ((z * cloudWidth) + cloudsZ);
+                float noiseOffset = (float) noise.getNoise(cloudX, cloudZ);
 
-        float height = (float) y + cloudHeight;
+                //Bottom Face
+                bufferIn.pos(cloudX + 0.0F,       cloudY + noiseOffset, cloudZ + 0.0F)      .tex(1, 1).color(r, g, b, alpha).normal(0.0F, -1.0F, 0.0F).endVertex();
+                bufferIn.pos(cloudX + cloudWidth, cloudY + noiseOffset, cloudZ + 0.0F)      .tex(1, 1).color(r, g, b, alpha).normal(0.0F, -1.0F, 0.0F).endVertex();
+                bufferIn.pos(cloudX + cloudWidth, cloudY + noiseOffset, cloudZ + cloudWidth).tex(1, 1).color(r, g, b, alpha).normal(0.0F, -1.0F, 0.0F).endVertex();
+                bufferIn.pos(cloudX + 0.0F,       cloudY + noiseOffset, cloudZ + cloudWidth).tex(1, 1).color(r, g, b, alpha).normal(0.0F, -1.0F, 0.0F).endVertex();
 
-        bufferIn.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-
-        //Bottom face
-        bufferIn.pos(x, y,z + cloudWidth)                 .tex(0.0F, 0.0F).color(r, g, b, a).endVertex();
-        bufferIn.pos(x + cloudWidth, y, z + cloudWidth).tex(0.0F, 0.0F).color(r, g, b, a).endVertex();
-        bufferIn.pos(x + cloudWidth, y, z + cloudWidth).tex(0.0F, 1.0F).color(r, g, b, a).endVertex();
-        bufferIn.pos(x, y, z)                                .tex(0.0F, 1.0F).color(r, g, b, a).endVertex();
-
-        //North Face
-        bufferIn.pos(x, y, z)                    .tex(0.0F, 1.0F).color(r, g, b, a).endVertex();
-        bufferIn.pos(x, y,z + cloudWidth)     .tex(1.0F, 1.0F).color(r, g, b, a).endVertex();
-        bufferIn.pos(x, height,z + cloudWidth).tex(1.0F, 0.0F).color(r, g, b, a).endVertex();
-        bufferIn.pos(x, height, z)               .tex(0.0F, 0.0F).color(r, g, b, a).endVertex();
-
-        //South Face
-        bufferIn.pos(x + cloudWidth, y, z)                    .tex(0.0F, 1.0F).color(r, g, b, a).endVertex();
-        bufferIn.pos(x + cloudWidth, y, z + cloudWidth)    .tex(1.0F, 1.0F).color(r, g, b, a).endVertex();
-        bufferIn.pos(x + cloudWidth, height,z + cloudWidth).tex(1.0F, 0.0F).color(r, g, b, a).endVertex();
-        bufferIn.pos(x + cloudWidth, height, z)               .tex(0.0F, 0.0F).color(r, g, b, a).endVertex();
-
-        //East Face
-        bufferIn.pos(x, y,z + cloudWidth)                      .tex(0.0F, 1.0F).color(r, g, b, a).endVertex();
-        bufferIn.pos(x + cloudWidth, y, z + cloudWidth)     .tex(1.0F, 1.0F).color(r, g, b, a).endVertex();
-        bufferIn.pos(x + cloudWidth, height, z + cloudWidth).tex(1.0F, 0.0F).color(r, g, b, a).endVertex();
-        bufferIn.pos(x,height, z + cloudWidth)                 .tex(0.0F, 0.0F).color(r, g, b, a).endVertex();
-
-        //West Face
-        bufferIn.pos(x, y, z)                     .tex(0.0F, 1.0F).color(r, g, b, a).endVertex();
-        bufferIn.pos(x + cloudWidth, y, z)     .tex(1.0F, 1.0F).color(r, g, b, a).endVertex();
-        bufferIn.pos(x + cloudWidth, height, z).tex(1.0F, 0.0F).color(r, g, b, a).endVertex();
-        bufferIn.pos(x, height, z)                .tex(0.0F, 0.0F).color(r, g, b, a).endVertex();
-
-        Clinker.LOGGER.info("Cloud rendered from " + cloudPosition.toString() + " to " + cloudPosition.add(cloudWidth, cloudHeight, cloudWidth).toString());
+                //Top Face
+                bufferIn.pos(cloudX + 0.0F,       cloudY + noiseOffset + cloudHeight, cloudZ + 0.0F)      .tex(0, 0).color(r, g, b, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
+                bufferIn.pos(cloudX + cloudWidth, cloudY + noiseOffset + cloudHeight, cloudZ + 0.0F)      .tex(0, 0).color(r, g, b, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
+                bufferIn.pos(cloudX + cloudWidth, cloudY + noiseOffset + cloudHeight, cloudZ + cloudWidth).tex(0, 0).color(r, g, b, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
+                bufferIn.pos(cloudX + 0.0F,       cloudY + noiseOffset + cloudHeight, cloudZ + cloudWidth).tex(0, 0).color(r, g, b, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
+            }
+        }
     }
 }

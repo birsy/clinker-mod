@@ -3,6 +3,8 @@ package birsy.clinker.client.render.world;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.world.ClinkerDimensions;
 import birsy.clinker.core.util.MathUtils;
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -18,7 +20,7 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(modid = Clinker.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class OthershoreFogRenderer {
     private static final int fogHeight = 48;
-    private static final int fogEnd = fogHeight + 30;
+    private static final int fogEnd = fogHeight + 12;
 
 
 
@@ -31,10 +33,12 @@ public class OthershoreFogRenderer {
             final World world = player.world;
             
             if (world.getDimensionKey() == ClinkerDimensions.OTHERSHORE) {
+                RenderSystem.fogMode(GlStateManager.FogMode.EXP);
+
                 Vector3d playerVecPos = player.getEyePosition((float) event.getRenderPartialTicks());
                 BlockPos playerPos = new BlockPos(playerVecPos);
 
-                final float heightMultiplier = MathHelper.clamp(MathUtils.mapRange(fogHeight, fogEnd, 1, 0, (float) playerVecPos.y), 0, 1);
+                final float heightMultiplier = MathHelper.clamp(MathUtils.mapRange(fogHeight, fogEnd, 1, 0, (float) playerVecPos.y), 0, 1) * 0.5F;
 
                 final float interpolatedLight = calculateInterpolatedLight(world, playerPos, playerVecPos, LightType.SKY) * heightMultiplier;
 
@@ -42,7 +46,6 @@ public class OthershoreFogRenderer {
 
                 //Make it a little foggier when it's darker....
                 final float darknessMultiplier = 1 + calculateInterpolatedLight(world, playerPos, playerVecPos, LightType.SKY, true);
-
                 if (event.getInfo().getFluidState().isEmpty()) {
                     event.setCanceled(true);
                     event.setDensity(density * darknessMultiplier);
@@ -63,14 +66,16 @@ public class OthershoreFogRenderer {
                 Vector3d playerVecPos = player.getEyePosition((float) event.getRenderPartialTicks());
                 BlockPos playerPos = new BlockPos(playerVecPos);
 
+                final float heightMultiplier = MathHelper.clamp(MathUtils.mapRange(fogHeight, fogEnd, 1, 0, (float) playerVecPos.y), 0, 1);
                 final float interpolatedLight = calculateInterpolatedLight(world, playerPos, playerVecPos, LightType.SKY, true);
 
+                Vector3f seafogColor = new Vector3f(0.60F, 0.57F, 0.54F);
                 float brightness = 0.25f;
                 Vector3f fogColor = new Vector3f(0.179f * brightness, 0.179f * brightness, 0.167f * brightness);
 
-                event.setRed  (MathHelper.lerp(interpolatedLight, event.getRed(),   fogColor.getX()));
-                event.setGreen(MathHelper.lerp(interpolatedLight, event.getGreen(), fogColor.getY()));
-                event.setBlue (MathHelper.lerp(interpolatedLight, event.getBlue(),  fogColor.getZ()));
+                event.setRed  (MathHelper.lerp(interpolatedLight, MathHelper.lerp(heightMultiplier, event.getRed(),   seafogColor.getX()), fogColor.getX()));
+                event.setGreen(MathHelper.lerp(interpolatedLight, MathHelper.lerp(heightMultiplier, event.getGreen(), seafogColor.getY()), fogColor.getY()));
+                event.setBlue (MathHelper.lerp(interpolatedLight, MathHelper.lerp(heightMultiplier, event.getBlue(),  seafogColor.getZ()), fogColor.getZ()));
             }
         }
     }

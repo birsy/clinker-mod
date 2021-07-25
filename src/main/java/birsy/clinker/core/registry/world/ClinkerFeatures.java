@@ -2,6 +2,7 @@ package birsy.clinker.core.registry.world;
 import birsy.clinker.common.world.feature.enviornment.*;
 import birsy.clinker.common.world.feature.plant.BrambleBlobFeature;
 import birsy.clinker.common.world.feature.plant.BrambleRootsFeature;
+import birsy.clinker.common.world.feature.plant.RootGrassFeature;
 import birsy.clinker.common.world.feature.plant.RootedAshFeature;
 import birsy.clinker.core.Clinker;
 import net.minecraft.world.gen.feature.*;
@@ -32,6 +33,8 @@ public class ClinkerFeatures
 	public static final RegistryObject<Feature<BlobReplacementConfig>> CAVE_FLOOR = FEATURES.register("cave_floor", () -> new CaveFloorFeature(BlobReplacementConfig.CODEC));
 	public static final RegistryObject<Feature<BlobReplacementConfig>> ASH_GEODE = FEATURES.register("ash_geode", () -> new LayeredBlobFeature(BlobReplacementConfig.CODEC));
 	public static final RegistryObject<Feature<BlockStateFeatureConfig>> AQUIFER = FEATURES.register("aquifer", () -> new AquiferFeature(BlockStateFeatureConfig.CODEC));
+
+	public static final RegistryObject<Feature<BlobReplacementConfig>> SHORELINE_PUDDLE = FEATURES.register("shoreline_puddle", () -> new ShorelinePuddleFeature(BlobReplacementConfig.CODEC));
 
 	public static final RegistryObject<Feature<NoFeatureConfig>> SPELEOTHEM = FEATURES.register("speleothem", () -> new SpeleothemFeature(NoFeatureConfig.CODEC));
 }

@@ -9,8 +9,10 @@ import net.minecraft.world.gen.feature.BlobReplacementConfig;
 import java.util.Random;
 
 public class AbstractCaveFeature {
-    public AbstractCaveFeature() {}
+    public AbstractCaveFeature() {
+    }
 
     public boolean generate(ISeedReader reader, ChunkGenerator generator, Random rand, BlockPos pos, BlobReplacementConfig config) {
-
+        return true;
     }
+}

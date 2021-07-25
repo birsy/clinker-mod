@@ -20,7 +20,7 @@ import net.minecraftforge.fml.common.Mod;
 public class ClientEvents {
     protected static final ResourceLocation LIGHT = new ResourceLocation(Clinker.MOD_ID, "textures/misc/spirit_glint.png");
 
-    @SubscribeEvent
+    //@SubscribeEvent
     public static void renderLiving(final RenderLivingEvent.Post<CreatureEntity, ?> event) {
         MatrixStack matrixStack = event.getMatrixStack();
         matrixStack.translate(0.0, 1.5, 0.0);

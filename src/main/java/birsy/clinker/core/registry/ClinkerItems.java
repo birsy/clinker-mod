@@ -1,6 +1,7 @@
 package birsy.clinker.core.registry;
 
 import birsy.clinker.common.item.ClinkerSpawnEggItem;
+import birsy.clinker.common.item.LadleItem;
 import birsy.clinker.common.item.PhospherBallItem;
 import birsy.clinker.common.item.food.GnomeatItem;
 import birsy.clinker.common.item.food.GnomeatJerkyItem;
@@ -98,7 +99,9 @@ public class ClinkerItems
 	
 	public static final RegistryObject<HoeItem> LEAD_HOE = ITEMS.register("lead_hoe", () ->
 	new HoeItem(ClinkerItemTier.LEAD, 0, -2.8F, new Item.Properties().group(Clinker.CLINKER_TOOLS)));
-	
+
+	public static final RegistryObject<Item> LADLE = ITEMS.register("ladle", () -> new LadleItem(new Item.Properties().group(Clinker.CLINKER_TOOLS)));
+
 	/**
 	 * ARMOR
 	 */

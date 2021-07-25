@@ -3,28 +3,32 @@
     "feature": {
       "config": {
         "feature": {
-          "config": {},
-          "type": "clinker:rooted_ash"
-        },
-        "decorator": {
           "config": {
-            "outer": {
+            "feature": {
               "config": {},
-              "type": "minecraft:square"
+              "type": "clinker:rooted_ash"
             },
-            "inner": {
-              "config": {},
-              "type": "minecraft:heightmap"
+            "decorator": {
+              "config": {
+                "bottom_offset": 0,
+                "top_offset": 0,
+                "maximum": 256
+              },
+              "type": "minecraft:range"
             }
           },
           "type": "minecraft:decorated"
+        },
+        "decorator": {
+          "config": {},
+          "type": "minecraft:square"
         }
       },
       "type": "minecraft:decorated"
     },
     "decorator": {
       "config": {
-        "count": 3
+        "count": 512
       },
       "type": "minecraft:count"
     }
