@@ -5,13 +5,18 @@ import birsy.clinker.core.registry.world.ClinkerDimensions;
 import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.CubicSampler;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -21,35 +26,28 @@ import net.minecraftforge.fml.common.Mod;
 public class OthershoreFogRenderer {
     private static final int fogHeight = 48;
     private static final int fogEnd = fogHeight + 12;
-
+    private static final Minecraft mc = Minecraft.getInstance();
 
 
     @SubscribeEvent
     public static void onRenderFogDensity(EntityViewRenderEvent.FogDensity event)
     {
-        if (event.getInfo().getRenderViewEntity() instanceof PlayerEntity)
-        {
-            final PlayerEntity player = (PlayerEntity) event.getInfo().getRenderViewEntity();
-            final World world = player.world;
-            
-            if (world.getDimensionKey() == ClinkerDimensions.OTHERSHORE) {
-                RenderSystem.fogMode(GlStateManager.FogMode.EXP);
+        final Entity player = event.getInfo().getRenderViewEntity();
+        final World world = player.world;
 
-                Vector3d playerVecPos = player.getEyePosition((float) event.getRenderPartialTicks());
-                BlockPos playerPos = new BlockPos(playerVecPos);
+        if (world.getDimensionKey() == ClinkerDimensions.OTHERSHORE) {
+            Vector3d playerVecPos = player.getEyePosition((float) event.getRenderPartialTicks());
+            BlockPos playerPos = new BlockPos(playerVecPos);
 
-                final float heightMultiplier = MathHelper.clamp(MathUtils.mapRange(fogHeight, fogEnd, 1, 0, (float) playerVecPos.y), 0, 1) * 0.5F;
+            final float heightMultiplier = MathHelper.clamp(MathUtils.mapRange(fogHeight, fogEnd, 1, 0, (float) playerVecPos.y), 0, 1) * 0.5F;
+            final float interpolatedLight = calculateInterpolatedLight(world, playerPos, playerVecPos, LightType.SKY) * heightMultiplier;
+            final float density = MathHelper.clamp((interpolatedLight - 3) * 0.25f / 13f, 0.02f, 1.0f);
 
-                final float interpolatedLight = calculateInterpolatedLight(world, playerPos, playerVecPos, LightType.SKY) * heightMultiplier;
-
-                final float density = MathHelper.clamp((interpolatedLight - 3) * 0.25f / 13f, 0.02f, 1.0f);
-
-                //Make it a little foggier when it's darker....
-                final float darknessMultiplier = 1 + calculateInterpolatedLight(world, playerPos, playerVecPos, LightType.SKY, true);
-                if (event.getInfo().getFluidState().isEmpty()) {
-                    event.setCanceled(true);
-                    event.setDensity(density * darknessMultiplier);
-                }
+            //Make it a little foggier when it's darker....
+            final float darknessMultiplier = 1 + calculateInterpolatedLight(world, playerPos, playerVecPos, LightType.SKY, true);
+            if (event.getInfo().getFluidState().isEmpty()) {
+                event.setCanceled(true);
+                event.setDensity(density * darknessMultiplier);
             }
         }
     }
@@ -57,26 +55,39 @@ public class OthershoreFogRenderer {
     @SubscribeEvent
     public static void onRenderFogColors(EntityViewRenderEvent.FogColors event)
     {
-        if (event.getInfo().getRenderViewEntity() instanceof PlayerEntity)
-        {
-            final PlayerEntity player = (PlayerEntity) event.getInfo().getRenderViewEntity();
-            final World world = player.world;
+        final Entity player = event.getInfo().getRenderViewEntity();
+        final World world = player.world;
+        final ClientWorld clientWorld = mc.world;
 
-            if (world.getDimensionKey() == ClinkerDimensions.OTHERSHORE) {
-                Vector3d playerVecPos = player.getEyePosition((float) event.getRenderPartialTicks());
-                BlockPos playerPos = new BlockPos(playerVecPos);
+        float f12 = MathHelper.clamp(MathHelper.cos(clientWorld.func_242415_f((float) event.getRenderPartialTicks()) * ((float)Math.PI * 2F)) * 2.0F + 0.5F, 0.0F, 1.0F);
+        BiomeManager biomemanager = world.getBiomeManager();
+        Vector3d vector3d1 = event.getRenderer().getActiveRenderInfo().getProjectedView().subtract(2.0D, 2.0D, 2.0D).scale(0.25D);
+        Vector3d baseColor = CubicSampler.func_240807_a_(vector3d1, (x, y, z) -> clientWorld.getDimensionRenderInfo().func_230494_a_(Vector3d.unpack(biomemanager.getBiomeAtPosition(x, y, z).getFogColor()), f12));
 
-                final float heightMultiplier = MathHelper.clamp(MathUtils.mapRange(fogHeight, fogEnd, 1, 0, (float) playerVecPos.y), 0, 1);
-                final float interpolatedLight = calculateInterpolatedLight(world, playerPos, playerVecPos, LightType.SKY, true);
+        if (world.getDimensionKey() == ClinkerDimensions.OTHERSHORE) {
+            Vector3d playerVecPos = player.getEyePosition((float) event.getRenderPartialTicks());
+            BlockPos playerPos = new BlockPos(playerVecPos);
 
-                Vector3f seafogColor = new Vector3f(0.60F, 0.57F, 0.54F);
-                float brightness = 0.25f;
-                Vector3f fogColor = new Vector3f(0.179f * brightness, 0.179f * brightness, 0.167f * brightness);
+            final float heightMultiplier = MathHelper.clamp(MathUtils.mapRange(fogHeight, fogEnd, 1, 0, (float) playerVecPos.y), 0, 1);
+            final float interpolatedLight = calculateInterpolatedLight(world, playerPos, playerVecPos, LightType.SKY, true);
 
-                event.setRed  (MathHelper.lerp(interpolatedLight, MathHelper.lerp(heightMultiplier, event.getRed(),   seafogColor.getX()), fogColor.getX()));
-                event.setGreen(MathHelper.lerp(interpolatedLight, MathHelper.lerp(heightMultiplier, event.getGreen(), seafogColor.getY()), fogColor.getY()));
-                event.setBlue (MathHelper.lerp(interpolatedLight, MathHelper.lerp(heightMultiplier, event.getBlue(),  seafogColor.getZ()), fogColor.getZ()));
-            }
+            Vector3f seafogColor = new Vector3f(0.60F, 0.57F, 0.54F);
+            float brightness = 0.25f;
+            Vector3f fogColor = new Vector3f(0.179f * brightness, 0.179f * brightness, 0.167f * brightness);
+
+            event.setRed  ((float) MathHelper.lerp(interpolatedLight, MathHelper.lerp(heightMultiplier, baseColor.getX(), seafogColor.getX()), fogColor.getX()));
+            event.setGreen((float) MathHelper.lerp(interpolatedLight, MathHelper.lerp(heightMultiplier, baseColor.getY(), seafogColor.getY()), fogColor.getY()));
+            event.setBlue ((float) MathHelper.lerp(interpolatedLight, MathHelper.lerp(heightMultiplier, baseColor.getZ(), seafogColor.getZ()), fogColor.getZ()));
+        }
+    }
+
+    @SubscribeEvent
+    public static void onRenderFog(EntityViewRenderEvent.RenderFogEvent event) {
+        final Entity player = event.getInfo().getRenderViewEntity();
+        final World world = player.world;
+
+        if (world.getDimensionKey() == ClinkerDimensions.OTHERSHORE) {
+            RenderSystem.fogMode(GlStateManager.FogMode.EXP);
         }
     }
 

@@ -3,15 +3,15 @@ package birsy.clinker.common.block.bramble;
 import java.util.Random;
 
 import birsy.clinker.core.registry.ClinkerBlocks;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.BushBlock;
-import net.minecraft.block.SoundType;
+import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.pathfinding.PathType;
+import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Direction;
@@ -24,9 +24,10 @@ import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 
-public class BrambleBlock extends BushBlock implements net.minecraftforge.common.IForgeShearable
-{	
-	protected static final VoxelShape SHAPE = Block.makeCuboidShape(2.0D, 0.0D, 2.0D, 14.0D, 14.0D, 14.0D);
+public class BrambleBlock extends BushBlock implements net.minecraftforge.common.IForgeShearable, IWaterLoggable
+{
+	public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+	public static final VoxelShape SHAPE = Block.makeCuboidShape(2.0D, 0.0D, 2.0D, 14.0D, 14.0D, 14.0D);
 	
 	public BrambleBlock()
 	{
@@ -37,24 +38,8 @@ public class BrambleBlock extends BushBlock implements net.minecraftforge.common
 			  .setRequiresTool()
 			  .hardnessAndResistance(4.0F)
 			  .doesNotBlockMovement())));
+		this.setDefaultState(this.stateContainer.getBaseState().with(WATERLOGGED, Boolean.valueOf(false)));
 	}
-	
-	@SuppressWarnings("deprecation")
-	@Override
-	public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
-		BlockPos posUp = pos.up();
-		BlockPos posDown = pos.down();
-		if (worldIn.getBlockState(pos.north()).getBlock() == ClinkerBlocks.BRAMBLE.get() || worldIn.getBlockState(pos.south()).getBlock() == ClinkerBlocks.BRAMBLE.get() || worldIn.getBlockState(pos.east()).getBlock() == ClinkerBlocks.BRAMBLE.get() || worldIn.getBlockState(pos.west()).getBlock() == ClinkerBlocks.BRAMBLE.get()) {
-			return;
-		} else if (!worldIn.getBlockState(posUp).isSolid() && worldIn.getBlockState(posDown).isSolid()) {
-			worldIn.setBlockState(pos, ClinkerBlocks.BRAMBLE_VINES_TOP.get().getDefaultState(), 2);
-		} else if (worldIn.getBlockState(posUp).isSolid() && !worldIn.getBlockState(posDown).isSolid()) {
-			worldIn.setBlockState(pos, ClinkerBlocks.BRAMBLE_ROOTS_BOTTOM.get().getDefaultState(), 2);
-		}
-		
-		super.tick(state, worldIn, pos, rand);
-	}
-	
 	
 	@Override
 	public boolean isLadder(BlockState state, IWorldReader world, BlockPos pos, LivingEntity entity) {
@@ -91,9 +76,18 @@ public class BrambleBlock extends BushBlock implements net.minecraftforge.common
 	
 	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context)
 	{
-		return SHAPE;
+		Vector3d vector3d = state.getOffset(worldIn, pos);
+		return SHAPE.withOffset(vector3d.x, vector3d.y, vector3d.z);
 	}
-	
+
+	public void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+		builder.add(WATERLOGGED);
+	}
+
+	public FluidState getFluidState(BlockState state) {
+		return state.get(WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
+	}
+
 	@Override
 	public boolean isFlammable(BlockState state, IBlockReader world, BlockPos pos, Direction face) {
 		return true;

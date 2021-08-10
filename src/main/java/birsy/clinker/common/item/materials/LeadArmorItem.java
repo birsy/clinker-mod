@@ -23,6 +23,6 @@ public class LeadArmorItem extends ArmorItem
 	}
 	
 	public <A extends BipedModel<?>> A getArmorModel(LivingEntity entityLiving, ItemStack itemStack, EquipmentSlotType armorSlot, A _default) {
-		return LeadArmorModel.getModel(armorSlot, entityLiving);
+		return (A) new LeadArmorModel<>(entityLiving, armorSlot);
 	}
 }

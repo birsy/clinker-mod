@@ -28,7 +28,7 @@ import java.util.stream.IntStream;
 public class TerracedTerrainSurfaceBuilder extends NetherForestsSurfaceBuilder {
     protected long seed;
 
-    private JNoise worleyNoise;
+    private JNoise noise;
 
     private PerlinNoiseGenerator terrainNoiseGenerator;
     private PerlinNoiseGenerator terraceNoiseGenerator;
@@ -40,8 +40,7 @@ public class TerracedTerrainSurfaceBuilder extends NetherForestsSurfaceBuilder {
 
     @Override
     public void buildSurface(Random random, IChunk chunkIn, Biome biomeIn, int x, int z, int startHeight, double noise, BlockState defaultBlock, BlockState defaultFluid, int seaLevel, long seed, SurfaceBuilderConfig config) {
-        //double baseNoise = (terrainNoiseGenerator.noiseAt(x * 0.06f, z * 0.06f, false) + 1) * 0.5;
-        double baseNoise = ((terrainNoiseGenerator.noiseAt(x * 0.005f, z * 0.005f, false) + 1) * 0.5;
+        double baseNoise = (terrainNoiseGenerator.noiseAt(x * 0.06f, z * 0.06f, false) + 1) * 0.5;
         double terraceNoise = MathUtils.mapRange(-1, 1, 0.07F, 0.6F, (float) terraceNoiseGenerator.noiseAt(x * 0.00625f, z * 0.00625f, false));
         double erosionNoise = MathUtils.mapRange(-1, 1, 0.05F, 0.5F, (float) erosionNoiseGenerator.noiseAt(x * 0.05f, z * 0.05f, false));
 
@@ -51,6 +50,11 @@ public class TerracedTerrainSurfaceBuilder extends NetherForestsSurfaceBuilder {
         double finalNoise = (terrace.first * 2) - 1;
         boolean isTerrace = terrace.second;
         double terrainHeight = (finalNoise * 70) + 55;
+
+        float oceanFloorFlatness = 5;
+        if (terrainHeight < (seaLevel - 1)) {
+            terrainHeight = ((terrainHeight - (seaLevel - 1)) * (1 / oceanFloorFlatness)) + (seaLevel - 1);
+        }
 
         BlockPos.Mutable pos = new BlockPos.Mutable(x, 0, z);
         for (int y = 0; y < 256; y++) {
@@ -92,7 +96,7 @@ public class TerracedTerrainSurfaceBuilder extends NetherForestsSurfaceBuilder {
 
     @Override
     public void setSeed(long seed) {
-        if (this.seed != seed || this.terrainNoiseGenerator == null || this.terraceNoiseGenerator == null || this.erosionNoiseGenerator == null) {
+        if (this.seed != seed || this.terrainNoiseGenerator == null || this.terraceNoiseGenerator == null || this.erosionNoiseGenerator == null || this.noise == null) {
             this.seed = seed;
             SharedSeedRandom sharedseedrandom = new SharedSeedRandom(seed);
 
@@ -100,7 +104,7 @@ public class TerracedTerrainSurfaceBuilder extends NetherForestsSurfaceBuilder {
             this.terraceNoiseGenerator = new PerlinNoiseGenerator(sharedseedrandom, IntStream.rangeClosed(-3, 0));
             this.erosionNoiseGenerator = new PerlinNoiseGenerator(sharedseedrandom, IntStream.rangeClosed(-3, 0));
 
-            this.worleyNoise = JNoise.newBuilder().worley().setDistanceFunction(DistanceFunctionType.EUCLIDEAN).setFrequency(1.25F).setSeed(seed).build();
+            this.noise = JNoise.newBuilder().octavated().setNoise(JNoise.newBuilder().fastSimplex().setSeed(seed).build()).setOctaves(4).setPersistence(0.5).build();
         }
         super.setSeed(seed);
     }

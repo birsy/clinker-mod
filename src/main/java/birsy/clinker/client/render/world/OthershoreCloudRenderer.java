@@ -24,7 +24,6 @@ import javax.annotation.Nullable;
 public class OthershoreCloudRenderer implements ICloudRenderHandler {
     private final TextureManager textureManager;
     private final Minecraft mc;
-    private final JNoise noise = JNoise.newBuilder().fastSimplex().setSeed(16).build();
 
     private boolean cloudsNeedUpdate = true;
     @Nullable
@@ -107,7 +106,7 @@ public class OthershoreCloudRenderer implements ICloudRenderHandler {
                 float cloudX = (float) ((x * cloudWidth) + cloudsX);
                 float cloudY = (float) cloudsY;
                 float cloudZ = (float) ((z * cloudWidth) + cloudsZ);
-                float noiseOffset = (float) noise.getNoise(cloudX, cloudZ);
+                float noiseOffset = 0;
 
                 //Bottom Face
                 bufferIn.pos(cloudX + 0.0F,       cloudY + noiseOffset, cloudZ + 0.0F)      .tex(1, 1).color(r, g, b, alpha).normal(0.0F, -1.0F, 0.0F).endVertex();

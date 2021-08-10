@@ -1,6 +1,8 @@
 {
     "__comment": "thanks mr. crayfish :)",
-"ambientocclusion": true,
+
+    "parent": "block/cube",
+    "ambientocclusion": true,
     "textures": {
         "particle": "#bush"
     },

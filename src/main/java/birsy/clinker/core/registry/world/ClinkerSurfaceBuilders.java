@@ -1,9 +1,6 @@
 package birsy.clinker.core.registry.world;
 
-import birsy.clinker.common.world.gen.surfacebuilder.AshSteppesSurfaceBuilder;
-import birsy.clinker.common.world.gen.surfacebuilder.CarvedSpringsSurfaceBuilder;
-import birsy.clinker.common.world.gen.surfacebuilder.StrataSurfaceBuilder;
-import birsy.clinker.common.world.gen.surfacebuilder.TerracedTerrainSurfaceBuilder;
+import birsy.clinker.common.world.gen.surfacebuilder.*;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import net.minecraft.world.gen.surfacebuilders.SurfaceBuilder;
@@ -21,9 +18,7 @@ public class ClinkerSurfaceBuilders
 		SURFACE_BUILDERS.register(FMLJavaModLoadingContext.get().getModEventBus());
 	}
 	
-	public static final RegistryObject<SurfaceBuilder<SurfaceBuilderConfig>> ASH_STEPPES_BUILDER = SURFACE_BUILDERS.register("ash_steppes_builder", () -> new StrataSurfaceBuilder(SurfaceBuilderConfig.CODEC,
-			ClinkerBlocks.SHALE.get().getDefaultState(),
-			ClinkerBlocks.BRIMSTONE.get().getDefaultState(),
+	public static final RegistryObject<SurfaceBuilder<SurfaceBuilderConfig>> ASH_STEPPES_BUILDER = SURFACE_BUILDERS.register("ash_steppes_builder", () -> new CaveSurfaceBuilder(SurfaceBuilderConfig.CODEC)); /*() -> new StrataSurfaceBuilder(SurfaceBuilderConfig.CODEC,
 			ClinkerBlocks.SHALE.get().getDefaultState(),
 			ClinkerBlocks.BRIMSTONE.get().getDefaultState(),
 			ClinkerBlocks.PACKED_ASH.get().getDefaultState(),
@@ -47,6 +42,8 @@ public class ClinkerSurfaceBuilders
 			ClinkerBlocks.SMOOTH_SHALE.get().getDefaultState(),
 			ClinkerBlocks.BRIMSTONE.get().getDefaultState(),
 			ClinkerBlocks.ASH.get().getDefaultState()));
+	*/
+
 
 	public static final RegistryObject<SurfaceBuilder<SurfaceBuilderConfig>> CARVED_SPRINGS_BUILDER = SURFACE_BUILDERS.register("carved_springs_builder", () -> new CarvedSpringsSurfaceBuilder(SurfaceBuilderConfig.CODEC));
 }

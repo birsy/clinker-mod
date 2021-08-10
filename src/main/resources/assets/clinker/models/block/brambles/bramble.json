@@ -1,6 +1,7 @@
 {
-  "parent": "clinker:block/bush",
-  "textures": {
-    "bush": "clinker:blocks/brambles/bramble"
-  }
+    "parent": "clinker:block/layered_bush",
+    "textures": {
+        "inner_bush": "clinker:blocks/brambles/bramble_bottom",
+        "outer_bush": "clinker:blocks/brambles/bramble_top"
+    }
 }

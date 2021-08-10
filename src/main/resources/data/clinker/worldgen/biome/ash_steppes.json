@@ -33,9 +33,7 @@
   "surface_builder": "clinker:ash_steppes_builder",
   "carvers": {
     "air": [
-      "clinker:lead_ore_vein",
-      "clinker:othershore_noodle_caves",
-      "clinker:othershore_canyon_cave"
+      "clinker:lead_ore_vein"
     ]
   },
   "features": [

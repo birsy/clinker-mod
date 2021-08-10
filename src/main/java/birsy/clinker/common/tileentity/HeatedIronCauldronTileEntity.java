@@ -4,6 +4,7 @@ import birsy.clinker.common.world.WorldUtil;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerTileEntities;
 import birsy.clinker.core.util.MathUtils;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
@@ -28,6 +29,7 @@ import net.minecraftforge.fluids.capability.templates.FluidTank;
 
 import javax.annotation.Nullable;
 import java.util.Random;
+import java.util.Set;
 
 public class HeatedIronCauldronTileEntity extends TileEntity implements ITickableTileEntity {
     boolean debug = Clinker.devmode;
@@ -36,6 +38,7 @@ public class HeatedIronCauldronTileEntity extends TileEntity implements ITickabl
     public int ageInTicks;
 
     private final NonNullList<ItemStack> inventory = NonNullList.withSize(4, ItemStack.EMPTY);
+    public NonNullList<float[]> itemRotations = NonNullList.withSize(4, new float[2]);
     public int mostRecentItemIndex = 0;
 
     //Measured in degrees per tick.
@@ -67,6 +70,10 @@ public class HeatedIronCauldronTileEntity extends TileEntity implements ITickabl
 
     public HeatedIronCauldronTileEntity() {
         super(ClinkerTileEntities.HEATED_IRON_CAULDRON.get());
+        this.itemRotations.set(0, new float[]{0, 0});
+        this.itemRotations.set(1, new float[]{90, 90});
+        this.itemRotations.set(2, new float[]{180, 180});
+        this.itemRotations.set(3, new float[]{270, 270});
     }
 
     @Override
@@ -89,13 +96,12 @@ public class HeatedIronCauldronTileEntity extends TileEntity implements ITickabl
         this.prevHeat = this.heat;
         this.prevWaterLevel = this.waterLevel;
         this.prevCauldronShakeAmount = this.cauldronShakeAmount;
-        this.prevSpoonRotation = this.spoonRotation;
 
         this.waterLevel = calculateWaterLevel();
         this.cauldronShakeAmount = calculateCauldronShakeAmount();
 
         this.stirSpeed = Math.max(this.stirSpeed - 0.25F, 0);
-        this.spoonRotation += this.stirSpeed;
+        updateStirRotations();
 
         if (WorldUtil.getAmbientHeat(this.getWorld(), this.getPos()) > 30) {
             if (this.heat < 100) {
@@ -108,6 +114,26 @@ public class HeatedIronCauldronTileEntity extends TileEntity implements ITickabl
         }
 
         this.updateStirTimes();
+    }
+
+    private void updateStirRotations() {
+        /* Sets the previous rotation for partialTick nonsense. */
+        this.prevSpoonRotation = this.spoonRotation;
+        for (int index = 0; index < 4; index++) {
+            this.itemRotations.get(index)[1] = this.itemRotations.get(index)[0];
+        }
+
+        /* Updates the rotations for each item as well as the items contained within.
+         * I did some funny math to the item's rotation so that they stir faster while the spoon is near them, and slower while it's further away.
+         * Don't really need to understand exactly what I did - just know it works ;) */
+        this.spoonRotation += this.stirSpeed;
+        for (int index = 0; index < 4; index++) {
+            float itemMultiplier = 1.00F;
+            //float distanceFromSpoon = Math.abs((this.spoonRotation % 360) - (this.itemRotations.get(index)[0] % 360));
+            //itemMultiplier *= MathUtils.mapRange(0.0F, 1.0F, 0.75F,1.0F, -1.0F * ((distanceFromSpoon / 360.0F) - 1.0F));
+
+            this.itemRotations.get(index)[0] = this.itemRotations.get(index)[0] + (this.stirSpeed * itemMultiplier);
+        }
     }
 
     private void updateStirTimes() {
@@ -245,6 +271,10 @@ public class HeatedIronCauldronTileEntity extends TileEntity implements ITickabl
         }
     }
 
+    public NonNullList<ItemStack> getInventory() {
+        return this.inventory;
+    }
+
     @OnlyIn(Dist.CLIENT)
     public float getVisualWaterLevel (float partialTicks) {
         return MathHelper.lerp(partialTicks, this.prevWaterLevel, this.waterLevel);
@@ -253,6 +283,11 @@ public class HeatedIronCauldronTileEntity extends TileEntity implements ITickabl
     @OnlyIn(Dist.CLIENT)
     public float getHeatOverlayStrength (float partialTicks) {
         return MathHelper.lerp(partialTicks, this.prevHeat, this.heat);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public float getItemRotations (int index, float partialTicks) {
+        return MathHelper.lerp(partialTicks, this.itemRotations.get(index)[1], this.itemRotations.get(index)[0]);
     }
 
     @OnlyIn(Dist.CLIENT)

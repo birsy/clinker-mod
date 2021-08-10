@@ -1,8 +1,5 @@
 {
     "variants": {
-        "": [
-        {"model": "clinker:block/brambles/bramble"}, 
-        {"model": "clinker:block/brambles/bramble_big"}
-        ]
+        "": {"model": "clinker:block/brambles/bramble"}
     }
 }

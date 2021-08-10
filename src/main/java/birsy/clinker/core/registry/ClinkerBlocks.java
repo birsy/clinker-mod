@@ -15,12 +15,11 @@ import birsy.clinker.common.block.driedsoulsand.DriedSoulsandFenceBlock;
 import birsy.clinker.common.block.driedsoulsand.DriedSoulsandPillarBlock;
 import birsy.clinker.common.block.driedsoulsand.DriedSoulsandSlabBlock;
 import birsy.clinker.common.block.driedsoulsand.DriedSoulsandStairsBlock;
+import birsy.clinker.common.block.HeaterBlock;
 import birsy.clinker.common.block.mitesoil.MitesoilDiffuserBlock;
 import birsy.clinker.common.block.riekplant.RiekPlantBlock;
 import birsy.clinker.common.block.riekplant.RiekTubeBlock;
 import birsy.clinker.common.block.riekplant.RiekVinesBlock;
-import birsy.clinker.common.block.silt.SiltscarVineBlock;
-import birsy.clinker.common.block.silt.SiltscarVineMouthBlock;
 import birsy.clinker.common.block.silt.WittlebulbBlock;
 import birsy.clinker.common.block.trees.LocustTree;
 import birsy.clinker.core.Clinker;
@@ -55,7 +54,8 @@ public class ClinkerBlocks
 
 
 	//Material Blocks
-	public static final RegistryObject<Block> LEAD_BLOCK = createBlock("lead_block", MetalMaterialBlock::new, Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> LEAD_BLOCK = createBlock("lead_block", () -> new Block(AbstractBlock.Properties.create(Material.IRON, MaterialColor.LIGHT_GRAY).hardnessAndResistance(5.0f, 6.0f).sound(SoundType.NETHERITE).harvestLevel(1).harvestTool(ToolType.PICKAXE)), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> RAW_LEAD_BLOCK = createBlock("raw_lead_block", () -> new Block(AbstractBlock.Properties.create(Material.IRON, MaterialColor.LIGHT_GRAY).hardnessAndResistance(2.5f, 3.0f).sound(SoundType.ANCIENT_DEBRIS).harvestLevel(1).harvestTool(ToolType.PICKAXE)), Clinker.CLINKER_BLOCKS);
 	public static final RegistryObject<Block> SULFUR_BLOCK = createBlock("sulfur_block", MaterialBlock::new, Clinker.CLINKER_BLOCKS);
 	public static final RegistryObject<Block> IRON_PYRITE_BLOCK = createBlock("iron_pyrite_block", MetalMaterialBlock::new, Clinker.CLINKER_BLOCKS);
 	
@@ -68,7 +68,7 @@ public class ClinkerBlocks
 	public static final RegistryObject<Block> ROCKY_PACKED_ASH = createBlock("rocky_packed_ash", () -> new Block(Block.Properties.create(Material.CLAY, MaterialColor.GRAY).hardnessAndResistance(0.5F).sound(SoundType.GROUND).harvestTool(ToolType.SHOVEL)), Clinker.CLINKER_BLOCKS);
 	public static final RegistryObject<Block> ROOTED_PACKED_ASH = createBlock("rooted_packed_ash", () -> new RootedAshBlock(PACKED_ASH.get()), Clinker.CLINKER_BLOCKS);
 	
-	public static final RegistryObject<Block> SALT_BLOCK = createBlock("salt_block", () -> new SandBlock(14406560, AbstractBlock.Properties.create(Material.SAND, MaterialColor.WHITE_TERRACOTTA).hardnessAndResistance(0.5F).sound(SoundType.GROUND).harvestTool(ToolType.SHOVEL)), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> SALT_BLOCK = createBlock("salt_block", () -> new SandBlock(14406560, AbstractBlock.Properties.create(Material.SAND, MaterialColor.LIGHT_GRAY_TERRACOTTA).hardnessAndResistance(0.5F).sound(SoundType.GROUND).harvestTool(ToolType.SHOVEL)), Clinker.CLINKER_BLOCKS);
 	
 	public static final RegistryObject<Block> ROOTSTALK = createBlock("rootstalk", () -> new Block(AbstractBlock.Properties.create(Material.ORGANIC, MaterialColor.ORANGE_TERRACOTTA).harvestTool(ToolType.HOE).hardnessAndResistance(0.1F).sound(SoundType.WART)), Clinker.CLINKER_BLOCKS);
 
@@ -157,7 +157,7 @@ public class ClinkerBlocks
 
 	//Scorstone
 	public static AbstractBlock.Properties getScorstoneProperties() {
-		return AbstractBlock.Properties.create(Material.ROCK, MaterialColor.WHITE_TERRACOTTA)
+		return AbstractBlock.Properties.create(Material.ROCK, MaterialColor.LIGHT_GRAY_TERRACOTTA)
 				  .hardnessAndResistance(1.5F, 6.0F)
 				  .sound(SoundType.BASALT)
 				  .harvestLevel(1)
@@ -263,12 +263,12 @@ public class ClinkerBlocks
 	public static final RegistryObject<Block> LOCUST_LOG = createBlock("locust_log", PoisonLogBlock::new, Clinker.CLINKER_BLOCKS);
 	public static final RegistryObject<Block> TRIMMED_LOCUST_LOG = createBlock("trimmed_locust_log", PoisonLogBlock::new, Clinker.CLINKER_BLOCKS);
 	public static final RegistryObject<Block> STRIPPED_LOCUST_LOG = createBlock("stripped_locust_log", 
-			() -> new RotatedPillarBlock(AbstractBlock.Properties.create(Material.WOOD, (state) -> {return state.get(RotatedPillarBlock.AXIS) == Direction.Axis.Y ? MaterialColor.FOLIAGE : MaterialColor.STONE;}).hardnessAndResistance(2.0F).sound(SoundType.WOOD)), Clinker.CLINKER_BLOCKS);
+			() -> new RotatedPillarBlock(AbstractBlock.Properties.create(Material.WOOD, (state) -> state.get(RotatedPillarBlock.AXIS) == Direction.Axis.Y ? MaterialColor.FOLIAGE : MaterialColor.STONE).hardnessAndResistance(2.0F).sound(SoundType.WOOD)), Clinker.CLINKER_BLOCKS);
 	public static final RegistryObject<Block> LOCUST_LEAVES = createBlock("locust_leaves", 
-			() -> new LeavesBlock(AbstractBlock.Properties.create(Material.LEAVES).hardnessAndResistance(0.2F).tickRandomly().sound(SoundType.PLANT).notSolid()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> LOCUST_SAPLING = createBlock("locust_sapling", 
+			() -> new LeavesBlock(AbstractBlock.Properties.create(Material.LEAVES, MaterialColor.ORANGE_TERRACOTTA).hardnessAndResistance(0.2F).tickRandomly().sound(SoundType.ROOT).notSolid()), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> LOCUST_SAPLING = createBlock("locust_sapling",
 			() -> new SaplingBlock(new LocustTree(), AbstractBlock.Properties.create(Material.PLANTS).doesNotBlockMovement().tickRandomly().zeroHardnessAndResistance().sound(SoundType.PLANT)), Clinker.CLINKER_BLOCKS);
-	
+
 	public static final RegistryObject<Block> LOCUST_PLANKS = createBlock("locust_planks", () -> new Block(getLocustWoodProperties()), Clinker.CLINKER_BLOCKS);
 	public static final RegistryObject<Block> LOCUST_STAIRS = createBlock("locust_stairs", () -> new StairsBlock(() -> ClinkerBlocks.LOCUST_PLANKS.get().getDefaultState(), getLocustWoodProperties()), Clinker.CLINKER_BLOCKS);
 	public static final RegistryObject<Block> LOCUST_SLAB = createBlock("locust_slab", () -> new SlabBlock(getLocustWoodProperties()), Clinker.CLINKER_BLOCKS);

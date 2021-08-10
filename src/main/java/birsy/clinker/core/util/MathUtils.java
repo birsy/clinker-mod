@@ -111,7 +111,7 @@ public class MathUtils {
 
             return retArray;
         } catch (Exception e) {
-            throw new RuntimeException("Non-array object passed into object field of 'getAllValidIndexes'!");
+            throw new IllegalArgumentException(e.getMessage());
         }
     }
 

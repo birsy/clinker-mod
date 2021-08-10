@@ -29,7 +29,7 @@ import java.util.Random;
 
 public class OthershoreSkyRenderer implements ISkyRenderHandler {
     private static final ResourceLocation SUN_TEXTURES = new ResourceLocation(Clinker.MOD_ID, "textures/environment/sun.png");
-    private static final ResourceLocation HORIZON_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/environment/horizon.png");
+    private static final ResourceLocation STAR_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/environment/star.png");
     private final Minecraft mc;
     private final TextureManager textureManager;
     private final VertexFormat skyVertexFormat = DefaultVertexFormats.POSITION;
@@ -74,6 +74,7 @@ public class OthershoreSkyRenderer implements ISkyRenderHandler {
         VertexBuffer.unbindBuffer();
         this.skyVertexFormat.clearBufferState();
         renderStars(matrixStackIn, 50.0F, rand, ticks, partialTicks);
+        renderFancyStars(matrixStackIn, 50.0F, rand, ticks, partialTicks);
 
         RenderSystem.disableFog();
         RenderSystem.disableAlphaTest();
@@ -172,7 +173,80 @@ public class OthershoreSkyRenderer implements ISkyRenderHandler {
             double starZ = rand.nextFloat() * 2.0F - 1.0F;
             double starSize = (0.01F + rand.nextFloat() * 0.017F);
             starSize += ((MathHelper.sin(ticks * (rand.nextFloat() * 0.125F)) + 1) * 0.5) * (0.01F + rand.nextFloat() * 0.022F);
+            double starDistance = starRadius * MathUtils.getRandomFloatBetween(rand, 0.65F, 1.0F);
+
             matrixStackIn.rotate(Vector3f.YP.rotationDegrees((float) ((ticks * 0.005F) * (starY * 0.005F)) * 1.5F));
+
+            double d4 = starX * starX + starY * starY + starZ * starZ;
+            if (d4 < 1.0D && d4 > 0.01D) {
+                d4 = 1.0D / Math.sqrt(d4);
+                starX = starX * d4;
+                starY = starY * d4;
+                starZ = starZ * d4;
+                double d5 = starX * starDistance;
+                double d6 = starY * starDistance;
+                double d7 = starZ * starDistance;
+                double d8 = Math.atan2(starX, starZ);
+                double d9 = Math.sin(d8);
+                double d10 = Math.cos(d8);
+                double d11 = Math.atan2(Math.sqrt(starX * starX + starZ * starZ), starY);
+                double d12 = Math.sin(d11);
+                double d13 = Math.cos(d11);
+                double d14 = rand.nextDouble() * Math.PI * 2.0D;
+                double d15 = Math.sin(d14);
+                double d16 = Math.cos(d14);
+
+                bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
+                for(int vertexCount = 0; vertexCount < 4; ++vertexCount) {
+                    double d18 = ((vertexCount & 2) - 1) * starSize;
+                    double d19 = ((vertexCount + 1 & 2) - 1) * starSize;
+
+                    double d21 = d18 * d16 - d19 * d15;
+                    double d22 = d19 * d16 + d18 * d15;
+                    double d23 = d21 * d12 + 0.0D * d13;
+                    double d24 = 0.0D * d12 - d21 * d13;
+                    double d25 = d24 * d9 - d22 * d10;
+                    double d26 = d22 * d9 + d24 * d10;
+
+                    float starHeight = MathUtils.mapRange(0, (float) starDistance, 0.0f, 1.0f, (float) (d6 + d23));
+                    float r = MathHelper.lerp(starHeight, 131, 205) / 255;
+                    float g = MathHelper.lerp(starHeight, 102, 255) / 255;
+                    float b = MathHelper.lerp(starHeight, 177, 171) / 255;
+
+                    bufferbuilder.pos(matrixStackIn.getLast().getMatrix(), (float) (d5 + d25), (float) (d6 + d23), (float) (d7 + d26)).color(r, g, b, starHeight).endVertex();
+                }
+                tessellator.draw();
+            }
+        }
+        matrixStackIn.pop();
+
+        RenderSystem.depthMask(true);
+        RenderSystem.enableTexture();
+        RenderSystem.disableBlend();
+        RenderSystem.enableAlphaTest();
+    }
+
+    private void renderFancyStars(MatrixStack matrixStackIn, float skyRadius, Random rand, int ticksIn, float partialTicks) {
+        RenderSystem.disableAlphaTest();
+        RenderSystem.enableTexture();
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.depthMask(false);
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferbuilder = tessellator.getBuffer();
+        this.textureManager.bindTexture(STAR_TEXTURE);
+        matrixStackIn.push();
+        float ticks = ticksIn + partialTicks;
+
+        float starBrightness = 1.5F;
+        int starCount = 75;
+        double starRadius = (skyRadius / 3) - 2;
+        for(int i = 0; i < starCount; ++i) {
+            double starX = rand.nextFloat() * 2.0F - 1.0F;
+            double starY = rand.nextFloat();
+            double starZ = rand.nextFloat() * 2.0F - 1.0F;
+            double starSize = (0.01F + rand.nextFloat() * 0.017F) * 7.5F;
+            starSize += ((MathHelper.sin(ticks * (rand.nextFloat() * 0.125F)) + 1) * 0.5) * (0.01F + rand.nextFloat() * 0.062F);
 
             double d4 = starX * starX + starY * starY + starZ * starZ;
             if (d4 < 1.0D && d4 > 0.01D) {
@@ -193,10 +267,10 @@ public class OthershoreSkyRenderer implements ISkyRenderHandler {
                 double d15 = Math.sin(d14);
                 double d16 = Math.cos(d14);
 
-                bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
+                bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
                 for(int vertexCount = 0; vertexCount < 4; ++vertexCount) {
-                    double d18 = (double)((vertexCount & 2) - 1) * starSize;
-                    double d19 = (double)((vertexCount + 1 & 2) - 1) * starSize;
+                    double d18 = ((vertexCount & 2) - 1) * starSize;
+                    double d19 = ((vertexCount + 1 & 2) - 1) * starSize;
 
                     double d21 = d18 * d16 - d19 * d15;
                     double d22 = d19 * d16 + d18 * d15;
@@ -206,11 +280,21 @@ public class OthershoreSkyRenderer implements ISkyRenderHandler {
                     double d26 = d22 * d9 + d24 * d10;
 
                     float starHeight = MathUtils.mapRange(0, (float) starRadius, 0.0f, 1.0f, (float) (d6 + d23));
-                    float r = MathHelper.lerp(starHeight, 131, 205) / 255;
-                    float g = MathHelper.lerp(starHeight, 102, 255) / 255;
-                    float b = MathHelper.lerp(starHeight, 177, 171) / 255;
+                    float r = Math.min(MathHelper.lerp(starHeight, 131, 205) * starBrightness, 255) / 255;
+                    float g = Math.min(MathHelper.lerp(starHeight, 102, 255) * starBrightness, 255) / 255;
+                    float b = Math.min(MathHelper.lerp(starHeight, 177, 171) * starBrightness, 255) / 255;
 
-                    bufferbuilder.pos(matrixStackIn.getLast().getMatrix(), (float) (d5 + d25), (float) (d6 + d23), (float) (d7 + d26)).color(r, g, b, starHeight).endVertex();
+                    float starTexEnd = 13.0F / 16.0F;
+
+                    if (vertexCount == 0) {
+                        bufferbuilder.pos(matrixStackIn.getLast().getMatrix(), (float) (d5 + d25), (float) (d6 + d23), (float) (d7 + d26)).tex(0,0)             .color(r, g, b, starHeight).endVertex();
+                    } else if (vertexCount == 1) {
+                        bufferbuilder.pos(matrixStackIn.getLast().getMatrix(), (float) (d5 + d25), (float) (d6 + d23), (float) (d7 + d26)).tex(0, starTexEnd)      .color(r, g, b, starHeight).endVertex();
+                    } else if (vertexCount == 2) {
+                        bufferbuilder.pos(matrixStackIn.getLast().getMatrix(), (float) (d5 + d25), (float) (d6 + d23), (float) (d7 + d26)).tex(starTexEnd, starTexEnd).color(r, g, b, starHeight).endVertex();
+                    } else {
+                        bufferbuilder.pos(matrixStackIn.getLast().getMatrix(), (float) (d5 + d25), (float) (d6 + d23), (float) (d7 + d26)).tex(starTexEnd,0)       .color(r, g, b, starHeight).endVertex();
+                    }
                 }
                 tessellator.draw();
             }

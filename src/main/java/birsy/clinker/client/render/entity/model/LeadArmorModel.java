@@ -11,142 +11,182 @@ import net.minecraft.client.renderer.entity.model.BipedModel;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.monster.ZombifiedPiglinEntity;
+import net.minecraft.entity.monster.piglin.AbstractPiglinEntity;
+import net.minecraft.entity.monster.piglin.PiglinBruteEntity;
 import net.minecraft.entity.monster.piglin.PiglinEntity;
 import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class LeadArmorModel<T extends LivingEntity> extends BipedModel<T> {    
-    public BirsyModelRenderer helmet;
-    public BirsyModelRenderer chestplate;
-    public BirsyModelRenderer leftShoulderPad;
-    public BirsyModelRenderer rightShoulderPad;
-    public BirsyModelRenderer leftHelmetFlap;
-    public BirsyModelRenderer rightHelmetFlap;
-    public BirsyModelRenderer upperHat;
-    public BirsyModelRenderer cross;
-    public BirsyModelRenderer leftChestplateFlap;
-    public BirsyModelRenderer rightChestplateFlap;
-    
-    private static final Map<Integer, LeadArmorModel<? extends LivingEntity>> CACHE = new HashMap<>();
+public class LeadArmorModel<T extends LivingEntity> extends BipedModel<T> {
     private final EquipmentSlotType slot;
-    private final byte entityIn;
+    private final LivingEntity entity;
 
-    public LeadArmorModel(int entityIn) {
-    	super(1.0F, 0.0F, 64, 64);
-    	this.slot = EquipmentSlotType.values()[entityIn & 15];
-    	this.entityIn = (byte) (entityIn >> 4);
-    	
-    	this.textureWidth = 64;
-        this.textureHeight = 32;
-        this.leftShoulderPad = new BirsyModelRenderer(this, 34, 16);
-        this.leftShoulderPad.mirror = true;
-        this.leftShoulderPad.setRotationPoint(5.0F, 2.0F, 0.0F);
-        this.leftShoulderPad.addBox(-0.75F, -2.0F, -2.0F, 4.0F, 4.0F, 4.0F, 0.3F, 0.3F, 0.3F);
-        this.setRotateAngle(leftShoulderPad, 0.0F, 0.0F, -0.19198621771937624F);
-        this.cross = new BirsyModelRenderer(this, 0, 0);
-        this.cross.setRotationPoint(0.0F, 0.0F, 0.0F);
-        this.cross.addBox(-1.5F, -14.0F, -0.5F, 3.0F, 4.0F, 1.0F, -0.25F, -0.25F, -0.25F);
-        this.rightHelmetFlap = new BirsyModelRenderer(this, 0, 15);
-        this.rightHelmetFlap.mirror = true;
-        this.rightHelmetFlap.setRotationPoint(-4.5F, -3.5F, 0.0F);
-        this.rightHelmetFlap.addBox(0.0F, -0.25F, -3.0F, 1.0F, 4.0F, 6.0F, 0.0F, -0.25F, 0.0F);
-        this.setRotateAngle(rightHelmetFlap, 0.0F, 0.0F, 0.3490658503988659F);
-        this.helmet = new BirsyModelRenderer(this, 0, 0);
-        this.helmet.setRotationPoint(0.0F, 0.0F, 0.0F);
-        this.helmet.addBox(-4.5F, -8.1F, -4.5F, 9.0F, 6.0F, 9.0F, 0.0F, 0.0F, 0.0F);
-        this.rightShoulderPad = new BirsyModelRenderer(this, 34, 16);
-        this.rightShoulderPad.setRotationPoint(-5.0F, 2.0F, 0.0F);
-        this.rightShoulderPad.addBox(-3.75F, -2.0F, -2.0F, 4.0F, 4.0F, 4.0F, 0.3F, 0.3F, 0.3F);
-        this.setRotateAngle(rightShoulderPad, 0.0F, 0.0F, 0.19198621771937624F);
-        this.upperHat = new BirsyModelRenderer(this, 14, 15);
-        this.upperHat.setRotationPoint(0.0F, 0.0F, 0.0F);
-        this.upperHat.addBox(-2.5F, -10.75F, -2.5F, 5.0F, 3.0F, 5.0F, 0.0F, 0.0F, 0.0F);
-        this.leftChestplateFlap = new BirsyModelRenderer(this, 50, 16);
-        this.leftChestplateFlap.setRotationPoint(4.25F, 11.0F, 0.0F);
-        this.leftChestplateFlap.addBox(-1.0F, 0.0F, -2.0F, 1.0F, 4.0F, 4.0F, 0.0F, 0.0F, 0.5F);
-        this.setRotateAngle(leftChestplateFlap, 0.0F, 0.0F, -0.3490658503988659F);
-        this.chestplate = new BirsyModelRenderer(this, 36, 0);
-        this.chestplate.setRotationPoint(0.0F, 0.0F, 0.0F);
-        this.chestplate.addBox(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, 0.6F, 0.6F, 0.6F);
-        this.leftHelmetFlap = new BirsyModelRenderer(this, 0, 15);
-        this.leftHelmetFlap.setRotationPoint(4.5F, -3.5F, 0.0F);
-        this.leftHelmetFlap.addBox(-1.0F, -0.25F, -3.0F, 1.0F, 4.0F, 6.0F, 0.0F, -0.25F, 0.0F);
-        this.setRotateAngle(leftHelmetFlap, 0.0F, 0.0F, -0.3490658503988659F);
-        this.rightChestplateFlap = new BirsyModelRenderer(this, 50, 16);
-        this.rightChestplateFlap.setRotationPoint(-4.25F, 11.0F, 0.0F);
-        this.rightChestplateFlap.addBox(0.0F, 0.0F, -2.0F, 1.0F, 4.0F, 4.0F, 0.0F, 0.0F, 0.5F);
-        this.setRotateAngle(rightChestplateFlap, 0.0F, 0.0F, 0.3490658503988659F);
-        this.helmet.addChild(this.cross);
-        this.helmet.addChild(this.rightHelmetFlap);
-        this.helmet.addChild(this.upperHat);
-        this.chestplate.addChild(this.leftChestplateFlap);
-        this.helmet.addChild(this.leftHelmetFlap);
-        this.chestplate.addChild(this.rightChestplateFlap);
-    }
+    public BirsyModelRenderer armorRightPauldron;
+    public BirsyModelRenderer armorHelmet;
+    public BirsyModelRenderer armorHelmetTop;
+    public BirsyModelRenderer armorRightHelmetFlap;
+    public BirsyModelRenderer armorLeftHelmetFlap;
+    public BirsyModelRenderer armorBackHelmetFlap;
+    public BirsyModelRenderer armorChestplate;
+    public BirsyModelRenderer armorFrontChestplateFlap;
+    public BirsyModelRenderer armorBackChestplateFlap;
+    public BirsyModelRenderer armorRightChestplateFlap;
+    public BirsyModelRenderer armorLeftChestplateFlap;
+    public BirsyModelRenderer armorLeftPauldron;
+
+    private boolean isPiglin;
+    private boolean isBaby;
     
+    public LeadArmorModel(LivingEntity entityIn, EquipmentSlotType slotIn) {
+        super(1.0F, 0.0F, 64, 64);
+        this.slot = slotIn;
+        this.isPiglin = entityIn instanceof AbstractPiglinEntity || entityIn instanceof ZombifiedPiglinEntity;
+        this.isBaby = entityIn.isChild();
+        this.entity = entityIn;
+        
+        this.textureWidth = 64;
+        this.textureHeight = 32;
+
+        this.armorHelmet = new BirsyModelRenderer(this, 0, 0);
+        this.armorHelmet.setRotationPoint(0.0F, 0.0F, 0.0F);
+        this.armorHelmet.addBox(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, 0.6F, 0.6F, 0.6F);
+
+        this.armorHelmetTop = new BirsyModelRenderer(this, 32, 0);
+        this.armorHelmetTop.setRotationPoint(0.0F, -8.6F, 0.0F);
+        this.armorHelmetTop.addBox(-3.0F, -2.0F, -3.0F, 6.0F, 2.0F, 6.0F, 0.6F, 0.1F, 0.6F);
+
+        this.armorRightHelmetFlap = new BirsyModelRenderer(this, 46, 8);
+        this.armorRightHelmetFlap.setRotationPoint(-4.6F, -5.25F, 0.0F);
+        this.armorRightHelmetFlap.addBox(0.0F, 0.0F, -4.0F, 1.0F, 4.0F, 8.0F, 0.0F, 0.0F, 0.0F);
+        this.armorRightHelmetFlap.rotateAngleZ = (float) Math.toRadians(20);
+
+        this.armorLeftHelmetFlap = new BirsyModelRenderer(this, 46, 8);
+        this.armorLeftHelmetFlap.setRotationPoint(4.6F, -5.25F, 0.0F);
+        this.armorLeftHelmetFlap.addBox(-1.0F, 0.0F, -4.0F, 1.0F, 4.0F, 8.0F, 0.0F, 0.0F, 0.0F);
+        this.armorLeftHelmetFlap.rotateAngleZ = (float) Math.toRadians(-20);
+
+        this.armorBackHelmetFlap = new BirsyModelRenderer(this, 46, 20);
+        this.armorBackHelmetFlap.setRotationPoint(0.0F, -5.25F, 4.6F);
+        this.armorBackHelmetFlap.addBox(-4.0F, 0.0F, -1.0F, 8.0F, 4.0F, 1.0F, 0.0F, 0.0F, 0.0F);
+        this.armorBackHelmetFlap.rotateAngleX = (float) Math.toRadians(20);
+
+
+        this.armorChestplate = new BirsyModelRenderer(this, 0, 16);
+        this.armorChestplate.setRotationPoint(0.0F, 0.0F, 0.0F);
+        this.armorChestplate.addBox(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, 1.0F, 1.0F, 1.0F);
+
+        this.armorRightChestplateFlap = new BirsyModelRenderer(this, 24, 16);
+        this.armorRightChestplateFlap.setRotationPoint(-4.6F, 9.0F, 0.0F);
+        this.armorRightChestplateFlap.addBox(0.0F, 0.0F, -2.0F, 1.0F, 5.0F, 4.0F, 0.05F, 0.25F, 0.75F);
+        this.armorRightChestplateFlap.rotateAngleZ = (float) Math.toRadians(15);
+
+        this.armorLeftChestplateFlap = new BirsyModelRenderer(this, 24, 16);
+        this.armorLeftChestplateFlap.setRotationPoint(4.6F, 9.0F, 0.0F);
+        this.armorLeftChestplateFlap.addBox(-1.0F, 0.0F, -2.0F, 1.0F, 5.0F, 4.0F, 0.05F, 0.25F, 0.75F);
+        this.armorLeftChestplateFlap.rotateAngleZ = (float) Math.toRadians(-15);
+
+        this.armorFrontChestplateFlap = new BirsyModelRenderer(this, 24, 25);
+        this.armorFrontChestplateFlap.setRotationPoint(0.0F, 10.55F, -2.25F);
+        this.armorFrontChestplateFlap.addBox(-2.0F, 0.0F, -0.5F, 4.0F, 5.0F, 1.0F, 0.8F, 0.0F, 0.0F);
+        this.armorFrontChestplateFlap.rotateAngleX = (float) Math.toRadians(-10);
+
+        this.armorBackChestplateFlap = new BirsyModelRenderer(this, 24, 25);
+        this.armorBackChestplateFlap.mirror = true;
+        this.armorBackChestplateFlap.setRotationPoint(0.0F, 10.55F, 2.25F);
+        this.armorBackChestplateFlap.addBox(-2.0F, 0.0F, -0.5F, 4.0F, 5.0F, 1.0F, 0.8F, 0.0F, 0.0F);
+        this.armorBackChestplateFlap.rotateAngleX = (float) Math.toRadians(10);
+
+        this.armorLeftPauldron = new BirsyModelRenderer(this, 34, 23);
+        this.armorLeftPauldron.mirror = true;
+        this.armorLeftPauldron.setRotationPoint(0.0F, 0.0F, 0.0F);
+        this.armorLeftPauldron.addBox(-1.0F, -2.0F, -2.0F, 4.0F, 4.0F, 4.0F, 0.6F, 0.6F, 0.6F);
+
+        this.armorRightPauldron = new BirsyModelRenderer(this, 34, 23);
+        this.armorRightPauldron.setRotationPoint(0.0F, 0.0F, 0.0F);
+        this.armorRightPauldron.addBox(-3.0F, -2.0F, -2.0F, 4.0F, 4.0F, 4.0F, 0.6F, 0.6F, 0.6F);
+        
+        this.bipedLeftArm.addChild(this.armorLeftPauldron);
+        this.bipedRightArm.addChild(this.armorRightPauldron);
+        this.armorHelmet.addChild(this.armorRightHelmetFlap);
+        this.armorHelmet.addChild(this.armorBackHelmetFlap);
+        this.bipedBody.addChild(this.armorChestplate);
+        this.armorHelmet.addChild(this.armorLeftHelmetFlap);
+        this.armorChestplate.addChild(this.armorRightChestplateFlap);
+        this.armorHelmet.addChild(this.armorHelmetTop);
+        this.armorChestplate.addChild(this.armorFrontChestplateFlap);
+        this.bipedHead.addChild(this.armorHelmet);
+        this.armorChestplate.addChild(this.armorLeftChestplateFlap);
+        this.armorChestplate.addChild(this.armorBackChestplateFlap);
+    }
+
     @Override
     public void render(MatrixStack matrixStack, IVertexBuilder buffer, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
-        boolean piglin = (this.entityIn & 2) > 0;
-        boolean child = (this.entityIn & 4) > 0;
+        boolean flag = entity.getTicksElytraFlying() > 4;
+        float f = 1.0F;
+        if (flag) {
+            f = (float) entity.getMotion().lengthSquared();
+            f = f / 0.2F;
+            f = f * f * f;
+        }
+
+        if (f < 1.0F) {
+            f = 1.0F;
+        }
+
+        float bob = (MathHelper.cos(entity.limbSwing * 0.6662F * 1.5F) * 2.0F * entity.limbSwingAmount * 0.5F / f) * 0.15F;
+
+        if (this.isSneak) {
+            this.armorFrontChestplateFlap.rotationPointY = this.armorFrontChestplateFlap.defaultRotationPointY;
+            this.armorFrontChestplateFlap.rotationPointY -= 1.0F;
+        }
+        this.armorFrontChestplateFlap.rotateAngleX = Math.min((float) Math.toRadians(-10), Math.min(this.bipedLeftLeg.rotateAngleX, this.bipedRightLeg.rotateAngleX)) - (this.bipedBody.rotateAngleX * 2);
+        this.armorBackChestplateFlap.rotateAngleX = -(Math.min((float) Math.toRadians(-10), Math.min(this.bipedLeftLeg.rotateAngleX, this.bipedRightLeg.rotateAngleX))) - this.bipedBody.rotateAngleX;
+
+        this.armorLeftChestplateFlap.rotateAngleZ = bob + (float) Math.toRadians(-15);
+        this.armorRightChestplateFlap.rotateAngleZ = -bob + (float) Math.toRadians(15);
 
         if (this.slot == EquipmentSlotType.HEAD) {
-        		if (piglin) {
+        		if (isPiglin) {
         			matrixStack.scale(1.25F, 1.0F, 1.25F);
         		}
                 matrixStack.push();
-                this.helmet.copyModelAngles(this.bipedHead);
-                if (child) {
+                this.armorHelmet.copyModelAngles(this.bipedHead);
+                if (isBaby) {
                     matrixStack.scale(0.8F, 0.8F, 0.8F);
-                    this.helmet.setRotationPoint(0.0F, 15.0F, 0.0F);
+                    this.armorHelmet.setRotationPoint(0.0F, 15.0F, 0.0F);
                 }
-                this.helmet.render(matrixStack, buffer, packedLightIn, packedOverlayIn, red, green, blue, alpha);
+                this.armorHelmet.render(matrixStack, buffer, packedLightIn, packedOverlayIn, red, green, blue, alpha);
                 matrixStack.pop();
         }
 
         if (this.slot == EquipmentSlotType.CHEST) {
             matrixStack.push();
-            this.chestplate.copyModelAngles(this.bipedBody);
-            addParentRotation(this.leftShoulderPad, this.bipedLeftArm);
-            addParentRotation(this.rightShoulderPad, this.bipedRightArm);
-            if (child) {
+            this.armorChestplate.copyModelAngles(this.bipedBody);
+            addParentRotation(this.armorLeftPauldron, this.bipedLeftArm);
+            addParentRotation(this.armorRightPauldron, this.bipedRightArm);
+            if (isBaby) {
                 matrixStack.scale(0.5F, 0.5F, 0.5F);
-                this.chestplate.setRotationPoint(0.0F, 24.0F, 0.0F);
-                this.leftShoulderPad.setRotationPoint(5.0F, 24.0F, 0.0F);
-                this.rightShoulderPad.setRotationPoint(-5.0F, 24.0F, 0.0F);
+                this.armorChestplate.setRotationPoint(0.0F, 24.0F, 0.0F);
+                this.armorLeftPauldron.setRotationPoint(5.0F, 24.0F, 0.0F);
+                this.armorRightPauldron.setRotationPoint(-5.0F, 24.0F, 0.0F);
             }
-            this.leftShoulderPad.render(matrixStack, buffer, packedLightIn, packedOverlayIn, red, green, blue, alpha);
-            this.rightShoulderPad.render(matrixStack, buffer, packedLightIn, packedOverlayIn, red, green, blue, alpha);
-            this.chestplate.render(matrixStack, buffer, packedLightIn, packedOverlayIn, red, green, blue, alpha);
+            this.armorLeftPauldron.render(matrixStack, buffer, packedLightIn, packedOverlayIn, red, green, blue, alpha);
+            this.armorRightPauldron.render(matrixStack, buffer, packedLightIn, packedOverlayIn, red, green, blue, alpha);
+            this.armorChestplate.render(matrixStack, buffer, packedLightIn, packedOverlayIn, red, green, blue, alpha);
             matrixStack.pop();
         }
     }
     
-    @SuppressWarnings("unchecked")
-    public static <A extends BipedModel<?>> A getModel(EquipmentSlotType slot, LivingEntity entity) {
-        boolean piglin = entity instanceof PiglinEntity || entity instanceof ZombifiedPiglinEntity;
-        int entityFlag = (slot.ordinal() & 15) | (piglin ? 1 : 0) << 5 | (entity.isChild() ? 1 : 0) << 6;
-        return (A) CACHE.computeIfAbsent(entityFlag, LeadArmorModel::new);
-    }
-
-    public void setRotateAngle(BirsyModelRenderer modelRenderer, float x, float y, float z) {
-        modelRenderer.rotateAngleX = x;
-        modelRenderer.rotateAngleY = y;
-        modelRenderer.rotateAngleZ = z;
-        
-        modelRenderer.defaultRotateAngleX = x;
-        modelRenderer.defaultRotateAngleY = y;
-        modelRenderer.defaultRotateAngleZ = z;
-    }
-    
     public void addParentRotation(BirsyModelRenderer modelRenderer, ModelRenderer modelRenderer1) {
-    	modelRenderer.rotateAngleX = modelRenderer.defaultRotateAngleX;
-		modelRenderer.rotateAngleY = modelRenderer.defaultRotateAngleY;
-		modelRenderer.rotateAngleZ = modelRenderer.defaultRotateAngleZ;
-    	
-    	modelRenderer.rotateAngleX = modelRenderer.defaultRotateAngleX + modelRenderer1.rotateAngleX;
-    	modelRenderer.rotateAngleY = modelRenderer.defaultRotateAngleY + modelRenderer1.rotateAngleY;
-    	modelRenderer.rotateAngleZ = modelRenderer.defaultRotateAngleZ + modelRenderer1.rotateAngleZ;
+    	modelRenderer.rotateAngleX = modelRenderer.rotateAngleX + modelRenderer1.rotateAngleX;
+    	modelRenderer.rotateAngleY = modelRenderer.rotateAngleY + modelRenderer1.rotateAngleY;
+    	modelRenderer.rotateAngleZ = modelRenderer.rotateAngleZ + modelRenderer1.rotateAngleZ;
+
+        modelRenderer.rotationPointX = modelRenderer.rotationPointX + modelRenderer1.rotationPointX;
+        modelRenderer.rotationPointY = modelRenderer.rotationPointY + modelRenderer1.rotationPointY;
+        modelRenderer.rotationPointZ = modelRenderer.rotationPointZ + modelRenderer1.rotationPointZ;
     }
 }

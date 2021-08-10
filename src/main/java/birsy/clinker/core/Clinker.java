@@ -80,7 +80,6 @@ public class Clinker
 
     private void doClientStuff(final FMLClientSetupEvent event)
     {
-        ClientRegistry.bindTileEntityRenderer(ClinkerTileEntities.SOUL_WELL.get(), SoulWellRenderer::new);
         ClientRegistry.bindTileEntityRenderer(ClinkerTileEntities.HEATED_IRON_CAULDRON.get(), HeatedIronCauldronRenderer::new);
         ClientRegistry.bindTileEntityRenderer(ClinkerTileEntities.HEATER.get(), HeaterRenderer::new);
         ClientRegistry.bindTileEntityRenderer(ClinkerTileEntities.MITESOIL_DIFFUSER.get(), MitesoilDiffuserRenderer::new);
