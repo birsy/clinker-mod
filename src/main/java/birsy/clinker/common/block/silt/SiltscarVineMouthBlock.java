@@ -3,35 +3,44 @@ package birsy.clinker.common.block.silt;
 import birsy.clinker.common.tileentity.SiltscarTileEntity;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import net.minecraft.block.*;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.state.BooleanProperty;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.state.IntegerProperty;
-import net.minecraft.state.StateContainer;
+import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.JukeboxTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nullable;
 import java.util.Random;
 
-public class SiltscarVineMouthBlock extends AbstractTopPlantBlock implements ITileEntityProvider {
-    public static final VoxelShape SHAPE = Block.makeCuboidShape(4.0D, 0.0D, 4.0D, 12.0D, 16.0D, 12.0D);
+import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
+
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.GrowingPlantHeadBlock;
+import net.minecraft.world.level.block.NetherVines;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.state.BlockState;
+
+public class SiltscarVineMouthBlock extends GrowingPlantHeadBlock implements EntityBlock {
+    public static final VoxelShape SHAPE = Block.box(4.0D, 0.0D, 4.0D, 12.0D, 16.0D, 12.0D);
 
     public static final BooleanProperty MOUTH_CLOSED = BooleanProperty.create("mouth_closed");
     public static final BooleanProperty HOLDING_ITEM = BooleanProperty.create("holding_item");
@@ -40,113 +49,113 @@ public class SiltscarVineMouthBlock extends AbstractTopPlantBlock implements ITi
         super(properties, Direction.UP, SHAPE, true, 0.1D);
     }
 
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(HOLDING_ITEM).add(MOUTH_CLOSED);
     }
 
-    public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-        super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
-        CompoundNBT compoundnbt = stack.getOrCreateTag();
+    public void setPlacedBy(Level worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+        super.setPlacedBy(worldIn, pos, state, placer, stack);
+        CompoundTag compoundnbt = stack.getOrCreateTag();
         if (compoundnbt.contains("BlockEntityTag")) {
-            CompoundNBT compoundnbt1 = compoundnbt.getCompound("BlockEntityTag");
+            CompoundTag compoundnbt1 = compoundnbt.getCompound("BlockEntityTag");
             if (compoundnbt1.contains("HeldItem")) {
-                worldIn.setBlockState(pos, state.with(HOLDING_ITEM, Boolean.valueOf(true)), 2);
+                worldIn.setBlock(pos, state.setValue(HOLDING_ITEM, Boolean.valueOf(true)), 2);
             }
         }
     }
 
     @Override
-    public void onEntityCollision(BlockState state, World worldIn, BlockPos pos, Entity entityIn) {
-        super.onEntityCollision(state, worldIn, pos, entityIn);
+    public void entityInside(BlockState state, Level worldIn, BlockPos pos, Entity entityIn) {
+        super.entityInside(state, worldIn, pos, entityIn);
 
-        TileEntity tileentity = worldIn.getTileEntity(pos);
+        BlockEntity tileentity = worldIn.getBlockEntity(pos);
         if (tileentity instanceof SiltscarTileEntity && !isHoldingOn(state, worldIn, pos)) {
             chomp(state, worldIn, pos, entityIn);
         }
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
+    public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
         if (isHoldingOn(state, worldIn, pos)) {
             pullOpen(state, worldIn, pos);
         }
 
-        return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
+        return super.use(state, worldIn, pos, player, handIn, hit);
     }
 
-    public void chomp(BlockState state, World worldIn, BlockPos pos, Entity entityIn) {
-        TileEntity tileentity = worldIn.getTileEntity(pos);
+    public void chomp(BlockState state, Level worldIn, BlockPos pos, Entity entityIn) {
+        BlockEntity tileentity = worldIn.getBlockEntity(pos);
         if (tileentity instanceof SiltscarTileEntity) {
             if (((SiltscarTileEntity) tileentity).attackDelay <= 0) {
                 if (entityIn instanceof ItemEntity && !isHoldingOn(state, worldIn, pos)) {
                     ((SiltscarTileEntity) tileentity).setHeldItem(((ItemEntity) entityIn).getItem());
-                    worldIn.setBlockState(pos, state.with(MOUTH_CLOSED, true).with(HOLDING_ITEM, true));
+                    worldIn.setBlockAndUpdate(pos, state.setValue(MOUTH_CLOSED, true).setValue(HOLDING_ITEM, true));
                     entityIn.remove();
                 } else if (!isHoldingOn(state, worldIn, pos)) {
-                    worldIn.setBlockState(pos, state.with(MOUTH_CLOSED, true));
+                    worldIn.setBlockAndUpdate(pos, state.setValue(MOUTH_CLOSED, true));
                     if (entityIn != ((SiltscarTileEntity) tileentity).getHeldEntity()) {
                         ((SiltscarTileEntity) tileentity).setHeldEntity(entityIn);
-                        entityIn.attackEntityFrom(new DamageSource("chomped").setDifficultyScaled(), 1.0f);
+                        entityIn.hurt(new DamageSource("chomped").setScalesWithDifficulty(), 1.0f);
                     }
-                    entityIn.setMotion(entityIn.getMotion().mul(0.125, 0.125, 0.125));
+                    entityIn.setDeltaMovement(entityIn.getDeltaMovement().multiply(0.125, 0.125, 0.125));
                 }
             }
         }
     }
 
-    public void pullOpen(BlockState state, World worldIn, BlockPos pos) {
+    public void pullOpen(BlockState state, Level worldIn, BlockPos pos) {
         if (isHoldingOn(state, worldIn, pos)) {
-            TileEntity tileentity = worldIn.getTileEntity(pos);
+            BlockEntity tileentity = worldIn.getBlockEntity(pos);
             if (tileentity instanceof SiltscarTileEntity) {
                 ItemStack itemstack = ((SiltscarTileEntity) tileentity).getHeldItem();
 
                 ((SiltscarTileEntity) tileentity).open(true, true);
-                worldIn.setBlockState(pos, state.with(MOUTH_CLOSED, false).with(HOLDING_ITEM, false));
+                worldIn.setBlockAndUpdate(pos, state.setValue(MOUTH_CLOSED, false).setValue(HOLDING_ITEM, false));
 
-                double d0 = (double)(worldIn.rand.nextFloat() * 0.7F) + (double)0.15F;
-                double d1 = (double)(worldIn.rand.nextFloat() * 0.7F) + (double)0.060000002F + 0.6D;
-                double d2 = (double)(worldIn.rand.nextFloat() * 0.7F) + (double)0.15F;
+                double d0 = (double)(worldIn.random.nextFloat() * 0.7F) + (double)0.15F;
+                double d1 = (double)(worldIn.random.nextFloat() * 0.7F) + (double)0.060000002F + 0.6D;
+                double d2 = (double)(worldIn.random.nextFloat() * 0.7F) + (double)0.15F;
                 ItemStack itemstack1 = itemstack.copy();
                 ItemEntity itementity = new ItemEntity(worldIn, (double)pos.getX() + d0, (double)pos.getY() + d1, (double)pos.getZ() + d2, itemstack1);
-                itementity.setDefaultPickupDelay();
-                worldIn.addEntity(itementity);
+                itementity.setDefaultPickUpDelay();
+                worldIn.addFreshEntity(itementity);
             }
         }
     }
 
-    private boolean isHoldingOn(BlockState state, World worldIn, BlockPos pos) {
-        TileEntity tileentity = worldIn.getTileEntity(pos);
+    private boolean isHoldingOn(BlockState state, Level worldIn, BlockPos pos) {
+        BlockEntity tileentity = worldIn.getBlockEntity(pos);
         boolean flag = false;
         if (tileentity instanceof SiltscarTileEntity) {
             flag = ((SiltscarTileEntity) tileentity).getHeldEntity() == null && ((SiltscarTileEntity) tileentity).getHeldItem() == ItemStack.EMPTY;
         }
 
-        return state.get(MOUTH_CLOSED) || state.get(HOLDING_ITEM) || flag;
+        return state.getValue(MOUTH_CLOSED) || state.getValue(HOLDING_ITEM) || flag;
     }
 
     @Override
-    protected int getGrowthAmount(Random rand) {
-        return PlantBlockHelper.getGrowthAmount(rand);
+    protected int getBlocksToGrowWhenBonemealed(Random rand) {
+        return NetherVines.getBlocksToGrowWhenBonemealed(rand);
     }
 
     @Override
-    protected boolean canGrowIn(BlockState state) {
-        return PlantBlockHelper.isAir(state);
+    protected boolean canGrowInto(BlockState state) {
+        return NetherVines.isValidGrowthState(state);
     }
 
     @Override
-    protected Block getBodyPlantBlock() {
+    protected Block getBodyBlock() {
         //return ClinkerBlocks.SILTSCAR_VINE.get();
         return null;
     }
 
     @Nullable
     @Override
-    public TileEntity createNewTileEntity(IBlockReader worldIn) {
+    public BlockEntity newBlockEntity(BlockGetter worldIn) {
         return new SiltscarTileEntity();
     }
     @Override
-    public BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.ENTITYBLOCK_ANIMATED;
+    public RenderShape getRenderShape(BlockState state) {
+        return RenderShape.ENTITYBLOCK_ANIMATED;
     }
 }

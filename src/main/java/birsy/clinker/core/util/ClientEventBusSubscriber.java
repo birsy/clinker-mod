@@ -5,7 +5,7 @@ import birsy.clinker.common.entity.monster.ShoggothBodyEntity;
 import birsy.clinker.common.item.ClinkerSpawnEggItem;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerEntities;
-import net.minecraft.entity.EntityType;
+import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;

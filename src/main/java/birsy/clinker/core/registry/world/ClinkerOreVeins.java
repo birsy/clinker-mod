@@ -3,7 +3,7 @@ package birsy.clinker.core.registry.world;
 import birsy.clinker.common.world.gen.carver.OreVein;
 import birsy.clinker.common.world.gen.carver.OreVeinConfig;
 import birsy.clinker.core.Clinker;
-import net.minecraft.world.gen.carver.WorldCarver;
+import net.minecraft.world.level.levelgen.carver.WorldCarver;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;

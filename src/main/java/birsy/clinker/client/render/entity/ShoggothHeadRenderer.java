@@ -3,23 +3,25 @@ package birsy.clinker.client.render.entity;
 import birsy.clinker.client.render.entity.model.LesserShoggothHeadModel;
 import birsy.clinker.common.entity.monster.ShoggothHeadEntity;
 import birsy.clinker.core.Clinker;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.renderer.entity.EntityRendererManager;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+
+import ResourceLocation;
 
 public class ShoggothHeadRenderer extends MobRenderer<ShoggothHeadEntity, LesserShoggothHeadModel<ShoggothHeadEntity>>
 {
 	protected static final ResourceLocation TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/entity/shoggoth.png");
 	
-	public ShoggothHeadRenderer(EntityRendererManager renderManagerIn) {
+	public ShoggothHeadRenderer(EntityRenderDispatcher renderManagerIn) {
 		super(renderManagerIn, new LesserShoggothHeadModel<>(), 0.7F);
 	}
 
 	@Override
-	protected void preRenderCallback(ShoggothHeadEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
-		float wiggle = 1 + (MathHelper.sin(entitylivingbaseIn.ticksExisted + partialTickTime) * 0.05F);
+	protected void scale(ShoggothHeadEntity entitylivingbaseIn, PoseStack matrixStackIn, float partialTickTime) {
+		float wiggle = 1 + (Mth.sin(entitylivingbaseIn.tickCount + partialTickTime) * 0.05F);
 		//matrixStackIn.scale(wiggle, wiggle * 1.02F, wiggle);
 
 		/**
@@ -35,7 +37,7 @@ public class ShoggothHeadRenderer extends MobRenderer<ShoggothHeadEntity, Lesser
 	}
 
 	@Override
-	public ResourceLocation getEntityTexture(ShoggothHeadEntity entity)
+	public ResourceLocation getTextureLocation(ShoggothHeadEntity entity)
 	{
      		return TEXTURE;
 	}

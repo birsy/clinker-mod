@@ -3,9 +3,9 @@ package birsy.clinker.core.registry;
 import birsy.clinker.client.particles.FlyingAshParticle;
 import birsy.clinker.core.Clinker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.ParticleManager;
-import net.minecraft.particles.BasicParticleType;
-import net.minecraft.particles.ParticleType;
+import net.minecraft.client.particle.ParticleEngine;
+import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.core.particles.ParticleType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
@@ -24,14 +24,14 @@ public class ClinkerParticles
 		PARTICLE_TYPES.register(FMLJavaModLoadingContext.get().getModEventBus());
 	}
 	
-	public static final RegistryObject<BasicParticleType> FLYING_ASH = PARTICLE_TYPES.register("flying_ash", () -> new BasicParticleType(false));
+	public static final RegistryObject<SimpleParticleType> FLYING_ASH = PARTICLE_TYPES.register("flying_ash", () -> new SimpleParticleType(false));
 	
 	@SubscribeEvent
 	@OnlyIn(Dist.CLIENT)
     public static void registerParticleFactories(ParticleFactoryRegisterEvent event) {
-        ParticleManager particleManager = Minecraft.getInstance().particles;
+        ParticleEngine particleManager = Minecraft.getInstance().particleEngine;
 
-        particleManager.registerFactory(ClinkerParticles.FLYING_ASH.get(), FlyingAshParticle.Factory::new);
+        particleManager.register(ClinkerParticles.FLYING_ASH.get(), FlyingAshParticle.Factory::new);
     }
 }
 

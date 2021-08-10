@@ -1,11 +1,11 @@
 package birsy.clinker.common.tileentity;
 
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 
-public class GemstoneTileEntity extends TileEntity
+public class GemstoneTileEntity extends BlockEntity
 {
-	public GemstoneTileEntity(final TileEntityType<?> tileEntityTypeIn) {
+	public GemstoneTileEntity(final BlockEntityType<?> tileEntityTypeIn) {
 		super(tileEntityTypeIn);
 	}
 }

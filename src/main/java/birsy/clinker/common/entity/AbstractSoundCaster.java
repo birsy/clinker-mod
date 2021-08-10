@@ -4,14 +4,14 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.IPacket;
-import net.minecraft.network.play.server.SSpawnObjectPacket;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 
 public abstract class AbstractSoundCaster extends Entity {
 	private int age;
@@ -22,35 +22,35 @@ public abstract class AbstractSoundCaster extends Entity {
 	public UUID caster;
 	public int casterID;
 	
-	public AbstractSoundCaster(EntityType<? extends AbstractSoundCaster> entityTypeIn, World worldIn) {
+	public AbstractSoundCaster(EntityType<? extends AbstractSoundCaster> entityTypeIn, Level worldIn) {
 		super(entityTypeIn, worldIn);
 	}
 	
-	public AbstractSoundCaster(EntityType<? extends AbstractSoundCaster> type, double x, double y, double z, World worldIn) {
+	public AbstractSoundCaster(EntityType<? extends AbstractSoundCaster> type, double x, double y, double z, Level worldIn) {
 		super(type, worldIn);
-		this.setPosition(x, y, z);
+		this.setPos(x, y, z);
 	}
 
-	public AbstractSoundCaster(EntityType<? extends AbstractSoundCaster> type, LivingEntity livingEntityIn, World worldIn) {
-		this(type, livingEntityIn.getPosX(), livingEntityIn.getPosYEye() - (double)0.1F, livingEntityIn.getPosZ(), worldIn);
+	public AbstractSoundCaster(EntityType<? extends AbstractSoundCaster> type, LivingEntity livingEntityIn, Level worldIn) {
+		this(type, livingEntityIn.getX(), livingEntityIn.getEyeY() - (double)0.1F, livingEntityIn.getZ(), worldIn);
 		this.setCaster(livingEntityIn);
 	}
 	
-	public void writeAdditional(CompoundNBT compound) {
+	public void addAdditionalSaveData(CompoundTag compound) {
 		compound.putShort("Age", (short)this.age);
 		compound.putInt("Lifespan", lifespan);
 		compound.putInt("Range", range);
 		if (this.getCasterId() != null) {
-			compound.putUniqueId("caster", this.getCasterId());
+			compound.putUUID("caster", this.getCasterId());
 		}
 	}
 
-	public void readAdditional(CompoundNBT compound) {
+	public void readAdditionalSaveData(CompoundTag compound) {
 		this.age = compound.getShort("Age");
 		if (compound.contains("Lifespan")) lifespan = compound.getInt("Lifespan");
 		if (compound.contains("Range")) range = compound.getInt("Range");
-		if (compound.hasUniqueId("Caster")) {
-			this.caster = compound.getUniqueId("Caster");
+		if (compound.hasUUID("Caster")) {
+			this.caster = compound.getUUID("Caster");
 		}
 	}
 	
@@ -68,25 +68,25 @@ public abstract class AbstractSoundCaster extends Entity {
 	
 	@Nullable
 	public Entity getCaster() {
-		if (this.caster != null && this.world instanceof ServerWorld) {
-			return ((ServerWorld)this.world).getEntityByUuid(this.caster);
+		if (this.caster != null && this.level instanceof ServerLevel) {
+			return ((ServerLevel)this.level).getEntity(this.caster);
 		} else {
-			return this.casterID != 0 ? this.world.getEntityByID(this.casterID) : null;
+			return this.casterID != 0 ? this.level.getEntity(this.casterID) : null;
 		}
 	}
 	
 	public void setCaster(@Nullable Entity entityIn) {
 		if (entityIn != null) {
-			this.caster = entityIn.getUniqueID();
-			this.casterID = entityIn.getEntityId();
+			this.caster = entityIn.getUUID();
+			this.casterID = entityIn.getId();
 		}
 	}
 	
 	@Override
-	protected void registerData(){}
+	protected void defineSynchedData(){}
 	
 	@Override
-	public IPacket<?> createSpawnPacket() {
-		return new SSpawnObjectPacket(this);
+	public Packet<?> getAddEntityPacket() {
+		return new ClientboundAddEntityPacket(this);
 	}
 }

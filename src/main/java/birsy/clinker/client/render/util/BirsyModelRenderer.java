@@ -1,11 +1,11 @@
 package birsy.clinker.client.render.util;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.renderer.model.Model;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.util.math.vector.Vector3d;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.model.Model;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.world.phys.Vec3;
 
-public class BirsyModelRenderer extends ModelRenderer
+public class BirsyModelRenderer extends ModelPart
 {
 	BirsyModelRenderer parent = null;
 
@@ -25,8 +25,8 @@ public class BirsyModelRenderer extends ModelRenderer
 	public float scaleY;
 	public float scaleZ;
 
-	public Vector3d defaultModelRendererPosition = new Vector3d(this.defaultRotationPointX, this.defaultRotationPointY, this.defaultRotationPointZ);
-	public Vector3d modelRendererPosition = new Vector3d(this.rotationPointX, this.rotationPointY, this.rotationPointZ);
+	public Vec3 defaultModelRendererPosition = new Vec3(this.defaultRotationPointX, this.defaultRotationPointY, this.defaultRotationPointZ);
+	public Vec3 modelRendererPosition = new Vec3(this.x, this.y, this.z);
 	
 	public BirsyModelRenderer(Model model, int texOffX, int texOffY) {
 		super(model, texOffX, texOffY);
@@ -41,20 +41,20 @@ public class BirsyModelRenderer extends ModelRenderer
 	}
 
 	@Override
-	public void translateRotate(MatrixStack matrixStackIn) {
+	public void translateAndRotate(PoseStack matrixStackIn) {
 		matrixStackIn.scale(scaleX, scaleY, scaleZ);
-		super.translateRotate(matrixStackIn);
+		super.translateAndRotate(matrixStackIn);
 	}
 
 	@Override
-	public void setRotationPoint(float rotationPointXIn, float rotationPointYIn, float rotationPointZIn) {
-		this.rotationPointX = rotationPointXIn;
-		this.rotationPointY = rotationPointYIn;
-		this.rotationPointZ = rotationPointZIn;
+	public void setPos(float rotationPointXIn, float rotationPointYIn, float rotationPointZIn) {
+		this.x = rotationPointXIn;
+		this.y = rotationPointYIn;
+		this.z = rotationPointZIn;
 		
-		this.defaultRotationPointX = this.rotationPointX;
-        this.defaultRotationPointY = this.rotationPointY;
-        this.defaultRotationPointZ = this.rotationPointZ;
+		this.defaultRotationPointX = this.x;
+        this.defaultRotationPointY = this.y;
+        this.defaultRotationPointZ = this.z;
 	}
 
 	public void setScale(float scaleXIn, float scaleYIn, float scaleZIn) {
@@ -68,19 +68,19 @@ public class BirsyModelRenderer extends ModelRenderer
 	}
 	
 	public void copyModelAngles(BirsyModelRenderer modelRendererIn) {
-		this.rotateAngleX = modelRendererIn.rotateAngleX;
-		this.rotateAngleY = modelRendererIn.rotateAngleY;
-		this.rotateAngleZ = modelRendererIn.rotateAngleZ;
-		this.defaultRotateAngleX = modelRendererIn.rotateAngleX;
-		this.defaultRotateAngleY = modelRendererIn.rotateAngleY;
-		this.defaultRotateAngleZ = modelRendererIn.rotateAngleZ;
+		this.xRot = modelRendererIn.xRot;
+		this.yRot = modelRendererIn.yRot;
+		this.zRot = modelRendererIn.zRot;
+		this.defaultRotateAngleX = modelRendererIn.xRot;
+		this.defaultRotateAngleY = modelRendererIn.yRot;
+		this.defaultRotateAngleZ = modelRendererIn.zRot;
 
-		this.rotationPointX = modelRendererIn.rotationPointX;
-		this.rotationPointY = modelRendererIn.rotationPointY;
-		this.rotationPointZ = modelRendererIn.rotationPointZ;
-	  	this.defaultRotationPointX = modelRendererIn.rotationPointX;
-	  	this.defaultRotationPointY = modelRendererIn.rotationPointY;
-	  	this.defaultRotationPointZ = modelRendererIn.rotationPointZ;
+		this.x = modelRendererIn.x;
+		this.y = modelRendererIn.y;
+		this.z = modelRendererIn.z;
+	  	this.defaultRotationPointX = modelRendererIn.x;
+	  	this.defaultRotationPointY = modelRendererIn.y;
+	  	this.defaultRotationPointZ = modelRendererIn.z;
 
 		this.scaleX = modelRendererIn.scaleX;
 		this.scaleY = modelRendererIn.scaleY;
@@ -104,11 +104,11 @@ public class BirsyModelRenderer extends ModelRenderer
 	}
 
 	//Thanks to BobMowzie for this clever bit of code.
-	public void matrixStackFromModel(MatrixStack matrixStack) {
+	public void matrixStackFromModel(PoseStack matrixStack) {
 		BirsyModelRenderer parent = this.getParent();
 		if (parent != null) {
 			parent.matrixStackFromModel(matrixStack);
 		}
-		this.translateRotate(matrixStack);
+		this.translateAndRotate(matrixStack);
 	}
 }	

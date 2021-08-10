@@ -4,68 +4,68 @@ import java.util.Random;
 
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.world.ClinkerDimensions;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.SnowBlock;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SnowLayerBlock;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.lighting.LightEngine;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.lighting.LayerLightEngine;
+import net.minecraft.server.level.ServerLevel;
 
 public abstract class SpreadableAshBlock extends Block {
 	Block grassBase;
 	
-	protected SpreadableAshBlock(AbstractBlock.Properties builder, Block blockStateIn)
+	protected SpreadableAshBlock(BlockBehaviour.Properties builder, Block blockStateIn)
 	{
 		super(builder);
 		grassBase = blockStateIn;
 	}
 	
-	private static boolean isBlockCovered(BlockState blockStateIn, IWorldReader worldIn, BlockPos blockPosIn) {
-		BlockPos blockpos = blockPosIn.up();
+	private static boolean isBlockCovered(BlockState blockStateIn, LevelReader worldIn, BlockPos blockPosIn) {
+		BlockPos blockpos = blockPosIn.above();
 		BlockState blockstate = worldIn.getBlockState(blockpos);
-		if (blockstate.matchesBlock(Blocks.SNOW) && blockstate.get(SnowBlock.LAYERS) == 1) {
+		if (blockstate.is(Blocks.SNOW) && blockstate.getValue(SnowLayerBlock.LAYERS) == 1) {
 			return true;
-		} else if (blockstate.getFluidState().getLevel() == 8) {
+		} else if (blockstate.getFluidState().getAmount() == 8) {
 			return false;
 		} else {
-			int i = LightEngine.func_215613_a(worldIn, blockStateIn, blockPosIn, blockstate, blockpos, Direction.UP, blockstate.getOpacity(worldIn, blockpos));
+			int i = LayerLightEngine.getLightBlockInto(worldIn, blockStateIn, blockPosIn, blockstate, blockpos, Direction.UP, blockstate.getLightBlock(worldIn, blockpos));
 			return i < worldIn.getMaxLightLevel();
 		}
 	}
 
-	private static boolean isBlockDrowned(BlockState blockStateIn, IWorldReader worldIn, BlockPos blockPosIn) {
-		BlockPos blockpos = blockPosIn.up();
-		return isBlockCovered(blockStateIn, worldIn, blockPosIn) && !worldIn.getFluidState(blockpos).isTagged(FluidTags.WATER);
+	private static boolean isBlockDrowned(BlockState blockStateIn, LevelReader worldIn, BlockPos blockPosIn) {
+		BlockPos blockpos = blockPosIn.above();
+		return isBlockCovered(blockStateIn, worldIn, blockPosIn) && !worldIn.getFluidState(blockpos).is(FluidTags.WATER);
 	}
 
 	/**
 	 * Performs a random tick on a block.
 	 */
-	public void randomTick(BlockState state, ServerWorld worldIn, BlockPos pos, Random random) {
-		if (!(worldIn.getBlockState(pos.up()).getBlock() == ClinkerBlocks.ROOTSTALK.get())) {
-			if (worldIn.getDimensionKey() == ClinkerDimensions.OTHERSHORE && worldIn.canSeeSky(pos)) {
+	public void randomTick(BlockState state, ServerLevel worldIn, BlockPos pos, Random random) {
+		if (!(worldIn.getBlockState(pos.above()).getBlock() == ClinkerBlocks.ROOTSTALK.get())) {
+			if (worldIn.dimension() == ClinkerDimensions.OTHERSHORE && worldIn.canSeeSky(pos)) {
 				if (random.nextInt(5) == 1) {
-					worldIn.setBlockState(pos, grassBase.getDefaultState());
+					worldIn.setBlockAndUpdate(pos, grassBase.defaultBlockState());
 				}
 			}
 			if (!isBlockCovered(state, worldIn, pos)) {
 				if (!worldIn.isAreaLoaded(pos, 3))
 					return; // Forge: prevent loading unloaded chunks when checking neighbor's light and spreading
-				worldIn.setBlockState(pos, grassBase.getDefaultState());
+				worldIn.setBlockAndUpdate(pos, grassBase.defaultBlockState());
 			} else if (!isDarkEnough(state, worldIn, pos)) {
-				worldIn.setBlockState(pos, grassBase.getDefaultState());
+				worldIn.setBlockAndUpdate(pos, grassBase.defaultBlockState());
 			} else {
-				if (worldIn.getLight(pos.up()) >= 9) {
-					BlockState blockstate = this.getDefaultState();
+				if (worldIn.getMaxLocalRawBrightness(pos.above()) >= 9) {
+					BlockState blockstate = this.defaultBlockState();
 					for (int i = 0; i < 4; ++i) {
-						BlockPos blockpos = pos.add(random.nextInt(3) - 1, random.nextInt(5) - 3, random.nextInt(3) - 1);
-						if (worldIn.getBlockState(blockpos).matchesBlock(grassBase) && isBlockDrowned(blockstate, worldIn, blockpos)) {
-							worldIn.setBlockState(blockpos, blockstate);
+						BlockPos blockpos = pos.offset(random.nextInt(3) - 1, random.nextInt(5) - 3, random.nextInt(3) - 1);
+						if (worldIn.getBlockState(blockpos).is(grassBase) && isBlockDrowned(blockstate, worldIn, blockpos)) {
+							worldIn.setBlockAndUpdate(blockpos, blockstate);
 						}
 					}
 				}
@@ -73,10 +73,10 @@ public abstract class SpreadableAshBlock extends Block {
 		}
 	}
 	
-	private static boolean isDarkEnough(BlockState state, IWorldReader reader, BlockPos pos) {
-		BlockPos blockpos = pos.up();
+	private static boolean isDarkEnough(BlockState state, LevelReader reader, BlockPos pos) {
+		BlockPos blockpos = pos.above();
 		BlockState blockstate = reader.getBlockState(blockpos);
-		int i = LightEngine.func_215613_a(reader, state, pos, blockstate, blockpos, Direction.UP, blockstate.getOpacity(reader, blockpos));
+		int i = LayerLightEngine.getLightBlockInto(reader, state, pos, blockstate, blockpos, Direction.UP, blockstate.getLightBlock(reader, blockpos));
 		return i < reader.getMaxLightLevel();
 	}
 }

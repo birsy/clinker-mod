@@ -3,46 +3,29 @@ package birsy.clinker.common.world.gen.surfacebuilder;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.util.MathUtils;
 import com.ibm.icu.impl.Pair;
-import com.mojang.serialization.Codec;
-import de.articdive.jnoise.JNoise;
-import de.articdive.jnoise.distance_functions.DistanceFunctionType;
-import de.articdive.jnoise.interpolation.InterpolationType;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.SlabBlock;
-import net.minecraft.util.Direction;
-import net.minecraft.util.SharedSeedRandom;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.chunk.IChunk;
-import net.minecraft.world.gen.PerlinNoiseGenerator;
-import net.minecraft.world.gen.surfacebuilders.NetherForestsSurfaceBuilder;
-import net.minecraft.world.gen.surfacebuilders.SurfaceBuilderConfig;
 
-import java.util.ArrayList;
+
 import java.util.Random;
 import java.util.stream.IntStream;
 
-public class TerracedTerrainSurfaceBuilder extends NetherForestsSurfaceBuilder {
+public class TerracedTerrainSurfaceBuilder extends NetherForestSurfaceBuilder {
     protected long seed;
 
-    private JNoise noise;
+    private PerlinSimplexNoise terrainNoiseGenerator;
+    private PerlinSimplexNoise terraceNoiseGenerator;
+    private PerlinSimplexNoise erosionNoiseGenerator;
 
-    private PerlinNoiseGenerator terrainNoiseGenerator;
-    private PerlinNoiseGenerator terraceNoiseGenerator;
-    private PerlinNoiseGenerator erosionNoiseGenerator;
-
-    public TerracedTerrainSurfaceBuilder(Codec<SurfaceBuilderConfig> codec) {
+    public TerracedTerrainSurfaceBuilder(Codec<SurfaceBuilderBaseConfiguration> codec) {
         super(codec);
     }
 
     @Override
-    public void buildSurface(Random random, IChunk chunkIn, Biome biomeIn, int x, int z, int startHeight, double noise, BlockState defaultBlock, BlockState defaultFluid, int seaLevel, long seed, SurfaceBuilderConfig config) {
-        double baseNoise = (terrainNoiseGenerator.noiseAt(x * 0.06f, z * 0.06f, false) + 1) * 0.5;
-        double terraceNoise = MathUtils.mapRange(-1, 1, 0.07F, 0.6F, (float) terraceNoiseGenerator.noiseAt(x * 0.00625f, z * 0.00625f, false));
-        double erosionNoise = MathUtils.mapRange(-1, 1, 0.05F, 0.5F, (float) erosionNoiseGenerator.noiseAt(x * 0.05f, z * 0.05f, false));
+    public void apply(Random random, ChunkAccess chunkIn, Biome biomeIn, int x, int z, int startHeight, double noise, BlockState defaultBlock, BlockState defaultFluid, int seaLevel, long seed, SurfaceBuilderBaseConfiguration config) {
+        double baseNoise = (terrainNoiseGenerator.getValue(x * 0.06f, z * 0.06f, false) + 1) * 0.5;
+        double terraceNoise = MathUtils.mapRange(-1, 1, 0.07F, 0.6F, (float) terraceNoiseGenerator.getValue(x * 0.00625f, z * 0.00625f, false));
+        double erosionNoise = MathUtils.mapRange(-1, 1, 0.05F, 0.5F, (float) erosionNoiseGenerator.getValue(x * 0.05f, z * 0.05f, false));
 
         double shorelineNoise = MathUtils.mapRange(0.05F, 0.5F, 0, 1, (float) erosionNoise);
 
@@ -56,16 +39,16 @@ public class TerracedTerrainSurfaceBuilder extends NetherForestsSurfaceBuilder {
             terrainHeight = ((terrainHeight - (seaLevel - 1)) * (1 / oceanFloorFlatness)) + (seaLevel - 1);
         }
 
-        BlockPos.Mutable pos = new BlockPos.Mutable(x, 0, z);
+        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(x, 0, z);
         for (int y = 0; y < 256; y++) {
-            pos.setPos(x, y, z);
+            pos.set(x, y, z);
             if (y < terrainHeight) {
                 chunkIn.setBlockState(pos, defaultBlock, false);
             } else {
                 if (y < seaLevel) {
                     chunkIn.setBlockState(pos, defaultFluid, false);
                 } else {
-                    chunkIn.setBlockState(pos, Blocks.AIR.getDefaultState(), false);
+                    chunkIn.setBlockState(pos, Blocks.AIR.defaultBlockState(), false);
                 }
             }
         }
@@ -74,20 +57,20 @@ public class TerracedTerrainSurfaceBuilder extends NetherForestsSurfaceBuilder {
 
         if (terrainHeight > shorelineHeight) {
             if (isTerrace) {
-                super.buildSurface(random, chunkIn, biomeIn, x, z, startHeight, noise, defaultBlock, defaultFluid, seaLevel, seed, config);
+                super.apply(random, chunkIn, biomeIn, x, z, startHeight, noise, defaultBlock, defaultFluid, seaLevel, seed, config);
             } else {
-                super.buildSurface(random, chunkIn, biomeIn, x, z, startHeight, noise, defaultBlock, defaultFluid, seaLevel, seed, new SurfaceBuilderConfig(defaultBlock, defaultBlock, ClinkerBlocks.SHALE.get().getDefaultState()));
+                super.apply(random, chunkIn, biomeIn, x, z, startHeight, noise, defaultBlock, defaultFluid, seaLevel, seed, new SurfaceBuilderBaseConfiguration(defaultBlock, defaultBlock, ClinkerBlocks.SHALE.get().defaultBlockState()));
             }
         } else {
-            super.buildSurface(random, chunkIn, biomeIn, x, z, startHeight, noise, defaultBlock, defaultFluid, seaLevel, seed, new SurfaceBuilderConfig(ClinkerBlocks.SALT_BLOCK.get().getDefaultState(),
-                    ClinkerBlocks.SCORSTONE.get().getDefaultState(),
-                    ClinkerBlocks.SALT_BLOCK.get().getDefaultState()));
+            super.apply(random, chunkIn, biomeIn, x, z, startHeight, noise, defaultBlock, defaultFluid, seaLevel, seed, new SurfaceBuilderBaseConfiguration(ClinkerBlocks.SALT_BLOCK.get().defaultBlockState(),
+                    ClinkerBlocks.SCORSTONE.get().defaultBlockState(),
+                    ClinkerBlocks.SALT_BLOCK.get().defaultBlockState()));
         }
     }
 
-    private boolean isOnEdge (IChunk world, BlockPos pos) {
+    private boolean isOnEdge (ChunkAccess world, BlockPos pos) {
         for (Direction direction : Direction.Plane.HORIZONTAL) {
-            if (!world.getBlockState(pos.offset(direction)).isSolid() && !world.getBlockState(pos.offset(direction)).matchesBlock(Blocks.WATER)) {
+            if (!world.getBlockState(pos.relative(direction)).canOcclude() && !world.getBlockState(pos.relative(direction)).is(Blocks.WATER)) {
                 return true;
             }
         }
@@ -95,17 +78,15 @@ public class TerracedTerrainSurfaceBuilder extends NetherForestsSurfaceBuilder {
     }
 
     @Override
-    public void setSeed(long seed) {
-        if (this.seed != seed || this.terrainNoiseGenerator == null || this.terraceNoiseGenerator == null || this.erosionNoiseGenerator == null || this.noise == null) {
+    public void initNoise(long seed) {
+        if (this.seed != seed || this.terrainNoiseGenerator == null || this.terraceNoiseGenerator == null || this.erosionNoiseGenerator == null) {
             this.seed = seed;
-            SharedSeedRandom sharedseedrandom = new SharedSeedRandom(seed);
+            WorldgenRandom sharedseedrandom = new WorldgenRandom(seed);
 
-            this.terrainNoiseGenerator = new PerlinNoiseGenerator(sharedseedrandom, IntStream.rangeClosed(-4, 0));
-            this.terraceNoiseGenerator = new PerlinNoiseGenerator(sharedseedrandom, IntStream.rangeClosed(-3, 0));
-            this.erosionNoiseGenerator = new PerlinNoiseGenerator(sharedseedrandom, IntStream.rangeClosed(-3, 0));
-
-            this.noise = JNoise.newBuilder().octavated().setNoise(JNoise.newBuilder().fastSimplex().setSeed(seed).build()).setOctaves(4).setPersistence(0.5).build();
+            this.terrainNoiseGenerator = new PerlinSimplexNoise(sharedseedrandom, IntStream.rangeClosed(-4, 0));
+            this.terraceNoiseGenerator = new PerlinSimplexNoise(sharedseedrandom, IntStream.rangeClosed(-3, 0));
+            this.erosionNoiseGenerator = new PerlinSimplexNoise(sharedseedrandom, IntStream.rangeClosed(-3, 0));
         }
-        super.setSeed(seed);
+        super.initNoise(seed);
     }
 }

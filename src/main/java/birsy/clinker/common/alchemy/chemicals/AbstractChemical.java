@@ -1,23 +1,25 @@
 package birsy.clinker.common.alchemy.chemicals;
 
-import net.minecraft.potion.Effect;
+import net.minecraft.world.effect.MobEffect;
+
+import MobEffect;
 
 public abstract class AbstractChemical {
-    public Effect getEffect() {
+    public MobEffect getEffect() {
         return null;
     }
 
     /**
      * @return The effect that the element gives to potions.
      */
-    public Effect getDrinkEffect() {
+    public MobEffect getDrinkEffect() {
         return this.getEffect();
     }
 
     /**
      * @return The effect that the element gives when contacted, via walking on or swam in.
      */
-    public Effect getContactEffect() {
+    public MobEffect getContactEffect() {
         return this.getEffect();
     }
 }

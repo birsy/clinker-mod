@@ -3,19 +3,19 @@ package birsy.clinker.common.tileentity;
 import birsy.clinker.common.block.silt.SiltscarVineMouthBlock;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.ClinkerTileEntities;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.TickableBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-public class SiltscarTileEntity extends TileEntity implements ITickableTileEntity {
+public class SiltscarTileEntity extends BlockEntity implements TickableBlockEntity {
     private float prevMouthAngle;
     private float mouthAngle;
 
@@ -34,19 +34,19 @@ public class SiltscarTileEntity extends TileEntity implements ITickableTileEntit
     public void tick() {
         prevMouthAngle = mouthAngle;
 
-        BlockState blockState = this.getWorld().getBlockState(this.pos);
+        BlockState blockState = this.getLevel().getBlockState(this.worldPosition);
         if (blockState.getBlock() == null) { //ClinkerBlocks.SILTSCAR_VINE_MOUTH.get()) { {
             float mouthClosingSpeed = 2;
-            if (blockState.get(SiltscarVineMouthBlock.MOUTH_CLOSED) && mouthAngle < 90) {
+            if (blockState.getValue(SiltscarVineMouthBlock.MOUTH_CLOSED) && mouthAngle < 90) {
                 mouthAngle =+ mouthClosingSpeed;
-            } else if (blockState.get(SiltscarVineMouthBlock.MOUTH_CLOSED) && mouthAngle > 90) {
+            } else if (blockState.getValue(SiltscarVineMouthBlock.MOUTH_CLOSED) && mouthAngle > 90) {
                 mouthAngle =- mouthClosingSpeed;
             }
 
-            if (this.getHeldEntity().getPosition() != this.getPos()) {
+            if (this.getHeldEntity().blockPosition() != this.getBlockPos()) {
                 this.setHeldEntity(null);
             } else {
-                this.getHeldEntity().attackEntityFrom(new DamageSource("chomped").setDifficultyScaled(), 1.0f);
+                this.getHeldEntity().hurt(new DamageSource("chomped").setScalesWithDifficulty(), 1.0f);
                 this.heldEntityTicks++;
             }
 
@@ -54,30 +54,30 @@ public class SiltscarTileEntity extends TileEntity implements ITickableTileEntit
                 ItemStack itemstack = this.getHeldItem();
 
                 this.open(true, true);
-                this.getWorld().setBlockState(pos, blockState.with(SiltscarVineMouthBlock.MOUTH_CLOSED, false).with(SiltscarVineMouthBlock.HOLDING_ITEM, false));
+                this.getLevel().setBlockAndUpdate(worldPosition, blockState.setValue(SiltscarVineMouthBlock.MOUTH_CLOSED, false).setValue(SiltscarVineMouthBlock.HOLDING_ITEM, false));
 
-                double d0 = (double) (this.getWorld().rand.nextFloat() * 0.7F) + (double) 0.15F;
-                double d1 = (double) (this.getWorld().rand.nextFloat() * 0.7F) + (double) 0.060000002F + 0.6D;
-                double d2 = (double) (this.getWorld().rand.nextFloat() * 0.7F) + (double) 0.15F;
+                double d0 = (double) (this.getLevel().random.nextFloat() * 0.7F) + (double) 0.15F;
+                double d1 = (double) (this.getLevel().random.nextFloat() * 0.7F) + (double) 0.060000002F + 0.6D;
+                double d2 = (double) (this.getLevel().random.nextFloat() * 0.7F) + (double) 0.15F;
                 ItemStack itemstack1 = itemstack.copy();
-                ItemEntity itementity = new ItemEntity(this.getWorld(), (double) pos.getX() + d0, (double) pos.getY() + d1, (double) pos.getZ() + d2, itemstack1);
-                itementity.setDefaultPickupDelay();
-                this.getWorld().addEntity(itementity);
+                ItemEntity itementity = new ItemEntity(this.getLevel(), (double) worldPosition.getX() + d0, (double) worldPosition.getY() + d1, (double) worldPosition.getZ() + d2, itemstack1);
+                itementity.setDefaultPickUpDelay();
+                this.getLevel().addFreshEntity(itementity);
             }
         }
     }
 
-    public void read(BlockState state, CompoundNBT nbt) {
-        super.read(state, nbt);
+    public void load(BlockState state, CompoundTag nbt) {
+        super.load(state, nbt);
         if (nbt.contains("Item", 10)) {
-            this.setHeldItem(ItemStack.read(nbt.getCompound("Item")));
+            this.setHeldItem(ItemStack.of(nbt.getCompound("Item")));
         }
     }
 
-    public CompoundNBT write(CompoundNBT compound) {
-        super.write(compound);
+    public CompoundTag save(CompoundTag compound) {
+        super.save(compound);
         if (!this.getHeldItem().isEmpty()) {
-            compound.put("HeldItem", this.getHeldItem().write(new CompoundNBT()));
+            compound.put("HeldItem", this.getHeldItem().save(new CompoundTag()));
         }
         return compound;
     }
@@ -88,7 +88,7 @@ public class SiltscarTileEntity extends TileEntity implements ITickableTileEntit
 
     public void setHeldItem(ItemStack item) {
         this.heldItem = item;
-        this.markDirty();
+        this.setChanged();
     }
 
 
@@ -98,7 +98,7 @@ public class SiltscarTileEntity extends TileEntity implements ITickableTileEntit
 
     public void setHeldEntity(Entity entity) {
         this.heldEntity = entity;
-        this.markDirty();
+        this.setChanged();
     }
 
     public void open(boolean item, boolean entity) {
@@ -117,6 +117,6 @@ public class SiltscarTileEntity extends TileEntity implements ITickableTileEntit
 
     @OnlyIn(Dist.CLIENT)
     public float getMouthAngle(float partialTick) {
-        return MathHelper.lerp(partialTick, prevMouthAngle, mouthAngle);
+        return Mth.lerp(partialTick, prevMouthAngle, mouthAngle);
     }
 }

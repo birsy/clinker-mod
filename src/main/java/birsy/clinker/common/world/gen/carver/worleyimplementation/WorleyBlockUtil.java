@@ -1,9 +1,11 @@
 package birsy.clinker.common.world.gen.carver.worleyimplementation;
 
 import birsy.clinker.core.Clinker;
-import net.minecraft.block.BlockState;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
+
+import BlockState;
 
 public class WorleyBlockUtil
 {
@@ -12,7 +14,7 @@ public class WorleyBlockUtil
     {
         BlockState blocky;
 
-        blocky = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(block)).getDefaultState();
+        blocky = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(block)).defaultBlockState();
 
         if(blocky == null)
         {

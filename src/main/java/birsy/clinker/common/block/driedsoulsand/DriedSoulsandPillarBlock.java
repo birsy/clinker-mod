@@ -1,31 +1,31 @@
 package birsy.clinker.common.block.driedsoulsand;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.RotatedPillarBlock;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RotatedPillarBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ToolType;
 
 public class DriedSoulsandPillarBlock extends RotatedPillarBlock
 {
 	public DriedSoulsandPillarBlock()
 	{
-		super(((Block.Properties.create(Material.ROCK, MaterialColor.LIGHT_GRAY)
-			.hardnessAndResistance(1.5F, 6.0F)
-			.sound(SoundType.NETHER_BRICK)
+		super(((Block.Properties.of(Material.STONE, MaterialColor.COLOR_LIGHT_GRAY)
+			.strength(1.5F, 6.0F)
+			.sound(SoundType.NETHER_BRICKS)
 			.harvestLevel(1)
 			.harvestTool(ToolType.PICKAXE))));
 	}
 		
-	public void onEntityWalk(World worldIn, BlockPos pos, Entity entityIn)
+	public void stepOn(Level worldIn, BlockPos pos, Entity entityIn)
 	{
-		Vector3d vec3d = entityIn.getMotion();
-		super.onEntityWalk(worldIn, pos, entityIn);
-		entityIn.setMotion(vec3d.x * 1.3, -vec3d.y, vec3d.z * 1.3);
+		Vec3 vec3d = entityIn.getDeltaMovement();
+		super.stepOn(worldIn, pos, entityIn);
+		entityIn.setDeltaMovement(vec3d.x * 1.3, -vec3d.y, vec3d.z * 1.3);
 	}
 }

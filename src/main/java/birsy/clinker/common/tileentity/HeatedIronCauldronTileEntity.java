@@ -5,19 +5,19 @@ import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerTileEntities;
 import birsy.clinker.core.util.MathUtils;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.level.block.entity.TickableBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
@@ -31,7 +31,7 @@ import javax.annotation.Nullable;
 import java.util.Random;
 import java.util.Set;
 
-public class HeatedIronCauldronTileEntity extends TileEntity implements ITickableTileEntity {
+public class HeatedIronCauldronTileEntity extends BlockEntity implements TickableBlockEntity {
     boolean debug = Clinker.devmode;
     
     private final Random rand = new Random();
@@ -77,14 +77,14 @@ public class HeatedIronCauldronTileEntity extends TileEntity implements ITickabl
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundTag tag) {
+        super.load(state, tag);
         tank.readFromNBT(tag);
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        tag = super.write(tag);
+    public CompoundTag save(CompoundTag tag) {
+        tag = super.save(tag);
         tank.writeToNBT(tag);
         return tag;
     }
@@ -103,7 +103,7 @@ public class HeatedIronCauldronTileEntity extends TileEntity implements ITickabl
         this.stirSpeed = Math.max(this.stirSpeed - 0.25F, 0);
         updateStirRotations();
 
-        if (WorldUtil.getAmbientHeat(this.getWorld(), this.getPos()) > 30) {
+        if (WorldUtil.getAmbientHeat(this.getLevel(), this.getBlockPos()) > 30) {
             if (this.heat < 100) {
                 this.heat++;
             }
@@ -207,9 +207,9 @@ public class HeatedIronCauldronTileEntity extends TileEntity implements ITickabl
             this.mostRecentItemIndex = emptySlot;
             
             for (int i = 0; i < 10; i++) {
-                this.getWorld().addParticle(ParticleTypes.POOF, itemEntity.getPosX(), itemEntity.getPosY(), itemEntity.getPosZ(), 0, rand.nextFloat() + 2, 0);
+                this.getLevel().addParticle(ParticleTypes.POOF, itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), 0, rand.nextFloat() + 2, 0);
             }
-            this.getWorld().playSound(null, itemEntity.getPosX(), itemEntity.getPosY(), itemEntity.getPosZ(), SoundEvents.ENTITY_GENERIC_BURN, SoundCategory.BLOCKS, 1.0F, 1.0F);
+            this.getLevel().playSound(null, itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), SoundEvents.GENERIC_BURN, SoundSource.BLOCKS, 1.0F, 1.0F);
 
             itemEntity.remove();
 
@@ -217,7 +217,7 @@ public class HeatedIronCauldronTileEntity extends TileEntity implements ITickabl
                 StringBuilder cauldronContents = new StringBuilder();
                 for (int i = 0; i < inventory.size(); i++) {
                     if (inventory.get(i) == ItemStack.EMPTY) {
-                        cauldronContents.append(inventory.get(i).getItem().getName().getString()).append(", ");
+                        cauldronContents.append(inventory.get(i).getItem().getDescription().getString()).append(", ");
                     }
                 }
 
@@ -230,15 +230,15 @@ public class HeatedIronCauldronTileEntity extends TileEntity implements ITickabl
         if (index == -1) {
             for (ItemStack itemStack : inventory) {
                 if (itemStack != ItemStack.EMPTY) {
-                    ItemEntity itemEntity = new ItemEntity(this.getWorld(), this.getPos().getX() + 0.5, this.getPos().getY() + 0.5, this.getPos().getZ() + 0.5, itemStack);
-                    this.getWorld().addEntity(itemEntity);
+                    ItemEntity itemEntity = new ItemEntity(this.getLevel(), this.getBlockPos().getX() + 0.5, this.getBlockPos().getY() + 0.5, this.getBlockPos().getZ() + 0.5, itemStack);
+                    this.getLevel().addFreshEntity(itemEntity);
                 }
             }
         } else {
             try {
                 ItemStack itemStack = inventory.get(index);
                 if (itemStack != ItemStack.EMPTY) {
-                    ItemEntity itemEntity = new ItemEntity(this.getWorld(), this.getPos().getX() + 0.5, this.getPos().getY() + 1.1, this.getPos().getZ() + 0.5, inventory.get(index));
+                    ItemEntity itemEntity = new ItemEntity(this.getLevel(), this.getBlockPos().getX() + 0.5, this.getBlockPos().getY() + 1.1, this.getBlockPos().getZ() + 0.5, inventory.get(index));
                     inventory.set(index, ItemStack.EMPTY);
 
                     /*
@@ -250,7 +250,7 @@ public class HeatedIronCauldronTileEntity extends TileEntity implements ITickabl
                     }
                      */
                     
-                    this.getWorld().addEntity(itemEntity);
+                    this.getLevel().addFreshEntity(itemEntity);
                 }
             } catch(Exception e) {
                 Clinker.LOGGER.error("Attempted to drop non-existent item from invalid index!");
@@ -277,27 +277,27 @@ public class HeatedIronCauldronTileEntity extends TileEntity implements ITickabl
 
     @OnlyIn(Dist.CLIENT)
     public float getVisualWaterLevel (float partialTicks) {
-        return MathHelper.lerp(partialTicks, this.prevWaterLevel, this.waterLevel);
+        return Mth.lerp(partialTicks, this.prevWaterLevel, this.waterLevel);
     }
 
     @OnlyIn(Dist.CLIENT)
     public float getHeatOverlayStrength (float partialTicks) {
-        return MathHelper.lerp(partialTicks, this.prevHeat, this.heat);
+        return Mth.lerp(partialTicks, this.prevHeat, this.heat);
     }
 
     @OnlyIn(Dist.CLIENT)
     public float getItemRotations (int index, float partialTicks) {
-        return MathHelper.lerp(partialTicks, this.itemRotations.get(index)[1], this.itemRotations.get(index)[0]);
+        return Mth.lerp(partialTicks, this.itemRotations.get(index)[1], this.itemRotations.get(index)[0]);
     }
 
     @OnlyIn(Dist.CLIENT)
     public float getSpoonRotation (float partialTicks) {
-        return MathHelper.lerp(partialTicks, this.prevSpoonRotation, this.spoonRotation);
+        return Mth.lerp(partialTicks, this.prevSpoonRotation, this.spoonRotation);
     }
 
     @OnlyIn(Dist.CLIENT)
     public float getCauldronShakeAmount (float partialTicks) {
-        return MathHelper.lerp(partialTicks, this.prevCauldronShakeAmount, this.cauldronShakeAmount);
+        return Mth.lerp(partialTicks, this.prevCauldronShakeAmount, this.cauldronShakeAmount);
     }
 
     /**

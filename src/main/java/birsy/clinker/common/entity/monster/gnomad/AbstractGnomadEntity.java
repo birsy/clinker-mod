@@ -2,28 +2,28 @@ package birsy.clinker.common.entity.monster.gnomad;
 
 import birsy.clinker.core.registry.ClinkerSounds;
 import birsy.clinker.core.util.MathUtils;
-import net.minecraft.block.BlockState;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.monster.MonsterEntity;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractGnomadEntity extends MonsterEntity
+public abstract class AbstractGnomadEntity extends Monster
 {
 	public int gnomadRank = 0;
 
@@ -31,27 +31,27 @@ public abstract class AbstractGnomadEntity extends MonsterEntity
 	private final double squadAddDistance = maxSquadDistance * 0.5F;
 	private List<AbstractGnomadEntity> squadron = new ArrayList<>();
 
-	protected AbstractGnomadEntity(EntityType<? extends AbstractGnomadEntity> type, World worldIn)
+	protected AbstractGnomadEntity(EntityType<? extends AbstractGnomadEntity> type, Level worldIn)
 	{
 		super(type, worldIn);
 	}
 	
-	public static AttributeModifierMap.MutableAttribute setCustomAttributes()
+	public static AttributeSupplier.Builder setCustomAttributes()
 	{
-		return MobEntity.func_233666_p_()
-				.createMutableAttribute(Attributes.MAX_HEALTH, 25.0F)
-				.createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.3F)
-				.createMutableAttribute(Attributes.ATTACK_DAMAGE, 3.0D)
-				.createMutableAttribute(Attributes.ARMOR, 0.0D)
-				.createMutableAttribute(Attributes.KNOCKBACK_RESISTANCE, 0.0D);
+		return Mob.createMobAttributes()
+				.add(Attributes.MAX_HEALTH, 25.0F)
+				.add(Attributes.MOVEMENT_SPEED, 0.3F)
+				.add(Attributes.ATTACK_DAMAGE, 3.0D)
+				.add(Attributes.ARMOR, 0.0D)
+				.add(Attributes.KNOCKBACK_RESISTANCE, 0.0D);
 	}
 
 	@Override
 	public void tick() {
 		//Updates the gnomad's squadron.
-		squadron.removeIf(gnomad -> this.getPosition().manhattanDistance(gnomad.getPosition()) >= maxSquadDistance);
+		squadron.removeIf(gnomad -> this.blockPosition().distManhattan(gnomad.blockPosition()) >= maxSquadDistance);
 		if (squadron.size() > 10) {
-			for (Entity entity : this.world.getEntitiesWithinAABB(AbstractGnomadEntity.class, new AxisAlignedBB(this.getPositionVec().add(squadAddDistance, squadAddDistance, squadAddDistance), this.getPositionVec().add(-squadAddDistance, -squadAddDistance, -squadAddDistance)))) {
+			for (Entity entity : this.level.getEntitiesOfClass(AbstractGnomadEntity.class, new AABB(this.position().add(squadAddDistance, squadAddDistance, squadAddDistance), this.position().add(-squadAddDistance, -squadAddDistance, -squadAddDistance)))) {
 				if (entity instanceof AbstractGnomadEntity && !squadron.contains(entity)) {
 					squadron.add((AbstractGnomadEntity) entity);
 				}
@@ -60,15 +60,15 @@ public abstract class AbstractGnomadEntity extends MonsterEntity
 		super.tick();
 	}
 
-	protected Vector3d getSquadCenter() {
-		Vector3d squadCenter = new Vector3d(this.getPosX(), this.getPosY(), this.getPosZ());
+	protected Vec3 getSquadCenter() {
+		Vec3 squadCenter = new Vec3(this.getX(), this.getY(), this.getZ());
 
 		if (squadron.size() > 1) {
 			for (AbstractGnomadEntity gnomad : squadron) {
-				squadCenter.add(gnomad.getPosX(), gnomad.getPosY(), gnomad.getPosZ());
+				squadCenter.add(gnomad.getX(), gnomad.getY(), gnomad.getZ());
 			}
 		}
-		return new Vector3d(squadCenter.getX() / squadron.size(), squadCenter.getY() / squadron.size(), squadCenter.getZ() / squadron.size());
+		return new Vec3(squadCenter.x() / squadron.size(), squadCenter.y() / squadron.size(), squadCenter.z() / squadron.size());
 	}
 
 	//Sounds
@@ -85,14 +85,14 @@ public abstract class AbstractGnomadEntity extends MonsterEntity
 	@Override
 	protected float getSoundVolume() {
 		if (Minecraft.getInstance().player != null) {
-			return MathUtils.mapRange(0, 60, 1, 0, (float) this.getDistanceSq(Minecraft.getInstance().player));
+			return MathUtils.mapRange(0, 60, 1, 0, (float) this.distanceToSqr(Minecraft.getInstance().player));
 		} else {
 			return 1.0f;
 		}
 	}
 
 	protected void playStepSound(BlockPos pos, BlockState blockIn) {
-		this.playSound(SoundEvents.ENTITY_PIGLIN_STEP, 0.15F, 1.0F);
+		this.playSound(SoundEvents.PIGLIN_STEP, 0.15F, 1.0F);
 	}
 	
 	@OnlyIn(Dist.CLIENT)

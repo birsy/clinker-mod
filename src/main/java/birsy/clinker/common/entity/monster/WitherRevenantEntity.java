@@ -2,42 +2,49 @@ package birsy.clinker.common.entity.monster;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.block.BlockState;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.entity.*;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.HurtByTargetGoal;
-import net.minecraft.entity.ai.goal.LookAtGoal;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.entity.ai.goal.LookRandomlyGoal;
-import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WaterAvoidingRandomWalkingGoal;
-import net.minecraft.entity.monster.MonsterEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileHelper;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.BannerItem;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.tileentity.BannerPattern;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.BannerItem;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.world.level.block.entity.BannerPattern;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.DifficultyInstance;
-import net.minecraft.world.IServerWorld;
-import net.minecraft.world.World;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.Level;
 
-public class WitherRevenantEntity extends MonsterEntity
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.SpawnGroupData;
+
+public class WitherRevenantEntity extends Monster
 {
 	private int windupTick;
 	private int stunTick;
@@ -45,7 +52,7 @@ public class WitherRevenantEntity extends MonsterEntity
 	
 	boolean debug = true;
 	
-	public WitherRevenantEntity(EntityType<? extends MonsterEntity> type, World worldIn) {
+	public WitherRevenantEntity(EntityType<? extends Monster> type, Level worldIn) {
 		super(type, worldIn);
 	}
 	
@@ -56,19 +63,19 @@ public class WitherRevenantEntity extends MonsterEntity
 		//this.goalSelector.addGoal(0, new SwimGoal(this));
 		this.goalSelector.addGoal(2, new DuelGoal(this));
 	    //this.goalSelector.addGoal(5, new WaterAvoidingRandomWalkingGoal(this, 1.0D));
-	    this.goalSelector.addGoal(6, new LookAtGoal(this, PlayerEntity.class, 6.0F));
+	    this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 6.0F));
 	    //this.goalSelector.addGoal(7, new LookRandomlyGoal(this));
 	    //this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
-	    this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true));
+	    this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
 	}
 	
-	public static AttributeModifierMap.MutableAttribute setCustomAttributes()
+	public static AttributeSupplier.Builder setCustomAttributes()
 	{
-		return MobEntity.func_233666_p_()
-				.createMutableAttribute(Attributes.MAX_HEALTH, 30.0)
-				.createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.25D)
-				.createMutableAttribute(Attributes.ATTACK_KNOCKBACK, 0.25D)
-				.createMutableAttribute(Attributes.ATTACK_DAMAGE, 4.0D);
+		return Mob.createMobAttributes()
+				.add(Attributes.MAX_HEALTH, 30.0)
+				.add(Attributes.MOVEMENT_SPEED, 0.25D)
+				.add(Attributes.ATTACK_KNOCKBACK, 0.25D)
+				.add(Attributes.ATTACK_DAMAGE, 4.0D);
 	}
 	
 	public static enum AIPhase {
@@ -91,12 +98,12 @@ public class WitherRevenantEntity extends MonsterEntity
 	}
 	
 	public void tick() {
-		if (this.getAttackTarget() == null) {
+		if (this.getTarget() == null) {
 			phase = AIPhase.WANDERING;
 		}
 		
 		if(debug == true) {
-			this.setCustomName(new StringTextComponent("AI Phase: ").appendSibling(new StringTextComponent(this.phase.toString()).mergeStyle(TextFormatting.RED)));
+			this.setCustomName(new TextComponent("AI Phase: ").append(new TextComponent(this.phase.toString()).withStyle(ChatFormatting.RED)));
 			this.setCustomNameVisible(true);
 		}
 		//(new StringTextComponent(this.phase.toString()).mergeStyle(TextFormatting.BLUE))
@@ -110,41 +117,41 @@ public class WitherRevenantEntity extends MonsterEntity
 			this.revenant = mob;
 		}
 		
-		public boolean shouldExecute() {
-			if (revenant.getAttackTarget() != null && revenant.getEntitySenses().canSee(revenant.getAttackTarget())) {
-				return revenant.getDistanceSq(revenant.getAttackTarget()) < 10.0F;
+		public boolean canUse() {
+			if (revenant.getTarget() != null && revenant.getSensing().canSee(revenant.getTarget())) {
+				return revenant.distanceToSqr(revenant.getTarget()) < 10.0F;
 			} else {
 				return false;
 			}
 		}
 		
-		public boolean shouldContinueExecuting() {
-			if (revenant.getAttackTarget() == null) {
+		public boolean canContinueToUse() {
+			if (revenant.getTarget() == null) {
 				return false;
-			} else if (!revenant.getAttackTarget().isAlive() || revenant.phase == AIPhase.WANDERING) {
+			} else if (!revenant.getTarget().isAlive() || revenant.phase == AIPhase.WANDERING) {
 				return false;
 			} else {
 				return true;
 			}
 		}
 		
-		public void startExecuting() {
-			LivingEntity target = revenant.getAttackTarget();
+		public void start() {
+			LivingEntity target = revenant.getTarget();
 			
-			if (revenant.getDistanceSq(target) < 10.0F) {
+			if (revenant.distanceToSqr(target) < 10.0F) {
 				revenant.phase = AIPhase.PURSUING;
-			} else if (revenant.getDistanceSq(target) < 5.0F) {
+			} else if (revenant.distanceToSqr(target) < 5.0F) {
 				revenant.phase = AIPhase.CIRCLING;
 			}
 			
-			super.startExecuting();
+			super.start();
 		}
 		
 		@SuppressWarnings("unused")
 		@Override
 		public void tick() {
-			LivingEntity target = revenant.getAttackTarget();
-			double targetDistance = revenant.getDistanceSq(target.getPositionVec());
+			LivingEntity target = revenant.getTarget();
+			double targetDistance = revenant.distanceToSqr(target.position());
 			int targetShieldUpTicks = 0;
 			AIPhase phase = revenant.phase;
 			
@@ -155,7 +162,7 @@ public class WitherRevenantEntity extends MonsterEntity
 				revenant.stunTick--;
 			}
 			
-			if (target.isActiveItemStackBlocking()) {
+			if (target.isBlocking()) {
 				targetShieldUpTicks++;
 			} else {
 				targetShieldUpTicks = 0;
@@ -172,13 +179,13 @@ public class WitherRevenantEntity extends MonsterEntity
 					break;
 					
 				case CIRCLING:
-					if (this.revenant.getHeldItemMainhand().getItem() == Items.SHIELD || this.revenant.getHeldItemOffhand().getItem() == Items.SHIELD) {
+					if (this.revenant.getMainHandItem().getItem() == Items.SHIELD || this.revenant.getOffhandItem().getItem() == Items.SHIELD) {
 						this.revenant.blockUsingShield(this.revenant);
-						this.revenant.setActiveHand(ProjectileHelper.getHandWith(this.revenant, Items.SHIELD));
+						this.revenant.startUsingItem(ProjectileUtil.getWeaponHoldingHand(this.revenant, Items.SHIELD));
 					}
 
 					strafeAroundTarget(target, 4.75F, 1.0F);
-					revenant.getLookController().setLookPosition(target.getPosX(), target.getPosY(), target.getPosZ());
+					revenant.getLookControl().setLookAt(target.getX(), target.getY(), target.getZ());
 					break;
 					
 				case RECOVERING:
@@ -200,9 +207,9 @@ public class WitherRevenantEntity extends MonsterEntity
 			 * Decides what phase the entity should be in.
 			 */
 
-			if (revenant.getDistanceSq(target) < 5.0F) {
+			if (revenant.distanceToSqr(target) < 5.0F) {
 				revenant.phase = AIPhase.CIRCLING;
-			} else if (revenant.getDistanceSq(target) < 10.0F) {
+			} else if (revenant.distanceToSqr(target) < 10.0F) {
 				revenant.phase = AIPhase.PURSUING;
 			} else {
 				revenant.phase = AIPhase.WAITING;
@@ -210,8 +217,8 @@ public class WitherRevenantEntity extends MonsterEntity
 		}
 		
 		@Override
-		public void resetTask() {
-			super.resetTask();
+		public void stop() {
+			super.stop();
 			
 			revenant.phase = AIPhase.WANDERING;
 		}
@@ -219,7 +226,7 @@ public class WitherRevenantEntity extends MonsterEntity
 		public void strafeAroundTarget(Entity target, float strafeSpeed, float moveSpeed) {
 			boolean rotationDirection = true;
 
-			if (revenant.rand.nextInt(80) == 0) {
+			if (revenant.random.nextInt(80) == 0) {
 				if (rotationDirection) {
 					rotationDirection = false;
 				} else {
@@ -227,9 +234,9 @@ public class WitherRevenantEntity extends MonsterEntity
 				}
 			}
 
-			this.revenant.getMoveHelper().strafe(0.5F, rotationDirection ? 0.5F : -0.5F);
-			this.revenant.faceEntity(target, 30.0F, 30.0F);
-			revenant.getLookController().setLookPosition(target.getPosX(), target.getPosY(), target.getPosZ());
+			this.revenant.getMoveControl().strafe(0.5F, rotationDirection ? 0.5F : -0.5F);
+			this.revenant.lookAt(target, 30.0F, 30.0F);
+			revenant.getLookControl().setLookAt(target.getX(), target.getY(), target.getZ());
 		}
 	}
 
@@ -239,47 +246,47 @@ public class WitherRevenantEntity extends MonsterEntity
 	public void setStunTick(int stunTickIn) {this.stunTick = stunTickIn;}
 	
 	
-	public ILivingEntityData onInitialSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
-		this.setItemStackToSlot(EquipmentSlotType.CHEST, new ItemStack(Items.NETHERITE_CHESTPLATE));
-		this.setItemStackToSlot(EquipmentSlotType.FEET, new ItemStack(Items.NETHERITE_BOOTS));
-		this.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.NETHERITE_SWORD));
-		this.setItemStackToSlot(EquipmentSlotType.OFFHAND, createShieldWithBanner());
-		return super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
+	public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn, MobSpawnType reason, @Nullable SpawnGroupData spawnDataIn, @Nullable CompoundTag dataTag) {
+		this.setItemSlot(EquipmentSlot.CHEST, new ItemStack(Items.NETHERITE_CHESTPLATE));
+		this.setItemSlot(EquipmentSlot.FEET, new ItemStack(Items.NETHERITE_BOOTS));
+		this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.NETHERITE_SWORD));
+		this.setItemSlot(EquipmentSlot.OFFHAND, createShieldWithBanner());
+		return super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
 	}
 	
 	public static ItemStack createShieldWithBanner() {
 		ItemStack shield = new ItemStack(Items.SHIELD);
-		CompoundNBT compoundnbt = shield.getOrCreateChildTag("BlockEntityTag");
-		ListNBT listnbt = (new BannerPattern.Builder())
-				.setPatternWithColor(BannerPattern.STRIPE_TOP, DyeColor.GRAY)
-				.setPatternWithColor(BannerPattern.STRIPE_LEFT, DyeColor.GRAY)
-				.setPatternWithColor(BannerPattern.STRIPE_RIGHT, DyeColor.GRAY)
-				.setPatternWithColor(BannerPattern.GLOBE, DyeColor.LIGHT_GRAY)
-				.setPatternWithColor(BannerPattern.SKULL, DyeColor.BLACK)
-				.setPatternWithColor(BannerPattern.HALF_HORIZONTAL_MIRROR, DyeColor.GRAY)
-				.setPatternWithColor(BannerPattern.FLOWER, DyeColor.BLACK)
-				.setPatternWithColor(BannerPattern.BORDER, DyeColor.BLACK)
-				.buildNBT();
+		CompoundTag compoundnbt = shield.getOrCreateTagElement("BlockEntityTag");
+		ListTag listnbt = (new BannerPattern.Builder())
+				.addPattern(BannerPattern.STRIPE_TOP, DyeColor.GRAY)
+				.addPattern(BannerPattern.STRIPE_LEFT, DyeColor.GRAY)
+				.addPattern(BannerPattern.STRIPE_RIGHT, DyeColor.GRAY)
+				.addPattern(BannerPattern.GLOBE, DyeColor.LIGHT_GRAY)
+				.addPattern(BannerPattern.SKULL, DyeColor.BLACK)
+				.addPattern(BannerPattern.HALF_HORIZONTAL_MIRROR, DyeColor.GRAY)
+				.addPattern(BannerPattern.FLOWER, DyeColor.BLACK)
+				.addPattern(BannerPattern.BORDER, DyeColor.BLACK)
+				.toListTag();
 		compoundnbt.putInt("Base", ((BannerItem) Items.LIGHT_GRAY_BANNER.getItem()).getColor().getId());
 		compoundnbt.put("Patterns", listnbt);
-		shield.setDisplayName((new TranslationTextComponent("item.clinker.ancient_shield")).mergeStyle(TextFormatting.GOLD));
+		shield.setHoverName((new TranslatableComponent("item.clinker.ancient_shield")).withStyle(ChatFormatting.GOLD));
 		return shield;
 	}
 	
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.ENTITY_WITHER_SKELETON_AMBIENT;
+		return SoundEvents.WITHER_SKELETON_AMBIENT;
 	}
 
 	protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-		return SoundEvents.ENTITY_WITHER_SKELETON_HURT;
+		return SoundEvents.WITHER_SKELETON_HURT;
 	}
 
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.ENTITY_WITHER_SKELETON_DEATH;
+		return SoundEvents.WITHER_SKELETON_DEATH;
 	}
 
 	protected void playStepSound(BlockPos pos, BlockState blockIn) {
-		this.playSound(SoundEvents.ENTITY_WITHER_SKELETON_STEP, 0.15F, 1.0F);
+		this.playSound(SoundEvents.WITHER_SKELETON_STEP, 0.15F, 1.0F);
 	}
 	
 	public static enum Pose {

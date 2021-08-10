@@ -2,22 +2,22 @@ package birsy.clinker.common.item.materials.enums;
 
 import java.util.function.Supplier;
 
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.IArmorMaterial;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.Items;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.SoundEvents;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ArmorMaterial;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.Items;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerItems;
 
-public enum ClinkerArmorMaterial implements IArmorMaterial
+public enum ClinkerArmorMaterial implements ArmorMaterial
 {	
-	SHELL(Clinker.MOD_ID + ":shell", 23, new int[] { 3, 6, 4, 2 }, 23, SoundEvents.ITEM_ARMOR_EQUIP_TURTLE, 1.5F, () -> {return Ingredient.fromItems(ClinkerItems.CENTIPEDE_SHELL.get());}, 0.25F),
-	LEAD(Clinker.MOD_ID + ":lead", 23, new int[] { 3, 6, 4, 2 }, 0, SoundEvents.ITEM_ARMOR_EQUIP_NETHERITE, 4.0F, () -> {return Ingredient.fromItems(ClinkerItems.LEAD_INGOT.get());}, 0.05F),
-	TRADITIONAL(Clinker.MOD_ID + ":traditional", 2, new int[] { 1, 2, 2, 1 }, 100, SoundEvents.ITEM_ARMOR_EQUIP_GENERIC, 0.0F, () -> {return Ingredient.fromItems(Items.GRAY_WOOL);}, 0.0F);
+	SHELL(Clinker.MOD_ID + ":shell", 23, new int[] { 3, 6, 4, 2 }, 23, SoundEvents.ARMOR_EQUIP_TURTLE, 1.5F, () -> {return Ingredient.of(ClinkerItems.CENTIPEDE_SHELL.get());}, 0.25F),
+	LEAD(Clinker.MOD_ID + ":lead", 23, new int[] { 3, 6, 4, 2 }, 0, SoundEvents.ARMOR_EQUIP_NETHERITE, 4.0F, () -> {return Ingredient.of(ClinkerItems.LEAD_INGOT.get());}, 0.05F),
+	TRADITIONAL(Clinker.MOD_ID + ":traditional", 2, new int[] { 1, 2, 2, 1 }, 100, SoundEvents.ARMOR_EQUIP_GENERIC, 0.0F, () -> {return Ingredient.of(Items.GRAY_WOOL);}, 0.0F);
 	
 	private static final int[] MAX_DAMAGE_ARRAY = new int[] { 11, 16, 15, 13 };
 	private final String name;
@@ -42,28 +42,28 @@ public enum ClinkerArmorMaterial implements IArmorMaterial
 	}
 
 	@Override
-	public int getDurability(EquipmentSlotType slotIn) {
+	public int getDurabilityForSlot(EquipmentSlot slotIn) {
 		return MAX_DAMAGE_ARRAY[slotIn.getIndex()] * this.maxDamamgeFactor;
 	}
 
 	@Override
-	public int getDamageReductionAmount(EquipmentSlotType slotIn) {
+	public int getDefenseForSlot(EquipmentSlot slotIn) {
 		return this.damageReductionAmountArray[slotIn.getIndex()];
 	}
 
 	@Override
-	public int getEnchantability() {
+	public int getEnchantmentValue() {
 		return this.enchantability;
 	}
 
 	@Override
-	public SoundEvent getSoundEvent() {
+	public SoundEvent getEquipSound() {
 		return this.soundEvent;
 	}
 	
 	@OnlyIn(Dist.CLIENT)
 	@Override
-	public Ingredient getRepairMaterial() {
+	public Ingredient getRepairIngredient() {
 		return this.repairMaterial.get();
 	}
 

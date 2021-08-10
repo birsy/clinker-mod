@@ -4,52 +4,67 @@ import birsy.clinker.common.world.feature.enviornment.SpeleothemConfig;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import com.google.common.collect.ImmutableList;
-import net.minecraft.block.Blocks;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.WorldGenRegistries;
-import net.minecraft.world.gen.blockplacer.SimpleBlockPlacer;
-import net.minecraft.world.gen.blockstateprovider.SimpleBlockStateProvider;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Registry;
+import net.minecraft.data.BuiltinRegistries;
+import net.minecraft.world.level.levelgen.feature.blockplacers.SimpleBlockPlacer;
+import net.minecraft.world.level.levelgen.feature.stateproviders.SimpleStateProvider;
 import net.minecraft.world.gen.feature.*;
-import net.minecraft.world.gen.feature.template.BlockMatchRuleTest;
-import net.minecraft.world.gen.feature.template.RuleTest;
-import net.minecraft.world.gen.placement.ChanceConfig;
-import net.minecraft.world.gen.placement.Placement;
+import net.minecraft.world.level.levelgen.structure.templatesystem.BlockMatchTest;
+import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
+import net.minecraft.world.level.levelgen.placement.ChanceDecoratorConfiguration;
+import net.minecraft.world.level.levelgen.placement.FeatureDecorator;
+
+import net.minecraft.data.worldgen.Features;
+import net.minecraft.util.UniformInt;
+import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.configurations.BlockStateConfiguration;
+import net.minecraft.world.level.levelgen.feature.configurations.ColumnFeatureConfiguration;
+import net.minecraft.world.level.levelgen.feature.configurations.CountConfiguration;
+import net.minecraft.world.level.levelgen.feature.configurations.DiskConfiguration;
+import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
+import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
+import net.minecraft.world.level.levelgen.feature.configurations.RandomPatchConfiguration;
+import net.minecraft.world.level.levelgen.feature.configurations.ReplaceSphereConfiguration;
+
+import RuleTest;
 
 public class ClinkerConfiguredFeatures {
-    public static final RuleTest BRIMSTONE_REPLACABLES = new BlockMatchRuleTest(ClinkerBlocks.BRIMSTONE.get());
+    public static final RuleTest BRIMSTONE_REPLACABLES = new BlockMatchTest(ClinkerBlocks.BRIMSTONE.get());
 
-    public static final ConfiguredFeature<?, ?> COBBLED_BRIMSTONE_VEIN = Feature.ORE.withConfiguration(new OreFeatureConfig(BRIMSTONE_REPLACABLES, ClinkerBlocks.COBBLED_BRIMSTONE.get().getDefaultState(), 40)).range(256).square().count(10);
-    public static final ConfiguredFeature<?, ?> CAVE_PUDDLE = ClinkerFeatures.CAVE_PUDDLE.get().withConfiguration(new BlobReplacementConfig(ClinkerBlocks.BRIMSTONE.get().getDefaultState(), ClinkerBlocks.BRIMSTONE.get().getDefaultState(), FeatureSpread.create(5, 5))).range(128).square().count(5);
-    public static final ConfiguredFeature<?, ?> CAVE_FLOOR = ClinkerFeatures.CAVE_FLOOR.get().withConfiguration(new BlobReplacementConfig(ClinkerBlocks.BRIMSTONE.get().getDefaultState(), ClinkerBlocks.BRIMSTONE.get().getDefaultState(), FeatureSpread.create(3, 3))).range(128).square().count(7);
-    public static final ConfiguredFeature<?, ?> ASH_GEODE = ClinkerFeatures.ASH_GEODE.get().withConfiguration(new BlobReplacementConfig(ClinkerBlocks.BRIMSTONE.get().getDefaultState(), ClinkerBlocks.ASH.get().getDefaultState(), FeatureSpread.create(2, 2))).range(128).square().count(4);
-    public static final ConfiguredFeature<?, ?> LARGE_SPELEOTHEM = ClinkerFeatures.SPELEOTHEM.get().withConfiguration(IFeatureConfig.NO_FEATURE_CONFIG).range(128).square().count(120);
+    public static final ConfiguredFeature<?, ?> COBBLED_BRIMSTONE_VEIN = Feature.ORE.configured(new OreConfiguration(BRIMSTONE_REPLACABLES, ClinkerBlocks.COBBLED_BRIMSTONE.get().defaultBlockState(), 40)).range(256).squared().count(10);
+    public static final ConfiguredFeature<?, ?> CAVE_PUDDLE = ClinkerFeatures.CAVE_PUDDLE.get().configured(new ReplaceSphereConfiguration(ClinkerBlocks.BRIMSTONE.get().defaultBlockState(), ClinkerBlocks.BRIMSTONE.get().defaultBlockState(), UniformInt.of(5, 5))).range(128).squared().count(5);
+    public static final ConfiguredFeature<?, ?> CAVE_FLOOR = ClinkerFeatures.CAVE_FLOOR.get().configured(new ReplaceSphereConfiguration(ClinkerBlocks.BRIMSTONE.get().defaultBlockState(), ClinkerBlocks.BRIMSTONE.get().defaultBlockState(), UniformInt.of(3, 3))).range(128).squared().count(7);
+    public static final ConfiguredFeature<?, ?> ASH_GEODE = ClinkerFeatures.ASH_GEODE.get().configured(new ReplaceSphereConfiguration(ClinkerBlocks.BRIMSTONE.get().defaultBlockState(), ClinkerBlocks.ASH.get().defaultBlockState(), UniformInt.of(2, 2))).range(128).squared().count(4);
+    public static final ConfiguredFeature<?, ?> LARGE_SPELEOTHEM = ClinkerFeatures.SPELEOTHEM.get().configured(FeatureConfiguration.NONE).range(128).squared().count(120);
 
-    public static final ConfiguredFeature<?, ?> SHORELINE_PUDDLE = ClinkerFeatures.SHORELINE_PUDDLE.get().withConfiguration(new BlobReplacementConfig(ClinkerBlocks.SCORSTONE.get().getDefaultState(), Blocks.WATER.getDefaultState(), FeatureSpread.create(5, 5))).range(128).square().count(5);
+    public static final ConfiguredFeature<?, ?> SHORELINE_PUDDLE = ClinkerFeatures.SHORELINE_PUDDLE.get().configured(new ReplaceSphereConfiguration(ClinkerBlocks.SCORSTONE.get().defaultBlockState(), Blocks.WATER.defaultBlockState(), UniformInt.of(5, 5))).range(128).squared().count(5);
 
     // Will definitely try to come up with a better system for this - something with the carvers, perhaps?
-    public static final ConfiguredFeature<?, ?> AQUIFER = ClinkerFeatures.AQUIFER.get().withConfiguration(new BlockStateFeatureConfig(Blocks.WATER.getDefaultState())).withPlacement(Placement.WATER_LAKE.configure(new ChanceConfig(4)));
+    public static final ConfiguredFeature<?, ?> AQUIFER = ClinkerFeatures.AQUIFER.get().configured(new BlockStateConfiguration(Blocks.WATER.defaultBlockState())).decorated(FeatureDecorator.WATER_LAKE.configured(new ChanceDecoratorConfiguration(4)));
 
-    public static final ConfiguredFeature<?, ?> ASH_DUNE = ClinkerFeatures.ASH_DUNE.get().withConfiguration(IFeatureConfig.NO_FEATURE_CONFIG).withPlacement(Placement.COUNT_MULTILAYER.configure(new FeatureSpreadConfig(1)));
+    public static final ConfiguredFeature<?, ?> ASH_DUNE = ClinkerFeatures.ASH_DUNE.get().configured(FeatureConfiguration.NONE).decorated(FeatureDecorator.COUNT_MULTILAYER.configured(new CountConfiguration(1)));
 
-    public static final ConfiguredFeature<?, ?> SMALL_CRAGROCK = ClinkerFeatures.CRAGROCK.get().withConfiguration(new ColumnConfig(FeatureSpread.create(1), FeatureSpread.create(1, 3))).withPlacement(Placement.COUNT_MULTILAYER.configure(new FeatureSpreadConfig(1)));
-    public static final ConfiguredFeature<?, ?> LARGE_CRAGROCK = ClinkerFeatures.CRAGROCK.get().withConfiguration(new ColumnConfig(FeatureSpread.create(2, 1), FeatureSpread.create(5, 5))).withPlacement(Placement.COUNT_MULTILAYER.configure(new FeatureSpreadConfig(1)));
-    public static final ConfiguredFeature<?, ?> BOULDER = ClinkerFeatures.BOULDER.get().withConfiguration(new BlockStateFeatureConfig(ClinkerBlocks.BRIMSTONE.get().getDefaultState())).withPlacement(Placement.COUNT_MULTILAYER.configure(new FeatureSpreadConfig(5)));
+    public static final ConfiguredFeature<?, ?> SMALL_CRAGROCK = ClinkerFeatures.CRAGROCK.get().configured(new ColumnFeatureConfiguration(UniformInt.fixed(1), UniformInt.of(1, 3))).decorated(FeatureDecorator.COUNT_MULTILAYER.configured(new CountConfiguration(1)));
+    public static final ConfiguredFeature<?, ?> LARGE_CRAGROCK = ClinkerFeatures.CRAGROCK.get().configured(new ColumnFeatureConfiguration(UniformInt.of(2, 1), UniformInt.of(5, 5))).decorated(FeatureDecorator.COUNT_MULTILAYER.configured(new CountConfiguration(1)));
+    public static final ConfiguredFeature<?, ?> BOULDER = ClinkerFeatures.BOULDER.get().configured(new BlockStateConfiguration(ClinkerBlocks.BRIMSTONE.get().defaultBlockState())).decorated(FeatureDecorator.COUNT_MULTILAYER.configured(new CountConfiguration(5)));
 
-    public static final ConfiguredFeature<?, ?> ROOTED_ASH = ClinkerFeatures.ROOTED_ASH.get().withConfiguration(IFeatureConfig.NO_FEATURE_CONFIG).withPlacement(Placement.COUNT_MULTILAYER.configure(new FeatureSpreadConfig(2)));
+    public static final ConfiguredFeature<?, ?> ROOTED_ASH = ClinkerFeatures.ROOTED_ASH.get().configured(FeatureConfiguration.NONE).decorated(FeatureDecorator.COUNT_MULTILAYER.configured(new CountConfiguration(2)));
 
     //Temporary - will try to find a better way to make it fill caves more, as it can currently have big gaps. Might just make it larger.
-    public static final ConfiguredFeature<?, ?> BRAMBLE_CAVE = Feature.DISK.withConfiguration(new SphereReplaceConfig(ClinkerBlocks.BRAMBLE.get().getDefaultState(), FeatureSpread.create(5, 6), 5, ImmutableList.of(Blocks.CAVE_AIR.getDefaultState(), ClinkerBlocks.FOUL_AIR.get().getDefaultState()))).withPlacement(Placement.LAVA_LAKE.configure(new ChanceConfig(3)));
-    public static final ConfiguredFeature<?, ?> ROOTSTALK_CAVE = Feature.DISK.withConfiguration(new SphereReplaceConfig(ClinkerBlocks.ROOTSTALK.get().getDefaultState(), FeatureSpread.create(5, 6), 5, ImmutableList.of(Blocks.CAVE_AIR.getDefaultState(), ClinkerBlocks.FOUL_AIR.get().getDefaultState()))).withPlacement(Placement.LAVA_LAKE.configure(new ChanceConfig(3)));
+    public static final ConfiguredFeature<?, ?> BRAMBLE_CAVE = Feature.DISK.configured(new DiskConfiguration(ClinkerBlocks.BRAMBLE.get().defaultBlockState(), UniformInt.of(5, 6), 5, ImmutableList.of(Blocks.CAVE_AIR.defaultBlockState(), ClinkerBlocks.FOUL_AIR.get().defaultBlockState()))).decorated(FeatureDecorator.LAVA_LAKE.configured(new ChanceDecoratorConfiguration(3)));
+    public static final ConfiguredFeature<?, ?> ROOTSTALK_CAVE = Feature.DISK.configured(new DiskConfiguration(ClinkerBlocks.ROOTSTALK.get().defaultBlockState(), UniformInt.of(5, 6), 5, ImmutableList.of(Blocks.CAVE_AIR.defaultBlockState(), ClinkerBlocks.FOUL_AIR.get().defaultBlockState()))).decorated(FeatureDecorator.LAVA_LAKE.configured(new ChanceDecoratorConfiguration(3)));
 
     //plants
-    public static final ConfiguredFeature<?, ?> CAVE_MOSS_PATCH = Feature.RANDOM_PATCH.withConfiguration((new BlockClusterFeatureConfig.Builder(new SimpleBlockStateProvider(ClinkerBlocks.CAVE_MOSS.get().getDefaultState()), SimpleBlockPlacer.PLACER)).tries(128).replaceable().build());
-    public static final ConfiguredFeature<?, ?> CAVE_MOSS_NORMAL = CAVE_MOSS_PATCH.withPlacement(Features.Placements.PATCH_PLACEMENT).chance(8);
+    public static final ConfiguredFeature<?, ?> CAVE_MOSS_PATCH = Feature.RANDOM_PATCH.configured((new RandomPatchConfiguration.GrassConfigurationBuilder(new SimpleStateProvider(ClinkerBlocks.CAVE_MOSS.get().defaultBlockState()), SimpleBlockPlacer.INSTANCE)).tries(128).canReplace().build());
+    public static final ConfiguredFeature<?, ?> CAVE_MOSS_NORMAL = CAVE_MOSS_PATCH.decorated(Features.Decorators.HEIGHTMAP_DOUBLE_SQUARE).chance(8);
 
-    public static final ConfiguredFeature<?, ?> BRAMBLE_BLOB = ClinkerFeatures.BRAMBLE_BLOB.get().withConfiguration(IFeatureConfig.NO_FEATURE_CONFIG).range(128).square().count(30);
+    public static final ConfiguredFeature<?, ?> BRAMBLE_BLOB = ClinkerFeatures.BRAMBLE_BLOB.get().configured(FeatureConfiguration.NONE).range(128).squared().count(30);
 
     public static void registerConfiguredFeatures() {
-        Registry<ConfiguredFeature<?, ?>> registry = WorldGenRegistries.CONFIGURED_FEATURE;
+        Registry<ConfiguredFeature<?, ?>> registry = BuiltinRegistries.CONFIGURED_FEATURE;
 
         Registry.register(registry, new ResourceLocation(Clinker.MOD_ID, "cobbled_brimstone_vein"), COBBLED_BRIMSTONE_VEIN);
         Registry.register(registry, new ResourceLocation(Clinker.MOD_ID, "cave_puddle"), CAVE_PUDDLE);

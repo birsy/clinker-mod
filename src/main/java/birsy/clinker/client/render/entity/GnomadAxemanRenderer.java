@@ -8,17 +8,19 @@ import birsy.clinker.client.render.entity.model.GnomadArmorModel;
 import birsy.clinker.client.render.entity.model.GnomadAxemanModel;
 import birsy.clinker.common.entity.monster.gnomad.GnomadAxemanEntity;
 import birsy.clinker.core.Clinker;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.EntityRendererManager;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoField;
+
+import ResourceLocation;
 
 public class GnomadAxemanRenderer extends MobRenderer<GnomadAxemanEntity, GnomadAxemanModel<GnomadAxemanEntity>>
 {
@@ -29,16 +31,16 @@ public class GnomadAxemanRenderer extends MobRenderer<GnomadAxemanEntity, Gnomad
 	protected static final ResourceLocation SHIELD_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/entity/gnomad/axeman/gnomad_axeman_shield.png");
 
 
-	public GnomadAxemanRenderer(EntityRendererManager renderManagerIn) {
+	public GnomadAxemanRenderer(EntityRenderDispatcher renderManagerIn) {
 		super(renderManagerIn, new GnomadAxemanModel<>(1), 0.7F);
 		this.addLayer(new GnomadAxemanBuffLayer(this, BUFF_TEXTURE));
 		this.addLayer(new GnomadAxemanShieldLayer(this, SHIELD_TEXTURE));
 		this.addLayer(new GnomeHeldItemLayer<>(this));
-		this.shadowSize = 0.5F;
+		this.shadowRadius = 0.5F;
 	}
 	
 	@Override
-	public ResourceLocation getEntityTexture(GnomadAxemanEntity entity) {
+	public ResourceLocation getTextureLocation(GnomadAxemanEntity entity) {
 		LocalDate localdate = LocalDate.now();
         int day = localdate.get(ChronoField.DAY_OF_MONTH);
         int month = localdate.get(ChronoField.MONTH_OF_YEAR);
@@ -52,11 +54,11 @@ public class GnomadAxemanRenderer extends MobRenderer<GnomadAxemanEntity, Gnomad
 	}
 
 	@Override
-	public void render(GnomadAxemanEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
-		this.entityModel.setArmorVisibility(entityIn);
-		matrixStackIn.push();
+	public void render(GnomadAxemanEntity entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
+		this.model.setArmorVisibility(entityIn);
+		matrixStackIn.pushPose();
 		matrixStackIn.scale(entityIn.getSize(), entityIn.getSize(), entityIn.getSize());
 		super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
-		matrixStackIn.pop();
+		matrixStackIn.popPose();
 	}
 }

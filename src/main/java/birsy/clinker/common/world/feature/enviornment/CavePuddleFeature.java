@@ -3,44 +3,44 @@ package birsy.clinker.common.world.feature.enviornment;
 import birsy.clinker.common.block.AshLayerBlock;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import com.mojang.serialization.Codec;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.SlabBlock;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ISeedReader;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.gen.ChunkGenerator;
-import net.minecraft.world.gen.feature.BlobReplacementConfig;
-import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SlabBlock;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.levelgen.feature.configurations.ReplaceSphereConfiguration;
+import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.gen.feature.NoFeatureConfig;
 
 import javax.annotation.Nullable;
 import java.util.Random;
 
-public class CavePuddleFeature extends Feature<BlobReplacementConfig> {
+public class CavePuddleFeature extends Feature<ReplaceSphereConfiguration> {
 
-	public CavePuddleFeature(Codec<BlobReplacementConfig> FeatureConfig) {
+	public CavePuddleFeature(Codec<ReplaceSphereConfiguration> FeatureConfig) {
 		super(FeatureConfig);
 	}
 
-	public boolean generate(ISeedReader reader, ChunkGenerator generator, Random rand, BlockPos pos, BlobReplacementConfig config) {
+	public boolean place(WorldGenLevel reader, ChunkGenerator generator, Random rand, BlockPos pos, ReplaceSphereConfiguration config) {
 		Block block = ClinkerBlocks.BRIMSTONE.get();
-		BlockPos blockpos = getValidPosition(reader, pos.toMutable().clampAxisCoordinate(Direction.Axis.Y, 1, reader.getHeight() - 1), block);
+		BlockPos blockpos = getValidPosition(reader, pos.mutable().clamp(Direction.Axis.Y, 1, reader.getMaxBuildHeight() - 1), block);
 
 		if (blockpos == null) {
 			return false;
 		} else {
-			int i = config.getRadius().getSpread(rand);
+			int i = config.radius().sample(rand);
 			boolean flag = false;
 
-			for (BlockPos blockpos1 : BlockPos.getProximitySortedBoxPositionsIterator(blockpos, i, i, i)) {
+			for (BlockPos blockpos1 : BlockPos.withinManhattan(blockpos, i, i, i)) {
 				BlockState blockstate = reader.getBlockState(blockpos1);
-				if (blockstate.matchesBlock(ClinkerBlocks.BRIMSTONE.get()) || blockstate.matchesBlock(ClinkerBlocks.COBBLED_BRIMSTONE.get()) || blockstate.matchesBlock(Blocks.STONE)) {
+				if (blockstate.is(ClinkerBlocks.BRIMSTONE.get()) || blockstate.is(ClinkerBlocks.COBBLED_BRIMSTONE.get()) || blockstate.is(Blocks.STONE)) {
 					//If the above it isn't solid, isn't water, and the block itself can hold water, then the puddle block will generate.
-					if (!reader.getBlockState(blockpos1.up()).isSolid() && !(reader.getBlockState(blockpos1.up()).getBlock() == Blocks.WATER) && canHoldLiquid(reader, blockpos1, rand)) {
-						reader.setBlockState(blockpos1, rand.nextBoolean() ? Blocks.WATER.getDefaultState() : ClinkerBlocks.BRIMSTONE_SLAB.get().getDefaultState().with(SlabBlock.WATERLOGGED, true), 1);
+					if (!reader.getBlockState(blockpos1.above()).canOcclude() && !(reader.getBlockState(blockpos1.above()).getBlock() == Blocks.WATER) && canHoldLiquid(reader, blockpos1, rand)) {
+						reader.setBlock(blockpos1, rand.nextBoolean() ? Blocks.WATER.defaultBlockState() : ClinkerBlocks.BRIMSTONE_SLAB.get().defaultBlockState().setValue(SlabBlock.WATERLOGGED, true), 1);
 					}
 
 					flag = true;
@@ -51,15 +51,15 @@ public class CavePuddleFeature extends Feature<BlobReplacementConfig> {
 		}
 	}
 
-	private boolean canHoldLiquid(ISeedReader reader, BlockPos pos, Random rand) {
+	private boolean canHoldLiquid(WorldGenLevel reader, BlockPos pos, Random rand) {
 		boolean flag = true;
 		Direction[] directionArray = {Direction.EAST, Direction.WEST, Direction.NORTH, Direction.SOUTH, Direction.DOWN};
 
 		for (Direction direction : directionArray) {
-			BlockState state = reader.getBlockState(pos.offset(direction));
+			BlockState state = reader.getBlockState(pos.relative(direction));
 
 			//If the block isn't solid, and isn't water, then it won't be able to hold water.
-			if (!state.isSolid() && !(state.getBlock() == Blocks.WATER)) {
+			if (!state.canOcclude() && !(state.getBlock() == Blocks.WATER)) {
 				flag = false;
 			}
 		}
@@ -68,10 +68,10 @@ public class CavePuddleFeature extends Feature<BlobReplacementConfig> {
 	}
 
 	@Nullable
-	private static BlockPos getValidPosition(IWorld worldIn, BlockPos.Mutable pos, Block block) {
+	private static BlockPos getValidPosition(LevelAccessor worldIn, BlockPos.MutableBlockPos pos, Block block) {
 		while (pos.getY() > 1) {
 			BlockState blockstate = worldIn.getBlockState(pos);
-			if (blockstate.matchesBlock(ClinkerBlocks.BRIMSTONE.get()) || blockstate.matchesBlock(ClinkerBlocks.COBBLED_BRIMSTONE.get()) || blockstate.matchesBlock(Blocks.STONE)) {
+			if (blockstate.is(ClinkerBlocks.BRIMSTONE.get()) || blockstate.is(ClinkerBlocks.COBBLED_BRIMSTONE.get()) || blockstate.is(Blocks.STONE)) {
 				return pos;
 			}
 

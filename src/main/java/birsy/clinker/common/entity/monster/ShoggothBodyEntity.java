@@ -1,14 +1,14 @@
 package birsy.clinker.common.entity.monster;
 
-import net.minecraft.block.BlockState;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.entity.*;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.monster.CreeperEntity;
 import net.minecraft.entity.monster.IMob;
-import net.minecraft.entity.monster.MonsterEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -16,39 +16,48 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.pathfinding.PathNavigator;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.IServerWorld;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+
 public class ShoggothBodyEntity extends AbstractShoggothEntity
 {
 
-	public ShoggothBodyEntity(EntityType<? extends MonsterEntity> type, World worldIn) {
+	public ShoggothBodyEntity(EntityType<? extends Monster> type, Level worldIn) {
 		super(type, worldIn);
 	}
 	
 	protected void registerGoals() {
 		this.goalSelector.addGoal(1, new MeleeAttackGoal(this, 1.0D, true));
 		this.goalSelector.addGoal(2, new FollowLeaderGoal(this, 1.0D));
-		this.goalSelector.addGoal(7, new LookAtGoal(this, PlayerEntity.class, 6.0F));
-		this.goalSelector.addGoal(8, new LookRandomlyGoal(this));
+		this.goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, 6.0F));
+		this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));
 		this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
-		this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true));
+		this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, true));
 	}
 	
-	public static AttributeModifierMap.MutableAttribute setCustomAttributes()
+	public static AttributeSupplier.Builder setCustomAttributes()
 	{
-		return MobEntity.func_233666_p_()
-		.createMutableAttribute(Attributes.MAX_HEALTH, 36.0D)
-		.createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.25D)
-		.createMutableAttribute(Attributes.KNOCKBACK_RESISTANCE, 0.2D)
-		.createMutableAttribute(Attributes.ATTACK_DAMAGE, 15.0D);
+		return Mob.createMobAttributes()
+		.add(Attributes.MAX_HEALTH, 36.0D)
+		.add(Attributes.MOVEMENT_SPEED, 0.25D)
+		.add(Attributes.KNOCKBACK_RESISTANCE, 0.2D)
+		.add(Attributes.ATTACK_DAMAGE, 15.0D);
 	}
 
 	@Override
@@ -65,14 +74,14 @@ public class ShoggothBodyEntity extends AbstractShoggothEntity
 	}
 
 	protected void playStepSound(BlockPos pos, BlockState blockIn) {
-		this.playSound(SoundEvents.ENTITY_HOGLIN_STEP, 0.15F, 1.0F);
+		this.playSound(SoundEvents.HOGLIN_STEP, 0.15F, 1.0F);
 	}
 	
-	protected void collideWithEntity(Entity entityIn) {
+	protected void doPush(Entity entityIn) {
 		if (entityIn instanceof ShoggothHeadEntity) {
 			return;
 		} else {
-			super.collideWithEntity(entityIn);
+			super.doPush(entityIn);
 		}
 	}
 }

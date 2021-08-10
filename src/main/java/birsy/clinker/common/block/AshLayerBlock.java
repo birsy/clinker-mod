@@ -4,56 +4,62 @@ import javax.annotation.Nullable;
 
 import birsy.clinker.core.registry.ClinkerBlocks;
 import net.minecraft.block.*;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.pathfinding.PathType;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.IntegerProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.IWorldReader;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ToolType;
 
-public class AshLayerBlock extends AshBlock implements IWaterLoggable
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SimpleWaterloggedBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockState;
+
+public class AshLayerBlock extends AshBlock implements SimpleWaterloggedBlock
 {
 	public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
-	public static final IntegerProperty LAYERS = BlockStateProperties.LAYERS_1_8;
-	protected static final VoxelShape[] SHAPES = new VoxelShape[]{VoxelShapes.empty(), 
-			Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 2.0D, 16.0D), 
-			Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 4.0D, 16.0D), 
-			Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 6.0D, 16.0D), 
-			Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 8.0D, 16.0D), 
-			Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 10.0D, 16.0D), 
-			Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 12.0D, 16.0D), 
-			Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 14.0D, 16.0D), 
-			Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D)};
+	public static final IntegerProperty LAYERS = BlockStateProperties.LAYERS;
+	protected static final VoxelShape[] SHAPES = new VoxelShape[]{Shapes.empty(), 
+			Block.box(0.0D, 0.0D, 0.0D, 16.0D, 2.0D, 16.0D), 
+			Block.box(0.0D, 0.0D, 0.0D, 16.0D, 4.0D, 16.0D), 
+			Block.box(0.0D, 0.0D, 0.0D, 16.0D, 6.0D, 16.0D), 
+			Block.box(0.0D, 0.0D, 0.0D, 16.0D, 8.0D, 16.0D), 
+			Block.box(0.0D, 0.0D, 0.0D, 16.0D, 10.0D, 16.0D), 
+			Block.box(0.0D, 0.0D, 0.0D, 16.0D, 12.0D, 16.0D), 
+			Block.box(0.0D, 0.0D, 0.0D, 16.0D, 14.0D, 16.0D), 
+			Block.box(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D)};
 	
 	public AshLayerBlock()
 	{
-		super(Block.Properties.create(Material.SNOW, MaterialColor.GRAY)
-				.hardnessAndResistance(0.5F)
+		super(Block.Properties.of(Material.TOP_SNOW, MaterialColor.COLOR_GRAY)
+				.strength(0.5F)
 				.sound(SoundType.SNOW)
-				.harvestTool(ToolType.SHOVEL).tickRandomly());
-		this.setDefaultState(this.stateContainer.getBaseState().with(LAYERS, Integer.valueOf(1)).with(WATERLOGGED, Boolean.valueOf(false)));
+				.harvestTool(ToolType.SHOVEL).randomTicks());
+		this.registerDefaultState(this.stateDefinition.any().setValue(LAYERS, Integer.valueOf(1)).setValue(WATERLOGGED, Boolean.valueOf(false)));
 	}
 	
-	public boolean allowsMovement(BlockState state, IBlockReader worldIn, BlockPos pos, PathType type) {
+	public boolean isPathfindable(BlockState state, BlockGetter worldIn, BlockPos pos, PathComputationType type) {
 		switch(type) {
 		case LAND:
-			return state.get(LAYERS) < 5;
+			return state.getValue(LAYERS) < 5;
 		case WATER:
 			return false;
 		case AIR:
@@ -63,31 +69,31 @@ public class AshLayerBlock extends AshBlock implements IWaterLoggable
 		}
 	}
 
-	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-		return SHAPES[state.get(LAYERS)];
+	public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
+		return SHAPES[state.getValue(LAYERS)];
 	}
 	
-	public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-		return SHAPES[state.get(LAYERS) - 1];
+	public VoxelShape getCollisionShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
+		return SHAPES[state.getValue(LAYERS) - 1];
 	}
 
-	public VoxelShape getCollisionShape(BlockState state, IBlockReader reader, BlockPos pos) {
-		return SHAPES[state.get(LAYERS)];
+	public VoxelShape getBlockSupportShape(BlockState state, BlockGetter reader, BlockPos pos) {
+		return SHAPES[state.getValue(LAYERS)];
 	}
 
-	public VoxelShape getRayTraceShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext context) {
-		return SHAPES[state.get(LAYERS)];
+	public VoxelShape getVisualShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context) {
+		return SHAPES[state.getValue(LAYERS)];
 	}
 
-	public boolean isTransparent(BlockState state) {
+	public boolean useShapeForLightOcclusion(BlockState state) {
 		return true;
 	}
 
-	public boolean isValidPosition(BlockState state, IWorldReader worldIn, BlockPos pos) {
-		BlockState blockstate = worldIn.getBlockState(pos.down());
-		if (!blockstate.matchesBlock(Blocks.ICE) && !blockstate.matchesBlock(Blocks.PACKED_ICE) && !blockstate.matchesBlock(Blocks.BARRIER)) {
-			if (!blockstate.matchesBlock(Blocks.HONEY_BLOCK)) {
-				return Block.doesSideFillSquare(blockstate.getCollisionShape(worldIn, pos.down()), Direction.UP) || blockstate.getBlock() == this && blockstate.get(LAYERS) == 8;
+	public boolean canSurvive(BlockState state, LevelReader worldIn, BlockPos pos) {
+		BlockState blockstate = worldIn.getBlockState(pos.below());
+		if (!blockstate.is(Blocks.ICE) && !blockstate.is(Blocks.PACKED_ICE) && !blockstate.is(Blocks.BARRIER)) {
+			if (!blockstate.is(Blocks.HONEY_BLOCK)) {
+				return Block.isFaceFull(blockstate.getBlockSupportShape(worldIn, pos.below()), Direction.UP) || blockstate.getBlock() == this && blockstate.getValue(LAYERS) == 8;
 			} else {
 		           return true;
 			}
@@ -96,11 +102,11 @@ public class AshLayerBlock extends AshBlock implements IWaterLoggable
 		}
 	}
 
-	public boolean isReplaceable(BlockState state, BlockItemUseContext useContext) {
-		int i = state.get(LAYERS);
-		if (useContext.getItem().getItem() == this.asItem() && i < 8) {
+	public boolean canBeReplaced(BlockState state, BlockPlaceContext useContext) {
+		int i = state.getValue(LAYERS);
+		if (useContext.getItemInHand().getItem() == this.asItem() && i < 8) {
 			if (useContext.replacingClickedOnBlock()) {
-				return useContext.getFace() == Direction.UP;
+				return useContext.getClickedFace() == Direction.UP;
 			} else {
 				return true;
 			}
@@ -110,31 +116,31 @@ public class AshLayerBlock extends AshBlock implements IWaterLoggable
 	}
 
 	@Nullable
-	public BlockState getStateForPlacement(BlockItemUseContext context) {
-		BlockState blockstate = context.getWorld().getBlockState(context.getPos());
+	public BlockState getStateForPlacement(BlockPlaceContext context) {
+		BlockState blockstate = context.getLevel().getBlockState(context.getClickedPos());
 
-		if (blockstate.matchesBlock(this)) {
-			int i = blockstate.get(LAYERS);
-			return blockstate.with(LAYERS, Integer.valueOf(Math.min(8, i + 1)));
+		if (blockstate.is(this)) {
+			int i = blockstate.getValue(LAYERS);
+			return blockstate.setValue(LAYERS, Integer.valueOf(Math.min(8, i + 1)));
 		} else {
-			FluidState fluidstate = context.getWorld().getFluidState(context.getPos());
-			return this.getDefaultState().with(WATERLOGGED, Boolean.valueOf(fluidstate.getFluid() == Fluids.WATER));
+			FluidState fluidstate = context.getLevel().getFluidState(context.getClickedPos());
+			return this.defaultBlockState().setValue(WATERLOGGED, Boolean.valueOf(fluidstate.getType() == Fluids.WATER));
 		}
 	}
 
-	public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
-		if (stateIn.get(WATERLOGGED)) {
-			worldIn.getPendingFluidTicks().scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickRate(worldIn));
+	public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
+		if (stateIn.getValue(WATERLOGGED)) {
+			worldIn.getLiquidTicks().scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(worldIn));
 		}
 
-		return super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
+		return super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos);
 	}
 
 	public FluidState getFluidState(BlockState state) {
-		return state.get(WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
+		return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
 	}
 
-	protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
 		builder.add(LAYERS, WATERLOGGED);
 	}
 }

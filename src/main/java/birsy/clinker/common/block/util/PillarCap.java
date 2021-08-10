@@ -1,8 +1,8 @@
 package birsy.clinker.common.block.util;
 
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.StringRepresentable;
 
-public enum PillarCap implements IStringSerializable {
+public enum PillarCap implements StringRepresentable {
 	NONE("none"),
 	UP("up"),
 	DOWN("down"),
@@ -15,10 +15,10 @@ public enum PillarCap implements IStringSerializable {
 	}
 	
 	public String toString() {
-		return this.getString();
+		return this.getSerializedName();
 	}
 
-	public String getString() {
+	public String getSerializedName() {
 		return this.letter;
 	}
 }

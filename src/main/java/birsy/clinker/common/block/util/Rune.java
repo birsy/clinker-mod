@@ -1,8 +1,8 @@
 package birsy.clinker.common.block.util;
 
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.StringRepresentable;
 
-public enum Rune implements IStringSerializable {
+public enum Rune implements StringRepresentable {
 	NONE("none"), 
 	RANDOM("random"),
 	A("a"), 
@@ -39,10 +39,10 @@ public enum Rune implements IStringSerializable {
 	}
 	
 	public String toString() {
-		return this.getString();
+		return this.getSerializedName();
 	}
 
-	public String getString() {
+	public String getSerializedName() {
 		return this.letter;
 	}
 }
