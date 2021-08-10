@@ -7,19 +7,17 @@ import birsy.clinker.client.render.entity.layers.GnomeHeldItemLayer;
 import birsy.clinker.client.render.entity.model.GnomeModel;
 import birsy.clinker.common.entity.merchant.GnomeEntity;
 import birsy.clinker.core.Clinker;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.resources.ResourceLocation;
-
-import ResourceLocation;
+import net.minecraft.util.ResourceLocation;
 
 public class GnomeRenderer<T extends GnomeEntity, M extends GnomeModel<T>> extends MobRenderer<GnomeEntity, GnomeModel<GnomeEntity>>
 {
 	protected static final ResourceLocation TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/entity/gnome/gnome.png");
 	
-	public GnomeRenderer(EntityRenderDispatcher renderManagerIn) {
+	public GnomeRenderer(EntityRendererManager renderManagerIn) {
 		super(renderManagerIn, new GnomeModel<>(0), 0.7F);
 		this.addLayer(new GnomeHeldItemLayer<>(this));
 		this.addLayer(new GnomeArmorLayer<>(this, new GnomeModel<>(0.25F), new GnomeModel<>(0.5F)));
@@ -28,12 +26,12 @@ public class GnomeRenderer<T extends GnomeEntity, M extends GnomeModel<T>> exten
 	}
 
 	@Override
-	public ResourceLocation getTextureLocation(GnomeEntity entity) {
+	public ResourceLocation getEntityTexture(GnomeEntity entity) {
 		return TEXTURE;
 	}
 
 	@Override
-	public void render(GnomeEntity entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
+	public void render(GnomeEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
 		if (entityIn.hasCustomName()) {
 			if (entityIn.getCustomName().getString().equalsIgnoreCase("chrinkla")) {
 				matrixStackIn.scale(0.75F, 0.75F, 0.75F);

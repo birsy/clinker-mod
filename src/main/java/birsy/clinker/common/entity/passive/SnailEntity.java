@@ -3,36 +3,36 @@ package birsy.clinker.common.entity.passive;
 import javax.annotation.Nullable;
 
 import birsy.clinker.core.registry.ClinkerEntities;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.entity.AgableMob;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.FollowParentGoal;
-import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
-import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
-import net.minecraft.world.entity.ai.goal.PanicGoal;
-import net.minecraft.world.entity.ai.goal.FloatGoal;
-import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
-import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.level.Level;
-import net.minecraft.server.level.ServerLevel;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.AgeableEntity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.ai.attributes.AttributeModifierMap;
+import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.ai.goal.FollowParentGoal;
+import net.minecraft.entity.ai.goal.LookAtGoal;
+import net.minecraft.entity.ai.goal.LookRandomlyGoal;
+import net.minecraft.entity.ai.goal.PanicGoal;
+import net.minecraft.entity.ai.goal.SwimGoal;
+import net.minecraft.entity.ai.goal.WaterAvoidingRandomWalkingGoal;
+import net.minecraft.entity.passive.AnimalEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundEvents;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 
-public class SnailEntity extends Animal
+public class SnailEntity extends AnimalEntity
 {
 	public int ticksClosed;
 	public boolean closed;
 	public boolean gary;
 	
-	public SnailEntity(EntityType<? extends Animal> type, Level worldIn) {
+	public SnailEntity(EntityType<? extends AnimalEntity> type, World worldIn) {
 		super(type, worldIn);
 	}
 	
@@ -40,41 +40,41 @@ public class SnailEntity extends Animal
 	protected void registerGoals()
 	{
 		super.registerGoals();
-		this.goalSelector.addGoal(0, new FloatGoal(this));
+		this.goalSelector.addGoal(0, new SwimGoal(this));
 	    this.goalSelector.addGoal(1, new PanicGoal(this, 1.1D));
 	    this.goalSelector.addGoal(4, new FollowParentGoal(this, 1.25D));
-	    this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 1.0D));
-	    this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 6.0F));
-	    this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
+	    this.goalSelector.addGoal(5, new WaterAvoidingRandomWalkingGoal(this, 1.0D));
+	    this.goalSelector.addGoal(6, new LookAtGoal(this, PlayerEntity.class, 6.0F));
+	    this.goalSelector.addGoal(7, new LookRandomlyGoal(this));
 	}
 	
-	//createMobAttributes --> registerAttributes
-	public static AttributeSupplier.Builder setCustomAttributes()
+	//func_233666_p_ --> registerAttributes
+	public static AttributeModifierMap.MutableAttribute setCustomAttributes()
 	{
-		return Mob.createMobAttributes()
-				.add(Attributes.MAX_HEALTH, 12.0)
-				.add(Attributes.MOVEMENT_SPEED, 0.05D);
+		return MobEntity.func_233666_p_()
+				.createMutableAttribute(Attributes.MAX_HEALTH, 12.0)
+				.createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.05D);
 	}
 	
 	private boolean isHidden() {
 		return this.closed;
 	}
 	
-	public void addAdditionalSaveData(CompoundTag compound) {
-		super.addAdditionalSaveData(compound);
+	public void writeAdditional(CompoundNBT compound) {
+		super.writeAdditional(compound);
 		if (this.gary) {
 			compound.putBoolean("Gary", true);
 		}
 	}
 	
-	public void readAdditionalSaveData(CompoundTag compound) {
-		super.readAdditionalSaveData(compound);
+	public void readAdditional(CompoundNBT compound) {
+		super.readAdditional(compound);
 		if (compound.contains("Gary", 99)) {
 			this.gary = compound.getBoolean("Gary");
 		}
 	}
 	
-	public void setCustomName(@Nullable Component name) {
+	public void setCustomName(@Nullable ITextComponent name) {
 		super.setCustomName(name);
 		if (!this.gary && name != null && name.getString().equals("Gary")) {
 			this.gary = true;
@@ -83,19 +83,19 @@ public class SnailEntity extends Animal
 	
 	//Sounds
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.GUARDIAN_AMBIENT_LAND;
+		return SoundEvents.ENTITY_GUARDIAN_AMBIENT_LAND;
 	}
 
 	protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-		return this.isHidden() ? SoundEvents.SHULKER_HURT_CLOSED : SoundEvents.GUARDIAN_FLOP;
+		return this.isHidden() ? SoundEvents.ENTITY_SHULKER_HURT_CLOSED : SoundEvents.ENTITY_GUARDIAN_FLOP;
 	}
 
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.GUARDIAN_DEATH_LAND;
+		return SoundEvents.ENTITY_GUARDIAN_DEATH_LAND;
 	}
 
 	protected void playStepSound(BlockPos pos, BlockState blockIn) {
-		this.playSound(SoundEvents.SPIDER_STEP, 0.15F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_SPIDER_STEP, 0.15F, 1.0F);
 	}
 
 	/**
@@ -106,7 +106,7 @@ public class SnailEntity extends Animal
 	}
 
 	@Override
-	public AgableMob getBreedOffspring(ServerLevel p_241840_1_, AgableMob p_241840_2_) {
-		return ClinkerEntities.SNAIL.get().create(this.level);
+	public AgeableEntity createChild(ServerWorld p_241840_1_, AgeableEntity p_241840_2_) {
+		return ClinkerEntities.SNAIL.get().create(this.world);
 	}
 }

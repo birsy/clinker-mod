@@ -2,15 +2,15 @@ package birsy.clinker.common.block.belwithstone;
 
 import java.util.Random;
 
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.SoundType;
+import net.minecraft.block.material.Material;
+import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.StateContainer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.ToolType;
 
 public class MonolithicBelwithBricksBlock extends Block
@@ -21,43 +21,43 @@ public class MonolithicBelwithBricksBlock extends Block
 	
 	public MonolithicBelwithBricksBlock()
 	{
-		super(((Block.Properties.of(Material.STONE)
-			  .strength(10F, 6.0F)
-			  .sound(SoundType.BONE_BLOCK)
+		super(((Block.Properties.create(Material.ROCK)
+			  .hardnessAndResistance(10F, 6.0F)
+			  .sound(SoundType.BONE)
 			  .harvestLevel(1)
 			  .harvestTool(ToolType.PICKAXE))));
-		this.registerDefaultState(this.stateDefinition.any().setValue(Y_EVEN, false).setValue(Z_EVEN, false));
+		this.setDefaultState(this.stateContainer.getBaseState().with(Y_EVEN, false).with(Z_EVEN, false));
 	}
 	
 	@Override
-	public BlockState getStateForPlacement(BlockPlaceContext context) {
-		int height = context.getClickedPos().getY();
-		int sideZ = context.getClickedPos().getZ();
+	public BlockState getStateForPlacement(BlockItemUseContext context) {
+		int height = context.getPos().getY();
+		int sideZ = context.getPos().getZ();
 		
 		if (height % 2 == 0 && sideZ % 2 == 0) {
-			return this.defaultBlockState().setValue(Y_EVEN, true).setValue(Z_EVEN, true);
+			return this.getDefaultState().with(Y_EVEN, true).with(Z_EVEN, true);
 		} else if (height % 2 == 0) {
-			return this.defaultBlockState().setValue(Y_EVEN, true);
+			return this.getDefaultState().with(Y_EVEN, true);
 		} else if (sideZ % 2 == 0) {
-			return this.defaultBlockState().setValue(Z_EVEN, true);
+			return this.getDefaultState().with(Z_EVEN, true);
 		} else {
-			return this.defaultBlockState();
+			return this.getDefaultState();
 		}
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public void tick(BlockState state, ServerLevel worldIn, BlockPos pos, Random rand) {
+	public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
 		if (pos.getX() % 2 == 0) {
-			worldIn.setBlockAndUpdate(pos, state.setValue(X_EVEN, true));
+			worldIn.setBlockState(pos, state.with(X_EVEN, true));
 		}
 		
 		if (pos.getY() % 2 == 0) {
-			worldIn.setBlockAndUpdate(pos, state.setValue(Y_EVEN, true));
+			worldIn.setBlockState(pos, state.with(Y_EVEN, true));
 		}
 		
 		if (pos.getZ() % 2 == 0) {
-			worldIn.setBlockAndUpdate(pos, state.setValue(Z_EVEN, true));
+			worldIn.setBlockState(pos, state.with(Z_EVEN, true));
 		}
 		
 		super.tick(state, worldIn, pos, rand);
@@ -84,7 +84,7 @@ public class MonolithicBelwithBricksBlock extends Block
 	*/
 	
 	
-	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+	protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
 		builder.add(X_EVEN, Y_EVEN, Z_EVEN);
 	}
 }

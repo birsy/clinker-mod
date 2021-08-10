@@ -5,159 +5,143 @@ import birsy.clinker.common.entity.merchant.GnomeEntity;
 import birsy.clinker.common.entity.monster.HyenaEntity;
 import birsy.clinker.core.registry.ClinkerItems;
 import birsy.clinker.core.util.MathUtils;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
-import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.*;
-import net.minecraft.world.entity.monster.EnderMan;
-import net.minecraft.world.entity.monster.WitherSkeleton;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.AxeItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.damagesource.IndirectEntityDamageSource;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.util.Mth;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.entity.monster.EndermanEntity;
+import net.minecraft.entity.monster.WitherSkeletonEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.item.AxeItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.particles.ParticleTypes;
+import net.minecraft.pathfinding.GroundPathNavigator;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.Hand;
+import net.minecraft.util.IndirectEntityDamageSource;
+import net.minecraft.util.SoundEvents;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.DifficultyInstance;
-import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.IServerWorld;
+import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.SpawnGroupData;
-import net.minecraft.world.entity.ai.goal.FloatGoal;
-import net.minecraft.world.entity.ai.goal.LeapAtTargetGoal;
-import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
-import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
-import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
-import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
-
-import EntityDataAccessor;
-
 public class GnomadAxemanEntity extends AbstractGnomadEntity
 {
 	public int stamina;
 	private int maxStamina = 100;
-	public static final EntityDataAccessor<Float> SIZE = SynchedEntityData.defineId(GnomadAxemanEntity.class, EntityDataSerializers.FLOAT);
-	public static final EntityDataAccessor<Float> BRUTALITY = SynchedEntityData.defineId(GnomadAxemanEntity.class, EntityDataSerializers.FLOAT);
-	public static final EntityDataAccessor<Float> PROWESS = SynchedEntityData.defineId(GnomadAxemanEntity.class, EntityDataSerializers.FLOAT);
+	public static final DataParameter<Float> SIZE = EntityDataManager.createKey(GnomadAxemanEntity.class, DataSerializers.FLOAT);
+	public static final DataParameter<Float> BRUTALITY = EntityDataManager.createKey(GnomadAxemanEntity.class, DataSerializers.FLOAT);
+	public static final DataParameter<Float> PROWESS = EntityDataManager.createKey(GnomadAxemanEntity.class, DataSerializers.FLOAT);
 
-	public static final EntityDataAccessor<Boolean> ATTACKING = SynchedEntityData.defineId(GnomadAxemanEntity.class, EntityDataSerializers.BOOLEAN);
+	public static final DataParameter<Boolean> ATTACKING = EntityDataManager.createKey(GnomadAxemanEntity.class, DataSerializers.BOOLEAN);
 
-	public static final EntityDataAccessor<Integer> PREV_WINDUP_TICKS = SynchedEntityData.defineId(GnomadAxemanEntity.class, EntityDataSerializers.INT);
-	public static final EntityDataAccessor<Integer> WINDUP_TICKS = SynchedEntityData.defineId(GnomadAxemanEntity.class, EntityDataSerializers.INT);
-	public static final EntityDataAccessor<Integer> MAX_WINDUP_TICKS = SynchedEntityData.defineId(GnomadAxemanEntity.class, EntityDataSerializers.INT);
+	public static final DataParameter<Integer> PREV_WINDUP_TICKS = EntityDataManager.createKey(GnomadAxemanEntity.class, DataSerializers.VARINT);
+	public static final DataParameter<Integer> WINDUP_TICKS = EntityDataManager.createKey(GnomadAxemanEntity.class, DataSerializers.VARINT);
+	public static final DataParameter<Integer> MAX_WINDUP_TICKS = EntityDataManager.createKey(GnomadAxemanEntity.class, DataSerializers.VARINT);
 
-	public static final EntityDataAccessor<Integer> PREV_SWING_TICKS = SynchedEntityData.defineId(GnomadAxemanEntity.class, EntityDataSerializers.INT);
-	public static final EntityDataAccessor<Integer> SWING_TICKS = SynchedEntityData.defineId(GnomadAxemanEntity.class, EntityDataSerializers.INT);
-	public static final EntityDataAccessor<Integer> MAX_SWING_TICKS = SynchedEntityData.defineId(GnomadAxemanEntity.class, EntityDataSerializers.INT);
+	public static final DataParameter<Integer> PREV_SWING_TICKS = EntityDataManager.createKey(GnomadAxemanEntity.class, DataSerializers.VARINT);
+	public static final DataParameter<Integer> SWING_TICKS = EntityDataManager.createKey(GnomadAxemanEntity.class, DataSerializers.VARINT);
+	public static final DataParameter<Integer> MAX_SWING_TICKS = EntityDataManager.createKey(GnomadAxemanEntity.class, DataSerializers.VARINT);
 
 	private boolean wasHit;
 
-	public static final EntityDataAccessor<Integer> SHIELDS = SynchedEntityData.defineId(GnomadAxemanEntity.class, EntityDataSerializers.INT);
+	public static final DataParameter<Integer> SHIELDS = EntityDataManager.createKey(GnomadAxemanEntity.class, DataSerializers.VARINT);
 	public int shieldTransitionAnimation;
 	public int shieldSizeRandomness;
 	public int shieldRandomness;
 
-	public static final EntityDataAccessor<Boolean> BUFFED = SynchedEntityData.defineId(GnomadAxemanEntity.class, EntityDataSerializers.BOOLEAN);
+	public static final DataParameter<Boolean> BUFFED = EntityDataManager.createKey(GnomadAxemanEntity.class, DataSerializers.BOOLEAN);
 	private float buffLength;
 
-	public static final EntityDataAccessor<Boolean> HELMET = SynchedEntityData.defineId(GnomadAxemanEntity.class, EntityDataSerializers.BOOLEAN);
-	public static final EntityDataAccessor<Boolean> LEFT_PAULDRON = SynchedEntityData.defineId(GnomadAxemanEntity.class, EntityDataSerializers.BOOLEAN);
-	public static final EntityDataAccessor<Boolean> RIGHT_PAULDRON = SynchedEntityData.defineId(GnomadAxemanEntity.class, EntityDataSerializers.BOOLEAN);
+	public static final DataParameter<Boolean> HELMET = EntityDataManager.createKey(GnomadAxemanEntity.class, DataSerializers.BOOLEAN);
+	public static final DataParameter<Boolean> LEFT_PAULDRON = EntityDataManager.createKey(GnomadAxemanEntity.class, DataSerializers.BOOLEAN);
+	public static final DataParameter<Boolean> RIGHT_PAULDRON = EntityDataManager.createKey(GnomadAxemanEntity.class, DataSerializers.BOOLEAN);
 
 
-	public static final EntityDataAccessor<Boolean> DODGE_DIRECTION = SynchedEntityData.defineId(GnomadAxemanEntity.class, EntityDataSerializers.BOOLEAN);
-	public static final EntityDataAccessor<Integer> DODGE_TIME = SynchedEntityData.defineId(GnomadAxemanEntity.class, EntityDataSerializers.INT);
+	public static final DataParameter<Boolean> DODGE_DIRECTION = EntityDataManager.createKey(GnomadAxemanEntity.class, DataSerializers.BOOLEAN);
+	public static final DataParameter<Integer> DODGE_TIME = EntityDataManager.createKey(GnomadAxemanEntity.class, DataSerializers.VARINT);
 	
 	public AbstractGnomadEntity.ArmPose armPose;
 	
-	public GnomadAxemanEntity(EntityType<? extends AbstractGnomadEntity> type, Level worldIn)
+	public GnomadAxemanEntity(EntityType<? extends AbstractGnomadEntity> type, World worldIn)
 	{
 		super(type, worldIn);
-	    ((GroundPathNavigation)this.getNavigation()).setCanOpenDoors(true);
-	    this.getNavigation().setCanFloat(true);
+	    ((GroundPathNavigator)this.getNavigator()).setBreakDoors(true);
+	    this.getNavigator().setCanSwim(true);
 	    this.setCanPickUpLoot(true);
 	}
 	
 	protected void registerGoals() {
 		super.registerGoals();
-		this.goalSelector.addGoal(0, new FloatGoal(this));
+		this.goalSelector.addGoal(0, new SwimGoal(this));
 
 		this.goalSelector.addGoal(3, new LeapAtTargetGoal(this, 0.2F));
 		this.goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.0D, false));
 
-		this.targetSelector.addGoal(2, new HurtByTargetGoal(this).setAlertOthers(AbstractGnomadEntity.class));
+		this.targetSelector.addGoal(2, new HurtByTargetGoal(this).setCallsForHelp(AbstractGnomadEntity.class));
 		this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, GnomeEntity.class, true));
 		this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, GnomeBratEntity.class, true));
-		this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, true));
+		this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true));
 		this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, HyenaEntity.class, true));
-		this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, WitherSkeleton.class, true));
-		this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, EnderMan.class, true));
+		this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, WitherSkeletonEntity.class, true));
+		this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, EndermanEntity.class, true));
 
-		this.goalSelector.addGoal(8, new RandomStrollGoal(this, 0.6D));
+		this.goalSelector.addGoal(8, new RandomWalkingGoal(this, 0.6D));
 
-		this.goalSelector.addGoal(9, new LookAtPlayerGoal(this, Player.class, 3.0F, 1.0F));
-		this.goalSelector.addGoal(11, new LookAtPlayerGoal(this, GnomeEntity.class, 3.0F, 1.0F));
-		this.goalSelector.addGoal(12, new LookAtPlayerGoal(this, AbstractGnomadEntity.class, 3.0F, 1.0F));
-		this.goalSelector.addGoal(13, new LookAtPlayerGoal(this, Mob.class, 8.0F));
+		this.goalSelector.addGoal(9, new LookAtGoal(this, PlayerEntity.class, 3.0F, 1.0F));
+		this.goalSelector.addGoal(11, new LookAtGoal(this, GnomeEntity.class, 3.0F, 1.0F));
+		this.goalSelector.addGoal(12, new LookAtGoal(this, AbstractGnomadEntity.class, 3.0F, 1.0F));
+		this.goalSelector.addGoal(13, new LookAtGoal(this, MobEntity.class, 8.0F));
 	}
 
-	protected void defineSynchedData() {
-		super.defineSynchedData();
-		this.entityData.define(SIZE, 1.0F);
-		this.entityData.define(BRUTALITY, 0.0F);
-		this.entityData.define(PROWESS, 0.0F);
+	protected void registerData() {
+		super.registerData();
+		this.dataManager.register(SIZE, 1.0F);
+		this.dataManager.register(BRUTALITY, 0.0F);
+		this.dataManager.register(PROWESS, 0.0F);
 
-		this.entityData.define(SHIELDS, 0);
-		this.entityData.define(BUFFED, false);
+		this.dataManager.register(SHIELDS, 0);
+		this.dataManager.register(BUFFED, false);
 
-		this.entityData.define(DODGE_TIME, 0);
-		this.entityData.define(DODGE_DIRECTION, false);
-
-
-		this.entityData.define(PREV_WINDUP_TICKS, 0);
-		this.entityData.define(WINDUP_TICKS, 0);
-		this.entityData.define(MAX_WINDUP_TICKS, 0);
-
-		this.entityData.define(PREV_SWING_TICKS, 0);
-		this.entityData.define(SWING_TICKS, 0);
-		this.entityData.define(MAX_SWING_TICKS, 0);
-
-		this.entityData.define(ATTACKING, false);
+		this.dataManager.register(DODGE_TIME, 0);
+		this.dataManager.register(DODGE_DIRECTION, false);
 
 
-		this.entityData.define(HELMET, false);
-		this.entityData.define(LEFT_PAULDRON, false);
-		this.entityData.define(RIGHT_PAULDRON, false);
+		this.dataManager.register(PREV_WINDUP_TICKS, 0);
+		this.dataManager.register(WINDUP_TICKS, 0);
+		this.dataManager.register(MAX_WINDUP_TICKS, 0);
+
+		this.dataManager.register(PREV_SWING_TICKS, 0);
+		this.dataManager.register(SWING_TICKS, 0);
+		this.dataManager.register(MAX_SWING_TICKS, 0);
+
+		this.dataManager.register(ATTACKING, false);
+
+
+		this.dataManager.register(HELMET, false);
+		this.dataManager.register(LEFT_PAULDRON, false);
+		this.dataManager.register(RIGHT_PAULDRON, false);
 	}
 
-	public void addAdditionalSaveData(CompoundTag compound) {
-		super.addAdditionalSaveData(compound);
-		compound.putFloat("Size", this.entityData.get(SIZE));
-		compound.putFloat("brutality", this.entityData.get(BRUTALITY));
-		compound.putFloat("prowess", this.entityData.get(PROWESS));
+	public void writeAdditional(CompoundNBT compound) {
+		super.writeAdditional(compound);
+		compound.putFloat("Size", this.dataManager.get(SIZE));
+		compound.putFloat("brutality", this.dataManager.get(BRUTALITY));
+		compound.putFloat("prowess", this.dataManager.get(PROWESS));
 
 		compound.putInt("shields", this.getShieldNumber());
 		compound.putBoolean("buffed", this.isBuffed());
@@ -166,13 +150,13 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 		compound.putBoolean("dodge_direction", this.getDodgeDirection());
 
 
-		compound.putInt("prev_windup_ticks", this.entityData.get(PREV_WINDUP_TICKS));
+		compound.putInt("prev_windup_ticks", this.dataManager.get(PREV_WINDUP_TICKS));
 		compound.putInt("windup_ticks", this.getWindupTicks());
-		compound.putInt("max_windup_ticks", this.entityData.get(MAX_WINDUP_TICKS));
+		compound.putInt("max_windup_ticks", this.dataManager.get(MAX_WINDUP_TICKS));
 
-		compound.putInt("prev_swing_ticks", this.entityData.get(PREV_SWING_TICKS));
+		compound.putInt("prev_swing_ticks", this.dataManager.get(PREV_SWING_TICKS));
 		compound.putInt("swing_ticks", this.getSwingTicks());
-		compound.putInt("max_swing_ticks", this.entityData.get(MAX_SWING_TICKS));
+		compound.putInt("max_swing_ticks", this.dataManager.get(MAX_SWING_TICKS));
 
 		compound.putBoolean("attacking", this.isAttacking());
 
@@ -182,35 +166,35 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 		compound.putBoolean("right_pauldron", this.isWearingRightPauldron());
 	}
 
-	public void readAdditionalSaveData(CompoundTag compound) {
-		super.readAdditionalSaveData(compound);
+	public void readAdditional(CompoundNBT compound) {
+		super.readAdditional(compound);
 		this.setSize(compound.getFloat("Size"));
-		this.entityData.set(BRUTALITY, compound.getFloat("brutality"));
-		this.entityData.set(PROWESS, compound.getFloat("prowess"));
+		this.dataManager.set(BRUTALITY, compound.getFloat("brutality"));
+		this.dataManager.set(PROWESS, compound.getFloat("prowess"));
 
-		this.entityData.set(SHIELDS, compound.getInt("shields"));
-		this.entityData.set(BUFFED, compound.getBoolean("buffed"));
+		this.dataManager.set(SHIELDS, compound.getInt("shields"));
+		this.dataManager.set(BUFFED, compound.getBoolean("buffed"));
 
-		this.entityData.set(DODGE_TIME, compound.getInt("dodge_time"));
-		this.entityData.set(DODGE_DIRECTION, compound.getBoolean("dodge_direction"));
+		this.dataManager.set(DODGE_TIME, compound.getInt("dodge_time"));
+		this.dataManager.set(DODGE_DIRECTION, compound.getBoolean("dodge_direction"));
 
-		this.entityData.set(PREV_WINDUP_TICKS, compound.getInt("prev_windup_ticks"));
-		this.entityData.set(WINDUP_TICKS, compound.getInt("windup_ticks"));
-		this.entityData.set(MAX_WINDUP_TICKS, compound.getInt("max_windup_ticks"));
-		this.entityData.set(PREV_SWING_TICKS, compound.getInt("prev_swing_ticks"));
-		this.entityData.set(SWING_TICKS, compound.getInt("swing_ticks"));
-		this.entityData.set(MAX_SWING_TICKS, compound.getInt("max_swing_ticks"));
-		this.entityData.set(ATTACKING, compound.getBoolean("attacking"));
+		this.dataManager.set(PREV_WINDUP_TICKS, compound.getInt("prev_windup_ticks"));
+		this.dataManager.set(WINDUP_TICKS, compound.getInt("windup_ticks"));
+		this.dataManager.set(MAX_WINDUP_TICKS, compound.getInt("max_windup_ticks"));
+		this.dataManager.set(PREV_SWING_TICKS, compound.getInt("prev_swing_ticks"));
+		this.dataManager.set(SWING_TICKS, compound.getInt("swing_ticks"));
+		this.dataManager.set(MAX_SWING_TICKS, compound.getInt("max_swing_ticks"));
+		this.dataManager.set(ATTACKING, compound.getBoolean("attacking"));
 
-		this.entityData.set(HELMET, compound.getBoolean("helmet"));
-		this.entityData.set(LEFT_PAULDRON, compound.getBoolean("left_pauldron"));
-		this.entityData.set(RIGHT_PAULDRON, compound.getBoolean("right_pauldron"));
+		this.dataManager.set(HELMET, compound.getBoolean("helmet"));
+		this.dataManager.set(LEFT_PAULDRON, compound.getBoolean("left_pauldron"));
+		this.dataManager.set(RIGHT_PAULDRON, compound.getBoolean("right_pauldron"));
 	}
 	
 	@Override
 	public void tick() {
-		this.entityData.set(PREV_SWING_TICKS, getSwingTicks());
-		this.entityData.set(PREV_WINDUP_TICKS, getWindupTicks());
+		this.dataManager.set(PREV_SWING_TICKS, getSwingTicks());
+		this.dataManager.set(PREV_WINDUP_TICKS, getWindupTicks());
 
 		super.tick();
 
@@ -220,20 +204,20 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 
 		if (getDodgeTime() > 0) {
 			setDodgeTime(getDodgeTime() - 1);
-			if (this.getTarget() !=  null) {
-				this.getLookControl().setLookAt(this.getTarget().getEyePosition(0.5f));
-				this.lookAt(this.getTarget(), 360, 360);
+			if (this.getAttackTarget() !=  null) {
+				this.getLookController().setLookPosition(this.getAttackTarget().getEyePosition(0.5f));
+				this.faceEntity(this.getAttackTarget(), 360, 360);
 			}
 		} else if (getDodgeTime() < 0) {
 			setDodgeTime(0);
 		}
 
 		if (getDodgeTime() > 10) {
-			Vec3 particleMotion = this.getDeltaMovement().reverse().multiply(0.75, 0.75, 0.75);
-			this.level.addParticle(ParticleTypes.SMOKE, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), particleMotion.x, particleMotion.y, particleMotion.z);
+			Vector3d particleMotion = this.getMotion().inverse().mul(0.75, 0.75, 0.75);
+			this.world.addParticle(ParticleTypes.SMOKE, this.getPosXRandom(0.5D), this.getPosYRandom(), this.getPosZRandom(0.5D), particleMotion.x, particleMotion.y, particleMotion.z);
 		}
 
-		if (this.isAggressive() && this.getMainHandItem().getItem() instanceof net.minecraft.world.item.BowItem) {
+		if (this.isAggressive() && this.getHeldItemMainhand().getItem() instanceof net.minecraft.item.BowItem) {
 			setArmPose(AbstractGnomadEntity.ArmPose.BOW_AND_ARROW);
 		} else {
 			setArmPose(AbstractGnomadEntity.ArmPose.NEUTRAL);
@@ -243,80 +227,80 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 			this.shieldTransitionAnimation++;
 		}
 
-		shieldSizeRandomness = this.random.nextInt(5) + 15;
-		shieldRandomness = this.random.nextInt(100);
+		shieldSizeRandomness = this.rand.nextInt(5) + 15;
+		shieldRandomness = this.rand.nextInt(100);
 	}
 
 	@Override
-	public void aiStep() {
+	public void livingTick() {
 		this.wasHit = false;
 		if (shouldAttemptDodge()) {
 			this.sideStepDodge();
 		}
-		super.aiStep();
+		super.livingTick();
 	}
 
 	@Override
-	public boolean skipAttackInteraction(Entity entityIn) {
+	public boolean hitByEntity(Entity entityIn) {
 		this.wasHit = true;
 		if (getShieldNumber() > 0) {
 			breakShield();
 			return true;
 		} else {
-			return super.skipAttackInteraction(entityIn);
+			return super.hitByEntity(entityIn);
 		}
 	}
 
 	public int getShieldNumber() {
-		return this.entityData.get(SHIELDS);
+		return this.dataManager.get(SHIELDS);
 	}
 	public void setShielded(int shieldNumber) {
-		boolean flag = this.entityData.get(SHIELDS) == 0;
-		this.entityData.set(SHIELDS, shieldNumber);
+		boolean flag = this.dataManager.get(SHIELDS) == 0;
+		this.dataManager.set(SHIELDS, shieldNumber);
 		if (flag && shieldNumber > 0) {
 			this.shieldTransitionAnimation = 0;
-			this.playSound(SoundEvents.BEACON_POWER_SELECT, 1.0F, 1.0F);
+			this.playSound(SoundEvents.BLOCK_BEACON_POWER_SELECT, 1.0F, 1.0F);
 		}
 	}
 	public void breakShield() {
 		if (getShieldNumber() > 0) {
 			if (getShieldNumber() == 1) {
-				this.playSound(SoundEvents.BEACON_DEACTIVATE, 1.0F, 1.0F);
+				this.playSound(SoundEvents.BLOCK_BEACON_DEACTIVATE, 1.0F, 1.0F);
 			}
 
-			this.playSound(SoundEvents.GLASS_BREAK, 1.0F, 1.0F);
+			this.playSound(SoundEvents.BLOCK_GLASS_BREAK, 1.0F, 1.0F);
 
-			this.entityData.set(SHIELDS, getShieldNumber() - 1);
-			this.level.addParticle(ParticleTypes.POOF, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
+			this.dataManager.set(SHIELDS, getShieldNumber() - 1);
+			this.world.addParticle(ParticleTypes.POOF, this.getPosXRandom(0.5D), this.getPosYRandom(), this.getPosZRandom(0.5D), 0.0D, 0.0D, 0.0D);
 		}
 	}
 
 	public boolean isBuffed() {
-		return this.entityData.get(BUFFED);
+		return this.dataManager.get(BUFFED);
 	}
 	public void setBuffed(boolean buffed) {
-		if (buffed && !this.entityData.get(BUFFED)) {
-			this.playSound(SoundEvents.BEACON_ACTIVATE, 1.0F, 1.0F);
-		} else if (this.entityData.get(BUFFED)) {
-			this.playSound(SoundEvents.BEACON_DEACTIVATE, 1.0F, 1.0F);
+		if (buffed && !this.dataManager.get(BUFFED)) {
+			this.playSound(SoundEvents.BLOCK_BEACON_ACTIVATE, 1.0F, 1.0F);
+		} else if (this.dataManager.get(BUFFED)) {
+			this.playSound(SoundEvents.BLOCK_BEACON_DEACTIVATE, 1.0F, 1.0F);
 		}
 
-		this.entityData.set(BUFFED, buffed);
+		this.dataManager.set(BUFFED, buffed);
 	}
 
 	public boolean isWearingHelmet() {
-		return this.entityData.get(HELMET);
+		return this.dataManager.get(HELMET);
 	}
 	public boolean isWearingLeftPauldron() {
-		return this.entityData.get(LEFT_PAULDRON);
+		return this.dataManager.get(LEFT_PAULDRON);
 	}
 	public boolean isWearingRightPauldron() {
-		return this.entityData.get(RIGHT_PAULDRON);
+		return this.dataManager.get(RIGHT_PAULDRON);
 	}
 
 	public void setWearingHelmet(boolean wearingHelmet) {
 		if (wearingHelmet) {
-			this.playSound(SoundEvents.ARMOR_EQUIP_IRON, 0.5F, 0.5F);
+			this.playSound(SoundEvents.ITEM_ARMOR_EQUIP_IRON, 0.5F, 0.5F);
 
 			this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(this.getAttribute(Attributes.MOVEMENT_SPEED).getBaseValue() - 2);
 			this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(this.getAttribute(Attributes.ARMOR).getBaseValue() + 6);
@@ -324,11 +308,11 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 
 			this.setHealth(this.getMaxHealth());
 		}
-		this.entityData.set(HELMET, wearingHelmet);
+		this.dataManager.set(HELMET, wearingHelmet);
 	}
 	public void setWearingLeftPauldron(boolean wearingLeftPauldron) {
 		if (wearingLeftPauldron) {
-			this.playSound(SoundEvents.ARMOR_EQUIP_IRON, 0.5F, 0.5F);
+			this.playSound(SoundEvents.ITEM_ARMOR_EQUIP_IRON, 0.5F, 0.5F);
 
 			this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(this.getAttribute(Attributes.MOVEMENT_SPEED).getBaseValue() - 1);
 			this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(this.getAttribute(Attributes.ARMOR).getBaseValue() + 4);
@@ -336,11 +320,11 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 
 			this.setHealth(this.getMaxHealth());
 		}
-		this.entityData.set(LEFT_PAULDRON, wearingLeftPauldron);
+		this.dataManager.set(LEFT_PAULDRON, wearingLeftPauldron);
 	}
 	public void setWearingRightPauldron(boolean wearingRightPauldron) {
 		if (wearingRightPauldron) {
-			this.playSound(SoundEvents.ARMOR_EQUIP_IRON, 0.5F, 0.5F);
+			this.playSound(SoundEvents.ITEM_ARMOR_EQUIP_IRON, 0.5F, 0.5F);
 
 			this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(this.getAttribute(Attributes.MOVEMENT_SPEED).getBaseValue() - 1);
 			this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(this.getAttribute(Attributes.ARMOR).getBaseValue() + 4);
@@ -348,7 +332,7 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 
 			this.setHealth(this.getMaxHealth());
 		}
-		this.entityData.set(RIGHT_PAULDRON, wearingRightPauldron);
+		this.dataManager.set(RIGHT_PAULDRON, wearingRightPauldron);
 	}
 
 
@@ -358,15 +342,15 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 	 */
 	public void sideStepDodge() {
 		if (stamina >= 20 && getDodgeTime() <= 0) {
-			this.setDodgeDirection(this.random.nextBoolean());
+			this.setDodgeDirection(this.rand.nextBoolean());
 			this.setDodgeTime(15);
 			this.stamina =- 25;
 
-			double dodgeIntensity = ((random.nextInt(2) + 8) * 0.1) * 0.9;
-			Vec3 motionVector = this.getViewVector(1.0F).normalize().yRot(this.getDodgeDirection() ? 90 : -90); //.mul(dodgeIntensity, dodgeIntensity, dodgeIntensity);
+			double dodgeIntensity = ((rand.nextInt(2) + 8) * 0.1) * 0.9;
+			Vector3d motionVector = this.getLook(1.0F).normalize().rotateYaw(this.getDodgeDirection() ? 90 : -90); //.mul(dodgeIntensity, dodgeIntensity, dodgeIntensity);
 
 			//this.jump();
-			this.push(motionVector.x() * dodgeIntensity, motionVector.y() * dodgeIntensity * 0.5F, motionVector.z() * dodgeIntensity);
+			this.addVelocity(motionVector.getX() * dodgeIntensity, motionVector.getY() * dodgeIntensity * 0.5F, motionVector.getZ() * dodgeIntensity);
 			this.playSound(SoundEvents.UI_TOAST_IN, 1.5F, 0.75F);
 		}
 	}
@@ -377,18 +361,18 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 	 */
 	private boolean shouldAttemptDodge() {
 		boolean flag;
-		if (this.getTarget() != null) {
-			flag = isEntityHolding(this.getTarget(), Items.BOW) || isEntityHolding(this.getTarget(), Items.CROSSBOW);
-			if (this.distanceToSqr(this.getTarget()) < 12 || flag) {
-				Vec3 lookVector = this.getTarget().getViewVector(1.0F).normalize();
-				Vec3 vector3d1 = new Vec3(this.getX() - this.getTarget().getX(), this.getEyeY() - this.getTarget().getEyeY(), this.getZ() - this.getTarget().getZ());
+		if (this.getAttackTarget() != null) {
+			flag = isEntityHolding(this.getAttackTarget(), Items.BOW) || isEntityHolding(this.getAttackTarget(), Items.CROSSBOW);
+			if (this.getDistanceSq(this.getAttackTarget()) < 12 || flag) {
+				Vector3d lookVector = this.getAttackTarget().getLook(1.0F).normalize();
+				Vector3d vector3d1 = new Vector3d(this.getPosX() - this.getAttackTarget().getPosX(), this.getPosYEye() - this.getAttackTarget().getPosYEye(), this.getPosZ() - this.getAttackTarget().getPosZ());
 				double d0 = vector3d1.length();
 				vector3d1 = vector3d1.normalize();
-				double d1 = lookVector.dot(vector3d1);
+				double d1 = lookVector.dotProduct(vector3d1);
 				if (flag) {
-					return d1 > 1.0D - 0.15D / d0 && this.getTarget().canSee(this);
+					return d1 > 1.0D - 0.15D / d0 && this.getAttackTarget().canEntityBeSeen(this);
 				} else {
-					return d1 > 1.0D - 0.15D / d0 && this.getTarget().canSee(this) && this.random.nextInt(3) == 0;
+					return d1 > 1.0D - 0.15D / d0 && this.getAttackTarget().canEntityBeSeen(this) && this.rand.nextInt(3) == 0;
 				}
 			}
 		}
@@ -397,29 +381,29 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 	}
 
 	private boolean isEntityHolding(LivingEntity entityIn, Item itemIn) {
-		return entityIn.getMainHandItem().getItem() == itemIn || entityIn.getOffhandItem().getItem() == itemIn;
+		return entityIn.getHeldItemMainhand().getItem() == itemIn || entityIn.getHeldItemOffhand().getItem() == itemIn;
 	}
 
 	public boolean getDodgeDirection() {
-		return this.entityData.get(DODGE_DIRECTION);
+		return this.dataManager.get(DODGE_DIRECTION);
 	}
 	public void setDodgeDirection(boolean direction) {
-		this.entityData.set(DODGE_DIRECTION, direction);
+		this.dataManager.set(DODGE_DIRECTION, direction);
 	}
 
 	public int getDodgeTime() {
-		return this.entityData.get(DODGE_TIME);
+		return this.dataManager.get(DODGE_TIME);
 	}
 	public void setDodgeTime(int time) {
-		this.entityData.set(DODGE_TIME, time);
+		this.dataManager.set(DODGE_TIME, time);
 	}
 
 	@Override
-	public boolean hurt(DamageSource source, float amount) {
-		if (source instanceof IndirectEntityDamageSource && getDodgeTime() > 10 * Math.min(0.75, this.entityData.get(PROWESS) + 0.5)) {
+	public boolean attackEntityFrom(DamageSource source, float amount) {
+		if (source instanceof IndirectEntityDamageSource && getDodgeTime() > 10 * Math.min(0.75, this.dataManager.get(PROWESS) + 0.5)) {
 			return false;
 		} else {
-			return super.hurt(source, amount * this.getArmorAttackMultiplier());
+			return super.attackEntityFrom(source, amount * this.getArmorAttackMultiplier());
 		}
 	}
 
@@ -459,10 +443,10 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 		}
 
 		@Override
-		public boolean canUse() {
-			if (gnomad.getTarget() != null) {
+		public boolean shouldExecute() {
+			if (gnomad.getAttackTarget() != null) {
 				if (gnomad.getSwingTicks() > 0 || gnomad.getWindupTicks() > 0) {
-					return entityInRange(gnomad.getTarget(), this.attackRange) && gnomad.getTarget().isAlive() && super.canUse();
+					return entityInRange(gnomad.getAttackTarget(), this.attackRange) && gnomad.getAttackTarget().isAlive() && super.shouldExecute();
 				}
 			}
 
@@ -472,7 +456,7 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 		@Override
 		public void tick() {
 			super.tick();
-			LivingEntity livingentity = this.gnomad.getTarget();
+			LivingEntity livingentity = this.gnomad.getAttackTarget();
 			boolean inRange = entityInRange(livingentity, this.attackRange * 1.5F);
 
 			if (swingCooldown <= 0) {
@@ -501,13 +485,13 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 		}
 
 		@Override
-		public boolean canContinueToUse() {
-			if (gnomad.getTarget() == null) {
+		public boolean shouldContinueExecuting() {
+			if (gnomad.getAttackTarget() == null) {
 				return false;
 			} else if (gnomad.wasHit && this.interuptable) {
 				return false;
 			} else {
-				return super.canContinueToUse();
+				return super.shouldContinueExecuting();
 			}
 		}
 
@@ -518,16 +502,16 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 		}
 
 		private void attack() {
-			if (this.gnomad.getTarget() != null) {
+			if (this.gnomad.getAttackTarget() != null) {
 				boolean attackSuccessful = false;
 
-				this.gnomad.swing(InteractionHand.MAIN_HAND);
-				AABB hurtBox = this.gnomad.getBoundingBox()
-						.inflate(0, -(this.gnomad.getBoundingBox().getYsize() / 2), 0)
-						.inflate(this.attackRange / 2)
-						.move(this.getHitboxOffset().x(), this.getHitboxOffset().y(), this.getHitboxOffset().y());
+				this.gnomad.swingArm(Hand.MAIN_HAND);
+				AxisAlignedBB hurtBox = this.gnomad.getBoundingBox()
+						.grow(0, -(this.gnomad.getBoundingBox().getYSize() / 2), 0)
+						.grow(this.attackRange / 2)
+						.offset(this.getHitboxOffset().getX(), this.getHitboxOffset().getY(), this.getHitboxOffset().getY());
 
-				for (Entity entity : this.gnomad.getCommandSenderWorld().getEntitiesOfClass(Entity.class, hurtBox)) {
+				for (Entity entity : this.gnomad.getEntityWorld().getEntitiesWithinAABB(Entity.class, hurtBox)) {
 					if (entity != this.gnomad) {
 						this.gnomad.attackEntityAsMob(entity, this.damage);
 						attackSuccessful = true;
@@ -547,58 +531,58 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 		}
 
 		@Override
-		public void stop() {
+		public void resetTask() {
 			resetAttack();
-			super.stop();
+			super.resetTask();
 		}
 
 		@Override
 		protected void checkAndPerformAttack(LivingEntity enemy, double distToEnemySqr) {}
 
-		private Vec3 getHitboxOffset() {
-			double xOffset = -Mth.sin(this.gnomad.yRot * ((float)Math.PI / 180F)) * this.attackRange;
-			double zOffset = Mth.cos(this.gnomad.yRot * ((float)Math.PI / 180F)) * this.attackRange;
-			return new Vec3(this.gnomad.getX() + xOffset, this.gnomad.getY(0.5D), this.gnomad.getZ() + zOffset);
+		private Vector3d getHitboxOffset() {
+			double xOffset = -MathHelper.sin(this.gnomad.rotationYaw * ((float)Math.PI / 180F)) * this.attackRange;
+			double zOffset = MathHelper.cos(this.gnomad.rotationYaw * ((float)Math.PI / 180F)) * this.attackRange;
+			return new Vector3d(this.gnomad.getPosX() + xOffset, this.gnomad.getPosYHeight(0.5D), this.gnomad.getPosZ() + zOffset);
 		}
 
 		private boolean entityInRange(LivingEntity entityIn, float range) {
-			return this.gnomad.distanceToSqr(entityIn) < range;
+			return this.gnomad.getDistanceSq(entityIn) < range;
 		}
 	}
 
 	public boolean isAttacking() {
-		return this.entityData.get(ATTACKING);
+		return this.dataManager.get(ATTACKING);
 	}
 	public void setAttacking(boolean attacking) {
-		this.entityData.set(ATTACKING, attacking);
+		this.dataManager.set(ATTACKING, attacking);
 	}
 
 	@OnlyIn(Dist.CLIENT)
 	public float getWindupTicks(float partialTick) {
-		return Mth.lerp(partialTick, this.entityData.get(PREV_WINDUP_TICKS), this.entityData.get(WINDUP_TICKS));
+		return MathHelper.lerp(partialTick, this.dataManager.get(PREV_WINDUP_TICKS), this.dataManager.get(WINDUP_TICKS));
 	}
 	public int getWindupTicks() {
-		return this.entityData.get(WINDUP_TICKS);
+		return this.dataManager.get(WINDUP_TICKS);
 	}
 	public void setWindupTicks(int ticks) {
-		this.entityData.set(WINDUP_TICKS, ticks);
+		this.dataManager.set(WINDUP_TICKS, ticks);
 	}
 
 	@OnlyIn(Dist.CLIENT)
 	public float getSwingTicks(float partialTick) {
-		return Mth.lerp(partialTick, this.entityData.get(PREV_SWING_TICKS), this.entityData.get(SWING_TICKS));
+		return MathHelper.lerp(partialTick, this.dataManager.get(PREV_SWING_TICKS), this.dataManager.get(SWING_TICKS));
 	}
 	public int getSwingTicks() {
-		return this.entityData.get(SWING_TICKS);
+		return this.dataManager.get(SWING_TICKS);
 	}
 	public void setSwingTicks(int ticks) {
-		this.entityData.set(SWING_TICKS, ticks);
+		this.dataManager.set(SWING_TICKS, ticks);
 	}
 
 	public void setSize(float size) {
-		this.entityData.set(SIZE, size);
-		this.reapplyPosition();
-		this.refreshDimensions();
+		this.dataManager.set(SIZE, size);
+		this.recenterBoundingBox();
+		this.recalculateSize();
 
 		this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(this.getAttribute(Attributes.MAX_HEALTH).getValue() * size);
 		this.setHealth(this.getMaxHealth());
@@ -610,7 +594,7 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 	}
 
 	public float getSize() {
-		return this.entityData.get(SIZE);
+		return this.dataManager.get(SIZE);
 	}
 
 	@OnlyIn(Dist.CLIENT)
@@ -626,94 +610,94 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 	public boolean attackEntityAsMob(Entity entityIn, float damage) {
 		float knockback = (float)this.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
 		if (entityIn instanceof LivingEntity) {
-			damage += EnchantmentHelper.getDamageBonus(this.getMainHandItem(), ((LivingEntity)entityIn).getMobType());
-			knockback += (float)EnchantmentHelper.getKnockbackBonus(this);
+			damage += EnchantmentHelper.getModifierForCreature(this.getHeldItemMainhand(), ((LivingEntity)entityIn).getCreatureAttribute());
+			knockback += (float)EnchantmentHelper.getKnockbackModifier(this);
 		}
 
-		int i = EnchantmentHelper.getFireAspect(this);
+		int i = EnchantmentHelper.getFireAspectModifier(this);
 		if (i > 0) {
-			entityIn.setSecondsOnFire(i * 4);
+			entityIn.setFire(i * 4);
 		}
 
-		boolean flag = entityIn.hurt(DamageSource.mobAttack(this), damage);
+		boolean flag = entityIn.attackEntityFrom(DamageSource.causeMobDamage(this), damage);
 		if (flag) {
 			if (knockback > 0.0F && entityIn instanceof LivingEntity) {
-				((LivingEntity)entityIn).knockback(knockback * 0.5F, Mth.sin(this.yRot * ((float)Math.PI / 180F)), -Mth.cos(this.yRot * ((float)Math.PI / 180F)));
-				this.setDeltaMovement(this.getDeltaMovement().multiply(0.6D, 1.0D, 0.6D));
+				((LivingEntity)entityIn).applyKnockback(knockback * 0.5F, MathHelper.sin(this.rotationYaw * ((float)Math.PI / 180F)), -MathHelper.cos(this.rotationYaw * ((float)Math.PI / 180F)));
+				this.setMotion(this.getMotion().mul(0.6D, 1.0D, 0.6D));
 			}
 
-			if (entityIn instanceof Player) {
-				Player playerentity = (Player)entityIn;
-				this.disableShield(playerentity, this.getMainHandItem(), playerentity.isUsingItem() ? playerentity.getUseItem() : ItemStack.EMPTY);
+			if (entityIn instanceof PlayerEntity) {
+				PlayerEntity playerentity = (PlayerEntity)entityIn;
+				this.disableShield(playerentity, this.getHeldItemMainhand(), playerentity.isHandActive() ? playerentity.getActiveItemStack() : ItemStack.EMPTY);
 			}
 
-			this.doEnchantDamageEffects(this, entityIn);
-			this.setLastHurtMob(entityIn);
+			this.applyEnchantments(this, entityIn);
+			this.setLastAttackedEntity(entityIn);
 		}
 
 		return flag;
 	}
 
-	public void disableShield (Player entity, ItemStack mainHandItem, ItemStack otherHandItem) {
+	public void disableShield (PlayerEntity entity, ItemStack mainHandItem, ItemStack otherHandItem) {
 		if (!mainHandItem.isEmpty() && !otherHandItem.isEmpty() && mainHandItem.getItem() instanceof AxeItem && otherHandItem.getItem() == Items.SHIELD) {
-			float f = 0.25F + (float)EnchantmentHelper.getBlockEfficiency(this) * 0.05F;
-			if (this.random.nextFloat() < f) {
-				entity.getCooldowns().addCooldown(Items.SHIELD, 100);
-				this.level.broadcastEntityEvent(entity, (byte)30);
+			float f = 0.25F + (float)EnchantmentHelper.getEfficiencyModifier(this) * 0.05F;
+			if (this.rand.nextFloat() < f) {
+				entity.getCooldownTracker().setCooldown(Items.SHIELD, 100);
+				this.world.setEntityState(entity, (byte)30);
 			}
 		}
 	}
 	
 	@Override
-	protected void populateDefaultEquipmentSlots(DifficultyInstance difficulty) {
+	protected void setEquipmentBasedOnDifficulty(DifficultyInstance difficulty) {
 		//Returns a lower value the more difficult it is.
 		// <1 = hard, <2 = normal, <3 = easy
-		float difficultyValue = (this.level.getDifficulty() == Difficulty.HARD ? 1.0f : this.level.getDifficulty() == Difficulty.NORMAL ? 2.0f : 3.0f) - difficulty.getEffectiveDifficulty();
+		float difficultyValue = (this.world.getDifficulty() == Difficulty.HARD ? 1.0f : this.world.getDifficulty() == Difficulty.NORMAL ? 2.0f : 3.0f) - difficulty.getAdditionalDifficulty();
 		float inverseDifficulty = (difficultyValue - 3) * -1;
 
 		for (int i = 0; i < inverseDifficulty + (this.getSkillValue() * 2); i++) {
-			if (MathUtils.getRandomFloatBetween(random, 0, 3) < difficultyValue) {
+			if (MathUtils.getRandomFloatBetween(rand, 0, 3) < difficultyValue) {
 				this.setRandomArmor();
 			}
 		}
 
-		if (random.nextBoolean()) {
-			if (MathUtils.getRandomFloatBetween(random, 0, 3) < difficultyValue && random.nextBoolean()) {
-				this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(ClinkerItems.LEAD_AXE.get()));
-			} else if (random.nextInt(5) != 0) {
-				this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(ClinkerItems.LEAD_SWORD.get()));
+		if (rand.nextBoolean()) {
+			if (MathUtils.getRandomFloatBetween(rand, 0, 3) < difficultyValue && rand.nextBoolean()) {
+				this.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(ClinkerItems.LEAD_AXE.get()));
+			} else if (rand.nextInt(5) != 0) {
+				this.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(ClinkerItems.LEAD_SWORD.get()));
 			} else {
-				this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
+				this.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.BOW));
 			}
 		} else {
-			this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(ClinkerItems.LEAD_AXE.get()));
+			this.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(ClinkerItems.LEAD_AXE.get()));
 		}
 
-		if (MathUtils.getRandomFloatBetween(random, 0, 3) < difficultyValue * 0.25F) {
-			this.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(Items.SHIELD.getItem()));
+		if (MathUtils.getRandomFloatBetween(rand, 0, 3) < difficultyValue * 0.25F) {
+			this.setItemStackToSlot(EquipmentSlotType.OFFHAND, new ItemStack(Items.SHIELD.getItem()));
 		}
 
-		super.populateDefaultEquipmentSlots(difficulty);
+		super.setEquipmentBasedOnDifficulty(difficulty);
 	}
 	
 	private void setRandomArmor() {
-		if (!this.entityData.get(HELMET) || !this.entityData.get(LEFT_PAULDRON) || !this.entityData.get(RIGHT_PAULDRON)) {
-			int randomInt = random.nextInt(3);
+		if (!this.dataManager.get(HELMET) || !this.dataManager.get(LEFT_PAULDRON) || !this.dataManager.get(RIGHT_PAULDRON)) {
+			int randomInt = rand.nextInt(3);
 
 			if (randomInt == 0) {
-				if (!entityData.get(HELMET)) {
+				if (!dataManager.get(HELMET)) {
 					this.setWearingHelmet(true);
 				} else {
 					this.setRandomArmor();
 				}
 			} else if (randomInt == 1) {
-				if (!entityData.get(LEFT_PAULDRON)) {
+				if (!dataManager.get(LEFT_PAULDRON)) {
 					this.setWearingLeftPauldron(true);
 				} else {
 					this.setRandomArmor();
 				}
 			} else {
-				if (!entityData.get(RIGHT_PAULDRON)) {
+				if (!dataManager.get(RIGHT_PAULDRON)) {
 					this.setWearingRightPauldron(true);
 				} else {
 					this.setRandomArmor();
@@ -725,37 +709,37 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 	private void setSkills(DifficultyInstance difficulty) {
 		//Returns a lower value the more difficult it is.
 		// <1 = hard, <2 = normal, <3 = easy
-		float difficultyValue = (this.level.getDifficulty() == Difficulty.HARD ? 1.0f : this.level.getDifficulty() == Difficulty.NORMAL ? 2.0f : 3.0f) - difficulty.getEffectiveDifficulty();
+		float difficultyValue = (this.world.getDifficulty() == Difficulty.HARD ? 1.0f : this.world.getDifficulty() == Difficulty.NORMAL ? 2.0f : 3.0f) - difficulty.getAdditionalDifficulty();
 		float inverseDifficulty = (difficultyValue - 3) * -1;
 
-		float skillAllocationAmount = MathUtils.bias(random.nextFloat(), 0.7F) * inverseDifficulty;
-		float brutality = MathUtils.getRandomFloatBetween(random, 0, skillAllocationAmount);
+		float skillAllocationAmount = MathUtils.bias(rand.nextFloat(), 0.7F) * inverseDifficulty;
+		float brutality = MathUtils.getRandomFloatBetween(rand, 0, skillAllocationAmount);
 		float prowess = skillAllocationAmount - brutality;
 
-		float sizeRand = MathUtils.getRandomFloatBetween(random, 0.8F, 1.0F);
-		float size = MathUtils.getRandomFloatBetween(random, sizeRand, ((sizeRand + (brutality / inverseDifficulty)) / 2) + 1);
+		float sizeRand = MathUtils.getRandomFloatBetween(rand, 0.8F, 1.0F);
+		float size = MathUtils.getRandomFloatBetween(rand, sizeRand, ((sizeRand + (brutality / inverseDifficulty)) / 2) + 1);
 
 		this.setSize(size);
-		this.entityData.set(BRUTALITY, brutality);
+		this.dataManager.set(BRUTALITY, brutality);
 
 		this.maxStamina = (int) (100 * Math.min(0.75, prowess + 0.5));
-		this.entityData.set(PROWESS, prowess);
+		this.dataManager.set(PROWESS, prowess);
 	}
 
 	public float getSkillValue() {
-		return this.entityData.get(BRUTALITY) + this.entityData.get(PROWESS);
+		return this.dataManager.get(BRUTALITY) + this.dataManager.get(PROWESS);
 	}
 
 	private float getArmorAttackMultiplier() {
 		float multiplier = 1;
 
-		if (entityData.get(HELMET)) {
+		if (dataManager.get(HELMET)) {
 			multiplier =- 0.25F;
 		}
-		if (entityData.get(LEFT_PAULDRON)) {
+		if (dataManager.get(LEFT_PAULDRON)) {
 			multiplier =- 0.125F;
 		}
-		if (entityData.get(RIGHT_PAULDRON)) {
+		if (dataManager.get(RIGHT_PAULDRON)) {
 			multiplier =- 0.125F;
 		}
 
@@ -764,9 +748,9 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 
 	@Nullable
 	@Override
-	public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn, MobSpawnType reason, @Nullable SpawnGroupData spawnDataIn, @Nullable CompoundTag dataTag) {
+	public ILivingEntityData onInitialSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
 		this.setSkills(difficultyIn);
-		this.populateDefaultEquipmentSlots(difficultyIn);
-		return super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
+		this.setEquipmentBasedOnDifficulty(difficultyIn);
+		return super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
 	}
 }

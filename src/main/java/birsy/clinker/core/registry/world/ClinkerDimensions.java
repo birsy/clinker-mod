@@ -1,19 +1,17 @@
 package birsy.clinker.core.registry.world;
 
 import birsy.clinker.core.Clinker;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.core.Registry;
-import net.minecraft.world.level.dimension.DimensionType;
-import net.minecraft.world.level.Level;
+import net.minecraft.util.RegistryKey;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.world.DimensionType;
+import net.minecraft.world.World;
 import net.minecraftforge.common.world.ForgeWorldType;
-
-import ResourceKey;
 
 public class ClinkerDimensions
 {	
-    public static final ResourceKey<DimensionType> OTHERSHORE_TYPE = ResourceKey.create(Registry.DIMENSION_TYPE_REGISTRY, name("othershore_type"));
-    public static final ResourceKey<Level> OTHERSHORE = ResourceKey.create(Registry.DIMENSION_REGISTRY, name("othershore"));
+    public static final RegistryKey<DimensionType> OTHERSHORE_TYPE = RegistryKey.getOrCreateKey(Registry.DIMENSION_TYPE_KEY, name("othershore_type"));
+    public static final RegistryKey<World> OTHERSHORE = RegistryKey.getOrCreateKey(Registry.WORLD_KEY, name("othershore"));
 
     private static ResourceLocation name(String name) {
         return new ResourceLocation(Clinker.MOD_ID, name);

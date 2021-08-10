@@ -1,17 +1,15 @@
 package birsy.clinker.client.render.entity.model;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 
 import birsy.clinker.client.render.util.BirsyBaseModel;
 import birsy.clinker.client.render.util.BirsyModelRenderer;
 import birsy.clinker.common.entity.monster.WitchBrickEntity;
-import net.minecraft.util.Mth;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-
-import birsy.clinker.client.render.util.BirsyBaseModel.Axis;
 
 /**
  * WitchBrickModel - doclg
@@ -35,26 +33,26 @@ public class WitchBrickModel<T extends WitchBrickEntity> extends BirsyBaseModel<
     public BirsyModelRenderer brickHairLeft;
 
     public WitchBrickModel() {
-        this.texWidth = 128;
-        this.texHeight = 64;
+        this.textureWidth = 128;
+        this.textureHeight = 64;
         this.brickLeftLeg = new BirsyModelRenderer(this, 64, 17);
-        this.brickLeftLeg.setPos(6.0F, -6.0F, 0.0F);
+        this.brickLeftLeg.setRotationPoint(6.0F, -6.0F, 0.0F);
         this.brickLeftLeg.addBox(-2.0F, -2.0F, -2.0F, 4.0F, 8.0F, 4.0F, 0.0F, 0.0F, 0.0F);
         this.brickBody = new BirsyModelRenderer(this, 45, 11);
-        this.brickBody.setPos(0.0F, -13.0F, 2.0F);
+        this.brickBody.setRotationPoint(0.0F, -13.0F, 2.0F);
         this.brickBody.addBox(-9.0F, -11.0F, -7.0F, 18.0F, 18.0F, 9.0F, 0.0F, 0.0F, 0.0F);
         this.brickHairRight = new BirsyModelRenderer(this, 54, 0);
-        this.brickHairRight.setPos(-6.0F, -5.0F, -3.0F);
+        this.brickHairRight.setRotationPoint(-6.0F, -5.0F, -3.0F);
         this.brickHairRight.addBox(-5.0F, -8.0F, -0.5F, 10.0F, 10.0F, 1.0F, 0.0F, 0.0F, 0.0F);
         this.setRotateAngle(brickHairRight, -0.41887902047863906F, 0.0F, -0.4363323129985824F);
         this.brickArmLeft = new BirsyModelRenderer(this, 64, 0);
-        this.brickArmLeft.setPos(9.0F, -8.0F, -2.0F);
-        this.brickArmLeft.texOffs(98, 0).addBox(0.0F, -2.0F, -2.0F, 2.0F, 13.0F, 4.0F, 0.0F, 0.0F, 0.0F);
+        this.brickArmLeft.setRotationPoint(9.0F, -8.0F, -2.0F);
+        this.brickArmLeft.setTextureOffset(98, 0).addBox(0.0F, -2.0F, -2.0F, 2.0F, 13.0F, 4.0F, 0.0F, 0.0F, 0.0F);
         this.brickRightLeg = new BirsyModelRenderer(this, 18, 16);
-        this.brickRightLeg.setPos(-6.0F, -6.0F, 0.0F);
+        this.brickRightLeg.setRotationPoint(-6.0F, -6.0F, 0.0F);
         this.brickRightLeg.addBox(-2.0F, -2.0F, -2.0F, 4.0F, 8.0F, 4.0F, 0.0F, 0.0F, 0.0F);
         this.movementBase = new BirsyModelRenderer(this, 0, 0);
-        this.movementBase.setPos(0.0F, 24.0F, 0.0F);
+        this.movementBase.setRotationPoint(0.0F, 24.0F, 0.0F);
         this.movementBase.addBox(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
         //this.brickMaskNose = new BirsyModelRenderer(this, 0, 0);
         //this.brickMaskNose.setRotationPoint(0.0F, 0.0F, -2.0F);
@@ -64,22 +62,22 @@ public class WitchBrickModel<T extends WitchBrickEntity> extends BirsyBaseModel<
         //this.brickMask.addBox(-3.5F, -4.0F, -2.0F, 7.0F, 8.0F, 2.0F, 0.0F, 0.0F, 0.0F);
         //this.setRotateAngle(brickMask, -0.10471975511965977F, 0.0F, 0.0F);
         this.brickTeeth = new BirsyModelRenderer(this, 0, 29);
-        this.brickTeeth.setPos(0.0F, -10.0F, 0.25F);
+        this.brickTeeth.setRotationPoint(0.0F, -10.0F, 0.25F);
         this.brickTeeth.addBox(-9.0F, -4.5F, -7.0F, 18.0F, 7.0F, 9.0F, -1.0F, -1.0F, -1.0F);
         this.setRotateAngle(brickTeeth, 0.2617993877991494F, 0.0F, 0.0F);
         this.brickArmRight = new BirsyModelRenderer(this, 64, 0);
-        this.brickArmRight.setPos(-9.0F, -8.0F, -2.0F);
-        this.brickArmRight.texOffs(110, 0).addBox(-2.0F, -2.0F, -2.0F, 2.0F, 13.0F, 4.0F, 0.0F, 0.0F, 0.0F);
+        this.brickArmRight.setRotationPoint(-9.0F, -8.0F, -2.0F);
+        this.brickArmRight.setTextureOffset(110, 0).addBox(-2.0F, -2.0F, -2.0F, 2.0F, 13.0F, 4.0F, 0.0F, 0.0F, 0.0F);
         this.brickHead = new BirsyModelRenderer(this, 0, 0);
-        this.brickHead.setPos(0.0F, -11.0F, 0.25F);
+        this.brickHead.setRotationPoint(0.0F, -11.0F, 0.25F);
         this.brickHead.addBox(-9.0F, -7.0F, -7.0F, 18.0F, 7.0F, 9.0F, 0.0F, 0.0F, -0.25F);
         this.brickHairLeft = new BirsyModelRenderer(this, 64, 0);
-        this.brickHairLeft.setPos(6.0F, -5.0F, -3.0F);
-        this.brickHairLeft.texOffs(77, 0).addBox(-5.0F, -8.0F, -0.5F, 10.0F, 10.0F, 1.0F, 0.0F, 0.0F, 0.0F);
+        this.brickHairLeft.setRotationPoint(6.0F, -5.0F, -3.0F);
+        this.brickHairLeft.setTextureOffset(77, 0).addBox(-5.0F, -8.0F, -0.5F, 10.0F, 10.0F, 1.0F, 0.0F, 0.0F, 0.0F);
         this.setRotateAngle(brickHairLeft, -0.41887902047863906F, 0.0F, 0.4363323129985824F);
         this.brickLoincloth = new BirsyModelRenderer(this, 45, 32);
-        this.brickLoincloth.setPos(0.0F, 7.0F, -2.0F);
-        this.brickLoincloth.texOffs(45, 38).addBox(-9.0F, -4.5F, -5.0F, 18.0F, 7.0F, 9.0F, 0.5F, 0.5F, 0.5F);
+        this.brickLoincloth.setRotationPoint(0.0F, 7.0F, -2.0F);
+        this.brickLoincloth.setTextureOffset(45, 38).addBox(-9.0F, -4.5F, -5.0F, 18.0F, 7.0F, 9.0F, 0.5F, 0.5F, 0.5F);
         this.movementBase.addChild(this.brickLeftLeg);
         this.movementBase.addChild(this.brickBody);
         this.brickHead.addChild(this.brickHairRight);
@@ -95,15 +93,15 @@ public class WitchBrickModel<T extends WitchBrickEntity> extends BirsyBaseModel<
     }
 
     @Override
-    public void renderToBuffer(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) { 
-        matrixStackIn.pushPose();
+    public void render(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) { 
+        matrixStackIn.push();
         matrixStackIn.scale(modelScale[0], modelScale[1], modelScale[2]);
         ImmutableList.of(this.movementBase).forEach((modelRenderer) -> modelRenderer.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha));
-        matrixStackIn.popPose();
+        matrixStackIn.pop();
     }
 
 	@Override
-    public void setupAnim(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch)
+    public void setRotationAngles(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch)
     {
     	resetParts(movementBase, brickRightLeg, brickLeftLeg, brickBody, brickTeeth, brickArmLeft, brickArmRight, brickLoincloth, brickHead, brickHairRight, brickHairLeft);
     	
@@ -147,15 +145,15 @@ public class WitchBrickModel<T extends WitchBrickEntity> extends BirsyBaseModel<
         look(this.brickHead, netHeadYaw, headPitch, 9999.0F, 2.0F);
 
         if(entityIn.isCharging || entityIn.isWindingUp) {
-            this.brickBody.xRot += 10.0F;
+            this.brickBody.rotateAngleX += 10.0F;
         }
     }
 
-    public void prepareMobModel(T entityIn, float limbSwing, float limbSwingAmount, float partialTick) {
+    public void setLivingAnimations(T entityIn, float limbSwing, float limbSwingAmount, float partialTick) {
     	int i = entityIn.getAttackTimer();
     	if (i > 0) {
-    		this.brickBody.xRot = (-2.0F + 1.5F * Mth.triangleWave((float)i - partialTick, 10.0F))*-1;
-    		this.brickHead.xRot = -2.0F + 1.5F * Mth.triangleWave((float)i - partialTick, 10.0F);
+    		this.brickBody.rotateAngleX = (-2.0F + 1.5F * MathHelper.func_233021_e_((float)i - partialTick, 10.0F))*-1;
+    		this.brickHead.rotateAngleX = -2.0F + 1.5F * MathHelper.func_233021_e_((float)i - partialTick, 10.0F);
     	}
     }
 }

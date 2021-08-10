@@ -11,45 +11,45 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
 import birsy.clinker.core.registry.ClinkerEntities;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.entity.AgableMob;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.AgeableEntity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.IAngerable;
 import net.minecraft.entity.IEquipable;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
-import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
+import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.ai.attributes.AttributeModifierMap;
+import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.ai.goal.LookAtGoal;
+import net.minecraft.entity.ai.goal.LookRandomlyGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.world.entity.ai.goal.MoveTowardsTargetGoal;
+import net.minecraft.entity.ai.goal.MoveTowardsTargetGoal;
 import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
-import net.minecraft.world.entity.ai.goal.PanicGoal;
-import net.minecraft.world.entity.ai.goal.FloatGoal;
-import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
+import net.minecraft.entity.ai.goal.PanicGoal;
+import net.minecraft.entity.ai.goal.SwimGoal;
+import net.minecraft.entity.ai.goal.WaterAvoidingRandomWalkingGoal;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
-import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
-import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.pathfinding.GroundPathNavigator;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
-import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundEvents;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 
 @SuppressWarnings("unused")
-public class GnomeBratEntity extends AgableMob
+public class GnomeBratEntity extends AgeableEntity
 {	
-	public GnomeBratEntity(EntityType<? extends AgableMob> type, Level worldIn)
+	public GnomeBratEntity(EntityType<? extends AgeableEntity> type, World worldIn)
 	{
 		super(type, worldIn);
-	    ((GroundPathNavigation)this.getNavigation()).setCanOpenDoors(true);
-	    this.getNavigation().setCanFloat(true);
+	    ((GroundPathNavigator)this.getNavigator()).setBreakDoors(true);
+	    this.getNavigator().setCanSwim(true);
 	    this.setCanPickUpLoot(true);
 	}
 	
@@ -57,40 +57,40 @@ public class GnomeBratEntity extends AgableMob
 	protected void registerGoals()
 	{
 		super.registerGoals();
-		this.goalSelector.addGoal(0, new FloatGoal(this));
+		this.goalSelector.addGoal(0, new SwimGoal(this));
 		this.goalSelector.addGoal(1, new PanicGoal(this, 1.1D));
 	    this.goalSelector.addGoal(2, new MoveTowardsTargetGoal(this, 0.9D, 32.0F));
-	    this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 1.0D));
-	    this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 6.0F));
-	    this.goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, 6.0F));
-	    this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));
+	    this.goalSelector.addGoal(5, new WaterAvoidingRandomWalkingGoal(this, 1.0D));
+	    this.goalSelector.addGoal(6, new LookAtGoal(this, PlayerEntity.class, 6.0F));
+	    this.goalSelector.addGoal(7, new LookAtGoal(this, PlayerEntity.class, 6.0F));
+	    this.goalSelector.addGoal(8, new LookRandomlyGoal(this));
 	}
 	
-	//createMobAttributes --> registerAttributes
-	public static AttributeSupplier.Builder setCustomAttributes()
+	//func_233666_p_ --> registerAttributes
+	public static AttributeModifierMap.MutableAttribute setCustomAttributes()
 	{
-		return Mob.createMobAttributes()
-				.add(Attributes.MAX_HEALTH, 10.0F)
-				.add(Attributes.MOVEMENT_SPEED, 0.3F)
-				.add(Attributes.ATTACK_DAMAGE, 0.5D);
+		return MobEntity.func_233666_p_()
+				.createMutableAttribute(Attributes.MAX_HEALTH, 10.0F)
+				.createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.3F)
+				.createMutableAttribute(Attributes.ATTACK_DAMAGE, 0.5D);
 	}
 
 	
 	//Sounds
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.HUSK_AMBIENT;
+		return SoundEvents.ENTITY_HUSK_AMBIENT;
 	}
 
 	protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-		return SoundEvents.VINDICATOR_HURT;
+		return SoundEvents.ENTITY_VINDICATOR_HURT;
 	}
 
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.VINDICATOR_DEATH;
+		return SoundEvents.ENTITY_VINDICATOR_DEATH;
 	}
 
 	protected void playStepSound(BlockPos pos, BlockState blockIn) {
-		this.playSound(SoundEvents.HUSK_STEP, 0.15F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_HUSK_STEP, 0.15F, 1.0F);
 	}
 
 	/**
@@ -101,7 +101,7 @@ public class GnomeBratEntity extends AgableMob
 	}
 
 	@Override
-	public AgableMob getBreedOffspring(ServerLevel p_241840_1_, AgableMob p_241840_2_) {
+	public AgeableEntity createChild(ServerWorld p_241840_1_, AgeableEntity p_241840_2_) {
 		return null;
 	}
 }

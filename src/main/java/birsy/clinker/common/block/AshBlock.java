@@ -3,30 +3,28 @@ package birsy.clinker.common.block;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.util.MathUtils;
 import net.minecraft.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.FallingBlock;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.FallingBlock;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.item.FallingBlockEntity;
-import net.minecraft.core.particles.BlockParticleOption;
-import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.FallingBlockEntity;
+import net.minecraft.particles.BlockParticleData;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.core.Direction;
-import net.minecraft.core.BlockPos;
+import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
-import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.IBlockReader;
+import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolType;
 
 import java.util.Random;
-
-import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 
 public class AshBlock extends FallingBlock
 {
@@ -38,41 +36,41 @@ public class AshBlock extends FallingBlock
 	}
 
 	@Override
-	public void randomTick(BlockState state, ServerLevel worldIn, BlockPos pos, Random random) {
+	public void randomTick(BlockState state, ServerWorld worldIn, BlockPos pos, Random random) {
 		super.randomTick(state, worldIn, pos, random);
-		if (worldIn.getBlockState(pos.above()).getBlock() == ClinkerBlocks.ROOTSTALK.get()) {
-			worldIn.setBlockAndUpdate(pos, ClinkerBlocks.ROOTED_ASH.get().defaultBlockState());
+		if (worldIn.getBlockState(pos.up()).getBlock() == ClinkerBlocks.ROOTSTALK.get()) {
+			worldIn.setBlockState(pos, ClinkerBlocks.ROOTED_ASH.get().getDefaultState());
 		}
 	}
 
-	public void stepOn(Level worldIn, BlockPos pos, Entity entityIn) {
-		if (!entityIn.hasImpulse) {
+	public void onEntityWalk(World worldIn, BlockPos pos, Entity entityIn) {
+		if (!entityIn.isAirBorne) {
 			spawnParticles(worldIn, pos, entityIn);
 		}
-		super.stepOn(worldIn, pos, entityIn);
+		super.onEntityWalk(worldIn, pos, entityIn);
 	}
 	
-	private static void spawnParticles(Level world, BlockPos worldIn, Entity entityIn) {
-		Vec3 entityMotion = entityIn.getDeltaMovement();
+	private static void spawnParticles(World world, BlockPos worldIn, Entity entityIn) {
+		Vector3d entityMotion = entityIn.getMotion();
 		
-		if(entityIn.hurtMarked) {
+		if(entityIn.velocityChanged) {
 			for(Direction direction : Direction.values()) {
-				BlockPos blockpos = worldIn.relative(direction);
-				if (!world.getBlockState(blockpos).isSolidRender(world, blockpos)) {
-					world.addParticle(ParticleTypes.ASH, entityIn.getX(), entityIn.getY(), entityIn.getZ(), -entityMotion.x(), -entityMotion.z(), -entityMotion.y());
+				BlockPos blockpos = worldIn.offset(direction);
+				if (!world.getBlockState(blockpos).isOpaqueCube(world, blockpos)) {
+					world.addParticle(ParticleTypes.ASH, entityIn.getPosX(), entityIn.getPosY(), entityIn.getPosZ(), -entityMotion.getX(), -entityMotion.getZ(), -entityMotion.getY());
 				}
 			}
 		}
 	}
 
 	@Override
-	public void onLand(Level worldIn, BlockPos pos, BlockState fallingState, BlockState hitState, FallingBlockEntity fallingBlock) {
-		super.onLand(worldIn, pos, fallingState, hitState, fallingBlock);
+	public void onEndFalling(World worldIn, BlockPos pos, BlockState fallingState, BlockState hitState, FallingBlockEntity fallingBlock) {
+		super.onEndFalling(worldIn, pos, fallingState, hitState, fallingBlock);
 		for (Direction direction : Direction.Plane.HORIZONTAL) {
-			this.addAshLayer(worldIn, pos.relative(direction), worldIn.getRandom().nextInt(3 - 1) + 1);
+			this.addAshLayer(worldIn, pos.offset(direction), worldIn.getRandom().nextInt(3 - 1) + 1);
 			final float velocityMultiplier = 20;
 			for (int i = 0; i < 5; i++) {
-				worldIn.addParticle(new BlockParticleOption(ParticleTypes.FALLING_DUST, fallingState),
+				worldIn.addParticle(new BlockParticleData(ParticleTypes.FALLING_DUST, fallingState),
 						MathUtils.getRandomFloatBetween(worldIn.getRandom(), pos.getX(), pos.getX() + 1),
 						pos.getY(),
 						MathUtils.getRandomFloatBetween(worldIn.getRandom(), pos.getZ(), pos.getZ() + 1),
@@ -83,10 +81,10 @@ public class AshBlock extends FallingBlock
 		}
 	}
 
-	public void addAshLayer(Level worldIn, BlockPos pos, int amount) { }
+	public void addAshLayer(World worldIn, BlockPos pos, int amount) { }
 
 	@OnlyIn(Dist.CLIENT)
-	public int getDustColor(BlockState state, BlockGetter p_189876_2_, BlockPos p_189876_3_) {
+	public int getDustColor(BlockState state, IBlockReader p_189876_2_, BlockPos p_189876_3_) {
 	   return this.dustColor;
 	}
 }

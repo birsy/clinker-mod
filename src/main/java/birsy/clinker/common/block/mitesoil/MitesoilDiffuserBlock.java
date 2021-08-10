@@ -2,51 +2,43 @@ package birsy.clinker.common.block.mitesoil;
 
 import birsy.clinker.common.tileentity.MitesoilDiffuserTileEntity;
 import net.minecraft.block.*;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.material.MaterialColor;
+import net.minecraft.state.BooleanProperty;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.world.IBlockReader;
+import net.minecraft.world.World;
 import net.minecraftforge.common.ToolType;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.state.BlockState;
-
-import BooleanProperty;
-import VoxelShape;
-
 public class MitesoilDiffuserBlock extends Block {
     public static final BooleanProperty ACTIVE = AbstractMitesoilBlock.ACTIVE;
-    public static final VoxelShape SHAPE = Block.box(1.0D, 0.0D, 1.0D, 15.0D, 16.0D, 15.0D);
+    public static final VoxelShape SHAPE = Block.makeCuboidShape(1.0D, 0.0D, 1.0D, 15.0D, 16.0D, 15.0D);
 
     public MitesoilDiffuserBlock() {
-        super(Block.Properties.of(Material.DIRT, MaterialColor.TERRACOTTA_WHITE)
-                .strength(0.5F)
-                .sound(SoundType.STEM)
+        super(Block.Properties.create(Material.EARTH, MaterialColor.WHITE_TERRACOTTA)
+                .hardnessAndResistance(0.5F)
+                .sound(SoundType.HYPHAE)
                 .harvestTool(ToolType.HOE)
-                .randomTicks());
+                .tickRandomly());
     }
 
-    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
+    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
         return SHAPE;
     }
 
-    public RenderShape getRenderShape(BlockState state) {
-        return RenderShape.INVISIBLE;
+    public BlockRenderType getRenderType(BlockState state) {
+        return BlockRenderType.INVISIBLE;
     }
 
-    public boolean triggerEvent(BlockState state, Level worldIn, BlockPos pos, int id, int param) {
-        super.triggerEvent(state, worldIn, pos, id, param);
-        BlockEntity tileentity = worldIn.getBlockEntity(pos);
-        return tileentity != null && tileentity.triggerEvent(id, param);
+    public boolean eventReceived(BlockState state, World worldIn, BlockPos pos, int id, int param) {
+        super.eventReceived(state, worldIn, pos, id, param);
+        TileEntity tileentity = worldIn.getTileEntity(pos);
+        return tileentity != null && tileentity.receiveClientEvent(id, param);
     }
 
     @Override
@@ -56,7 +48,7 @@ public class MitesoilDiffuserBlock extends Block {
 
     @Nullable
     @Override
-    public BlockEntity createTileEntity(BlockState state, BlockGetter world) {
+    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
         return new MitesoilDiffuserTileEntity();
     }
 }

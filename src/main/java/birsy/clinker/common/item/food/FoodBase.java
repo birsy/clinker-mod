@@ -1,21 +1,21 @@
 package birsy.clinker.common.item.food;
 
 import birsy.clinker.core.Clinker;
-import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.item.Food;
+import net.minecraft.item.Item;
+import net.minecraft.potion.Effect;
+import net.minecraft.potion.EffectInstance;
 
 public class FoodBase extends Item
 {
-	public FoodBase(int hunger, float saturation, MobEffect effect, int time, int level, float probability)
+	public FoodBase(int hunger, float saturation, Effect effect, int time, int level, float probability)
 	{
 		super(new Item.Properties()
-				.tab(Clinker.CLINKER_FOOD)
-				.food(new FoodProperties.Builder()
-						.nutrition(hunger)
-						.saturationMod(saturation)
-						.effect(() -> new MobEffectInstance(effect, time, level), probability)
+				.group(Clinker.CLINKER_FOOD)
+				.food(new Food.Builder()
+						.hunger(hunger)
+						.saturation(saturation)
+						.effect(() -> new EffectInstance(effect, time, level), probability)
 						.build())
 		);
 	}

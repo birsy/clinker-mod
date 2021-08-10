@@ -6,100 +6,100 @@ import java.util.function.Predicate;
 import birsy.clinker.common.entity.merchant.GnomeBratEntity;
 import birsy.clinker.common.entity.merchant.GnomeEntity;
 import birsy.clinker.core.registry.ClinkerEntities;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.entity.AgableMob;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.NeutralMob;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.FollowParentGoal;
-import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
-import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
-import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
-import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
-import net.minecraft.world.entity.ai.goal.PanicGoal;
-import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
-import net.minecraft.world.entity.ai.goal.target.ResetUniversalAngerTargetGoal;
-import net.minecraft.world.entity.ai.goal.FloatGoal;
-import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.animal.Fox;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
-import net.minecraft.server.level.ServerLevel;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.AgeableEntity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.IAngerable;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.ai.attributes.AttributeModifierMap;
+import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.ai.goal.FollowParentGoal;
+import net.minecraft.entity.ai.goal.HurtByTargetGoal;
+import net.minecraft.entity.ai.goal.LookAtGoal;
+import net.minecraft.entity.ai.goal.LookRandomlyGoal;
+import net.minecraft.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
+import net.minecraft.entity.ai.goal.PanicGoal;
+import net.minecraft.entity.ai.goal.RandomWalkingGoal;
+import net.minecraft.entity.ai.goal.ResetAngerGoal;
+import net.minecraft.entity.ai.goal.SwimGoal;
+import net.minecraft.entity.passive.AnimalEntity;
+import net.minecraft.entity.passive.FoxEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundEvents;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 
-public class HyenaEntity extends Animal implements NeutralMob
+public class HyenaEntity extends AnimalEntity implements IAngerable
 {
 	@SuppressWarnings("unused")
-	private static final EntityDataAccessor<Boolean> TAIL_SHAKING = SynchedEntityData.defineId(HyenaEntity.class, EntityDataSerializers.BOOLEAN);
-	private static final EntityDataAccessor<Boolean> IS_BITING = SynchedEntityData.defineId(HyenaEntity.class, EntityDataSerializers.BOOLEAN);
+	private static final DataParameter<Boolean> TAIL_SHAKING = EntityDataManager.createKey(HyenaEntity.class, DataSerializers.BOOLEAN);
+	private static final DataParameter<Boolean> IS_BITING = EntityDataManager.createKey(HyenaEntity.class, DataSerializers.BOOLEAN);
 	private int warningSoundTicks;
 	
-	public HyenaEntity(EntityType<? extends Animal> type, Level worldIn) {
+	public HyenaEntity(EntityType<? extends AnimalEntity> type, World worldIn) {
 		super(type, worldIn);
 	}
 	
-	public boolean canBeLeashed(Player player) {
-		return this.isBaby() ? this.isLeashed() : !this.isLeashed();
+	public boolean canBeLeashedTo(PlayerEntity player) {
+		return this.isChild() ? this.getLeashed() : !this.getLeashed();
 	}
 	
 	@Override
 	protected void registerGoals()
 	{
 		super.registerGoals();
-		this.goalSelector.addGoal(0, new FloatGoal(this));
+		this.goalSelector.addGoal(0, new SwimGoal(this));
 		this.goalSelector.addGoal(1, new MeleeAttackGoal(this, 1.0D, true));
 		this.goalSelector.addGoal(1, new PanicGoal(this, 1.1D));
 	    this.goalSelector.addGoal(5, new FollowParentGoal(this, 1.25D));
-	    this.goalSelector.addGoal(4, new RandomStrollGoal(this, 1.0D));
-	    this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 6.0F));
-	    this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
-	    this.targetSelector.addGoal(2, new HurtByTargetGoal(this).setAlertOthers(HyenaEntity.class));
+	    this.goalSelector.addGoal(4, new RandomWalkingGoal(this, 1.0D));
+	    this.goalSelector.addGoal(6, new LookAtGoal(this, PlayerEntity.class, 6.0F));
+	    this.goalSelector.addGoal(7, new LookRandomlyGoal(this));
+	    this.targetSelector.addGoal(2, new HurtByTargetGoal(this).setCallsForHelp(HyenaEntity.class));
 	    this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, GnomeEntity.class, true));
 	    this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, GnomeBratEntity.class, true));
-	    this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, this::isAngryAt));
-	    this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Fox.class, 10, true, true, (Predicate<LivingEntity>)null));
-	    this.targetSelector.addGoal(5, new ResetUniversalAngerTargetGoal<>(this, false));
+	    this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, 10, true, false, this::func_233680_b_));
+	    this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, FoxEntity.class, 10, true, true, (Predicate<LivingEntity>)null));
+	    this.targetSelector.addGoal(5, new ResetAngerGoal<>(this, false));
 	}
 	
-	//createMobAttributes --> registerAttributes
-	public static AttributeSupplier.Builder setCustomAttributes()
+	//func_233666_p_ --> registerAttributes
+	public static AttributeModifierMap.MutableAttribute setCustomAttributes()
 	{
-		return Mob.createMobAttributes()
-				.add(Attributes.MAX_HEALTH, 17.0)
-				.add(Attributes.MOVEMENT_SPEED, 0.25D)
-				.add(Attributes.ATTACK_DAMAGE, 3.0D);
+		return MobEntity.func_233666_p_()
+				.createMutableAttribute(Attributes.MAX_HEALTH, 17.0)
+				.createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.25D)
+				.createMutableAttribute(Attributes.ATTACK_DAMAGE, 3.0D);
 	}
 	
 	//Sounds
 	protected SoundEvent getAmbientSound() {
-		return this.isBaby() ? SoundEvents.WOLF_GROWL : SoundEvents.WOLF_GROWL;
+		return this.isChild() ? SoundEvents.ENTITY_WOLF_GROWL : SoundEvents.ENTITY_WOLF_GROWL;
 	}
 	
 	protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-		return SoundEvents.WOLF_AMBIENT;
+		return SoundEvents.ENTITY_WOLF_AMBIENT;
 	}
 	
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.WOLF_DEATH;
+		return SoundEvents.ENTITY_WOLF_DEATH;
 	}
 	
 	protected void playStepSound(BlockPos pos, BlockState blockIn) {
-		this.playSound(SoundEvents.POLAR_BEAR_STEP, 0.15F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_POLAR_BEAR_STEP, 0.15F, 1.0F);
 	}
 	
 	protected void playWarningSound() {
 		if (this.warningSoundTicks <= 0) {
-			this.playSound(SoundEvents.POLAR_BEAR_WARNING, 1.0F, this.getVoicePitch());
+			this.playSound(SoundEvents.ENTITY_POLAR_BEAR_WARNING, 1.0F, this.getSoundPitch());
 			this.warningSoundTicks = 40;
 		}	
 	}
@@ -110,8 +110,8 @@ public class HyenaEntity extends Animal implements NeutralMob
 		}
 
 		protected double getAttackReachSqr(LivingEntity attackTarget) {
-			float f = HyenaEntity.this.getBbWidth() - 0.1F;
-			return (double)(f * 2.0F * f * 2.0F + attackTarget.getBbWidth());
+			float f = HyenaEntity.this.getWidth() - 0.1F;
+			return (double)(f * 2.0F * f * 2.0F + attackTarget.getWidth());
 	      }
 	}
 
@@ -122,44 +122,44 @@ public class HyenaEntity extends Animal implements NeutralMob
 		return 0.4F;
 	}
 	
-	protected void defineSynchedData() {
-		super.defineSynchedData();
-		this.entityData.define(IS_BITING, false);
+	protected void registerData() {
+		super.registerData();
+		this.dataManager.register(IS_BITING, false);
 	}
 
 	@Override
-	public int getRemainingPersistentAngerTime() {
+	public int getAngerTime() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public void setRemainingPersistentAngerTime(int time) {
+	public void setAngerTime(int time) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public UUID getPersistentAngerTarget() {
+	public UUID getAngerTarget() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void setPersistentAngerTarget(UUID target) {
+	public void setAngerTarget(UUID target) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void startPersistentAngerTimer() {
+	public void func_230258_H__() {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public AgableMob getBreedOffspring(ServerLevel p_241840_1_, AgableMob p_241840_2_) {
-		return ClinkerEntities.HYENA.get().create(this.level);
+	public AgeableEntity createChild(ServerWorld p_241840_1_, AgeableEntity p_241840_2_) {
+		return ClinkerEntities.HYENA.get().create(this.world);
 	}
 
 }

@@ -1,16 +1,14 @@
 package birsy.clinker.client.render.entity.model;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 
 import birsy.clinker.client.render.util.BirsyBaseModel;
 import birsy.clinker.client.render.util.BirsyModelRenderer;
 import birsy.clinker.common.entity.monster.gnomad.GnomadShamanEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-
-import birsy.clinker.client.render.util.BirsyBaseModel.Axis;
 
 /**
  * NewNewshamanShamanModel - doclg
@@ -45,94 +43,94 @@ public class GnomadShamanModel<T extends GnomadShamanEntity> extends BirsyBaseMo
     public BirsyModelRenderer shamanHat;
 
     public GnomadShamanModel() {
-        this.texWidth = 64;
-        this.texHeight = 64;
+        this.textureWidth = 64;
+        this.textureHeight = 64;
         this.shamanStaff = new BirsyModelRenderer(this, 60, 37);
-        this.shamanStaff.setPos(0.0F, 10.25F, 0.0F);
+        this.shamanStaff.setRotationPoint(0.0F, 10.25F, 0.0F);
         this.shamanStaff.addBox(-0.5F, -16.0F, -0.5F, 1.0F, 26.0F, 1.0F, 0.0F, 0.0F, 0.0F);
         this.setRotateAngle(shamanStaff, 1.5707963267948966F, 0.0F, 0.0F);
         this.legsJoint = new BirsyModelRenderer(this, 0, 0);
-        this.legsJoint.setPos(0.0F, 3.0F, 0.0F);
+        this.legsJoint.setRotationPoint(0.0F, 3.0F, 0.0F);
         this.legsJoint.addBox(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 8.0F, 0.0F, 0.0F, 0.0F);
         this.setRotateAngle(legsJoint, -0.17453292519943295F, 0.0F, 0.0F);
         this.shamanBeard = new BirsyModelRenderer(this, 28, 22);
-        this.shamanBeard.setPos(0.0F, 3.0F, -6.0F);
+        this.shamanBeard.setRotationPoint(0.0F, 3.0F, -6.0F);
         this.shamanBeard.addBox(-4.0F, 0.0F, -0.5F, 8.0F, 7.0F, 1.0F, -0.5F, 0.0F, 0.0F);
         this.shamanStaffRingInside = new BirsyModelRenderer(this, 36, 36);
-        this.shamanStaffRingInside.setPos(0.0F, 0.0F, 0.0F);
+        this.shamanStaffRingInside.setRotationPoint(0.0F, 0.0F, 0.0F);
         this.shamanStaffRingInside.addBox(-1.5F, -4.0F, -0.5F, 3.0F, 3.0F, 1.0F, 0.0F, 0.0F, 0.0F);
         this.shamanNeck = new BirsyModelRenderer(this, 46, 16);
-        this.shamanNeck.setPos(0.0F, 0.0F, 0.0F);
+        this.shamanNeck.setRotationPoint(0.0F, 0.0F, 0.0F);
         this.shamanNeck.addBox(-1.5F, -1.5F, -4.0F, 3.0F, 3.0F, 6.0F, 0.0F, 0.0F, 0.0F);
         this.setRotateAngle(shamanNeck, -0.3490658503988659F, 0.0F, 0.0F);
         this.shamanPouch = new BirsyModelRenderer(this, 19, 15);
-        this.shamanPouch.setPos(2.0F, -0.5F, 4.0F);
+        this.shamanPouch.setRotationPoint(2.0F, -0.5F, 4.0F);
         this.shamanPouch.addBox(-2.0F, -1.5F, 0.0F, 4.0F, 5.0F, 2.0F, 0.0F, 0.0F, 0.0F);
         this.setRotateAngle(shamanPouch, 0.11728612207217244F, 0.0F, 0.0F);
         this.shamanFaceTop = new BirsyModelRenderer(this, 33, 12);
-        this.shamanFaceTop.setPos(0.0F, -2.5F, 0.0F);
+        this.shamanFaceTop.setRotationPoint(0.0F, -2.5F, 0.0F);
         this.shamanFaceTop.addBox(-3.0F, -1.0F, 0.0F, 6.0F, 1.0F, 1.0F, 0.0F, 0.0F, 0.0F);
         this.shamanFace = new BirsyModelRenderer(this, 32, 13);
-        this.shamanFace.setPos(0.0F, 0.0F, -7.0F);
+        this.shamanFace.setRotationPoint(0.0F, 0.0F, -7.0F);
         this.shamanFace.addBox(-4.0F, -2.5F, 0.0F, 8.0F, 6.0F, 1.0F, 0.0F, 0.0F, 0.0F);
         this.shamanTornBottom = new BirsyModelRenderer(this, 0, 46);
-        this.shamanTornBottom.setPos(0.0F, 3.0F, 4.0F);
+        this.shamanTornBottom.setRotationPoint(0.0F, 3.0F, 4.0F);
         this.shamanTornBottom.addBox(-5.0F, 0.0F, -8.0F, 10.0F, 10.0F, 8.0F, 0.0F, 0.0F, 0.0F);
         this.setRotateAngle(shamanTornBottom, -0.17453292519943295F, 0.0F, 0.0F);
         this.shamanLeftArm = new BirsyModelRenderer(this, 48, 25);
         this.shamanLeftArm.mirror = true;
-        this.shamanLeftArm.setPos(5.35F, 0.0F, 0.0F);
+        this.shamanLeftArm.setRotationPoint(5.35F, 0.0F, 0.0F);
         this.shamanLeftArm.addBox(-1.0F, -0.5F, -1.0F, 2.0F, 12.0F, 2.0F, -0.25F, -0.5F, -0.25F);
         this.shamanStaffRing = new BirsyModelRenderer(this, 36, 30);
-        this.shamanStaffRing.setPos(0.0F, -16.0F, 0.0F);
+        this.shamanStaffRing.setRotationPoint(0.0F, -16.0F, 0.0F);
         this.shamanStaffRing.addBox(-2.5F, -5.0F, -0.5F, 5.0F, 5.0F, 1.0F, 0.0F, 0.0F, 0.0F);
         this.shamanBody = new BirsyModelRenderer(this, 0, 24);
-        this.shamanBody.setPos(0.0F, 13.0F, 0.0F);
+        this.shamanBody.setRotationPoint(0.0F, 13.0F, 0.0F);
         this.shamanBody.addBox(-5.0F, -11.0F, -4.0F, 10.0F, 14.0F, 8.0F, 0.0F, 0.0F, 0.0F);
         this.setRotateAngle(shamanBody, 0.17453292519943295F, 0.0F, 0.0F);
         this.shamanRightArm = new BirsyModelRenderer(this, 48, 25);
-        this.shamanRightArm.setPos(-5.35F, 0.0F, 0.0F);
+        this.shamanRightArm.setRotationPoint(-5.35F, 0.0F, 0.0F);
         this.shamanRightArm.addBox(-1.0F, -0.5F, -1.0F, 2.0F, 12.0F, 2.0F, -0.25F, -0.5F, -0.25F);
         this.shamanHatBrim = new BirsyModelRenderer(this, 0, 18);
-        this.shamanHatBrim.setPos(0.0F, -3.0F, -3.0F);
+        this.shamanHatBrim.setRotationPoint(0.0F, -3.0F, -3.0F);
         this.shamanHatBrim.addBox(-3.5F, -1.0F, -2.5F, 7.0F, 1.0F, 5.0F, 0.0F, 0.0F, 0.0F);
         this.shamanHat = new BirsyModelRenderer(this, 0, 10);
-        this.shamanHat.setPos(0.0F, -1.0F, 0.0F);
+        this.shamanHat.setRotationPoint(0.0F, -1.0F, 0.0F);
         this.shamanHat.addBox(-2.0F, -3.5F, -2.0F, 4.0F, 4.0F, 4.0F, 0.0F, 0.0F, 0.0F);
         this.shamanLeftLeg = new BirsyModelRenderer(this, 56, 25);
         this.shamanLeftLeg.mirror = true;
-        this.shamanLeftLeg.setPos(3.4F, 0.0F, 0.0F);
+        this.shamanLeftLeg.setRotationPoint(3.4F, 0.0F, 0.0F);
         this.shamanLeftLeg.addBox(-1.0F, -0.15F, -1.0F, 2.0F, 9.0F, 2.0F, -0.25F, -0.5F, -0.25F);
         this.headJoint = new BirsyModelRenderer(this, 0, 0);
-        this.headJoint.setPos(0.0F, 0.0F, -3.5F);
+        this.headJoint.setRotationPoint(0.0F, 0.0F, -3.5F);
         this.headJoint.addBox(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
         this.setRotateAngle(headJoint, 0.3490658503988659F, 0.0F, 0.0F);
         this.armsJoint = new BirsyModelRenderer(this, 0, 0);
-        this.armsJoint.setPos(0.0F, -8.0F, 0.0F);
+        this.armsJoint.setRotationPoint(0.0F, -8.0F, 0.0F);
         this.armsJoint.addBox(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 8.0F, 0.0F, 0.0F, 0.0F);
         this.setRotateAngle(armsJoint, -0.17453292519943295F, 0.0F, 0.0F);
         this.shamanRightLeg = new BirsyModelRenderer(this, 56, 25);
-        this.shamanRightLeg.setPos(-3.5F, 0.0F, 0.0F);
+        this.shamanRightLeg.setRotationPoint(-3.5F, 0.0F, 0.0F);
         this.shamanRightLeg.addBox(-1.0F, -0.15F, -1.0F, 2.0F, 9.0F, 2.0F, -0.25F, -0.5F, -0.25F);
         this.shamanStaffCross = new BirsyModelRenderer(this, 36, 40);
-        this.shamanStaffCross.setPos(0.0F, -14.0F, 0.0F);
+        this.shamanStaffCross.setRotationPoint(0.0F, -14.0F, 0.0F);
         this.shamanStaffCross.addBox(-2.5F, 0.0F, -0.5F, 5.0F, 1.0F, 1.0F, 0.0F, 0.0F, 0.0F);
         this.neckJoint = new BirsyModelRenderer(this, 0, 0);
-        this.neckJoint.setPos(0.0F, -10.5F, -3.0F);
+        this.neckJoint.setRotationPoint(0.0F, -10.5F, -3.0F);
         this.neckJoint.addBox(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 8.0F, 0.0F, 0.0F, 0.0F);
         this.setRotateAngle(neckJoint, -0.17453292519943295F, 0.0F, 0.0F);
         this.shamanFaceBottom = new BirsyModelRenderer(this, 33, 19);
-        this.shamanFaceBottom.setPos(0.0F, 3.5F, 0.0F);
+        this.shamanFaceBottom.setRotationPoint(0.0F, 3.5F, 0.0F);
         this.shamanFaceBottom.addBox(-3.0F, 0.0F, 0.0F, 6.0F, 2.0F, 1.0F, 0.0F, 0.0F, 0.0F);
         this.shamanStaffLowerCross = new BirsyModelRenderer(this, 36, 42);
-        this.shamanStaffLowerCross.setPos(0.0F, -11.0F, 0.0F);
+        this.shamanStaffLowerCross.setRotationPoint(0.0F, -11.0F, 0.0F);
         this.shamanStaffLowerCross.addBox(-1.5F, 0.0F, -0.5F, 3.0F, 1.0F, 1.0F, 0.0F, 0.0F, 0.0F);
         this.shamanNose = new BirsyModelRenderer(this, 50, 12);
-        this.shamanNose.setPos(0.0F, -1.5F, 0.0F);
+        this.shamanNose.setRotationPoint(0.0F, -1.5F, 0.0F);
         this.shamanNose.addBox(-1.0F, -0.0F, 0.0F, 2.0F, 2.0F, 2.0F, 0.0F, 0.0F, 0.0F);
         this.setRotateAngle(shamanNose, -0.3441789165090569F, 0.0F, 0.0F);
         this.shamanHead = new BirsyModelRenderer(this, 32, 0);
-        this.shamanHead.setPos(0.0F, 0.0F, 1.0F);
+        this.shamanHead.setRotationPoint(0.0F, 0.0F, 1.0F);
         this.shamanHead.addBox(-3.0F, -3.0F, -6.0F, 6.0F, 6.0F, 6.0F, 0.0F, 0.0F, 0.0F);
         this.shamanRightArm.addChild(this.shamanStaff);
         this.shamanBody.addChild(this.legsJoint);
@@ -161,14 +159,14 @@ public class GnomadShamanModel<T extends GnomadShamanEntity> extends BirsyBaseMo
     }
 
     @Override
-    public void renderToBuffer(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) { 
+    public void render(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) { 
         ImmutableList.of(this.shamanBody).forEach((modelRenderer) -> { 
             modelRenderer.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
         });
     }
 
     @Override
-    public void setupAnim(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) 
+    public void setRotationAngles(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) 
     {
     	resetParts(this.shamanBody, this.shamanTornBottom, this.legsJoint, this.armsJoint, this.neckJoint, this.shamanPouch, this.shamanLeftLeg, this.shamanRightLeg, this.shamanLeftArm, this.shamanRightArm, this.shamanStaff, this.shamanStaffRing, this.shamanStaffCross, this.shamanStaffLowerCross, this.shamanStaffRingInside, this.shamanNeck, this.headJoint, this.shamanHead, this.shamanFace, this.shamanHatBrim, this.shamanBeard, this.shamanNose, this.shamanFaceBottom, this.shamanFaceTop, this.shamanHat);
     	
@@ -218,13 +216,13 @@ public class GnomadShamanModel<T extends GnomadShamanEntity> extends BirsyBaseMo
     	look(this.shamanNeck, netHeadYaw, headPitch, 2.0F, 2.0F);
     	look(this.shamanHead, netHeadYaw, headPitch, 2.0F, 2.0F);
     	
-    	this.shamanBody.xRot += this.shamanBody.defaultRotateAngleX;
-    	this.shamanNeck.xRot += this.shamanNeck.defaultRotateAngleX;
+    	this.shamanBody.rotateAngleX += this.shamanBody.defaultRotateAngleX;
+    	this.shamanNeck.rotateAngleX += this.shamanNeck.defaultRotateAngleX;
     	
-    	this.shamanTornBottom.xRot = -this.shamanBody.xRot;
-    	this.armsJoint.xRot = -this.shamanBody.xRot;
-    	this.legsJoint.xRot = -this.shamanBody.xRot;
-    	this.neckJoint.xRot = -this.shamanBody.xRot;
-    	this.headJoint.xRot = -this.shamanNeck.xRot;
+    	this.shamanTornBottom.rotateAngleX = -this.shamanBody.rotateAngleX;
+    	this.armsJoint.rotateAngleX = -this.shamanBody.rotateAngleX;
+    	this.legsJoint.rotateAngleX = -this.shamanBody.rotateAngleX;
+    	this.neckJoint.rotateAngleX = -this.shamanBody.rotateAngleX;
+    	this.headJoint.rotateAngleX = -this.shamanNeck.rotateAngleX;
     }
 }

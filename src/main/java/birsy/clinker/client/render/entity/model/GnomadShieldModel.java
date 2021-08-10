@@ -1,11 +1,11 @@
 package birsy.clinker.client.render.entity.model;
 
 import birsy.clinker.client.render.util.BirsyModelRenderer;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.model.Model;
-import net.minecraft.util.Mth;
+import net.minecraft.client.renderer.model.Model;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -19,30 +19,30 @@ public class GnomadShieldModel extends Model {
     public BirsyModelRenderer shieldRight;
 
     public GnomadShieldModel(float distance) {
-        super(RenderType::entityTranslucent);
+        super(RenderType::getEntityTranslucent);
         
-        this.texWidth = 32;
-        this.texHeight = 64;
+        this.textureWidth = 32;
+        this.textureHeight = 64;
 
         this.rootPart = new BirsyModelRenderer(this, 0, 0);
-        this.rootPart.setPos(0.0F, 12.0F, 0.0F);
+        this.rootPart.setRotationPoint(0.0F, 12.0F, 0.0F);
         this.rootPart.addBox(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
 
         this.shieldFront = new BirsyModelRenderer(this, 0, 0);
-        this.shieldFront.setPos(0.0F, 0.0F, -1 * distance);
+        this.shieldFront.setRotationPoint(0.0F, 0.0F, -1 * distance);
         this.shieldFront.addBox(-6.0F, -11.0F, -1.0F, 12.0F, 22.0F, 1.0F, 0.0F, 0.0F, 0.0F);
 
         this.shieldBack = new BirsyModelRenderer(this, 0, 0);
-        this.shieldBack.setPos(0.0F, 0.0F, distance);
+        this.shieldBack.setRotationPoint(0.0F, 0.0F, distance);
         this.shieldBack.addBox(-6.0F, -11.0F, 0.0F, 12.0F, 22.0F, 1.0F, 0.0F, 0.0F, 0.0F);
         this.shieldBack.mirror = true;
 
         this.shieldLeft = new BirsyModelRenderer(this, 0, 23);
-        this.shieldLeft.setPos(-1 * distance, 0.0F, 0.0F);
+        this.shieldLeft.setRotationPoint(-1 * distance, 0.0F, 0.0F);
         this.shieldLeft.addBox(-1.0F, -11.0F, -6.0F, 1.0F, 22.0F, 12.0F, 0.0F, 0.0F, 0.0F);
 
         this.shieldRight = new BirsyModelRenderer(this, 0, 23);
-        this.shieldRight.setPos(distance, 0.0F, 0.0F);
+        this.shieldRight.setRotationPoint(distance, 0.0F, 0.0F);
         this.shieldRight.addBox(0.0F, -11.0F, -6.0F, 1.0F, 22.0F, 12.0F, 0.0F, 0.0F, 0.0F);
         this.shieldRight.mirror = true;
 
@@ -53,80 +53,80 @@ public class GnomadShieldModel extends Model {
     }
 
     @Override
-    public void renderToBuffer(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
+    public void render(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
         this.rootPart.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
     }
 
     public void setRotation(float rotation, float distanceFromCenter, float ticksExisted, int shieldNumber) {
-        this.rootPart.yRot = rotation;
-        this.rootPart.y =+ (Mth.sin(ticksExisted * 0.13F) * 2) + 5;
+        this.rootPart.rotateAngleY = rotation;
+        this.rootPart.rotationPointY =+ (MathHelper.sin(ticksExisted * 0.13F) * 2) + 5;
 
-        this.shieldFront.z = -1 * distanceFromCenter;
-        this.shieldBack.z  = distanceFromCenter;
-        this.shieldLeft.x  = -1 * distanceFromCenter;
-        this.shieldRight.x = distanceFromCenter;
+        this.shieldFront.rotationPointZ = -1 * distanceFromCenter;
+        this.shieldBack.rotationPointZ  = distanceFromCenter;
+        this.shieldLeft.rotationPointX  = -1 * distanceFromCenter;
+        this.shieldRight.rotationPointX = distanceFromCenter;
 
-        shieldFront.visible = false;
-        shieldBack.visible  = false;
-        shieldLeft.visible  = false;
-        shieldRight.visible = false;
+        shieldFront.showModel = false;
+        shieldBack.showModel  = false;
+        shieldLeft.showModel  = false;
+        shieldRight.showModel = false;
 
         if (shieldNumber > 0) {
-            shieldRight.visible = true;
+            shieldRight.showModel = true;
         }
 
         if (shieldNumber > 1) {
-            shieldLeft.visible  = true;
+            shieldLeft.showModel  = true;
         }
 
         if (shieldNumber > 2) {
-            shieldBack.visible  = true;
+            shieldBack.showModel  = true;
         }
 
         if (shieldNumber > 3) {
-            shieldFront.visible = true;
+            shieldFront.showModel = true;
         }
     }
     
     public void resetRotation() {
-        this.rootPart.xRot = this.rootPart.defaultRotateAngleX;
-        this.rootPart.yRot = this.rootPart.defaultRotateAngleY;
-        this.rootPart.zRot = this.rootPart.defaultRotateAngleZ;
+        this.rootPart.rotateAngleX = this.rootPart.defaultRotateAngleX;
+        this.rootPart.rotateAngleY = this.rootPart.defaultRotateAngleY;
+        this.rootPart.rotateAngleZ = this.rootPart.defaultRotateAngleZ;
 
-        this.rootPart.x = this.rootPart.defaultRotationPointX;
-        this.rootPart.y = this.rootPart.defaultRotationPointY;
-        this.rootPart.z = this.rootPart.defaultRotationPointZ;
+        this.rootPart.rotationPointX = this.rootPart.defaultRotationPointX;
+        this.rootPart.rotationPointY = this.rootPart.defaultRotationPointY;
+        this.rootPart.rotationPointZ = this.rootPart.defaultRotationPointZ;
 
-        this.shieldFront.xRot = this.shieldFront.defaultRotateAngleX;
-        this.shieldFront.yRot = this.shieldFront.defaultRotateAngleY;
-        this.shieldFront.zRot = this.shieldFront.defaultRotateAngleZ;
+        this.shieldFront.rotateAngleX = this.shieldFront.defaultRotateAngleX;
+        this.shieldFront.rotateAngleY = this.shieldFront.defaultRotateAngleY;
+        this.shieldFront.rotateAngleZ = this.shieldFront.defaultRotateAngleZ;
 
-        this.shieldFront.x = this.shieldFront.defaultRotationPointX;
-        this.shieldFront.y = this.shieldFront.defaultRotationPointY;
-        this.shieldFront.z = this.shieldFront.defaultRotationPointZ;
+        this.shieldFront.rotationPointX = this.shieldFront.defaultRotationPointX;
+        this.shieldFront.rotationPointY = this.shieldFront.defaultRotationPointY;
+        this.shieldFront.rotationPointZ = this.shieldFront.defaultRotationPointZ;
 
-        this.shieldBack.xRot = this.shieldBack.defaultRotateAngleX;
-        this.shieldBack.yRot = this.shieldBack.defaultRotateAngleY;
-        this.shieldBack.zRot = this.shieldBack.defaultRotateAngleZ;
+        this.shieldBack.rotateAngleX = this.shieldBack.defaultRotateAngleX;
+        this.shieldBack.rotateAngleY = this.shieldBack.defaultRotateAngleY;
+        this.shieldBack.rotateAngleZ = this.shieldBack.defaultRotateAngleZ;
 
-        this.shieldBack.x = this.shieldBack.defaultRotationPointX;
-        this.shieldBack.y = this.shieldBack.defaultRotationPointY;
-        this.shieldBack.z = this.shieldBack.defaultRotationPointZ;
+        this.shieldBack.rotationPointX = this.shieldBack.defaultRotationPointX;
+        this.shieldBack.rotationPointY = this.shieldBack.defaultRotationPointY;
+        this.shieldBack.rotationPointZ = this.shieldBack.defaultRotationPointZ;
 
-        this.shieldLeft.xRot = this.shieldLeft.defaultRotateAngleX;
-        this.shieldLeft.yRot = this.shieldLeft.defaultRotateAngleY;
-        this.shieldLeft.zRot = this.shieldLeft.defaultRotateAngleZ;
+        this.shieldLeft.rotateAngleX = this.shieldLeft.defaultRotateAngleX;
+        this.shieldLeft.rotateAngleY = this.shieldLeft.defaultRotateAngleY;
+        this.shieldLeft.rotateAngleZ = this.shieldLeft.defaultRotateAngleZ;
 
-        this.shieldLeft.x = this.shieldLeft.defaultRotationPointX;
-        this.shieldLeft.y = this.shieldLeft.defaultRotationPointY;
-        this.shieldLeft.z = this.shieldLeft.defaultRotationPointZ;
+        this.shieldLeft.rotationPointX = this.shieldLeft.defaultRotationPointX;
+        this.shieldLeft.rotationPointY = this.shieldLeft.defaultRotationPointY;
+        this.shieldLeft.rotationPointZ = this.shieldLeft.defaultRotationPointZ;
 
-        this.shieldRight.xRot = this.shieldRight.defaultRotateAngleX;
-        this.shieldRight.yRot = this.shieldRight.defaultRotateAngleY;
-        this.shieldRight.zRot = this.shieldRight.defaultRotateAngleZ;
+        this.shieldRight.rotateAngleX = this.shieldRight.defaultRotateAngleX;
+        this.shieldRight.rotateAngleY = this.shieldRight.defaultRotateAngleY;
+        this.shieldRight.rotateAngleZ = this.shieldRight.defaultRotateAngleZ;
 
-        this.shieldRight.x = this.shieldRight.defaultRotationPointX;
-        this.shieldRight.y = this.shieldRight.defaultRotationPointY;
-        this.shieldRight.z = this.shieldRight.defaultRotationPointZ;
+        this.shieldRight.rotationPointX = this.shieldRight.defaultRotationPointX;
+        this.shieldRight.rotationPointY = this.shieldRight.defaultRotationPointY;
+        this.shieldRight.rotationPointZ = this.shieldRight.defaultRotationPointZ;
     }
 }

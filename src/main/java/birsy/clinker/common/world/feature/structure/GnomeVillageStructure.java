@@ -2,19 +2,17 @@ package birsy.clinker.common.world.feature.structure;
 
 import com.mojang.serialization.Codec;
 
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
-import net.minecraft.world.level.levelgen.feature.StructureFeature;
+import net.minecraft.world.gen.feature.NoFeatureConfig;
+import net.minecraft.world.gen.feature.structure.Structure;
 
-import net.minecraft.world.level.levelgen.feature.StructureFeature.StructureStartFactory;
-
-public class GnomeVillageStructure extends StructureFeature<NoneFeatureConfiguration>
+public class GnomeVillageStructure extends Structure<NoFeatureConfig>
 {
-	public GnomeVillageStructure(Codec<NoneFeatureConfiguration> config) {
+	public GnomeVillageStructure(Codec<NoFeatureConfig> config) {
 		super(config);
 	}
 	
 	@Override
-	public StructureStartFactory<NoneFeatureConfiguration> getStartFactory() {
+	public IStartFactory<NoFeatureConfig> getStartFactory() {
 		// TODO Auto-generated method stub
 		return null;
 	}

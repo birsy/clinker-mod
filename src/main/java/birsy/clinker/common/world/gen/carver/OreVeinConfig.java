@@ -2,10 +2,10 @@ package birsy.clinker.common.world.gen.carver;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.carver.CarverConfiguration;
+import net.minecraft.block.BlockState;
+import net.minecraft.world.gen.carver.ICarverConfig;
 
-public class OreVeinConfig implements CarverConfiguration {
+public class OreVeinConfig implements ICarverConfig {
     public static final Codec<OreVeinConfig> CODEC = RecordCodecBuilder.create((builder) -> {
         return builder.group(BlockState.CODEC.fieldOf("ore").forGetter((config) -> {
             return config.ore;

@@ -2,43 +2,43 @@ package birsy.clinker.common.world.feature.cavebiomehack;
 
 import birsy.clinker.core.registry.ClinkerBlocks;
 import com.mojang.serialization.Codec;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.SlabBlock;
-import net.minecraft.core.Direction;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.WorldGenLevel;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.feature.configurations.ReplaceSphereConfiguration;
-import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.SlabBlock;
+import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.ISeedReader;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.gen.ChunkGenerator;
+import net.minecraft.world.gen.feature.BlobReplacementConfig;
+import net.minecraft.world.gen.feature.Feature;
 
 import javax.annotation.Nullable;
 import java.util.Random;
 
-public class CaveBiome extends Feature<ReplaceSphereConfiguration> {
+public class CaveBiome extends Feature<BlobReplacementConfig> {
 
-	public CaveBiome(Codec<ReplaceSphereConfiguration> FeatureConfig) {
+	public CaveBiome(Codec<BlobReplacementConfig> FeatureConfig) {
 		super(FeatureConfig);
 	}
 
-	public boolean place(WorldGenLevel reader, ChunkGenerator generator, Random rand, BlockPos pos, ReplaceSphereConfiguration config) {
+	public boolean generate(ISeedReader reader, ChunkGenerator generator, Random rand, BlockPos pos, BlobReplacementConfig config) {
 		Block block = ClinkerBlocks.BRIMSTONE.get();
-		BlockPos blockpos = findTarget(reader, pos.mutable().clamp(Direction.Axis.Y, 1, reader.getMaxBuildHeight() - 1), block);
+		BlockPos blockpos = func_236329_a_(reader, pos.toMutable().clampAxisCoordinate(Direction.Axis.Y, 1, reader.getHeight() - 1), block);
 
 		if (blockpos == null) {
 			return false;
 		} else {
-			int i = config.radius().sample(rand);
+			int i = config.getRadius().getSpread(rand);
 			boolean flag = false;
 
-			for (BlockPos blockpos1 : BlockPos.withinManhattan(blockpos, i, i, i)) {
+			for (BlockPos blockpos1 : BlockPos.getProximitySortedBoxPositionsIterator(blockpos, i, i, i)) {
 				BlockState blockstate = reader.getBlockState(blockpos1);
-				if (blockstate.is(ClinkerBlocks.BRIMSTONE.get()) || blockstate.is(ClinkerBlocks.COBBLED_BRIMSTONE.get()) || blockstate.is(Blocks.STONE)) {
+				if (blockstate.matchesBlock(ClinkerBlocks.BRIMSTONE.get()) || blockstate.matchesBlock(ClinkerBlocks.COBBLED_BRIMSTONE.get()) || blockstate.matchesBlock(Blocks.STONE)) {
 					//If the above it isn't solid, isn't water, and the block itself can hold water, then the puddle block will generate.
-					if (!reader.getBlockState(blockpos1.above()).canOcclude() && !(reader.getBlockState(blockpos1.above()).getBlock() == Blocks.WATER) && canHoldLiquid(reader, blockpos1, rand)) {
-						reader.setBlock(blockpos1, rand.nextBoolean() ? Blocks.WATER.defaultBlockState() : ClinkerBlocks.BRIMSTONE_SLAB.get().defaultBlockState().setValue(SlabBlock.WATERLOGGED, true), 1);
+					if (!reader.getBlockState(blockpos1.up()).isSolid() && !(reader.getBlockState(blockpos1.up()).getBlock() == Blocks.WATER) && canHoldLiquid(reader, blockpos1, rand)) {
+						reader.setBlockState(blockpos1, rand.nextBoolean() ? Blocks.WATER.getDefaultState() : ClinkerBlocks.BRIMSTONE_SLAB.get().getDefaultState().with(SlabBlock.WATERLOGGED, true), 1);
 					}
 
 					flag = true;
@@ -49,15 +49,15 @@ public class CaveBiome extends Feature<ReplaceSphereConfiguration> {
 		}
 	}
 
-	private boolean canHoldLiquid(WorldGenLevel reader, BlockPos pos, Random rand) {
+	private boolean canHoldLiquid(ISeedReader reader, BlockPos pos, Random rand) {
 		boolean flag = true;
 		Direction[] directionArray = {Direction.EAST, Direction.WEST, Direction.NORTH, Direction.SOUTH, Direction.DOWN};
 
 		for (Direction direction : directionArray) {
-			BlockState state = reader.getBlockState(pos.relative(direction));
+			BlockState state = reader.getBlockState(pos.offset(direction));
 
 			//If the block isn't solid, and isn't water, then it won't be able to hold water.
-			if (!state.canOcclude() && !(state.getBlock() == Blocks.WATER)) {
+			if (!state.isSolid() && !(state.getBlock() == Blocks.WATER)) {
 				flag = false;
 			}
 		}
@@ -66,10 +66,10 @@ public class CaveBiome extends Feature<ReplaceSphereConfiguration> {
 	}
 
 	@Nullable
-	private static BlockPos findTarget(LevelAccessor worldIn, BlockPos.MutableBlockPos pos, Block block) {
+	private static BlockPos func_236329_a_(IWorld worldIn, BlockPos.Mutable pos, Block block) {
 		while (pos.getY() > 1) {
 			BlockState blockstate = worldIn.getBlockState(pos);
-			if (blockstate.is(ClinkerBlocks.BRIMSTONE.get()) || blockstate.is(ClinkerBlocks.COBBLED_BRIMSTONE.get()) || blockstate.is(Blocks.STONE)) {
+			if (blockstate.matchesBlock(ClinkerBlocks.BRIMSTONE.get()) || blockstate.matchesBlock(ClinkerBlocks.COBBLED_BRIMSTONE.get()) || blockstate.matchesBlock(Blocks.STONE)) {
 				return pos;
 			}
 

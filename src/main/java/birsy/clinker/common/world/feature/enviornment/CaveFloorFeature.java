@@ -2,44 +2,44 @@ package birsy.clinker.common.world.feature.enviornment;
 
 import birsy.clinker.core.registry.ClinkerBlocks;
 import com.mojang.serialization.Codec;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.core.Direction;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.WorldGenLevel;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.feature.configurations.ReplaceSphereConfiguration;
-import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.ISeedReader;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.gen.ChunkGenerator;
+import net.minecraft.world.gen.feature.BlobReplacementConfig;
+import net.minecraft.world.gen.feature.Feature;
 
 import javax.annotation.Nullable;
 import java.util.Random;
 
-public class CaveFloorFeature extends Feature<ReplaceSphereConfiguration> {
+public class CaveFloorFeature extends Feature<BlobReplacementConfig> {
     
-    public CaveFloorFeature(Codec<ReplaceSphereConfiguration> codec) {
+    public CaveFloorFeature(Codec<BlobReplacementConfig> codec) {
         super(codec);
     }
 
     @Override
-    public boolean place(WorldGenLevel reader, ChunkGenerator generator, Random rand, BlockPos pos, ReplaceSphereConfiguration config) {
-        BlockPos blockpos = getValidYPos(reader, pos.mutable().clamp(Direction.Axis.Y, 1, reader.getMaxBuildHeight() - 1), ClinkerBlocks.BRIMSTONE.get());
+    public boolean generate(ISeedReader reader, ChunkGenerator generator, Random rand, BlockPos pos, BlobReplacementConfig config) {
+        BlockPos blockpos = getValidYPos(reader, pos.toMutable().clampAxisCoordinate(Direction.Axis.Y, 1, reader.getHeight() - 1), ClinkerBlocks.BRIMSTONE.get());
         if (blockpos == null) {
             return false;
         } else {
-            int i = config.radius().sample(rand);
+            int i = config.getRadius().getSpread(rand);
             boolean flag = false;
 
-            for (BlockPos blockpos1 : BlockPos.withinManhattan(blockpos, i, i, i)) {
+            for (BlockPos blockpos1 : BlockPos.getProximitySortedBoxPositionsIterator(blockpos, i, i, i)) {
                 int height = rand.nextInt(6);
-                BlockPos.MutableBlockPos blockPos$mutable = blockpos1.mutable();
+                BlockPos.Mutable blockPos$mutable = blockpos1.toMutable();
 
-                if (!reader.getBlockState(blockpos1.above()).canOcclude()) {
+                if (!reader.getBlockState(blockpos1.up()).isSolid()) {
                     for (int j = 0; j < height; j++) {
                         BlockState blockstate = reader.getBlockState(blockPos$mutable);
-                        if (blockstate.is(ClinkerBlocks.BRIMSTONE.get()) || blockstate.is(ClinkerBlocks.COBBLED_BRIMSTONE.get()) || blockstate.is(Blocks.STONE)) {
-                            this.setBlock(reader, blockPos$mutable, ClinkerBlocks.COBBLED_BRIMSTONE.get().defaultBlockState());
+                        if (blockstate.matchesBlock(ClinkerBlocks.BRIMSTONE.get()) || blockstate.matchesBlock(ClinkerBlocks.COBBLED_BRIMSTONE.get()) || blockstate.matchesBlock(Blocks.STONE)) {
+                            this.setBlockState(reader, blockPos$mutable, ClinkerBlocks.COBBLED_BRIMSTONE.get().getDefaultState());
 
                             blockPos$mutable.setY(blockpos1.getY() - j);
                             flag = true;
@@ -54,10 +54,10 @@ public class CaveFloorFeature extends Feature<ReplaceSphereConfiguration> {
     }
 
     @Nullable
-    private static BlockPos getValidYPos(LevelAccessor worldIn, BlockPos.MutableBlockPos pos, Block block) {
+    private static BlockPos getValidYPos(IWorld worldIn, BlockPos.Mutable pos, Block block) {
         while (pos.getY() > 1) {
             BlockState blockstate = worldIn.getBlockState(pos);
-            if (blockstate.is(ClinkerBlocks.BRIMSTONE.get()) || blockstate.is(ClinkerBlocks.COBBLED_BRIMSTONE.get()) || blockstate.is(Blocks.STONE)) {
+            if (blockstate.matchesBlock(ClinkerBlocks.BRIMSTONE.get()) || blockstate.matchesBlock(ClinkerBlocks.COBBLED_BRIMSTONE.get()) || blockstate.matchesBlock(Blocks.STONE)) {
                 return pos;
             }
 

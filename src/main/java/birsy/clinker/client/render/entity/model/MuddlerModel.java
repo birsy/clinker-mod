@@ -3,13 +3,11 @@ package birsy.clinker.client.render.entity.model;
 import birsy.clinker.client.render.util.BirsyBaseModel;
 import birsy.clinker.client.render.util.BirsyModelRenderer;
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.world.entity.Entity;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
+import net.minecraft.entity.Entity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-
-import Entity;
 
 /**
  * MuddlerModel - birse
@@ -34,63 +32,63 @@ public class MuddlerModel<T extends Entity> extends BirsyBaseModel<T> {
     public BirsyModelRenderer muddlerShoulders;
 
     public MuddlerModel() {
-        this.texWidth = 128;
-        this.texHeight = 128;
+        this.textureWidth = 128;
+        this.textureHeight = 128;
         this.muddlerLeftLeg = new BirsyModelRenderer(this, 84, 17);
-        this.muddlerLeftLeg.setPos(4.5F, 0.0F, 0.0F);
+        this.muddlerLeftLeg.setRotationPoint(4.5F, 0.0F, 0.0F);
         this.muddlerLeftLeg.addBox(-2.0F, 0.0F, -1.5F, 4.0F, 12.0F, 3.0F, 0.0F, 0.0F, 0.0F);
         this.legsJoint = new BirsyModelRenderer(this, 0, 0);
-        this.legsJoint.setPos(0.0F, 4.0F, 0.0F);
+        this.legsJoint.setRotationPoint(0.0F, 4.0F, 0.0F);
         this.legsJoint.addBox(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
         this.setRotateAngle(legsJoint, -0.17453292519943295F, 0.0F, 0.0F);
         this.muddlerRightLeg = new BirsyModelRenderer(this, 70, 17);
-        this.muddlerRightLeg.setPos(-4.5F, 0.0F, 0.0F);
+        this.muddlerRightLeg.setRotationPoint(-4.5F, 0.0F, 0.0F);
         this.muddlerRightLeg.addBox(-2.0F, 0.0F, -1.5F, 4.0F, 12.0F, 3.0F, 0.0F, 0.0F, 0.0F);
         this.muddlerHood = new BirsyModelRenderer(this, 0, 32);
-        this.muddlerHood.setPos(0.0F, -15.0F, 5.5F);
+        this.muddlerHood.setRotationPoint(0.0F, -15.0F, 5.5F);
         this.muddlerHood.addBox(-7.0F, -24.0F, -14.0F, 14.0F, 24.0F, 14.0F, 0.02F, 0.0F, 0.0F);
         this.setRotateAngle(muddlerHood, 0.2617993877991494F, 0.0F, 0.0F);
         this.muddlerRightArm = new BirsyModelRenderer(this, 98, 17);
         this.muddlerRightArm.mirror = true;
-        this.muddlerRightArm.setPos(-7.5F, 0.0F, 0.0F);
+        this.muddlerRightArm.setRotationPoint(-7.5F, 0.0F, 0.0F);
         this.muddlerRightArm.addBox(-1.5F, 0.0F, -2.0F, 3.0F, 24.0F, 4.0F, 0.0F, 0.0F, 0.0F);
         this.setRotateAngle(muddlerRightArm, 0.0F, 0.20943951023931953F, 0.0F);
         this.armsJoint = new BirsyModelRenderer(this, 0, 0);
-        this.armsJoint.setPos(0.0F, -9.0F, -4.0F);
+        this.armsJoint.setRotationPoint(0.0F, -9.0F, -4.0F);
         this.armsJoint.addBox(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
         this.setRotateAngle(armsJoint, -0.17453292519943295F, 0.0F, 0.0F);
         this.muddlerPlant = new BirsyModelRenderer(this, 80, 92);
-        this.muddlerPlant.setPos(0.0F, -31.5F, 0.0F);
+        this.muddlerPlant.setRotationPoint(0.0F, -31.5F, 0.0F);
         this.muddlerPlant.addBox(-4.0F, -15.0F, 0.0F, 8.0F, 25.0F, 0.0F, 0.0F, 0.0F, 0.0F);
         this.setRotateAngle(muddlerPlant, 0.23457224414434488F, 0.0F, 0.11728612207217244F);
         this.muddlerLeftArm = new BirsyModelRenderer(this, 98, 17);
-        this.muddlerLeftArm.setPos(7.5F, 0.0F, 0.0F);
+        this.muddlerLeftArm.setRotationPoint(7.5F, 0.0F, 0.0F);
         this.muddlerLeftArm.addBox(-1.5F, 0.0F, -2.0F, 3.0F, 24.0F, 4.0F, 0.0F, 0.0F, 0.0F);
         this.setRotateAngle(muddlerLeftArm, 0.0F, -0.20943951023931953F, 0.0F);
         this.muddlerChest = new BirsyModelRenderer(this, 56, 35);
-        this.muddlerChest.setPos(0.0F, 8.0F, 0.0F);
+        this.muddlerChest.setRotationPoint(0.0F, 8.0F, 0.0F);
         this.muddlerChest.addBox(-7.0F, -15.0F, -5.5F, 14.0F, 21.0F, 11.0F, 0.0F, 0.0F, 0.0F);
         this.setRotateAngle(muddlerChest, 0.17453292519943295F, 0.0F, 0.0F);
         this.muddlerButtVines = new BirsyModelRenderer(this, 70, 0);
-        this.muddlerButtVines.setPos(0.0F, 6.0F, 5.5F);
+        this.muddlerButtVines.setRotationPoint(0.0F, 6.0F, 5.5F);
         this.muddlerButtVines.addBox(-7.0F, 0.0F, -11.0F, 14.0F, 6.0F, 11.0F, -0.02F, 0.0F, 0.0F);
         this.setRotateAngle(muddlerButtVines, -0.17453292519943295F, 0.0F, 0.0F);
         this.muddlerHead = new BirsyModelRenderer(this, 26, 0);
-        this.muddlerHead.setPos(0.0F, 0.0F, -5.5F);
+        this.muddlerHead.setRotationPoint(0.0F, 0.0F, -5.5F);
         this.muddlerHead.addBox(-6.0F, -22.0F, -5.0F, 12.0F, 22.0F, 10.0F, 0.0F, 0.0F, 0.0F);
         this.muddlerHat = new BirsyModelRenderer(this, 80, 67);
-        this.muddlerHat.setPos(0.0F, -10.0F, 0.0F);
+        this.muddlerHat.setRotationPoint(0.0F, -10.0F, 0.0F);
         this.muddlerHat.addBox(-4.0F, -17.0F, -8.0F, 8.0F, 17.0F, 8.0F, 0.0F, 0.0F, 0.0F);
         this.setRotateAngle(muddlerHat, -0.17453292519943295F, 0.0F, 0.0F);
         this.muddlerMudHat = new BirsyModelRenderer(this, 0, 70);
-        this.muddlerMudHat.setPos(0.0F, 2.0F, -6.0F);
+        this.muddlerMudHat.setRotationPoint(0.0F, 2.0F, -6.0F);
         this.muddlerMudHat.addBox(-10.0F, -31.0F, -10.0F, 20.0F, 31.0F, 20.0F, 0.0F, 0.0F, 0.0F);
         this.muddlerFace = new BirsyModelRenderer(this, 0, 0);
-        this.muddlerFace.setPos(0.0F, -19.0F, -5.0F);
+        this.muddlerFace.setRotationPoint(0.0F, -19.0F, -5.0F);
         this.muddlerFace.addBox(-3.0F, 0.0F, 0.0F, 6.0F, 16.0F, 7.0F, 0.0F, 0.0F, 0.0F);
         this.setRotateAngle(muddlerFace, -0.2617993877991494F, 0.0F, 0.0F);
         this.muddlerShoulders = new BirsyModelRenderer(this, 0, 121);
-        this.muddlerShoulders.setPos(0.0F, 0.0F, 1.5F);
+        this.muddlerShoulders.setRotationPoint(0.0F, 0.0F, 1.5F);
         this.muddlerShoulders.addBox(-10.0F, -1.5F, -2.0F, 20.0F, 3.0F, 4.0F, -1.0F, 0.2F, 0.0F);
         this.setRotateAngle(muddlerShoulders, -0.46914448828868976F, 0.0F, 0.0F);
         this.legsJoint.addChild(this.muddlerLeftLeg);
@@ -110,12 +108,12 @@ public class MuddlerModel<T extends Entity> extends BirsyBaseModel<T> {
     }
 
     @Override
-    public void renderToBuffer(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) { 
+    public void render(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) { 
         ImmutableList.of(this.muddlerChest).forEach((ModelRenderer) -> {
             ModelRenderer.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
         });
     }
 
     @Override
-    public void setupAnim(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {}
+    public void setRotationAngles(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {}
 }

@@ -7,16 +7,16 @@ import com.mojang.serialization.Codec;
 import birsy.clinker.common.block.AshLayerBlock;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import net.minecraft.block.BlockState;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.block.Blocks;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.util.Direction;
-import net.minecraft.core.BlockPos;
-import net.minecraft.util.Mth;
-import net.minecraft.world.level.WorldGenLevel;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.ISeedReader;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.gen.ChunkGenerator;
+import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.NoFeatureConfig;
 
 /**
  * Generates a dune of ash out of the "ash layer" block. Who knew this would be so difficult?
@@ -24,21 +24,21 @@ import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConf
  *
  * TODO - Figure out a way to get these generating dynamically? - If you leave a window open or something. Could look pretty sweet.
  */
-public class AshDuneFeature extends Feature<NoneFeatureConfiguration> {
+public class AshDuneFeature extends Feature<NoFeatureConfig> {
 
-	public AshDuneFeature(Codec<NoneFeatureConfiguration> FeatureConfig) {
+	public AshDuneFeature(Codec<NoFeatureConfig> FeatureConfig) {
 		super(FeatureConfig);
 	}
 
 	@Override
-	public boolean place(WorldGenLevel reader, ChunkGenerator generator, Random rand, BlockPos pos, NoneFeatureConfiguration config) {
+	public boolean generate(ISeedReader reader, ChunkGenerator generator, Random rand, BlockPos pos, NoFeatureConfig config) {
 		if (pos.getY() < 1) {
 			return false;
 		} else {
-			int baseHeight = Mth.clamp(rand.nextInt(8), 2, 8);
-			this.setBlock(reader, pos, ClinkerBlocks.ASH_LAYER.get().defaultBlockState().setValue(AshLayerBlock.LAYERS, baseHeight));
+			int baseHeight = MathHelper.clamp(rand.nextInt(8), 2, 8);
+			this.setBlockState(reader, pos, ClinkerBlocks.ASH_LAYER.get().getDefaultState().with(AshLayerBlock.LAYERS, baseHeight));
 
-			BlockPos.MutableBlockPos blockPos = pos.mutable();
+			BlockPos.Mutable blockPos = pos.toMutable();
 
 			for (int x = -(baseHeight + 1); x < baseHeight + 1; x++) {
 				for (int z = -(baseHeight + 1); z < baseHeight + 1; z++) {
@@ -51,11 +51,11 @@ public class AshDuneFeature extends Feature<NoneFeatureConfiguration> {
 					}
 					 */
 
-					int height = Mth.clamp(baseHeight - (blockPos.distManhattan(pos)), 0, 8);
+					int height = MathHelper.clamp(baseHeight - (blockPos.manhattanDistance(pos)), 0, 8);
 					int variation = rand.nextInt(2) - 1;
 
 					if (height > 0) {
-						this.setBlock(reader, blockPos, ClinkerBlocks.ASH_LAYER.get().defaultBlockState().setValue(AshLayerBlock.LAYERS, height));//.with(AshLayerBlock.WATERLOGGED, isWaterlogged));
+						this.setBlockState(reader, blockPos, ClinkerBlocks.ASH_LAYER.get().getDefaultState().with(AshLayerBlock.LAYERS, height));//.with(AshLayerBlock.WATERLOGGED, isWaterlogged));
 					}
 					/**
 					if (reader.getBlockState(blockPos).getMaterial().isReplaceable() || reader.isAirBlock(blockPos)) {
@@ -69,30 +69,30 @@ public class AshDuneFeature extends Feature<NoneFeatureConfiguration> {
 		}
 	}
 
-	public void setAshLayer(WorldGenLevel worldIn, BlockPos blockPos, int height) {
-		int clampedHeight = Mth.clamp(height, 0, 8);
+	public void setAshLayer(ISeedReader worldIn, BlockPos blockPos, int height) {
+		int clampedHeight = MathHelper.clamp(height, 0, 8);
 
 		if (clampedHeight > 0) {
 			boolean isWaterlogged = worldIn.getBlockState(blockPos).getBlock() == Blocks.WATER;
 			if (worldIn.getBlockState(blockPos).getBlock() == ClinkerBlocks.ASH_LAYER.get()) {
-				if (worldIn.getBlockState(blockPos).getValue(AshLayerBlock.LAYERS) < clampedHeight) {
-					this.setBlock(worldIn, blockPos, ClinkerBlocks.ASH_LAYER.get().defaultBlockState().setValue(AshLayerBlock.LAYERS, clampedHeight).setValue(AshLayerBlock.WATERLOGGED, isWaterlogged));
+				if (worldIn.getBlockState(blockPos).get(AshLayerBlock.LAYERS) < clampedHeight) {
+					this.setBlockState(worldIn, blockPos, ClinkerBlocks.ASH_LAYER.get().getDefaultState().with(AshLayerBlock.LAYERS, clampedHeight).with(AshLayerBlock.WATERLOGGED, isWaterlogged));
 				}
 			} else if (worldIn.getBlockState(blockPos).getMaterial().isReplaceable()) {
-				this.setBlock(worldIn, blockPos, ClinkerBlocks.ASH_LAYER.get().defaultBlockState().setValue(AshLayerBlock.LAYERS, clampedHeight).setValue(AshLayerBlock.WATERLOGGED, isWaterlogged));
+				this.setBlockState(worldIn, blockPos, ClinkerBlocks.ASH_LAYER.get().getDefaultState().with(AshLayerBlock.LAYERS, clampedHeight).with(AshLayerBlock.WATERLOGGED, isWaterlogged));
 			}
 		}
 	}
 
-	public void fillWithAsh(WorldGenLevel worldIn, Random rand, BlockPos pos, int baseHeightIn) {
-		BlockPos.MutableBlockPos blockPos = pos.mutable();
+	public void fillWithAsh(ISeedReader worldIn, Random rand, BlockPos pos, int baseHeightIn) {
+		BlockPos.Mutable blockPos = pos.toMutable();
 
 		for (int x = -baseHeightIn; x < baseHeightIn + 1; x++) {
 			for (int z = -baseHeightIn; z < baseHeightIn + 1; z++) {
 				blockPos.setX(x);
 				blockPos.setZ(z);
 
-				int height = (int) Mth.clamp(baseHeightIn - (blockPos.distManhattan(pos)), 0, 8);
+				int height = (int) MathHelper.clamp(baseHeightIn - (blockPos.manhattanDistance(pos)), 0, 8);
 				int variation = rand.nextInt(2) - 1;
 
 				this.setAshLayer(worldIn, blockPos, height + variation);
@@ -110,20 +110,20 @@ public class AshDuneFeature extends Feature<NoneFeatureConfiguration> {
 	 * 				int height = MathHelper.clamp(Math.max(Math.max(Math.max(distanceFromMiddle1, distanceFromMiddle2), distanceFromMiddle3), distanceFromMiddle4) + (rand.nextInt(2) - 1), 0, 8);
 */
 	
-	private int getPlacementY(LevelAccessor worldIn, BlockPos pos) {
-		BlockPos.MutableBlockPos placementPos = pos.mutable();
+	private int getPlacementY(IWorld worldIn, BlockPos pos) {
+		BlockPos.Mutable placementPos = pos.toMutable();
 		for(int i = 0; i < 20; i++) {
 			if (placementPos.getY() <= 0) {
 				break;
-			} else if (!worldIn.getBlockState(placementPos.below()).canOcclude()) {
-				placementPos.set(placementPos.below());
+			} else if (!worldIn.getBlockState(placementPos.down()).isSolid()) {
+				placementPos.setPos(placementPos.down());
 			} else {
 				break;
 			}
 		}
 
 		//If the block below it isn't solid, or the block itself isn't solid, return an invalid position.
-		if (!worldIn.getBlockState(placementPos.below()).canOcclude() || worldIn.getBlockState(placementPos).canOcclude()) {
+		if (!worldIn.getBlockState(placementPos.down()).isSolid() || worldIn.getBlockState(placementPos).isSolid()) {
 			return 0;
 		} else {
 			return placementPos.getY();

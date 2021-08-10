@@ -1,26 +1,26 @@
 package birsy.clinker.common.block.bramble;
 
 import birsy.clinker.core.registry.ClinkerBlocks;
-import net.minecraft.world.level.block.GrowingPlantHeadBlock;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.core.Direction;
+import net.minecraft.block.AbstractTopPlantBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
+import net.minecraft.block.material.Material;
+import net.minecraft.util.Direction;
 
 public class BrambleVinesBlock extends AbstractBrambleBodyBlock implements net.minecraftforge.common.IForgeShearable {
 			
 	public BrambleVinesBlock() {
-		super(((Block.Properties.of(Material.GRASS)
+		super(((Block.Properties.create(Material.ORGANIC)
 				  .sound(SoundType.CROP)
-				  .randomTicks()
-				  .noOcclusion()
-				  .requiresCorrectToolForDrops()
-				  .strength(4.0F)
-				  .noCollission())), Direction.UP);
+				  .tickRandomly()
+				  .notSolid()
+				  .setRequiresTool()
+				  .hardnessAndResistance(4.0F)
+				  .doesNotBlockMovement())), Direction.UP);
 	}
 
 	@Override
-	protected GrowingPlantHeadBlock getHeadBlock() {
-		return (GrowingPlantHeadBlock)ClinkerBlocks.BRAMBLE_VINES_TOP.get();
+	protected AbstractTopPlantBlock getTopPlantBlock() {
+		return (AbstractTopPlantBlock)ClinkerBlocks.BRAMBLE_VINES_TOP.get();
 	}
 }

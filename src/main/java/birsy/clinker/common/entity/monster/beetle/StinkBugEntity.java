@@ -4,44 +4,44 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import net.minecraft.entity.CreatureAttribute;
-import net.minecraft.world.entity.PathfinderMob;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
-import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
-import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
-import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.world.entity.ai.goal.MoveTowardsTargetGoal;
-import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
-import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.world.level.Level;
+import net.minecraft.entity.CreatureEntity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.ai.attributes.AttributeModifierMap;
+import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.ai.goal.HurtByTargetGoal;
+import net.minecraft.entity.ai.goal.LookAtGoal;
+import net.minecraft.entity.ai.goal.LookRandomlyGoal;
+import net.minecraft.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.entity.ai.goal.MoveTowardsTargetGoal;
+import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
+import net.minecraft.entity.monster.MonsterEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.world.World;
 
 @SuppressWarnings("unused")
-public class StinkBugEntity extends Monster {
-	public static final EntityDataAccessor<Boolean> SLEEPING = SynchedEntityData.defineId(StinkBugEntity.class, EntityDataSerializers.BOOLEAN);
+public class StinkBugEntity extends MonsterEntity {
+	public static final DataParameter<Boolean> SLEEPING = EntityDataManager.createKey(StinkBugEntity.class, DataSerializers.BOOLEAN);
 	private int awakenTimer;
 	
 	private static final Predicate<LivingEntity> ENEMY_MATCHER = (entity) -> {
 		if (entity == null) {
 			return false;
-		} else if (!(entity instanceof Player) || !entity.isSpectator() && !((Player)entity).isCreative()) {
+		} else if (!(entity instanceof PlayerEntity) || !entity.isSpectator() && !((PlayerEntity)entity).isCreative()) {
 			return true;
-		} else if ((entity instanceof PathfinderMob) && !(entity instanceof StinkBugEntity)){
+		} else if ((entity instanceof CreatureEntity) && !(entity instanceof StinkBugEntity)){
 			return true;
 		} else {
 			return false;
 		}
 	};
 	
-	public StinkBugEntity(EntityType<? extends Monster> type, Level worldIn) {
+	public StinkBugEntity(EntityType<? extends MonsterEntity> type, World worldIn) {
 		super(type, worldIn);
 	}
 	
@@ -49,18 +49,18 @@ public class StinkBugEntity extends Monster {
 		this.goalSelector.addGoal(1, new StinkBugEntity.AwakenGoal(this));
 		this.goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.0D, true));
 		this.goalSelector.addGoal(3, new MoveTowardsTargetGoal(this, 0.9D, 32.0F));
-		this.goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, 6.0F));
-		this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));
+		this.goalSelector.addGoal(7, new LookAtGoal(this, PlayerEntity.class, 6.0F));
+		this.goalSelector.addGoal(8, new LookRandomlyGoal(this));
 		this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
-		this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, true));
+		this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true));
 	}
 	
-	public static AttributeSupplier.Builder setCustomAttributes()
+	public static AttributeModifierMap.MutableAttribute setCustomAttributes()
 	{
-		return Mob.createMobAttributes()
-				.add(Attributes.MAX_HEALTH, 17.0)
-				.add(Attributes.MOVEMENT_SPEED, 0.25D)
-				.add(Attributes.ATTACK_DAMAGE, 3.0D);
+		return MobEntity.func_233666_p_()
+				.createMutableAttribute(Attributes.MAX_HEALTH, 17.0)
+				.createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.25D)
+				.createMutableAttribute(Attributes.ATTACK_DAMAGE, 3.0D);
 	}
 	
 	static class AwakenGoal extends Goal {
@@ -70,12 +70,12 @@ public class StinkBugEntity extends Monster {
 			this.stinkbug = stinkbug;
 		}
 
-		public boolean canUse() {
-			List<LivingEntity> list = this.stinkbug.level.getEntitiesOfClass(LivingEntity.class, this.stinkbug.getBoundingBox().inflate(2.0D), StinkBugEntity.ENEMY_MATCHER);
+		public boolean shouldExecute() {
+			List<LivingEntity> list = this.stinkbug.world.getEntitiesWithinAABB(LivingEntity.class, this.stinkbug.getBoundingBox().grow(2.0D), StinkBugEntity.ENEMY_MATCHER);
 			return !list.isEmpty();
 		}
 
-		public void start() {
+		public void startExecuting() {
 			this.stinkbug.awakenTimer = 0;
 		}
 
@@ -83,15 +83,15 @@ public class StinkBugEntity extends Monster {
 			stinkbug.awakenTimer++;
 		}
 		
-		public boolean canContinueToUse() {
+		public boolean shouldContinueExecuting() {
 			if (stinkbug.awakenTimer > 50) {
 				return false;
 			} else {
-				return this.canUse();
+				return this.shouldExecute();
 			}
 		}
 		
-		public void stop() {
+		public void resetTask() {
 			this.stinkbug.awakenTimer = 0;
 		}
 	}

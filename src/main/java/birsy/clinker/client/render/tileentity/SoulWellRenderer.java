@@ -3,29 +3,29 @@ package birsy.clinker.client.render.tileentity;
 import birsy.clinker.common.tileentity.SoulWellTileEntity;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.MultiBufferSource;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.renderer.model.ModelRenderer;
+import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3f;
 
-public class SoulWellRenderer<T extends SoulWellTileEntity> extends BlockEntityRenderer<T> {
+public class SoulWellRenderer<T extends SoulWellTileEntity> extends TileEntityRenderer<T> {
     protected static final ResourceLocation LIGHT = new ResourceLocation(Clinker.MOD_ID, "textures/blocks/soul_well/soul_well_light.png");
-    private final ModelPart lightModel;
+    private final ModelRenderer lightModel;
 
-    public SoulWellRenderer(BlockEntityRenderDispatcher rendererDispatcherIn) {
+    public SoulWellRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
         super(rendererDispatcherIn);
-        this.lightModel = new ModelPart(64, 32, 0, 0);
-        this.lightModel.setPos(0.0F, 0.0F, 0.0F);
+        this.lightModel = new ModelRenderer(64, 32, 0, 0);
+        this.lightModel.setRotationPoint(0.0F, 0.0F, 0.0F);
         this.lightModel.addBox(-8.0F, -8.0F, -8.0F, 16.0F, 16.0F, 16.0F, 0.0F, 0.0F, 0.0F);
     }
 
     @Override
-    public void render(T tileEntityIn, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void render(T tileEntityIn, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
         /**
         matrixStackIn.push();
 
@@ -61,7 +61,7 @@ public class SoulWellRenderer<T extends SoulWellTileEntity> extends BlockEntityR
     }
 
     @Override
-    public boolean shouldRenderOffScreen(T te) {
+    public boolean isGlobalRenderer(T te) {
         return true;
     }
 }

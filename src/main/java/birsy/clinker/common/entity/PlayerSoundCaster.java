@@ -1,15 +1,15 @@
 package birsy.clinker.common.entity;
 
 //import birsy.clinker.init.ClinkerEntityTypes;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.entity.EntityType;
 //import net.minecraft.entity.LivingEntity;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.World;
 
 public class PlayerSoundCaster extends AbstractSoundCaster {
 	public int lifespan = 100;
 	public int range = 30;
 	
-	public PlayerSoundCaster(EntityType<? extends AbstractSoundCaster> type, Level worldIn) {
+	public PlayerSoundCaster(EntityType<? extends AbstractSoundCaster> type, World worldIn) {
 		super(type, worldIn);
 	}
 	

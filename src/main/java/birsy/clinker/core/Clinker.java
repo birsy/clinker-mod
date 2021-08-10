@@ -10,13 +10,13 @@ import birsy.clinker.core.registry.*;
 import birsy.clinker.core.registry.world.*;
 import com.google.common.collect.Maps;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
-import net.minecraft.client.renderer.DimensionSpecialEffects;
-import net.minecraft.world.level.material.Fluid;
+import net.minecraft.client.world.DimensionRenderInfo;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.SpawnEggItem;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SharedConstants;
-import net.minecraft.Util;
-import net.minecraft.world.level.biome.Biome;
+import net.minecraft.util.Util;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.carver.WorldCarver;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -26,9 +26,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.client.renderer.RenderTypeLookup;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
@@ -84,45 +84,45 @@ public class Clinker
         ClientRegistry.bindTileEntityRenderer(ClinkerTileEntities.HEATER.get(), HeaterRenderer::new);
         ClientRegistry.bindTileEntityRenderer(ClinkerTileEntities.MITESOIL_DIFFUSER.get(), MitesoilDiffuserRenderer::new);
 
-        ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.THORN_LOG.get(), RenderType.cutout());
-    	ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.STRIPPED_THORN_LOG.get(), RenderType.cutout());
+        RenderTypeLookup.setRenderLayer(ClinkerBlocks.THORN_LOG.get(), RenderType.getCutout());
+    	RenderTypeLookup.setRenderLayer(ClinkerBlocks.STRIPPED_THORN_LOG.get(), RenderType.getCutout());
 
-    	ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.ROOTSTALK.get(), RenderType.cutout());
-        ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.ROOT_GRASS.get(), RenderType.cutoutMipped());
+    	RenderTypeLookup.setRenderLayer(ClinkerBlocks.ROOTSTALK.get(), RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(ClinkerBlocks.ROOT_GRASS.get(), RenderType.getCutoutMipped());
 
-        ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.LOCUST_LOG.get(), RenderType.cutout());
-    	ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.LOCUST_LEAVES.get(), RenderType.cutoutMipped());
-    	ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.LOCUST_DOOR.get(), RenderType.cutout());
-    	ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.LOCUST_SAPLING.get(), RenderType.cutout());
+        RenderTypeLookup.setRenderLayer(ClinkerBlocks.LOCUST_LOG.get(), RenderType.getCutout());
+    	RenderTypeLookup.setRenderLayer(ClinkerBlocks.LOCUST_LEAVES.get(), RenderType.getCutoutMipped());
+    	RenderTypeLookup.setRenderLayer(ClinkerBlocks.LOCUST_DOOR.get(), RenderType.getCutout());
+    	RenderTypeLookup.setRenderLayer(ClinkerBlocks.LOCUST_SAPLING.get(), RenderType.getCutout());
     	
-    	ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.BRAMBLE.get(), RenderType.cutoutMipped());
-    	ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.BRAMBLE_VINES.get(), RenderType.cutoutMipped());
-    	ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.BRAMBLE_VINES_TOP.get(), RenderType.cutoutMipped());
-    	ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.BRAMBLE_ROOTS.get(), RenderType.cutoutMipped());
-    	ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.BRAMBLE_ROOTS_BOTTOM.get(), RenderType.cutoutMipped());
+    	RenderTypeLookup.setRenderLayer(ClinkerBlocks.BRAMBLE.get(), RenderType.getCutoutMipped());
+    	RenderTypeLookup.setRenderLayer(ClinkerBlocks.BRAMBLE_VINES.get(), RenderType.getCutoutMipped());
+    	RenderTypeLookup.setRenderLayer(ClinkerBlocks.BRAMBLE_VINES_TOP.get(), RenderType.getCutoutMipped());
+    	RenderTypeLookup.setRenderLayer(ClinkerBlocks.BRAMBLE_ROOTS.get(), RenderType.getCutoutMipped());
+    	RenderTypeLookup.setRenderLayer(ClinkerBlocks.BRAMBLE_ROOTS_BOTTOM.get(), RenderType.getCutoutMipped());
     	
-    	ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.RIEK_TUBE.get(), RenderType.cutout());
+    	RenderTypeLookup.setRenderLayer(ClinkerBlocks.RIEK_TUBE.get(), RenderType.getCutout());
     	//RenderTypeLookup.setRenderLayer(ClinkerBlocks.RIEK_FRUIT.get(), RenderType.getCutout());
-    	ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.RIEK_VINES.get(), RenderType.cutout());
-    	ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.FERTILE_RIEK_VINES.get(), RenderType.cutout());
+    	RenderTypeLookup.setRenderLayer(ClinkerBlocks.RIEK_VINES.get(), RenderType.getCutout());
+    	RenderTypeLookup.setRenderLayer(ClinkerBlocks.FERTILE_RIEK_VINES.get(), RenderType.getCutout());
 
-        ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.WITTLEBULB.get(), RenderType.cutout());
-        ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.BLOOMING_WITTLEBULB.get(), RenderType.cutout());
+        RenderTypeLookup.setRenderLayer(ClinkerBlocks.WITTLEBULB.get(), RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(ClinkerBlocks.BLOOMING_WITTLEBULB.get(), RenderType.getCutout());
 
-        ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.CAVE_MOSS.get(), RenderType.cutout());
+        RenderTypeLookup.setRenderLayer(ClinkerBlocks.CAVE_MOSS.get(), RenderType.getCutout());
 
-        ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.BRINE.get(), RenderType.translucent());
+        RenderTypeLookup.setRenderLayer(ClinkerBlocks.BRINE.get(), RenderType.getTranslucent());
         event.enqueueWork(() -> {
             final Map<Fluid, RenderType> TYPES_BY_FLUID = Util.make(Maps.newHashMap(), (map) -> {
-                final RenderType translucent = RenderType.translucent();
+                final RenderType translucent = RenderType.getTranslucent();
                 map.put(ClinkerFluids.BRINE_SOURCE.get(), translucent);
                 map.put(ClinkerFluids.BRINE_FLOWING.get(), translucent);
             });
 
-            TYPES_BY_FLUID.forEach(ItemBlockRenderTypes::setRenderLayer);
+            TYPES_BY_FLUID.forEach(RenderTypeLookup::setRenderLayer);
         });
 
-        DimensionSpecialEffects.EFFECTS.put(new ResourceLocation(Clinker.MOD_ID, "othershore"), new OthershoreDimensionRenderInfo());
+        DimensionRenderInfo.field_239208_a_.put(new ResourceLocation(Clinker.MOD_ID, "othershore"), new OthershoreDimensionRenderInfo());
     }
 
     @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD, modid = Clinker.MOD_ID)
@@ -133,37 +133,37 @@ public class Clinker
         }
     }
 
-    public static final CreativeModeTab CLINKER_MISC = new CreativeModeTab("clinkerItems")
+    public static final ItemGroup CLINKER_MISC = new ItemGroup("clinkerItems")
     {
         @Override
-        public ItemStack makeIcon()
+        public ItemStack createIcon()
         {
         	return new ItemStack(ClinkerItems.SULFUR.get());
         }
     };
     
-    public static final CreativeModeTab CLINKER_BLOCKS = new CreativeModeTab("clinkerBlocks")
+    public static final ItemGroup CLINKER_BLOCKS = new ItemGroup("clinkerBlocks")
     {
         @Override
-        public ItemStack makeIcon()
+        public ItemStack createIcon()
         {
         	return new ItemStack(ClinkerBlocks.BRIMSTONE_BRICKS.get().asItem());
         }
     };
     
-    public static final CreativeModeTab CLINKER_TOOLS = new CreativeModeTab("clinkerTools")
+    public static final ItemGroup CLINKER_TOOLS = new ItemGroup("clinkerTools")
     {
         @Override
-        public ItemStack makeIcon()
+        public ItemStack createIcon()
         {
         	return new ItemStack(ClinkerItems.LEAD_SWORD.get());
         }
     };
     
-    public static final CreativeModeTab CLINKER_FOOD = new CreativeModeTab("clinkerFood")
+    public static final ItemGroup CLINKER_FOOD = new ItemGroup("clinkerFood")
     {
         @Override
-        public ItemStack makeIcon()
+        public ItemStack createIcon()
         {
         	return new ItemStack(ClinkerItems.GNOMEAT_JERKY.get());
         }

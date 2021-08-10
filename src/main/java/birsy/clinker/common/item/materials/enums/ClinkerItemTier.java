@@ -1,16 +1,16 @@
 package birsy.clinker.common.item.materials.enums;
 
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.item.IItemTier;
+import net.minecraft.item.crafting.Ingredient;
 
 import java.util.function.Supplier;
 
 import birsy.clinker.core.registry.ClinkerItems;;
 
-public enum ClinkerItemTier implements Tier
+public enum ClinkerItemTier implements IItemTier
 {
 	
-	LEAD(2, 290, 6.5F, 1.2F, 1, () -> {return Ingredient.of(ClinkerItems.LEAD_INGOT.get());});
+	LEAD(2, 290, 6.5F, 1.2F, 1, () -> {return Ingredient.fromItems(ClinkerItems.LEAD_INGOT.get());});
 	
 	private final int harvestLevel;
 	private final int maxUses;
@@ -30,32 +30,32 @@ public enum ClinkerItemTier implements Tier
 	}
 	
 	@Override
-	public int getUses() {
+	public int getMaxUses() {
 		return maxUses;
 	}
 
 	@Override
-	public float getSpeed() {
+	public float getEfficiency() {
 		return efficiency;
 	}
 
 	@Override
-	public float getAttackDamageBonus() {
+	public float getAttackDamage() {
 		return attackDamage;
 	}
 
 	@Override
-	public int getLevel() {
+	public int getHarvestLevel() {
 		return harvestLevel;
 	}
 
 	@Override
-	public int getEnchantmentValue() {
+	public int getEnchantability() {
 		return enchantability;
 	}
 
 	@Override
-	public Ingredient getRepairIngredient() {
+	public Ingredient getRepairMaterial() {
 		return repairMaterial.get();
 	}
 

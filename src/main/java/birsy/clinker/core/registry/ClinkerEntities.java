@@ -10,11 +10,11 @@ import birsy.clinker.common.entity.monster.gnomad.GnomadHelicopterEntity;
 import birsy.clinker.common.entity.monster.gnomad.GnomadShamanEntity;
 import birsy.clinker.common.entity.passive.SnailEntity;
 import birsy.clinker.core.Clinker;
-import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.DefaultAttributes;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.entity.EntityClassification;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.attributes.GlobalEntityTypeAttributes;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -37,94 +37,94 @@ public class ClinkerEntities
 
 	//Entity Types
 	public static final RegistryObject<EntityType<ShoggothHeadEntity>> SHOGGOTH_HEAD = createLivingEntity("shoggoth_head",
-			() -> EntityType.Builder.of(ShoggothHeadEntity::new, MobCategory.MONSTER)
-					.sized(2.0f, 3.0f)
+			() -> EntityType.Builder.create(ShoggothHeadEntity::new, EntityClassification.MONSTER)
+					.size(2.0f, 3.0f)
 					.build(makeEntityPath("shoggoth_head")));
 	public static final RegistryObject<EntityType<ShoggothBodyEntity>> SHOGGOTH_BODY = createLivingEntity("shoggoth_body",
-			() -> EntityType.Builder.of(ShoggothBodyEntity::new, MobCategory.MONSTER)
-					.sized(1.5f, 1.25f)
+			() -> EntityType.Builder.create(ShoggothBodyEntity::new, EntityClassification.MONSTER)
+					.size(1.5f, 1.25f)
 					.build(makeEntityPath("shoggoth_body")));
 
 	//Animals
 	public static final RegistryObject<EntityType<SnailEntity>> SNAIL = createLivingEntity("snail",
-			() -> EntityType.Builder.of(SnailEntity::new, MobCategory.CREATURE)
-			.sized(1.0f, 1.0f)
+			() -> EntityType.Builder.create(SnailEntity::new, EntityClassification.CREATURE)
+			.size(1.0f, 1.0f)
 			.build(makeEntityPath("snail")));
 	
 	//Gnomes
 	public static final RegistryObject<EntityType<GnomeEntity>> GNOME = createLivingEntity("gnome",
-			() -> EntityType.Builder.of(GnomeEntity::new, MobCategory.CREATURE)
-			.sized(1.0f, 1.5f)
+			() -> EntityType.Builder.create(GnomeEntity::new, EntityClassification.CREATURE)
+			.size(1.0f, 1.5f)
 			.build(makeEntityPath("gnome")));
 	
 	public static final RegistryObject<EntityType<GnomeBratEntity>> GNOME_BRAT = createLivingEntity("gnome_brat",
-			() -> EntityType.Builder.of(GnomeBratEntity::new, MobCategory.CREATURE)
-			.sized(1.0f, 1.0f)
+			() -> EntityType.Builder.create(GnomeBratEntity::new, EntityClassification.CREATURE)
+			.size(1.0f, 1.0f)
 			.build(makeEntityPath("gnome_brat")));
 	
 	
 	//Gnomads
 	public static final RegistryObject<EntityType<GnomadAxemanEntity>> GNOMAD_AXEMAN = createLivingEntity("gnomad_axeman",
-			() -> EntityType.Builder.of(GnomadAxemanEntity::new, MobCategory.MONSTER)
-			.sized(1.0f, 1.5f)
+			() -> EntityType.Builder.create(GnomadAxemanEntity::new, EntityClassification.MONSTER)
+			.size(1.0f, 1.5f)
 			.build(makeEntityPath("gnomad_axeman")));
 	
 	public static final RegistryObject<EntityType<GnomadShamanEntity>> GNOMAD_SHAMAN = createLivingEntity("gnomad_shaman",
-			() -> EntityType.Builder.of(GnomadShamanEntity::new, MobCategory.MONSTER)
-			.sized(1.0f, 1.5f)
+			() -> EntityType.Builder.create(GnomadShamanEntity::new, EntityClassification.MONSTER)
+			.size(1.0f, 1.5f)
 			.build(makeEntityPath("gnomad_shaman")));
 	
 	public static final RegistryObject<EntityType<GnomadHelicopterEntity>> COPTER_GNOMAD = createLivingEntity("copter_gnomad",
-			() -> EntityType.Builder.of(GnomadHelicopterEntity::new, MobCategory.MONSTER)
-			.sized(1.0f, 2.5f)
+			() -> EntityType.Builder.create(GnomadHelicopterEntity::new, EntityClassification.MONSTER)
+			.size(1.0f, 2.5f)
 			.build(makeEntityPath("copter_gnomad")));
 
 
 	//Monsters
 	public static final RegistryObject<EntityType<HyenaEntity>> HYENA = createLivingEntity("hyena",
-			() -> EntityType.Builder.of(HyenaEntity::new, MobCategory.MONSTER)
-			.sized(1.8f, 1.5f)
+			() -> EntityType.Builder.create(HyenaEntity::new, EntityClassification.MONSTER)
+			.size(1.8f, 1.5f)
 			.build(makeEntityPath("hyena")));
 	
 	public static final RegistryObject<EntityType<WitherRevenantEntity>> WITHER_REVENANT = createLivingEntity("wither_revenant",
-			() -> EntityType.Builder.of(WitherRevenantEntity::new, MobCategory.MONSTER)
-			.sized(1.3f, 2.6f)
+			() -> EntityType.Builder.create(WitherRevenantEntity::new, EntityClassification.MONSTER)
+			.size(1.3f, 2.6f)
 			.build(makeEntityPath("wither_revenant")));
 
 	//Beetles
 	public static final RegistryObject<EntityType<BoxBeetleEntity>> BOX_BEETLE = createLivingEntity("box_beetle",
-			() -> EntityType.Builder.of(BoxBeetleEntity::new, MobCategory.MONSTER)
-					.sized(1.3f, 1.2f)
+			() -> EntityType.Builder.create(BoxBeetleEntity::new, EntityClassification.MONSTER)
+					.size(1.3f, 1.2f)
 					.build(makeEntityPath("box_beetle")));
 
 	//Witches
 	public static final RegistryObject<EntityType<WitchBrickEntity>> WITCH_BRICK = createLivingEntity("witch_brick",
-			() -> EntityType.Builder.of(WitchBrickEntity::new, MobCategory.MONSTER)
-			.sized(1.2f, 2.2f)
+			() -> EntityType.Builder.create(WitchBrickEntity::new, EntityClassification.MONSTER)
+			.size(1.2f, 2.2f)
 			.build(makeEntityPath("witch_brick")));
 
 
 
 	public static void setup()
 	{
-		DefaultAttributes.put(ClinkerEntities.SHOGGOTH_HEAD.get(), ShoggothHeadEntity.setCustomAttributes().build());
-		DefaultAttributes.put(ClinkerEntities.SHOGGOTH_BODY.get(), ShoggothBodyEntity.setCustomAttributes().build());
+		GlobalEntityTypeAttributes.put(ClinkerEntities.SHOGGOTH_HEAD.get(), ShoggothHeadEntity.setCustomAttributes().create());
+		GlobalEntityTypeAttributes.put(ClinkerEntities.SHOGGOTH_BODY.get(), ShoggothBodyEntity.setCustomAttributes().create());
 
-		DefaultAttributes.put(ClinkerEntities.SNAIL.get(), SnailEntity.setCustomAttributes().build());
+		GlobalEntityTypeAttributes.put(ClinkerEntities.SNAIL.get(), SnailEntity.setCustomAttributes().create());
 
-		DefaultAttributes.put(ClinkerEntities.GNOME.get(), GnomeEntity.setCustomAttributes().build());
-		DefaultAttributes.put(ClinkerEntities.GNOME_BRAT.get(), GnomeBratEntity.setCustomAttributes().build());
+		GlobalEntityTypeAttributes.put(ClinkerEntities.GNOME.get(), GnomeEntity.setCustomAttributes().create());
+		GlobalEntityTypeAttributes.put(ClinkerEntities.GNOME_BRAT.get(), GnomeBratEntity.setCustomAttributes().create());
 
-		DefaultAttributes.put(ClinkerEntities.GNOMAD_AXEMAN.get(), GnomadAxemanEntity.setCustomAttributes().build());
-		DefaultAttributes.put(ClinkerEntities.GNOMAD_SHAMAN.get(), GnomadShamanEntity.setCustomAttributes().build());
-		DefaultAttributes.put(ClinkerEntities.COPTER_GNOMAD.get(), GnomadHelicopterEntity.setCustomAttributes().build());
+		GlobalEntityTypeAttributes.put(ClinkerEntities.GNOMAD_AXEMAN.get(), GnomadAxemanEntity.setCustomAttributes().create());
+		GlobalEntityTypeAttributes.put(ClinkerEntities.GNOMAD_SHAMAN.get(), GnomadShamanEntity.setCustomAttributes().create());
+		GlobalEntityTypeAttributes.put(ClinkerEntities.COPTER_GNOMAD.get(), GnomadHelicopterEntity.setCustomAttributes().create());
 
-		DefaultAttributes.put(ClinkerEntities.HYENA.get(), HyenaEntity.setCustomAttributes().build());
-		DefaultAttributes.put(ClinkerEntities.WITHER_REVENANT.get(), WitherRevenantEntity.setCustomAttributes().build());
+		GlobalEntityTypeAttributes.put(ClinkerEntities.HYENA.get(), HyenaEntity.setCustomAttributes().create());
+		GlobalEntityTypeAttributes.put(ClinkerEntities.WITHER_REVENANT.get(), WitherRevenantEntity.setCustomAttributes().create());
 
-		DefaultAttributes.put(ClinkerEntities.BOX_BEETLE.get(), BoxBeetleEntity.setCustomAttributes().build());
+		GlobalEntityTypeAttributes.put(ClinkerEntities.BOX_BEETLE.get(), BoxBeetleEntity.setCustomAttributes().create());
 
-		DefaultAttributes.put(ClinkerEntities.WITCH_BRICK.get(), WitchBrickEntity.setCustomAttributes().build());
+		GlobalEntityTypeAttributes.put(ClinkerEntities.WITCH_BRICK.get(), WitchBrickEntity.setCustomAttributes().create());
 	}
 
 	public static void clientSetup() {

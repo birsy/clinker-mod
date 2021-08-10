@@ -5,53 +5,53 @@ import java.util.Random;
 import com.mojang.serialization.Codec;
 
 import birsy.clinker.core.registry.ClinkerBlocks;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.core.Direction;
-import net.minecraft.core.BlockPos;
-import net.minecraft.util.Mth;
-import net.minecraft.world.level.WorldGenLevel;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
+import net.minecraft.block.BlockState;
+import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.ISeedReader;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.gen.ChunkGenerator;
+import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.NoFeatureConfig;
 
 
-public class BrambleRootsFeature extends Feature<NoneFeatureConfiguration> {
+public class BrambleRootsFeature extends Feature<NoFeatureConfig> {
 	private static final Direction[] directionArray = Direction.values();
 
-	public BrambleRootsFeature(Codec<NoneFeatureConfiguration> featureConfigIn) {
+	public BrambleRootsFeature(Codec<NoFeatureConfig> featureConfigIn) {
 		super(featureConfigIn);
 	}
 
 	@Override
-	public boolean place(WorldGenLevel seedReaderIn, ChunkGenerator chunkGeneratorIn, Random random, BlockPos blockPosIn, NoneFeatureConfiguration featureConfigIn) {
-		if (!seedReaderIn.isEmptyBlock(blockPosIn)) {
+	public boolean generate(ISeedReader seedReaderIn, ChunkGenerator chunkGeneratorIn, Random random, BlockPos blockPosIn, NoFeatureConfig featureConfigIn) {
+		if (!seedReaderIn.isAirBlock(blockPosIn)) {
 			return false;
 		} else {
-			BlockState blockstate = seedReaderIn.getBlockState(blockPosIn.above());
-			if (!blockstate.is(ClinkerBlocks.BRIMSTONE.get()) && !blockstate.is(ClinkerBlocks.PACKED_ASH.get())) {
+			BlockState blockstate = seedReaderIn.getBlockState(blockPosIn.up());
+			if (!blockstate.matchesBlock(ClinkerBlocks.BRIMSTONE.get()) && !blockstate.matchesBlock(ClinkerBlocks.PACKED_ASH.get())) {
 				return false;
 			} else {
-				this.placeRoofNetherWart(seedReaderIn, random, blockPosIn);
-				this.placeRoofWeepingVines(seedReaderIn, random, blockPosIn);
+				this.func_236428_a_(seedReaderIn, random, blockPosIn);
+				this.func_236429_b_(seedReaderIn, random, blockPosIn);
 				return true;
 			}
 		}
 	}
 
-	private void placeRoofNetherWart(LevelAccessor worldIn, Random random, BlockPos blockPosIn) {
-		worldIn.setBlock(blockPosIn, ClinkerBlocks.BRAMBLE.get().defaultBlockState(), 2);
-		BlockPos.MutableBlockPos blockpos$mutable = new BlockPos.MutableBlockPos();
-		BlockPos.MutableBlockPos blockpos$mutable1 = new BlockPos.MutableBlockPos();
+	private void func_236428_a_(IWorld worldIn, Random random, BlockPos blockPosIn) {
+		worldIn.setBlockState(blockPosIn, ClinkerBlocks.BRAMBLE.get().getDefaultState(), 2);
+		BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable();
+		BlockPos.Mutable blockpos$mutable1 = new BlockPos.Mutable();
 
 		for(int i = 0; i < 200; ++i) {
-			blockpos$mutable.setWithOffset(blockPosIn, random.nextInt(6) - random.nextInt(6), random.nextInt(2) - random.nextInt(5), random.nextInt(6) - random.nextInt(6));
-			if (worldIn.isEmptyBlock(blockpos$mutable)) {
+			blockpos$mutable.setAndOffset(blockPosIn, random.nextInt(6) - random.nextInt(6), random.nextInt(2) - random.nextInt(5), random.nextInt(6) - random.nextInt(6));
+			if (worldIn.isAirBlock(blockpos$mutable)) {
 				int j = 0;
 
 				for(Direction direction : directionArray) {
-					BlockState blockstate = worldIn.getBlockState(blockpos$mutable1.setWithOffset(blockpos$mutable, direction));
-					if (blockstate.is(ClinkerBlocks.BRIMSTONE.get()) || blockstate.is(ClinkerBlocks.PACKED_ASH.get())) {
+					BlockState blockstate = worldIn.getBlockState(blockpos$mutable1.setAndMove(blockpos$mutable, direction));
+					if (blockstate.matchesBlock(ClinkerBlocks.BRIMSTONE.get()) || blockstate.matchesBlock(ClinkerBlocks.PACKED_ASH.get())) {
 						++j;
 					}
 
@@ -61,21 +61,21 @@ public class BrambleRootsFeature extends Feature<NoneFeatureConfiguration> {
 				}
 
 				if (j == 1) {
-					worldIn.setBlock(blockpos$mutable, ClinkerBlocks.BRAMBLE.get().defaultBlockState(), 2);
+					worldIn.setBlockState(blockpos$mutable, ClinkerBlocks.BRAMBLE.get().getDefaultState(), 2);
 				}
 			}
 		}
 	}
 
-	private void placeRoofWeepingVines(LevelAccessor worldIn, Random random, BlockPos blockPosIn) {
-		BlockPos.MutableBlockPos blockpos$mutable = new BlockPos.MutableBlockPos();
+	private void func_236429_b_(IWorld worldIn, Random random, BlockPos blockPosIn) {
+		BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable();
 
 		for(int i = 0; i < 100; ++i) {
-			blockpos$mutable.setWithOffset(blockPosIn, random.nextInt(8) - random.nextInt(8), random.nextInt(2) - random.nextInt(7), random.nextInt(8) - random.nextInt(8));
-			if (worldIn.isEmptyBlock(blockpos$mutable)) {
-				BlockState blockstate = worldIn.getBlockState(blockpos$mutable.above());
-				if (blockstate.is(ClinkerBlocks.BRIMSTONE.get()) || blockstate.is(ClinkerBlocks.PACKED_ASH.get())) {
-					int j = Mth.nextInt(random, 1, 8);
+			blockpos$mutable.setAndOffset(blockPosIn, random.nextInt(8) - random.nextInt(8), random.nextInt(2) - random.nextInt(7), random.nextInt(8) - random.nextInt(8));
+			if (worldIn.isAirBlock(blockpos$mutable)) {
+				BlockState blockstate = worldIn.getBlockState(blockpos$mutable.up());
+				if (blockstate.matchesBlock(ClinkerBlocks.BRIMSTONE.get()) || blockstate.matchesBlock(ClinkerBlocks.PACKED_ASH.get())) {
+					int j = MathHelper.nextInt(random, 1, 8);
 					if (random.nextInt(6) == 0) {
 						j *= 2;
 					}
@@ -84,21 +84,21 @@ public class BrambleRootsFeature extends Feature<NoneFeatureConfiguration> {
 						j = 1;
 					}
 
-					placeWeepingVinesColumn(worldIn, random, blockpos$mutable, j, 17, 25);
+					func_236427_a_(worldIn, random, blockpos$mutable, j, 17, 25);
 				}
 			}
 		}
 	}
 
-	public static void placeWeepingVinesColumn(LevelAccessor worldIn, Random random, BlockPos.MutableBlockPos blockpos$mutable, int chance, int minimumTries, int maximumTries) {
+	public static void func_236427_a_(IWorld worldIn, Random random, BlockPos.Mutable blockpos$mutable, int chance, int minimumTries, int maximumTries) {
 		for(int i = 0; i <= chance; ++i) {
-			if (worldIn.isEmptyBlock(blockpos$mutable)) {
-				if (i == chance || !worldIn.isEmptyBlock(blockpos$mutable.below())) {
-					worldIn.setBlock(blockpos$mutable, ClinkerBlocks.BRAMBLE_ROOTS.get().defaultBlockState(), 2);
+			if (worldIn.isAirBlock(blockpos$mutable)) {
+				if (i == chance || !worldIn.isAirBlock(blockpos$mutable.down())) {
+					worldIn.setBlockState(blockpos$mutable, ClinkerBlocks.BRAMBLE_ROOTS.get().getDefaultState(), 2);
 					break;
 				}
 
-				worldIn.setBlock(blockpos$mutable, ClinkerBlocks.BRAMBLE_ROOTS_BOTTOM.get().defaultBlockState(), 2);
+				worldIn.setBlockState(blockpos$mutable, ClinkerBlocks.BRAMBLE_ROOTS_BOTTOM.get().getDefaultState(), 2);
 			}
 			blockpos$mutable.move(Direction.DOWN);
 		}

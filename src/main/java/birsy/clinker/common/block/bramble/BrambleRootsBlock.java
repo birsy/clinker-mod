@@ -1,50 +1,50 @@
 package birsy.clinker.common.block.bramble;
 
 import birsy.clinker.core.registry.ClinkerBlocks;
-import net.minecraft.world.level.block.GrowingPlantHeadBlock;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.core.Direction;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
+import net.minecraft.block.AbstractTopPlantBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.SoundType;
+import net.minecraft.block.material.Material;
+import net.minecraft.entity.Entity;
+import net.minecraft.state.properties.BlockStateProperties;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.IBlockReader;
+import net.minecraft.world.World;
 
 public class BrambleRootsBlock extends AbstractBrambleBodyBlock implements net.minecraftforge.common.IForgeShearable {
 			
 	public BrambleRootsBlock() {
-		super(((Block.Properties.of(Material.GRASS)
+		super(((Block.Properties.create(Material.ORGANIC)
 				  .sound(SoundType.CROP)
-				  .randomTicks()
-				  .noOcclusion()
-				  .requiresCorrectToolForDrops()
-				  .strength(4.0F)
-				  .noCollission())), Direction.DOWN);
+				  .tickRandomly()
+				  .notSolid()
+				  .setRequiresTool()
+				  .hardnessAndResistance(4.0F)
+				  .doesNotBlockMovement())), Direction.DOWN);
 	}
 
 	@Override
-	protected GrowingPlantHeadBlock getHeadBlock() {
-		return (GrowingPlantHeadBlock)ClinkerBlocks.BRAMBLE_ROOTS_BOTTOM.get();
+	protected AbstractTopPlantBlock getTopPlantBlock() {
+		return (AbstractTopPlantBlock)ClinkerBlocks.BRAMBLE_ROOTS_BOTTOM.get();
 	}
 	
-	public void entityInside(BlockState state, Level worldIn, BlockPos pos, Entity entityIn)
+	public void onEntityCollision(BlockState state, World worldIn, BlockPos pos, Entity entityIn)
     {
-		entityIn.makeStuckInBlock(state, new Vec3(0.35D, 0.35D, 0.35D));
-		entityIn.hurt(DamageSource.CACTUS, 1.0F);
+		entityIn.setMotionMultiplier(state, new Vector3d(0.35D, 0.35D, 0.35D));
+		entityIn.attackEntityFrom(DamageSource.CACTUS, 1.0F);
     }
 	
 	@Override
-	public boolean isFlammable(BlockState state, BlockGetter world, BlockPos pos, Direction face) {
+	public boolean isFlammable(BlockState state, IBlockReader world, BlockPos pos, Direction face) {
 		return true;
 	}
 	
 	@Override
-	public int getFireSpreadSpeed(BlockState state, BlockGetter world, BlockPos pos, Direction face) {
+	public int getFireSpreadSpeed(BlockState state, IBlockReader world, BlockPos pos, Direction face) {
 		if(state.hasProperty(BlockStateProperties.WATERLOGGED)) {
 			return 0;
 		}

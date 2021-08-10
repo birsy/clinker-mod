@@ -2,42 +2,42 @@ package birsy.clinker.client.audio;
 
 import birsy.clinker.core.registry.world.ClinkerDimensions;
 import birsy.clinker.core.util.MathUtils;
-import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.util.Mth;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.client.audio.TickableSound;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class OthershoreWindSound extends AbstractTickableSoundInstance {
-    private final LocalPlayer player;
+public class OthershoreWindSound extends TickableSound {
+    private final ClientPlayerEntity player;
     private float windSpeed;
-    private Vec3 windDirection;
+    private Vector3d windDirection;
 
-    public OthershoreWindSound(LocalPlayer playerIn) {
-        super(SoundEvents.ELYTRA_FLYING, SoundSource.AMBIENT);
+    public OthershoreWindSound(ClientPlayerEntity playerIn) {
+        super(SoundEvents.ITEM_ELYTRA_FLYING, SoundCategory.AMBIENT);
         this.player = playerIn;
-        this.looping = true;
-        this.delay = 0;
+        this.repeat = true;
+        this.repeatDelay = 0;
         this.volume = 0.1F;
         this.windSpeed = 5.0F;
     }
 
     public void tick() {
-        if (!this.player.removed && this.player.level.dimension() == ClinkerDimensions.OTHERSHORE) {
-            Vec3 lookVector = this.player.getLookAngle();
-            double windDirectionMul = MathUtils.mapRange(0.0F, 1.0F, 0.5F, 1.0F, (float) windDirection.dot(lookVector));
+        if (!this.player.removed && this.player.world.getDimensionKey() == ClinkerDimensions.OTHERSHORE) {
+            Vector3d lookVector = this.player.getLookVec();
+            double windDirectionMul = MathUtils.mapRange(0.0F, 1.0F, 0.5F, 1.0F, (float) windDirection.dotProduct(lookVector));
             this.windSpeed = 5.0F;
-            this.windSpeed += Mth.sin(this.player.clientLevel.getGameTime() * 0.125F) * 2;
+            this.windSpeed += MathHelper.sin(this.player.worldClient.getGameTime() * 0.125F) * 2;
 
-            this.x = this.player.getX();
-            this.y = this.player.getY();
-            this.z = this.player.getZ();
+            this.x = this.player.getPosX();
+            this.y = this.player.getPosY();
+            this.z = this.player.getPosZ();
         } else {
-            this.stop();
+            this.finishPlaying();
         }
     }
 }

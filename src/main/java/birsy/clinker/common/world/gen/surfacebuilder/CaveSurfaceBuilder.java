@@ -2,22 +2,31 @@ package birsy.clinker.common.world.gen.surfacebuilder;
 
 import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.core.util.noise.FastNoiseLite;
+import com.mojang.serialization.Codec;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.chunk.IChunk;
+import net.minecraft.world.gen.surfacebuilders.SurfaceBuilder;
+import net.minecraft.world.gen.surfacebuilders.SurfaceBuilderConfig;
 
 import java.util.Random;
 
-public class CaveSurfaceBuilder extends SurfaceBuilder<SurfaceBuilderBaseConfiguration> {
+public class CaveSurfaceBuilder extends SurfaceBuilder<SurfaceBuilderConfig> {
     private long seed;
     private FastNoiseLite spaghettiCaveNoise1;
     private FastNoiseLite spaghettiCaveNoise2;
     private FastNoiseLite caveSizeNoise;
 
-    public CaveSurfaceBuilder(Codec<SurfaceBuilderBaseConfiguration> codec) {
+    public CaveSurfaceBuilder(Codec<SurfaceBuilderConfig> codec) {
         super(codec);
     }
 
     @Override
-    public void apply(Random random, ChunkAccess chunkIn, Biome biomeIn, int x, int z, int startHeight, double noise, BlockState defaultBlock, BlockState defaultFluid, int seaLevel, long seed, SurfaceBuilderBaseConfiguration config) {
-        BlockPos.MutableBlockPos blockPos = new BlockPos.MutableBlockPos(x, 255, z);
+    public void buildSurface(Random random, IChunk chunkIn, Biome biomeIn, int x, int z, int startHeight, double noise, BlockState defaultBlock, BlockState defaultFluid, int seaLevel, long seed, SurfaceBuilderConfig config) {
+        BlockPos.Mutable blockPos = new BlockPos.Mutable(x, 255, z);
         float yMultiplier = 1.4F;
 
         final float averageCaveSize = 0.002F;
@@ -27,8 +36,8 @@ public class CaveSurfaceBuilder extends SurfaceBuilder<SurfaceBuilderBaseConfigu
         int maxHeight = startHeight + 4;
 
         for (int y = 256; y > 0; y--) {
-            blockPos.set(x, y, z);
-            float bedrockDistance = Mth.clamp(MathUtils.mapRange(4.0F, 20.0F, 0.0F, 1.0F, y), 0, 1);
+            blockPos.setPos(x, y, z);
+            float bedrockDistance = MathHelper.clamp(MathUtils.mapRange(4.0F, 20.0F, 0.0F, 1.0F, y), 0, 1);
 
             float spaghettiSizeThreshold = this.caveSizeNoise.GetNoise(x, y, z);
             spaghettiSizeThreshold *= spaghettiSizeThreshold < 0 ? Math.abs(minCaveSizeDeviation) : Math.abs(maxCaveSizeDeviation);
@@ -44,13 +53,13 @@ public class CaveSurfaceBuilder extends SurfaceBuilder<SurfaceBuilderBaseConfigu
             if (thresholdedCaveNoise > 0.0F) {
                 chunkIn.setBlockState(blockPos, defaultBlock, false);
             } else {
-                chunkIn.setBlockState(blockPos, Blocks.CAVE_AIR.defaultBlockState(), false);
+                chunkIn.setBlockState(blockPos, Blocks.CAVE_AIR.getDefaultState(), false);
             }
         }
     }
 
     @Override
-    public void initNoise(long seed) {
+    public void setSeed(long seed) {
         if (this.seed != seed || this.spaghettiCaveNoise1 == null || this.spaghettiCaveNoise2 == null || this.caveSizeNoise == null) {
             this.seed = seed;
             Random rand = new Random(seed);

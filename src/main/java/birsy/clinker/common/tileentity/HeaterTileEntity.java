@@ -3,25 +3,25 @@ package birsy.clinker.common.tileentity;
 import birsy.clinker.common.block.HeaterBlock;
 import birsy.clinker.core.registry.ClinkerTileEntities;
 import birsy.clinker.core.util.MathUtils;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.WorldlyContainer;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.TickableBlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.Direction;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.util.Mth;
+import net.minecraft.client.audio.TickableSound;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.ISidedInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundEvents;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 
-public class HeaterTileEntity extends BlockEntity implements TickableBlockEntity, WorldlyContainer {
+public class HeaterTileEntity extends TileEntity implements ITickableTileEntity, ISidedInventory {
     public int ageInTicks;
     private float prevHeat;
     public float heat;
@@ -49,28 +49,28 @@ public class HeaterTileEntity extends BlockEntity implements TickableBlockEntity
             }
         }
 
-        if (!this.level.isClientSide()) {
+        if (!this.world.isRemote()) {
             int blockHeat = (int) MathUtils.mapRange(0, 100, 0, 15, this.heat);
-            BlockState state = level.getBlockState(this.worldPosition);
+            BlockState state = world.getBlockState(this.pos);
 
-            if (state.getValue(HeaterBlock.PROPERTY_HEAT) != blockHeat) {
-                this.level.setBlockAndUpdate(this.worldPosition, state.setValue(HeaterBlock.PROPERTY_HEAT, blockHeat));
+            if (state.get(HeaterBlock.PROPERTY_HEAT) != blockHeat) {
+                this.world.setBlockState(this.pos, state.with(HeaterBlock.PROPERTY_HEAT, blockHeat));
             }
         }
     }
 
     @Override
-    public boolean triggerEvent(int id, int type) {
+    public boolean receiveClientEvent(int id, int type) {
         if (id == 0) {
-            HeaterSound heaterSound = new HeaterSound(this, SoundEvents.ANVIL_PLACE, SoundSource.BLOCKS);
-            Minecraft.getInstance().getSoundManager().queueTickingSound(heaterSound);
+            HeaterSound heaterSound = new HeaterSound(this, SoundEvents.BLOCK_ANVIL_PLACE, SoundCategory.BLOCKS);
+            Minecraft.getInstance().getSoundHandler().playOnNextTick(heaterSound);
         }
-        return super.triggerEvent(id, type);
+        return super.receiveClientEvent(id, type);
     }
 
     @OnlyIn(Dist.CLIENT)
     public float getHeatOverlayStrength (float partialTicks) {
-        return Mth.lerp(partialTicks, this.prevHeat, this.heat);
+        return MathHelper.lerp(partialTicks, this.prevHeat, this.heat);
     }
 
 
@@ -80,7 +80,7 @@ public class HeaterTileEntity extends BlockEntity implements TickableBlockEntity
     }
 
     @Override
-    public boolean canPlaceItemThroughFace(int index, ItemStack itemStackIn, @Nullable Direction direction) {
+    public boolean canInsertItem(int index, ItemStack itemStackIn, @Nullable Direction direction) {
         if (itemStackIn.getItem() == this.fuel.getItem() || this.fuel == ItemStack.EMPTY) {
             return direction != Direction.DOWN && this.fuel.getCount() + itemStackIn.getCount() > itemStackIn.getMaxStackSize();
         } else {
@@ -89,12 +89,12 @@ public class HeaterTileEntity extends BlockEntity implements TickableBlockEntity
     }
 
     @Override
-    public boolean canTakeItemThroughFace(int index, ItemStack stack, Direction direction) {
+    public boolean canExtractItem(int index, ItemStack stack, Direction direction) {
         return direction == Direction.DOWN;
     }
 
     @Override
-    public int getContainerSize() {
+    public int getSizeInventory() {
         return 1;
     }
 
@@ -104,56 +104,56 @@ public class HeaterTileEntity extends BlockEntity implements TickableBlockEntity
     }
 
     @Override
-    public ItemStack getItem(int index) {
+    public ItemStack getStackInSlot(int index) {
         return fuel;
     }
 
     @Override
-    public ItemStack removeItem(int index, int count) {
+    public ItemStack decrStackSize(int index, int count) {
         this.fuel = new ItemStack(fuel.getItem(), fuel.getCount() - 1);
         return this.fuel;
     }
 
     @Override
-    public ItemStack removeItemNoUpdate(int index) {
+    public ItemStack removeStackFromSlot(int index) {
         this.fuel = ItemStack.EMPTY;
         return this.fuel;
     }
 
     @Override
-    public void setItem(int index, ItemStack stack) {
+    public void setInventorySlotContents(int index, ItemStack stack) {
         this.fuel = stack;
     }
 
     @Override
-    public boolean stillValid(Player player) {
-        if (this.level.getBlockEntity(this.worldPosition) != this) {
+    public boolean isUsableByPlayer(PlayerEntity player) {
+        if (this.world.getTileEntity(this.pos) != this) {
             return false;
         } else {
-            return player.distanceToSqr((double)this.worldPosition.getX() + 0.5D, (double)this.worldPosition.getY() + 0.5D, (double)this.worldPosition.getZ() + 0.5D) <= 64.0D;
+            return player.getDistanceSq((double)this.pos.getX() + 0.5D, (double)this.pos.getY() + 0.5D, (double)this.pos.getZ() + 0.5D) <= 64.0D;
         }
     }
 
     @Override
-    public void clearContent() {
+    public void clear() {
         this.fuel = ItemStack.EMPTY;
     }
 
     @OnlyIn(Dist.CLIENT)
-    public class HeaterSound extends AbstractTickableSoundInstance {
+    public class HeaterSound extends TickableSound {
         private final HeaterTileEntity block;
         private static final float maxVolume = 1.6F;
         private float fade;
 
-        public HeaterSound(HeaterTileEntity blockIn, SoundEvent eventIn, SoundSource categoryIn) {
+        public HeaterSound(HeaterTileEntity blockIn, SoundEvent eventIn, SoundCategory categoryIn) {
             super(eventIn, categoryIn);
             this.block = blockIn;
 
-            this.x = (float) block.getBlockPos().getX();
-            this.y = (float) block.getBlockPos().getY();
-            this.z = (float) block.getBlockPos().getZ();
-            this.looping = true;
-            this.delay = 0;
+            this.x = (float) block.getPos().getX();
+            this.y = (float) block.getPos().getY();
+            this.z = (float) block.getPos().getZ();
+            this.repeat = true;
+            this.repeatDelay = 0;
 
             this.volume = 0.0F;
             this.fade = 1.0F;
@@ -170,12 +170,12 @@ public class HeaterTileEntity extends BlockEntity implements TickableBlockEntity
 
                 this.volume = this.fade * maxVolume;
             } else {
-                this.stop();
+                this.finishPlaying();
             }
         }
 
         @Override
-        public boolean canPlaySound() {
+        public boolean shouldPlaySound() {
             return !block.isRemoved();
         }
     }

@@ -1,44 +1,44 @@
 package birsy.clinker.common.entity.monster;
 
 import net.minecraft.entity.CreatureEntity;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.world.level.Level;
+import net.minecraft.entity.monster.MonsterEntity;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.world.World;
 
 @SuppressWarnings("unused")
-public abstract class AbstractMultiAttackEntity extends Monster
+public abstract class AbstractMultiAttackEntity extends MonsterEntity
 {
-	private static final EntityDataAccessor<Byte> ATTACK = SynchedEntityData.defineId(AbstractMultiAttackEntity.class, EntityDataSerializers.BYTE);
+	private static final DataParameter<Byte> ATTACK = EntityDataManager.createKey(AbstractMultiAttackEntity.class, DataSerializers.BYTE);
 	public int attackTicks;
 	private AbstractMultiAttackEntity.AttackType activeAttack = AbstractMultiAttackEntity.AttackType.NONE;
 
 	
-	public AbstractMultiAttackEntity(EntityType<? extends Monster> type, Level worldIn) {
+	public AbstractMultiAttackEntity(EntityType<? extends MonsterEntity> type, World worldIn) {
 		super(type, worldIn);
 	}
 
-	protected void defineSynchedData() {
-		super.defineSynchedData();
-		this.entityData.define(ATTACK, (byte)0);
+	protected void registerData() {
+		super.registerData();
+		this.dataManager.register(ATTACK, (byte)0);
 	}
 
-	public void readAdditionalSaveData(CompoundTag compound) {
-		super.readAdditionalSaveData(compound);
+	public void readAdditional(CompoundNBT compound) {
+		super.readAdditional(compound);
 		this.attackTicks = compound.getInt("AttackTicks");
 	}
 
-	public void addAdditionalSaveData(CompoundTag compound) {
-		super.addAdditionalSaveData(compound);
+	public void writeAdditional(CompoundNBT compound) {
+		super.writeAdditional(compound);
 		compound.putInt("AttackTicks", this.attackTicks);
 	}
 
-	protected void customServerAiStep() {
-		super.customServerAiStep();
+	protected void updateAITasks() {
+		super.updateAITasks();
 		if (this.attackTicks > 0) {
 			--this.attackTicks;
 		}

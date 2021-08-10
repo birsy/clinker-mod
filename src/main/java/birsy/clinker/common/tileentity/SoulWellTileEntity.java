@@ -1,13 +1,13 @@
 package birsy.clinker.common.tileentity;
 
 import birsy.clinker.core.registry.ClinkerTileEntities;
-import net.minecraft.world.level.block.entity.TickableBlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.util.Mth;
+import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-public class SoulWellTileEntity extends BlockEntity implements TickableBlockEntity {
+public class SoulWellTileEntity extends TileEntity implements ITickableTileEntity {
     private int ageInTicks;
     private int prevAgeInTicks;
 
@@ -31,11 +31,11 @@ public class SoulWellTileEntity extends BlockEntity implements TickableBlockEnti
 
     @OnlyIn(Dist.CLIENT)
     public float getChargeUpTime (float partialTicks) {
-        return Mth.lerp(partialTicks, this.prevChargeUpTime, this.chargeUpTime);
+        return MathHelper.lerp(partialTicks, this.prevChargeUpTime, this.chargeUpTime);
     }
 
     @OnlyIn(Dist.CLIENT)
     public float getAgeInTicks (float partialTicks) {
-        return Mth.lerp(partialTicks, this.prevAgeInTicks, this.ageInTicks);
+        return MathHelper.lerp(partialTicks, this.prevAgeInTicks, this.ageInTicks);
     }
 }

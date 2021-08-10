@@ -1,7 +1,7 @@
 package birsy.clinker.core.util;
 
 import com.ibm.icu.impl.Pair;
-import net.minecraft.util.Mth;
+import net.minecraft.util.math.MathHelper;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
@@ -86,11 +86,11 @@ public class MathUtils {
         float secondTerraceThreshold = Math.abs(terraceThreshold - 1);
         boolean isTerrace = s >= terraceThreshold || s <= secondTerraceThreshold;
 
-        return Pair.of(Mth.lerp(erosion,(k + s) * terraceWidth, height), isTerrace);
+        return Pair.of(MathHelper.lerp(erosion,(k + s) * terraceWidth, height), isTerrace);
     }
 
     public static float minMaxSin (float value, float min, float max) {
-        return (((Mth.sin(value) + 1) * 0.5F) * (max - min)) + min;
+        return (((MathHelper.sin(value) + 1) * 0.5F) * (max - min)) + min;
     }
 
     public static float smoothMin (float value1, float value2, float smoothness) {
@@ -187,17 +187,17 @@ public class MathUtils {
         },
         easeInSine {
             public float ease(float x) {
-                return 1 - Mth.cos((float) ((x * Math.PI) / 2));
+                return 1 - MathHelper.cos((float) ((x * Math.PI) / 2));
             }
         },
         easeOutSine {
             public float ease(float x) {
-                return Mth.sin((float) ((x * Math.PI) / 2));
+                return MathHelper.sin((float) ((x * Math.PI) / 2));
             }
         },
         easeInOutSine {
             public float ease(float x) {
-                return -(Mth.cos((float) (Math.PI * x)) - 1) / 2;
+                return -(MathHelper.cos((float) (Math.PI * x)) - 1) / 2;
             }
         },
         easeInExpo {
@@ -259,7 +259,7 @@ public class MathUtils {
                         ? 0
                         : (float) (x == 1
                         ? 1
-                        : -Math.pow(2, 10 * x - 10) * Mth.sin((float) ((x * 10 - 10.75) * ((2 * Math.PI) / 3))));
+                        : -Math.pow(2, 10 * x - 10) * MathHelper.sin((float) ((x * 10 - 10.75) * ((2 * Math.PI) / 3))));
             }
         },
         easeOutElastic {
@@ -268,7 +268,7 @@ public class MathUtils {
                         ? 0
                         : (float) (x == 1
                         ? 1
-                        : Math.pow(2, -10 * x) * Mth.sin((float) ((x * 10 - 0.75) * ((2 * Math.PI) / 3))) + 1);
+                        : Math.pow(2, -10 * x) * MathHelper.sin((float) ((x * 10 - 0.75) * ((2 * Math.PI) / 3))) + 1);
             }
         },
         easeInOutElastic {
@@ -278,8 +278,8 @@ public class MathUtils {
                         : (float) (x == 1
                         ? 1
                         : x < 0.5
-                        ? -(Math.pow(2, 20 * x - 10) * Mth.sin((float) ((20 * x - 11.125) * ((2 * Math.PI) / 4.5)))) / 2
-                        : (Math.pow(2, -20 * x + 10) * Mth.sin((float) ((20 * x - 11.125) * ((2 * Math.PI) / 4.5)))) / 2 + 1);
+                        ? -(Math.pow(2, 20 * x - 10) * MathHelper.sin((float) ((20 * x - 11.125) * ((2 * Math.PI) / 4.5)))) / 2
+                        : (Math.pow(2, -20 * x + 10) * MathHelper.sin((float) ((20 * x - 11.125) * ((2 * Math.PI) / 4.5)))) / 2 + 1);
             }
         },
         easeInBounce {

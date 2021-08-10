@@ -1,13 +1,11 @@
 package birsy.clinker.client.render.util;
 
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.util.Mth;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.client.renderer.entity.model.EntityModel;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-
-import Entity;
 
 @OnlyIn(Dist.CLIENT)
 public abstract class BirsyBaseModel<T extends Entity> extends EntityModel<T>
@@ -29,9 +27,9 @@ public abstract class BirsyBaseModel<T extends Entity> extends EntityModel<T>
             bob = (float) -Math.abs((Math.sin(limbSwingAmount * (speed * 0.5F)) * limbSwingSpeed * degree));
         }
         if (inverse) {
-        	box.y =+ box.defaultRotationPointY + bob;
+        	box.rotationPointY =+ box.defaultRotationPointY + bob;
         } else {
-        	box.y =+ bob;
+        	box.rotationPointY =+ bob;
         }
     }
 	
@@ -47,16 +45,16 @@ public abstract class BirsyBaseModel<T extends Entity> extends EntityModel<T>
 	{	
         switch(axis) {
     	case X:
-    		box.xRot =+ randomSine(entityIn.getId(), minimum, range);
+    		box.rotateAngleX =+ randomSine(entityIn.getEntityId(), minimum, range);
     		break;
     	case Y:
-    		box.yRot =+ randomSine(entityIn.getId(), minimum, range);
+    		box.rotateAngleY =+ randomSine(entityIn.getEntityId(), minimum, range);
     		break;
     	case Z:
-    		box.zRot =+ randomSine(entityIn.getId(), minimum, range);
+    		box.rotateAngleZ =+ randomSine(entityIn.getEntityId(), minimum, range);
     		break;
     	default: 
-    		box.xRot =+ randomSine(entityIn.getId(), minimum, range);
+    		box.rotateAngleX =+ randomSine(entityIn.getEntityId(), minimum, range);
     		throw new RuntimeException(entityIn + " had no axis assigned for thier " + box + "'s rotation variation. Defaulting to X!");
         }
 	}
@@ -73,16 +71,16 @@ public abstract class BirsyBaseModel<T extends Entity> extends EntityModel<T>
 	{	
         switch(axis) {
     	case X:
-    		box.x =+ randomSine(entityIn.getId(), minimum, range);
+    		box.rotationPointX =+ randomSine(entityIn.getEntityId(), minimum, range);
     		break;
     	case Y:
-    		box.y =+ randomSine(entityIn.getId(), minimum, range);
+    		box.rotationPointY =+ randomSine(entityIn.getEntityId(), minimum, range);
     		break;
     	case Z:
-    		box.z =+ randomSine(entityIn.getId(), minimum, range);
+    		box.rotationPointZ =+ randomSine(entityIn.getEntityId(), minimum, range);
     		break;
     	default: 
-    		box.x =+ randomSine(entityIn.getId(), minimum, range);
+    		box.rotationPointX =+ randomSine(entityIn.getEntityId(), minimum, range);
     		throw new RuntimeException(entityIn + " had no axis assigned for thier " + box + "'s location variation. Defaulting to X!");
         }
 	}
@@ -98,8 +96,8 @@ public abstract class BirsyBaseModel<T extends Entity> extends EntityModel<T>
      * @param pitchDivisor    the amount to divide the pitch by. good to make it the amount of parts.
      */
 	public void look(BirsyModelRenderer box, float netHeadYaw, float headPitch, float yawDivisor, float pitchDivisor) {
-		box.yRot =+ (netHeadYaw * ((float)Math.PI / 180F))/yawDivisor;
-		box.xRot =+ (headPitch * ((float)Math.PI / 180F))/pitchDivisor;
+		box.rotateAngleY =+ (netHeadYaw * ((float)Math.PI / 180F))/yawDivisor;
+		box.rotateAngleX =+ (headPitch * ((float)Math.PI / 180F))/pitchDivisor;
 	}
 	
 	
@@ -122,16 +120,16 @@ public abstract class BirsyBaseModel<T extends Entity> extends EntityModel<T>
 		} else {
 			switch (axis) {
 				case X:
-					box.xRot = +this.calculateRotation(speed, degree, invert, offset, weight, swing, limbSwingAmount);
+					box.rotateAngleX = +this.calculateRotation(speed, degree, invert, offset, weight, swing, limbSwingAmount);
 					break;
 				case Y:
-					box.yRot = +this.calculateRotation(speed, degree, invert, offset, weight, swing, limbSwingAmount);
+					box.rotateAngleY = +this.calculateRotation(speed, degree, invert, offset, weight, swing, limbSwingAmount);
 					break;
 				case Z:
-					box.zRot = +this.calculateRotation(speed, degree, invert, offset, weight, swing, limbSwingAmount);
+					box.rotateAngleZ = +this.calculateRotation(speed, degree, invert, offset, weight, swing, limbSwingAmount);
 					break;
 				default:
-					box.xRot = +this.calculateRotation(speed, degree, invert, offset, weight, swing, limbSwingAmount);
+					box.rotateAngleX = +this.calculateRotation(speed, degree, invert, offset, weight, swing, limbSwingAmount);
 					throw new RuntimeException(box + "had no axis assigned for thier swing. Defaulting to X!");
 			}
 
@@ -145,7 +143,7 @@ public abstract class BirsyBaseModel<T extends Entity> extends EntityModel<T>
 		swing(right, speed, degree, false, offset, weight, swing, limbSwingAmount, Axis.X);
 	}
 
-	public void inverseKinematicsBase(BirsyModelRenderer Joint0, BirsyModelRenderer Joint1, Vec3 Target)
+	public void inverseKinematicsBase(BirsyModelRenderer Joint0, BirsyModelRenderer Joint1, Vector3d Target)
 	{
 		float length0 = (float) Joint0.defaultModelRendererPosition.distanceTo(Joint1.defaultModelRendererPosition);
 		float length1 = (float) Joint1.defaultModelRendererPosition.distanceTo(Target);
@@ -155,7 +153,7 @@ public abstract class BirsyBaseModel<T extends Entity> extends EntityModel<T>
 	 
 	    float length2 = (float) Joint0.defaultModelRendererPosition.distanceTo(Target);
 	 
-	    Vec3 diff = Target.subtract(Joint0.defaultModelRendererPosition);
+	    Vector3d diff = Target.subtract(Joint0.defaultModelRendererPosition);
 	    float atan = (float) Math.atan2(diff.y, diff.x);
 
 	    if (length0 + length1 <= length2)
@@ -176,11 +174,11 @@ public abstract class BirsyBaseModel<T extends Entity> extends EntityModel<T>
 	        jointAngle1 = 180f - angle1;
 	    }
 	    
-	    Joint0.xRot = jointAngle0;
-	    Joint1.xRot = jointAngle1;
+	    Joint0.rotateAngleX = jointAngle0;
+	    Joint1.rotateAngleX = jointAngle1;
 	}
 	
-	public Vec3 sideSideSide (float lengthA, float lengthB, float lengthC)
+	public Vector3d sideSideSide (float lengthA, float lengthB, float lengthC)
 	{
 		float cosA = ((lengthB*lengthB) + (lengthC*lengthC) - (lengthA*lengthA)) / (2 * lengthB * lengthC);
 		float cosB = ((lengthC*lengthC) + (lengthA*lengthA) - (lengthB*lengthB)) / (2 * lengthC * lengthA);
@@ -190,20 +188,20 @@ public abstract class BirsyBaseModel<T extends Entity> extends EntityModel<T>
 		float angleB = (float) Math.asin(cosB);
 		float angleC = (float) Math.asin(cosC);
 		
-		Vec3 angles = new Vec3(angleA, angleB, angleC);
+		Vector3d angles = new Vector3d(angleA, angleB, angleC);
 		
 		return angles;
 	}
 	
 	public void resetParts(BirsyModelRenderer... boxes) {
 		for (BirsyModelRenderer modelRenderer : boxes) {
-			modelRenderer.xRot = modelRenderer.defaultRotateAngleX;
-			modelRenderer.yRot = modelRenderer.defaultRotateAngleY;
-			modelRenderer.zRot = modelRenderer.defaultRotateAngleZ;
+			modelRenderer.rotateAngleX = modelRenderer.defaultRotateAngleX;
+			modelRenderer.rotateAngleY = modelRenderer.defaultRotateAngleY;
+			modelRenderer.rotateAngleZ = modelRenderer.defaultRotateAngleZ;
 
-			modelRenderer.x = modelRenderer.defaultRotationPointX;
-			modelRenderer.y = modelRenderer.defaultRotationPointY;
-			modelRenderer.z = modelRenderer.defaultRotationPointZ;
+			modelRenderer.rotationPointX = modelRenderer.defaultRotationPointX;
+			modelRenderer.rotationPointY = modelRenderer.defaultRotationPointY;
+			modelRenderer.rotationPointZ = modelRenderer.defaultRotationPointZ;
         }
 	}
 	
@@ -212,13 +210,13 @@ public abstract class BirsyBaseModel<T extends Entity> extends EntityModel<T>
 	}
 	
 	public float randomSine(float seed, float range, float minimum) {
-		return (float) Math.max(Mth.sin(seed) * range, minimum);
+		return (float) Math.max(MathHelper.sin(seed) * range, minimum);
 	}
 	
     public void setRotateAngle(BirsyModelRenderer modelRenderer, float x, float y, float z) {
-        modelRenderer.xRot = x;
-        modelRenderer.yRot = y;
-        modelRenderer.zRot = z;
+        modelRenderer.rotateAngleX = x;
+        modelRenderer.rotateAngleY = y;
+        modelRenderer.rotateAngleZ = z;
         
         modelRenderer.defaultRotateAngleX = x;
         modelRenderer.defaultRotateAngleY = y;
@@ -226,7 +224,7 @@ public abstract class BirsyBaseModel<T extends Entity> extends EntityModel<T>
     }
     
     private float calculateRotation(float speed, float degree, boolean invert, float offset, float weight, float f, float f1) {
-        float rotation = (Mth.cos(f * (speed) + offset) * (degree) * f1) + (weight * f1);
+        float rotation = (MathHelper.cos(f * (speed) + offset) * (degree) * f1) + (weight * f1);
         return invert ? -rotation : rotation;
     }
     

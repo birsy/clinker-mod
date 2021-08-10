@@ -4,71 +4,71 @@ import javax.annotation.Nullable;
 
 import birsy.clinker.common.block.util.Rune;
 import birsy.clinker.core.registry.ClinkerBlocks;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.PickaxeItem;
-import net.minecraft.world.level.block.state.properties.EnumProperty;
-import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.Util;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.world.level.Level;
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.PickaxeItem;
+import net.minecraft.state.EnumProperty;
+import net.minecraft.state.Property;
+import net.minecraft.state.StateContainer;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
+import net.minecraft.util.Util;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.World;
 
 public class AncientBrickRunesBlock extends Block {
 	public static final EnumProperty<Rune> RUNE = EnumProperty.create("rune", Rune.class);
 	
 	public AncientBrickRunesBlock() {
-		super(BlockBehaviour.Properties.copy(ClinkerBlocks.ANCIENT_BRICKS.get()));
-		this.registerDefaultState(this.stateDefinition.any().setValue(RUNE, Rune.RANDOM));
+		super(AbstractBlock.Properties.from(ClinkerBlocks.ANCIENT_BRICKS.get()));
+		this.setDefaultState(this.stateContainer.getBaseState().with(RUNE, Rune.RANDOM));
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
-		ItemStack itemInHand = player.getItemInHand(handIn);
+	public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
+		ItemStack itemInHand = player.getHeldItem(handIn);
 		
 		if (itemInHand.getItem() instanceof PickaxeItem) {
 			if(!player.isCreative()) {
-				itemInHand.hurtAndBreak(1, player, (consumer) -> {
-					consumer.broadcastBreakEvent(handIn);
+				itemInHand.damageItem(1, player, (consumer) -> {
+					consumer.sendBreakAnimation(handIn);
 				});
 			}
-			Property<?> property = state.getBlock().getStateDefinition().getProperty("rune");
+			Property<?> property = state.getBlock().getStateContainer().getProperty("rune");
 			BlockState blockstate = cycleProperty(state, property, player.isSecondaryUseActive());
 			String name = property.toString().toUpperCase();
-			worldIn.setBlock(pos, blockstate, 18);
-			worldIn.playSound(player, pos, SoundEvents.GRINDSTONE_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
-			player.displayClientMessage(new TranslatableComponent("block.clinker.ancient_rune.carve", name.substring(0, 1).toUpperCase() + name.substring(1)), true);
+			worldIn.setBlockState(pos, blockstate, 18);
+			worldIn.playSound(player, pos, SoundEvents.BLOCK_GRINDSTONE_USE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+			player.sendStatusMessage(new TranslationTextComponent("block.clinker.ancient_rune.carve", name.substring(0, 1).toUpperCase() + name.substring(1)), true);
 		}
-		return super.use(state, worldIn, pos, player, handIn, hit);
+		return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
 	}
 	
 	
 	public static <T extends Comparable<T>> BlockState cycleProperty(BlockState state, Property<T> propertyIn, boolean backwards) {
-		return state.setValue(propertyIn, getAdjacentValue(propertyIn.getPossibleValues(), state.getValue(propertyIn), backwards));
+		return state.with(propertyIn, getAdjacentValue(propertyIn.getAllowedValues(), state.get(propertyIn), backwards));
 	}
 
 	private static <T> T getAdjacentValue(Iterable<T> allowedValues, @Nullable T currentValue, boolean backwards) {
-		return (T)(backwards ? Util.findPreviousInIterable(allowedValues, currentValue) : Util.findNextInIterable(allowedValues, currentValue));
+		return (T)(backwards ? Util.getElementBefore(allowedValues, currentValue) : Util.getElementAfter(allowedValues, currentValue));
 	}
 	
 	@Override
-	public boolean hasAnalogOutputSignal(BlockState state) {
+	public boolean hasComparatorInputOverride(BlockState state) {
 		return true;
 	}
 	
 	@Override
-	public int getAnalogOutputSignal(BlockState blockState, Level worldIn, BlockPos pos) {
-		Rune rune = blockState.getValue(RUNE);
+	public int getComparatorInputOverride(BlockState blockState, World worldIn, BlockPos pos) {
+		Rune rune = blockState.get(RUNE);
 		switch(rune) {
 			case NONE:
 				return 0;
@@ -130,7 +130,7 @@ public class AncientBrickRunesBlock extends Block {
 		return 0;
 	}
 	
-	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+	protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
 		builder.add(RUNE);
 	}
 }
