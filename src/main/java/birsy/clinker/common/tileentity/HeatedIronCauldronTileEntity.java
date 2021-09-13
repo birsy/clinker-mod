@@ -4,10 +4,10 @@ import birsy.clinker.common.world.WorldUtil;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerTileEntities;
 import birsy.clinker.core.util.MathUtils;
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.particles.ParticleTypes;
@@ -21,6 +21,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.extensions.IForgeTileEntity;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
@@ -29,7 +30,6 @@ import net.minecraftforge.fluids.capability.templates.FluidTank;
 
 import javax.annotation.Nullable;
 import java.util.Random;
-import java.util.Set;
 
 public class HeatedIronCauldronTileEntity extends TileEntity implements ITickableTileEntity {
     boolean debug = Clinker.devmode;
@@ -37,9 +37,11 @@ public class HeatedIronCauldronTileEntity extends TileEntity implements ITickabl
     private final Random rand = new Random();
     public int ageInTicks;
 
-    private final NonNullList<ItemStack> inventory = NonNullList.withSize(4, ItemStack.EMPTY);
+    private final NonNullList<ItemStack> items = NonNullList.withSize(4, ItemStack.EMPTY);
     public NonNullList<float[]> itemRotations = NonNullList.withSize(4, new float[2]);
     public int mostRecentItemIndex = 0;
+
+    private int ticksSinceSync;
 
     //Measured in degrees per tick.
     private final float maxStirSpeed = 50.0F;
@@ -79,12 +81,24 @@ public class HeatedIronCauldronTileEntity extends TileEntity implements ITickabl
     @Override
     public void read(BlockState state, CompoundNBT tag) {
         super.read(state, tag);
+        ItemStackHelper.loadAllItems(tag, this.items);
+        stirTimeTable[0] = tag.getInt("TotalStirTime");
+        stirTimeTable[1] = tag.getInt("SlowStirTime");
+        stirTimeTable[2] = tag.getInt("MediumStirTime");
+        stirTimeTable[3] = tag.getInt("QuickStirTime");
+        
         tank.readFromNBT(tag);
     }
 
     @Override
     public CompoundNBT write(CompoundNBT tag) {
         tag = super.write(tag);
+        ItemStackHelper.saveAllItems(tag, this.items);
+        tag.putInt("TotalStirTime", stirTimeTable[0]);
+        tag.putInt("SlowStirTime", stirTimeTable[1]);
+        tag.putInt("MediumStirTime", stirTimeTable[2]);
+        tag.putInt("QuickStirTime", stirTimeTable[3]);
+
         tank.writeToNBT(tag);
         return tag;
     }
@@ -92,10 +106,15 @@ public class HeatedIronCauldronTileEntity extends TileEntity implements ITickabl
 
     @Override
     public void tick() {
-        ageInTicks++;
+        this.ageInTicks++;
+        this.ticksSinceSync++;
         this.prevHeat = this.heat;
         this.prevWaterLevel = this.waterLevel;
         this.prevCauldronShakeAmount = this.cauldronShakeAmount;
+
+        if (ticksSinceSync % 80 == 0) {
+            this.serializeNBT();
+        }
 
         this.waterLevel = calculateWaterLevel();
         this.cauldronShakeAmount = calculateCauldronShakeAmount();
@@ -115,6 +134,7 @@ public class HeatedIronCauldronTileEntity extends TileEntity implements ITickabl
 
         this.updateStirTimes();
     }
+
 
     private void updateStirRotations() {
         /* Sets the previous rotation for partialTick nonsense. */
@@ -196,14 +216,14 @@ public class HeatedIronCauldronTileEntity extends TileEntity implements ITickabl
 
     public void addItem(ItemEntity itemEntity) {
         int emptySlot = -1;
-        for (int i = 0; i < inventory.size(); i++) {
-            if (inventory.get(i) == ItemStack.EMPTY) {
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i) == ItemStack.EMPTY) {
                 emptySlot = i;
             }
         }
 
         if (emptySlot != -1) {
-            inventory.set(emptySlot, itemEntity.getItem());
+            items.set(emptySlot, itemEntity.getItem());
             this.mostRecentItemIndex = emptySlot;
             
             for (int i = 0; i < 10; i++) {
@@ -215,9 +235,9 @@ public class HeatedIronCauldronTileEntity extends TileEntity implements ITickabl
 
             if (this.debug) {
                 StringBuilder cauldronContents = new StringBuilder();
-                for (int i = 0; i < inventory.size(); i++) {
-                    if (inventory.get(i) == ItemStack.EMPTY) {
-                        cauldronContents.append(inventory.get(i).getItem().getName().getString()).append(", ");
+                for (int i = 0; i < items.size(); i++) {
+                    if (items.get(i) == ItemStack.EMPTY) {
+                        cauldronContents.append(items.get(i).getItem().getName().getString()).append(", ");
                     }
                 }
 
@@ -228,7 +248,7 @@ public class HeatedIronCauldronTileEntity extends TileEntity implements ITickabl
 
     public void dropItems(int index, @Nullable LivingEntity entity) {
         if (index == -1) {
-            for (ItemStack itemStack : inventory) {
+            for (ItemStack itemStack : items) {
                 if (itemStack != ItemStack.EMPTY) {
                     ItemEntity itemEntity = new ItemEntity(this.getWorld(), this.getPos().getX() + 0.5, this.getPos().getY() + 0.5, this.getPos().getZ() + 0.5, itemStack);
                     this.getWorld().addEntity(itemEntity);
@@ -236,10 +256,10 @@ public class HeatedIronCauldronTileEntity extends TileEntity implements ITickabl
             }
         } else {
             try {
-                ItemStack itemStack = inventory.get(index);
+                ItemStack itemStack = items.get(index);
                 if (itemStack != ItemStack.EMPTY) {
-                    ItemEntity itemEntity = new ItemEntity(this.getWorld(), this.getPos().getX() + 0.5, this.getPos().getY() + 1.1, this.getPos().getZ() + 0.5, inventory.get(index));
-                    inventory.set(index, ItemStack.EMPTY);
+                    ItemEntity itemEntity = new ItemEntity(this.getWorld(), this.getPos().getX() + 0.5, this.getPos().getY() + 1.1, this.getPos().getZ() + 0.5, items.get(index));
+                    items.set(index, ItemStack.EMPTY);
 
                     /*
                     if (entity != null) {
@@ -259,9 +279,9 @@ public class HeatedIronCauldronTileEntity extends TileEntity implements ITickabl
     }
 
     public int getLastItemInInventory() {
-        if (inventory.get(this.mostRecentItemIndex) == ItemStack.EMPTY || this.mostRecentItemIndex == -1) {
-            for (int i = inventory.size() - 1; i > 0; i--) {
-                if (inventory.get(i) != ItemStack.EMPTY) {
+        if (items.get(this.mostRecentItemIndex) == ItemStack.EMPTY || this.mostRecentItemIndex == -1) {
+            for (int i = items.size() - 1; i > 0; i--) {
+                if (items.get(i) != ItemStack.EMPTY) {
                     return i;
                 }
             }
@@ -272,7 +292,7 @@ public class HeatedIronCauldronTileEntity extends TileEntity implements ITickabl
     }
 
     public NonNullList<ItemStack> getInventory() {
-        return this.inventory;
+        return this.items;
     }
 
     @OnlyIn(Dist.CLIENT)

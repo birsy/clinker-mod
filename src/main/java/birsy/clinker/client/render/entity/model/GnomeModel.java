@@ -3,6 +3,7 @@ package birsy.clinker.client.render.entity.model;
 import java.util.List;
 import java.util.Random;
 
+import birsy.clinker.client.render.util.AnimFunctions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -125,6 +126,7 @@ public class GnomeModel<T extends GnomeEntity> extends BirsyBaseModel<T> impleme
         
         this.headJoint = new BirsyModelRenderer(this, 0, 0);
         this.headJoint.setRotationPoint(0.0F, 0.0F, -3.5F);
+        this.headJoint.setScale(0.8F);
         this.headJoint.addBox(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
         this.setRotateAngle(headJoint, 0.3490658503988659F, 0.0F, 0.0F);
         modelRenderers.add(this.headJoint);
@@ -211,7 +213,7 @@ public class GnomeModel<T extends GnomeEntity> extends BirsyBaseModel<T> impleme
     @Override
     public void setRotationAngles(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch)
     {
-    	resetParts(this.gnomeBody, this.legsJoint, this.armsJoint, this.neckJoint, this.gnomeLeftLeg, this.gnomeRightLeg, this.gnomeLeftArm, this.gnomeRightArm, this.gnomeNeck, this.headJoint, this.gnomeHead, this.gnomeFace, this.gnomeNose, this.gnomeFaceBottom, this.gnomeFaceTop, this.gnomeHatBottom, this.gnomeHatMiddle, this.gnomeHatTop);
+        AnimFunctions.resetParts(this.gnomeBody, this.legsJoint, this.armsJoint, this.neckJoint, this.gnomeLeftLeg, this.gnomeRightLeg, this.gnomeLeftArm, this.gnomeRightArm, this.gnomeNeck, this.headJoint, this.gnomeHead, this.gnomeFace, this.gnomeNose, this.gnomeFaceBottom, this.gnomeFaceTop, this.gnomeHatBottom, this.gnomeHatMiddle, this.gnomeHatTop);
     	
     	float f = limbSwing;
     	float f1 = limbSwingAmount * 2F;
@@ -223,40 +225,40 @@ public class GnomeModel<T extends GnomeEntity> extends BirsyBaseModel<T> impleme
     	float walkSpeed = 0.5F * globalSpeed;
     	
     	//IDLE
-    	swing(this.gnomeBody, 0.125F * globalSpeed, 0.1f * globalDegree, false, 0.0F, 0.0F, ageInTicks, 0.5F, Axis.X);
+    	AnimFunctions.swing(this.gnomeBody, 0.125F * globalSpeed, 0.1f * globalDegree, false, 0.0F, 0.0F, ageInTicks, 0.5F, AnimFunctions.Axis.X);
     	
-    	swing(this.gnomeRightArm, 0.125F * globalSpeed, 0.03f * globalDegree, false, 0.5F, 0.07F, ageInTicks, 0.5F, Axis.Z);
-    	swing(this.gnomeLeftArm, 0.125F * globalSpeed, 0.03f * globalDegree, false, 1.5F, -0.07F, ageInTicks, 0.5F, Axis.Z);
-    	swing(this.gnomeRightArm, 0.12F * globalSpeed, 0.03f * globalDegree, false, 0.5F, 0.0F, ageInTicks, 0.5F, Axis.X);
-    	swing(this.gnomeLeftArm, 0.12F * globalSpeed, 0.03f * globalDegree, false, 1.5F, 0.0F, ageInTicks, 0.5F, Axis.X);
+    	AnimFunctions.swing(this.gnomeRightArm, 0.125F * globalSpeed, 0.03f * globalDegree, false, 0.5F, 0.07F, ageInTicks, 0.5F, AnimFunctions.Axis.Z);
+    	AnimFunctions.swing(this.gnomeLeftArm, 0.125F * globalSpeed, 0.03f * globalDegree, false, 1.5F, -0.07F, ageInTicks, 0.5F, AnimFunctions.Axis.Z);
+    	AnimFunctions.swing(this.gnomeRightArm, 0.12F * globalSpeed, 0.03f * globalDegree, false, 0.5F, 0.0F, ageInTicks, 0.5F, AnimFunctions.Axis.X);
+    	AnimFunctions.swing(this.gnomeLeftArm, 0.12F * globalSpeed, 0.03f * globalDegree, false, 1.5F, 0.0F, ageInTicks, 0.5F, AnimFunctions.Axis.X);
     	
-    	bob(this.gnomeRightArm, 0.125F * globalSpeed, 0.2f * globalDegree, false, ageInTicks, 0.5F, true);
-    	bob(this.gnomeLeftArm, 0.125F * globalSpeed, 0.2f * globalDegree, false, ageInTicks, 0.5F, true);
+    	AnimFunctions.bob(this.gnomeRightArm, 0.125F * globalSpeed, 0.2f * globalDegree, false, ageInTicks, 0.5F, true);
+    	AnimFunctions.bob(this.gnomeLeftArm, 0.125F * globalSpeed, 0.2f * globalDegree, false, ageInTicks, 0.5F, true);
     	
-    	bob(this.neckJoint, 0.125F * globalSpeed, 0.2f * globalHeight, false, ageInTicks, 0.5F, true);
-    	bob(this.gnomeBody, 0.5F * (0.125F * globalSpeed), 0.2f * globalHeight, true, ageInTicks, 0.5F, true);
+    	AnimFunctions.bob(this.neckJoint, 0.125F * globalSpeed, 0.2f * globalHeight, false, ageInTicks, 0.5F, true);
+    	AnimFunctions.bob(this.gnomeBody, 0.5F * (0.125F * globalSpeed), 0.2f * globalHeight, true, ageInTicks, 0.5F, true);
     	
-    	swing(this.gnomeHatMiddle, 0.1F * globalSpeed, 0.05F * globalDegree, false, 1F, 0, ageInTicks, 0.5F, Axis.X);
-    	swing(this.gnomeHatMiddle, 0.1F * globalSpeed, 0.05F * globalDegree, false, 1F, 0, ageInTicks, 0.5F, Axis.Z);
+    	AnimFunctions.swing(this.gnomeHatMiddle, 0.1F * globalSpeed, 0.05F * globalDegree, false, 1F, 0, ageInTicks, 0.5F, AnimFunctions.Axis.X);
+    	AnimFunctions.swing(this.gnomeHatMiddle, 0.1F * globalSpeed, 0.05F * globalDegree, false, 1F, 0, ageInTicks, 0.5F, AnimFunctions.Axis.Z);
     	
-    	swing(this.gnomeBeard, 0.1F * globalSpeed, 0.05F * globalDegree, false, 1F, 0, ageInTicks, 0.5F, Axis.X);
-    	swing(this.gnomeBeard, 0.1F * globalSpeed, 0.05F * globalDegree, false, 1F, 0, ageInTicks, 0.5F, Axis.Z);
+    	AnimFunctions.swing(this.gnomeBeard, 0.1F * globalSpeed, 0.05F * globalDegree, false, 1F, 0, ageInTicks, 0.5F, AnimFunctions.Axis.X);
+    	AnimFunctions.swing(this.gnomeBeard, 0.1F * globalSpeed, 0.05F * globalDegree, false, 1F, 0, ageInTicks, 0.5F, AnimFunctions.Axis.Z);
     	
     	//WALK
-    	swingLimbs(this.gnomeLeftLeg, this.gnomeRightLeg, walkSpeed, 0.6f * globalDegree, 0.0F, 0.0F, f, f1);
-    	swingLimbs(this.gnomeRightArm, this.gnomeLeftArm, walkSpeed, 0.6f * globalDegree, 0.0F, 0.0F, f, f1);
+    	AnimFunctions.swingLimbs(this.gnomeLeftLeg, this.gnomeRightLeg, walkSpeed, 0.6f * globalDegree, 0.0F, 0.0F, f, f1);
+    	AnimFunctions.swingLimbs(this.gnomeRightArm, this.gnomeLeftArm, walkSpeed, 0.6f * globalDegree, 0.0F, 0.0F, f, f1);
     	
-    	swing(this.gnomeRightArm, walkSpeed, 0.06f * globalDegree, false, 0.0F, 0.2F, f, f1, Axis.Z);
-    	swing(this.gnomeLeftArm, walkSpeed, 0.06f * globalDegree, false, 0.0F, -0.2F, f, f1, Axis.Z);
+    	AnimFunctions.swing(this.gnomeRightArm, walkSpeed, 0.06f * globalDegree, false, 0.0F, 0.2F, f, f1, AnimFunctions.Axis.Z);
+    	AnimFunctions.swing(this.gnomeLeftArm, walkSpeed, 0.06f * globalDegree, false, 0.0F, -0.2F, f, f1, AnimFunctions.Axis.Z);
     	
-    	swing(this.gnomeBody, walkSpeed, 0.06f * globalDegree, false, 0.0F, 0.2F, f, f1, Axis.X);
-    	swing(this.gnomeBody, 0.5F * walkSpeed, 0.1f * globalDegree, false, 0.0F, 0.0F, f, f1, Axis.Y);
+    	AnimFunctions.swing(this.gnomeBody, walkSpeed, 0.06f * globalDegree, false, 0.0F, 0.2F, f, f1, AnimFunctions.Axis.X);
+    	AnimFunctions.swing(this.gnomeBody, 0.5F * walkSpeed, 0.1f * globalDegree, false, 0.0F, 0.0F, f, f1, AnimFunctions.Axis.Y);
     	
-    	bob(this.gnomeBody, 2.0F * walkSpeed, 2 * globalHeight, true, f, f1, true);
-    	bob(this.gnomeHead, 2.0F * walkSpeed, 0.5F * globalHeight, true, f, f1, true);
+    	AnimFunctions.bob(this.gnomeBody, 2.0F * walkSpeed, 2 * globalHeight, true, f, f1, true);
+    	AnimFunctions.bob(this.gnomeHead, 2.0F * walkSpeed, 0.5F * globalHeight, true, f, f1, true);
     	
-    	look(this.gnomeNeck, netHeadYaw, headPitch, 2.0F, 2.0F);
-    	look(this.gnomeHead, netHeadYaw, headPitch, 2.0F, 2.0F);
+    	AnimFunctions.look(this.gnomeNeck, netHeadYaw, headPitch, 2.0F, 2.0F);
+    	AnimFunctions.look(this.gnomeHead, netHeadYaw, headPitch, 2.0F, 2.0F);
     	
     	GnomeEntity.ArmPose GnomeEntity$armpose = entityIn.getArmPose();
         if (GnomeEntity$armpose == GnomeEntity.ArmPose.ATTACKING) {
@@ -375,6 +377,7 @@ public class GnomeModel<T extends GnomeEntity> extends BirsyBaseModel<T> impleme
 
 	@Override
     public void translateHand(HandSide sideIn, MatrixStack matrixStackIn) {
+        matrixStackIn.translate(sideIn == HandSide.RIGHT ? 0.075 : -0.075, 0.075, -0.1);
         this.getArmForSide(sideIn).matrixStackFromModel(matrixStackIn);
     }
 

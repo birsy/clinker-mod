@@ -1,21 +1,17 @@
 package birsy.clinker.client.render.world;
 
 import birsy.clinker.core.Clinker;
-import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import de.articdive.jnoise.JNoise;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexBuffer;
-import net.minecraft.client.settings.CloudOption;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.client.ICloudRenderHandler;
 

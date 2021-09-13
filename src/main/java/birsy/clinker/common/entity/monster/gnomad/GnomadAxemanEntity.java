@@ -68,6 +68,7 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 	private float buffLength;
 
 	public static final DataParameter<Boolean> HELMET = EntityDataManager.createKey(GnomadAxemanEntity.class, DataSerializers.BOOLEAN);
+	public static final DataParameter<Boolean> HELMET_VISOR = EntityDataManager.createKey(GnomadAxemanEntity.class, DataSerializers.BOOLEAN);
 	public static final DataParameter<Boolean> LEFT_PAULDRON = EntityDataManager.createKey(GnomadAxemanEntity.class, DataSerializers.BOOLEAN);
 	public static final DataParameter<Boolean> RIGHT_PAULDRON = EntityDataManager.createKey(GnomadAxemanEntity.class, DataSerializers.BOOLEAN);
 
@@ -120,19 +121,16 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 		this.dataManager.register(DODGE_TIME, 0);
 		this.dataManager.register(DODGE_DIRECTION, false);
 
-
 		this.dataManager.register(PREV_WINDUP_TICKS, 0);
 		this.dataManager.register(WINDUP_TICKS, 0);
 		this.dataManager.register(MAX_WINDUP_TICKS, 0);
-
 		this.dataManager.register(PREV_SWING_TICKS, 0);
 		this.dataManager.register(SWING_TICKS, 0);
 		this.dataManager.register(MAX_SWING_TICKS, 0);
-
 		this.dataManager.register(ATTACKING, false);
 
-
 		this.dataManager.register(HELMET, false);
+		this.dataManager.register(HELMET_VISOR, false);
 		this.dataManager.register(LEFT_PAULDRON, false);
 		this.dataManager.register(RIGHT_PAULDRON, false);
 	}
@@ -140,55 +138,53 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 	public void writeAdditional(CompoundNBT compound) {
 		super.writeAdditional(compound);
 		compound.putFloat("Size", this.dataManager.get(SIZE));
-		compound.putFloat("brutality", this.dataManager.get(BRUTALITY));
-		compound.putFloat("prowess", this.dataManager.get(PROWESS));
+		compound.putFloat("Brutality", this.dataManager.get(BRUTALITY));
+		compound.putFloat("Prowess", this.dataManager.get(PROWESS));
 
-		compound.putInt("shields", this.getShieldNumber());
-		compound.putBoolean("buffed", this.isBuffed());
+		compound.putInt("Shields", this.getShieldNumber());
+		compound.putBoolean("Buffed", this.isBuffed());
 
-		compound.putInt("dodge_time", this.getDodgeTime());
-		compound.putBoolean("dodge_direction", this.getDodgeDirection());
+		compound.putInt("DodgeTime", this.getDodgeTime());
+		compound.putBoolean("DodgeDirection", this.getDodgeDirection());
 
+		compound.putInt("PreviousWindupTicks", this.dataManager.get(PREV_WINDUP_TICKS));
+		compound.putInt("WindupTicks", this.getWindupTicks());
+		compound.putInt("MaximumWindupTicks", this.dataManager.get(MAX_WINDUP_TICKS));
+		compound.putInt("PreviousSwingTicks", this.dataManager.get(PREV_SWING_TICKS));
+		compound.putInt("SwingTicks", this.getSwingTicks());
+		compound.putInt("MaximumSwingTicks", this.dataManager.get(MAX_SWING_TICKS));
+		compound.putBoolean("Attacking", this.isAttacking());
 
-		compound.putInt("prev_windup_ticks", this.dataManager.get(PREV_WINDUP_TICKS));
-		compound.putInt("windup_ticks", this.getWindupTicks());
-		compound.putInt("max_windup_ticks", this.dataManager.get(MAX_WINDUP_TICKS));
-
-		compound.putInt("prev_swing_ticks", this.dataManager.get(PREV_SWING_TICKS));
-		compound.putInt("swing_ticks", this.getSwingTicks());
-		compound.putInt("max_swing_ticks", this.dataManager.get(MAX_SWING_TICKS));
-
-		compound.putBoolean("attacking", this.isAttacking());
-
-
-		compound.putBoolean("helmet", this.isWearingHelmet());
-		compound.putBoolean("left_pauldron", this.isWearingLeftPauldron());
-		compound.putBoolean("right_pauldron", this.isWearingRightPauldron());
+		compound.putBoolean("HasHelmet", this.isWearingHelmet());
+		compound.putBoolean("HasHelmetVisor", this.isWearingHelmetVisor());
+		compound.putBoolean("HasLeftPauldron", this.isWearingLeftPauldron());
+		compound.putBoolean("HasRightPauldron", this.isWearingRightPauldron());
 	}
 
 	public void readAdditional(CompoundNBT compound) {
 		super.readAdditional(compound);
 		this.setSize(compound.getFloat("Size"));
-		this.dataManager.set(BRUTALITY, compound.getFloat("brutality"));
-		this.dataManager.set(PROWESS, compound.getFloat("prowess"));
+		this.dataManager.set(BRUTALITY, compound.getFloat("Brutality"));
+		this.dataManager.set(PROWESS, compound.getFloat("Prowess"));
 
-		this.dataManager.set(SHIELDS, compound.getInt("shields"));
-		this.dataManager.set(BUFFED, compound.getBoolean("buffed"));
+		this.dataManager.set(SHIELDS, compound.getInt("Shields"));
+		this.dataManager.set(BUFFED, compound.getBoolean("Buffed"));
 
-		this.dataManager.set(DODGE_TIME, compound.getInt("dodge_time"));
-		this.dataManager.set(DODGE_DIRECTION, compound.getBoolean("dodge_direction"));
+		this.dataManager.set(DODGE_TIME, compound.getInt("DodgeTime"));
+		this.dataManager.set(DODGE_DIRECTION, compound.getBoolean("DodgeDirection"));
 
-		this.dataManager.set(PREV_WINDUP_TICKS, compound.getInt("prev_windup_ticks"));
-		this.dataManager.set(WINDUP_TICKS, compound.getInt("windup_ticks"));
-		this.dataManager.set(MAX_WINDUP_TICKS, compound.getInt("max_windup_ticks"));
-		this.dataManager.set(PREV_SWING_TICKS, compound.getInt("prev_swing_ticks"));
-		this.dataManager.set(SWING_TICKS, compound.getInt("swing_ticks"));
-		this.dataManager.set(MAX_SWING_TICKS, compound.getInt("max_swing_ticks"));
-		this.dataManager.set(ATTACKING, compound.getBoolean("attacking"));
+		this.dataManager.set(PREV_WINDUP_TICKS, compound.getInt("PreviousWindupTicks"));
+		this.dataManager.set(WINDUP_TICKS, compound.getInt("WindupTicks"));
+		this.dataManager.set(MAX_WINDUP_TICKS, compound.getInt("MaximumWindupTicks"));
+		this.dataManager.set(PREV_SWING_TICKS, compound.getInt("PreviousSwingTicks"));
+		this.dataManager.set(SWING_TICKS, compound.getInt("SwingTicks"));
+		this.dataManager.set(MAX_SWING_TICKS, compound.getInt("MaximumSwingTicks"));
+		this.dataManager.set(ATTACKING, compound.getBoolean("Attacking"));
 
-		this.dataManager.set(HELMET, compound.getBoolean("helmet"));
-		this.dataManager.set(LEFT_PAULDRON, compound.getBoolean("left_pauldron"));
-		this.dataManager.set(RIGHT_PAULDRON, compound.getBoolean("right_pauldron"));
+		this.dataManager.set(HELMET, compound.getBoolean("HasHelmet"));
+		this.dataManager.set(HELMET_VISOR, compound.getBoolean("HasHelmetVisor"));
+		this.dataManager.set(LEFT_PAULDRON, compound.getBoolean("HasLeftPauldron"));
+		this.dataManager.set(RIGHT_PAULDRON, compound.getBoolean("HasRightPauldron"));
 	}
 	
 	@Override
@@ -278,18 +274,21 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 	public boolean isBuffed() {
 		return this.dataManager.get(BUFFED);
 	}
-	public void setBuffed(boolean buffed) {
-		if (buffed && !this.dataManager.get(BUFFED)) {
+	public void setBuffed(boolean Buffed) {
+		if (Buffed && !this.dataManager.get(BUFFED)) {
 			this.playSound(SoundEvents.BLOCK_BEACON_ACTIVATE, 1.0F, 1.0F);
 		} else if (this.dataManager.get(BUFFED)) {
 			this.playSound(SoundEvents.BLOCK_BEACON_DEACTIVATE, 1.0F, 1.0F);
 		}
 
-		this.dataManager.set(BUFFED, buffed);
+		this.dataManager.set(BUFFED, Buffed);
 	}
 
 	public boolean isWearingHelmet() {
 		return this.dataManager.get(HELMET);
+	}
+	public boolean isWearingHelmetVisor() {
+		return this.dataManager.get(HELMET_VISOR);
 	}
 	public boolean isWearingLeftPauldron() {
 		return this.dataManager.get(LEFT_PAULDRON);
@@ -299,40 +298,54 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 	}
 
 	public void setWearingHelmet(boolean wearingHelmet) {
+		this.dataManager.set(HELMET, wearingHelmet);
+
 		if (wearingHelmet) {
 			this.playSound(SoundEvents.ITEM_ARMOR_EQUIP_IRON, 0.5F, 0.5F);
 
-			this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(this.getAttribute(Attributes.MOVEMENT_SPEED).getBaseValue() - 2);
-			this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(this.getAttribute(Attributes.ARMOR).getBaseValue() + 6);
-			this.getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(this.getAttribute(Attributes.KNOCKBACK_RESISTANCE).getBaseValue() + 10);
+			this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(this.getAttribute(Attributes.MOVEMENT_SPEED).getBaseValue() - 0.025);
+			this.getAttribute(Attributes.ARMOR).setBaseValue(this.getAttribute(Attributes.ARMOR).getBaseValue() + 3.0);
+			this.getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(this.getAttribute(Attributes.KNOCKBACK_RESISTANCE).getBaseValue() + 0.5);
 
 			this.setHealth(this.getMaxHealth());
 		}
-		this.dataManager.set(HELMET, wearingHelmet);
 	}
+
+	private void setWearingHelmetVisor(boolean wearingHelmetVisor) {
+		this.dataManager.set(HELMET_VISOR, wearingHelmetVisor);
+
+		if (wearingHelmetVisor && this.isWearingHelmet()) {
+			this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(this.getAttribute(Attributes.MOVEMENT_SPEED).getBaseValue() - 0.0125);
+			this.getAttribute(Attributes.ARMOR).setBaseValue(this.getAttribute(Attributes.ARMOR).getBaseValue() + 1.0);
+			this.getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(this.getAttribute(Attributes.KNOCKBACK_RESISTANCE).getBaseValue() + 0.25F);
+		}
+	}
+
 	public void setWearingLeftPauldron(boolean wearingLeftPauldron) {
+		this.dataManager.set(LEFT_PAULDRON, wearingLeftPauldron);
+
 		if (wearingLeftPauldron) {
 			this.playSound(SoundEvents.ITEM_ARMOR_EQUIP_IRON, 0.5F, 0.5F);
 
-			this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(this.getAttribute(Attributes.MOVEMENT_SPEED).getBaseValue() - 1);
-			this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(this.getAttribute(Attributes.ARMOR).getBaseValue() + 4);
-			this.getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(this.getAttribute(Attributes.KNOCKBACK_RESISTANCE).getBaseValue() + 7);
+			this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(this.getAttribute(Attributes.MOVEMENT_SPEED).getBaseValue() - 0.0125);
+			this.getAttribute(Attributes.ARMOR).setBaseValue(this.getAttribute(Attributes.ARMOR).getBaseValue() + 1.0);
+			this.getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(this.getAttribute(Attributes.KNOCKBACK_RESISTANCE).getBaseValue() + 0.25F);
 
 			this.setHealth(this.getMaxHealth());
 		}
-		this.dataManager.set(LEFT_PAULDRON, wearingLeftPauldron);
 	}
 	public void setWearingRightPauldron(boolean wearingRightPauldron) {
+		this.dataManager.set(RIGHT_PAULDRON, wearingRightPauldron);
+
 		if (wearingRightPauldron) {
 			this.playSound(SoundEvents.ITEM_ARMOR_EQUIP_IRON, 0.5F, 0.5F);
 
-			this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(this.getAttribute(Attributes.MOVEMENT_SPEED).getBaseValue() - 1);
-			this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(this.getAttribute(Attributes.ARMOR).getBaseValue() + 4);
-			this.getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(this.getAttribute(Attributes.KNOCKBACK_RESISTANCE).getBaseValue() + 7);
+			this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(this.getAttribute(Attributes.MOVEMENT_SPEED).getBaseValue() - 0.0125);
+			this.getAttribute(Attributes.ARMOR).setBaseValue(this.getAttribute(Attributes.ARMOR).getBaseValue() + 1.0);
+			this.getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(this.getAttribute(Attributes.KNOCKBACK_RESISTANCE).getBaseValue() + 0.25F);
 
 			this.setHealth(this.getMaxHealth());
 		}
-		this.dataManager.set(RIGHT_PAULDRON, wearingRightPauldron);
 	}
 
 
@@ -403,7 +416,7 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 		if (source instanceof IndirectEntityDamageSource && getDodgeTime() > 10 * Math.min(0.75, this.dataManager.get(PROWESS) + 0.5)) {
 			return false;
 		} else {
-			return super.attackEntityFrom(source, amount * this.getArmorAttackMultiplier());
+			return super.attackEntityFrom(source, amount);
 		}
 	}
 
@@ -553,8 +566,8 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 	public boolean isAttacking() {
 		return this.dataManager.get(ATTACKING);
 	}
-	public void setAttacking(boolean attacking) {
-		this.dataManager.set(ATTACKING, attacking);
+	public void setAttacking(boolean Attacking) {
+		this.dataManager.set(ATTACKING, Attacking);
 	}
 
 	@OnlyIn(Dist.CLIENT)
@@ -581,6 +594,7 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 
 	public void setSize(float size) {
 		this.dataManager.set(SIZE, size);
+		/*
 		this.recenterBoundingBox();
 		this.recalculateSize();
 
@@ -591,6 +605,7 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 
 		this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(this.getAttribute(Attributes.ATTACK_DAMAGE).getValue() * size);
 		this.getAttribute(Attributes.ATTACK_KNOCKBACK).setBaseValue(this.getAttribute(Attributes.ATTACK_KNOCKBACK).getValue() * Math.min(1, size));
+		 */
 	}
 
 	public float getSize() {
@@ -687,6 +702,7 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 			if (randomInt == 0) {
 				if (!dataManager.get(HELMET)) {
 					this.setWearingHelmet(true);
+					this.setWearingHelmetVisor(rand.nextBoolean());
 				} else {
 					this.setRandomArmor();
 				}
@@ -709,41 +725,27 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity
 	private void setSkills(DifficultyInstance difficulty) {
 		//Returns a lower value the more difficult it is.
 		// <1 = hard, <2 = normal, <3 = easy
+		/**
 		float difficultyValue = (this.world.getDifficulty() == Difficulty.HARD ? 1.0f : this.world.getDifficulty() == Difficulty.NORMAL ? 2.0f : 3.0f) - difficulty.getAdditionalDifficulty();
 		float inverseDifficulty = (difficultyValue - 3) * -1;
 
 		float skillAllocationAmount = MathUtils.bias(rand.nextFloat(), 0.7F) * inverseDifficulty;
-		float brutality = MathUtils.getRandomFloatBetween(rand, 0, skillAllocationAmount);
-		float prowess = skillAllocationAmount - brutality;
+		float Brutality = MathUtils.getRandomFloatBetween(rand, 0, skillAllocationAmount);
+		float Prowess = skillAllocationAmount - Brutality;
 
 		float sizeRand = MathUtils.getRandomFloatBetween(rand, 0.8F, 1.0F);
-		float size = MathUtils.getRandomFloatBetween(rand, sizeRand, ((sizeRand + (brutality / inverseDifficulty)) / 2) + 1);
+		float size = MathUtils.getRandomFloatBetween(rand, sizeRand, ((sizeRand + (Brutality / inverseDifficulty)) / 2) + 1);
 
 		this.setSize(size);
-		this.dataManager.set(BRUTALITY, brutality);
+		this.dataManager.set(BRUTALITY, Brutality);
 
-		this.maxStamina = (int) (100 * Math.min(0.75, prowess + 0.5));
-		this.dataManager.set(PROWESS, prowess);
+		this.maxStamina = (int) (100 * Math.min(0.75, Prowess + 0.5));
+		this.dataManager.set(PROWESS, Prowess);
+		 */
 	}
 
 	public float getSkillValue() {
 		return this.dataManager.get(BRUTALITY) + this.dataManager.get(PROWESS);
-	}
-
-	private float getArmorAttackMultiplier() {
-		float multiplier = 1;
-
-		if (dataManager.get(HELMET)) {
-			multiplier =- 0.25F;
-		}
-		if (dataManager.get(LEFT_PAULDRON)) {
-			multiplier =- 0.125F;
-		}
-		if (dataManager.get(RIGHT_PAULDRON)) {
-			multiplier =- 0.125F;
-		}
-
-		return multiplier;
 	}
 
 	@Nullable

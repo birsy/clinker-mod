@@ -1,0 +1,52 @@
+{
+    "parent": "minecraft:block/block",
+    "textures": {
+        "crockpot_base_top": "clinker:blocks/crockpot/crockpot_base_top",
+        "crockpot_side": "clinker:blocks/crockpot/crockpot_side",
+        "crockpot_base": "clinker:blocks/crockpot/crockpot_base",
+        "crockpot_top": "clinker:blocks/crockpot/crockpot_top"
+    },
+    "elements": [
+        {
+            "from": [ 0, 0, 0 ], 
+            "to": [ 16, 4, 16 ], 
+            "faces": {
+                "north": { "texture": "#crockpot_base", "uv": [ 0, 12, 16, 16 ], "cullface": "north" },
+                "east": { "texture": "#crockpot_base", "uv": [ 0, 12, 16, 16 ], "cullface": "east" },
+                "south": { "texture": "#crockpot_base", "uv": [ 0, 12, 16, 16 ], "cullface": "south" },
+                "west": { "texture": "#crockpot_base", "uv": [ 0, 12, 16, 16 ], "cullface": "west" },
+                "up": { "texture": "#crockpot_base_top", "uv": [ 0, 0, 16, 16 ] },
+                "down": { "texture": "#crockpot_base_top", "uv": [ 0, 0, 16, 16 ], "cullface": "down" }
+            }
+        },
+        {
+            "from": [ 1.5, 4, 1.5 ], 
+            "to": [ 14.5, 11, 14.5 ], 
+            "faces": {
+                "north": { "texture": "#crockpot_side", "uv": [ 0, 0, 13, 7 ] },
+                "east": { "texture": "#crockpot_side", "uv": [ 0, 0, 13, 7 ] },
+                "south": { "texture": "#crockpot_side", "uv": [ 0, 0, 13, 7 ] },
+                "west": { "texture": "#crockpot_side", "uv": [ 0, 0, 13, 7 ] },
+                "up": { "texture": "#crockpot_top", "uv": [ 0, 0, 13, 13 ] }
+            }
+        },
+        {
+            "from": [ 6.5, 10.5, 8 ], 
+            "to": [ 9.5, 15.5, 8 ], 
+            "rotation": { "origin": [ 8, 8, 8 ], "axis": "y", "angle": 45.0 },
+            "faces": {
+                "north": { "texture": "#crockpot_side", "uv": [ 13, 0, 16, 5 ] },
+                "south": { "texture": "#crockpot_side", "uv": [ 13, 0, 16, 5 ] }
+            }
+        },
+        {
+            "from": [ 6.5, 10.5, 8 ], 
+            "to": [ 9.5, 15.5, 8 ], 
+            "rotation": { "origin": [ 8, 8, 8 ], "axis": "y", "angle": -45.0 },
+            "faces": {
+                "north": { "texture": "#crockpot_side", "uv": [ 13, 0, 16, 5 ] },
+                "south": { "texture": "#crockpot_side", "uv": [ 13, 0, 16, 5 ] }
+            }
+        }
+    ]
+}

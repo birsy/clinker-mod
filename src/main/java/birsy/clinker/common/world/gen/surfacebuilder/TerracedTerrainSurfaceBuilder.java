@@ -4,31 +4,22 @@ import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.util.MathUtils;
 import com.ibm.icu.impl.Pair;
 import com.mojang.serialization.Codec;
-import de.articdive.jnoise.JNoise;
-import de.articdive.jnoise.distance_functions.DistanceFunctionType;
-import de.articdive.jnoise.interpolation.InterpolationType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.SlabBlock;
 import net.minecraft.util.Direction;
 import net.minecraft.util.SharedSeedRandom;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.IChunk;
 import net.minecraft.world.gen.PerlinNoiseGenerator;
 import net.minecraft.world.gen.surfacebuilders.NetherForestsSurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilders.SurfaceBuilderConfig;
 
-import java.util.ArrayList;
 import java.util.Random;
 import java.util.stream.IntStream;
 
 public class TerracedTerrainSurfaceBuilder extends NetherForestsSurfaceBuilder {
     protected long seed;
-
-    private JNoise noise;
 
     private PerlinNoiseGenerator terrainNoiseGenerator;
     private PerlinNoiseGenerator terraceNoiseGenerator;
@@ -96,15 +87,13 @@ public class TerracedTerrainSurfaceBuilder extends NetherForestsSurfaceBuilder {
 
     @Override
     public void setSeed(long seed) {
-        if (this.seed != seed || this.terrainNoiseGenerator == null || this.terraceNoiseGenerator == null || this.erosionNoiseGenerator == null || this.noise == null) {
+        if (this.seed != seed || this.terrainNoiseGenerator == null || this.terraceNoiseGenerator == null || this.erosionNoiseGenerator == null) {
             this.seed = seed;
             SharedSeedRandom sharedseedrandom = new SharedSeedRandom(seed);
 
             this.terrainNoiseGenerator = new PerlinNoiseGenerator(sharedseedrandom, IntStream.rangeClosed(-4, 0));
             this.terraceNoiseGenerator = new PerlinNoiseGenerator(sharedseedrandom, IntStream.rangeClosed(-3, 0));
             this.erosionNoiseGenerator = new PerlinNoiseGenerator(sharedseedrandom, IntStream.rangeClosed(-3, 0));
-
-            this.noise = JNoise.newBuilder().octavated().setNoise(JNoise.newBuilder().fastSimplex().setSeed(seed).build()).setOctaves(4).setPersistence(0.5).build();
         }
         super.setSeed(seed);
     }

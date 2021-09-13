@@ -73,7 +73,7 @@ public class OthershoreSkyRenderer implements ISkyRenderHandler {
         this.skyVBO.draw(matrixStackIn.getLast().getMatrix(), 7);
         VertexBuffer.unbindBuffer();
         this.skyVertexFormat.clearBufferState();
-        renderStars(matrixStackIn, 50.0F, rand, ticks, partialTicks);
+        renderStars(matrixStackIn, 50.0F, ticks, partialTicks);
         renderFancyStars(matrixStackIn, 50.0F, rand, ticks, partialTicks);
 
         RenderSystem.disableFog();
@@ -90,7 +90,7 @@ public class OthershoreSkyRenderer implements ISkyRenderHandler {
             RenderSystem.disableTexture();
             RenderSystem.shadeModel(7425);
             matrixStackIn.push();
-            float f3 = MathHelper.sin(this.getCelestialAngle() * 2 * 3.1415f) < 0.0F ? 180.0F : 0.0F;
+
             Matrix4f matrix4f = matrixStackIn.getLast().getMatrix();
             bufferbuilder.begin(6, DefaultVertexFormats.POSITION_COLOR);
             bufferbuilder.pos(matrix4f, 0.0F, skyRadius / 3, 0.0F).color(skyRed, skyGreen, skyBlue, 1.0F).endVertex();
@@ -109,11 +109,38 @@ public class OthershoreSkyRenderer implements ISkyRenderHandler {
             RenderSystem.shadeModel(7424);
         }
 
+        Vector3f darkFogColor = OthershoreFogRenderer.getDarknessFogColors();
+        float distanceBelowSeaLevel = (float) MathHelper.clamp((world.getSeaLevel() - mc.getRenderViewEntity().getPositionVec().getY()) / 15.0F, 0.0F, 1.0F);
+        if (distanceBelowSeaLevel > 0) {
+            skyRadius *= 0.125;
+            RenderSystem.disableTexture();
+            RenderSystem.shadeModel(7425);
+            matrixStackIn.push();
+
+            Matrix4f matrix4f = matrixStackIn.getLast().getMatrix();
+            bufferbuilder.begin(6, DefaultVertexFormats.POSITION_COLOR);
+            bufferbuilder.pos(matrix4f, 0.0F, skyRadius / 3, 0.0F).color(darkFogColor.getX() / 0.75f, darkFogColor.getY() / 0.75f, darkFogColor.getZ() / 0.75f, distanceBelowSeaLevel).endVertex();
+            int circleRes = 32;
+
+            for(int vertexNum = 0; vertexNum <= circleRes; ++vertexNum) {
+                float circleRotation = (float) (vertexNum * (Math.PI * 2F) / circleRes);
+                float circleX = MathHelper.sin(circleRotation);
+                float circleZ = MathHelper.cos(circleRotation);
+                bufferbuilder.pos(matrix4f, circleX * skyRadius, 0, -circleZ * skyRadius).color(darkFogColor.getX(), darkFogColor.getY(), darkFogColor.getZ(), distanceBelowSeaLevel).endVertex();
+            }
+
+            bufferbuilder.finishDrawing();
+            WorldVertexBufferUploader.draw(bufferbuilder);
+            matrixStackIn.pop();
+            RenderSystem.shadeModel(7424);
+        }
+
         RenderSystem.disableFog();
         RenderSystem.enableTexture();
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+
         matrixStackIn.push();
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 0.5F);
+        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 0.125F * MathUtils.invert(distanceBelowSeaLevel));
         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(-45.0F));
         matrixStackIn.rotate(Vector3f.XP.rotationDegrees(this.getCelestialAngle() * 360.0F));
         Matrix4f matrix4f1 = matrixStackIn.getLast().getMatrix();
@@ -121,10 +148,10 @@ public class OthershoreSkyRenderer implements ISkyRenderHandler {
         float f12 = 40.0F;
         this.textureManager.bindTexture(SUN_TEXTURES);
         bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-        bufferbuilder.pos(matrix4f1, -f12 * 5, 100.0F, -f12).tex(0.0F, 0.0F).color(0.9f * 0.05f, 0.05f, 0.7f * 0.05f, 0.05f).endVertex();
-        bufferbuilder.pos(matrix4f1, f12 * 5, 100.0F, -f12).tex(1.0F, 0.0F).color(0.9f * 0.05f, 0.05f, 0.7f * 0.05f, 0.05f).endVertex();
-        bufferbuilder.pos(matrix4f1, f12 * 5, 100.0F, f12).tex(1.0F, 1.0F).color(0.9f, 1.0f, 0.7f, 0.25f).endVertex();
-        bufferbuilder.pos(matrix4f1, -f12 * 5, 100.0F, f12).tex(0.0F, 1.0F).color(0.9f, 1.0f, 0.7f, 0.25f).endVertex();
+        bufferbuilder.pos(matrix4f1, -f12 * 5, 100.0F, -f12).tex(0.0F, 0.0F).color(0.9f * 0.05f, 0.05f, 0.7f * 0.05f, 0.01f * MathUtils.invert(distanceBelowSeaLevel)).endVertex();
+        bufferbuilder.pos(matrix4f1, f12 * 5, 100.0F, -f12).tex(1.0F, 0.0F).color(0.9f * 0.05f, 0.05f, 0.7f * 0.05f, 0.01f * MathUtils.invert(distanceBelowSeaLevel)).endVertex();
+        bufferbuilder.pos(matrix4f1, f12 * 5, 100.0F, f12).tex(1.0F, 1.0F).color(0.9f, 1.0f, 0.7f, 0.01f * MathUtils.invert(distanceBelowSeaLevel)).endVertex();
+        bufferbuilder.pos(matrix4f1, -f12 * 5, 100.0F, f12).tex(0.0F, 1.0F).color(0.9f, 1.0f, 0.7f, 0.01f * MathUtils.invert(distanceBelowSeaLevel)).endVertex();
         bufferbuilder.finishDrawing();
         WorldVertexBufferUploader.draw(bufferbuilder);
         RenderSystem.disableTexture();
@@ -149,13 +176,14 @@ public class OthershoreSkyRenderer implements ISkyRenderHandler {
             matrixStackIn.pop();
         }
 
-        RenderSystem.color3f(skyRed, skyGreen, skyBlue);
+        RenderSystem.color3f(MathHelper.lerp(distanceBelowSeaLevel, skyRed, darkFogColor.getX()), MathHelper.lerp(distanceBelowSeaLevel, skyGreen, darkFogColor.getY()), MathHelper.lerp(distanceBelowSeaLevel, skyBlue, darkFogColor.getZ()));
         RenderSystem.enableTexture();
         RenderSystem.depthMask(true);
         RenderSystem.disableFog();
     }
 
-    private void renderStars(MatrixStack matrixStackIn, float skyRadius, Random rand, int ticksIn, float partialTicks) {
+    private void renderStars(MatrixStack matrixStackIn, float skyRadius, int ticksIn, float partialTicks) {
+        Random rand = new Random(1337);
         RenderSystem.disableAlphaTest();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();

@@ -49,6 +49,7 @@ public abstract class AbstractGnomadEntity extends MonsterEntity
 	@Override
 	public void tick() {
 		//Updates the gnomad's squadron.
+		/*
 		squadron.removeIf(gnomad -> this.getPosition().manhattanDistance(gnomad.getPosition()) >= maxSquadDistance);
 		if (squadron.size() > 10) {
 			for (Entity entity : this.world.getEntitiesWithinAABB(AbstractGnomadEntity.class, new AxisAlignedBB(this.getPositionVec().add(squadAddDistance, squadAddDistance, squadAddDistance), this.getPositionVec().add(-squadAddDistance, -squadAddDistance, -squadAddDistance)))) {
@@ -57,6 +58,7 @@ public abstract class AbstractGnomadEntity extends MonsterEntity
 				}
 			}
 		}
+		 */
 		super.tick();
 	}
 

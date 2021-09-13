@@ -30,6 +30,7 @@ public class ClinkerConfiguredFeatures {
     // Will definitely try to come up with a better system for this - something with the carvers, perhaps?
     public static final ConfiguredFeature<?, ?> AQUIFER = ClinkerFeatures.AQUIFER.get().withConfiguration(new BlockStateFeatureConfig(Blocks.WATER.getDefaultState())).withPlacement(Placement.WATER_LAKE.configure(new ChanceConfig(4)));
 
+    public static final ConfiguredFeature<?, ?> DAKRAS_TREE = ClinkerFeatures.DAKRAS_TREE.get().withConfiguration(IFeatureConfig.NO_FEATURE_CONFIG).range(128).square().count(120);
     public static final ConfiguredFeature<?, ?> ASH_DUNE = ClinkerFeatures.ASH_DUNE.get().withConfiguration(IFeatureConfig.NO_FEATURE_CONFIG).withPlacement(Placement.COUNT_MULTILAYER.configure(new FeatureSpreadConfig(1)));
 
     public static final ConfiguredFeature<?, ?> SMALL_CRAGROCK = ClinkerFeatures.CRAGROCK.get().withConfiguration(new ColumnConfig(FeatureSpread.create(1), FeatureSpread.create(1, 3))).withPlacement(Placement.COUNT_MULTILAYER.configure(new FeatureSpreadConfig(1)));
@@ -61,6 +62,7 @@ public class ClinkerConfiguredFeatures {
 
         Registry.register(registry, new ResourceLocation(Clinker.MOD_ID, "patch_rootstalk_root"), ASH_GEODE);
 
+        Registry.register(registry, new ResourceLocation(Clinker.MOD_ID, "dakras_tree"), DAKRAS_TREE);
         Registry.register(registry, new ResourceLocation(Clinker.MOD_ID, "ash_dune"), ASH_DUNE);
 
         Registry.register(registry, new ResourceLocation(Clinker.MOD_ID, "small_cragrock"), SMALL_CRAGROCK);

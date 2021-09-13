@@ -1,0 +1,46 @@
+{
+    "parent": "minecraft:block/block",
+    "ambientocclusion": false,
+    "textures": {
+        "flower": "ssvrfi:block/clover/clover_flower",
+        "stem": "ssvrfi:block/clover/clover_stem"
+    },
+    "elements": [
+        {
+            "from": [ 0, 0, 8 ], 
+            "to": [ 16, 3, 8 ], 
+            "shade": false,
+            "rotation": { "origin": [ 8, 8, 8 ], "axis": "y", "angle": -45.0, "rescale": true },
+            "faces": {
+                "north": { "texture": "#stem", "uv": [ 0, 13, 16, 16 ] , "tintindex": 0 },
+                "south": { "texture": "#stem", "uv": [ 0, 13, 16, 16 ], "tintindex": 0 }
+            }
+        },
+        {
+            "from": [ 0, 0, 8 ], 
+            "to": [ 16, 3, 8 ], 
+            "shade": false,
+            "rotation": { "origin": [ 8, 8, 8 ], "axis": "y", "angle": 45.0, "rescale": true },
+            "faces": {
+                "north": { "texture": "#stem", "uv": [ 0, 13, 16, 16 ], "tintindex": 0 },
+                "south": { "texture": "#stem", "uv": [ 0, 13, 16, 16 ], "tintindex": 0 }
+            }
+        },
+        {
+            "from": [ 0, 4, 0 ], 
+            "to": [ 16, 4, 16 ], 
+            "faces": {
+                "up": { "texture": "#flower", "uv": [ 0, 0, 16, 16 ]},
+                "down": { "texture": "#flower", "uv": [ 0, 0, 16, 16 ]}
+            }
+        },
+        {
+            "from": [ 0, 3, 0 ], 
+            "to": [ 16, 3, 16 ], 
+            "faces": {
+                "up": { "texture": "#flower", "uv": [ 0, 0, 16, 16 ], "rotation": 90 },
+                "down": { "texture": "#flower", "uv": [ 0, 0, 16, 16 ], "rotation": 90 }
+            }
+        }
+    ]
+}

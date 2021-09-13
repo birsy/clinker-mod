@@ -50,7 +50,9 @@
       "clinker:cave_puddle",
       "clinker:cave_floor",
       "clinker:cobbled_brimstone_vein",
-      "clinker:shoreline_puddle"
+      "clinker:shoreline_puddle",
+      "clinker:large_speleothem",
+      "clinker:dakras_tree"
     ],
     [],
     [

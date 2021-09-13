@@ -1,5 +1,6 @@
 package birsy.clinker.client.render.entity.model;
 
+import birsy.clinker.client.render.util.AnimFunctions;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
@@ -103,7 +104,7 @@ public class WitchBrickModel<T extends WitchBrickEntity> extends BirsyBaseModel<
 	@Override
     public void setRotationAngles(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch)
     {
-    	resetParts(movementBase, brickRightLeg, brickLeftLeg, brickBody, brickTeeth, brickArmLeft, brickArmRight, brickLoincloth, brickHead, brickHairRight, brickHairLeft);
+        AnimFunctions.resetParts(movementBase, brickRightLeg, brickLeftLeg, brickBody, brickTeeth, brickArmLeft, brickArmRight, brickLoincloth, brickHead, brickHairRight, brickHairLeft);
     	
     	float f = limbSwing;
     	float f1 = limbSwingAmount;
@@ -114,35 +115,35 @@ public class WitchBrickModel<T extends WitchBrickEntity> extends BirsyBaseModel<
 
     	//IDLE
 
-        swing(this.brickHead, globalSpeed - 0.25F, 0.15f * globalDegree, false, 0.65F, 0.0F, f, f1, Axis.Z);
-        swing(this.brickHead, globalSpeed - 0.15F, 0.15f * globalDegree, false, 0.35F, -0.2F, f, f1, Axis.X);
+        AnimFunctions.swing(this.brickHead, globalSpeed - 0.25F, 0.15f * globalDegree, false, 0.65F, 0.0F, f, f1, AnimFunctions.Axis.Z);
+        AnimFunctions.swing(this.brickHead, globalSpeed - 0.15F, 0.15f * globalDegree, false, 0.35F, -0.2F, f, f1, AnimFunctions.Axis.X);
 
-        swing(this.brickTeeth, globalSpeed - 0.15F, 0.15f * globalDegree, false, 0.95F, 0.2F, f, f1, Axis.X);
+        AnimFunctions.swing(this.brickTeeth, globalSpeed - 0.15F, 0.15f * globalDegree, false, 0.95F, 0.2F, f, f1, AnimFunctions.Axis.X);
 
-        bob(this.movementBase, 0.12F * globalSpeed, 0.2f * globalDegree, false, ageInTicks, 0.5F, true);
+        AnimFunctions.bob(this.movementBase, 0.12F * globalSpeed, 0.2f * globalDegree, false, ageInTicks, 0.5F, true);
 
-        bob(this.brickArmRight, 0.125F * globalSpeed, 0.2f * globalDegree, false, ageInTicks, 0.5F, true);
-        bob(this.brickArmLeft, 0.125F * globalSpeed, 0.2f * globalDegree, false, ageInTicks, 0.5F, true);
+        AnimFunctions.bob(this.brickArmRight, 0.125F * globalSpeed, 0.2f * globalDegree, false, ageInTicks, 0.5F, true);
+        AnimFunctions.bob(this.brickArmLeft, 0.125F * globalSpeed, 0.2f * globalDegree, false, ageInTicks, 0.5F, true);
 
         //WALK
     	float walkSpeed = 0.5F * globalSpeed;
 
-        bob(this.brickHead, globalSpeed, 1.25F * globalHeight, true, f, f1, true);
+        AnimFunctions.bob(this.brickHead, globalSpeed, 1.25F * globalHeight, true, f, f1, true);
 
-        swing(this.movementBase, globalSpeed, 0.15f * globalDegree, false, 0.5F, 0.0F, f, f1, Axis.Z);
-        swing(this.movementBase, walkSpeed, 0.25f * globalDegree, false, 0.5F, 0.0F, f, f1, Axis.Y);
-        bob(this.movementBase, globalSpeed, 1.5F * globalHeight, true, f, f1, true);
+        AnimFunctions.swing(this.movementBase, globalSpeed, 0.15f * globalDegree, false, 0.5F, 0.0F, f, f1, AnimFunctions.Axis.Z);
+        AnimFunctions.swing(this.movementBase, walkSpeed, 0.25f * globalDegree, false, 0.5F, 0.0F, f, f1, AnimFunctions.Axis.Y);
+        AnimFunctions.bob(this.movementBase, globalSpeed, 1.5F * globalHeight, true, f, f1, true);
 
-        swingLimbs(this.brickLeftLeg, this.brickRightLeg, walkSpeed, 0.6f * globalDegree, 0.0F, 0.0F, f, f1);
+        AnimFunctions.swingLimbs(this.brickLeftLeg, this.brickRightLeg, walkSpeed, 0.6f * globalDegree, 0.0F, 0.0F, f, f1);
 
-        swingLimbs(this.brickArmRight, this.brickArmLeft, walkSpeed, 0.25f * globalDegree, 0.0F, 0.0F, f, f1);
-        swing(this.brickArmRight, walkSpeed, 0.2f * globalDegree, false, 0.0F, 0.2F, f, f1, Axis.Z);
-        swing(this.brickArmLeft, walkSpeed, 0.2f * globalDegree, false, 0.0F, -0.2F, f, f1, Axis.Z);
-        bob(this.brickArmLeft, walkSpeed, globalHeight, false, f, f1, true);
-        bob(this.brickArmRight, walkSpeed, globalHeight, false, f, f1, true);
+        AnimFunctions.swingLimbs(this.brickArmRight, this.brickArmLeft, walkSpeed, 0.25f * globalDegree, 0.0F, 0.0F, f, f1);
+        AnimFunctions.swing(this.brickArmRight, walkSpeed, 0.2f * globalDegree, false, 0.0F, 0.2F, f, f1, AnimFunctions.Axis.Z);
+        AnimFunctions.swing(this.brickArmLeft, walkSpeed, 0.2f * globalDegree, false, 0.0F, -0.2F, f, f1, AnimFunctions.Axis.Z);
+        AnimFunctions.bob(this.brickArmLeft, walkSpeed, globalHeight, false, f, f1, true);
+        AnimFunctions.bob(this.brickArmRight, walkSpeed, globalHeight, false, f, f1, true);
 
-        look(this.brickBody, netHeadYaw, headPitch, 9999.0F, 6.0F);
-        look(this.brickHead, netHeadYaw, headPitch, 9999.0F, 2.0F);
+        AnimFunctions.look(this.brickBody, netHeadYaw, headPitch, 9999.0F, 6.0F);
+        AnimFunctions.look(this.brickHead, netHeadYaw, headPitch, 9999.0F, 2.0F);
 
         if(entityIn.isCharging || entityIn.isWindingUp) {
             this.brickBody.rotateAngleX += 10.0F;

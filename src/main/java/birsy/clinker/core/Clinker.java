@@ -1,10 +1,7 @@
 package birsy.clinker.core;
 
 
-import birsy.clinker.client.render.tileentity.HeatedIronCauldronRenderer;
-import birsy.clinker.client.render.tileentity.HeaterRenderer;
-import birsy.clinker.client.render.tileentity.MitesoilDiffuserRenderer;
-import birsy.clinker.client.render.tileentity.SoulWellRenderer;
+import birsy.clinker.client.render.tileentity.*;
 import birsy.clinker.client.render.world.OthershoreDimensionRenderInfo;
 import birsy.clinker.core.registry.*;
 import birsy.clinker.core.registry.world.*;
@@ -82,6 +79,7 @@ public class Clinker
     {
         ClientRegistry.bindTileEntityRenderer(ClinkerTileEntities.HEATED_IRON_CAULDRON.get(), HeatedIronCauldronRenderer::new);
         ClientRegistry.bindTileEntityRenderer(ClinkerTileEntities.HEATER.get(), HeaterRenderer::new);
+        ClientRegistry.bindTileEntityRenderer(ClinkerTileEntities.CROCKPOT.get(), CrockpotRenderer::new);
         ClientRegistry.bindTileEntityRenderer(ClinkerTileEntities.MITESOIL_DIFFUSER.get(), MitesoilDiffuserRenderer::new);
 
         RenderTypeLookup.setRenderLayer(ClinkerBlocks.THORN_LOG.get(), RenderType.getCutout());

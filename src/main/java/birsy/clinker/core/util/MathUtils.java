@@ -2,11 +2,16 @@ package birsy.clinker.core.util;
 
 import com.ibm.icu.impl.Pair;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.util.math.vector.Vector3i;
+import net.minecraft.util.math.vector.Vector4f;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Random;
 
+/* cappin's math utils
+ * hope you find this useful :) */
 public class MathUtils {
     /**
      * Maps one range of numbers to another. Incredibly useful function for lazy people like me.
@@ -89,6 +94,77 @@ public class MathUtils {
         return Pair.of(MathHelper.lerp(erosion,(k + s) * terraceWidth, height), isTerrace);
     }
 
+    /**
+     * Applies a series of distinct stairs (terraces) to a number. Very useful for terrain.
+     * @param height A float between 0 and 1. The input height that you want to be terraced.
+     * @param width A float between 0 and 1. The width of each "step" on the terrace.
+     * @param erosion A float between 0 and 1. The factor of influence for the terrace.
+     * @return The inputted height with the terraced step effect applied.
+     */
+    public static Pair<Float, Float> terrace (float height, float width, float erosion) {
+        float terraceWidth = width * 0.5f;
+        if (terraceWidth == 0) {
+            terraceWidth += 0.0001f;
+        }
+
+        float k = (float) Math.floor(height / terraceWidth);
+        float f = (height - k * terraceWidth) / terraceWidth;
+        float s = Math.min(2.0f * f, 1.0f);
+
+        float terraceMultiplier = MathHelper.clamp(MathUtils.invert(Math.abs(s - 1.0F)), 0.0F, 1.0F);
+
+        return Pair.of(MathHelper.lerp(erosion,(k + s) * terraceWidth, height), terraceMultiplier);
+    }
+
+    /**
+     * Inverts a number.
+     * @param input The number to invert
+     * @return 0 when the input is 1, and 1 when the input is 0.
+     */
+    public static float invert(float input) {
+        return (1 - input) * -1;
+    }
+
+    /**
+     * Inverts a number.
+     * @param input The number to invert
+     * @return 0 when the input is 1, and 1 when the input is 0.
+     */
+    public static double invert(double input) {
+        return (1 - input) * -1;
+    }
+
+    /**
+     * Quick and dirty power function. Should be faster than the regular Math.pow() function, if only slightly.
+     * @param input
+     * @param exponentIn
+     * @return
+     */
+    public static float lazyPow(float input, int exponentIn) {
+        float value = 1;
+        for (int exponent = 0; exponent < exponentIn; exponent++) {
+            value *= input;
+        }
+
+        return value;
+    }
+
+    /**
+     * Quick and dirty power function. Should be faster than the regular Math.pow() function, if only slightly.
+     * @param input
+     * @param exponentIn
+     * @return
+     */
+    public static double lazyPow(double input, int exponentIn) {
+        double value = 1;
+        for (int exponent = 0; exponent < exponentIn; exponent++) {
+            value *= input;
+        }
+
+        return value;
+    }
+
+
     public static float minMaxSin (float value, float min, float max) {
         return (((MathHelper.sin(value) + 1) * 0.5F) * (max - min)) + min;
     }
@@ -113,6 +189,36 @@ public class MathUtils {
         } catch (Exception e) {
             throw new IllegalArgumentException(e.getMessage());
         }
+    }
+
+    public static float sobelFilter(float[][] heightmap, int x, int z) {
+        float height = heightmap[x][z];
+        int maxX = heightmap.length;
+        int maxZ = heightmap[0].length;
+
+        // Compute the differentials by stepping over 1 in both directions.
+        float dx = heightmap[x + 1 < maxX ? x + 1 : x - 1][z] - height;
+        float dz = heightmap[x][z + 1 < maxZ ? z + 1 : z - 1] - height;
+
+        // The "steepness" is the magnitude of the gradient vector
+        // For a faster but not as accurate computation, you can just use abs(dx) + abs(dy)
+        return (float) Math.sqrt(dx * dx + dz * dz);
+    }
+
+    public static float triSobelFilter(float[][][] heightmap, int x, int y, int z) {
+        float height = heightmap[x][y][z];
+        int maxX = heightmap.length;
+        int maxY = heightmap[0].length;
+        int maxZ = heightmap[0][0].length;
+
+        // Compute the differentials by stepping over 1 in both directions.
+        float dx = heightmap[x + 1 < maxX ? x + 1 : x - 1][y][z] - height;
+        float dy = heightmap[x][y + 1 < maxY ? y + 1 : y - 1][z] - height;
+        float dz = heightmap[x][y][z + 1 < maxZ ? z + 1 : z - 1] - height;
+
+        // The "steepness" is the magnitude of the gradient vector
+        // For a faster but not as accurate computation, you can just use abs(dx) + abs(dy)
+        return (float) Math.pow(dx * dx + dy * dy + dz * dz, 1/3);
     }
 
     //Refer to https://easings.net/.
@@ -318,5 +424,96 @@ public class MathUtils {
     
     public interface IEasingFunction {
         float ease(float x);
+    }
+
+    public static float triLerp(Vector3f pct, float cAAA, float cAAB, float cABA, float cABB, float cBAA, float cBAB, float cBBA, float cBBB) {
+        float cAA = MathHelper.lerp(pct.getX(), cAAA, cBAA);
+        float cAB = MathHelper.lerp(pct.getX(), cAAB, cBAB);
+        float cBB = MathHelper.lerp(pct.getX(), cABB, cBBB);
+        float cBA = MathHelper.lerp(pct.getX(), cABA, cBBA);
+        
+        float cA = MathHelper.lerp(pct.getZ(), cAA, cBA);
+        float cB = MathHelper.lerp(pct.getZ(), cAB, cBB);
+        
+        float c = MathHelper.lerp(pct.getY(), cA, cB);
+        
+        return c;
+    }
+
+    public static class InterpolationMatrix {
+        final int xCells;
+        final int yCells;
+        final int zCells;
+        final EasingType easingType;
+
+        private float[][][] valueMatrix;
+
+        public InterpolationMatrix(int xCellsIn, int zCellsIn, int yCellsIn, EasingType easingType) {
+            this.xCells = xCellsIn;
+            this.zCells = zCellsIn;
+            this.yCells = yCellsIn;
+            this.easingType = easingType;
+
+            this.valueMatrix = new float[xCells][yCells][zCells];
+        }
+
+        public InterpolationMatrix(int horizontalCellsIn, int verticalCellsIn, EasingType easingType) {
+            this(horizontalCellsIn, horizontalCellsIn, verticalCellsIn, easingType);
+        }
+
+        public InterpolationMatrix(int cellsIn, EasingType easingType) {
+            this(cellsIn, cellsIn, easingType);
+        }
+
+        public void inputValue(int cellX, int cellY, int cellZ, float value) {
+            try {
+                this.valueMatrix[cellX][cellY][cellZ] = value;
+            } catch(Exception e) {
+                throw new IndexOutOfBoundsException("Cell outside of InterpolationMatrix range! Inputted coordinates are:" + cellX + ", " + cellY + ", " + cellZ + ".");
+            }
+        }
+
+        public float outputValue(float x, float y, float z) {
+            Vector3f positionInMatrix = new Vector3f(x * xCells, y * yCells, z * zCells);
+            Vector3i coord0 = new Vector3i(Math.floor(positionInMatrix.getX()), Math.floor(positionInMatrix.getY()), Math.floor(positionInMatrix.getZ()));
+            Vector3i coord1 = new Vector3i(Math.ceil(positionInMatrix.getX()), Math.ceil(positionInMatrix.getY()), Math.ceil(positionInMatrix.getZ()));
+
+            float AAA = this.getValueInMatrix(coord0.getX(), coord0.getY(), coord0.getZ());
+            float BAA = this.getValueInMatrix(coord1.getX(), coord0.getY(), coord0.getZ());
+            float AAB = this.getValueInMatrix(coord0.getX(), coord0.getY(), coord1.getZ());
+            float ABA = this.getValueInMatrix(coord0.getX(), coord1.getY(), coord0.getZ());
+
+            float BBB = this.getValueInMatrix(coord1.getX(), coord1.getY(), coord1.getZ());
+            float ABB = this.getValueInMatrix(coord0.getX(), coord1.getY(), coord1.getZ());
+            float BBA = this.getValueInMatrix(coord1.getX(), coord1.getY(), coord0.getZ());
+            float BAB = this.getValueInMatrix(coord1.getX(), coord0.getY(), coord1.getZ());
+
+            Vector3f pct = positionInMatrix;
+            pct.add(-coord0.getX(), -coord0.getY(), -coord0.getZ());
+            return this.triInterpolate(pct, AAA, BAA, AAB, ABA, BBB, ABB, BBA, BAB, this.easingType);
+        }
+
+        private float getValueInMatrix(int x, int y, int z) {
+            try {
+                return this.valueMatrix[x][y][z];
+            } catch(Exception e) {
+                throw new IndexOutOfBoundsException("Coordinate outside of InterpolationMatrix range! Coordinates are:" + x + ", " + y + ", " + z + ".");
+            }
+        }
+
+        private float triInterpolate(Vector3f pct, float cAAA, float cBAA, float cAAB, float cABA, float cBBB, float cABB, float cBBA, float cBAB, EasingType easingType) {
+            pct = new Vector3f(MathUtils.ease(pct.getX(), easingType), MathUtils.ease(pct.getY(), easingType), MathUtils.ease(pct.getZ(), easingType));
+            float cAA = MathHelper.lerp(pct.getX(), cAAA, cBAA);
+            float cAB = MathHelper.lerp(pct.getX(), cAAB, cBAB);
+            float cBB = MathHelper.lerp(pct.getX(), cABB, cBBB);
+            float cBA = MathHelper.lerp(pct.getX(), cABA, cBBA);
+
+            float cA = MathHelper.lerp(pct.getZ(), cAA, cBA);
+            float cB = MathHelper.lerp(pct.getZ(), cAB, cBB);
+
+            float c = MathHelper.lerp(pct.getY(), cA, cB);
+
+            return c;
+        }
     }
 }

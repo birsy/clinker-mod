@@ -70,7 +70,10 @@ public class HeatedIronCauldronBlock extends ContainerBlock implements ILiquidCo
             if (worldIn.getTileEntity(pos) != null && worldIn.getTileEntity(pos) instanceof HeatedIronCauldronTileEntity) {
                 HeatedIronCauldronTileEntity tileEntity = (HeatedIronCauldronTileEntity) worldIn.getTileEntity(pos);
                 tileEntity.stir();
+                return ActionResultType.PASS;
             }
+        } else {
+            return ActionResultType.SUCCESS;
         }
         return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
     }

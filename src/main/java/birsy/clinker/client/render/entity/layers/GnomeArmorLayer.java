@@ -115,9 +115,9 @@ public class GnomeArmorLayer<T extends GnomeEntity, M extends GnomeModel<T>, A e
        }
        return model == null ? _default : model;
    }
-   
+
    protected A getArmorModelHook(T entity, ItemStack itemStack, EquipmentSlotType slot, A model) {
-	      return getGnomeArmorModel(entity, itemStack, slot, model);
+       return getGnomeArmorModel(entity, itemStack, slot, model);
    }
    
    public static String getGnomeArmorTexture(Entity entity, ItemStack armor, String _default, EquipmentSlotType slot, String type)

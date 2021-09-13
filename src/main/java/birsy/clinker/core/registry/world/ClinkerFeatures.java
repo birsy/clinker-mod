@@ -1,9 +1,6 @@
 package birsy.clinker.core.registry.world;
 import birsy.clinker.common.world.feature.enviornment.*;
-import birsy.clinker.common.world.feature.plant.BrambleBlobFeature;
-import birsy.clinker.common.world.feature.plant.BrambleRootsFeature;
-import birsy.clinker.common.world.feature.plant.RootGrassFeature;
-import birsy.clinker.common.world.feature.plant.RootedAshFeature;
+import birsy.clinker.common.world.feature.plant.*;
 import birsy.clinker.core.Clinker;
 import net.minecraft.world.gen.feature.*;
 import net.minecraft.world.gen.placement.Placement;
@@ -24,6 +21,7 @@ public class ClinkerFeatures
 
 	public static final RegistryObject<Feature<NoFeatureConfig>> BRAMBLE_BLOB = FEATURES.register("bramble_blob", () -> new BrambleBlobFeature(NoFeatureConfig.CODEC));
 	public static final RegistryObject<Feature<NoFeatureConfig>> ROOTED_ASH = FEATURES.register("rooted_ash", () -> new RootedAshFeature(NoFeatureConfig.CODEC));
+	public static final RegistryObject<Feature<NoFeatureConfig>> DAKRAS_TREE = FEATURES.register("dakras_tree", () -> new DakrasTreeFeature(NoFeatureConfig.CODEC));
 
 	public static final RegistryObject<Feature<ColumnConfig>> CRAGROCK = FEATURES.register("cragrock", () -> new CragrockFeature(ColumnConfig.CODEC));
 	public static final RegistryObject<Feature<BlockStateFeatureConfig>> BOULDER = FEATURES.register("boulder", () -> new BoulderFeature(BlockStateFeatureConfig.CODEC));

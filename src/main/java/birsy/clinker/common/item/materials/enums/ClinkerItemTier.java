@@ -9,8 +9,7 @@ import birsy.clinker.core.registry.ClinkerItems;;
 
 public enum ClinkerItemTier implements IItemTier
 {
-	
-	LEAD(2, 290, 6.5F, 1.2F, 1, () -> {return Ingredient.fromItems(ClinkerItems.LEAD_INGOT.get());});
+	LEAD(2, 10430, 6.0F, 2.0F, 0, () -> {return Ingredient.fromItems(ClinkerItems.LEAD_INGOT.get());});
 	
 	private final int harvestLevel;
 	private final int maxUses;

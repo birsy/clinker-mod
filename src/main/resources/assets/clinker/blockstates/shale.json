@@ -1,8 +1,62 @@
 {
     "variants": {
-        "": [
-            { "model": "clinker:block/shale/shale" },
-            { "model": "clinker:block/shale/shale", "y": 180 }
+        "axis=x": [
+            {
+                "model": "clinker:block/shale/shale",
+                "x": 90,
+                "y": 90
+            },
+            {
+                "model": "clinker:block/shale/shale_mirrored",
+                "x": 90,
+                "y": 90
+            },
+            {
+                "model": "clinker:block/shale/shale",
+                "y": 90,
+                "x": 90
+            },
+            {
+                "model": "clinker:block/shale/shale_mirrored",
+                "y": 90,
+                "x": 90
+            }
+        ],
+        "axis=y": [
+            {
+                "model": "clinker:block/shale/shale"
+            },
+            {
+                "model": "clinker:block/shale/shale_mirrored"
+            },
+            {
+                "model": "clinker:block/shale/shale",
+                "y": 180
+            },
+            {
+                "model": "clinker:block/shale/shale_mirrored",
+                "y": 180
+            }
+        ],
+        "axis=z": [
+            {
+                "model": "clinker:block/shale/shale",
+                "x": 90
+            },
+            {
+                "model": "clinker:block/shale/shale_mirrored",
+                "x": 90
+            },
+            {
+                "model": "clinker:block/shale/shale",
+                "y": 180,
+                "x": 90
+            },
+            {
+                "model": "clinker:block/shale/shale_mirrored",
+                "y": 180,
+                "x": 90
+            }
         ]
     }
 }

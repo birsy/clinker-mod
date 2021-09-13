@@ -5,7 +5,7 @@ import net.minecraft.client.renderer.model.Model;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.util.math.vector.Vector3d;
 
-public class BirsyModelRenderer extends ModelRenderer
+public class BirsyModelRenderer extends ModelRenderer implements IPosablePart
 {
 	BirsyModelRenderer parent = null;
 
@@ -66,6 +66,10 @@ public class BirsyModelRenderer extends ModelRenderer
 		this.defaultScaleY = this.scaleY;
 		this.defaultScaleZ = this.scaleZ;
 	}
+
+	public void setScale(float scaleIn) {
+		this.setScale(scaleIn, scaleIn, scaleIn);
+	}
 	
 	public void copyModelAngles(BirsyModelRenderer modelRendererIn) {
 		this.rotateAngleX = modelRendererIn.rotateAngleX;
@@ -110,5 +114,67 @@ public class BirsyModelRenderer extends ModelRenderer
 			parent.matrixStackFromModel(matrixStack);
 		}
 		this.translateRotate(matrixStack);
+	}
+
+
+	public float getRotationPointX() {
+		return this.rotationPointX;
+	}
+	public float getRotationPointY() {
+		return this.rotationPointY;
+	}
+	public float getRotationPointZ() {
+		return this.rotationPointZ;
+	}
+
+	public float getRotateAngleX() {
+		return this.rotateAngleX;
+	}
+	public float getRotateAngleY() {
+		return this.rotationPointY;
+	}
+	public float getRotateAngleZ() {
+		return this.rotateAngleZ;
+	}
+
+	public float getScaleX() {
+		return this.scaleX;
+	}
+	public float getScaleY() {
+		return this.scaleY;
+	}
+	public float getScaleZ() {
+		return this.scaleZ;
+	}
+
+
+	public void setRotationPointX(float value) {
+		this.rotationPointX = value;
+	}
+	public void setRotationPointY(float value) {
+		this.rotationPointY = value;
+	}
+	public void setRotationPointZ(float value) {
+		this.rotationPointZ = value;
+	}
+
+	public void setRotateAngleX(float value) {
+		this.rotateAngleX = value;
+	}
+	public void setRotateAngleY(float value) {
+		this.rotateAngleY = value;
+	}
+	public void setRotateAngleZ(float value) {
+		this.rotateAngleZ = value;
+	}
+
+	public void setScaleX(float value) {
+		this.scaleX = value;
+	}
+	public void setScaleY(float value) {
+		this.scaleY = value;
+	}
+	public void setScaleZ(float value) {
+		this.scaleZ = value;
 	}
 }	

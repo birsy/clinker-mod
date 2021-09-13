@@ -15,7 +15,7 @@ public class OthershoreDimensionRenderInfo extends DimensionRenderInfo {
     private final Minecraft mc = Minecraft.getInstance();
 
     public OthershoreDimensionRenderInfo() {
-        super(256.0F, true, DimensionRenderInfo.FogType.NORMAL, false, false);
+        super(128.0F, true, DimensionRenderInfo.FogType.NORMAL, false, false);
     }
 
     public Vector3d func_230494_a_(Vector3d p_230494_1_, float p_230494_2_) {
@@ -25,7 +25,6 @@ public class OthershoreDimensionRenderInfo extends DimensionRenderInfo {
     public boolean func_230493_a_(int p_230493_1_, int p_230493_2_) {
         return false;
     }
-
 
     @Nullable
     @Override

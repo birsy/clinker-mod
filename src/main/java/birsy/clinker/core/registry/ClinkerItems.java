@@ -1,5 +1,6 @@
 package birsy.clinker.core.registry;
 
+import birsy.clinker.common.item.AlchemicalItem;
 import birsy.clinker.common.item.ClinkerSpawnEggItem;
 import birsy.clinker.common.item.LadleItem;
 import birsy.clinker.common.item.PhospherBallItem;
@@ -30,7 +31,7 @@ public class ClinkerItems
 	 */
 
 	public static final RegistryObject<Item> RAW_LEAD = ITEMS.register("raw_lead", () -> new Item(new Item.Properties().group(Clinker.CLINKER_MISC)));
-	public static final RegistryObject<Item> LEAD_INGOT = ITEMS.register("lead_ingot", () -> new Item(new Item.Properties().group(Clinker.CLINKER_MISC)));
+	public static final RegistryObject<Item> LEAD_INGOT = ITEMS.register("lead_ingot", () -> new AlchemicalItem(new Item.Properties().group(Clinker.CLINKER_MISC)));
 	public static final RegistryObject<Item> LEAD_NUGGET = ITEMS.register("lead_nugget", () -> new Item(new Item.Properties().group(Clinker.CLINKER_MISC)));
 	public static final RegistryObject<Item> SULFUR = ITEMS.register("sulfur", () -> new Item(new Item.Properties().group(Clinker.CLINKER_MISC)));
 	public static final RegistryObject<Item> BISMUTH = ITEMS.register("bismuth", () -> new Item(new Item.Properties().group(Clinker.CLINKER_MISC)));

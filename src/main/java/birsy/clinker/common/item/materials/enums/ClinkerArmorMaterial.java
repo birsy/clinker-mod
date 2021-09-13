@@ -16,7 +16,7 @@ import birsy.clinker.core.registry.ClinkerItems;
 public enum ClinkerArmorMaterial implements IArmorMaterial
 {	
 	SHELL(Clinker.MOD_ID + ":shell", 23, new int[] { 3, 6, 4, 2 }, 23, SoundEvents.ITEM_ARMOR_EQUIP_TURTLE, 1.5F, () -> {return Ingredient.fromItems(ClinkerItems.CENTIPEDE_SHELL.get());}, 0.25F),
-	LEAD(Clinker.MOD_ID + ":lead", 23, new int[] { 3, 6, 4, 2 }, 0, SoundEvents.ITEM_ARMOR_EQUIP_NETHERITE, 4.0F, () -> {return Ingredient.fromItems(ClinkerItems.LEAD_INGOT.get());}, 0.05F),
+	LEAD(Clinker.MOD_ID + ":lead", 190, new int[] {2, 5, 6, 2}, 0, SoundEvents.ITEM_ARMOR_EQUIP_NETHERITE, 4.0F, () -> {return Ingredient.fromItems(ClinkerItems.LEAD_INGOT.get());}, 0.05F),
 	TRADITIONAL(Clinker.MOD_ID + ":traditional", 2, new int[] { 1, 2, 2, 1 }, 100, SoundEvents.ITEM_ARMOR_EQUIP_GENERIC, 0.0F, () -> {return Ingredient.fromItems(Items.GRAY_WOOL);}, 0.0F);
 	
 	private static final int[] MAX_DAMAGE_ARRAY = new int[] { 11, 16, 15, 13 };

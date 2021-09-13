@@ -1,5 +1,6 @@
 package birsy.clinker.client.render.entity.model;
 
+import birsy.clinker.client.render.util.AnimFunctions;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
@@ -136,7 +137,7 @@ public class WitherRevenantModel<T extends WitherRevenantEntity> extends BirsyBa
 
 	@Override
     public void setRotationAngles(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-    	resetParts(this.movementBase, this.witherRevenantRightLeg, this.witherRevenantLeftLeg, this.witherRevenantRibs, this.witherRevenantRightFoot, this.witherRevenantRightBoot, this.witherRevenantLeftFoot, this.witherRevenantLeftBoot, this.witherRevenantTorso, this.witherRevenantLeftArm, this.witherRevenantRightArm, this.neckJoint, this.witherRevenantChestplate, this.witherRevenantLeftPad, this.witherRevenantLeftHand, this.witherRevenantRightPad, this.witherRevenantRightHand, this.witherRevenantHead, this.witherRevenantRidges);
+        AnimFunctions.resetParts(this.movementBase, this.witherRevenantRightLeg, this.witherRevenantLeftLeg, this.witherRevenantRibs, this.witherRevenantRightFoot, this.witherRevenantRightBoot, this.witherRevenantLeftFoot, this.witherRevenantLeftBoot, this.witherRevenantTorso, this.witherRevenantLeftArm, this.witherRevenantRightArm, this.neckJoint, this.witherRevenantChestplate, this.witherRevenantLeftPad, this.witherRevenantLeftHand, this.witherRevenantRightPad, this.witherRevenantRightHand, this.witherRevenantHead, this.witherRevenantRidges);
     	
     	float f = limbSwing;
     	float f1 = limbSwingAmount * 1.5F;
@@ -146,18 +147,18 @@ public class WitherRevenantModel<T extends WitherRevenantEntity> extends BirsyBa
     	float globalDegree = 1.25F;
     	
     	//IDLE
-    	swing(this.witherRevenantRibs, 0.125F * globalSpeed, 0.03f * globalDegree, false, 0.0F, 0.1F, ageInTicks, 0.5F, Axis.X);
+    	AnimFunctions.swing(this.witherRevenantRibs, 0.125F * globalSpeed, 0.03f * globalDegree, false, 0.0F, 0.1F, ageInTicks, 0.5F, AnimFunctions.Axis.X);
     	
-    	swing(this.witherRevenantRightArm, 0.125F * globalSpeed, 0.03f * globalDegree, false, 0.5F, 0.07F, ageInTicks, 0.5F, Axis.Z);
-    	swing(this.witherRevenantLeftArm, 0.125F * globalSpeed, 0.03f * globalDegree, false, 1.5F, -0.07F, ageInTicks, 0.5F, Axis.Z);
-    	swing(this.witherRevenantRightArm, 0.12F * globalSpeed, 0.03f * globalDegree, false, 0.5F, 0.0F, ageInTicks, 0.5F, Axis.X);
-    	swing(this.witherRevenantLeftArm, 0.12F * globalSpeed, 0.03f * globalDegree, false, 1.5F, 0.0F, ageInTicks, 0.5F, Axis.X);
+    	AnimFunctions.swing(this.witherRevenantRightArm, 0.125F * globalSpeed, 0.03f * globalDegree, false, 0.5F, 0.07F, ageInTicks, 0.5F, AnimFunctions.Axis.Z);
+    	AnimFunctions.swing(this.witherRevenantLeftArm, 0.125F * globalSpeed, 0.03f * globalDegree, false, 1.5F, -0.07F, ageInTicks, 0.5F, AnimFunctions.Axis.Z);
+    	AnimFunctions.swing(this.witherRevenantRightArm, 0.12F * globalSpeed, 0.03f * globalDegree, false, 0.5F, 0.0F, ageInTicks, 0.5F, AnimFunctions.Axis.X);
+    	AnimFunctions.swing(this.witherRevenantLeftArm, 0.12F * globalSpeed, 0.03f * globalDegree, false, 1.5F, 0.0F, ageInTicks, 0.5F, AnimFunctions.Axis.X);
     	
-    	bob(this.witherRevenantRightArm, 0.125F * globalSpeed, 0.2f * globalDegree, false, ageInTicks, 0.5F, true);
-    	bob(this.witherRevenantLeftArm, 0.125F * globalSpeed, 0.2f * globalDegree, false, ageInTicks, 0.5F, true);
+    	AnimFunctions.bob(this.witherRevenantRightArm, 0.125F * globalSpeed, 0.2f * globalDegree, false, ageInTicks, 0.5F, true);
+    	AnimFunctions.bob(this.witherRevenantLeftArm, 0.125F * globalSpeed, 0.2f * globalDegree, false, ageInTicks, 0.5F, true);
     	
-    	bob(this.neckJoint, 0.125F * globalSpeed, 0.2f * globalHeight, false, ageInTicks, 0.5F, true);
-    	bob(this.witherRevenantRibs, 0.5F * (0.125F * globalSpeed), 0.2f * globalHeight, true, ageInTicks, 0.5F, true);
+    	AnimFunctions.bob(this.neckJoint, 0.125F * globalSpeed, 0.2f * globalHeight, false, ageInTicks, 0.5F, true);
+    	AnimFunctions.bob(this.witherRevenantRibs, 0.5F * (0.125F * globalSpeed), 0.2f * globalHeight, true, ageInTicks, 0.5F, true);
     	
     	this.witherRevenantRightArm.rotateAngleX =- this.witherRevenantRibs.rotateAngleX;
     	this.witherRevenantLeftArm.rotateAngleX =- this.witherRevenantRibs.rotateAngleX;
@@ -165,23 +166,23 @@ public class WitherRevenantModel<T extends WitherRevenantEntity> extends BirsyBa
     	//WALK
     	float walkSpeed = 0.5F * globalSpeed;
     	
-    	swingLimbs(this.witherRevenantLeftLeg, this.witherRevenantRightLeg, walkSpeed, 0.6f * globalDegree, 0.0F, 0.0F, f, f1);
-    	swingLimbs(this.witherRevenantRightArm, this.witherRevenantLeftArm, walkSpeed, 0.6f * globalDegree, 0.0F, 0.0F, f, f1);
+    	AnimFunctions.swingLimbs(this.witherRevenantLeftLeg, this.witherRevenantRightLeg, walkSpeed, 0.6f * globalDegree, 0.0F, 0.0F, f, f1);
+    	AnimFunctions.swingLimbs(this.witherRevenantRightArm, this.witherRevenantLeftArm, walkSpeed, 0.6f * globalDegree, 0.0F, 0.0F, f, f1);
     	
-    	swing(this.witherRevenantRightArm, walkSpeed, 0.06f * globalDegree, false, 0.0F, 0.2F, f, f1, Axis.Z);
-    	swing(this.witherRevenantLeftArm, walkSpeed, 0.06f * globalDegree, false, 0.0F, -0.2F, f, f1, Axis.Z);
+    	AnimFunctions.swing(this.witherRevenantRightArm, walkSpeed, 0.06f * globalDegree, false, 0.0F, 0.2F, f, f1, AnimFunctions.Axis.Z);
+    	AnimFunctions.swing(this.witherRevenantLeftArm, walkSpeed, 0.06f * globalDegree, false, 0.0F, -0.2F, f, f1, AnimFunctions.Axis.Z);
     	
-    	swing(this.witherRevenantRibs, walkSpeed, 0.06f * globalDegree, false, 0.0F, 0.2F, f, f1, Axis.X);
-    	swing(this.witherRevenantRibs, 0.5F * walkSpeed, 0.1f * globalDegree, false, 0.0F, 0.0F, f, f1, Axis.Y);
+    	AnimFunctions.swing(this.witherRevenantRibs, walkSpeed, 0.06f * globalDegree, false, 0.0F, 0.2F, f, f1, AnimFunctions.Axis.X);
+    	AnimFunctions.swing(this.witherRevenantRibs, 0.5F * walkSpeed, 0.1f * globalDegree, false, 0.0F, 0.0F, f, f1, AnimFunctions.Axis.Y);
     	
     	this.neckJoint.rotateAngleX =- 0.8F * this.witherRevenantRibs.rotateAngleX;
     	this.neckJoint.rotateAngleY =- 0.8F * this.witherRevenantRibs.rotateAngleY;
     	
-    	bob(this.movementBase, 2.0F * walkSpeed, 2 * globalHeight, true, f, f1, true);
-    	bob(this.witherRevenantHead, 2.0F * walkSpeed, 0.5F * globalHeight, true, f, f1, true);
+    	AnimFunctions.bob(this.movementBase, 2.0F * walkSpeed, 2 * globalHeight, true, f, f1, true);
+    	AnimFunctions.bob(this.witherRevenantHead, 2.0F * walkSpeed, 0.5F * globalHeight, true, f, f1, true);
     	
-    	look(this.witherRevenantHead, netHeadYaw, headPitch, 1.1F, 1.1F);
-    	look(this.witherRevenantRibs, netHeadYaw, headPitch, 6.0F, 6.0F);
+    	AnimFunctions.look(this.witherRevenantHead, netHeadYaw, headPitch, 1.1F, 1.1F);
+    	AnimFunctions.look(this.witherRevenantRibs, netHeadYaw, headPitch, 6.0F, 6.0F);
     }
     
     @Override

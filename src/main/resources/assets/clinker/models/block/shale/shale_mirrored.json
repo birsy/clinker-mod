@@ -1,0 +1,7 @@
+{
+   "parent": "clinker:block/cube_column_mirrored",
+   "textures": {
+       "end": "clinker:blocks/shale_top",
+       "side": "clinker:blocks/shale"
+   }
+}

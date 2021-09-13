@@ -1,11 +1,20 @@
 {
 	//**ITEMS
+	"item.clinker.quality": "Quality: ",
+	"item.clinker.quality.bad": "Dubious",
+	"item.clinker.quality.average": "Acceptable",
+	"item.clinker.quality.good": "Proficient",
+	"item.clinker.quality.perfect": "Exquisite",
+	"item.clinker.quality.none": "If you see this, tell me about it. It's a bug.",
+
 	"item.clinker.sulfur": "Sulfur",
 	"item.clinker.bismuth": "Bismuth",
 	"item.clinker.pyrite": "Pyrite",
 	"item.clinker.iron_pyrite": "Iron Pyrite",
 	"item.clinker.phosphor": "Phosphor",
 	"item.clinker.lead_ingot": "Lead Ingot",
+	"item.clinker.lead_ingot.description": "The base alchemical metal. Although\nmagically inert, it easily\nmakes up for it in raw strength -\nthis material is incredibly tough.",
+	"item.clinker.raw_lead": "Raw Lead",
 	"item.clinker.lead_nugget": "Lead Nugget",
 	"item.clinker.salt": "Sea Salt",
 

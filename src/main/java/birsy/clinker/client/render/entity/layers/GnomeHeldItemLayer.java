@@ -20,27 +20,28 @@ public class GnomeHeldItemLayer<T extends LivingEntity, M extends EntityModel<T>
 	}
 
 	public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, T entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-		boolean flag = entitylivingbaseIn.getPrimaryHand() == HandSide.RIGHT;
-		ItemStack itemstack = flag ? entitylivingbaseIn.getHeldItemOffhand() : entitylivingbaseIn.getHeldItemMainhand();
-		ItemStack itemstack1 = flag ? entitylivingbaseIn.getHeldItemMainhand() : entitylivingbaseIn.getHeldItemOffhand();
-		if (!itemstack.isEmpty() || !itemstack1.isEmpty()) {
+		boolean rightHanded = entitylivingbaseIn.getPrimaryHand() == HandSide.RIGHT;
+		ItemStack leftHandItem = rightHanded ? entitylivingbaseIn.getHeldItemOffhand() : entitylivingbaseIn.getHeldItemMainhand();
+		ItemStack rightHandItem = rightHanded ? entitylivingbaseIn.getHeldItemMainhand() : entitylivingbaseIn.getHeldItemOffhand();
+		if (!leftHandItem.isEmpty() || !rightHandItem.isEmpty()) {
 			matrixStackIn.push();
-			this.func_229135_a_(entitylivingbaseIn, itemstack1, ItemCameraTransforms.TransformType.THIRD_PERSON_RIGHT_HAND, HandSide.RIGHT, matrixStackIn, bufferIn, packedLightIn);
-			this.func_229135_a_(entitylivingbaseIn, itemstack, ItemCameraTransforms.TransformType.THIRD_PERSON_LEFT_HAND, HandSide.LEFT, matrixStackIn, bufferIn, packedLightIn);
+			this.renderItemInHand(entitylivingbaseIn, rightHandItem, ItemCameraTransforms.TransformType.THIRD_PERSON_RIGHT_HAND, HandSide.RIGHT, matrixStackIn, bufferIn, packedLightIn);
+			this.renderItemInHand(entitylivingbaseIn, leftHandItem, ItemCameraTransforms.TransformType.THIRD_PERSON_LEFT_HAND, HandSide.LEFT, matrixStackIn, bufferIn, packedLightIn);
 			matrixStackIn.pop();
 		}
 	}
 
-	private void func_229135_a_(LivingEntity p_229135_1_, ItemStack p_229135_2_, ItemCameraTransforms.TransformType p_229135_3_, HandSide p_229135_4_, MatrixStack p_229135_5_, IRenderTypeBuffer p_229135_6_, int p_229135_7_) {
-		if (!p_229135_2_.isEmpty()) {
-			p_229135_5_.push();
-			this.getEntityModel().translateHand(p_229135_4_, p_229135_5_);
-			p_229135_5_.rotate(Vector3f.XP.rotationDegrees(-90.0F));
-			p_229135_5_.rotate(Vector3f.YP.rotationDegrees(180.0F));
-			boolean flag = p_229135_4_ == HandSide.LEFT;
-			p_229135_5_.translate((double)((float)(flag ? -1 : 1) / 16.0F), 0, -0.625D);
-			Minecraft.getInstance().getFirstPersonRenderer().renderItemSide(p_229135_1_, p_229135_2_, p_229135_3_, flag, p_229135_5_, p_229135_6_, p_229135_7_);
-			p_229135_5_.pop();
+	private void renderItemInHand(LivingEntity entity, ItemStack itemStack, ItemCameraTransforms.TransformType transformType, HandSide handSide, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
+		if (!itemStack.isEmpty()) {
+			matrixStackIn.push();
+			this.getEntityModel().translateHand(handSide, matrixStackIn);
+			matrixStackIn.rotate(Vector3f.XP.rotationDegrees(-90.0F));
+			matrixStackIn.rotate(Vector3f.YP.rotationDegrees(180.0F));
+
+			boolean leftHanded = handSide == HandSide.LEFT;
+			matrixStackIn.translate((float)(leftHanded ? -1 : 1) / 16.0F, 0, -0.625D);
+			Minecraft.getInstance().getFirstPersonRenderer().renderItemSide(entity, itemStack, transformType, leftHanded, matrixStackIn, bufferIn, packedLightIn);
+			matrixStackIn.pop();
 		}
 	}
 }

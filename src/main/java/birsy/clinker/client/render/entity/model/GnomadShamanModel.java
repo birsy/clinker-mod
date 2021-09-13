@@ -1,5 +1,6 @@
 package birsy.clinker.client.render.entity.model;
 
+import birsy.clinker.client.render.util.AnimFunctions;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
@@ -102,6 +103,7 @@ public class GnomadShamanModel<T extends GnomadShamanEntity> extends BirsyBaseMo
         this.shamanLeftLeg.setRotationPoint(3.4F, 0.0F, 0.0F);
         this.shamanLeftLeg.addBox(-1.0F, -0.15F, -1.0F, 2.0F, 9.0F, 2.0F, -0.25F, -0.5F, -0.25F);
         this.headJoint = new BirsyModelRenderer(this, 0, 0);
+        this.headJoint.setScale(0.8F);
         this.headJoint.setRotationPoint(0.0F, 0.0F, -3.5F);
         this.headJoint.addBox(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
         this.setRotateAngle(headJoint, 0.3490658503988659F, 0.0F, 0.0F);
@@ -168,7 +170,7 @@ public class GnomadShamanModel<T extends GnomadShamanEntity> extends BirsyBaseMo
     @Override
     public void setRotationAngles(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) 
     {
-    	resetParts(this.shamanBody, this.shamanTornBottom, this.legsJoint, this.armsJoint, this.neckJoint, this.shamanPouch, this.shamanLeftLeg, this.shamanRightLeg, this.shamanLeftArm, this.shamanRightArm, this.shamanStaff, this.shamanStaffRing, this.shamanStaffCross, this.shamanStaffLowerCross, this.shamanStaffRingInside, this.shamanNeck, this.headJoint, this.shamanHead, this.shamanFace, this.shamanHatBrim, this.shamanBeard, this.shamanNose, this.shamanFaceBottom, this.shamanFaceTop, this.shamanHat);
+        AnimFunctions.resetParts(this.shamanBody, this.shamanTornBottom, this.legsJoint, this.armsJoint, this.neckJoint, this.shamanPouch, this.shamanLeftLeg, this.shamanRightLeg, this.shamanLeftArm, this.shamanRightArm, this.shamanStaff, this.shamanStaffRing, this.shamanStaffCross, this.shamanStaffLowerCross, this.shamanStaffRingInside, this.shamanNeck, this.headJoint, this.shamanHead, this.shamanFace, this.shamanHatBrim, this.shamanBeard, this.shamanNose, this.shamanFaceBottom, this.shamanFaceTop, this.shamanHat);
     	
     	float f = limbSwing;
     	float f1 = limbSwingAmount * 2F;
@@ -180,41 +182,37 @@ public class GnomadShamanModel<T extends GnomadShamanEntity> extends BirsyBaseMo
     	float walkSpeed = 0.5F * globalSpeed;
     	
     	//IDLE
-    	swing(this.shamanBody, 0.125F * globalSpeed, 0.1f * globalDegree, false, 0.0F, 0.0F, ageInTicks, 0.5F, Axis.X);
+    	AnimFunctions.swing(this.shamanBody, 0.125F * globalSpeed, 0.1f * globalDegree, false, 0.0F, 0.0F, ageInTicks, 0.5F, AnimFunctions.Axis.X);
     	
-    	swing(this.shamanRightArm, 0.125F * globalSpeed, 0.03f * globalDegree, false, 0.5F, 0.07F, ageInTicks, 0.5F, Axis.Z);
-    	swing(this.shamanLeftArm, 0.125F * globalSpeed, 0.03f * globalDegree, false, 1.5F, -0.07F, ageInTicks, 0.5F, Axis.Z);
-    	swing(this.shamanRightArm, 0.12F * globalSpeed, 0.03f * globalDegree, false, 0.5F, 0.0F, ageInTicks, 0.5F, Axis.X);
-    	swing(this.shamanLeftArm, 0.12F * globalSpeed, 0.03f * globalDegree, false, 1.5F, 0.0F, ageInTicks, 0.5F, Axis.X);
+    	AnimFunctions.swing(this.shamanRightArm, 0.125F * globalSpeed, 0.03f * globalDegree, false, 0.5F, 0.07F, ageInTicks, 0.5F, AnimFunctions.Axis.Z);
+    	AnimFunctions.swing(this.shamanLeftArm, 0.125F * globalSpeed, 0.03f * globalDegree, false, 1.5F, -0.07F, ageInTicks, 0.5F, AnimFunctions.Axis.Z);
+    	AnimFunctions.swing(this.shamanRightArm, 0.12F * globalSpeed, 0.03f * globalDegree, false, 0.5F, 0.0F, ageInTicks, 0.5F, AnimFunctions.Axis.X);
+    	AnimFunctions.swing(this.shamanLeftArm, 0.12F * globalSpeed, 0.03f * globalDegree, false, 1.5F, 0.0F, ageInTicks, 0.5F, AnimFunctions.Axis.X);
     	
-    	bob(this.shamanRightArm, 0.125F * globalSpeed, 0.2f * globalDegree, false, ageInTicks, 0.5F, true);
-    	bob(this.shamanLeftArm, 0.125F * globalSpeed, 0.2f * globalDegree, false, ageInTicks, 0.5F, true);
+    	AnimFunctions.bob(this.shamanRightArm, 0.125F * globalSpeed, 0.2f * globalDegree, false, ageInTicks, 0.5F, true);
+    	AnimFunctions.bob(this.shamanLeftArm, 0.125F * globalSpeed, 0.2f * globalDegree, false, ageInTicks, 0.5F, true);
     	
-    	bob(this.neckJoint, 0.125F * globalSpeed, 0.2f * globalHeight, false, ageInTicks, 0.5F, true);
-    	bob(this.shamanBody, 0.5F * (0.125F * globalSpeed), 0.2f * globalHeight, true, ageInTicks, 0.5F, true);
+    	AnimFunctions.bob(this.neckJoint, 0.125F * globalSpeed, 0.2f * globalHeight, false, ageInTicks, 0.5F, true);
+    	AnimFunctions.bob(this.shamanBody, 0.5F * (0.125F * globalSpeed), 0.2f * globalHeight, true, ageInTicks, 0.5F, true);
     	
-    	rotVar(this.shamanHat, entityIn, -0.01F, 0.01F, Axis.X);
-    	rotVar(this.shamanHat, entityIn, -0.01F, 0.01F, Axis.Y);
-    	rotVar(this.shamanHat, entityIn, -0.05F, 0.05F, Axis.Z);
-    	
-    	swing(this.shamanHat, 0.125F * walkSpeed, 0.05F * globalDegree, false, 1F, 0, ageInTicks, 0.5F, Axis.X);
-    	swing(this.shamanHat, 0.125F * walkSpeed, 0.05F * globalDegree, false, 1F, 0, ageInTicks, 0.5F, Axis.Z);
+    	AnimFunctions.swing(this.shamanHat, 0.125F * walkSpeed, 0.05F * globalDegree, false, 1F, 0, ageInTicks, 0.5F, AnimFunctions.Axis.X);
+    	AnimFunctions.swing(this.shamanHat, 0.125F * walkSpeed, 0.05F * globalDegree, false, 1F, 0, ageInTicks, 0.5F, AnimFunctions.Axis.Z);
     	
     	//WALK
-    	swingLimbs(this.shamanLeftLeg, this.shamanRightLeg, walkSpeed, 0.6f * globalDegree, 0.0F, 0.0F, f, f1);
-    	swingLimbs(this.shamanRightArm, this.shamanLeftArm, walkSpeed, 0.6f * globalDegree, 0.0F, 0.0F, f, f1);
+    	AnimFunctions.swingLimbs(this.shamanLeftLeg, this.shamanRightLeg, walkSpeed, 0.6f * globalDegree, 0.0F, 0.0F, f, f1);
+    	AnimFunctions.swingLimbs(this.shamanRightArm, this.shamanLeftArm, walkSpeed, 0.6f * globalDegree, 0.0F, 0.0F, f, f1);
     	
-    	swing(this.shamanRightArm, walkSpeed, 0.06f * globalDegree, false, 0.0F, 0.2F, f, f1, Axis.Z);
-    	swing(this.shamanLeftArm, walkSpeed, 0.06f * globalDegree, false, 0.0F, -0.2F, f, f1, Axis.Z);
+    	AnimFunctions.swing(this.shamanRightArm, walkSpeed, 0.06f * globalDegree, false, 0.0F, 0.2F, f, f1, AnimFunctions.Axis.Z);
+    	AnimFunctions.swing(this.shamanLeftArm, walkSpeed, 0.06f * globalDegree, false, 0.0F, -0.2F, f, f1, AnimFunctions.Axis.Z);
     	
-    	swing(this.shamanBody, walkSpeed, 0.06f * globalDegree, false, 0.0F, 0.2F, f, f1, Axis.X);
-    	swing(this.shamanBody, 0.5F * walkSpeed, 0.1f * globalDegree, false, 0.0F, 0.0F, f, f1, Axis.Y);
+    	AnimFunctions.swing(this.shamanBody, walkSpeed, 0.06f * globalDegree, false, 0.0F, 0.2F, f, f1, AnimFunctions.Axis.X);
+    	AnimFunctions.swing(this.shamanBody, 0.5F * walkSpeed, 0.1f * globalDegree, false, 0.0F, 0.0F, f, f1, AnimFunctions.Axis.Y);
     	
-    	bob(this.shamanBody, 2.0F * walkSpeed, 2 * globalHeight, true, f, f1, true);
-    	bob(this.shamanHead, 2.0F * walkSpeed, 0.5F * globalHeight, true, f, f1, true);
+    	AnimFunctions.bob(this.shamanBody, 2.0F * walkSpeed, 2 * globalHeight, true, f, f1, true);
+    	AnimFunctions.bob(this.shamanHead, 2.0F * walkSpeed, 0.5F * globalHeight, true, f, f1, true);
     	
-    	look(this.shamanNeck, netHeadYaw, headPitch, 2.0F, 2.0F);
-    	look(this.shamanHead, netHeadYaw, headPitch, 2.0F, 2.0F);
+    	AnimFunctions.look(this.shamanNeck, netHeadYaw, headPitch, 2.0F, 2.0F);
+    	AnimFunctions.look(this.shamanHead, netHeadYaw, headPitch, 2.0F, 2.0F);
     	
     	this.shamanBody.rotateAngleX += this.shamanBody.defaultRotateAngleX;
     	this.shamanNeck.rotateAngleX += this.shamanNeck.defaultRotateAngleX;

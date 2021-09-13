@@ -1,6 +1,7 @@
 package birsy.clinker.common.block;
 
 import birsy.clinker.common.tileentity.HeaterTileEntity;
+import birsy.clinker.core.registry.ClinkerItems;
 import birsy.clinker.core.util.MathUtils;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;

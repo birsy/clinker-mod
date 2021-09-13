@@ -36,6 +36,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
+@SuppressWarnings("unused")
 public class ClinkerBlocks
 {
 	public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, Clinker.MOD_ID);
@@ -83,6 +84,7 @@ public class ClinkerBlocks
 
 	public static final RegistryObject<Block> HEATED_IRON_CAULDRON = createBlock("heated_iron_cauldron", HeatedIronCauldronBlock::new, null);
 	public static final RegistryObject<Block> HEATER = createBlock("heater", HeaterBlock::new, Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> CROCKPOT = createBlock("crockpot", CrockpotBlock::new, Clinker.CLINKER_BLOCKS);
 
 	//Brimstone
 	public static AbstractBlock.Properties getBrimstoneProperties() {
@@ -201,7 +203,7 @@ public class ClinkerBlocks
 				  .harvestTool(ToolType.PICKAXE);
 	}
 	
-	public static final RegistryObject<Block> SHALE = createBlock("shale", () -> new Block(getShaleProperties()), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> SHALE = createBlock("shale", () -> new RotatedPillarBlock(getShaleProperties()), Clinker.CLINKER_BLOCKS);
 	public static final RegistryObject<Block> SHALE_PILLAR = createBlock("shale_pillar", () -> new RotatedPillarBlock(getShaleProperties()), Clinker.CLINKER_BLOCKS);
 
 	public static final RegistryObject<Block> SMOOTH_SHALE = createBlock("smooth_shale", () -> new Block(getShaleProperties()), Clinker.CLINKER_BLOCKS);

@@ -1,5 +1,6 @@
 package birsy.clinker.client.render.entity.model;
 
+import birsy.clinker.client.render.util.AnimFunctions;
 import birsy.clinker.common.entity.monster.beetle.BoxBeetleEntity;
 import birsy.clinker.core.util.MathUtils;
 import com.google.common.collect.ImmutableList;
@@ -113,7 +114,7 @@ public class BoxBeetleModel<T extends BoxBeetleEntity> extends BirsyBaseModel<T>
 
     @Override
     public void setRotationAngles(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-        resetParts(this.boxBeetleBody, this.boxBeetleLeftElytra, this.boxBeetleRightElytra, this.boxBeetleLeftWing, this.boxBeetleRightWing, this.boxBeetleHead, this.boxBeetleRightArm, this.boxBeetleLeftArm, this.boxBeetleFrontLeftLeg, this.boxBeetleBackLeftLeg, this.boxBeetleFrontRightLeg, this.boxBeetleBackRightLeg, this.boxBeetleRightAntennae, this.boxBeetleLeftAntennae);
+        AnimFunctions.resetParts(this.boxBeetleBody, this.boxBeetleLeftElytra, this.boxBeetleRightElytra, this.boxBeetleLeftWing, this.boxBeetleRightWing, this.boxBeetleHead, this.boxBeetleRightArm, this.boxBeetleLeftArm, this.boxBeetleFrontLeftLeg, this.boxBeetleBackLeftLeg, this.boxBeetleFrontRightLeg, this.boxBeetleBackRightLeg, this.boxBeetleRightAntennae, this.boxBeetleLeftAntennae);
         float f = limbSwing;
         float f1 = limbSwingAmount * 2F;
 
@@ -123,16 +124,16 @@ public class BoxBeetleModel<T extends BoxBeetleEntity> extends BirsyBaseModel<T>
 
         float walkSpeed = 0.5F * globalSpeed;
 
-        swing(this.boxBeetleLeftAntennae, 0.1F * globalSpeed, 0.05F * globalDegree, false, 1F, 0, ageInTicks, 0.5F, Axis.X);
-        swing(this.boxBeetleLeftAntennae, 0.1F * globalSpeed, 0.05F * globalDegree, false, 1F, 0, ageInTicks, 0.5F, Axis.Z);
+        AnimFunctions.swing(this.boxBeetleLeftAntennae, 0.1F * globalSpeed, 0.05F * globalDegree, false, 1F, 0, ageInTicks, 0.5F, AnimFunctions.Axis.X);
+        AnimFunctions.swing(this.boxBeetleLeftAntennae, 0.1F * globalSpeed, 0.05F * globalDegree, false, 1F, 0, ageInTicks, 0.5F, AnimFunctions.Axis.Z);
 
-        swing(this.boxBeetleRightAntennae, 0.1F * globalSpeed, 0.05F * globalDegree, true, 1F, 0, ageInTicks, 0.5F, Axis.X);
-        swing(this.boxBeetleRightAntennae, 0.1F * globalSpeed, 0.05F * globalDegree, true, 1F, 0, ageInTicks, 0.5F, Axis.Z);
+        AnimFunctions.swing(this.boxBeetleRightAntennae, 0.1F * globalSpeed, 0.05F * globalDegree, true, 1F, 0, ageInTicks, 0.5F, AnimFunctions.Axis.X);
+        AnimFunctions.swing(this.boxBeetleRightAntennae, 0.1F * globalSpeed, 0.05F * globalDegree, true, 1F, 0, ageInTicks, 0.5F, AnimFunctions.Axis.Z);
 
-        swing(this.boxBeetleRightElytra, 0.125F * globalSpeed, 0.03f * globalDegree, false, 0.5F, -0.07F, ageInTicks, 0.5F, Axis.Z);
-        swing(this.boxBeetleLeftElytra, 0.125F * globalSpeed, 0.03f * globalDegree, false, 1.5F, -0.07F, ageInTicks, 0.5F, Axis.Z);
-        swing(this.boxBeetleRightElytra, 0.12F * globalSpeed, 0.03f * globalDegree, false, 0.5F, 0.07F, ageInTicks, 0.5F, Axis.X);
-        swing(this.boxBeetleLeftElytra, 0.12F * globalSpeed, 0.03f * globalDegree, false, 1.5F, 0.07F, ageInTicks, 0.5F, Axis.X);
+        AnimFunctions.swing(this.boxBeetleRightElytra, 0.125F * globalSpeed, 0.03f * globalDegree, false, 0.5F, -0.07F, ageInTicks, 0.5F, AnimFunctions.Axis.Z);
+        AnimFunctions.swing(this.boxBeetleLeftElytra, 0.125F * globalSpeed, 0.03f * globalDegree, false, 1.5F, -0.07F, ageInTicks, 0.5F, AnimFunctions.Axis.Z);
+        AnimFunctions.swing(this.boxBeetleRightElytra, 0.12F * globalSpeed, 0.03f * globalDegree, false, 0.5F, 0.07F, ageInTicks, 0.5F, AnimFunctions.Axis.X);
+        AnimFunctions.swing(this.boxBeetleLeftElytra, 0.12F * globalSpeed, 0.03f * globalDegree, false, 1.5F, 0.07F, ageInTicks, 0.5F, AnimFunctions.Axis.X);
 
         if (entityIn.inFlight() || entityIn.isAirBorne) {
             this.bodyPitch = entityIn.getBodyPitch(0.5F);
@@ -140,19 +141,19 @@ public class BoxBeetleModel<T extends BoxBeetleEntity> extends BirsyBaseModel<T>
         } else {
             flyAnimation(entityIn, flightTransition, globalSpeed, globalDegree, ageInTicks, netHeadYaw, headPitch);
 
-            bob(this.boxBeetleBody, 2.0F * walkSpeed, 2 * globalHeight, true, f, f1, true);
-            swing(this.boxBeetleBody, walkSpeed, 0.07f * globalDegree, true, 0.0F, 0.0F, f, f1, Axis.Z);
-            swing(this.boxBeetleBody, 2.0F * walkSpeed, 0.07f * globalDegree, true, 0.0F, 0.0F, f, f1, Axis.X);
+            AnimFunctions.bob(this.boxBeetleBody, 2.0F * walkSpeed, 2 * globalHeight, true, f, f1, true);
+            AnimFunctions.swing(this.boxBeetleBody, walkSpeed, 0.07f * globalDegree, true, 0.0F, 0.0F, f, f1, AnimFunctions.Axis.Z);
+            AnimFunctions.swing(this.boxBeetleBody, 2.0F * walkSpeed, 0.07f * globalDegree, true, 0.0F, 0.0F, f, f1, AnimFunctions.Axis.X);
 
-            swing(this.boxBeetleFrontLeftLeg, walkSpeed, 0.6f * globalDegree, false, 0.0F, 0.0F, f, f1, Axis.Z);
-            swing(this.boxBeetleBackRightLeg, walkSpeed, 0.6f * globalDegree, false, 0.0F, 0.0F, f, f1, Axis.Z);
-            swing(this.boxBeetleFrontRightLeg, walkSpeed, 0.6f * globalDegree, true, 0.0F, 0.0F, f, f1, Axis.Z);
-            swing(this.boxBeetleBackLeftLeg, walkSpeed, 0.6f * globalDegree, true, 0.0F, 0.0F, f, f1, Axis.Z);
+            AnimFunctions.swing(this.boxBeetleFrontLeftLeg, walkSpeed, 0.6f * globalDegree, false, 0.0F, 0.0F, f, f1, AnimFunctions.Axis.Z);
+            AnimFunctions.swing(this.boxBeetleBackRightLeg, walkSpeed, 0.6f * globalDegree, false, 0.0F, 0.0F, f, f1, AnimFunctions.Axis.Z);
+            AnimFunctions.swing(this.boxBeetleFrontRightLeg, walkSpeed, 0.6f * globalDegree, true, 0.0F, 0.0F, f, f1, AnimFunctions.Axis.Z);
+            AnimFunctions.swing(this.boxBeetleBackLeftLeg, walkSpeed, 0.6f * globalDegree, true, 0.0F, 0.0F, f, f1, AnimFunctions.Axis.Z);
 
-            swing(this.boxBeetleLeftArm, walkSpeed, 0.2f * globalDegree, true, 0.0F, 0.0F, f, f1, Axis.Y);
-            swing(this.boxBeetleRightArm, walkSpeed, 0.2f * globalDegree, false, 0.0F, 0.0F, f, f1, Axis.Y);
+            AnimFunctions.swing(this.boxBeetleLeftArm, walkSpeed, 0.2f * globalDegree, true, 0.0F, 0.0F, f, f1, AnimFunctions.Axis.Y);
+            AnimFunctions.swing(this.boxBeetleRightArm, walkSpeed, 0.2f * globalDegree, false, 0.0F, 0.0F, f, f1, AnimFunctions.Axis.Y);
 
-            bob(this.boxBeetleHead, 2.0F * walkSpeed, 2 * globalHeight, true, f + 5, f1, true);
+            AnimFunctions.bob(this.boxBeetleHead, 2.0F * walkSpeed, 2 * globalHeight, true, f + 5, f1, true);
         }
     }
 
@@ -166,16 +167,16 @@ public class BoxBeetleModel<T extends BoxBeetleEntity> extends BirsyBaseModel<T>
         this.boxBeetleRightElytra.rotateAngleZ =+ MathHelper.lerp(flightTransition, this.boxBeetleLeftElytra.defaultRotateAngleZ, -0.69F);
 
         this.boxBeetleLeftWing.rotateAngleY = MathHelper.lerp(flightTransition, this.boxBeetleLeftElytra.defaultRotateAngleX, 0.26F);
-        this.boxBeetleLeftWing.rotateAngleX = MathHelper.lerp(flightTransition, this.boxBeetleLeftWing.defaultRotateAngleX, swing(null, 1.75F * globalSpeed, globalDegree, false, 0.0F, 0.5F, ageInTicks, flightTransition * 0.5F, Axis.X));
+        this.boxBeetleLeftWing.rotateAngleX = MathHelper.lerp(flightTransition, this.boxBeetleLeftWing.defaultRotateAngleX, AnimFunctions.swing(null, 1.75F * globalSpeed, globalDegree, false, 0.0F, 0.5F, ageInTicks, flightTransition * 0.5F, AnimFunctions.Axis.X));
 
-        this.boxBeetleRightWing.rotateAngleX = MathHelper.lerp(flightTransition, this.boxBeetleRightWing.defaultRotateAngleX, swing(null, 1.75F * globalSpeed, globalDegree, false, 0.0F, 0.5F, ageInTicks, flightTransition * 0.5F, Axis.X));
+        this.boxBeetleRightWing.rotateAngleX = MathHelper.lerp(flightTransition, this.boxBeetleRightWing.defaultRotateAngleX, AnimFunctions.swing(null, 1.75F * globalSpeed, globalDegree, false, 0.0F, 0.5F, ageInTicks, flightTransition * 0.5F, AnimFunctions.Axis.X));
         this.boxBeetleRightWing.rotateAngleY = MathHelper.lerp(flightTransition, this.boxBeetleLeftElytra.defaultRotateAngleX, -0.26F);
 
         boxBeetleBody.rotateAngleY =+ MathHelper.lerp(flightTransition, (netHeadYaw * ((float)Math.PI / 180F))/2, 0);
         boxBeetleBody.rotateAngleX =+ MathHelper.lerp(flightTransition, (headPitch * ((float)Math.PI / 180F))/2, 0);
 
-        look(this.boxBeetleHead, netHeadYaw, headPitch, flightTransition + 1.0F, flightTransition + 1.0F);
-        bob(this.boxBeetleBody, 0.5F * globalSpeed, 3 * 0.75F, false, ageInTicks, 0.5F, true);
+        AnimFunctions.look(this.boxBeetleHead, netHeadYaw, headPitch, flightTransition + 1.0F, flightTransition + 1.0F);
+        AnimFunctions.bob(this.boxBeetleBody, 0.5F * globalSpeed, 3 * 0.75F, false, ageInTicks, 0.5F, true);
 
         boxBeetleBody.rotationPointY =+ MathHelper.lerp(flightTransition, boxBeetleBody.defaultRotationPointY, (float)(boxBeetleBody.defaultRotationPointY + (Math.sin(ageInTicks * 0.5F * globalSpeed) * 0.5F * 3 * 0.75F - 0.5F * 3 * 0.75F)));
     }

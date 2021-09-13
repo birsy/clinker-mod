@@ -1,0 +1,14 @@
+{
+    "variants": {
+        "": [
+            { "model": "ssvrfi:block/clover/clover_short" },
+            { "model": "ssvrfi:block/clover/clover_tall" },
+            { "model": "ssvrfi:block/clover/clover_short", "y": 90 },
+            { "model": "ssvrfi:block/clover/clover_tall", "y": 90 },
+            { "model": "ssvrfi:block/clover/clover_short", "y": 180 },
+            { "model": "ssvrfi:block/clover/clover_tall", "y": 180 },
+            { "model": "ssvrfi:block/clover/clover_short", "y": 270 },
+            { "model": "ssvrfi:block/clover/clover_tall", "y": 270 }
+        ]
+    }
+}
