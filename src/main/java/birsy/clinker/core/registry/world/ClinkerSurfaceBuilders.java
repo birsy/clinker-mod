@@ -1,8 +1,9 @@
 package birsy.clinker.core.registry.world;
 
+import birsy.clinker.common.world.gen.cave.CaveSurfaceBuilder;
+import birsy.clinker.common.world.gen.cave.NetherTestSurfaceBuilder;
 import birsy.clinker.common.world.gen.surfacebuilder.*;
 import birsy.clinker.core.Clinker;
-import birsy.clinker.core.registry.ClinkerBlocks;
 import net.minecraft.world.gen.surfacebuilders.SurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilders.SurfaceBuilderConfig;
 import net.minecraftforge.fml.RegistryObject;

@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.gen.cavenoisesampler;
+package birsy.clinker.common.world.gen.cave.cavenoisesampler;
 
 import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.core.util.noise.FastNoiseLite;

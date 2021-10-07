@@ -8,11 +8,20 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.material.MaterialColor;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.monster.BlazeEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.particles.ParticleTypes;
+import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.IntegerProperty;
+import net.minecraft.state.StateContainer;
+import net.minecraft.state.properties.BlockStateProperties;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -31,98 +40,122 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class FoulAirBlock extends Block
 {
+	public static final BooleanProperty LIT = BlockStateProperties.LIT;
+
 	public FoulAirBlock()
 	{
-		super(((Block.Properties.create(Material.MISCELLANEOUS).tickRandomly())));
+		super(Block.Properties.create(Material.MISCELLANEOUS, MaterialColor.AIR).doesNotBlockMovement().noDrops().notSolid().zeroHardnessAndResistance().tickRandomly());
+		this.setDefaultState(this.getStateContainer().getBaseState().with(LIT, false));
+	}
+
+	@Override
+	public void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+		builder.add(LIT);
 	}
 	
+	public void burn(BlockState state, World worldIn, BlockPos pos) {
+		if (state.get(LIT)) {
+			worldIn.setBlockState(pos, Blocks.FIRE.getDefaultState());
+		} else {
+			worldIn.setBlockState(pos, state.with(LIT, true));
+		}
+	}
+
 	public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
-		if(rand.nextInt(7) == 0) {
-			if (!state.isValidPosition(worldIn, pos)) {
-				worldIn.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);			
+		worldIn.getPendingBlockTicks().scheduleTick(pos, this, 3);
+
+		if (shouldBurn(state, worldIn, pos)) {
+			this.burn(state, worldIn, pos);
+		} else if (!isValidPosition(state, worldIn, pos)) {
+			worldIn.removeBlock(pos, false);
+		}
+	}
+
+
+	@Override
+	public boolean isValidPosition(BlockState state, IWorldReader worldIn, BlockPos pos) {
+		int minNeighbors = 3;
+		int neighbors = 0;
+
+		for (Direction direction : Direction.values()) {
+			BlockState blockstate = worldIn.getBlockState(pos.offset(direction));
+			if (blockstate.matchesBlock(ClinkerBlocks.FOUL_AIR.get())) {
+				neighbors++;
 			}
 		}
-		
-		for(Direction direction : Direction.values()) {
-			BlockState blockstate = worldIn.getBlockState(pos.offset(direction));
-			if (blockstate == Blocks.TORCH.getDefaultState()) {
-				worldIn.setBlockState(pos, Blocks.FIRE.getDefaultState(), 2);
+
+		return neighbors >= minNeighbors;
+	}
+
+	public boolean shouldBurn(BlockState state, IWorldReader worldIn, BlockPos pos) {
+		if (state.get(LIT)) {
+			return true;
+		} else {
+			for (Direction direction : Direction.values()) {
+				BlockState blockState = worldIn.getBlockState(pos.offset(direction));
+				Block block = blockState.getBlock();
+
+				if (blockState.matchesBlock(ClinkerBlocks.FOUL_AIR.get())) {
+					return blockState.get(LIT);
+				} else if (block.getDefaultState().isBurning(worldIn, pos) || block.isIn(BlockTags.FIRE)|| block == Blocks.TORCH || block == Blocks.SOUL_TORCH || block == Blocks.CAMPFIRE || block == Blocks.SOUL_CAMPFIRE || block == Blocks.REDSTONE_TORCH) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+	}
+
+
+	public void onEntityCollision(BlockState state, World worldIn, BlockPos pos, Entity entityIn) {
+		if (!worldIn.isRemote) {
+			if (entityCausesFire(entityIn, worldIn)) {
+				this.burn(state, worldIn, pos);
+			} else if (entityIn instanceof LivingEntity) {
+				LivingEntity livingentity = (LivingEntity) entityIn;
+				if (!livingentity.isInvulnerableTo(DamageSource.IN_WALL)) {
+					livingentity.attackEntityFrom(DamageSource.IN_WALL, 0.25F);
+				}
 			}
 		}
 	}
 
-	public void onEntityCollision(BlockState state, World worldIn, BlockPos pos, Entity entityIn) {
-		if (!worldIn.isRemote && worldIn.getDifficulty() != Difficulty.PEACEFUL) {
-			if (entityIn instanceof LivingEntity) {
-				LivingEntity livingentity = (LivingEntity)entityIn;
-				if (!livingentity.isInvulnerableTo(DamageSource.DRYOUT)) {
-					livingentity.attackEntityFrom(DamageSource.DRYOUT, 0.5F);
-				}
-			}
+	private boolean entityCausesFire(Entity entityIn, World worldIn) {
+		if (entityIn.isBurning() || entityIn instanceof BlazeEntity) {
+			return true;
+		} else if (entityIn instanceof LivingEntity) {
+			Item mainHand = ((LivingEntity) entityIn).getHeldItemMainhand().getItem();
+			Item offHand = ((LivingEntity) entityIn).getHeldItemOffhand().getItem();
+			//TODO: Replace this with an item tag.
+			boolean isHoldingFlames = mainHand == Items.TORCH || offHand == Items.TORCH || mainHand == Items.SOUL_TORCH || offHand == Items.SOUL_TORCH || mainHand == Items.CAMPFIRE || offHand == Items.CAMPFIRE || mainHand == Items.SOUL_CAMPFIRE || offHand == Items.REDSTONE_TORCH || mainHand == Items.REDSTONE_TORCH || offHand == Items.BLAZE_ROD || offHand == Items.BLAZE_POWDER;
+			boolean holdingFireAspect = EnchantmentHelper.getFireAspectModifier((LivingEntity) entityIn) > 0;
+
+			return worldIn.getDifficulty() == Difficulty.HARD && (holdingFireAspect || isHoldingFlames);
 		}
-		if (!worldIn.isRemote && worldIn.getDifficulty() == Difficulty.HARD && entityIn instanceof LivingEntity) {
-			if (EnchantmentHelper.getEnchantments(((LivingEntity) entityIn).getHeldItemMainhand().getStack()) == Enchantments.FIRE_ASPECT || EnchantmentHelper.getEnchantments(((LivingEntity) entityIn).getHeldItemOffhand().getStack()) == Enchantments.FIRE_ASPECT) {
-				worldIn.setBlockState(pos, Blocks.FIRE.getDefaultState(), 2);
-			}
-		}
-		if(!worldIn.isRemote && entityIn.isBurning()) {
-			worldIn.setBlockState(pos, Blocks.FIRE.getDefaultState(), 2);
-		}
+
+		return false;
 	}
-	
+
+
 	@OnlyIn(Dist.CLIENT)
 	public void animateTick(BlockState stateIn, World worldIn, BlockPos pos, Random rand) {
 		for(int j = 0; j < 1; ++j) {
-			double d0 = (double)pos.getX() + rand.nextDouble();
-			double d1 = (double)pos.getY() + rand.nextDouble();
-            double d2 = (double)pos.getZ() + rand.nextDouble();
+			double x = (double) pos.getX() + rand.nextDouble();
+			double y = (double) pos.getY() + rand.nextDouble();
+            double z = (double) pos.getZ() + rand.nextDouble();
             int k = rand.nextInt(2) * 2 - 1;
+
             if (rand.nextBoolean()) {
-            	d2 = (double)pos.getZ() + 0.5D + 0.25D * (double)k;
+            	z = (double) pos.getZ() + 0.5D + 0.25D * (double) k;
             } else {
-            	d0 = (double)pos.getX() + 0.5D + 0.25D * (double)k;
+            	x = (double) pos.getX() + 0.5D + 0.25D * (double) k;
             }
-            worldIn.addParticle(ParticleTypes.ENTITY_EFFECT, d0, d1, d2, 0.0, 0.0, 0.0);
+
+            worldIn.addParticle(stateIn.get(LIT) ? ParticleTypes.FLAME : ParticleTypes.ENTITY_EFFECT, x, y, z, 0.0, 0.0, 0.0);
 		}
 	}
-	
-	@SuppressWarnings("deprecation")
-	@Override
-	public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
-		if (!stateIn.isValidPosition(worldIn, currentPos)) {
-			worldIn.getPendingBlockTicks().scheduleTick(currentPos, this, 1);
-		}
-		return super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
-	}
-	
-	@Override
-	public boolean isValidPosition(BlockState state, IWorldReader worldIn, BlockPos pos) {
-		for(Direction direction : Direction.values()) {
-			BlockState blockstate = worldIn.getBlockState(pos.offset(direction));
-			if (blockstate.isBurning(worldIn, pos) || blockstate == Blocks.FIRE.getDefaultState()) {
-				return false;
-			}
-		}
-		
-		BlockState upBlockstate = worldIn.getBlockState(pos.offset(Direction.UP));
-		BlockState downBlockstate = worldIn.getBlockState(pos.offset(Direction.DOWN));
-		BlockState northBlockstate = worldIn.getBlockState(pos.offset(Direction.NORTH));
-		BlockState southBlockstate = worldIn.getBlockState(pos.offset(Direction.SOUTH));
-		BlockState eastBlockstate = worldIn.getBlockState(pos.offset(Direction.EAST));
-		BlockState westBlockstate = worldIn.getBlockState(pos.offset(Direction.WEST));
-		if (upBlockstate != ClinkerBlocks.FOUL_AIR.get().getDefaultState() && 
-			downBlockstate != ClinkerBlocks.FOUL_AIR.get().getDefaultState() &&
-			northBlockstate != ClinkerBlocks.FOUL_AIR.get().getDefaultState() &&
-			southBlockstate != ClinkerBlocks.FOUL_AIR.get().getDefaultState() &&
-			eastBlockstate != ClinkerBlocks.FOUL_AIR.get().getDefaultState() &&
-			westBlockstate != ClinkerBlocks.FOUL_AIR.get().getDefaultState())
-		{
-			return false;
-		}
-		
-		return true;
-	}
-	
+
+
 	@Override
 	public Vector3d getFogColor(BlockState state, IWorldReader world, BlockPos pos, Entity entity, Vector3d originalColor, float partialTicks) {
 		return new Vector3d(0.34F, 0.35F, 0.24F);
@@ -137,8 +170,7 @@ public class FoulAirBlock extends Block
 	}
 	
 	@Override
-	public boolean isFlammable(BlockState state, IBlockReader world, BlockPos pos, Direction face)
-	{
+	public boolean isFlammable(BlockState state, IBlockReader world, BlockPos pos, Direction face) {
 	    return true;
 	}
 	

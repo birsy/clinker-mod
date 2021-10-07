@@ -48,6 +48,12 @@ public class MathUtils {
         return (value*b)/(value*b-value+1);
     }
 
+    public static float biasTowardsIntegers(float value) {
+        float mod = value % 4;
+        float modSqr = mod * mod;
+        return (float) ((modSqr * modSqr) + Math.floor(value));
+    }
+
     /**
      * Determines if a value is within range of another.
      * @param value The value you want to check the closeness of.

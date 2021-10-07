@@ -9,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.util.CubicSampler;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -48,6 +49,9 @@ public class OthershoreFogRenderer {
             if (event.getInfo().getFluidState().isEmpty()) {
                 event.setCanceled(true);
                 event.setDensity(density * darknessMultiplier);
+            } else if (event.getInfo().getFluidState() != Fluids.LAVA.getDefaultState() || event.getInfo().getFluidState() != Fluids.LAVA.getFlowingFluid().getDefaultState()) {
+                event.setCanceled(true);
+                event.setDensity(event.getDensity() * MathHelper.clamp(MathUtils.mapRange(20, 48, 2.3F, 1, (float) playerVecPos.y), 1.0F, 4.0F));
             }
         }
     }
@@ -86,7 +90,7 @@ public class OthershoreFogRenderer {
                 event.setRed  (MathHelper.lerp(interpolatedLight, red, darkFogColor.getX()));
                 event.setGreen(MathHelper.lerp(interpolatedLight, green, darkFogColor.getY()));
                 event.setBlue (MathHelper.lerp(interpolatedLight, blue, darkFogColor.getZ()));
-            } else {
+            } else if (event.getInfo().getFluidState() != Fluids.LAVA.getDefaultState() || event.getInfo().getFluidState() != Fluids.LAVA.getFlowingFluid().getDefaultState()){
                 event.setRed  (MathHelper.lerp(interpolatedBlockLight, event.getRed(),   darkFogColor.getX()));
                 event.setGreen(MathHelper.lerp(interpolatedBlockLight, event.getGreen(), darkFogColor.getY()));
                 event.setBlue (MathHelper.lerp(interpolatedBlockLight, event.getBlue(),  darkFogColor.getZ()));

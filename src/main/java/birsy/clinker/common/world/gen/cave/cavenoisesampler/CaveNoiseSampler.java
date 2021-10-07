@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.gen.cavenoisesampler;
+package birsy.clinker.common.world.gen.cave.cavenoisesampler;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;

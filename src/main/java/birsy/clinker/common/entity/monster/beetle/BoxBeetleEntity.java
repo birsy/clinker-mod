@@ -39,6 +39,7 @@ public class BoxBeetleEntity extends MonsterEntity {
 	public static final DataParameter<Boolean> BASHING = EntityDataManager.createKey(BoxBeetleEntity.class, DataSerializers.BOOLEAN);
 
 	private boolean wasInFlightLastTick;
+	private boolean attemptTransitionNextTick;
 
 	public int ticksInFlight;
 	public int ticksAirborne;
@@ -46,7 +47,7 @@ public class BoxBeetleEntity extends MonsterEntity {
 	public int attackTimer;
 	private int attackDelay;
 	private float rollAmount;
-	private float rollAmountO;
+	private float prevRollAmount;
 
 	@OnlyIn(Dist.CLIENT)
 	private int prevFlightOpenTicks;
@@ -111,8 +112,8 @@ public class BoxBeetleEntity extends MonsterEntity {
 		compound.putBoolean("Flying", this.inFlight());
 		compound.putBoolean("Bashing", this.isBashing());
 
-		compound.putInt("Flight_Open_Ticks", this.getFlightOpenTransitionTicks());
-		compound.putInt("Flight_Close_Ticks", this.getFlightCloseTransitionTicks());
+		compound.putInt("FlightOpenTicks", this.getFlightOpenTransitionTicks());
+		compound.putInt("FlightCloseTicks", this.getFlightCloseTransitionTicks());
 
 		compound.putFloat("Size", this.getSize());
 	}
@@ -122,8 +123,8 @@ public class BoxBeetleEntity extends MonsterEntity {
 		this.dataManager.set(FLYING, compound.getBoolean("Flying"));
 		this.dataManager.set(BASHING, compound.getBoolean("Bashing"));
 
-		this.dataManager.set(FLIGHT_OPEN_TICKS, compound.getInt("Flight_Open_Ticks"));
-		this.dataManager.set(FLIGHT_CLOSE_TICKS, compound.getInt("Flight_Close_Ticks"));
+		this.dataManager.set(FLIGHT_OPEN_TICKS, compound.getInt("FlightOpenTicks"));
+		this.dataManager.set(FLIGHT_CLOSE_TICKS, compound.getInt("FlightCloseTicks"));
 
 		this.dataManager.set(SIZE, compound.getFloat("Size"));
 	}
@@ -139,13 +140,13 @@ public class BoxBeetleEntity extends MonsterEntity {
 	@Override
 	public void livingTick() {
 		//If it's not currently transitioning from flying, then it may start to fly.
-		if (this.rand.nextInt(600) == 0 && this.getFlightCloseTransitionTicks() == 0 && this.getFlightOpenTransitionTicks() == 0 ) {
+		if (this.rand.nextInt(600) == 0) {
 			if (!this.inFlight()) {
-				this.setFlying(true);
+				this.setFlying(true, true);
 			}
-		} else if (this.rand.nextInt(100) == 0 && this.getFlightCloseTransitionTicks() == 0 && this.getFlightOpenTransitionTicks() == 0) {
+		} else if (this.rand.nextInt(100) == 0) {
 			if (this.inFlight()) {
-				this.setFlying(false);
+				this.setFlying(false, true);
 			}
 		}
 
@@ -154,18 +155,7 @@ public class BoxBeetleEntity extends MonsterEntity {
 
 	@Override
 	public void tick() {
-		this.prevFlightOpenTicks = this.getFlightOpenTransitionTicks();
-		this.prevFlightCloseTicks = this.getFlightCloseTransitionTicks();
-
-		//Sets the transition ticks for the elytra unfullering animation.
-		if (this.getFlightCloseTransitionTicks() > 0) {
-			this.setFlightCloseTransitionTicks(this.getFlightCloseTransitionTicks() - 1);
-		}
-
-		if (this.getFlightOpenTransitionTicks() > 0) {
-			this.setFlightOpenTransitionTicks(this.getFlightOpenTransitionTicks() - 1);
-		}
-
+		updateFlightTicks();
 
 		if(this.isBashing()) {
 			this.attackTimer++;
@@ -179,18 +169,39 @@ public class BoxBeetleEntity extends MonsterEntity {
 
 		if (this.inFlight()) {
 			updateBodyPitch();
+			this.moveController = this.flyingMoveController;
+		} else {
+			this.moveController = this.walkingMoveController;
+		}
+
+		if (this.attemptTransitionNextTick) {
+			this.setFlying(!this.inFlight(), true);
 		}
 
 		super.tick();
 	}
+	
+	public void updateFlightTicks() {
+		this.prevFlightOpenTicks = this.getFlightOpenTransitionTicks();
+		this.prevFlightCloseTicks = this.getFlightCloseTransitionTicks();
+
+		//Sets the transition ticks for the elytra unfullering animation.
+		if (this.getFlightCloseTransitionTicks() > 0) {
+			this.setFlightCloseTransitionTicks(this.getFlightCloseTransitionTicks() - 1);
+		}
+
+		if (this.getFlightOpenTransitionTicks() > 0) {
+			this.setFlightOpenTransitionTicks(this.getFlightOpenTransitionTicks() - 1);
+		}
+	}
 
 	@OnlyIn(Dist.CLIENT)
 	public float getBodyPitch(float partialTicks) {
-		return MathHelper.lerp(partialTicks, this.rollAmountO, this.rollAmount);
+		return MathHelper.lerp(partialTicks, this.prevRollAmount, this.rollAmount);
 	}
 
 	private void updateBodyPitch() {
-		this.rollAmountO = this.rollAmount;
+		this.prevRollAmount = this.rollAmount;
 		if (this.isBashing()) {
 			this.rollAmount = Math.min(1.0F, this.rollAmount + 0.2F);
 		} else {
@@ -202,24 +213,28 @@ public class BoxBeetleEntity extends MonsterEntity {
 		this.dataManager.set(BASHING, bool);
 	}
 	public boolean isBashing() {
-		return this.dataManager.get(FLYING);
+		return this.dataManager.get(BASHING);
 	}
 
-	public void setFlying(Boolean bool) {
-		this.dataManager.set(FLYING, bool);
-		if (bool) {
-			this.moveController = flyingMoveController;
-			this.setNoGravity(true);
-			this.setFlightOpenTransitionTicks(10);
+	public void setFlying(boolean state, boolean checkTransitionTicks) {
+		if (!checkTransitionTicks || (this.getFlightCloseTransitionTicks() == 0 && this.getFlightOpenTransitionTicks() == 0)) {
+			this.dataManager.set(FLYING, state);
+			if (state) {
+				this.moveController = flyingMoveController;
+				this.setNoGravity(true);
+				this.setFlightOpenTransitionTicks(10);
+			} else {
+				this.moveController = walkingMoveController;
+				this.setNoGravity(false);
+				this.setFlightCloseTransitionTicks(10);
+			}
+
+			this.attemptTransitionNextTick = false;
 		} else {
-			this.moveController = walkingMoveController;
-			this.setNoGravity(false);
-			this.setFlightCloseTransitionTicks(10);
+			this.attemptTransitionNextTick = true;
 		}
 	}
-	public boolean inFlight() {
-		return this.dataManager.get(FLYING);
-	}
+	public boolean inFlight() { return this.dataManager.get(FLYING); }
 
 	@OnlyIn(Dist.CLIENT)
 	public float getFlightOpenTransitionTicks(float partialTicks) {
@@ -385,8 +400,8 @@ public class BoxBeetleEntity extends MonsterEntity {
 	}
 
 	public boolean attackEntityFrom(DamageSource source, float amount) {
-		if ((super.attackEntityFrom(source, amount) && source.isProjectile() && this.inFlight()) || (super.attackEntityFrom(source, amount) && this.rand.nextInt(3) == 0 && this.inFlight())) {
-			this.setFlying(false);
+		if (super.attackEntityFrom(source, amount) && this.inFlight() && (source.isProjectile() || this.rand.nextInt(3) == 0)) {
+			this.setFlying(false, true);
 			this.setBashing(false);
 			this.attackDelay = 50;
 		}

@@ -5,7 +5,6 @@ import birsy.clinker.core.util.MathUtils;
 import com.mojang.serialization.Codec;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.ISeedReader;
@@ -16,7 +15,7 @@ import net.minecraft.world.gen.feature.NoFeatureConfig;
 import java.util.Random;
 
 public class DakrasTreeFeature extends Feature<NoFeatureConfig> {
-    private final BlockState TRUNK = Blocks.STRIPPED_CRIMSON_STEM.getDefaultState();
+    private final BlockState TRUNK_STATE = Blocks.STRIPPED_CRIMSON_STEM.getDefaultState();
 
     public DakrasTreeFeature(Codec<NoFeatureConfig> codec) {
         super(codec);
@@ -24,11 +23,11 @@ public class DakrasTreeFeature extends Feature<NoFeatureConfig> {
 
     @Override
     public boolean generate(ISeedReader reader, ChunkGenerator generator, Random rand, BlockPos pos, NoFeatureConfig config) {
-        Clinker.LOGGER.info("placing a dakras tree :)");
+        Clinker.LOGGER.info("placing a tree");
         boolean couldGenerate = false;
 
-        int resolution = 5;
-        float length = MathUtils.getRandomFloatBetween(rand, 15, 30);
+        int resolution = 16;
+        float length = 15 + rand.nextFloat() * 15;
         final float maxTrunkRadius = 6;
         final float minTrunkRadius = 2;
         float trunkRadius = maxTrunkRadius;
@@ -48,16 +47,13 @@ public class DakrasTreeFeature extends Feature<NoFeatureConfig> {
             float z = (xzOffset * MathHelper.cos(yRotation)) + pos.getZ();
 
             trunkCenter.setPos(x, y, z);
-            for (BlockPos blockPos: BlockPos.getAllInBoxMutable(trunkCenter.add(trunkRadius, trunkRadius, trunkRadius), trunkCenter.add(-trunkRadius, -trunkRadius, -trunkRadius))) {
-                if (blockPos.manhattanDistance(trunkCenter) < trunkRadius) {
-                    reader.setBlockState(blockPos, TRUNK, 2);
-                    couldGenerate = true;
-                }
-            }
+            reader.setBlockState(trunkCenter, TRUNK_STATE, 2);
+            couldGenerate = true;
 
             trunkRadius = MathHelper.lerp(distanceAlongPath, maxTrunkRadius, minTrunkRadius);
         }
 
         return couldGenerate;
     }
+
 }
