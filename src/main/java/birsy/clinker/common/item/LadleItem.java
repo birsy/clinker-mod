@@ -1,21 +1,14 @@
 package birsy.clinker.common.item;
 
-import birsy.clinker.common.tileentity.HeatedIronCauldronTileEntity;
-import birsy.clinker.core.registry.ClinkerBlocks;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.stats.Stats;
-import net.minecraft.util.*;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.item.Item;
+
 
 public class LadleItem extends Item {
-    public LadleItem(Properties properties) {
+    public LadleItem(Item.Properties properties) {
         super(properties);
     }
 
+    /*
     @Override
     public ActionResultType onItemUse(ItemUseContext context) {
         World world = context.getWorld();
@@ -40,4 +33,5 @@ public class LadleItem extends Item {
             return super.onItemUse(context);
         }
     }
+     */
 }

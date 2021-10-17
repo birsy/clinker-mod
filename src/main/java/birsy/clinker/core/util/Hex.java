@@ -1,15 +1,12 @@
 
 package birsy.clinker.core.util;
 
-import net.minecraft.util.math.BlockPos;
-
-import java.util.List;
-import java.util.Random;
-
 /*
  * Ripped from the HexLands mod! Code by AlcatrazEscape, I assume.
  * Will be used for generating aquifer coordinates, instead of the cell system vanilla uses. Should look more natural.
  */
+
+import net.minecraft.core.BlockPos;
 
 /**
  * See https://www.redblobgames.com/grids/hexagons/

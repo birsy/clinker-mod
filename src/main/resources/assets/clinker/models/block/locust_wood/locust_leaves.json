@@ -1,6 +1,358 @@
 {
-   "parent": "block/cube_all",
-   "textures": {
-       "all": "clinker:blocks/locust_wood/locust_leaves"
-   }
+    "__comment": "Model generated using MrCrayfish's Model Creator (https://mrcrayfish.com/tools?id=mc)",
+"ambientocclusion": false,
+    "textures": {
+        "particle": "clinker:blocks/locust_wood/locust_leaves",
+        "locust_needles": "clinker:blocks/locust_wood/locust_needles"
+    },
+    "elements": [
+        {
+            "from": [ -10, -7, 8 ], 
+            "to": [ 8, 25, 8 ], 
+            "shade": false,
+            "rotation": { "origin": [ 8, 0, 8 ], "axis": "x", "angle": -22.5 },
+            "faces": {
+                "north": { "texture": "#locust_needles", "uv": [ 4.5, 9.75, 9, 13.75 ] },
+                "south": { "texture": "#locust_needles", "uv": [ 0, 9.75, 4.5, 13.75 ] }
+            }
+        },
+        {
+            "from": [ 8, -7, -10 ], 
+            "to": [ 8, 25, 8 ], 
+            "shade": false,
+            "rotation": { "origin": [ 8, 0, 8 ], "axis": "z", "angle": 22.5 },
+            "faces": {
+                "east": { "texture": "#locust_needles", "uv": [ 4.5, 9.75, 9, 13.75 ] },
+                "west": { "texture": "#locust_needles", "uv": [ 0, 9.75, 4.5, 13.75 ] }
+            }
+        },
+        {
+            "from": [ -10, -7, 8 ], 
+            "to": [ 8, 25, 8 ], 
+            "shade": false,
+            "faces": {
+                "north": { "texture": "#locust_needles", "uv": [ 4.5, 4.625, 9, 8.625 ] },
+                "south": { "texture": "#locust_needles", "uv": [ 0, 4.625, 4.5, 8.625 ] }
+            }
+        },
+        {
+            "from": [ 8, -7, -10 ], 
+            "to": [ 8, 25, 8 ], 
+            "shade": false,
+            "faces": {
+                "east": { "texture": "#locust_needles", "uv": [ 4.5, 4.625, 9, 8.625 ] },
+                "west": { "texture": "#locust_needles", "uv": [ 0, 4.625, 4.5, 8.625 ] }
+            }
+        },
+        {
+            "from": [ 8, -7, 8 ], 
+            "to": [ 8, 25, 26 ], 
+            "shade": false,
+            "faces": {
+                "east": { "texture": "#locust_needles", "uv": [ 0, 4.625, 4.5, 8.625 ] },
+                "west": { "texture": "#locust_needles", "uv": [ 4.5, 4.625, 0, 8.625 ] }
+            }
+        },
+        {
+            "from": [ 8, -7, 8 ], 
+            "to": [ 26, 25, 8 ], 
+            "shade": false,
+            "faces": {
+                "north": { "texture": "#locust_needles", "uv": [ 0, 4.625, 4.5, 8.625 ] },
+                "south": { "texture": "#locust_needles", "uv": [ 4.5, 4.625, 0, 8.625 ] }
+            }
+        },
+        {
+            "from": [ -10, 25, 8 ], 
+            "to": [ 8, 57, 8 ], 
+            "shade": false,
+            "faces": {
+                "north": { "texture": "#locust_needles", "uv": [ 4.5, 0.625, 9, 4.625 ] },
+                "south": { "texture": "#locust_needles", "uv": [ 0, 0.625, 4.5, 4.625 ] }
+            }
+        },
+        {
+            "from": [ 8, 25, 8 ], 
+            "to": [ 26, 57, 8 ], 
+            "shade": false,
+            "faces": {
+                "north": { "texture": "#locust_needles", "uv": [ 0, 0.625, 4.5, 4.625 ] },
+                "south": { "texture": "#locust_needles", "uv": [ 4.5, 0.625, 9, 4.625 ] }
+            }
+        },
+        {
+            "from": [ 8, 25, 8 ], 
+            "to": [ 8, 57, 26 ], 
+            "shade": false,
+            "faces": {
+                "east": { "texture": "#locust_needles", "uv": [ 0, 0.625, 4.5, 4.625 ] },
+                "west": { "texture": "#locust_needles", "uv": [ 4.5, 0.625, 0, 4.625 ] }
+            }
+        },
+        {
+            "from": [ 8, 25, -10 ], 
+            "to": [ 8, 57, 8 ], 
+            "shade": false,
+            "faces": {
+                "east": { "texture": "#locust_needles", "uv": [ 4.5, 0.625, 9, 4.625 ] },
+                "west": { "texture": "#locust_needles", "uv": [ 0, 0.625, 4.5, 4.625 ] }
+            }
+        },
+        {
+            "from": [ 8, 57, -10 ], 
+            "to": [ 8, 65, 8 ], 
+            "shade": false,
+            "faces": {
+                "east": { "texture": "#locust_needles", "uv": [ 4.5, 0, 9, 0.625 ] },
+                "west": { "texture": "#locust_needles", "uv": [ 0, 0, 4.5, 0.625 ] }
+            }
+        },
+        {
+            "from": [ 8, 57, 8 ], 
+            "to": [ 8, 65, 26 ], 
+            "shade": false,
+            "faces": {
+                "east": { "texture": "#locust_needles", "uv": [ 0, 0, 4.5, 0.625 ] },
+                "west": { "texture": "#locust_needles", "uv": [ 4.5, 0, 9, 0.625 ] }
+            }
+        },
+        {
+            "from": [ 8, 57, 8 ], 
+            "to": [ 26, 65, 8 ], 
+            "shade": false,
+            "faces": {
+                "north": { "texture": "#locust_needles", "uv": [ 0, 0, 4.5, 0.625 ] },
+                "south": { "texture": "#locust_needles", "uv": [ 4.5, 0, 9, 0.625 ] }
+            }
+        },
+        {
+            "from": [ -10, 57, 8 ], 
+            "to": [ 8, 65, 8 ], 
+            "shade": false,
+            "faces": {
+                "north": { "texture": "#locust_needles", "uv": [ 4.5, 0, 9, 0.625 ] },
+                "south": { "texture": "#locust_needles", "uv": [ 0, 0, 4.5, 0.625 ] }
+            }
+        },
+        {
+            "from": [ -10, -7, 8 ], 
+            "to": [ 8, 25, 8 ], 
+            "shade": false,
+            "rotation": { "origin": [ 8, 8, 8 ], "axis": "y", "angle": 45.0, "rescale": true },
+            "faces": {
+                "north": { "texture": "#locust_needles", "uv": [ 4.5, 4.625, 9, 8.625 ] },
+                "south": { "texture": "#locust_needles", "uv": [ 0, 4.625, 4.5, 8.625 ] }
+            }
+        },
+        {
+            "from": [ 8, -7, -10 ], 
+            "to": [ 8, 25, 8 ], 
+            "shade": false,
+            "rotation": { "origin": [ 8, 8, 8 ], "axis": "y", "angle": 45.0, "rescale": true },
+            "faces": {
+                "east": { "texture": "#locust_needles", "uv": [ 4.5, 4.625, 9, 8.625 ] },
+                "west": { "texture": "#locust_needles", "uv": [ 0, 4.625, 4.5, 8.625 ] }
+            }
+        },
+        {
+            "from": [ 8, -7, 8 ], 
+            "to": [ 8, 25, 26 ], 
+            "shade": false,
+            "rotation": { "origin": [ 8, 8, 8 ], "axis": "y", "angle": 45.0, "rescale": true },
+            "faces": {
+                "east": { "texture": "#locust_needles", "uv": [ 0, 4.625, 4.5, 8.625 ] },
+                "west": { "texture": "#locust_needles", "uv": [ 4.5, 4.625, 0, 8.625 ] }
+            }
+        },
+        {
+            "from": [ 8, -7, 8 ], 
+            "to": [ 26, 25, 8 ], 
+            "shade": false,
+            "rotation": { "origin": [ 8, 8, 8 ], "axis": "y", "angle": 45.0, "rescale": true },
+            "faces": {
+                "north": { "texture": "#locust_needles", "uv": [ 0, 4.625, 4.5, 8.625 ] },
+                "south": { "texture": "#locust_needles", "uv": [ 4.5, 4.625, 0, 8.625 ] }
+            }
+        },
+        {
+            "from": [ 8, 25, 8 ], 
+            "to": [ 26, 57, 8 ], 
+            "shade": false,
+            "rotation": { "origin": [ 8, 8, 8 ], "axis": "y", "angle": -45.0, "rescale": true },
+            "faces": {
+                "north": { "texture": "#locust_needles", "uv": [ 0, 0.625, 4.5, 4.625 ] },
+                "south": { "texture": "#locust_needles", "uv": [ 4.5, 0.625, 9, 4.625 ] }
+            }
+        },
+        {
+            "from": [ 8, 25, 8 ], 
+            "to": [ 8, 57, 26 ], 
+            "shade": false,
+            "rotation": { "origin": [ 8, 8, 8 ], "axis": "y", "angle": -45.0, "rescale": true },
+            "faces": {
+                "east": { "texture": "#locust_needles", "uv": [ 0, 0.625, 4.5, 4.625 ] },
+                "west": { "texture": "#locust_needles", "uv": [ 4.5, 0.625, 0, 4.625 ] }
+            }
+        },
+        {
+            "from": [ 8, 25, -10 ], 
+            "to": [ 8, 57, 8 ], 
+            "shade": false,
+            "rotation": { "origin": [ 8, 8, 8 ], "axis": "y", "angle": -45.0, "rescale": true },
+            "faces": {
+                "east": { "texture": "#locust_needles", "uv": [ 4.5, 0.625, 9, 4.625 ] },
+                "west": { "texture": "#locust_needles", "uv": [ 0, 0.625, 4.5, 4.625 ] }
+            }
+        },
+        {
+            "from": [ -10, 25, 8 ], 
+            "to": [ 8, 57, 8 ], 
+            "shade": false,
+            "rotation": { "origin": [ 8, 8, 8 ], "axis": "y", "angle": -45.0, "rescale": true },
+            "faces": {
+                "north": { "texture": "#locust_needles", "uv": [ 4.5, 0.625, 9, 4.625 ] },
+                "south": { "texture": "#locust_needles", "uv": [ 0, 0.625, 4.5, 4.625 ] }
+            }
+        },
+        {
+            "from": [ 8, -7, 8 ], 
+            "to": [ 26, 25, 8 ], 
+            "shade": false,
+            "rotation": { "origin": [ 8, 0, 8 ], "axis": "x", "angle": -22.5 },
+            "faces": {
+                "north": { "texture": "#locust_needles", "uv": [ 0, 9.75, 4.5, 13.75 ] },
+                "south": { "texture": "#locust_needles", "uv": [ 4.5, 9.75, 9, 13.75 ] }
+            }
+        },
+        {
+            "from": [ 8, -7, 8 ], 
+            "to": [ 8, 25, 26 ], 
+            "shade": false,
+            "rotation": { "origin": [ 8, 0, 8 ], "axis": "z", "angle": 22.5 },
+            "faces": {
+                "east": { "texture": "#locust_needles", "uv": [ 0, 9.75, 4.5, 13.75 ] },
+                "west": { "texture": "#locust_needles", "uv": [ 4.5, 9.75, 9, 13.75 ] }
+            }
+        },
+        {
+            "from": [ -10, 25, 8 ], 
+            "to": [ 8, 34, 8 ], 
+            "shade": false,
+            "rotation": { "origin": [ 8, 0, 8 ], "axis": "x", "angle": -22.5 },
+            "faces": {
+                "north": { "texture": "#locust_needles", "uv": [ 4.5, 8.625, 9, 9.75 ] },
+                "south": { "texture": "#locust_needles", "uv": [ 0, 8.625, 4.5, 9.75 ] }
+            }
+        },
+        {
+            "from": [ 8, 25, 8 ], 
+            "to": [ 26, 34, 8 ], 
+            "shade": false,
+            "rotation": { "origin": [ 8, 0, 8 ], "axis": "x", "angle": -22.5 },
+            "faces": {
+                "north": { "texture": "#locust_needles", "uv": [ 0, 8.625, 4.5, 9.75 ] },
+                "south": { "texture": "#locust_needles", "uv": [ 4.5, 8.625, 9, 9.75 ] }
+            }
+        },
+        {
+            "from": [ 8, 25, -10 ], 
+            "to": [ 8, 34, 8 ], 
+            "shade": false,
+            "rotation": { "origin": [ 8, 0, 8 ], "axis": "z", "angle": 22.5 },
+            "faces": {
+                "east": { "texture": "#locust_needles", "uv": [ 4.5, 8.625, 9, 9.75 ] },
+                "west": { "texture": "#locust_needles", "uv": [ 0, 8.625, 4.5, 9.75 ] }
+            }
+        },
+        {
+            "from": [ 8, 25, 8 ], 
+            "to": [ 8, 34, 26 ], 
+            "shade": false,
+            "rotation": { "origin": [ 8, 0, 8 ], "axis": "z", "angle": 22.5 },
+            "faces": {
+                "east": { "texture": "#locust_needles", "uv": [ 0, 8.625, 4.5, 9.75 ] },
+                "west": { "texture": "#locust_needles", "uv": [ 4.5, 8.625, 9, 9.75 ] }
+            }
+        },
+        {
+            "from": [ -10, -7, 8 ], 
+            "to": [ 8, 25, 8 ], 
+            "shade": false,
+            "rotation": { "origin": [ 8, 0, 8 ], "axis": "x", "angle": 22.5 },
+            "faces": {
+                "north": { "texture": "#locust_needles", "uv": [ 4.5, 9.75, 9, 13.75 ] },
+                "south": { "texture": "#locust_needles", "uv": [ 0, 9.75, 4.5, 13.75 ] }
+            }
+        },
+        {
+            "from": [ 8, -7, -10 ], 
+            "to": [ 8, 25, 8 ], 
+            "shade": false,
+            "rotation": { "origin": [ 8, 0, 8 ], "axis": "z", "angle": -22.5 },
+            "faces": {
+                "east": { "texture": "#locust_needles", "uv": [ 4.5, 9.75, 9, 13.75 ] },
+                "west": { "texture": "#locust_needles", "uv": [ 0, 9.75, 4.5, 13.75 ] }
+            }
+        },
+        {
+            "from": [ 8, -7, 8 ], 
+            "to": [ 26, 25, 8 ], 
+            "shade": false,
+            "rotation": { "origin": [ 8, 0, 8 ], "axis": "x", "angle": 22.5 },
+            "faces": {
+                "north": { "texture": "#locust_needles", "uv": [ 0, 9.75, 4.5, 13.75 ] },
+                "south": { "texture": "#locust_needles", "uv": [ 4.5, 9.75, 9, 13.75 ] }
+            }
+        },
+        {
+            "from": [ 8, -7, 8 ], 
+            "to": [ 8, 25, 26 ], 
+            "shade": false,
+            "rotation": { "origin": [ 8, 0, 8 ], "axis": "z", "angle": -22.5 },
+            "faces": {
+                "east": { "texture": "#locust_needles", "uv": [ 0, 9.75, 4.5, 13.75 ] },
+                "west": { "texture": "#locust_needles", "uv": [ 4.5, 9.75, 9, 13.75 ] }
+            }
+        },
+        {
+            "from": [ -10, 25, 8 ], 
+            "to": [ 8, 34, 8 ], 
+            "shade": false,
+            "rotation": { "origin": [ 8, 0, 8 ], "axis": "x", "angle": 22.5 },
+            "faces": {
+                "north": { "texture": "#locust_needles", "uv": [ 4.5, 8.625, 9, 9.75 ] },
+                "south": { "texture": "#locust_needles", "uv": [ 0, 8.625, 4.5, 9.75 ] }
+            }
+        },
+        {
+            "from": [ 8, 25, 8 ], 
+            "to": [ 26, 34, 8 ], 
+            "shade": false,
+            "rotation": { "origin": [ 8, 0, 8 ], "axis": "x", "angle": 22.5 },
+            "faces": {
+                "north": { "texture": "#locust_needles", "uv": [ 0, 8.625, 4.5, 9.75 ] },
+                "south": { "texture": "#locust_needles", "uv": [ 4.5, 8.625, 9, 9.75 ] }
+            }
+        },
+        {
+            "from": [ 8, 25, 8 ], 
+            "to": [ 8, 34, 26 ], 
+            "shade": false,
+            "rotation": { "origin": [ 8, 0, 8 ], "axis": "z", "angle": -22.5 },
+            "faces": {
+                "east": { "texture": "#locust_needles", "uv": [ 0, 8.625, 4.5, 9.75 ] },
+                "west": { "texture": "#locust_needles", "uv": [ 4.5, 8.625, 9, 9.75 ] }
+            }
+        },
+        {
+            "from": [ 8, 25, -10 ], 
+            "to": [ 8, 34, 8 ], 
+            "shade": false,
+            "rotation": { "origin": [ 8, 0, 8 ], "axis": "z", "angle": -22.5 },
+            "faces": {
+                "east": { "texture": "#locust_needles", "uv": [ 4.5, 8.625, 9, 9.75 ] },
+                "west": { "texture": "#locust_needles", "uv": [ 0, 8.625, 4.5, 9.75 ] }
+            }
+        }
+    ]
 }

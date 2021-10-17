@@ -1,17 +1,16 @@
 package birsy.clinker.common.item;
 
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.IStringSerializable;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -22,34 +21,34 @@ public class AlchemicalItem extends Item {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        this.cycleQuality(playerIn.getHeldItem(handIn));
-        return ActionResult.resultSuccess(playerIn.getHeldItem(handIn));
+    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
+        this.cycleQuality(playerIn.getItemInHand(handIn));
+        return InteractionResultHolder.success(playerIn.getItemInHand(handIn));
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag isAdvanced) {
         if (this.getQuality(stack) != AlchemicalQuality.NONE) {
-            tooltip.add(new TranslationTextComponent("item.clinker.quality").appendSibling(this.getQuality(stack).getTranslationComponent()));
+            tooltip.add(new TranslatableComponent("item.clinker.quality").append(this.getQuality(stack).getTranslationComponent()));
         }
-        tooltip.add(new TranslationTextComponent(this.getTranslationKey(stack) + ".description").mergeStyle(TextFormatting.DARK_GRAY).mergeStyle(TextFormatting.ITALIC));
-        super.addInformation(stack, worldIn, tooltip, flagIn);
+        tooltip.add(new TranslatableComponent(this.getDescriptionId(stack) + ".description").withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC));
+        super.appendHoverText(stack, worldIn, tooltip, isAdvanced);
     }
 
     @Override
-    public ITextComponent getDisplayName(ItemStack stack) {
+    public Component getName(ItemStack stack) {
         boolean isAcceptableQuality = this.getQuality(stack) != AlchemicalQuality.DUBIOUS;
-        return isAcceptableQuality ? new TranslationTextComponent(this.getTranslationKey(stack)) : new TranslationTextComponent(this.getTranslationKey(stack)).mergeStyle(TextFormatting.RED);
+        return isAcceptableQuality ? new TranslatableComponent(this.getDescriptionId(stack)) : new TranslatableComponent(this.getDescriptionId(stack)).withStyle(ChatFormatting.RED);
     }
 
     public boolean hasQuality(ItemStack stack) {
-        CompoundNBT nbt = stack.getChildTag("quality");
+        CompoundTag nbt = stack.getTagElement("quality");
         return nbt != null && nbt.contains("index", 99);
     }
 
     public AlchemicalQuality getQuality(ItemStack stack) {
         if (hasQuality(stack)) {
-            CompoundNBT nbt = stack.getChildTag("quality");
+            CompoundTag nbt = stack.getTagElement("quality");
             return AlchemicalQuality.fromIndex(nbt.getInt("index") % 5);
         } else {
             return AlchemicalQuality.NONE;
@@ -57,41 +56,41 @@ public class AlchemicalItem extends Item {
     }
 
     public void setQuality(ItemStack stack, AlchemicalQuality qualityIn) {
-        stack.getOrCreateChildTag("quality").putInt("index", qualityIn.getIndex());
+        stack.getOrCreateTagElement("quality").putInt("index", qualityIn.getIndex());
     }
 
     public void setQuality(ItemStack stack, int qualityIndex) {
-        stack.getOrCreateChildTag("quality").putInt("index", qualityIndex % 5);
+        stack.getOrCreateTagElement("quality").putInt("index", qualityIndex % 5);
     }
 
     public void cycleQuality(ItemStack stack) {
         setQuality(stack, getQuality(stack).getIndex() + 1);
     }
 
-    public enum AlchemicalQuality implements IStringSerializable{
-        NONE("none", TextFormatting.RESET, 0),
-        DUBIOUS("bad", TextFormatting.DARK_RED, 1),
-        ACCEPTABLE("average", TextFormatting.YELLOW, 2),
-        PROFICIENT("good", TextFormatting.GREEN, 3),
-        EXQUISITE("perfect", TextFormatting.AQUA,4);
+    public enum AlchemicalQuality {
+        NONE("none", ChatFormatting.RESET, 0),
+        DUBIOUS("bad", ChatFormatting.DARK_RED, 1),
+        ACCEPTABLE("average", ChatFormatting.YELLOW, 2),
+        PROFICIENT("good", ChatFormatting.GREEN, 3),
+        EXQUISITE("perfect", ChatFormatting.AQUA,4);
 
         private final int index;
         private final String name;
         private final String translationKey;
-        private final TextFormatting colorFormatting;
+        private final ChatFormatting colorFormatting;
 
-        AlchemicalQuality(String name, TextFormatting color, int index) {
+        AlchemicalQuality(String name, ChatFormatting color, int index) {
             this.name = name;
             this.translationKey = "item.clinker.quality." + name;
             this.colorFormatting = color;
             this.index = index;
         }
 
-        public TranslationTextComponent getTranslationComponent() {
-            return (TranslationTextComponent) new TranslationTextComponent(this.getString()).mergeStyle(this.getColor());
+        public TranslatableComponent getTranslationComponent() {
+            return (TranslatableComponent) new TranslatableComponent(this.getString()).withStyle(this.getColor());
         }
 
-        public TextFormatting getColor() {
+        public ChatFormatting getColor() {
             return this.colorFormatting;
         }
 
@@ -116,7 +115,6 @@ public class AlchemicalItem extends Item {
             }
         }
 
-        @Override
         public String getString() {
             return this.translationKey;
         }

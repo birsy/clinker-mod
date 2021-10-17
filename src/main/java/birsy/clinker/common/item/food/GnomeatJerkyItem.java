@@ -1,18 +1,19 @@
 package birsy.clinker.common.item.food;
 
 import birsy.clinker.core.Clinker;
-import net.minecraft.item.Food;
-import net.minecraft.item.Item;
+import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.Item;
 
 public class GnomeatJerkyItem extends Item
 {
 	public GnomeatJerkyItem()
 	{
 		super(new Item.Properties()
-				.group(Clinker.CLINKER_FOOD)
-				.food(new Food.Builder()
-						.hunger(5)
-						.saturation(5.0F)
+				.tab(Clinker.CLINKER_FOOD)
+				.food(new FoodProperties.Builder()
+						.nutrition(5)
+						.saturationMod(5.0F)
+						.meat()
 						.build())
 		);
 	}

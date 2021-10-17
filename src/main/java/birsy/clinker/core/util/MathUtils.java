@@ -1,10 +1,9 @@
 package birsy.clinker.core.util;
 
 import com.ibm.icu.impl.Pair;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.util.math.vector.Vector3i;
-import net.minecraft.util.math.vector.Vector4f;
+import com.mojang.math.Vector3d;
+import com.mojang.math.Vector3f;
+import net.minecraft.util.Mth;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
@@ -97,7 +96,7 @@ public class MathUtils {
         float secondTerraceThreshold = Math.abs(terraceThreshold - 1);
         boolean isTerrace = s >= terraceThreshold || s <= secondTerraceThreshold;
 
-        return Pair.of(MathHelper.lerp(erosion,(k + s) * terraceWidth, height), isTerrace);
+        return Pair.of(Mth.lerp(erosion,(k + s) * terraceWidth, height), isTerrace);
     }
 
     /**
@@ -117,9 +116,9 @@ public class MathUtils {
         float f = (height - k * terraceWidth) / terraceWidth;
         float s = Math.min(2.0f * f, 1.0f);
 
-        float terraceMultiplier = MathHelper.clamp(MathUtils.invert(Math.abs(s - 1.0F)), 0.0F, 1.0F);
+        float terraceMultiplier = Mth.clamp(MathUtils.invert(Math.abs(s - 1.0F)), 0.0F, 1.0F);
 
-        return Pair.of(MathHelper.lerp(erosion,(k + s) * terraceWidth, height), terraceMultiplier);
+        return Pair.of(Mth.lerp(erosion,(k + s) * terraceWidth, height), terraceMultiplier);
     }
 
     /**
@@ -172,7 +171,7 @@ public class MathUtils {
 
 
     public static float minMaxSin (float value, float min, float max) {
-        return (((MathHelper.sin(value) + 1) * 0.5F) * (max - min)) + min;
+        return (((Mth.sin(value) + 1) * 0.5F) * (max - min)) + min;
     }
 
     public static float smoothMin (float value1, float value2, float smoothness) {
@@ -299,17 +298,17 @@ public class MathUtils {
         },
         easeInSine {
             public float ease(float x) {
-                return 1 - MathHelper.cos((float) ((x * Math.PI) / 2));
+                return 1 - Mth.cos((float) ((x * Math.PI) / 2));
             }
         },
         easeOutSine {
             public float ease(float x) {
-                return MathHelper.sin((float) ((x * Math.PI) / 2));
+                return Mth.sin((float) ((x * Math.PI) / 2));
             }
         },
         easeInOutSine {
             public float ease(float x) {
-                return -(MathHelper.cos((float) (Math.PI * x)) - 1) / 2;
+                return -(Mth.cos((float) (Math.PI * x)) - 1) / 2;
             }
         },
         easeInExpo {
@@ -371,7 +370,7 @@ public class MathUtils {
                         ? 0
                         : (float) (x == 1
                         ? 1
-                        : -Math.pow(2, 10 * x - 10) * MathHelper.sin((float) ((x * 10 - 10.75) * ((2 * Math.PI) / 3))));
+                        : -Math.pow(2, 10 * x - 10) * Mth.sin((float) ((x * 10 - 10.75) * ((2 * Math.PI) / 3))));
             }
         },
         easeOutElastic {
@@ -380,7 +379,7 @@ public class MathUtils {
                         ? 0
                         : (float) (x == 1
                         ? 1
-                        : Math.pow(2, -10 * x) * MathHelper.sin((float) ((x * 10 - 0.75) * ((2 * Math.PI) / 3))) + 1);
+                        : Math.pow(2, -10 * x) * Mth.sin((float) ((x * 10 - 0.75) * ((2 * Math.PI) / 3))) + 1);
             }
         },
         easeInOutElastic {
@@ -390,8 +389,8 @@ public class MathUtils {
                         : (float) (x == 1
                         ? 1
                         : x < 0.5
-                        ? -(Math.pow(2, 20 * x - 10) * MathHelper.sin((float) ((20 * x - 11.125) * ((2 * Math.PI) / 4.5)))) / 2
-                        : (Math.pow(2, -20 * x + 10) * MathHelper.sin((float) ((20 * x - 11.125) * ((2 * Math.PI) / 4.5)))) / 2 + 1);
+                        ? -(Math.pow(2, 20 * x - 10) * Mth.sin((float) ((20 * x - 11.125) * ((2 * Math.PI) / 4.5)))) / 2
+                        : (Math.pow(2, -20 * x + 10) * Mth.sin((float) ((20 * x - 11.125) * ((2 * Math.PI) / 4.5)))) / 2 + 1);
             }
         },
         easeInBounce {
@@ -433,93 +432,16 @@ public class MathUtils {
     }
 
     public static float triLerp(Vector3f pct, float cAAA, float cAAB, float cABA, float cABB, float cBAA, float cBAB, float cBBA, float cBBB) {
-        float cAA = MathHelper.lerp(pct.getX(), cAAA, cBAA);
-        float cAB = MathHelper.lerp(pct.getX(), cAAB, cBAB);
-        float cBB = MathHelper.lerp(pct.getX(), cABB, cBBB);
-        float cBA = MathHelper.lerp(pct.getX(), cABA, cBBA);
+        float cAA = Mth.lerp(pct.x(), cAAA, cBAA);
+        float cAB = Mth.lerp(pct.x(), cAAB, cBAB);
+        float cBB = Mth.lerp(pct.x(), cABB, cBBB);
+        float cBA = Mth.lerp(pct.x(), cABA, cBBA);
         
-        float cA = MathHelper.lerp(pct.getZ(), cAA, cBA);
-        float cB = MathHelper.lerp(pct.getZ(), cAB, cBB);
+        float cA = Mth.lerp(pct.z(), cAA, cBA);
+        float cB = Mth.lerp(pct.z(), cAB, cBB);
         
-        float c = MathHelper.lerp(pct.getY(), cA, cB);
+        float c = Mth.lerp(pct.y(), cA, cB);
         
         return c;
-    }
-
-    public static class InterpolationMatrix {
-        final int xCells;
-        final int yCells;
-        final int zCells;
-        final EasingType easingType;
-
-        private float[][][] valueMatrix;
-
-        public InterpolationMatrix(int xCellsIn, int zCellsIn, int yCellsIn, EasingType easingType) {
-            this.xCells = xCellsIn;
-            this.zCells = zCellsIn;
-            this.yCells = yCellsIn;
-            this.easingType = easingType;
-
-            this.valueMatrix = new float[xCells][yCells][zCells];
-        }
-
-        public InterpolationMatrix(int horizontalCellsIn, int verticalCellsIn, EasingType easingType) {
-            this(horizontalCellsIn, horizontalCellsIn, verticalCellsIn, easingType);
-        }
-
-        public InterpolationMatrix(int cellsIn, EasingType easingType) {
-            this(cellsIn, cellsIn, easingType);
-        }
-
-        public void inputValue(int cellX, int cellY, int cellZ, float value) {
-            try {
-                this.valueMatrix[cellX][cellY][cellZ] = value;
-            } catch(Exception e) {
-                throw new IndexOutOfBoundsException("Cell outside of InterpolationMatrix range! Inputted coordinates are:" + cellX + ", " + cellY + ", " + cellZ + ".");
-            }
-        }
-
-        public float outputValue(float x, float y, float z) {
-            Vector3f positionInMatrix = new Vector3f(x * xCells, y * yCells, z * zCells);
-            Vector3i coord0 = new Vector3i(Math.floor(positionInMatrix.getX()), Math.floor(positionInMatrix.getY()), Math.floor(positionInMatrix.getZ()));
-            Vector3i coord1 = new Vector3i(Math.ceil(positionInMatrix.getX()), Math.ceil(positionInMatrix.getY()), Math.ceil(positionInMatrix.getZ()));
-
-            float AAA = this.getValueInMatrix(coord0.getX(), coord0.getY(), coord0.getZ());
-            float BAA = this.getValueInMatrix(coord1.getX(), coord0.getY(), coord0.getZ());
-            float AAB = this.getValueInMatrix(coord0.getX(), coord0.getY(), coord1.getZ());
-            float ABA = this.getValueInMatrix(coord0.getX(), coord1.getY(), coord0.getZ());
-
-            float BBB = this.getValueInMatrix(coord1.getX(), coord1.getY(), coord1.getZ());
-            float ABB = this.getValueInMatrix(coord0.getX(), coord1.getY(), coord1.getZ());
-            float BBA = this.getValueInMatrix(coord1.getX(), coord1.getY(), coord0.getZ());
-            float BAB = this.getValueInMatrix(coord1.getX(), coord0.getY(), coord1.getZ());
-
-            Vector3f pct = positionInMatrix;
-            pct.add(-coord0.getX(), -coord0.getY(), -coord0.getZ());
-            return this.triInterpolate(pct, AAA, BAA, AAB, ABA, BBB, ABB, BBA, BAB, this.easingType);
-        }
-
-        private float getValueInMatrix(int x, int y, int z) {
-            try {
-                return this.valueMatrix[x][y][z];
-            } catch(Exception e) {
-                throw new IndexOutOfBoundsException("Coordinate outside of InterpolationMatrix range! Coordinates are:" + x + ", " + y + ", " + z + ".");
-            }
-        }
-
-        private float triInterpolate(Vector3f pct, float cAAA, float cBAA, float cAAB, float cABA, float cBBB, float cABB, float cBBA, float cBAB, EasingType easingType) {
-            pct = new Vector3f(MathUtils.ease(pct.getX(), easingType), MathUtils.ease(pct.getY(), easingType), MathUtils.ease(pct.getZ(), easingType));
-            float cAA = MathHelper.lerp(pct.getX(), cAAA, cBAA);
-            float cAB = MathHelper.lerp(pct.getX(), cAAB, cBAB);
-            float cBB = MathHelper.lerp(pct.getX(), cABB, cBBB);
-            float cBA = MathHelper.lerp(pct.getX(), cABA, cBBA);
-
-            float cA = MathHelper.lerp(pct.getZ(), cAA, cBA);
-            float cB = MathHelper.lerp(pct.getZ(), cAB, cBB);
-
-            float c = MathHelper.lerp(pct.getY(), cA, cB);
-
-            return c;
-        }
     }
 }
