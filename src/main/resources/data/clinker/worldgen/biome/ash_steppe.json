@@ -1,0 +1,65 @@
+{
+  "scale": 0.05,
+  "depth": 0.125,
+  "effects": {
+    "mood_sound": {
+      "sound": "minecraft:ambient.basalt_deltas.mood",
+      "tick_delay": 6000,
+      "block_search_extent": 8,
+      "offset": 2.0
+    },
+    "additions_sound": {
+      "sound": "clinker:ambient.ash_plains.additions",
+      "tick_chance": 0.0003
+    },
+    "music": {
+      "sound": "minecraft:music.nether.basalt_deltas",
+      "min_delay": 12000,
+      "max_delay": 24000,
+      "replace_current_music": false
+    },
+    "particle": {
+      "options": {
+        "type": "minecraft:ash"
+      },
+      "probability": 0.038093334
+    },
+    "ambient_sound": "clinker:ambient.ash_plains.loop",
+    "sky_color": 4209726,
+    "fog_color": 9139549,
+    "water_color": 6578522,
+    "water_fog_color": 723467
+  },
+  "surface_builder": "clinker:ash_steppe",
+  "carvers": {
+    "air": []
+  },
+  "features": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    []
+  ],
+  "starts": [],
+  "spawners": {
+    "monster": [],
+    "creature": [],
+    "ambient": [],
+    "underground_water_creature": [],
+    "water_creature": [],
+    "water_ambient": [],
+    "misc": []
+  },
+  "spawn_costs": {},
+  "player_spawn_friendly": true,
+  "precipitation": "rain",
+  "temperature": 0.8,
+  "downfall": 0.4,
+  "category": "none"
+}

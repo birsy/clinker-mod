@@ -1,0 +1,67 @@
+{
+    "__comment": "Model generated using MrCrayfish's Model Creator (https://mrcrayfish.com/tools?id=mc)",
+    "textures": {
+        "particle": "clinker:blocks/swamp_aspen/swamp_aspen_log_top",
+        "swamp_aspen_log_top": "clinker:blocks/swamp_aspen/swamp_aspen_log_top",
+        "swamp_aspen_log": "clinker:blocks/swamp_aspen/swamp_aspen_log"
+    },
+    "display": {
+        "gui": {
+            "rotation": [ 30, 45, 0 ],
+            "translation": [ 0, 0, 0 ],
+            "scale": [ 0.625, 0.625, 0.625 ]
+        },
+        "ground": {
+            "rotation": [ 0, 0, 0 ],
+            "translation": [ 0, 3, 0 ],
+            "scale": [ 0.25, 0.25, 0.25 ]
+        },
+        "fixed": {
+            "rotation": [ 0, 180, 0 ],
+            "translation": [ 0, 0, 0 ],
+            "scale": [ 1, 1, 1 ]
+        },
+        "head": {
+            "rotation": [ 0, 180, 0 ],
+            "translation": [ 0, 0, 0 ],
+            "scale": [ 1, 1, 1 ]
+        },
+        "firstperson_righthand": {
+            "rotation": [ 0, 315, 0 ],
+            "translation": [ 0, 2.5, 0 ],
+            "scale": [ 0.4, 0.4, 0.4 ]
+        },
+        "thirdperson_righthand": {
+            "rotation": [ 75, 315, 0 ],
+            "translation": [ 0, 2.5, 0 ],
+            "scale": [ 0.375, 0.375, 0.375 ]
+        }
+    },
+    "elements": [
+        {
+            "name": "log",
+            "from": [ 4, 0, 4 ], 
+            "to": [ 12, 16, 12 ], 
+            "faces": {
+                "north": { "texture": "#swamp_aspen_log", "uv": [ 4, 0, 12, 16 ] },
+                "east": { "texture": "#swamp_aspen_log", "uv": [ 4, 0, 12, 16 ] },
+                "south": { "texture": "#swamp_aspen_log", "uv": [ 4, 0, 12, 16 ] },
+                "west": { "texture": "#swamp_aspen_log", "uv": [ 4, 0, 12, 16 ] },
+                "up": { "texture": "#swamp_aspen_log_top", "uv": [ 4, 4, 12, 12 ], "cullface": "up" },
+                "down": { "texture": "#swamp_aspen_log_top", "uv": [ 4, 4, 12, 12 ], "cullface": "down" }
+            }
+        },
+        {
+            "name": "s",
+            "from": [ 4, 4, 12 ], 
+            "to": [ 12, 12, 16 ], 
+            "faces": {
+                "east": { "texture": "#swamp_aspen_log", "uv": [ 0, 4, 4, 12 ] },
+                "south": { "texture": "#swamp_aspen_log_top", "uv": [ 4, 4, 12, 12 ], "cullface": "south" },
+                "west": { "texture": "#swamp_aspen_log", "uv": [ 12, 4, 16, 12 ] },
+                "up": { "texture": "#swamp_aspen_log", "uv": [ 4, 12, 12, 16 ] },
+                "down": { "texture": "#swamp_aspen_log", "uv": [ 4, 0, 12, 4 ] }
+            }
+        }
+    ]
+}

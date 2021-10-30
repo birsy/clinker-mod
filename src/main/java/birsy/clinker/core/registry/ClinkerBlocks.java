@@ -1,6 +1,7 @@
 package birsy.clinker.core.registry;
 
 import birsy.clinker.common.block.*;
+import birsy.clinker.common.block.aspen.SwampAspenLogBlock;
 import birsy.clinker.core.Clinker;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.BlockItem;
@@ -183,8 +184,8 @@ public class ClinkerBlocks
 	
 	
 	//Wood Types
-	public static BlockBehaviour.Properties getLocustWoodProperties() {
-		return BlockBehaviour.Properties.of(Material.WOOD, MaterialColor.WOOD)
+	public static BlockBehaviour.Properties getOthershoreWoodProperties(MaterialColor colorIn) {
+		return BlockBehaviour.Properties.of(Material.WOOD, colorIn)
 				.strength(2.0F, 3.0F)
 				.sound(SoundType.WOOD);
 	}
@@ -196,18 +197,20 @@ public class ClinkerBlocks
 	public static final RegistryObject<Block> LOCUST_LEAVES = createBlock("locust_leaves", 
 			() -> new LocustFlowersBlock(BlockBehaviour.Properties.of(Material.LEAVES, MaterialColor.TERRACOTTA_ORANGE).strength(0.2F).randomTicks().sound(SoundType.AZALEA_LEAVES).noOcclusion()), Clinker.CLINKER_BLOCKS);
 
-	public static final RegistryObject<Block> LOCUST_PLANKS = createBlock("locust_planks", () -> new Block(getLocustWoodProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> LOCUST_STAIRS = createBlock("locust_stairs", () -> new StairBlock(() -> ClinkerBlocks.LOCUST_PLANKS.get().defaultBlockState(), getLocustWoodProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> LOCUST_SLAB = createBlock("locust_slab", () -> new SlabBlock(getLocustWoodProperties()), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> LOCUST_PLANKS = createBlock("locust_planks", () -> new Block(getOthershoreWoodProperties(MaterialColor.TERRACOTTA_GREEN)), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> LOCUST_STAIRS = createBlock("locust_stairs", () -> new StairBlock(() -> ClinkerBlocks.LOCUST_PLANKS.get().defaultBlockState(), getOthershoreWoodProperties(MaterialColor.TERRACOTTA_GREEN)), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> LOCUST_SLAB = createBlock("locust_slab", () -> new SlabBlock(getOthershoreWoodProperties(MaterialColor.TERRACOTTA_GREEN)), Clinker.CLINKER_BLOCKS);
 	
-	public static final RegistryObject<Block> LOCUST_FENCE = createBlock("locust_fence", () -> new FenceBlock(getLocustWoodProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> LOCUST_FENCE_GATE = createBlock("locust_fence_gate", () -> new FenceGateBlock(getLocustWoodProperties()), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> LOCUST_FENCE = createBlock("locust_fence", () -> new FenceBlock(getOthershoreWoodProperties(MaterialColor.TERRACOTTA_GREEN)), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> LOCUST_FENCE_GATE = createBlock("locust_fence_gate", () -> new FenceGateBlock(getOthershoreWoodProperties(MaterialColor.TERRACOTTA_GREEN)), Clinker.CLINKER_BLOCKS);
 	public static final RegistryObject<Block> LOCUST_DOOR = createBlock("locust_door", () -> new DoorBlock(BlockBehaviour.Properties.of(Material.WOOD, MaterialColor.WOOD).strength(2.0F, 3.0F).sound(SoundType.WOOD).noOcclusion()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> LOCUST_TRAPDOOR = createBlock("locust_trapdoor", () -> new TrapDoorBlock(getLocustWoodProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> LOCUST_BUTTON = createBlock("locust_button", () -> new WoodButtonBlock(getLocustWoodProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> LOCUST_PRESSURE_PLATE = createBlock("locust_pressure_plate", () -> new PressurePlateBlock(PressurePlateBlock.Sensitivity.MOBS, getLocustWoodProperties()), Clinker.CLINKER_BLOCKS);
-	
-	
+	public static final RegistryObject<Block> LOCUST_TRAPDOOR = createBlock("locust_trapdoor", () -> new TrapDoorBlock(getOthershoreWoodProperties(MaterialColor.TERRACOTTA_GREEN)), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> LOCUST_BUTTON = createBlock("locust_button", () -> new WoodButtonBlock(getOthershoreWoodProperties(MaterialColor.TERRACOTTA_GREEN)), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> LOCUST_PRESSURE_PLATE = createBlock("locust_pressure_plate", () -> new PressurePlateBlock(PressurePlateBlock.Sensitivity.MOBS, getOthershoreWoodProperties(MaterialColor.TERRACOTTA_GREEN)), Clinker.CLINKER_BLOCKS);
+
+	public static final RegistryObject<Block> SWAMP_ASPEN_LOG = createBlock("swamp_aspen_log", () -> new SwampAspenLogBlock(BlockBehaviour.Properties.of(Material.WOOD, (state) -> state.getValue(RotatedPillarBlock.AXIS) == Direction.Axis.Y ? MaterialColor.WOOD : MaterialColor.COLOR_LIGHT_GRAY).strength(2.0F).sound(SoundType.STEM).noOcclusion()), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> STRIPPED_SWAMP_ASPEN_LOG = createBlock("stripped_swamp_aspen_log", () -> new SwampAspenLogBlock(BlockBehaviour.Properties.of(Material.WOOD, MaterialColor.WOOD).strength(2.0F).sound(SoundType.STEM).noOcclusion()), Clinker.CLINKER_BLOCKS);
+
 	//Plants
 
 	//Riek Plant

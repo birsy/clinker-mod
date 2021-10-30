@@ -1,0 +1,44 @@
+{
+    "__comment": "Model generated using MrCrayfish's Model Creator (https://mrcrayfish.com/tools?id=mc)",
+    "textures": {
+        "particle": "clinker:blocks/swamp_aspen/stripped_swamp_aspen_log_top",
+        "swamp_aspen_log_top": "clinker:blocks/swamp_aspen/stripped_swamp_aspen_log_top",
+        "swamp_aspen_log": "clinker:blocks/swamp_aspen/stripped_swamp_aspen_log"
+    },
+    "elements": [
+        {
+            "from": [ 4, 0, 4 ], 
+            "to": [ 12, 16, 12 ], 
+            "faces": {
+                "north": { "texture": "#swamp_aspen_log", "uv": [ 4, 0, 12, 16 ] },
+                "east": { "texture": "#swamp_aspen_log", "uv": [ 4, 0, 12, 16 ] },
+                "south": { "texture": "#swamp_aspen_log", "uv": [ 4, 0, 12, 16 ] },
+                "west": { "texture": "#swamp_aspen_log", "uv": [ 4, 0, 12, 16 ] },
+                "up": { "texture": "#swamp_aspen_log_top", "uv": [ 4, 4, 12, 12 ], "cullface": "up" },
+                "down": { "texture": "#swamp_aspen_log_top", "uv": [ 4, 4, 12, 12 ], "cullface": "down" }
+            }
+        },
+        {
+            "from": [ 4, 4, 0 ], 
+            "to": [ 12, 12, 4 ], 
+            "faces": {
+                "north": { "texture": "#swamp_aspen_log_top", "uv": [ 4, 4, 12, 12 ], "cullface": "north" },
+                "east": { "texture": "#swamp_aspen_log", "uv": [ 12, 4, 16, 12 ] },
+                "west": { "texture": "#swamp_aspen_log", "uv": [ 0, 4, 4, 12 ] },
+                "up": { "texture": "#swamp_aspen_log", "uv": [ 4, 0, 12, 4 ] },
+                "down": { "texture": "#swamp_aspen_log", "uv": [ 4, 12, 12, 16 ] }
+            }
+        },
+        {
+            "from": [ 0, 4, 4 ], 
+            "to": [ 4, 12, 12 ], 
+            "faces": {
+                "north": { "texture": "#swamp_aspen_log", "uv": [ 12, 4, 16, 12 ] },
+                "south": { "texture": "#swamp_aspen_log", "uv": [ 0, 4, 4, 12 ] },
+                "west": { "texture": "#swamp_aspen_log_top", "uv": [ 4, 4, 12, 12 ], "cullface": "west" },
+                "up": { "texture": "#swamp_aspen_log", "uv": [ 0, 4, 4, 12 ] },
+                "down": { "texture": "#swamp_aspen_log", "uv": [ 12, 4, 16, 12 ] }
+            }
+        }
+    ]
+}

@@ -1,0 +1,49 @@
+{
+  "noise_caves_enabled": false,
+  "deepslate_enabled": false,
+  "ore_veins_enabled": false,
+  "noodle_caves_enabled": true,
+  "min_surface_level": 0,
+  "disable_mob_generation": false,
+  "aquifers_enabled": false,
+  "default_fluid": {
+    "Properties": {
+      "level": "0"
+    },
+    "Name": "minecraft:water"
+  },
+  "bedrock_roof_position": -2147483648,
+  "bedrock_floor_position": -64,
+  "sea_level": 0,
+  "structures": {
+    "structures": {}
+  },
+  "noise": {
+    "simplex_surface_noise": true,
+    "size_vertical": 1,
+    "density_factor": 0.0,
+    "density_offset": 0.0,
+    "top_slide": {
+      "target": -1000,
+      "size": 64,
+      "offset": -46
+    },
+    "bottom_slide": {
+      "target": 75,
+      "size": 50,
+      "offset": -1
+    },
+    "size_horizontal": 2,
+    "min_y": -64,
+    "height": 256,
+    "sampling": {
+      "xz_scale": 1.0,
+      "y_scale": 0.125,
+      "xz_factor": 80.0,
+      "y_factor": 160.0
+    }
+  },
+  "default_block": {
+    "Name": "clinker:brimstone"
+  }
+}

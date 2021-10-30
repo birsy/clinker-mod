@@ -6,6 +6,7 @@ import birsy.clinker.core.registry.ClinkerItems;
 import birsy.clinker.core.registry.ClinkerSounds;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
@@ -42,6 +43,8 @@ public class Clinker
 	private void setup(final FMLCommonSetupEvent event)
     {
         event.enqueueWork(() -> {
+            AxeItem.STRIPPABLES.put(ClinkerBlocks.LOCUST_LOG.get(), ClinkerBlocks.STRIPPED_LOCUST_LOG.get());
+            AxeItem.STRIPPABLES.put(ClinkerBlocks.SWAMP_ASPEN_LOG.get(), ClinkerBlocks.STRIPPED_SWAMP_ASPEN_LOG.get());
         });
     }
 
