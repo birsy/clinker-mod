@@ -16,7 +16,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
+
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.Map;
@@ -30,7 +30,9 @@ public class SwampAspenLogBlock extends RotatedPillarBlock implements SimpleWate
     public static final BooleanProperty SOUTH = BlockStateProperties.SOUTH;
     public static final BooleanProperty WEST = BlockStateProperties.WEST;
 
-    private static final double AABB_MIN = 4.0F;
+    //Currently doesn't support the log connections. The code was super convoluted and barely worked - just not doing it is cleaner and probably clearer to the player.
+    //TODO: Make the collisions support log connections. Or not? It's pretty fine as-is.
+    private static final double AABB_MIN = 4.0D;
     private static final double AABB_MAX = 12.0D;
     private static final VoxelShape X_AXIS_AABB = Block.box(0.0D, AABB_MIN, AABB_MIN, 16.0D, AABB_MAX, AABB_MAX);
     private static final VoxelShape Y_AXIS_AABB = Block.box(AABB_MIN, 0.0D, AABB_MIN, AABB_MAX, 16.0D, AABB_MAX);
@@ -43,57 +45,29 @@ public class SwampAspenLogBlock extends RotatedPillarBlock implements SimpleWate
 
     public SwampAspenLogBlock(Properties properties) {
         super(properties);
-        this.registerDefaultState(this.getStateDefinition().any().setValue(WATERLOGGED, false));
+        this.registerDefaultState(this.getStateDefinition().any().setValue(AXIS, Direction.Axis.Y).setValue(NORTH, false).setValue(SOUTH, false).setValue(EAST, false).setValue(WEST, false).setValue(WATERLOGGED, false));
     }
+
+
+    @Override
+    public BlockState getStateForPlacement(BlockPlaceContext pContext) {
+        BlockState baseState = super.getStateForPlacement(pContext);
+
+        for (Direction direction : Direction.values()) {
+            BlockPos facingPos = pContext.getClickedPos().relative(direction);
+            BlockState facingState = pContext.getLevel().getBlockState(facingPos);
+
+            baseState = updateShape(baseState, direction, facingState, pContext.getLevel(), pContext.getClickedPos(), facingPos);
+        }
+
+        return baseState;
+    }
+
+
 
     @Override
     public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
         return SHAPE_BY_AXIS.get(pState.getValue(AXIS));
-    }
-
-    public static Direction getGlobalDirection(Direction.Axis axis, Direction direction) {
-        switch (axis) {
-            case X:
-                return direction.getClockWise(Direction.Axis.Y).getClockWise(Direction.Axis.Z);
-            case Y:
-                return direction;
-            default:
-               return direction.getClockWise(Direction.Axis.X);
-        }
-    }
-
-    public static Direction getLocalDirection(Direction.Axis axis, Direction direction) {
-        if (direction.getAxis() != axis) {
-            switch (axis) {
-                case X:
-                    return direction.getCounterClockWise(Direction.Axis.Z).getCounterClockWise(Direction.Axis.Y);
-                case Y:
-                    return direction;
-                case Z:
-                    return direction.getCounterClockWise(Direction.Axis.X);
-            }
-        }
-
-        return null;
-    }
-
-    public BooleanProperty directionToProperty(Direction direction) {
-        if (direction == null) {
-            return null;
-        } else {
-            switch (direction) {
-                case NORTH:
-                    return this.NORTH;
-                case SOUTH:
-                    return this.SOUTH;
-                case EAST:
-                    return this.EAST;
-                case WEST:
-                    return this.WEST;
-                default:
-                    return null;
-            }
-        }
     }
 
     @Override
@@ -110,21 +84,58 @@ public class SwampAspenLogBlock extends RotatedPillarBlock implements SimpleWate
         return pState;
     }
 
-    @Override
-    public BlockState getStateForPlacement(BlockPlaceContext pContext) {
-        BlockState baseState = super.getStateForPlacement(pContext);
-
-        for (Direction direction : Direction.values()) {
-            BlockPos facingPos = pContext.getClickedPos().relative(direction);
-            BlockState facingState = pContext.getLevel().getBlockState(facingPos);
-
-            baseState = updateShape(baseState, direction, facingState, pContext.getLevel(), pContext.getClickedPos(), facingPos);
-        }
-
-        return baseState;
-    }
 
     public void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
         pBuilder.add(AXIS, NORTH, EAST, WEST, SOUTH, WATERLOGGED);
+    }
+
+
+
+    //Gets the global direction for a given LOG CONNECTION DIRECTION, given the log's AXIS.
+    public static Direction getGlobalDirection(Direction.Axis axis, Direction direction) {
+        switch (axis) {
+            case X:
+                return direction.getClockWise(Direction.Axis.Y).getClockWise(Direction.Axis.Z);
+            case Y:
+                return direction;
+            default:
+               return direction.getClockWise(Direction.Axis.X);
+        }
+    }
+
+    //Gets the LOG CONNECTION DIRECTION for a given global direction, given the log's AXIS.
+    //Returns null if no LOG CONNECTION DIRECTION can be calculated (the global direction is facing the same way as the log's AXIS)
+    public static Direction getLocalDirection(Direction.Axis axis, Direction direction) {
+        if (direction.getAxis() != axis) {
+            switch (axis) {
+                case X:
+                    return direction.getCounterClockWise(Direction.Axis.Z).getCounterClockWise(Direction.Axis.Y);
+                case Y:
+                    return direction;
+                case Z:
+                    return direction.getCounterClockWise(Direction.Axis.X);
+            }
+        }
+
+        return null;
+    }
+
+    private BooleanProperty directionToProperty(Direction direction) {
+        if (direction == null) {
+            return null;
+        } else {
+            switch (direction) {
+                case NORTH:
+                    return this.NORTH;
+                case SOUTH:
+                    return this.SOUTH;
+                case EAST:
+                    return this.EAST;
+                case WEST:
+                    return this.WEST;
+                default:
+                    return null;
+            }
+        }
     }
 }

@@ -174,9 +174,32 @@ public class MathUtils {
         return (((Mth.sin(value) + 1) * 0.5F) * (max - min)) + min;
     }
 
-    public static float smoothMin (float value1, float value2, float smoothness) {
-        float h = Math.max(smoothness - Math.abs(value1-value2), 0) / smoothness;
-        return Math.min(value1, value2) - h * h * h * smoothness * 1 / 6.0F;
+    /**
+     * Returns the minimum of two values while reducing discontinuities in their derivatives.
+     * See https://iquilezles.org/www/articles/smin/smin.htm
+     *
+     * @param value1 The first value you'd like to ta take the minimum of.
+     * @param value2 The second value you'd like to ta take the minimum of.
+     * @param smoothness The radius of the smoothing effect.
+     * @return The smoothed minimum of the two values.
+     */
+    public static float smoothMin(float value1, float value2, float smoothness) {
+        float h = (float) (Math.max(smoothness - Math.abs(value1 - value2), 0.0 ) / smoothness);
+        return (float) (Math.min(value1, value2) - h * h * h * smoothness * (1.0 / 6.0));
+    }
+
+    /**
+     * Returns the maximum of two values while reducing discontinuities in their derivatives.
+     * See https://iquilezles.org/www/articles/smin/smin.htm
+     *
+     * @param value1 The first value you'd like to ta take the maximum of.
+     * @param value2 The second value you'd like to ta take the maximum of.
+     * @param smoothness The radius of the smoothing effect.
+     * @return The smoothed maximum of the two values.
+     */
+    public static float smoothMax(float value1, float value2, float smoothness) {
+        float h = (float) (Math.max(smoothness - Math.abs(value1 - value2), 0.0 ) / smoothness);
+        return (float) (Math.max(value1, value2) + h * h * h * smoothness * (1.0 / 6.0));
     }
 
     public static int[] getValidIndexes(Object array, int... excludedIndexes) {
