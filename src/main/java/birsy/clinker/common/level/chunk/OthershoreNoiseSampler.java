@@ -91,7 +91,11 @@ public class OthershoreNoiseSampler {
 
     private float sampleNoise(int x, int y, int z) {
         Pair<Float, Float> surfaceNoise = sampleTerracedSurfaceNoise(x, y, z);
+<<<<<<< Updated upstream
         float overhangNoise = overhangNoiseGenerator.GetNoise(x, y, z);
+=======
+        float overhangNoise = (float) overhangNoiseGenerator.GetNoise(x, y, z);
+>>>>>>> Stashed changes
         float overhangNoiseIntensity = surfaceNoise.second * MathUtils.invert(Mth.clamp(Math.abs(y - surfaceNoise.first) * 0.125F, 0, 1));
 
         return surfaceNoise.first * (overhangNoise * overhangNoiseIntensity);
@@ -99,9 +103,15 @@ public class OthershoreNoiseSampler {
 
     //This base layer will return a distance from Y. This is later modulated with some funky shit to allow overhangs, if only slightly. Should work!
     private Pair<Float, Float> sampleTerracedSurfaceNoise(int x, int y, int z) {
+<<<<<<< Updated upstream
         float baseNoise = (heightmapNoiseGenerator.GetNoise(x, z) + 1) * 0.5F;
         float terraceNoise = MathUtils.mapRange(-1, 1, 0.07F, 0.6F, terraceNoiseGenerator.GetNoise(x, z));
         float terraceStrengthGenerator = MathUtils.mapRange(-1, 1, 0.05F, 0.5F, terraceStrengthNoiseGenerator.GetNoise(x, z));
+=======
+        float baseNoise = (float) ((heightmapNoiseGenerator.GetNoise(x, z) + 1) * 0.5F);
+        float terraceNoise = MathUtils.mapRange(-1, 1, 0.07F, 0.6F, (float) terraceNoiseGenerator.GetNoise(x, z));
+        float terraceStrengthGenerator = MathUtils.mapRange(-1, 1, 0.05F, 0.5F, (float) terraceStrengthNoiseGenerator.GetNoise(x, z));
+>>>>>>> Stashed changes
 
         Pair<Float, Float> terrace = MathUtils.terrace(baseNoise, terraceNoise, terraceStrengthGenerator);
         float final2DNoise = (terrace.first * 2) - 1;

@@ -1,10 +1,43 @@
 package birsy.clinker.core;
 
 
+<<<<<<< Updated upstream
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.ClinkerItems;
 import birsy.clinker.core.registry.ClinkerSounds;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
+=======
+<<<<<<< Updated upstream
+import birsy.clinker.client.render.tileentity.*;
+import birsy.clinker.client.render.world.OthershoreDimensionRenderInfo;
+import birsy.clinker.core.registry.*;
+import birsy.clinker.core.registry.world.*;
+import com.google.common.collect.Maps;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import net.minecraft.client.world.DimensionRenderInfo;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.item.SpawnEggItem;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SharedConstants;
+import net.minecraft.util.Util;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.carver.WorldCarver;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+=======
+import birsy.clinker.common.alchemy.chemicals.Element;
+import birsy.clinker.core.registry.ClinkerBlocks;
+import birsy.clinker.core.registry.ClinkerItems;
+import birsy.clinker.core.registry.ClinkerSounds;
+import birsy.clinker.core.registry.alchemy.ClinkerElements;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.CreativeModeTab;
@@ -15,8 +48,19 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+<<<<<<< Updated upstream
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+=======
+<<<<<<< Updated upstream
+
+import java.util.Map;
+=======
+import net.minecraftforge.registries.DeferredRegister;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 
 @Mod(Clinker.MOD_ID)
 public class Clinker
@@ -33,6 +77,15 @@ public class Clinker
         ClinkerItems.ITEMS.register(modEventBus);
         ClinkerBlocks.BLOCKS.register(modEventBus);
         ClinkerBlocks.ITEMS.register(modEventBus);
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+        ClinkerEntities.ENTITY_TYPES.register(modEventBus);
+        ClinkerTileEntities.TILE_ENTITY_TYPES.register(modEventBus);
+=======
+        ClinkerElements.ELEMENTS.register(modEventBus);
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 
 		modEventBus.addListener(this::setup);
 		modEventBus.addListener(this::doClientStuff);

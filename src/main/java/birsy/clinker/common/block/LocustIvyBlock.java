@@ -35,7 +35,11 @@ public class LocustIvyBlock extends DirectionalBlock implements BonemealableBloc
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         Direction facingDirection = Direction.Plane.HORIZONTAL.test(context.getClickedFace()) ? context.getClickedFace() : context.getHorizontalDirection();
+<<<<<<< Updated upstream
         //TODO: Replace "instanceof LeavesBlock" with tag.
+=======
+        //TODO: Replace "instanceof LeavesBlock" with tag. Trivial, but I do not care enough to do this right now. Take care of this before release!
+>>>>>>> Stashed changes
         boolean isSolidBlockAbove = Block.isFaceFull(context.getLevel().getBlockState(context.getClickedPos().above()).getCollisionShape(context.getLevel(), context.getClickedPos()), Direction.DOWN);
 
         BlockState belowState = context.getLevel().getBlockState(context.getClickedPos().below());
