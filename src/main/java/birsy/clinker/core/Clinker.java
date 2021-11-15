@@ -6,6 +6,13 @@ import birsy.clinker.core.registry.ClinkerSounds;
 import birsy.clinker.core.registry.world.ClinkerConfiguredFeatures;
 import birsy.clinker.core.registry.world.ClinkerFeatures;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+
+import birsy.clinker.core.registry.alchemy.ClinkerElements;
+
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.CreativeModeTab;
@@ -16,8 +23,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 @Mod(Clinker.MOD_ID)
 public class Clinker
@@ -35,6 +40,8 @@ public class Clinker
         ClinkerBlocks.BLOCKS.register(modEventBus);
         ClinkerBlocks.ITEMS.register(modEventBus);
         ClinkerFeatures.FEATURES.register(modEventBus);
+        ClinkerElements.ELEMENTS.register(modEventBus);
+
 
 		modEventBus.addListener(this::setup);
 		modEventBus.addListener(this::doClientStuff);

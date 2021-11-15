@@ -1,5 +1,8 @@
 package birsy.clinker.common.alchemy.chemicals;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Holds elements, and the bonds between them.
  * Bonds can also form between distinct chemicals.
@@ -29,6 +32,7 @@ public class Chemical {
     
     public List<ElementBond> getBondsFromNode(int nodeIndex) {
         List<ElementBond> elementBondsList = new ArrayList<>();
+
         for (ElementBond elementBond : elementBonds) {
             if (elementBond.nodeIndex1 == nodeIndex || elementBond.nodeIndex2 == nodeIndex) {
                 elementBondsList.add(elementBond);

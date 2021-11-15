@@ -11,13 +11,11 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.DirectionalBlock;
-import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
-import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 
 import javax.annotation.Nullable;
 import java.util.Random;
@@ -35,7 +33,7 @@ public class LocustIvyBlock extends DirectionalBlock implements BonemealableBloc
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         Direction facingDirection = Direction.Plane.HORIZONTAL.test(context.getClickedFace()) ? context.getClickedFace() : context.getHorizontalDirection();
-        //TODO: Replace "instanceof LeavesBlock" with tag.
+
         boolean isSolidBlockAbove = Block.isFaceFull(context.getLevel().getBlockState(context.getClickedPos().above()).getCollisionShape(context.getLevel(), context.getClickedPos()), Direction.DOWN);
 
         BlockState belowState = context.getLevel().getBlockState(context.getClickedPos().below());
