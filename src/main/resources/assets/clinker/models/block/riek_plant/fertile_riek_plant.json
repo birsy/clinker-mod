@@ -1,7 +1,7 @@
 {
   "parent": "block/cube_column",
   "textures": {
-    "side": "clinker:blocks/riek_plant/riek_plant_fertile",
-    "end": "clinker:blocks/riek_plant/riek_plant_top"
+    "side": "clinker:block/riek_plant/riek_plant_fertile",
+    "end": "clinker:block/riek_plant/riek_plant_top"
   }
 }

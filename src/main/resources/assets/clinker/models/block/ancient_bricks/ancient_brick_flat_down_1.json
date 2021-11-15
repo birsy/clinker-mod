@@ -1,8 +1,8 @@
 {
   "parent": "minecraft:block/cube_bottom_top",
   "textures": {
-    "top": "clinker:blocks/ancient_bricks/ancient_bricks_1",
-    "bottom": "clinker:blocks/ancient_bricks/ancient_stone_1",
-    "side": "clinker:blocks/ancient_bricks/ancient_brick_flat_down_1"
+    "top": "clinker:block/ancient_bricks/ancient_bricks_1",
+    "bottom": "clinker:block/ancient_bricks/ancient_stone_1",
+    "side": "clinker:block/ancient_bricks/ancient_brick_flat_down_1"
   }
 }

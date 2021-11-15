@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/wall_inventory",
   "textures": {
-    "wall": "clinker:blocks/brimstone/polished_brimstone/polished_brimstone_wall"
+    "wall": "clinker:block/brimstone/polished_brimstone/polished_brimstone_wall"
   }
 }

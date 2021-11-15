@@ -1,6 +1,6 @@
 {
    "parent": "block/cube_all",
    "textures": {
-       "all": "clinker:blocks/blue_stained_living_clay"
+       "all": "clinker:block/blue_stained_living_clay"
    }
 }

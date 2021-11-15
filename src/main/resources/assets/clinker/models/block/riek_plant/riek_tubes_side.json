@@ -1,7 +1,7 @@
 {
     "textures": {
-        "particle": "clinker:blocks/riek_plant/riek_plant",
-        "riek_tube_side": "clinker:blocks/riek_plant/riek_tube_side"
+        "particle": "clinker:block/riek_plant/riek_plant",
+        "riek_tube_side": "clinker:block/riek_plant/riek_tube_side"
     },
     "elements": [
         {

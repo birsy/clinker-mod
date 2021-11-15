@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/template_wall_side_tall",
   "textures": {
-    "wall": "clinker:blocks/scorstone/scorstone_bricks"
+    "wall": "clinker:block/scorstone/scorstone_bricks"
   }
 }

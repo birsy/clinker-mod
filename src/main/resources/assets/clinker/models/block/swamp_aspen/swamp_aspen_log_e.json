@@ -1,9 +1,9 @@
 {
     "__comment": "Model generated using MrCrayfish's Model Creator (https://mrcrayfish.com/tools?id=mc)",
     "textures": {
-        "particle": "clinker:blocks/swamp_aspen/swamp_aspen_log_top",
-        "swamp_aspen_log_top": "clinker:blocks/swamp_aspen/swamp_aspen_log_top",
-        "swamp_aspen_log": "clinker:blocks/swamp_aspen/swamp_aspen_log"
+        "particle": "clinker:block/swamp_aspen/swamp_aspen_log_top",
+        "swamp_aspen_log_top": "clinker:block/swamp_aspen/swamp_aspen_log_top",
+        "swamp_aspen_log": "clinker:block/swamp_aspen/swamp_aspen_log"
     },
     "display": {
         "gui": {

@@ -1,8 +1,8 @@
 {
     "textures": {
-        "particle": "clinker:blocks/riek_plant/riek_fruit_vines_3",
-        "riek_fruit_vines_3": "clinker:blocks/riek_plant/riek_fruit_vines_3",
-        "riek_fruit": "clinker:blocks/riek_plant/riek_fruit"
+        "particle": "clinker:block/riek_plant/riek_fruit_vines_3",
+        "riek_fruit_vines_3": "clinker:block/riek_plant/riek_fruit_vines_3",
+        "riek_fruit": "clinker:block/riek_plant/riek_fruit"
     },
     "display": {
         "gui": {

@@ -1,6 +1,6 @@
 {
     "parent": "clinker:block/thornplant",
     "textures": {
-        "thorns": "clinker:blocks/thorns"
+        "thorns": "clinker:block/thorns"
     }
 }

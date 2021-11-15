@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/template_wall_side",
   "textures": {
-    "wall": "clinker:blocks/polished_shale_wall"
+    "wall": "clinker:block/polished_shale_wall"
   }
 }

@@ -1,6 +1,6 @@
 {
    "parent": "block/cube_all",
    "textures": {
-       "all": "clinker:blocks/dried_soulsand/dried_soulsand_roof_var/dried_soulsand_roof1"
+       "all": "clinker:block/dried_soulsand/dried_soulsand_roof_var/dried_soulsand_roof1"
    }
 }

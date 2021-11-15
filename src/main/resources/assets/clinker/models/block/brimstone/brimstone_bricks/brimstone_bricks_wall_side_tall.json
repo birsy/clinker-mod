@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/template_wall_side_tall",
   "textures": {
-    "wall": "clinker:blocks/brimstone/brimstone_bricks/brimstone_bricks"
+    "wall": "clinker:block/brimstone/brimstone_bricks/brimstone_bricks"
   }
 }

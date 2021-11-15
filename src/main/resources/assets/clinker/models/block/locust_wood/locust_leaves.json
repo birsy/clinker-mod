@@ -2,8 +2,8 @@
     "__comment": "Model generated using MrCrayfish's Model Creator (https://mrcrayfish.com/tools?id=mc)",
 "ambientocclusion": false,
     "textures": {
-        "particle": "clinker:blocks/locust_wood/locust_leaves",
-        "locust_needles": "clinker:blocks/locust_wood/locust_needles"
+        "particle": "clinker:block/locust_wood/locust_leaves",
+        "locust_needles": "clinker:block/locust_wood/locust_needles"
     },
     "elements": [
         {

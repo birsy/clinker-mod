@@ -1,6 +1,6 @@
 {
    "parent": "block/cube_all",
    "textures": {
-       "all": "clinker:blocks/nether_lead_ore"
+       "all": "clinker:block/nether_lead_ore"
    }
 }

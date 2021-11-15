@@ -1,12 +1,12 @@
 {
    "parent": "block/cube",
    "textures": {
-       "north": "clinker:blocks/ancient_bricks/ancient_brick_flat_east",
-       "south": "clinker:blocks/ancient_bricks/ancient_brick_flat_west",
-       "up": "clinker:blocks/ancient_bricks/ancient_brick_flat_west",
-       "down": "clinker:blocks/ancient_bricks/ancient_brick_flat_west",
-       "east": "clinker:blocks/ancient_bricks/ancient_bricks",
-       "west": "clinker:blocks/ancient_bricks/ancient_stone",
-       "particle": "clinker:blocks/ancient_bricks/ancient_brick_flat_up"
+       "north": "clinker:block/ancient_bricks/ancient_brick_flat_east",
+       "south": "clinker:block/ancient_bricks/ancient_brick_flat_west",
+       "up": "clinker:block/ancient_bricks/ancient_brick_flat_west",
+       "down": "clinker:block/ancient_bricks/ancient_brick_flat_west",
+       "east": "clinker:block/ancient_bricks/ancient_bricks",
+       "west": "clinker:block/ancient_bricks/ancient_stone",
+       "particle": "clinker:block/ancient_bricks/ancient_brick_flat_up"
    }
 }

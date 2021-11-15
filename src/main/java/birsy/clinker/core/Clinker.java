@@ -1,9 +1,10 @@
 package birsy.clinker.core;
 
-
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.ClinkerItems;
 import birsy.clinker.core.registry.ClinkerSounds;
+import birsy.clinker.core.registry.world.ClinkerConfiguredFeatures;
+import birsy.clinker.core.registry.world.ClinkerFeatures;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.item.AxeItem;
@@ -33,6 +34,7 @@ public class Clinker
         ClinkerItems.ITEMS.register(modEventBus);
         ClinkerBlocks.BLOCKS.register(modEventBus);
         ClinkerBlocks.ITEMS.register(modEventBus);
+        ClinkerFeatures.FEATURES.register(modEventBus);
 
 		modEventBus.addListener(this::setup);
 		modEventBus.addListener(this::doClientStuff);
@@ -45,6 +47,7 @@ public class Clinker
         event.enqueueWork(() -> {
             AxeItem.STRIPPABLES.put(ClinkerBlocks.LOCUST_LOG.get(), ClinkerBlocks.STRIPPED_LOCUST_LOG.get());
             AxeItem.STRIPPABLES.put(ClinkerBlocks.SWAMP_ASPEN_LOG.get(), ClinkerBlocks.STRIPPED_SWAMP_ASPEN_LOG.get());
+            ClinkerConfiguredFeatures.registerConfiguredFeatures();
         });
     }
 

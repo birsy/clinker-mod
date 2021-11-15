@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/fence_inventory",
   "textures": {
-    "texture": "clinker:blocks/dried_soulsand/dried_soulsand_bricks_var/dried_soulsand_bricks"
+    "texture": "clinker:block/dried_soulsand/dried_soulsand_bricks_var/dried_soulsand_bricks"
   }
 }

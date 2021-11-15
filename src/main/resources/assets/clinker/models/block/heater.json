@@ -1,8 +1,8 @@
 {
   "parent": "minecraft:block/cube_bottom_top",
   "textures": {
-    "top": "clinker:blocks/heater/heater_top",
-    "bottom": "clinker:blocks/heater/heater_bottom",
-    "side": "clinker:blocks/heater/heater_side"
+    "top": "clinker:block/heater/heater_top",
+    "bottom": "clinker:block/heater/heater_bottom",
+    "side": "clinker:block/heater/heater_side"
   }
 }

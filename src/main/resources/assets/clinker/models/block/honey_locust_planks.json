@@ -1,6 +1,6 @@
 {
    "parent": "block/cube_all",
    "textures": {
-       "all": "clinker:blocks/honey_locust_planks"
+       "all": "clinker:block/honey_locust_planks"
    }
 }

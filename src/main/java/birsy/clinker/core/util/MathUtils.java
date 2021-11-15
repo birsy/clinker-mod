@@ -3,6 +3,7 @@ package birsy.clinker.core.util;
 import com.ibm.icu.impl.Pair;
 import com.mojang.math.Vector3d;
 import com.mojang.math.Vector3f;
+import net.minecraft.Util;
 import net.minecraft.util.Mth;
 
 import java.lang.reflect.Array;
@@ -12,6 +13,16 @@ import java.util.Random;
 /* cappin's math utils
  * hope you find this useful :) */
 public class MathUtils {
+    private static final float[] SIN = Util.make(new float[65536], (array) -> {
+        for(int i = 0; i < array.length; ++i) {
+            array[i] = (float)Math.sin((double)i * Math.PI * 2.0D / 65536.0D);
+        }
+    });
+
+    public static float sin(float pValue) {
+        return SIN[(int)(pValue * 10430.378F) & '\uffff'];
+    }
+    
     /**
      * Maps one range of numbers to another. Incredibly useful function for lazy people like me.
      * @param fromMin The minimum of the range you're mapping from.
@@ -174,9 +185,43 @@ public class MathUtils {
         return (((Mth.sin(value) + 1) * 0.5F) * (max - min)) + min;
     }
 
-    public static float smoothMin (float value1, float value2, float smoothness) {
-        float h = Math.max(smoothness - Math.abs(value1-value2), 0) / smoothness;
-        return Math.min(value1, value2) - h * h * h * smoothness * 1 / 6.0F;
+    public static float fastSin (float value) {
+        float offset = (float) ((Math.ceil((1 /  Math.PI) * value) * 2) - 1);
+        float v = (float) (-(4 / Math.pow(Math.PI, 2)) * Math.pow((value - (offset * (Math.PI / 2))), 2) + 1);
+
+        if ((value % Math.PI * 2) / Math.PI < 1.0) {
+            return v;
+        } else {
+            return -v;
+        }
+    }
+
+    /**
+     * Returns the minimum of two values while reducing discontinuities in their derivatives.
+     * See https://iquilezles.org/www/articles/smin/smin.htm
+     *
+     * @param value1 The first value you'd like to ta take the minimum of.
+     * @param value2 The second value you'd like to ta take the minimum of.
+     * @param smoothness The radius of the smoothing effect.
+     * @return The smoothed minimum of the two values.
+     */
+    public static float smoothMin(float value1, float value2, float smoothness) {
+        float h = (float) (Math.max(smoothness - Math.abs(value1 - value2), 0.0 ) / smoothness);
+        return (float) (Math.min(value1, value2) - h * h * h * smoothness * (1.0 / 6.0));
+    }
+
+    /**
+     * Returns the maximum of two values while reducing discontinuities in their derivatives.
+     * See https://iquilezles.org/www/articles/smin/smin.htm
+     *
+     * @param value1 The first value you'd like to ta take the maximum of.
+     * @param value2 The second value you'd like to ta take the maximum of.
+     * @param smoothness The radius of the smoothing effect.
+     * @return The smoothed maximum of the two values.
+     */
+    public static float smoothMax(float value1, float value2, float smoothness) {
+        float h = (float) (Math.max(smoothness - Math.abs(value1 - value2), 0.0 ) / smoothness);
+        return (float) (Math.max(value1, value2) + h * h * h * smoothness * (1.0 / 6.0));
     }
 
     public static int[] getValidIndexes(Object array, int... excludedIndexes) {

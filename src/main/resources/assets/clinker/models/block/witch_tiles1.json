@@ -1,6 +1,6 @@
 {
    "parent": "block/cube_all",
    "textures": {
-       "all": "clinker:blocks/witch_tiles_var/witch_tiles1"
+       "all": "clinker:block/witch_tiles_var/witch_tiles1"
    }
 }

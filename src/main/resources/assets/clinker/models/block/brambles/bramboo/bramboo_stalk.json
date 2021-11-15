@@ -1,8 +1,8 @@
 {
   "parent": "block/block",
   "textures": {
-    "top": "clinker:blocks/brambles/bramboo_top",
-    "side": "clinker:blocks/brambles/bramboo_stalk",
+    "top": "clinker:block/brambles/bramboo_top",
+    "side": "clinker:block/brambles/bramboo_stalk",
     "particle": "#side"
   },
   "elements": [

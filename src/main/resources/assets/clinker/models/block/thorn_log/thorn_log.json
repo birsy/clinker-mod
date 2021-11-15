@@ -2,8 +2,8 @@
     "__comment": "Model generated using MrCrayfish's Model Creator (https://mrcrayfish.com/tools?id=mc)",
 "ambientocclusion": false,
     "textures": {
-        "particle": "clinker:blocks/thorn_log/thorn_log",
-        "thorn_log_top": "clinker:blocks/thorn_log/thorn_log_top"
+        "particle": "clinker:block/thorn_log/thorn_log",
+        "thorn_log_top": "clinker:block/thorn_log/thorn_log_top"
     },
     "elements": [
         {

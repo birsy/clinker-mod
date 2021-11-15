@@ -1,9 +1,9 @@
 {
     "parent": "minecraft:block/block",
     "textures": {
-        "crockpot_base_top": "clinker:blocks/crockpot/crockpot_base_top",
-        "crockpot_base": "clinker:blocks/crockpot/crockpot_base",
-        "particle": "clinker:blocks/crockpot/crockpot_particle"
+        "crockpot_base_top": "clinker:block/crockpot/crockpot_base_top",
+        "crockpot_base": "clinker:block/crockpot/crockpot_base",
+        "particle": "clinker:block/crockpot/crockpot_particle"
     },
     "elements": [
         {

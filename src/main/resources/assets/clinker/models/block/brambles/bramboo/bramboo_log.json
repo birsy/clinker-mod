@@ -1,7 +1,7 @@
 {
   "parent": "block/cube_column",
   "textures": {
-    "end": "clinker:blocks/brambles/bramboo_top",
-    "side": "clinker:blocks/brambles/bramboo_log1"
+    "end": "clinker:block/brambles/bramboo_top",
+    "side": "clinker:block/brambles/bramboo_log1"
   }
 }

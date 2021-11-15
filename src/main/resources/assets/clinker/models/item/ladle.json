@@ -2,7 +2,7 @@
    "parent": "item/generated",
 
    "textures": {
-      "layer0": "clinker:items/ladle"
+      "layer0": "clinker:item/ladle"
    },
 
    "display": {

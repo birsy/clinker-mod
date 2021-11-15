@@ -1,8 +1,8 @@
 {
   "parent": "minecraft:block/cube_bottom_top",
   "textures": {
-    "top": "clinker:blocks/soul_well/soul_well_top",
-    "bottom": "clinker:blocks/soul_well/soul_well_bottom",
-    "side": "clinker:blocks/soul_well/soul_well"
+    "top": "clinker:block/soul_well/soul_well_top",
+    "bottom": "clinker:block/soul_well/soul_well_bottom",
+    "side": "clinker:block/soul_well/soul_well"
   }
 }

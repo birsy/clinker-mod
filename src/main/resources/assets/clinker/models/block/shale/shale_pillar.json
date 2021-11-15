@@ -1,7 +1,7 @@
 {
   "parent": "block/cube_column",
   "textures": {
-    "end": "clinker:blocks/shale_pillar_top",
-    "side": "clinker:blocks/shale_pillar"
+    "end": "clinker:block/shale_pillar_top",
+    "side": "clinker:block/shale_pillar"
   }
 }

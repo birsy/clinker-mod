@@ -1,7 +1,7 @@
 {
    "parent": "block/cube_column",
    "textures": {
-       "end": "clinker:blocks/ancient_bricks/ancient_smooth_brick",
-       "side": "clinker:blocks/ancient_bricks/ancient_brick_slab"
+       "end": "clinker:block/ancient_bricks/ancient_smooth_brick",
+       "side": "clinker:block/ancient_bricks/ancient_brick_slab"
    }
 }

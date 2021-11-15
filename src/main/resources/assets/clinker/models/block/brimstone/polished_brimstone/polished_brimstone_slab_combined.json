@@ -1,7 +1,7 @@
 {
    "parent": "block/cube_column",
    "textures": {
-       "end": "clinker:blocks/brimstone/polished_brimstone/polished_brimstone_bottom",
-       "side": "clinker:blocks/brimstone/polished_brimstone/polished_brimstone_slab"
+       "end": "clinker:block/brimstone/polished_brimstone/polished_brimstone_bottom",
+       "side": "clinker:block/brimstone/polished_brimstone/polished_brimstone_slab"
    }
 }

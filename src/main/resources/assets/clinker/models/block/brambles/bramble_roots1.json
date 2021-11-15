@@ -1,6 +1,6 @@
 {
   "parent": "clinker:block/plant",
   "textures": {
-    "texture": "clinker:blocks/brambles/bramble_roots1"
+    "texture": "clinker:block/brambles/bramble_roots1"
   }
 }

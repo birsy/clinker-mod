@@ -1,10 +1,10 @@
 {
     "__comment": "Model generated using MrCrayfish's Model Creator (https://mrcrayfish.com/tools?id=mc)",
     "textures": {
-        "particle": "clinker:blocks/belwith_stone/monolithic_belwith_bricks_00",
-        "monolithic_belwith_bricks_10": "clinker:blocks/belwith_stone/monolithic_belwith_bricks_10",
-        "monolithic_belwith_bricks_11": "clinker:blocks/belwith_stone/monolithic_belwith_bricks_11",
-        "monolithic_belwith_bricks_01": "clinker:blocks/belwith_stone/monolithic_belwith_bricks_01"
+        "particle": "clinker:block/belwith_stone/monolithic_belwith_bricks_00",
+        "monolithic_belwith_bricks_10": "clinker:block/belwith_stone/monolithic_belwith_bricks_10",
+        "monolithic_belwith_bricks_11": "clinker:block/belwith_stone/monolithic_belwith_bricks_11",
+        "monolithic_belwith_bricks_01": "clinker:block/belwith_stone/monolithic_belwith_bricks_01"
     },
     "display": {
         "gui": {

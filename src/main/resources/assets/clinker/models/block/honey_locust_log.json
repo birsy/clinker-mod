@@ -1,10 +1,10 @@
 {
     "__comment": "Model generated using MrCrayfish's Model Creator (https://mrcrayfish.com/tools?id=mc)",
     "textures": {
-        "particle": "clinker:blocks/honey_locust_log",
-        "honey_locust_log": "clinker:blocks/honey_locust_log",
-        "honey_locust_log_thorns": "clinker:blocks/honey_locust_log_thorns",
-        "honey_locust_log_top": "clinker:blocks/honey_locust_log_top"
+        "particle": "clinker:block/honey_locust_log",
+        "honey_locust_log": "clinker:block/honey_locust_log",
+        "honey_locust_log_thorns": "clinker:block/honey_locust_log_thorns",
+        "honey_locust_log_top": "clinker:block/honey_locust_log_top"
     },
     "display": {
         "gui": {

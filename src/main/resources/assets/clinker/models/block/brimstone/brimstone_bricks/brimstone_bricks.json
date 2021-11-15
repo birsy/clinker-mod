@@ -1,6 +1,6 @@
 {
    "parent": "block/cube_all",
    "textures": {
-       "all": "clinker:blocks/brimstone/brimstone_bricks/brimstone_bricks"
+       "all": "clinker:block/brimstone/brimstone_bricks/brimstone_bricks"
    }
 }

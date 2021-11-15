@@ -1,6 +1,6 @@
 {
    "parent": "item/generated",
    "textures": {
-       "layer0": "clinker:items/lead_boots"
+       "layer0": "clinker:item/lead_boots"
    }
 }

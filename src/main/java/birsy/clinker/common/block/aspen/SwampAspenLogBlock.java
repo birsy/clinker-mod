@@ -15,6 +15,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -43,14 +45,61 @@ public class SwampAspenLogBlock extends RotatedPillarBlock implements SimpleWate
 
     public SwampAspenLogBlock(Properties properties) {
         super(properties);
-        this.registerDefaultState(this.getStateDefinition().any().setValue(WATERLOGGED, false));
+        this.registerDefaultState(this.getStateDefinition().any().setValue(AXIS, Direction.Axis.Y).setValue(NORTH, false).setValue(SOUTH, false).setValue(EAST, false).setValue(WEST, false).setValue(WATERLOGGED, false));
     }
+
+    @Override
+    public FluidState getFluidState(BlockState pState) {
+        return pState.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(pState);
+    }
+
+    @Override
+    public BlockState getStateForPlacement(BlockPlaceContext pContext) {
+        BlockState baseState = super.getStateForPlacement(pContext);
+        FluidState fluidstate = pContext.getLevel().getFluidState(pContext.getClickedPos());
+
+        for (Direction direction : Direction.values()) {
+            BlockPos facingPos = pContext.getClickedPos().relative(direction);
+            BlockState facingState = pContext.getLevel().getBlockState(facingPos);
+
+            baseState = updateShape(baseState, direction, facingState, pContext.getLevel(), pContext.getClickedPos(), facingPos);
+        }
+
+        return baseState.setValue(WATERLOGGED, fluidstate.getType() == Fluids.WATER);
+    }
+
 
     @Override
     public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
         return SHAPE_BY_AXIS.get(pState.getValue(AXIS));
     }
 
+    @Override
+    public BlockState updateShape(BlockState pState, Direction pFacing, BlockState pFacingState, LevelAccessor pLevel, BlockPos pCurrentPos, BlockPos pFacingPos) {
+        if (pState.getValue(WATERLOGGED)) {
+            pLevel.getLiquidTicks().scheduleTick(pCurrentPos, Fluids.WATER, Fluids.WATER.getTickDelay(pLevel));
+        }
+
+        BooleanProperty property = directionToProperty(getLocalDirection(pState.getValue(AXIS), pFacing));
+        if (property != null) {
+            if (pFacingState.getBlock() instanceof SwampAspenLogBlock) {
+                return pState.setValue(property, pFacingState.getValue(AXIS) == pFacing.getAxis() && pFacingState.getValue(AXIS) != pState.getValue(AXIS));
+            } else {
+                return pState.setValue(property, false);
+            }
+        }
+
+        return pState;
+    }
+
+
+    public void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
+        pBuilder.add(AXIS, NORTH, EAST, WEST, SOUTH, WATERLOGGED);
+    }
+
+
+
+    //Gets the global direction for a given LOG CONNECTION DIRECTION, given the log's AXIS.
     public static Direction getGlobalDirection(Direction.Axis axis, Direction direction) {
         switch (axis) {
             case X:
@@ -94,37 +143,5 @@ public class SwampAspenLogBlock extends RotatedPillarBlock implements SimpleWate
                     return null;
             }
         }
-    }
-
-    @Override
-    public BlockState updateShape(BlockState pState, Direction pFacing, BlockState pFacingState, LevelAccessor pLevel, BlockPos pCurrentPos, BlockPos pFacingPos) {
-        BooleanProperty property = directionToProperty(getLocalDirection(pState.getValue(AXIS), pFacing));
-        if (property != null) {
-            if (pFacingState.getBlock() instanceof SwampAspenLogBlock) {
-                return pState.setValue(property, pFacingState.getValue(AXIS) == pFacing.getAxis() && pFacingState.getValue(AXIS) != pState.getValue(AXIS));
-            } else {
-                return pState.setValue(property, false);
-            }
-        }
-
-        return pState;
-    }
-
-    @Override
-    public BlockState getStateForPlacement(BlockPlaceContext pContext) {
-        BlockState baseState = super.getStateForPlacement(pContext);
-
-        for (Direction direction : Direction.values()) {
-            BlockPos facingPos = pContext.getClickedPos().relative(direction);
-            BlockState facingState = pContext.getLevel().getBlockState(facingPos);
-
-            baseState = updateShape(baseState, direction, facingState, pContext.getLevel(), pContext.getClickedPos(), facingPos);
-        }
-
-        return baseState;
-    }
-
-    public void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
-        pBuilder.add(AXIS, NORTH, EAST, WEST, SOUTH, WATERLOGGED);
     }
 }

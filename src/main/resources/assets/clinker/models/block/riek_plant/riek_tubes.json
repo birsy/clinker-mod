@@ -1,8 +1,8 @@
 {
     "textures": {
-        "particle": "clinker:blocks/riek_plant/riek_tube",
-        "riek_grass": "clinker:blocks/riek_plant/riek_grass",
-        "riek_tube": "clinker:blocks/riek_plant/riek_tube"
+        "particle": "clinker:block/riek_plant/riek_tube",
+        "riek_grass": "clinker:block/riek_plant/riek_grass",
+        "riek_tube": "clinker:block/riek_plant/riek_tube"
     },
     "display": {
         "gui": {

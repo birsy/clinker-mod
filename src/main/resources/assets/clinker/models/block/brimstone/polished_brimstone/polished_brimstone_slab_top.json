@@ -1,8 +1,8 @@
 {
   "parent": "minecraft:block/slab_top",
   "textures": {
-    "bottom": "clinker:blocks/brimstone/polished_brimstone/polished_brimstone_bottom",
-    "top": "clinker:blocks/brimstone/polished_brimstone/polished_brimstone_top",
-    "side": "clinker:blocks/brimstone/polished_brimstone/polished_brimstone_slab"
+    "bottom": "clinker:block/brimstone/polished_brimstone/polished_brimstone_bottom",
+    "top": "clinker:block/brimstone/polished_brimstone/polished_brimstone_top",
+    "side": "clinker:block/brimstone/polished_brimstone/polished_brimstone_slab"
   }
 }

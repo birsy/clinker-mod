@@ -1,7 +1,7 @@
 {
   "parent": "block/cube_column",
   "textures": {
-    "end": "clinker:blocks/dried_soulsand/dried_soulsand_pillar_var/dried_soulsand_pillar_top",
-    "side": "clinker:blocks/dried_soulsand/dried_soulsand_pillar_var/dried_soulsand_pillar"
+    "end": "clinker:block/dried_soulsand/dried_soulsand_pillar_var/dried_soulsand_pillar_top",
+    "side": "clinker:block/dried_soulsand/dried_soulsand_pillar_var/dried_soulsand_pillar"
   }
 }

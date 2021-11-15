@@ -1,0 +1,8 @@
+{
+    "variants": {
+        "squished=false,waterlogged=false": [{ "model": "clinker:block/mud/mud" }, { "model": "clinker:block/mud/mud_mirrored" }],
+        "squished=true,waterlogged=false":  { "model": "clinker:block/mud/squished_mud" },
+        "squished=false,waterlogged=true":  { "model": "clinker:block/mud/wet_mud" },
+        "squished=true,waterlogged=true":   { "model": "clinker:block/mud/squished_wet_mud" }
+    }
+}

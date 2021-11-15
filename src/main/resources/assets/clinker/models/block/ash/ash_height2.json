@@ -1,7 +1,7 @@
 {   "parent": "block/thin_block",
     "textures": {
-        "particle": "clinker:blocks/ash/ash",
-        "texture": "clinker:blocks/ash/ash"
+        "particle": "clinker:block/ash/ash",
+        "texture": "clinker:block/ash/ash"
     },
     "elements": [
         {   "from": [ 0, 0, 0 ],

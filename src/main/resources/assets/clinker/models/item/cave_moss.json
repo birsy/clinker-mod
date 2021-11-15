@@ -1,6 +1,6 @@
 {
    "parent": "item/generated",
    "textures": {
-       "layer0": "clinker:items/cave_moss"
+       "layer0": "clinker:item/cave_moss"
    }
 }

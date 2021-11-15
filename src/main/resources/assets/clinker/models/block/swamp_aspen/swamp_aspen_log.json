@@ -1,9 +1,9 @@
 {
     "parent": "block/cube",
     "textures": {
-        "particle": "clinker:blocks/swamp_aspen/swamp_aspen_log_top",
-        "swamp_aspen_log_top": "clinker:blocks/swamp_aspen/swamp_aspen_log_top",
-        "swamp_aspen_log": "clinker:blocks/swamp_aspen/swamp_aspen_log"
+        "particle": "clinker:block/swamp_aspen/swamp_aspen_log_top",
+        "swamp_aspen_log_top": "clinker:block/swamp_aspen/swamp_aspen_log_top",
+        "swamp_aspen_log": "clinker:block/swamp_aspen/swamp_aspen_log"
     },
     "elements": [
         {

@@ -1,6 +1,6 @@
 {
    "parent": "item/generated",
    "textures": {
-       "layer0": "clinker:blocks/riek_plant/riek_vine_fertile"
+       "layer0": "clinker:block/riek_plant/riek_vine_fertile"
    }
 }

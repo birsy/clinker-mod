@@ -1,7 +1,7 @@
 {
    "parent": "block/cube_column",
    "textures": {
-       "end": "clinker:blocks/gourd_top",
-       "side": "clinker:blocks/gourd"
+       "end": "clinker:block/gourd_top",
+       "side": "clinker:block/gourd"
    }
 }

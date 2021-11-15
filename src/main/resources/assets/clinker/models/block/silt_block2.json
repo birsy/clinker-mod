@@ -1,7 +1,7 @@
 {
    "parent": "block/cube_column",
    "textures": {
-       "end": "clinker:blocks/silt_block",
-       "side": "clinker:blocks/silt_block_side2"
+       "end": "clinker:block/silt_block",
+       "side": "clinker:block/silt_block_side2"
    }
 }

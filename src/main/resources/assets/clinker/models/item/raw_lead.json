@@ -1,6 +1,6 @@
 {
    "parent": "item/generated",
    "textures": {
-       "layer0": "clinker:items/raw_lead"
+       "layer0": "clinker:item/raw_lead"
    }
 }

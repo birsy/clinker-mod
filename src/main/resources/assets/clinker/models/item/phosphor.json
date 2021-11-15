@@ -1,6 +1,6 @@
 {
    "parent": "item/generated",
    "textures": {
-       "layer0": "clinker:items/phosphor"
+       "layer0": "clinker:item/phosphor"
    }
 }

@@ -1,6 +1,6 @@
 {
    "parent": "block/cube_all",
    "textures": {
-       "all": "clinker:blocks/scorstone/scorstone_bricks"
+       "all": "clinker:block/scorstone/scorstone_bricks"
    }
 }

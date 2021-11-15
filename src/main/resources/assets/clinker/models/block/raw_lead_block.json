@@ -1,6 +1,6 @@
 {
    "parent": "block/cube_all",
    "textures": {
-       "all": "clinker:blocks/raw_lead_block"
+       "all": "clinker:block/raw_lead_block"
    }
 }

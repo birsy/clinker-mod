@@ -1,9 +1,9 @@
 {
     "__comment": "Model generated using MrCrayfish's Model Creator (https://mrcrayfish.com/tools?id=mc)",
     "textures": {
-        "particle": "clinker:blocks/thornlog",
-        "thornlog": "clinker:blocks/thornlog",
-        "thornlog_top": "clinker:blocks/thornlog_top"
+        "particle": "clinker:block/thornlog",
+        "thornlog": "clinker:block/thornlog",
+        "thornlog_top": "clinker:block/thornlog_top"
     },
     "display": {
         "gui": {

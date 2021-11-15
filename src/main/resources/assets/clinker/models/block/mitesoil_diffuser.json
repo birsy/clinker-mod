@@ -1,9 +1,9 @@
 {
     "parent": "block/block",
     "textures": {
-        "mitesoil_diffuser_side": "clinker:blocks/mitesoil/mitesoil_diffuser_side",
-        "mitesoil_diffuser_top": "clinker:blocks/mitesoil/mitesoil_diffuser_top",
-        "particle": "clinker:blocks/mitesoil/mitesoil_diffuser_top"
+        "mitesoil_diffuser_side": "clinker:block/mitesoil/mitesoil_diffuser_side",
+        "mitesoil_diffuser_top": "clinker:block/mitesoil/mitesoil_diffuser_top",
+        "particle": "clinker:block/mitesoil/mitesoil_diffuser_top"
     },
     "elements": [
         {

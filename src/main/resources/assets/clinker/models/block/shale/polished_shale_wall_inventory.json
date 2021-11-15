@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/wall_inventory",
   "textures": {
-    "wall": "clinker:blocks/polished_shale"
+    "wall": "clinker:block/polished_shale"
   }
 }

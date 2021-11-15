@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "clinker:block/mud_top",
+    "side": "clinker:block/mud"
+  }
+}

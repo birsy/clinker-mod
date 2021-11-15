@@ -1,6 +1,6 @@
 {
    "parent": "item/generated",
    "textures": {
-       "layer0": "clinker:items/blooming_wittlebulb"
+       "layer0": "clinker:item/blooming_wittlebulb"
    }
 }

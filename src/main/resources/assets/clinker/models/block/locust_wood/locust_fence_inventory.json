@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/fence_inventory",
   "textures": {
-    "texture": "clinker:blocks/locust_wood/locust_planks"
+    "texture": "clinker:block/locust_wood/locust_planks"
   }
 }

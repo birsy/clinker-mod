@@ -1,6 +1,6 @@
 {
    "parent": "item/generated",
    "textures": {
-       "layer0": "clinker:blocks/locust_wood/locust_sapling"
+       "layer0": "clinker:block/locust_wood/locust_sapling"
    }
 }

@@ -1,8 +1,8 @@
 {
   "parent": "minecraft:block/inner_stairs",
   "textures": {
-    "bottom": "clinker:blocks/polished_shale_stairs",
-    "top": "clinker:blocks/polished_shale_stairs",
-    "side": "clinker:blocks/polished_shale_stairs"
+    "bottom": "clinker:block/polished_shale_stairs",
+    "top": "clinker:block/polished_shale_stairs",
+    "side": "clinker:block/polished_shale_stairs"
   }
 }

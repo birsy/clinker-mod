@@ -1,6 +1,6 @@
 {
    "parent": "item/generated",
    "textures": {
-       "layer0": "clinker:blocks/brambles/bramble_top"
+       "layer0": "clinker:block/brambles/bramble_top"
    }
 }

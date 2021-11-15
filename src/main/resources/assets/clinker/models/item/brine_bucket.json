@@ -1,6 +1,6 @@
 {
    "parent": "item/generated",
    "textures": {
-       "layer0": "clinker:items/brine_bucket"
+       "layer0": "clinker:item/brine_bucket"
    }
 }

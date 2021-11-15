@@ -1,11 +1,11 @@
 {
   "parent": "clinker:block/orientable_full",
   "textures": {
-    "top": "clinker:blocks/dried_soulsand/chiseled_dry_soulsand_top",
-    "bottom": "clinker:blocks/dried_soulsand/chiseled_dry_soulsand_bottom",
-    "right": "clinker:blocks/dried_soulsand/chiseled_dry_soulsand_right",
-    "left": "clinker:blocks/dried_soulsand/chiseled_dry_soulsand_left",
-    "back": "clinker:blocks/dried_soulsand/chiseled_dry_soulsand_back",
-    "front": "clinker:blocks/dried_soulsand/chiseled_dry_soulsand"
+    "top": "clinker:block/dried_soulsand/chiseled_dry_soulsand_top",
+    "bottom": "clinker:block/dried_soulsand/chiseled_dry_soulsand_bottom",
+    "right": "clinker:block/dried_soulsand/chiseled_dry_soulsand_right",
+    "left": "clinker:block/dried_soulsand/chiseled_dry_soulsand_left",
+    "back": "clinker:block/dried_soulsand/chiseled_dry_soulsand_back",
+    "front": "clinker:block/dried_soulsand/chiseled_dry_soulsand"
   }
 }

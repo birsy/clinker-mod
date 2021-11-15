@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/template_wall_post",
   "textures": {
-    "wall": "clinker:blocks/brimstone/brimstone_bricks/brimstone_bricks"
+    "wall": "clinker:block/brimstone/brimstone_bricks/brimstone_bricks"
   }
 }

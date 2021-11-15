@@ -1,9 +1,9 @@
 {
 	"ambientocclusion": false,
     "textures": {
-        "particle": "clinker:blocks/riek_plant/riek_vine",
-        "riek_vine_side": "clinker:blocks/riek_plant/riek_vine_side",
-        "riek_vine": "clinker:blocks/riek_plant/riek_vine"
+        "particle": "clinker:block/riek_plant/riek_vine",
+        "riek_vine_side": "clinker:block/riek_plant/riek_vine_side",
+        "riek_vine": "clinker:block/riek_plant/riek_vine"
     },
     "elements": [
         {

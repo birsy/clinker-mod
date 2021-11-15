@@ -1,7 +1,7 @@
 {
    "parent": "block/cube_column",
    "textures": {
-       "end": "clinker:blocks/belwith_stone/belwith_pillar_end",
-       "side": "clinker:blocks/belwith_stone/belwith_pillar"
+       "end": "clinker:block/belwith_stone/belwith_pillar_end",
+       "side": "clinker:block/belwith_stone/belwith_pillar"
    }
 }

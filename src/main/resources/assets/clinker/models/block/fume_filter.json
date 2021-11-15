@@ -1,8 +1,8 @@
 {
     "__comment": "Model generated using MrCrayfish's Model Creator (https://mrcrayfish.com/tools?id=mc)",
     "textures": {
-        "fume_filter_side": "clinker:blocks/fume_filter_side",
-        "fume_filter": "clinker:blocks/fume_filter"
+        "fume_filter_side": "clinker:block/fume_filter_side",
+        "fume_filter": "clinker:block/fume_filter"
     },
     "display": {
         "gui": {

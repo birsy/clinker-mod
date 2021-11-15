@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/template_orientable_trapdoor_open",
   "textures": {
-    "texture": "clinker:blocks/locust_wood/locust_trapdoor"
+    "texture": "clinker:block/locust_wood/locust_trapdoor"
   }
 }

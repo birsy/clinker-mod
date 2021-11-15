@@ -1,6 +1,6 @@
 {
    "parent": "block/cube_all",
    "textures": {
-       "all": "clinker:blocks/impure_ruby_block"
+       "all": "clinker:block/impure_ruby_block"
    }
 }

@@ -1,6 +1,6 @@
 {
   "parent": "clinker:block/thick_grass",
   "textures": {
-    "cross": "clinker:blocks/root_grass_1"
+    "cross": "clinker:block/root_grass_1"
   }
 }

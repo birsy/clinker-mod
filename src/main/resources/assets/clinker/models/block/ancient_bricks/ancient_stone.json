@@ -1,6 +1,6 @@
 {
    "parent": "block/cube_all",
    "textures": {
-       "all": "clinker:blocks/ancient_bricks/ancient_stone"
+       "all": "clinker:block/ancient_bricks/ancient_stone"
    }
 }

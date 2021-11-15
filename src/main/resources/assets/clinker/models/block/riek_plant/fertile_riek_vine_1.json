@@ -1,10 +1,10 @@
 {
 	"ambientocclusion": false,
     "textures": {
-        "particle": "clinker:blocks/riek_plant/riek_vine_fertile",
-        "riek_grass": "clinker:blocks/riek_plant/riek_fruit_vines_3",
-        "riek_vine_side": "clinker:blocks/riek_plant/riek_vine_side",
-        "riek_vine": "clinker:blocks/riek_plant/riek_vine_fertile"
+        "particle": "clinker:block/riek_plant/riek_vine_fertile",
+        "riek_grass": "clinker:block/riek_plant/riek_fruit_vines_3",
+        "riek_vine_side": "clinker:block/riek_plant/riek_vine_side",
+        "riek_vine": "clinker:block/riek_plant/riek_vine_fertile"
     },
     "elements": [
         {
