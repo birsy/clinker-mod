@@ -1,0 +1,10 @@
+{
+    "variants": {
+        "": [
+            { "model": "clinker:block/mold/white_mold" },
+            { "model": "clinker:block/mold/white_mold", "y": 90 },
+            { "model": "clinker:block/mold/white_mold", "y": 180 },
+            { "model": "clinker:block/mold/white_mold", "y": 270 }
+        ]
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "variants": {
+        "": [
+            { "model": "clinker:block/mold/white_mold_roots" },
+            { "model": "clinker:block/mold/white_mold_roots", "y": 90 },
+            { "model": "clinker:block/mold/white_mold_roots", "y": 180 },
+            { "model": "clinker:block/mold/white_mold_roots", "y": 270 }
+        ]
+    }
+}

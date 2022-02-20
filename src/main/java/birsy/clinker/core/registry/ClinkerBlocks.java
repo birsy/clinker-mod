@@ -2,11 +2,14 @@ package birsy.clinker.core.registry;
 
 import birsy.clinker.common.block.*;
 import birsy.clinker.common.block.aspen.SwampAspenLogBlock;
+import birsy.clinker.common.block.plant.DoubleMudReedsBlock;
+import birsy.clinker.common.block.plant.MudReedsBlock;
 import birsy.clinker.core.Clinker;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.WaterLilyBlockItem;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.Material;
@@ -32,8 +35,8 @@ public class ClinkerBlocks
 	}
 	
 	// Blocks
-	//Fluids
-
+	//Alchemy
+	public static final RegistryObject<Block> FERMENTATION_BARREL = createBlock("fermentation_barrel", FermentationBarrelBlock::new, Clinker.CLINKER_BLOCKS);
 
 	//Material Blocks
 	public static final RegistryObject<Block> LEAD_BLOCK = createBlock("lead_block", () -> new Block(BlockBehaviour.Properties.of(Material.METAL, MaterialColor.COLOR_LIGHT_GRAY).strength(5.0f, 6.0f).sound(SoundType.NETHERITE_BLOCK)), Clinker.CLINKER_BLOCKS);
@@ -50,6 +53,9 @@ public class ClinkerBlocks
 
 	public static final RegistryObject<Block> MUD = createBlock("mud", () -> new MudBlock(Block.Properties.of(Material.DIRT, MaterialColor.TERRACOTTA_BROWN).strength(0.5F).sound(SoundType.WET_GRASS)), Clinker.CLINKER_BLOCKS);
 
+	public static final RegistryObject<Block> WHITE_MOLD = createBlock("white_mold", () -> new Block(Block.Properties.of(Material.MOSS, MaterialColor.COLOR_GRAY).strength(0.5F).sound(SoundType.MOSS)), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> WHITE_MOLD_ROOTS = createBlock("white_mold_roots", () -> new Block(Block.Properties.of(Material.MOSS, MaterialColor.COLOR_GRAY).strength(0.5F).sound(SoundType.MOSS)), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> BLACK_MOLD = createBlock("black_mold", () -> new Block(Block.Properties.of(Material.MOSS, MaterialColor.COLOR_BLACK).strength(0.5F).sound(SoundType.MOSS)), Clinker.CLINKER_BLOCKS);
 
 	//Brimstone
 	public static BlockBehaviour.Properties getBrimstoneProperties() {
@@ -215,6 +221,9 @@ public class ClinkerBlocks
 	public static final RegistryObject<Block> STRIPPED_SWAMP_ASPEN_LOG = createBlock("stripped_swamp_aspen_log", () -> new SwampAspenLogBlock(BlockBehaviour.Properties.of(Material.WOOD, MaterialColor.WOOD).strength(2.0F).sound(SoundType.STEM).noOcclusion()), Clinker.CLINKER_BLOCKS);
 
 	//Plants
+	public static final RegistryObject<Block> TALL_MUD_REEDS = createBlock("tall_mud_reeds", () -> new DoubleMudReedsBlock(BlockBehaviour.Properties.of(Material.REPLACEABLE_PLANT).noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS)), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> SHORT_MUD_REEDS = createBlock("short_mud_reeds", () -> new MudReedsBlock(BlockBehaviour.Properties.of(Material.REPLACEABLE_PLANT).noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS)), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> MUD_REEDS = createBlock("mud_reeds", () -> new MudReedsBlock(BlockBehaviour.Properties.of(Material.REPLACEABLE_PLANT).noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS)), Clinker.CLINKER_BLOCKS);
 
 	//Riek Plant
 

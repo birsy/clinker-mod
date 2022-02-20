@@ -5,6 +5,9 @@ import com.mojang.math.Vector3d;
 import com.mojang.math.Vector3f;
 import net.minecraft.Util;
 import net.minecraft.util.Mth;
+import net.minecraft.world.level.levelgen.WorldgenRandom;
+import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.Vec3;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
@@ -37,6 +40,20 @@ public class MathUtils {
     }
 
     /**
+     * Maps one range of numbers to another. Incredibly useful function for lazy people like me.
+     * @param fromMin The minimum of the range you're mapping from.
+     * @param fromMax The maximum of the range you're mapping from.
+     * @param toMin The minimum of the range you're mapping to.
+     * @param toMax The maximum of the range you're mapping to.
+     * @param value The value you're mapping.
+     * @return The value, mapped to the second range.
+     */
+    public static double mapRange(double fromMin, double fromMax, double toMin, double toMax, double value) {
+        return toMin + (((value - fromMin) * (toMax - toMin))/(fromMax - fromMin));
+    }
+
+
+    /**
      * Biases an input so that smaller numbers are more likely to occur.
      * @param value The input value. Should range for 0 - 1; any more or less will break it.
      * @param bias The amount of biasing applied to the function. I like to keep it around 0.5.
@@ -59,9 +76,24 @@ public class MathUtils {
     }
 
     public static float biasTowardsIntegers(float value) {
-        float mod = value % 4;
+        float mod = value % 1;
         float modSqr = mod * mod;
         return (float) ((modSqr * modSqr) + Math.floor(value));
+    }
+
+    /**
+     * Takes an input value and biases it using a sine function towards two larger magnitude values.
+     *
+     * @param value A value in the range [-1, 1]
+     * @param bias The effect of the bias. At {@code 0.0}, there will be no bias. Mojang only uses {@code 1.0} here.
+     * @param iterations Allows you to repeat the effect several times.
+     */
+    public static double biasTowardsExtreme(double value, double bias, int iterations) {
+        double result = value;
+        for (int i = 0; i < iterations; i++) {
+            result = result + Math.sin(Math.PI * result) * bias / Math.PI;
+        }
+        return result;
     }
 
     /**
@@ -196,6 +228,28 @@ public class MathUtils {
         }
     }
 
+    public static float wave (WaveType type, float x, float frequency, float amplitude) {
+        float value = 0;
+        switch (type) {
+            case sine:
+                value = (float) Math.sin((Math.PI * x) / frequency);
+            case square:
+                value = 2.0F * Math.round((Math.sin((Math.PI * x) / frequency) + 1.0F) / 2.0F) - 1.0F;
+            case triangle:
+                value = (-1 * ((((x + (frequency / 2)) % (2 * frequency)) - frequency) / frequency / 2)) + 1;
+            case sawtooth:
+                value = (((x + frequency) % (2 * frequency)) / frequency) - 1;
+            default:
+                value = x;
+        }
+
+        return value * amplitude;
+    }
+
+    public enum WaveType {
+        sine, square, triangle, sawtooth;
+    }
+
     /**
      * Returns the minimum of two values while reducing discontinuities in their derivatives.
      * See https://iquilezles.org/www/articles/smin/smin.htm
@@ -206,8 +260,12 @@ public class MathUtils {
      * @return The smoothed minimum of the two values.
      */
     public static float smoothMin(float value1, float value2, float smoothness) {
-        float h = (float) (Math.max(smoothness - Math.abs(value1 - value2), 0.0 ) / smoothness);
-        return (float) (Math.min(value1, value2) - h * h * h * smoothness * (1.0 / 6.0));
+        if (smoothness == 0) {
+            return Math.min(value1, value2);
+        } else {
+            float h = value1 - value2;
+            return (float) (0.5 * ((value1 + value2) - Math.sqrt(h * h + smoothness)));
+        }
     }
 
     /**
@@ -222,6 +280,40 @@ public class MathUtils {
     public static float smoothMax(float value1, float value2, float smoothness) {
         float h = (float) (Math.max(smoothness - Math.abs(value1 - value2), 0.0 ) / smoothness);
         return (float) (Math.max(value1, value2) + h * h * h * smoothness * (1.0 / 6.0));
+    }
+
+    public static double smoothMinExpo(double a, double b, double smoothness) {
+        if (smoothness == 0) {
+            return Math.min(a, b);
+        } else {
+            double k = 1 / smoothness;
+            double res = Math.pow(2, -k * a) + Math.pow(2, -k * b);
+            return -MathUtils.log(2, res) / k;
+        }
+    }
+
+    public static double smoothMinExpo2(double smoothness, double... nums) {
+        if (smoothness == 0) {
+            double min = Double.MAX_VALUE;
+            for (double num : nums) {
+                min = Math.min(num, min);
+            }
+
+            return min;
+        } else {
+            double k = 1 / smoothness;
+            double res = 0;
+            for (double num : nums) {
+                res += Math.pow(2, -k * num);
+            }
+
+            return -MathUtils.log(2, res) / k;
+        }
+    }
+
+
+    private static double log(double base, double logNumber) {
+        return Math.log10(logNumber) / Math.log10(base);
     }
 
     public static int[] getValidIndexes(Object array, int... excludedIndexes) {
@@ -239,6 +331,15 @@ public class MathUtils {
         } catch (Exception e) {
             throw new IllegalArgumentException(e.getMessage());
         }
+    }
+
+    public static Object reverseArray(Object array) {
+        Object[] returnArray = new Object[Array.getLength(array)];
+        for (int i = 0; i < Array.getLength(array); i++) {
+            returnArray[Array.getLength(array) - i] = Array.get(array, i);
+        }
+
+        return returnArray;
     }
 
     public static float sobelFilter(float[][] heightmap, int x, int z) {

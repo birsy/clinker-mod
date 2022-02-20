@@ -1,6 +1,6 @@
 {
   "scale": 0.05,
-  "depth": 0.125,
+  "depth": 2.0,
   "effects": {
     "mood_sound": {
       "sound": "minecraft:ambient.basalt_deltas.mood",

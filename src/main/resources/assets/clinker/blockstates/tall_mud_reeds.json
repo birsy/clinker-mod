@@ -1,0 +1,8 @@
+{
+    "variants": {
+        "half=lower": {
+            "model": "clinker:block/mud_reeds/tall_mud_reeds_bottom"
+        },
+        "half=upper": [{"model": "clinker:block/mud_reeds/tall_mud_reeds_top"}, {"model": "clinker:block/mud_reeds/tall_mud_reeds_top2"}]
+    }
+}

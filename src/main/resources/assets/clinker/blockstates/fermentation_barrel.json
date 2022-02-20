@@ -1,0 +1,5 @@
+{
+    "variants": {
+        "": { "model": "clinker:block/fermentation_barrel" }
+    }
+}

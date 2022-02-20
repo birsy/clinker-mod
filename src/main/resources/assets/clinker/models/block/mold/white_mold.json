@@ -1,0 +1,7 @@
+{
+   "parent": "block/cube_column",
+   "textures": {
+       "end": "clinker:block/mold/white_mold_top",
+       "side": "clinker:block/mold/white_mold_side"
+   }
+}

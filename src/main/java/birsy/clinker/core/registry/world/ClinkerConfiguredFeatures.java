@@ -8,11 +8,15 @@ import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 
 public class ClinkerConfiguredFeatures {
-    public static final ConfiguredFeature<?, ?> ASH_LAYER = ClinkerFeatures.ASH_LAYER.get().configured(FeatureConfiguration.NONE);
+    public static ConfiguredFeature<?, ?> ASH_LAYER = registerConfiguredFeature("ash_layer", ClinkerFeatures.ASH_LAYER.get().configured(FeatureConfiguration.NONE));
 
-    public static void registerConfiguredFeatures() {
-        Registry<ConfiguredFeature<?, ?>> registry = BuiltinRegistries.CONFIGURED_FEATURE;
+    public static ConfiguredFeature<?, ?> registerConfiguredFeature(String registryName, ConfiguredFeature<?, ?> configuredFeature) {
+        ResourceLocation resourceLocation = new ResourceLocation(Clinker.MOD_ID, registryName);
 
-        Registry.register(registry, new ResourceLocation(Clinker.MOD_ID, "ash_layer"), ASH_LAYER);
+        if (BuiltinRegistries.CONFIGURED_FEATURE.keySet().contains(resourceLocation)) {
+            throw new IllegalStateException("Configured Feature ID: \"" + resourceLocation.toString() + "\" is already in the registry!");
+        }
+
+        return Registry.register(BuiltinRegistries.CONFIGURED_FEATURE, resourceLocation, configuredFeature);
     }
 }

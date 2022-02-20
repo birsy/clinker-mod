@@ -4,9 +4,9 @@
   "sea_level": 48,
   "min_surface_level": 3,
   "disable_mob_generation": false,
-  "noise_caves_enabled": true,
-  "noodle_caves_enabled": true,
-  "aquifers_enabled": true,
+  "noise_caves_enabled": false,
+  "noodle_caves_enabled": false,
+  "aquifers_enabled": false,
   "deepslate_enabled": false,
   "ore_veins_enabled": false,
   "default_block": {

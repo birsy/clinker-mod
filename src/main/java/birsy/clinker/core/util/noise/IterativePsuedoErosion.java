@@ -52,6 +52,8 @@ public class IterativePsuedoErosion {
 
             }
         }
+
+        return samples;
     }
 
     private float evaluatePoint(float x, float y, Float[][]... nearbyPairs) {

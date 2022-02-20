@@ -1,4 +1,5 @@
-{   "parent": "block/block",
+{
+  "ambientocclusion": false,
   "textures": {
     "particle": "clinker:block/mud",
     "top": "clinker:block/mud_top",

@@ -3,8 +3,6 @@ package birsy.clinker.client.render.world;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.world.ClinkerDimensions;
 import birsy.clinker.core.util.MathUtils;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
@@ -25,51 +23,88 @@ import net.minecraftforge.fml.common.Mod;
 public class OthershoreFogRenderer {
     private static final int fogHeight = 48;
     private static final int fogEnd = fogHeight + 128;
-    private static final int aquiferFogHeight = 25;
+    private static final int aquiferFogHeight = -5;
     private static final Minecraft mc = Minecraft.getInstance();
 
-    @SubscribeEvent
-    public static void onRenderFog(EntityViewRenderEvent.RenderFogEvent event) {
-        Entity player = event.getInfo().getEntity();
-        Level world = player.level;
-        ClientLevel clientWorld = mc.level;
+    private static final int baseEmergingTicks = 45;
 
-        float timeOfDay = Mth.clamp(Mth.cos(clientWorld.getTimeOfDay((float) event.getRenderPartialTicks()) * ((float)Math.PI * 2F)) * 2.0F + 0.5F, 0.0F, 1.0F);
-        BiomeManager biomemanager = world.getBiomeManager();
-        Vec3 vector3d1 = event.getRenderer().getMainCamera().getPosition().subtract(2.0D, 2.0D, 2.0D).scale(0.25D);
-        Vec3 baseColor = CubicSampler.gaussianSampleVec3(vector3d1, (x, y, z) -> clientWorld.effects().getBrightnessDependentFogColor(Vec3.fromRGB24(biomemanager.getNoiseBiomeAtQuart(x, y, z).getFogColor()), timeOfDay));
-        Vec3 waterFogColor = CubicSampler.gaussianSampleVec3(vector3d1, (x, y, z) -> clientWorld.effects().getBrightnessDependentFogColor(Vec3.fromRGB24(biomemanager.getNoiseBiomeAtQuart(x, y, z).getWaterFogColor()), timeOfDay));
+    private static boolean devMode = true;
+
+    @SubscribeEvent
+    public static void onRenderFogDensity(EntityViewRenderEvent.FogDensity event)
+    {
+        final Entity player = event.getInfo().getEntity();
+        final Level world = player.level;
+        final ClientLevel clientLevel = mc.level;
+
+        float devModeMultiplier = 1.5F;
 
         if (world.dimension() == ClinkerDimensions.OTHERSHORE) {
             Vec3 playerVecPos = player.getEyePosition((float) event.getRenderPartialTicks());
             BlockPos playerPos = new BlockPos(playerVecPos);
 
-            float heightMultiplier = Mth.clamp(MathUtils.mapRange(fogHeight, fogEnd, 1, 0, (float) playerVecPos.y), 0, 1) * 0.25F;
-            float deepCaveHeightMultiplier = Mth.clamp(MathUtils.mapRange(15, aquiferFogHeight, 0.125F, 0, (float) playerVecPos.y), 0, 1);
-            float interpolatedLight = calculateInterpolatedLight(world, playerPos, playerVecPos, LightLayer.SKY, true) * 0.75F;
-            float interpolatedBlockLight = calculateInterpolatedLight(world, playerPos, playerVecPos, LightLayer.BLOCK, true) * 0.75F;
+            final float heightMultiplier = Mth.clamp(MathUtils.mapRange(world.getMinBuildHeight() + fogHeight, world.getMinBuildHeight() + fogEnd, 1, 0, (float) playerVecPos.y), 0, 1) * 0.125F;
+            final float interpolatedLight = calculateInterpolatedLight(world, playerPos, playerVecPos, LightLayer.SKY) * heightMultiplier;
+            final float density = Mth.clamp((interpolatedLight - 3) * 0.25f / 13f, 0.02f, 1.0f);
 
-            Vector3f seafogColor = new Vector3f(0.60F, 0.57F, 0.54F);
-            Vector3f darkFogColor = getDarknessFogColors();
-
-            float red = (float) Mth.lerp(deepCaveHeightMultiplier, Mth.lerp(heightMultiplier, baseColor.x(), seafogColor.x()), waterFogColor.x());
-            float green = (float) Mth.lerp(deepCaveHeightMultiplier, Mth.lerp(heightMultiplier, baseColor.y(), seafogColor.y()), waterFogColor.y());
-            float blue = (float) Mth.lerp(deepCaveHeightMultiplier, Mth.lerp(heightMultiplier, baseColor.z(), seafogColor.z()), waterFogColor.z());
-
+            //Make it a little foggier when it's darker....
+            final float minDensity = 0.5F;
+            final float darknessMultiplier = (((calculateInterpolatedLight(world, playerPos, playerVecPos, LightLayer.SKY, false) / -1) + 15) / 15) * (1 - minDensity) + minDensity;
             if (event.getInfo().getFluidInCamera() == FogType.NONE) {
-                RenderSystem.setShaderFogColor(Mth.lerp(interpolatedLight, red, darkFogColor.x()), Mth.lerp(interpolatedLight, green, darkFogColor.y()), Mth.lerp(interpolatedLight, blue, darkFogColor.z()));
-                RenderSystem.setShaderFogStart(-8.0F);
-                RenderSystem.setShaderFogEnd((RenderSystem.getShaderFogEnd() * 0.75F) - (5 * MathUtils.invert(calculateInterpolatedLight(world, playerPos, playerVecPos, LightLayer.SKY, true)) - (30 * Mth.clamp(MathUtils.mapRange(fogHeight, fogEnd, 1, 0, (float) playerVecPos.y), 0, 1))));
-            } else if (event.getInfo().getFluidInCamera() != FogType.LAVA) {
-                float[] fogColor = RenderSystem.getShaderFogColor();
-                RenderSystem.setShaderFogColor(Mth.lerp(interpolatedBlockLight, fogColor[0], darkFogColor.x()), Mth.lerp(interpolatedBlockLight, fogColor[1], darkFogColor.y()), Mth.lerp(interpolatedBlockLight, fogColor[2], darkFogColor.z()));
+                event.setCanceled(true);
+                event.setDensity(density * darknessMultiplier * 10000F * devModeMultiplier);
+            } else if (event.getInfo().getFluidInCamera() == FogType.WATER) {
+                event.setCanceled(true);
+                event.setDensity(event.getDensity() * 1000F * devModeMultiplier);
             }
         }
     }
 
-    public static Vector3f getDarknessFogColors() {
-        float brightness = 0.25f;
-        return new Vector3f(0.179f * brightness, 0.179f * brightness, 0.167f * brightness);
+    @SubscribeEvent
+    public static void onRenderFogColors(EntityViewRenderEvent.FogColors event)
+    {
+        final Entity player = event.getInfo().getEntity();
+        final Level world = player.level;
+        final ClientLevel clientLevel = mc.level;
+
+        float sunsetStrength = Mth.clamp(Mth.cos(clientLevel.getTimeOfDay((float) event.getRenderPartialTicks()) * ((float)Math.PI * 2F)) * 2.0F + 0.5F, 0.0F, 1.0F);
+        BiomeManager biomemanager = world.getBiomeManager();
+        Vec3 vec31 = event.getRenderer().getMainCamera().getPosition().subtract(2.0D, 2.0D, 2.0D).scale(0.25D);
+        Vec3 baseColor = CubicSampler.gaussianSampleVec3(vec31, (x, y, z) -> clientLevel.effects().getBrightnessDependentFogColor(Vec3.fromRGB24(biomemanager.getNoiseBiomeAtQuart(x, y, z).getFogColor()), sunsetStrength));
+        Vec3 waterFogColor = CubicSampler.gaussianSampleVec3(vec31, (x, y, z) -> clientLevel.effects().getBrightnessDependentFogColor(Vec3.fromRGB24(biomemanager.getNoiseBiomeAtQuart(x, y, z).getWaterFogColor()), sunsetStrength));
+        
+        if (world.dimension() == ClinkerDimensions.OTHERSHORE) {
+            Vec3 playerVecPos = player.getEyePosition((float) event.getRenderPartialTicks());
+            BlockPos playerPos = new BlockPos(playerVecPos);
+
+            final float heightMultiplier = Mth.clamp(MathUtils.mapRange(world.getMinBuildHeight() + fogHeight, world.getMinBuildHeight() + fogEnd, 1, 0, (float) playerVecPos.y), 0, 1) * 0.25F;
+            final float deepCaveHeightMultiplier = Mth.clamp(MathUtils.mapRange(-10, 0, 0.5F, 0, (float) playerVecPos.y), 0, 1);
+            final float interpolatedLight = calculateInterpolatedLight(world, playerPos, playerVecPos, LightLayer.SKY, true);
+            final float interpolatedBlockLight = calculateInterpolatedLight(world, playerPos, playerVecPos, LightLayer.BLOCK, true);
+
+            Vec3 seafogColor = new Vec3(0.60F, 0.57F, 0.54F);
+            Vec3 darkFogColor = getDarknessFogColors();
+
+            float red = (float) Mth.lerp(deepCaveHeightMultiplier, baseColor.x(), seafogColor.x());
+            float green = (float) Mth.lerp(deepCaveHeightMultiplier, baseColor.y(), seafogColor.y());
+            float blue = (float) Mth.lerp(deepCaveHeightMultiplier, baseColor.z(), seafogColor.z());
+
+
+            if (event.getInfo().getFluidInCamera() == FogType.NONE) {
+                event.setRed  ((float) Mth.lerp(interpolatedLight, red, red * darkFogColor.x()));
+                event.setGreen((float) Mth.lerp(interpolatedLight, green, green * darkFogColor.y()));
+                event.setBlue ((float) Mth.lerp(interpolatedLight, blue, blue * darkFogColor.z()));
+            } else if (event.getInfo().getFluidInCamera() != FogType.LAVA){
+                event.setRed  ((float) Mth.lerp(interpolatedBlockLight, event.getRed(),   event.getRed() * darkFogColor.x()));
+                event.setGreen((float) Mth.lerp(interpolatedBlockLight, event.getGreen(), event.getGreen() * darkFogColor.y()));
+                event.setBlue ((float) Mth.lerp(interpolatedBlockLight, event.getBlue(),  event.getBlue() * darkFogColor.z()));
+            }
+        }
+    }
+
+    public static Vec3 getDarknessFogColors() {
+        float brightness = 1.0f;
+        return new Vec3(0.14f * brightness, 0.175f * brightness, 0.17f * brightness);
     }
 
     private static float calculateInterpolatedLight(Level world, BlockPos playerPos, Vec3 playerVecPos, LightLayer lightType) {
@@ -87,10 +122,10 @@ public class OthershoreFogRenderer {
             }
         }
 
-        Vector3d interpolationFactor = playerVecPos.subtract(new Vector3d(playerPos.x(), playerPos.y(), playerPos.z()));
+        Vec3 interpolationFactor = playerVecPos.subtract(new Vec3(playerPos.x(), playerPos.y(), playerPos.z()));
         return MathUtils.triLerp(new Vector3f((float) interpolationFactor.x(), (float) interpolationFactor.y(), (float) interpolationFactor.z()), lightValueArray[0], lightValueArray[1], lightValueArray[2], lightValueArray[3], lightValueArray[4], lightValueArray[5], lightValueArray[6], lightValueArray[7]);
 */
-
+/*
         float light = getLight(world, playerPos, lightType);
 
         float xLight = getLight(world, playerPos.offset(1, 0, 0), lightType);
@@ -117,15 +152,38 @@ public class OthershoreFogRenderer {
 
         //return (float) Mth.lerp(interpolationFactor.z, Mth.lerp(interpolationFactor.y, Mth.lerp(interpolationFactor.x, light, xLight), yLight), zLight);
         return ((((xLight + zLight) - light) + yLight) - light);
+*/
+        BlockPos pos0 = new BlockPos(Mth.floor(playerVecPos.x()), Mth.floor(playerVecPos.y()), Mth.floor(playerVecPos.z()));
+        BlockPos pos1 = new BlockPos(Mth.ceil(playerVecPos.x()), Mth.ceil(playerVecPos.y()), Mth.ceil(playerVecPos.z()));
 
+        float xLerp = (float) Mth.frac(playerVecPos.x());
+        float yLerp = (float) Mth.frac(playerVecPos.y());
+        float zLerp = (float) Mth.frac(playerVecPos.z());
+
+        float light000 = getLight(world, pos0, lightType);
+        float light001 = getLight(world, new BlockPos(pos0.getX(), pos0.getY(), pos1.getZ()), lightType);
+        float light010 = getLight(world, new BlockPos(pos0.getX(), pos1.getY(), pos0.getZ()), lightType);
+        float light011 = getLight(world, new BlockPos(pos0.getX(), pos1.getY(), pos1.getZ()), lightType);
+        float light100 = getLight(world, new BlockPos(pos1.getX(), pos0.getY(), pos0.getZ()), lightType);
+        float light101 = getLight(world, new BlockPos(pos1.getX(), pos0.getY(), pos1.getZ()), lightType);
+        float light110 = getLight(world, new BlockPos(pos1.getX(), pos1.getY(), pos0.getZ()), lightType);
+        float light111 = getLight(world, pos1, lightType);
+
+        float light00 = Mth.lerp(xLerp, light000, light100);
+        float light01 = Mth.lerp(xLerp, light001, light101);
+        float light10 = Mth.lerp(xLerp, light010, light110);
+        float light11 = Mth.lerp(xLerp, light011, light111);
+
+        float light0 = Mth.lerp(zLerp, light00, light01);
+        float light1 = Mth.lerp(zLerp, light10, light11);
+
+        float light = Mth.lerp(yLerp, light0, light1);
+
+        return -1 * (light - 15);
     }
 
     private static float calculateInterpolatedLight(Level world, BlockPos playerPos, Vec3 playerVecPos, LightLayer lightType, boolean returnsNormalized) {
-        if (!returnsNormalized) {
-            return calculateInterpolatedLight(world, playerPos, playerVecPos, lightType);
-        } else {
-            return MathUtils.mapRange(0, 15, 1, 0, calculateInterpolatedLight(world, playerPos, playerVecPos, lightType));
-        }
+        return calculateInterpolatedLight(world, playerPos, playerVecPos, lightType) / (returnsNormalized ? 15 : 1);
     }
 
     private static float getLight(Level worldIn, BlockPos posIn, LightLayer lightType) {

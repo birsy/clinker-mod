@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "clinker:block/mold/white_mold_top",
+    "bottom": "clinker:block/mold/black_mold_top",
+    "side": "clinker:block/mold/white_mold_roots"
+  }
+}

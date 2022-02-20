@@ -35,11 +35,14 @@ public class AshBuildupFeature extends Feature<NoneFeatureConfiguration> {
                 pos.set(x, y, z);
 
                 for (Direction direction : Direction.Plane.HORIZONTAL) {
-                    if (level.getBlockState(pos.relative(direction)).isFaceSturdy(level, pos.relative(direction), direction.getOpposite())) {
-                        level.setBlock(pos, ClinkerBlocks.ASH_LAYER.get().defaultBlockState().setValue(AshLayerBlock.LAYERS, featureContext.random().nextInt(4) + 2), 2);
+                    //Second clause ensures that it doesn't happen on steeper cliffsides, only smooth plains.
+                    if (level.getBlockState(pos.relative(direction)).isFaceSturdy(level, pos.relative(direction), direction.getOpposite()) && !level.getBlockState(pos.relative(direction).above()).isFaceSturdy(level, pos.relative(direction).above(), direction.getOpposite())) {
+                        level.setBlock(pos, ClinkerBlocks.ASH_LAYER.get().defaultBlockState().setValue(AshLayerBlock.LAYERS, featureContext.random().nextInt(3) + 1), 2);
                         break;
                     }
                 }
+
+
             }
         }
 

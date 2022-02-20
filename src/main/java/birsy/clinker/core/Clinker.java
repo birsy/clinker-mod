@@ -1,10 +1,9 @@
 package birsy.clinker.core;
 
-import birsy.clinker.core.registry.ClinkerBlocks;
-import birsy.clinker.core.registry.ClinkerItems;
-import birsy.clinker.core.registry.ClinkerSounds;
-import birsy.clinker.core.registry.world.ClinkerConfiguredFeatures;
+import birsy.clinker.core.registry.*;
+import birsy.clinker.core.registry.world.ClinkerBiomeTest;
 import birsy.clinker.core.registry.world.ClinkerFeatures;
+import birsy.clinker.core.registry.world.ClinkerSurfaceBuilder;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 
 import org.apache.logging.log4j.LogManager;
@@ -39,9 +38,13 @@ public class Clinker
         ClinkerItems.ITEMS.register(modEventBus);
         ClinkerBlocks.BLOCKS.register(modEventBus);
         ClinkerBlocks.ITEMS.register(modEventBus);
+        ClinkerBlockEntities.BLOCK_ENTITIES.register(modEventBus);
+        ClinkerEntities.ENTITIES.register(modEventBus);
         ClinkerFeatures.FEATURES.register(modEventBus);
+        ClinkerSurfaceBuilder.SURFACE_BUILDERS.register(modEventBus);
         ClinkerElements.ELEMENTS.register(modEventBus);
 
+        ClinkerBiomeTest.BIOMES.register(modEventBus);
 
 		modEventBus.addListener(this::setup);
 		modEventBus.addListener(this::doClientStuff);
@@ -54,15 +57,19 @@ public class Clinker
         event.enqueueWork(() -> {
             AxeItem.STRIPPABLES.put(ClinkerBlocks.LOCUST_LOG.get(), ClinkerBlocks.STRIPPED_LOCUST_LOG.get());
             AxeItem.STRIPPABLES.put(ClinkerBlocks.SWAMP_ASPEN_LOG.get(), ClinkerBlocks.STRIPPED_SWAMP_ASPEN_LOG.get());
-            ClinkerConfiguredFeatures.registerConfiguredFeatures();
         });
     }
 
     private void doClientStuff(final FMLClientSetupEvent event)
     {
+        ClinkerBlockEntities.registerTileEntityRenderers();
         ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.LOCUST_LOG.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.LOCUST_LEAVES.get(), RenderType.cutoutMipped());
         ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.LOCUST_DOOR.get(), RenderType.cutout());
+
+        ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.SHORT_MUD_REEDS.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.MUD_REEDS.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.TALL_MUD_REEDS.get(), RenderType.cutout());
     }
 
     @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD, modid = Clinker.MOD_ID)
@@ -104,4 +111,33 @@ public class Clinker
         	return new ItemStack(ClinkerItems.GNOMEAT_JERKY.get());
         }
     };
+
+    /*
+
+       the, elder, scrolls,
+       klaatu, berata, niktu, xyzzy,
+       bless, curse,
+       light, darkness,
+       fire, air, earth, water,
+       hot, dry, cold, wet,
+       ignite, snuff,
+       embiggen, twist, shorten, stretch,
+       fiddle, destroy,
+       imbue,
+       galvanize,
+       enchant,
+       free, limited,
+       range, of,
+       towards, inside,
+       sphere, cube, self, other, ball,
+       mental, physical,
+       grow, shrink,
+       demon, elemental, spirit, animal, creature, beast, humanoid, undead,
+       fresh, stale,
+       phnglui, mglwnafh,
+       cthulhu, rlyeh,
+       wgahnagl, fhtagn,
+       baguette
+
+     */
 }

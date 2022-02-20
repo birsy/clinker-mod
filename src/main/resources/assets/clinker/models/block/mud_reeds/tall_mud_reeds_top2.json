@@ -1,0 +1,6 @@
+{
+  "parent": "clinker:block/thick_grass",
+  "textures": {
+    "cross": "clinker:block/mud_reeds/tall_mud_reeds_top2"
+  }
+}

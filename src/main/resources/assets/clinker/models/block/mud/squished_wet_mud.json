@@ -1,5 +1,4 @@
 {
-  "parent": "block/block",
   "textures": {
     "particle": "clinker:block/mud",
     "bottom": "clinker:block/mud_top",

@@ -1,5 +1,6 @@
 package birsy.clinker.common.block;
 
+import birsy.clinker.common.entity.MudScarabEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -11,6 +12,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.BushBlock;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -36,12 +38,16 @@ public class MudBlock extends Block implements SimpleWaterloggedBlock {
 
     @Override
     public void stepOn(Level pLevel, BlockPos pPos, BlockState pState, Entity pEntity) {
-        pEntity.setDeltaMovement(pEntity.getDeltaMovement().multiply(0.5, 0.5, 0.5));
+        if (!(pEntity instanceof MudScarabEntity)) {
+            pEntity.setDeltaMovement(pEntity.getDeltaMovement().multiply(0.5, 0.5, 0.5));
+        }
 
         if (!pState.getValue(SQUISHED)) {
-            pLevel.playSound(null, pEntity, SoundEvents.SLIME_SQUISH, pEntity.getSoundSource(), 0.125F, 0.125F);
-            pLevel.setBlock(pPos, pState.setValue(SQUISHED, true), 2);
-            pLevel.getBlockTicks().scheduleTick(pPos, this, pLevel.random.nextInt(60) + 20);
+            if (!(pLevel.getBlockState(pPos.above()).getBlock() instanceof BushBlock)) {
+                pLevel.playSound(null, pEntity, SoundEvents.SLIME_SQUISH, pEntity.getSoundSource(), 0.125F, 0.125F);
+                pLevel.setBlock(pPos, pState.setValue(SQUISHED, true), 2);
+                pLevel.getBlockTicks().scheduleTick(pPos, this, pLevel.random.nextInt(60) + 20);
+            }
         }
 
         super.stepOn(pLevel, pPos, pState, pEntity);
@@ -53,7 +59,9 @@ public class MudBlock extends Block implements SimpleWaterloggedBlock {
             float ySubtract = pState.getValue(WATERLOGGED) ? 0.8125F : 0.0F;
 
             if (pLevel.getEntities((Entity) null, new AABB(pPos.above().getX(), pPos.above().getY() - ySubtract, pPos.above().getZ(), pPos.above().getX() + 1, pPos.above().getY() + 0.25 - ySubtract, pPos.above().getZ() + 1), (entity) -> entity.isOnGround()).isEmpty()) {
-                pLevel.setBlock(pPos, pState.setValue(SQUISHED, false), 2);
+                if (!(pLevel.getBlockState(pPos.above()).getBlock() instanceof BushBlock)) {
+                    pLevel.setBlock(pPos, pState.setValue(SQUISHED, false), 2);
+                }
             }
         }
 
@@ -62,10 +70,6 @@ public class MudBlock extends Block implements SimpleWaterloggedBlock {
 
     @Override
     public BlockState updateShape(BlockState pState, Direction pFacing, BlockState pFacingState, LevelAccessor pLevel, BlockPos pCurrentPos, BlockPos pFacingPos) {
-        if (pState.getValue(WATERLOGGED)) {
-            pLevel.getLiquidTicks().scheduleTick(pCurrentPos, Fluids.WATER, Fluids.WATER.getTickDelay(pLevel));
-        }
-
         if (pLevel.getFluidState(pFacingPos).getType() == Fluids.WATER) {
             pState.setValue(SQUISHED, true);
         } else if (!isSaturated(pLevel, pCurrentPos)) {
