@@ -16,16 +16,17 @@ import java.util.Random;
 /* cappin's math utils
  * hope you find this useful :) */
 public class MathUtils {
-    private static final float[] SIN = Util.make(new float[65536], (array) -> {
+    private static final float[] ASIN = Util.make(new float[65536], (array) -> {
         for(int i = 0; i < array.length; ++i) {
-            array[i] = (float)Math.sin((double)i * Math.PI * 2.0D / 65536.0D);
+            array[i] = (float)Math.sin((double)i * Math.PI * 2.0D / (double)array.length);
         }
     });
 
-    public static float sin(float pValue) {
-        return SIN[(int)(pValue * 10430.378F) & '\uffff'];
+    public static float arcsin(float pValue) {
+        return ASIN[(int)(pValue * 10430.378F) & '\uffff'];
     }
-    
+    public static float arccos(float pValue) { return (float) ((arcsin(pValue) * -1) + (Math.PI / 2));}
+
     /**
      * Maps one range of numbers to another. Incredibly useful function for lazy people like me.
      * @param fromMin The minimum of the range you're mapping from.
@@ -77,8 +78,7 @@ public class MathUtils {
 
     public static float biasTowardsIntegers(float value) {
         float mod = value % 1;
-        float modSqr = mod * mod;
-        return (float) ((modSqr * modSqr) + Math.floor(value));
+        return (float) ((mod * mod * mod * mod) + Math.floor(value));
     }
 
     /**
@@ -312,6 +312,22 @@ public class MathUtils {
     }
 
 
+    public static double a_asin(double x) {
+        double a0 = 1.5707288;
+        double a1 = -0.2121144;
+        double a2 = 0.0742610;
+        double a3 = -0.0187293;
+
+        double xx = Math.abs(x);
+
+        var y = Math.PI/2 - Math.sqrt(1-xx)*(a0 + a1 * xx + a2 * xx * xx + a3 * xx * xx * xx);
+        return y * Math.signum(x);
+    }
+
+    public static double a_acos(double x) {
+        return (a_asin(x) * -1) + (Math.PI / 2);
+    }
+
     private static double log(double base, double logNumber) {
         return Math.log10(logNumber) / Math.log10(base);
     }
@@ -370,6 +386,11 @@ public class MathUtils {
         // The "steepness" is the magnitude of the gradient vector
         // For a faster but not as accurate computation, you can just use abs(dx) + abs(dy)
         return (float) Math.pow(dx * dx + dy * dy + dz * dz, 1/3);
+    }
+
+    public static Vec3 cubeNormalize(Vec3 input) {
+        double divisor = 1 / Math.max(Math.max(Math.abs(input.x), Math.abs(input.y)),  Math.abs(input.z));
+        return input.multiply(divisor, divisor, divisor);
     }
 
     //Refer to https://easings.net/.
@@ -590,4 +611,6 @@ public class MathUtils {
         
         return c;
     }
+    
+
 }

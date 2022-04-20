@@ -1,0 +1,10 @@
+{
+    "variants": {
+        "": [
+            { "model": "clinker:block/calamine/calamine" },
+            { "model": "clinker:block/calamine/calamine", "y": 180 },
+            { "model": "clinker:block/calamine/calamine_mirrored"},
+            { "model": "clinker:block/calamine/calamine_mirrored", "y": 180 }
+        ]
+    }
+}

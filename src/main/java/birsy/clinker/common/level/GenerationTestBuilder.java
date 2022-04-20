@@ -3,8 +3,10 @@ package birsy.clinker.common.level;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.core.util.noise.FastNoiseLite;
+import birsy.clinker.core.util.noise.IterativePsuedoEroder;
 import birsy.clinker.core.util.noise.VoronoiGenerator;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.math.Constants;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
@@ -21,43 +23,38 @@ import java.util.Random;
 
 public class GenerationTestBuilder extends NetherForestSurfaceBuilder {
     private long seed;
-    private FastNoiseLite noise1;
+    private float frequency = 1.0F;
 
-    private VoronoiGenerator voronoiNoise = new VoronoiGenerator(1337);
+    private FastNoiseLite noise1;
+    private IterativePsuedoEroder noise2 = new IterativePsuedoEroder((coords, seed) -> (float) noise1.GetNoise(coords.x * frequency, coords.y * frequency), seed);
 
     public GenerationTestBuilder(Codec<SurfaceBuilderBaseConfiguration> config) {
         super(config);
     }
 
     public void apply(Random pRandom, ChunkAccess chunkIn, Biome pBiome, int x, int z, int pHeight, double pNoise, BlockState defaultBlock, BlockState defaultFluid, int pSeaLevel, int pMinSurfaceLevel, long pSeed, SurfaceBuilderBaseConfiguration pConfig) {
-        voronoiNoise.setOffsetAmount(0.0);
+        float terrainHeight = (noise2.at(x, z) - 0.5F) * 2.0F;
+        terrainHeight *= 32;
+        terrainHeight += pSeaLevel;
+        //Clinker.LOGGER.info(terrainHeight);
 
-        double scale = 15;
-        Pair<double[], Vec2> voronoiSample = voronoiNoise.get2(x / scale, z / scale);
-        double sample = (MathUtils.biasTowardsExtreme(noise1.GetNoise(voronoiSample.getSecond().x * scale, voronoiSample.getSecond().y * scale), 0.5, 2) * 60) + pSeaLevel;
-
-        BlockPos.MutableBlockPos blockPos = new BlockPos.MutableBlockPos(x, chunkIn.getMaxBuildHeight(), z);
+        BlockPos.MutableBlockPos pos = new BlockPos(x, 0, z).mutable();
         for (int y = chunkIn.getMaxBuildHeight(); y > chunkIn.getMinBuildHeight(); y--) {
-            blockPos.setY(y);
-
-            if (y < sample) {
-                chunkIn.setBlockState(blockPos, defaultBlock, false);
+            pos.setY(y);
+            if (y < terrainHeight) {
+                chunkIn.setBlockState(pos, defaultBlock, false);
             } else {
-                chunkIn.setBlockState(blockPos, Blocks.AIR.defaultBlockState(), false);
+                chunkIn.setBlockState(pos, Blocks.AIR.defaultBlockState(), false);
             }
         }
-
-        Clinker.LOGGER.info("test");
-
     }
 
     @Override
     public void initNoise(long seed) {
         super.initNoise(seed);
-        if (this.seed != seed || this.noise1 == null || this.voronoiNoise == null) {
+        if (this.seed != seed || this.noise1 == null || this.noise2 == null) {
             this.seed = seed;
             Random rand = new Random(seed);
-
             this.setupNoise(rand);
         }
     }
@@ -74,6 +71,6 @@ public class GenerationTestBuilder extends NetherForestSurfaceBuilder {
         this.noise1.SetFractalGain(1.7F);
         this.noise1.SetFractalWeightedStrength(0.0F);
 
-        this.voronoiNoise = new VoronoiGenerator(seed);
+        noise2.setSeed(seed);
     }
 }

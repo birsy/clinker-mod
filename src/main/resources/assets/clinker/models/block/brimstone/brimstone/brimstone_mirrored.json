@@ -1,6 +1,7 @@
 {
-   "parent": "block/cube_mirrored_all",
-   "textures": {
-       "all": "clinker:block/brimstone/brimstone"
-   }
+  "parent": "minecraft:block/cube_column_mirrored",
+  "textures": {
+    "end": "clinker:block/brimstone/brimstone_top",
+    "side": "clinker:block/brimstone/brimstone"
+  }
 }

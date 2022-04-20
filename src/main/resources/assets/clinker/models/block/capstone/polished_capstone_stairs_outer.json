@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/outer_stairs",
+  "textures": {
+    "bottom": "clinker:block/polished_capstone_stairs",
+    "top": "clinker:block/polished_capstone_stairs",
+    "side": "clinker:block/polished_capstone_stairs"
+  }
+}

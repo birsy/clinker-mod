@@ -1,9 +1,12 @@
 package birsy.clinker.core.registry;
 
+import birsy.clinker.client.render.entity.GnomadAxemanRenderer;
 import birsy.clinker.client.render.entity.MudScarabRenderer;
 import birsy.clinker.client.render.entity.SeaHagRenderer;
+import birsy.clinker.client.render.entity.model.GnomadAxemanModel;
 import birsy.clinker.client.render.entity.model.MudScarabModel;
 import birsy.clinker.client.render.entity.model.SeaHagModel;
+import birsy.clinker.common.entity.GnomadAxemanEntity;
 import birsy.clinker.common.entity.MudScarabEntity;
 import birsy.clinker.common.entity.SeaHagEntity;
 import birsy.clinker.core.Clinker;
@@ -38,21 +41,29 @@ public class ClinkerEntities {
                     .sized(2.5F, 6.4F)
                     .build(new ResourceLocation(Clinker.MOD_ID, "sea_hag").toString()));
 
+    public static final RegistryObject<EntityType<GnomadAxemanEntity>> GNOMAD_AXEMAN = ENTITIES.register("gnomad_axeman", () ->
+            EntityType.Builder.of(GnomadAxemanEntity::new, MobCategory.MONSTER)
+                    .sized(1.0f, 1.5f)
+                    .build(new ResourceLocation(Clinker.MOD_ID, "gnomad_axeman").toString()));
+
     @SubscribeEvent
     public static void registerEntityAttribute(EntityAttributeCreationEvent event) {
         event.put(MUD_SCARAB.get(), MudScarabEntity.createAttributes().build());
         event.put(SEA_HAG.get(), SeaHagEntity.createAttributes().build());
+        event.put(GNOMAD_AXEMAN.get(), SeaHagEntity.createAttributes().build());
     }
 
     @SubscribeEvent
     public static void registerEntityRenders(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ClinkerEntities.MUD_SCARAB.get(), MudScarabRenderer::new);
         event.registerEntityRenderer(ClinkerEntities.SEA_HAG.get(), SeaHagRenderer::new);
+        event.registerEntityRenderer(ClinkerEntities.GNOMAD_AXEMAN.get(), GnomadAxemanRenderer::new);
     }
 
     @SubscribeEvent
     public static void registerLayerDefinition(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(MudScarabModel.LAYER_LOCATION, MudScarabModel::createBodyLayer);
         event.registerLayerDefinition(SeaHagModel.LAYER_LOCATION, SeaHagModel::createBodyLayer);
+        event.registerLayerDefinition(GnomadAxemanModel.LAYER_LOCATION, GnomadAxemanModel::createBodyLayer);
     }
 }

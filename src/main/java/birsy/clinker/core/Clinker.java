@@ -44,6 +44,8 @@ public class Clinker
         ClinkerSurfaceBuilder.SURFACE_BUILDERS.register(modEventBus);
         ClinkerElements.ELEMENTS.register(modEventBus);
 
+        //TODO : STRUCTURES. LOOK INTO WAVE FUNCTION COLLAPSE?
+
         ClinkerBiomeTest.BIOMES.register(modEventBus);
 
 		modEventBus.addListener(this::setup);
@@ -70,6 +72,8 @@ public class Clinker
         ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.SHORT_MUD_REEDS.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.MUD_REEDS.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.TALL_MUD_REEDS.get(), RenderType.cutout());
+
+        ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.BUGSTALK.get(), RenderType.cutout());
     }
 
     @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD, modid = Clinker.MOD_ID)

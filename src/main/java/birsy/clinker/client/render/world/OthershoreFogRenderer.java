@@ -37,7 +37,7 @@ public class OthershoreFogRenderer {
         final Level world = player.level;
         final ClientLevel clientLevel = mc.level;
 
-        float devModeMultiplier = 1.5F;
+        float devModeMultiplier = 1.3F;
 
         if (world.dimension() == ClinkerDimensions.OTHERSHORE) {
             Vec3 playerVecPos = player.getEyePosition((float) event.getRenderPartialTicks());

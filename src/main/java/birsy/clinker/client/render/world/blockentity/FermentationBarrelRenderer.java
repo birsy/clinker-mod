@@ -19,7 +19,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.LidBlockEntity;
 
-public class FermentationBarrelRenderer<T extends FermentationBarrelBlockEntity & LidBlockEntity> implements BlockEntityRenderer<T> {
+public class FermentationBarrelRenderer<T extends FermentationBarrelBlockEntity> implements BlockEntityRenderer<T> {
     public static final ResourceLocation TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/block/fermentation_barrel/fermentation_barrel_lid.png");
     public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation(Clinker.MOD_ID, "fermentation_barrel"), "main");
     private final ModelPart lid;

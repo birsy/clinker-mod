@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column_mirrored",
+  "textures": {
+    "end": "clinker:block/capstone_top",
+    "side": "clinker:block/capstone"
+  }
+}

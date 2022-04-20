@@ -53,16 +53,13 @@
 	"ambient.ash_plains.additions": {
 		"category": "ambient",
 		"sounds": [
-		{"name": "clinker:ambient/othershore/ash_plains/chimes1", "stream": true},
-		{"name": "clinker:ambient/othershore/ash_plains/chimes2", "stream": true},
-		{"name": "clinker:ambient/othershore/ash_plains/chimes3", "stream": true}
+		{"name": "clinker:ambient/othershore/ash_plains/bubbling1", "stream": true}
 		]
 	},
 	"ambient.ash_plains.loop": {
 		"category": "ambient",
 		"sounds": [
-			{"name": "clinker:ambient/othershore/ash_plains/wind1", "stream": true},
-			{"name": "clinker:ambient/othershore/ash_plains/wind2", "stream": true}
+			{"name": "clinker:ambient/othershore/ash_plains/chimney1", "stream": true}
 		]
 	}
 }

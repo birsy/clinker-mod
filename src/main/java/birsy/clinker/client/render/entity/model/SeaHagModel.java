@@ -38,21 +38,19 @@ public class SeaHagModel<T extends SeaHagEntity> extends EntityModel<T> {
 	private final CappinModelPart rightLegRotationJoint;
 	private final CappinModelPart rightLeg;
 
-
-
 	public SeaHagModel(ModelPart root) {
 		this.rootJoint = CappinModelPart.fromModelPart(root.getChild("rootJoint"));
-		this.body = CappinModelPart.fromModelPart(this.rootJoint.getChild("body"));
-		this.torso = CappinModelPart.fromModelPart(this.body.getChild("torso"));
-		this.head = CappinModelPart.fromModelPart(this.torso.getChild("head"));
-		this.frontLegRotationJoint = CappinModelPart.fromModelPart(this.body.getChild("frontLegRotationJoint"));
-		this.frontLeg = CappinModelPart.fromModelPart(this.frontLegRotationJoint.getChild("frontLeg"));
-		this.backLegRotationJoint = CappinModelPart.fromModelPart(this.body.getChild("backLegRotationJoint"));
-		this.backLeg = CappinModelPart.fromModelPart(this.backLegRotationJoint.getChild("backLeg"));
-		this.leftLegRotationJoint = CappinModelPart.fromModelPart(this.body.getChild("leftLegRotationJoint"));
-		this.leftLeg = CappinModelPart.fromModelPart(this.leftLegRotationJoint.getChild("leftLeg"));
-		this.rightLegRotationJoint = CappinModelPart.fromModelPart(this.body.getChild("rightLegRotationJoint"));
-		this.rightLeg = CappinModelPart.fromModelPart(this.rightLegRotationJoint.getChild("rightLeg"));
+		this.body = this.rootJoint.getChild("body");
+		this.torso = this.body.getChild("torso");
+		this.head = this.torso.getChild("head");
+		this.frontLegRotationJoint = this.body.getChild("frontLegRotationJoint");
+		this.frontLeg = this.frontLegRotationJoint.getChild("frontLeg");
+		this.backLegRotationJoint = this.body.getChild("backLegRotationJoint");
+		this.backLeg = this.backLegRotationJoint.getChild("backLeg");
+		this.leftLegRotationJoint = this.body.getChild("leftLegRotationJoint");
+		this.leftLeg = this.leftLegRotationJoint.getChild("leftLeg");
+		this.rightLegRotationJoint = this.body.getChild("rightLegRotationJoint");
+		this.rightLeg = this.rightLegRotationJoint.getChild("rightLeg");
 	}
 
 	public static LayerDefinition createBodyLayer() {
@@ -92,20 +90,18 @@ public class SeaHagModel<T extends SeaHagEntity> extends EntityModel<T> {
 	public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
 		resetAnimation();
 		this.frontLeg.setRotation(legRotations[0][0], legRotations[0][1], legRotations[0][2]);
-		this.frontLeg.setScale(1.0F, legRotations[0][3] / entity.legLength, 1.0F);
+		this.frontLeg.setScale(1.0F, legRotations[0][3], 1.0F);
 		this.rightLeg.setRotation(legRotations[1][0], legRotations[1][1], legRotations[1][2]);
-		this.rightLeg.setScale(1.0F, legRotations[1][3] / entity.legLength, 1.0F);
+		this.rightLeg.setScale(1.0F, legRotations[1][3], 1.0F);
 		this.backLeg.setRotation(legRotations[2][0], legRotations[2][1], legRotations[2][2]);
-		this.backLeg.setScale(1.0F, legRotations[2][3] / entity.legLength, 1.0F);
+		this.backLeg.setScale(1.0F, legRotations[2][3], 1.0F);
 		this.leftLeg.setRotation(legRotations[3][0], legRotations[3][1], legRotations[3][2]);
-		this.leftLeg.setScale(1.0F, legRotations[3][3] / entity.legLength, 1.0F);
+		this.leftLeg.setScale(1.0F, legRotations[3][3], 1.0F);
 	}
 
 	@Override
 	public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
 		rootJoint.render(poseStack, buffer, packedLight, packedOverlay);
-		frontLegRotationJoint.render(poseStack, buffer, packedLight, packedOverlay);
-
 	}
 
 	public void setLegRotation(int leg, float pitch, float yaw, float roll, float scale) {

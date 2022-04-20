@@ -216,6 +216,7 @@ public class CaveSurfaceBuilder extends NetherForestSurfaceBuilder {
 
         return new double[]{MathUtils.smoothMinExpo(MathUtils.smoothMinExpo(tunnelSample1, cavernSample, -0.01), bridgeSample, 0.03), MathUtils.smoothMinExpo(MathUtils.smoothMinExpo(tunnelSample2, cavernSample, -0.01), bridgeSample, 0.03)};
     }
+
     private double sampleCavernBridgeNoise(Vec3 localPos, Vec3 globalPos, double cellValue, double cavernRadius, double cavernHeight) {
         long seed = Math.abs((long)(cellValue * Long.MAX_VALUE));
         int bridgeAmount = (int) ((Math.abs(cellValue) * 6) + 8);

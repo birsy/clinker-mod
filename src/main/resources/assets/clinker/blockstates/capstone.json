@@ -1,0 +1,14 @@
+{
+    "variants": {
+        "": [
+            { "model": "clinker:block/capstone/capstone" },
+            { "model": "clinker:block/capstone/capstone", "z": 180 },
+            { "model": "clinker:block/capstone/capstone_mirrored"},
+            { "model": "clinker:block/capstone/capstone_mirrored", "z": 180 },
+            { "model": "clinker:block/capstone/capstone1" },
+            { "model": "clinker:block/capstone/capstone1", "z": 180 },
+            { "model": "clinker:block/capstone/capstone1_mirrored"},
+            { "model": "clinker:block/capstone/capstone1_mirrored", "z": 180 }
+        ]
+    }
+}

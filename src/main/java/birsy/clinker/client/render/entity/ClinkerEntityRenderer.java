@@ -1,7 +1,10 @@
 package birsy.clinker.client.render.entity;
 
+import birsy.clinker.common.entity.GnomadAxemanEntity;
+import birsy.clinker.common.entity.IVelocityTilt;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -19,6 +22,14 @@ public abstract class ClinkerEntityRenderer<T extends Mob, M extends EntityModel
     public ClinkerEntityRenderer(EntityRendererProvider.Context context, M model, float shadowSize) {
         super(context, model, shadowSize);
     }
+    @Override
+    protected void setupRotations(T pEntityLiving, PoseStack pMatrixStack, float pAgeInTicks, float pRotationYaw, float pPartialTicks) {
+        if (pEntityLiving instanceof IVelocityTilt) {
+            pMatrixStack.mulPose(Vector3f.XP.rotationDegrees(((IVelocityTilt) pEntityLiving).getPitch(pPartialTicks)));
+            pMatrixStack.mulPose(Vector3f.ZP.rotationDegrees(((IVelocityTilt) pEntityLiving).getRoll(pPartialTicks)));
+        }
+        super.setupRotations(pEntityLiving, pMatrixStack, pAgeInTicks, pRotationYaw, pPartialTicks);
+    }
 
     @Override
     public void render(T pEntity, float pEntityYaw, float pPartialTicks, PoseStack pMatrixStack, MultiBufferSource pBuffer, int pPackedLight) {
@@ -28,28 +39,28 @@ public abstract class ClinkerEntityRenderer<T extends Mob, M extends EntityModel
         boolean shouldSit = pEntity.isPassenger() && (pEntity.getVehicle() != null && pEntity.getVehicle().shouldRiderSit());
         this.model.riding = shouldSit;
         this.model.young = pEntity.isBaby();
-        float f = Mth.rotLerp(pPartialTicks, pEntity.yBodyRotO, pEntity.yBodyRot);
-        float f1 = Mth.rotLerp(pPartialTicks, pEntity.yHeadRotO, pEntity.yHeadRot);
-        float f2 = f1 - f;
+        float bodyRotation = Mth.rotLerp(pPartialTicks, pEntity.yBodyRotO, pEntity.yBodyRot);
+        float headRotation = Mth.rotLerp(pPartialTicks, pEntity.yHeadRotO, pEntity.yHeadRot);
+        float neckRotation = headRotation - bodyRotation;
         if (shouldSit && pEntity.getVehicle() instanceof LivingEntity) {
             LivingEntity livingentity = (LivingEntity)pEntity.getVehicle();
-            f = Mth.rotLerp(pPartialTicks, livingentity.yBodyRotO, livingentity.yBodyRot);
-            f2 = f1 - f;
-            float f3 = Mth.wrapDegrees(f2);
-            if (f3 < -85.0F) {
-                f3 = -85.0F;
+            bodyRotation = Mth.rotLerp(pPartialTicks, livingentity.yBodyRotO, livingentity.yBodyRot);
+            neckRotation = headRotation - bodyRotation;
+            float wrappedNeckRotation = Mth.wrapDegrees(neckRotation);
+            if (wrappedNeckRotation < -85.0F) {
+                wrappedNeckRotation = -85.0F;
             }
 
-            if (f3 >= 85.0F) {
-                f3 = 85.0F;
+            if (wrappedNeckRotation >= 85.0F) {
+                wrappedNeckRotation = 85.0F;
             }
 
-            f = f1 - f3;
-            if (f3 * f3 > 2500.0F) {
-                f += f3 * 0.2F;
+            bodyRotation = headRotation - wrappedNeckRotation;
+            if (wrappedNeckRotation * wrappedNeckRotation > 2500.0F) {
+                bodyRotation += wrappedNeckRotation * 0.2F;
             }
 
-            f2 = f1 - f;
+            neckRotation = headRotation - bodyRotation;
         }
 
         float f6 = Mth.lerp(pPartialTicks, pEntity.xRotO, pEntity.getXRot());
@@ -61,8 +72,8 @@ public abstract class ClinkerEntityRenderer<T extends Mob, M extends EntityModel
             }
         }
 
-        float f7 = this.getBob(pEntity, pPartialTicks);
-        this.setupRotations(pEntity, pMatrixStack, f7, f, pPartialTicks);
+        float rotationBob = this.getBob(pEntity, pPartialTicks);
+        this.setupRotations(pEntity, pMatrixStack, rotationBob, bodyRotation, pPartialTicks);
         pMatrixStack.scale(-1.0F, -1.0F, 1.0F);
         this.scale(pEntity, pMatrixStack, pPartialTicks);
         pMatrixStack.translate(0.0D, (double)-1.501F, 0.0D);
@@ -80,7 +91,7 @@ public abstract class ClinkerEntityRenderer<T extends Mob, M extends EntityModel
             }
         }
 
-        this.model.setupAnim(pEntity, f5, f8, f7, f2, f6);
+        this.model.setupAnim(pEntity, f5, f8, rotationBob, neckRotation, f6);
         this.model.prepareMobModel(pEntity, f5, f8, pPartialTicks);
         Minecraft minecraft = Minecraft.getInstance();
         boolean flag = this.isBodyVisible(pEntity);
@@ -95,7 +106,7 @@ public abstract class ClinkerEntityRenderer<T extends Mob, M extends EntityModel
 
         if (!pEntity.isSpectator()) {
             for(RenderLayer<T, M> renderlayer : this.layers) {
-                renderlayer.render(pMatrixStack, pBuffer, pPackedLight, pEntity, f5, f8, pPartialTicks, f7, f2, f6);
+                renderlayer.render(pMatrixStack, pBuffer, pPackedLight, pEntity, f5, f8, pPartialTicks, rotationBob, neckRotation, f6);
             }
         }
 

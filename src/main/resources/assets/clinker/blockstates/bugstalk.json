@@ -1,0 +1,7 @@
+{
+    "variants": {
+        "axis=x":   { "model": "clinker:block/bugstalk", "x": 90, "y": 90 },
+        "axis=y":   { "model": "clinker:block/bugstalk" },
+        "axis=z":   { "model": "clinker:block/bugstalk", "x": 90 }
+    }
+}

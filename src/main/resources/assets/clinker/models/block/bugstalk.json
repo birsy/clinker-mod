@@ -1,0 +1,44 @@
+{
+    "parent": "minecraft:block/block",
+    "textures": {
+        "bugstalk_top": "clinker:block/bugstalk_top",
+        "bugstalk_inner": "clinker:block/bugstalk_inner",
+        "bugstalk_side": "clinker:block/bugstalk_side",
+        "particle": "clinker:block/bugstalk_inner"
+    },
+    "elements": [
+        {
+            "from": [ 0, 0, 8 ], 
+            "to": [ 16, 16, 8 ], 
+            "shade": false,
+            "rotation": { "origin": [ 8, 8, 8 ], "axis": "y", "angle": 45.0, "rescale": true },
+            "faces": {
+                "north": { "texture": "#bugstalk_inner", "uv": [ 0, 0, 16, 16 ] },
+                "south": { "texture": "#bugstalk_inner", "uv": [ 0, 0, 16, 16 ] }
+            }
+        },
+        {
+            "from": [ 0, 0, 8 ], 
+            "to": [ 16, 16, 8 ], 
+            "shade": false,
+            "rotation": { "origin": [ 8, 8, 8 ], "axis": "y", "angle": -45.0, "rescale": true },
+            "faces": {
+                "north": { "texture": "#bugstalk_inner", "uv": [ 0, 0, 16, 16 ] },
+                "south": { "texture": "#bugstalk_inner", "uv": [ 0, 0, 16, 16 ] }
+            }
+        },
+        {
+            "from": [ 0, 0, 0 ], 
+            "to": [ 16, 16, 16 ], 
+            "shade": false,
+            "faces": {
+                "north": { "texture": "#bugstalk_side", "uv": [ 0, 0, 16, 16 ], "cullface": "north" },
+                "east": { "texture": "#bugstalk_side", "uv": [ 0, 0, 16, 16 ], "cullface": "east" },
+                "south": { "texture": "#bugstalk_side", "uv": [ 0, 0, 16, 16 ], "cullface": "south" },
+                "west": { "texture": "#bugstalk_side", "uv": [ 0, 0, 16, 16 ], "cullface": "west" },
+                "up": { "texture": "#bugstalk_top", "uv": [ 0, 0, 16, 16 ], "cullface": "up" },
+                "down": { "texture": "#bugstalk_top", "uv": [ 0, 0, 16, 16 ], "cullface": "down" }
+            }
+        }
+    ]
+}

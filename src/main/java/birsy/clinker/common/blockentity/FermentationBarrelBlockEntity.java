@@ -3,9 +3,12 @@ package birsy.clinker.common.blockentity;
 import birsy.clinker.common.block.FermentationBarrelBlock;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlockEntities;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.*;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -13,8 +16,13 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.entity.LidBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
-public class FermentationBarrelBlockEntity extends BlockEntity implements LidBlockEntity {
+import java.util.ArrayList;
+import java.util.List;
+
+public class FermentationBarrelBlockEntity extends BlockEntity implements LidBlockEntity, IAlchemicalInfo {
     private final NonNullList<ItemStack> items = NonNullList.of(ItemStack.EMPTY, ItemStack.EMPTY);
     private LidController lidController = new LidController(0.05F, 0.07F);
     private boolean isFermenting;
@@ -104,5 +112,20 @@ public class FermentationBarrelBlockEntity extends BlockEntity implements LidBlo
     @Override
     public float getOpenNess(float pPartialTicks) {
         return lidController.getOpenness(pPartialTicks);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public List<? extends FormattedText> getText(BlockEntity blockEntity) {
+        ArrayList<Component> text = new ArrayList<>();
+        text.add(new TranslatableComponent("block.clinker.fermentation_barrel").withStyle(ChatFormatting.DARK_GRAY));
+        text.add(new TextComponent("this is a demo"));
+        text.add(new TextComponent("showing off world-space gui!"));
+        text.add(new TextComponent("this took far too much math."));
+        return text;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public void renderCustomElements(BlockEntity blockEntity, PoseStack mStack, int x, int y, int width, int height) {
+
     }
 }

@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "clinker:block/capstone/capstone_slab"
+    },
+    "type=double": {
+      "model": "clinker:block/capstone/capstone"
+    },
+    "type=top": {
+      "model": "clinker:block/capstone/capstone_slab_top"
+    }
+  }
+}

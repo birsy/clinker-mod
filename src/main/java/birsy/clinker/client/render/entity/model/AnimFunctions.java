@@ -1,6 +1,7 @@
 package birsy.clinker.client.render.entity.model;
 
 import birsy.clinker.core.util.MathUtils;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -20,7 +21,7 @@ public class AnimFunctions {
     public static void bob(ModelPart box, float speed, float degree, boolean bounce, float limbSwingAmount, float limbSwingSpeed) {
         float bob = (float) (Math.sin(limbSwingAmount * speed) * limbSwingSpeed * degree - limbSwingSpeed * degree);
         if (bounce) {
-            bob = (float) -Math.abs((Math.sin(limbSwingAmount * (speed * 0.5F)) * limbSwingSpeed * degree));
+            bob = (float) -Math.abs(Math.sin(limbSwingAmount * (speed * 0.5F)) * limbSwingSpeed * degree);
         }
 
         box.y = box.y + bob;
@@ -132,6 +133,11 @@ public class AnimFunctions {
         part.setRotation(xRotation, yRotation, zRotation);
     }
 
+    public static void setScale(CappinModelPart part, float scale) {
+        part.setScale(scale, scale, scale);
+    }
+
+
     public static void resetScale(CappinModelPart part) {
         part.setScale(1.0F, 1.0F, 1.0F);
     }
@@ -140,6 +146,14 @@ public class AnimFunctions {
     //Prevents mobs animations from appearing synced on world load. Makes creatures look slightly more natural.
     public static void desyncAnimations(Entity entity, float ageInTicks) {
         ageInTicks += entity.getId();
+    }
+
+    public static void getGlobalTransForm(CappinModelPart part, PoseStack matrixStack) {
+        CappinModelPart parent = part.parent;
+        if (parent != null) {
+            getGlobalTransForm(parent, matrixStack);
+        }
+        part.translateAndRotate(matrixStack);
     }
 
     /**

@@ -54,10 +54,6 @@ public class AshLayerBlock extends AshBlock implements SimpleWaterloggedBlock
 	switch(pType) {
 		case LAND:
 			return pState.getValue(LAYERS) < 5;
-		case WATER:
-			return false;
-		case AIR:
-			return false;
 		default:
 			return false;
 	}

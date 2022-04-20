@@ -10,7 +10,7 @@
     },
     "additions_sound": {
       "sound": "clinker:ambient.ash_plains.additions",
-      "tick_chance": 0.0003
+      "tick_chance": 0.0005
     },
     "music": {
       "sound": "minecraft:music.nether.basalt_deltas",
@@ -41,8 +41,8 @@
     [],
     [],
     [],
-    [],
-    [],
+    ["clinker:capstone_replacement"],
+    ["clinker:ash_pile"],
     [],
     ["clinker:ash_layer"]
   ],
