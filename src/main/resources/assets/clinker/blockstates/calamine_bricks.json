@@ -1,5 +1,10 @@
 {
     "variants": {
-        "": { "model": "clinker:block/calamine/calamine_bricks" }
+        "": [
+            {"model": "clinker:block/calamine/calamine_bricks"},
+            {"model": "clinker:block/calamine/calamine_bricks1"},
+            {"model": "clinker:block/calamine/calamine_bricks2"},
+            {"model": "clinker:block/calamine/calamine_bricks3"}
+        ]
     }
 }

@@ -5,23 +5,18 @@ import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.core.util.noise.FastNoiseLite;
 import birsy.clinker.core.util.noise.VoronoiGenerator;
 import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.Codec;
-import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
-import net.minecraft.world.level.levelgen.surfacebuilders.NetherForestSurfaceBuilder;
-import net.minecraft.world.level.levelgen.surfacebuilders.SurfaceBuilderBaseConfiguration;
-import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.Random;
 
-public class CaveSurfaceBuilder extends NetherForestSurfaceBuilder {
+public class CaveSurfaceBuilder {
     private long seed;
     private FastNoiseLite spaghettiCaveNoise1;
     private FastNoiseLite spaghettiCaveNoise2;
@@ -32,11 +27,11 @@ public class CaveSurfaceBuilder extends NetherForestSurfaceBuilder {
 
     private VoronoiGenerator bridgeCaveNoise = new VoronoiGenerator(1337);
 
-    public CaveSurfaceBuilder(Codec<SurfaceBuilderBaseConfiguration> config) {
-        super(config);
+    public CaveSurfaceBuilder() {
+        super();
     }
 
-    public void apply(Random pRandom, ChunkAccess chunkIn, Biome pBiome, int x, int z, int pHeight, double pNoise, BlockState defaultBlock, BlockState defaultFluid, int pSeaLevel, int pMinSurfaceLevel, long pSeed, SurfaceBuilderBaseConfiguration pConfig) {
+    public void apply(Random pRandom, ChunkAccess chunkIn, Biome pBiome, int x, int z, int pHeight, double pNoise, BlockState defaultBlock, BlockState defaultFluid, int pSeaLevel, int pMinSurfaceLevel, long pSeed) {
         //super.apply(pRandom, chunkIn, pBiome, x, z, pHeight, pNoise, defaultBlock, defaultFluid, pSeaLevel, pMinSurfaceLevel, pSeed, pConfig);
 /*
         int aquiferUpperRange = (int) MathUtils.mapRange(-1.0F, 1.0F, -30.0F, -5.0F, (float) this.caveSizeNoise.GetNoise((x + 682) * 2, (z + 682) * 2));
@@ -351,9 +346,7 @@ public class CaveSurfaceBuilder extends NetherForestSurfaceBuilder {
         chunkIn.setBlockState(new BlockPos(x, y, z), state, false);
     }
 
-    @Override
     public void initNoise(long seed) {
-        super.initNoise(seed);
         if (this.seed != seed || this.spaghettiCaveNoise1 == null || this.spaghettiCaveNoise2 == null || this.caveSizeNoise == null || this.aquiferCaveNoise == null || this.stalagmiteNoise == null || this.bridgeCaveNoise == null) {
             this.seed = seed;
             Random rand = new Random(seed);

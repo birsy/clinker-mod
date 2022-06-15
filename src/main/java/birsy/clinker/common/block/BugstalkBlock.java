@@ -1,5 +1,6 @@
 package birsy.clinker.common.block;
 
+import birsy.clinker.core.registry.ClinkerParticles;
 import birsy.clinker.core.util.MathUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -71,7 +72,7 @@ public class BugstalkBlock extends RotatedPillarBlock implements SimpleWaterlogg
                     .multiply(0.5, 0.5, 0.5)
                     .multiply(1.1, 1.1, 1.1);
             //Clinker.LOGGER.info(particlePosition.toString());
-            pLevel.addParticle(ParticleTypes.MYCELIUM, (double)pPos.getX() + particlePosition.x() + 0.5, (double)pPos.getY() + particlePosition.y() + 0.5, (double)pPos.getZ() + particlePosition.z() + 0.5, 0.0D, 0.0D, 0.0D);
+            pLevel.addParticle(ClinkerParticles.BUG.get(), (double)pPos.getX() + particlePosition.x() + 0.5, (double)pPos.getY() + particlePosition.y() + 0.5, (double)pPos.getZ() + particlePosition.z() + 0.5, 0.0D, 0.0D, 0.0D);
         }
     }
 }

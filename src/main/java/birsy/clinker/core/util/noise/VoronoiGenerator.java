@@ -4,6 +4,7 @@ import birsy.clinker.core.util.MathUtils;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.Util;
 import net.minecraft.util.Mth;
+import net.minecraft.world.level.levelgen.LegacyRandomSource;
 import net.minecraft.world.level.levelgen.WorldgenRandom;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
@@ -20,7 +21,7 @@ public class VoronoiGenerator {
 
     public VoronoiGenerator(long seed) {
         this.seed = seed;
-        random = new WorldgenRandom(seed);
+        random = new WorldgenRandom(new LegacyRandomSource(seed));
     }
 
     public void setOffsetAmount(double offsetAmount) {

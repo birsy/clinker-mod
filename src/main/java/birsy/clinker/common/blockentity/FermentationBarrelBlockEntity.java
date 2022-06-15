@@ -33,13 +33,11 @@ public class FermentationBarrelBlockEntity extends BlockEntity implements LidBlo
         super(ClinkerBlockEntities.FERMENTATION_BARREL.get(), pWorldPosition, pBlockState);
     }
 
-    public CompoundTag save(CompoundTag tag) {
-        super.save(tag);
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
         tag.putBoolean("Fermenting", this.isFermenting);
         tag.putInt("FermentationTime", this.fermentationTime);
         tag.putBoolean("Open", lidController.isOpen());
-
-        return tag;
     }
 
     public void load(CompoundTag tag) {
@@ -118,9 +116,7 @@ public class FermentationBarrelBlockEntity extends BlockEntity implements LidBlo
     public List<? extends FormattedText> getText(BlockEntity blockEntity) {
         ArrayList<Component> text = new ArrayList<>();
         text.add(new TranslatableComponent("block.clinker.fermentation_barrel").withStyle(ChatFormatting.DARK_GRAY));
-        text.add(new TextComponent("this is a demo"));
-        text.add(new TextComponent("showing off world-space gui!"));
-        text.add(new TextComponent("this took far too much math."));
+        text.add(new TextComponent("sync chest noise later"));
         return text;
     }
 

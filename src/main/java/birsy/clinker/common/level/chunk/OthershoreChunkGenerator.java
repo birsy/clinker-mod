@@ -1,34 +1,18 @@
 package birsy.clinker.common.level.chunk;
 
-import birsy.clinker.core.util.MathUtils;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
-import net.minecraft.server.level.WorldGenRegion;
-import net.minecraft.util.Mth;
-import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.LevelHeightAccessor;
-import net.minecraft.world.level.NoiseColumn;
-import net.minecraft.world.level.StructureFeatureManager;
 import net.minecraft.world.level.biome.BiomeSource;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.*;
-import net.minecraft.world.level.levelgen.synth.PerlinNoise;
-import net.minecraft.world.level.levelgen.synth.PerlinSimplexNoise;
-import net.minecraft.world.level.levelgen.synth.SurfaceNoise;
+import net.minecraft.world.level.levelgen.structure.StructureSet;
 
-import java.util.Random;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
-import java.util.function.Supplier;
-import java.util.stream.IntStream;
+import java.util.Optional;
 
-public class OthershoreChunkGenerator extends ChunkGenerator {
-    public static final Codec<OthershoreChunkGenerator> CODEC = RecordCodecBuilder.create((codec) -> {
+public abstract class OthershoreChunkGenerator extends ChunkGenerator {
+    public OthershoreChunkGenerator(Registry<StructureSet> pStructureSets, Optional<HolderSet<StructureSet>> pStructureOverrides, BiomeSource pBiomeSource) {
+        super(pStructureSets, pStructureOverrides, pBiomeSource);
+    }
+    /*public static final Codec<OthershoreChunkGenerator> CODEC = RecordCodecBuilder.create((codec) -> {
         return codec.group(BiomeSource.CODEC.fieldOf("biome_source").forGetter((chunkGenerator) -> {
             return chunkGenerator.biomeSource;
         }), NoiseGeneratorSettings.CODEC.fieldOf("settings").forGetter((chunkGenerator) -> {
@@ -197,5 +181,5 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         }
 
         return new NoiseColumn(pLevel.getMinBuildHeight(), column);
-    }
+    }*/
 }

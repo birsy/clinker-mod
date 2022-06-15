@@ -7,9 +7,8 @@ import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryBuilder;
 
 public class ClinkerRegistries {
-    public static IForgeRegistry<Element> ELEMENT = new RegistryBuilder<Element>()
+    /*public static IForgeRegistry<Element> ELEMENT = new RegistryBuilder<Element>()
             .setIDRange(0, 0x0FFFFF)
             .setName(new ResourceLocation(Clinker.MOD_ID, "element"))
-            .setType(Element.class)
-            .create();
+            .setType(Element.class).create();*/
 }

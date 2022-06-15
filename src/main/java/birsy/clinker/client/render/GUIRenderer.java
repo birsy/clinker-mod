@@ -27,10 +27,10 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderTooltipEvent;
+import net.minecraftforge.client.gui.GuiUtils;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fmlclient.gui.GuiUtils;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ import java.util.List;
 
 @Mod.EventBusSubscriber(modid = Clinker.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class GUIRenderer {
-    @SubscribeEvent
+    /*@SubscribeEvent
     public static void onRenderGUI(RenderGameOverlayEvent.Post event) {
         Minecraft mc = Minecraft.getInstance();
         Window window = mc.getWindow();
@@ -97,7 +97,7 @@ public class GUIRenderer {
 
     public static int[] drawHoveringText(@Nonnull final ItemStack stack, PoseStack pStack, List<? extends FormattedText> textLines, int mouseX, int mouseY, int screenWidth, int screenHeight, int maxTextWidth, int backgroundColor, int borderColorStart, int borderColorEnd, Font font) {
         if (!textLines.isEmpty()) {
-            RenderTooltipEvent.Pre event = new RenderTooltipEvent.Pre(stack, textLines, pStack, mouseX, mouseY, screenWidth, screenHeight, maxTextWidth, font);
+            RenderTooltipEvent.Pre event = onRenderTooltipPre(stack, textLines, pStack, mouseX, mouseY, screenWidth, screenHeight, maxTextWidth, font);
             if (MinecraftForge.EVENT_BUS.post(event))
                 return new int[0];
             mouseX = event.getX();
@@ -235,5 +235,5 @@ public class GUIRenderer {
         }
 
         return null;
-    }
+    }*/
 }

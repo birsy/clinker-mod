@@ -1,38 +1,27 @@
 package birsy.clinker.common.level;
 
 import birsy.clinker.core.Clinker;
-import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.core.util.noise.FastNoiseLite;
 import birsy.clinker.core.util.noise.IterativePsuedoEroder;
-import birsy.clinker.core.util.noise.VoronoiGenerator;
-import com.mojang.datafixers.util.Pair;
-import com.mojang.math.Constants;
-import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
-import net.minecraft.util.Mth;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
-import net.minecraft.world.level.levelgen.surfacebuilders.NetherForestSurfaceBuilder;
-import net.minecraft.world.level.levelgen.surfacebuilders.SurfaceBuilderBaseConfiguration;
-import net.minecraft.world.phys.Vec2;
-import net.minecraft.world.phys.Vec3;
 
 import java.util.Random;
 
-public class GenerationTestBuilder extends NetherForestSurfaceBuilder {
+public class GenerationTestBuilder {
     private long seed;
     private float frequency = 1.0F;
 
     private FastNoiseLite noise1;
     private IterativePsuedoEroder noise2 = new IterativePsuedoEroder((coords, seed) -> (float) noise1.GetNoise(coords.x * frequency, coords.y * frequency), seed);
 
-    public GenerationTestBuilder(Codec<SurfaceBuilderBaseConfiguration> config) {
-        super(config);
+    public GenerationTestBuilder() {
     }
 
-    public void apply(Random pRandom, ChunkAccess chunkIn, Biome pBiome, int x, int z, int pHeight, double pNoise, BlockState defaultBlock, BlockState defaultFluid, int pSeaLevel, int pMinSurfaceLevel, long pSeed, SurfaceBuilderBaseConfiguration pConfig) {
+    public void apply(Random pRandom, ChunkAccess chunkIn, Biome pBiome, int x, int z, int pHeight, double pNoise, BlockState defaultBlock, BlockState defaultFluid, int pSeaLevel, int pMinSurfaceLevel, long pSeed) {
         float terrainHeight = (noise2.at(x, z) - 0.5F) * 2.0F;
         terrainHeight *= 32;
         terrainHeight += pSeaLevel;
@@ -49,9 +38,7 @@ public class GenerationTestBuilder extends NetherForestSurfaceBuilder {
         }
     }
 
-    @Override
     public void initNoise(long seed) {
-        super.initNoise(seed);
         if (this.seed != seed || this.noise1 == null || this.noise2 == null) {
             this.seed = seed;
             Random rand = new Random(seed);

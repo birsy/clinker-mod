@@ -1,13 +1,7 @@
 package birsy.clinker.core.registry.world;
 
 import birsy.clinker.core.Clinker;
-import net.minecraft.core.Registry;
-import net.minecraft.data.worldgen.biome.VanillaBiomes;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.biome.Biomes;
-import net.minecraftforge.common.BiomeManager;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 

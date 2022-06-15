@@ -1,7 +1,8 @@
 package birsy.clinker.core.registry;
 
 import birsy.clinker.common.block.*;
-import birsy.clinker.common.block.aspen.SwampAspenLogBlock;
+import birsy.clinker.common.block.plant.CaveFigRootsBlock;
+import birsy.clinker.common.block.plant.aspen.SwampAspenLogBlock;
 import birsy.clinker.common.block.plant.DoubleMudReedsBlock;
 import birsy.clinker.common.block.plant.MudReedsBlock;
 import birsy.clinker.core.Clinker;
@@ -9,15 +10,14 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.WaterLilyBlockItem;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
@@ -98,12 +98,12 @@ public class ClinkerBlocks
 	//public static final RegistryObject<Block> CALAMINE_STAIRS = createBlock("calamine_stairs", () -> new StairBlock(() -> CALAMINE.get().defaultBlockState(), getCalamineProperties()), Clinker.CLINKER_BLOCKS);
 	//public static final RegistryObject<Block> CALAMINE_WALL = createBlock("calamine_wall", () -> new WallBlock(getCalamineProperties()), Clinker.CLINKER_BLOCKS);
 
-	//public static final RegistryObject<Block> POLISHED_CALAMINE = createBlock("polished_calamine", () -> new Block(getCalamineProperties()), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> POLISHED_CALAMINE = createBlock("polished_calamine", () -> new Block(getCalamineProperties()), Clinker.CLINKER_BLOCKS);
 	//public static final RegistryObject<Block> POLISHED_CALAMINE_SLAB = createBlock("polished_calamine_slab", () -> new SlabBlock(getCalamineProperties()), Clinker.CLINKER_BLOCKS);
 	//public static final RegistryObject<Block> POLISHED_CALAMINE_STAIRS = createBlock("polished_calamine_stairs", () -> new StairBlock(() -> POLISHED_CALAMINE.get().defaultBlockState(), getCalamineProperties()), Clinker.CLINKER_BLOCKS);
 	//public static final RegistryObject<Block> POLISHED_CALAMINE_WALL = createBlock("polished_calamine_wall", () -> new WallBlock(getCalamineProperties()), Clinker.CLINKER_BLOCKS);
 
-	//public static final RegistryObject<Block> CALAMINE_BRICKS = createBlock("calamine_bricks", () -> new Block(getCalamineProperties()), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> CALAMINE_BRICKS = createBlock("calamine_bricks", () -> new Block(getCalamineProperties()), Clinker.CLINKER_BLOCKS);
 	//public static final RegistryObject<Block> CALAMINE_BRICKS_SLAB = createBlock("calamine_bricks_slab", () -> new SlabBlock(getCalamineProperties()), Clinker.CLINKER_BLOCKS);
 	//public static final RegistryObject<Block> CALAMINE_BRICKS_STAIRS = createBlock("calamine_bricks_stairs", () -> new StairBlock(() -> CALAMINE_BRICKS.get().defaultBlockState(), getCalamineProperties()), Clinker.CLINKER_BLOCKS);
 	//public static final RegistryObject<Block> CALAMINE_BRICKS_WALL = createBlock("calamine_bricks_wall", () -> new WallBlock(getCalamineProperties()), Clinker.CLINKER_BLOCKS);
@@ -246,6 +246,10 @@ public class ClinkerBlocks
 	public static final RegistryObject<Block> MUD_REEDS = createBlock("mud_reeds", () -> new MudReedsBlock(BlockBehaviour.Properties.of(Material.REPLACEABLE_PLANT).noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS)), Clinker.CLINKER_BLOCKS);
 
 	public static final RegistryObject<Block> BUGSTALK = createBlock("bugstalk", () -> new BugstalkBlock(BlockBehaviour.Properties.of(Material.PLANT, MaterialColor.TERRACOTTA_BROWN).randomTicks().noOcclusion().sound(SoundType.HANGING_ROOTS)), Clinker.CLINKER_BLOCKS);
+
+	public static final RegistryObject<Block> CAVE_FIG_STEM = createBlock("cave_fig_stem", () -> new HugeMushroomBlock(BlockBehaviour.Properties.of(Material.WOOD, MaterialColor.COLOR_GRAY).sound(SoundType.CALCITE)), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> CAVE_FIG_ROOTS = createBlock("cave_fig_roots", () -> new CaveFigRootsBlock(BlockBehaviour.Properties.of(Material.WOOD, MaterialColor.COLOR_GRAY).noOcclusion().sound(SoundType.CALCITE)), Clinker.CLINKER_BLOCKS);
+
 	//Special
 
 	public static RegistryObject<Block> createBlock(String name, final Supplier<? extends Block> supplier, @Nullable CreativeModeTab group) {

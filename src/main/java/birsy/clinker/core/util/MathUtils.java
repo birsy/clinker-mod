@@ -1,12 +1,10 @@
 package birsy.clinker.core.util;
 
 import com.ibm.icu.impl.Pair;
-import com.mojang.math.Vector3d;
 import com.mojang.math.Vector3f;
 import net.minecraft.Util;
+import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
-import net.minecraft.world.level.levelgen.WorldgenRandom;
-import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 
 import java.lang.reflect.Array;
@@ -26,6 +24,10 @@ public class MathUtils {
         return ASIN[(int)(pValue * 10430.378F) & '\uffff'];
     }
     public static float arccos(float pValue) { return (float) ((arcsin(pValue) * -1) + (Math.PI / 2));}
+
+    public static Vec3 vec3Lerp(float delta, Vec3 start, Vec3 end) {
+        return new Vec3(Mth.lerp(delta, start.x(), start.x()), Mth.lerp(delta, start.y(), start.y()), Mth.lerp(delta, start.z(), start.z()));
+    }
 
     /**
      * Maps one range of numbers to another. Incredibly useful function for lazy people like me.
@@ -117,6 +119,26 @@ public class MathUtils {
      */
     public static float getRandomFloatBetween (Random rand, float min, float max) {
         return mapRange(0, 1, min, max, rand.nextFloat());
+    }
+    public static float map(float value, float min, float max) {
+        return mapRange(0, 1, min, max, value);
+    }
+
+
+    public static Vec3 adjustAxis(Vec3 vector, double desiredLength, Direction.Axis axis) {
+        double lSqr = desiredLength * desiredLength;
+        switch (axis) {
+            case X:
+                return new Vec3(Math.sqrt(lSqr + (-1 * vector.y() * vector.y()) + (-1 * vector.z() * vector.z())), vector.y(), vector.z());
+            case Y:
+                return new Vec3(vector.x(), Math.sqrt(lSqr + (-1 * vector.x() * vector.x()) + (-1 * vector.z() * vector.z())), vector.z());
+            default:
+                return new Vec3(vector.x(), vector.y(), Math.sqrt(lSqr + (-1 * vector.x() * vector.x()) + (-1 * vector.y() * vector.y())));
+        }
+    }
+
+    public static float awfulRandom(float seed) {
+        return Mth.frac(Mth.sin((float) (seed * Math.tan(Mth.sqrt((float) Math.abs(seed - seed * 0.5F))))) * 100000.0F);
     }
 
     /**
@@ -611,6 +633,4 @@ public class MathUtils {
         
         return c;
     }
-    
-
 }

@@ -26,6 +26,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.control.SmoothSwimmingMoveControl;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
@@ -118,6 +119,7 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity implements Inventor
     public GnomadAxemanEntity(EntityType<? extends GnomadAxemanEntity> entityType, Level level) {
         super(entityType, level);
         this.setCanPickUpLoot(true);
+        this.moveControl = new SmoothSwimmingMoveControl(this, 365, 25, 1000.0F, 1.0F, false);
 
         //Placeholder, for now.
         //TODO: Make them spawn with an actual inventory :P

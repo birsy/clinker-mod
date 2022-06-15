@@ -23,6 +23,7 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.ticks.ScheduledTick;
 
 import javax.annotation.Nullable;
 import java.util.Random;
@@ -46,7 +47,7 @@ public class MudBlock extends Block implements SimpleWaterloggedBlock {
             if (!(pLevel.getBlockState(pPos.above()).getBlock() instanceof BushBlock)) {
                 pLevel.playSound(null, pEntity, SoundEvents.SLIME_SQUISH, pEntity.getSoundSource(), 0.125F, 0.125F);
                 pLevel.setBlock(pPos, pState.setValue(SQUISHED, true), 2);
-                pLevel.getBlockTicks().scheduleTick(pPos, this, pLevel.random.nextInt(60) + 20);
+                pLevel.getBlockTicks().schedule(new ScheduledTick<>(this, pPos, pLevel.random.nextInt(60) + 20, 1));
             }
         }
 

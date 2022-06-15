@@ -70,10 +70,10 @@ public class CappinModelPart extends ModelPart {
 
     public CappinModelPart getChild(String pName) {
         CappinModelPart modelPart = this.childrenCMP.get(pName);
-        modelPart.setParent(this);
         if (modelPart == null) {
             throw new NoSuchElementException("Can't find part " + pName);
         } else {
+            modelPart.setParent(this);
             return modelPart;
         }
     }

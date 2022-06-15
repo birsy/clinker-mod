@@ -3,13 +3,13 @@ package birsy.clinker.core.registry.alchemy;
 import birsy.clinker.common.alchemy.chemicals.Element;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerRegistries;
-import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Supplier;
 
 public class ClinkerElements {
-    public static final DeferredRegister<Element> ELEMENTS = DeferredRegister.create(ClinkerRegistries.ELEMENT, Clinker.MOD_ID);
+    /*public static final DeferredRegister<Element> ELEMENTS = DeferredRegister.create(ClinkerRegistries.ELEMENT, Clinker.MOD_ID);
 
 
     public static final RegistryObject<Element> FOUNDATION = createElement("foundation", () -> new Element(Integer.MIN_VALUE));
@@ -25,5 +25,5 @@ public class ClinkerElements {
     public static RegistryObject<Element> createElement(String name, final Supplier<? extends Element> supplier) {
         RegistryObject<Element> element = ELEMENTS.register(name, supplier);
         return element;
-    }
+    }*/
 }

@@ -1,8 +1,9 @@
 package birsy.clinker.client.render.world;
 
 import birsy.clinker.core.Clinker;
-import birsy.clinker.core.registry.world.ClinkerDimensions;
+import birsy.clinker.core.registry.ClinkerDimensions;
 import birsy.clinker.core.util.MathUtils;
+import com.mojang.blaze3d.shaders.FogShape;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
@@ -31,16 +32,16 @@ public class OthershoreFogRenderer {
     private static boolean devMode = true;
 
     @SubscribeEvent
-    public static void onRenderFogDensity(EntityViewRenderEvent.FogDensity event)
+    public static void onRenderFog(EntityViewRenderEvent.RenderFogEvent event)
     {
-        final Entity player = event.getInfo().getEntity();
+        /*final Entity player = event.getCamera().getEntity();
         final Level world = player.level;
         final ClientLevel clientLevel = mc.level;
 
         float devModeMultiplier = 1.3F;
 
         if (world.dimension() == ClinkerDimensions.OTHERSHORE) {
-            Vec3 playerVecPos = player.getEyePosition((float) event.getRenderPartialTicks());
+            Vec3 playerVecPos = player.getEyePosition((float) event.getPartialTicks());
             BlockPos playerPos = new BlockPos(playerVecPos);
 
             final float heightMultiplier = Mth.clamp(MathUtils.mapRange(world.getMinBuildHeight() + fogHeight, world.getMinBuildHeight() + fogEnd, 1, 0, (float) playerVecPos.y), 0, 1) * 0.125F;
@@ -50,17 +51,27 @@ public class OthershoreFogRenderer {
             //Make it a little foggier when it's darker....
             final float minDensity = 0.5F;
             final float darknessMultiplier = (((calculateInterpolatedLight(world, playerPos, playerVecPos, LightLayer.SKY, false) / -1) + 15) / 15) * (1 - minDensity) + minDensity;
-            if (event.getInfo().getFluidInCamera() == FogType.NONE) {
-                event.setCanceled(true);
-                event.setDensity(density * darknessMultiplier * 10000F * devModeMultiplier);
-            } else if (event.getInfo().getFluidInCamera() == FogType.WATER) {
-                event.setCanceled(true);
-                event.setDensity(event.getDensity() * 1000F * devModeMultiplier);
+            if (event.getCamera().getFluidInCamera() == FogType.NONE) {
+                //event.setCanceled(true);
+                //event.set(density * darknessMultiplier * 10000F * devModeMultiplier);
+            } else if (event.getCamera().getFluidInCamera() == FogType.WATER) {
+                //event.setCanceled(true);
+                //event.setDensity(event.getDensity() * 1000F * devModeMultiplier);
             }
+        }*/
+        final Entity player = event.getCamera().getEntity();
+        final Level world = player.level;
+        final ClientLevel clientLevel = mc.level;
+        if (world.dimension() == ClinkerDimensions.OTHERSHORE) {
+            float renderDist = (float) mc.options.renderDistance * 16.0F;
+            event.setCanceled(true);
+            event.setFarPlaneDistance(renderDist - (renderDist * 0.25F));
+            event.setNearPlaneDistance(0.0F);
+            event.setFogShape(FogShape.SPHERE);
         }
     }
 
-    @SubscribeEvent
+    /*@SubscribeEvent
     public static void onRenderFogColors(EntityViewRenderEvent.FogColors event)
     {
         final Entity player = event.getInfo().getEntity();
@@ -100,7 +111,7 @@ public class OthershoreFogRenderer {
                 event.setBlue ((float) Mth.lerp(interpolatedBlockLight, event.getBlue(),  event.getBlue() * darkFogColor.z()));
             }
         }
-    }
+    }*/
 
     public static Vec3 getDarknessFogColors() {
         float brightness = 1.0f;

@@ -1,4 +1,10 @@
 {
+	"lore.clinker.gather_nigredo": "First Aspect Attained.",
+	"lore.clinker.gather_albedo": "Second Aspect Attained.",
+	"lore.clinker.gather_xanthosis": "Third Aspect Attained.",
+	"lore.clinker.gather_rubedo": "Fourth Aspect Attained.",
+	"lore.clinker.work_completion": "What is done cannot be undone.",
+
 	//**ITEMS
 	"item.clinker.quality": "Quality: ",
 	"item.clinker.quality.bad": "Dubious",

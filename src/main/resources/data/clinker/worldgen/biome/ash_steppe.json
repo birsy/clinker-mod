@@ -41,10 +41,10 @@
     [],
     [],
     [],
-    ["clinker:capstone_replacement"],
-    ["clinker:ash_pile"],
     [],
-    ["clinker:ash_layer"]
+    [],
+    [],
+    []
   ],
   "starts": [],
   "spawners": {

@@ -1,0 +1,44 @@
+{
+    "parent": "block/cube",
+    "textures": {
+        "particle": "clinker:block/cave_fig_roots",
+        "side": "clinker:block/cave_fig_roots",
+        "end": "clinker:block/cave_fig_roots_end"
+    },
+    "elements": [
+        {
+            "from": [ 5, 5, 5 ], 
+            "to": [ 11, 11, 11 ], 
+            "faces": {
+                "north": { "texture": "#side", "uv": [ 5, 5, 11, 11 ] },
+                "east": { "texture": "#side", "uv": [ 5, 5, 11, 11 ] },
+                "south": { "texture": "#side", "uv": [ 5, 5, 11, 11 ] },
+                "west": { "texture": "#side", "uv": [ 5, 5, 11, 11 ] },
+                "up": { "texture": "#side", "uv": [ 5, 5, 11, 11 ] },
+                "down": { "texture": "#side", "uv": [ 5, 5, 11, 11 ] }
+            }
+        },
+        {
+            "from": [ 5, 11, 5 ], 
+            "to": [ 11, 16, 11 ], 
+            "faces": {
+                "north": { "texture": "#side", "uv": [ 5, 0, 11, 5 ] },
+                "east": { "texture": "#side", "uv": [ 5, 0, 11, 5 ] },
+                "south": { "texture": "#side", "uv": [ 5, 0, 11, 5 ] },
+                "west": { "texture": "#side", "uv": [ 5, 0, 11, 5 ] },
+                "up": { "texture": "#end", "uv": [ 5, 5, 11, 11 ], "cullface": "up" }
+            }
+        },
+        {
+            "from": [ 5, 0, 5 ], 
+            "to": [ 11, 5, 11 ], 
+            "faces": {
+                "north": { "texture": "#side", "uv": [ 5, 11, 11, 16 ] },
+                "east": { "texture": "#side", "uv": [ 5, 11, 11, 16 ] },
+                "south": { "texture": "#side", "uv": [ 5, 11, 11, 16 ] },
+                "west": { "texture": "#side", "uv": [ 5, 11, 11, 16 ] },
+                "down": { "texture": "#end", "uv": [ 5, 5, 11, 11 ], "cullface": "down" }
+            }
+        }
+    ]
+}

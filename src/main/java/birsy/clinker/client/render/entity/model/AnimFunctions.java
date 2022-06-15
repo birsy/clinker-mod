@@ -24,7 +24,16 @@ public class AnimFunctions {
             bob = (float) -Math.abs(Math.sin(limbSwingAmount * (speed * 0.5F)) * limbSwingSpeed * degree);
         }
 
-        box.y = box.y + bob;
+        box.y += bob;
+    }
+
+    public static void bob(ModelPart box, float speed, float degree, boolean bounce, float offset, float limbSwingAmount, float limbSwingSpeed) {
+        float bob = (float) (Math.sin(limbSwingAmount * speed + offset) * limbSwingSpeed * degree - limbSwingSpeed * degree);
+        if (bounce) {
+            bob = (float) -Math.abs(Math.sin(limbSwingAmount * (speed * 0.5F) + offset) * limbSwingSpeed * degree);
+        }
+
+        box.y += bob;
     }
 
     /**
@@ -146,6 +155,27 @@ public class AnimFunctions {
     //Prevents mobs animations from appearing synced on world load. Makes creatures look slightly more natural.
     public static void desyncAnimations(Entity entity, float ageInTicks) {
         ageInTicks += entity.getId();
+    }
+
+    public static void cancelRotation(CappinModelPart part, boolean x, boolean y, boolean z) {
+        cancelRotation(part, x, y, z, Integer.MAX_VALUE);
+    }
+
+    public static void cancelRotation(CappinModelPart part, boolean x, boolean y, boolean z, int depth) {
+        cancelRotationIterative(part, part, x, y, z, depth);
+    }
+
+    public static void cancelRotationIterative(CappinModelPart originalPart, CappinModelPart part, boolean x, boolean y, boolean z, int depth) {
+        if (originalPart != part) {
+            originalPart.xRot -= x ? part.xRot : 0.0F;
+            originalPart.yRot -= y ? part.yRot : 0.0F;
+            originalPart.zRot -= z ? part.zRot : 0.0F;
+        }
+
+        CappinModelPart parent = part.parent;
+        if (parent != null && depth > 0) {
+            cancelRotationIterative(originalPart, parent, x, y, z, depth - 1);
+        }
     }
 
     public static void getGlobalTransForm(CappinModelPart part, PoseStack matrixStack) {

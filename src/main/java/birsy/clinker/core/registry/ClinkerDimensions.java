@@ -1,4 +1,4 @@
-package birsy.clinker.core.registry.world;
+package birsy.clinker.core.registry;
 
 import birsy.clinker.core.Clinker;
 import net.minecraft.core.Registry;

@@ -63,12 +63,12 @@ public abstract class ClinkerEntityRenderer<T extends Mob, M extends EntityModel
             neckRotation = headRotation - bodyRotation;
         }
 
-        float f6 = Mth.lerp(pPartialTicks, pEntity.xRotO, pEntity.getXRot());
+        float entityXRotation = Mth.lerp(pPartialTicks, pEntity.xRotO, pEntity.getXRot());
         if (pEntity.getPose() == Pose.SLEEPING) {
             Direction direction = pEntity.getBedOrientation();
             if (direction != null) {
-                float f4 = pEntity.getEyeHeight(Pose.STANDING) - 0.1F;
-                pMatrixStack.translate((double)((float)(-direction.getStepX()) * f4), 0.0D, (double)((float)(-direction.getStepZ()) * f4));
+                float eyeHeight = pEntity.getEyeHeight(Pose.STANDING) - 0.1F;
+                pMatrixStack.translate((float)(-direction.getStepX()) * eyeHeight, 0.0D, (float)(-direction.getStepZ()) * eyeHeight);
             }
         }
 
@@ -76,37 +76,37 @@ public abstract class ClinkerEntityRenderer<T extends Mob, M extends EntityModel
         this.setupRotations(pEntity, pMatrixStack, rotationBob, bodyRotation, pPartialTicks);
         pMatrixStack.scale(-1.0F, -1.0F, 1.0F);
         this.scale(pEntity, pMatrixStack, pPartialTicks);
-        pMatrixStack.translate(0.0D, (double)-1.501F, 0.0D);
-        float f8 = 0.0F;
-        float f5 = 0.0F;
+        pMatrixStack.translate(0.0D, -1.501F, 0.0D);
+        float animationSpeed = 0.0F;
+        float animationAmount = 0.0F;
         if (!shouldSit && pEntity.isAlive()) {
-            f8 = Mth.lerp(pPartialTicks, pEntity.animationSpeedOld, pEntity.animationSpeed);
-            f5 = pEntity.animationPosition - pEntity.animationSpeed * (1.0F - pPartialTicks);
+            animationSpeed = Mth.lerp(pPartialTicks, pEntity.animationSpeedOld, pEntity.animationSpeed);
+            animationAmount = pEntity.animationPosition - pEntity.animationSpeed * (1.0F - pPartialTicks);
             if (pEntity.isBaby()) {
-                f5 *= 3.0F;
+                animationAmount *= 3.0F;
             }
 
-            if (f8 > 1.0F) {
-                f8 = 1.0F;
+            if (animationSpeed > 1.0F) {
+                animationSpeed = 1.0F;
             }
         }
 
-        this.model.setupAnim(pEntity, f5, f8, rotationBob, neckRotation, f6);
-        this.model.prepareMobModel(pEntity, f5, f8, pPartialTicks);
+        this.model.setupAnim(pEntity, animationAmount, animationSpeed, rotationBob, neckRotation, entityXRotation);
+        this.model.prepareMobModel(pEntity, animationAmount, animationSpeed, pPartialTicks);
         Minecraft minecraft = Minecraft.getInstance();
-        boolean flag = this.isBodyVisible(pEntity);
-        boolean flag1 = !flag && !pEntity.isInvisibleTo(minecraft.player);
-        boolean flag2 = minecraft.shouldEntityAppearGlowing(pEntity);
-        RenderType rendertype = this.getRenderType(pEntity, flag, flag1, flag2);
+        boolean isBodyVisible = this.isBodyVisible(pEntity);
+        boolean isSpectator = !isBodyVisible && !pEntity.isInvisibleTo(minecraft.player);
+        boolean isGlowing = minecraft.shouldEntityAppearGlowing(pEntity);
+        RenderType rendertype = this.getRenderType(pEntity, isBodyVisible, isSpectator, isGlowing);
         if (rendertype != null) {
             VertexConsumer vertexconsumer = pBuffer.getBuffer(rendertype);
             int i = getOverlayCoords(pEntity, this.getWhiteOverlayProgress(pEntity, pPartialTicks));
-            this.model.renderToBuffer(pMatrixStack, vertexconsumer, pPackedLight, i, 1.0F, 1.0F, 1.0F, flag1 ? 0.15F : 1.0F);
+            this.model.renderToBuffer(pMatrixStack, vertexconsumer, pPackedLight, i, 1.0F, 1.0F, 1.0F, isSpectator ? 0.15F : 1.0F);
         }
 
         if (!pEntity.isSpectator()) {
             for(RenderLayer<T, M> renderlayer : this.layers) {
-                renderlayer.render(pMatrixStack, pBuffer, pPackedLight, pEntity, f5, f8, pPartialTicks, rotationBob, neckRotation, f6);
+                renderlayer.render(pMatrixStack, pBuffer, pPackedLight, pEntity, animationAmount, animationSpeed, pPartialTicks, rotationBob, neckRotation, entityXRotation);
             }
         }
 

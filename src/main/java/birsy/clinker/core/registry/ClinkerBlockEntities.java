@@ -1,27 +1,20 @@
 package birsy.clinker.core.registry;
 
-import birsy.clinker.client.render.entity.MudScarabRenderer;
-import birsy.clinker.client.render.entity.model.MudScarabModel;
 import birsy.clinker.client.render.world.blockentity.FermentationBarrelRenderer;
 import birsy.clinker.common.blockentity.FermentationBarrelBlockEntity;
-import birsy.clinker.common.entity.MudScarabEntity;
 import birsy.clinker.core.Clinker;
 import com.ibm.icu.impl.Pair;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fmlclient.registry.ClientRegistry;
-import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.ArrayList;
 import java.util.List;

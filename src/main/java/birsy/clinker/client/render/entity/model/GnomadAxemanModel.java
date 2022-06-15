@@ -247,7 +247,7 @@ public class GnomadAxemanModel<T extends GnomadAxemanEntity> extends EntityModel
 		}
 
 		//CROUCHING
-		float crouch = 1.0F;
+		float crouch = 0.1F;
 		float crouchBodyRotation = 1.17F;
 		this.gnomadBody.xRot += Mth.lerp(crouch, -0.2F, crouchBodyRotation);
 		this.gnomadTornBottom.xRot += Mth.lerp(crouch, 0.0F, crouchBodyRotation * 0.5F) * 0.5F;

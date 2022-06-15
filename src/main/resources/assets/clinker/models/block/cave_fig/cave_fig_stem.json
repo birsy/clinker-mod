@@ -1,0 +1,6 @@
+{
+    "parent": "minecraft:block/template_single_face",
+    "textures": {
+        "texture": "clinker:block/cave_fig_stem"
+    }
+}

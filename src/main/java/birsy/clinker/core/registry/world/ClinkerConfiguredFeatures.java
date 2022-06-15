@@ -10,7 +10,7 @@ import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 
 public class ClinkerConfiguredFeatures {
-    public static ConfiguredFeature<?, ?> ASH_LAYER = registerConfiguredFeature("ash_layer", ClinkerFeatures.ASH_LAYER.get().configured(FeatureConfiguration.NONE));
+    /*public static ConfiguredFeature<?, ?> ASH_LAYER = registerConfiguredFeature("ash_layer", ClinkerFeatures.ASH_LAYER.get().configured(FeatureConfiguration.NONE));
     public static ConfiguredFeature<?, ?> ASH_PILE = registerConfiguredFeature("ash_pile", ClinkerFeatures.ASH_PILE.get().configured(FeatureConfiguration.NONE).squared().rangeUniform(VerticalAnchor.bottom(), VerticalAnchor.absolute(180)).count(UniformInt.of(20, 30)));
     public static ConfiguredFeature<?, ?> CAPSTONE_REPLACEMENT = registerConfiguredFeature("capstone_replacement", ClinkerFeatures.LAYERED_REPLACEMENT.get().configured(FeatureConfiguration.NONE).squared().rangeUniform(VerticalAnchor.bottom(), VerticalAnchor.absolute(180)).count(UniformInt.of(20, 30)));
 
@@ -22,5 +22,5 @@ public class ClinkerConfiguredFeatures {
         }
 
         return Registry.register(BuiltinRegistries.CONFIGURED_FEATURE, resourceLocation, configuredFeature);
-    }
+    }*/
 }

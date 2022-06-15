@@ -1,6 +1,6 @@
 {
   "logical_height": 320,
-  "infiniburn": "minecraft:infiniburn_nether",
+  "infiniburn": "#minecraft:infiniburn_nether",
   "effects": "minecraft:nether",
   "ambient_light": 0.0,
   "respawn_anchor_works": false,

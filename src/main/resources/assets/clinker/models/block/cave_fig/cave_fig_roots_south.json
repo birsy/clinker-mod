@@ -1,0 +1,20 @@
+{
+    "textures": {
+        "particle": "clinker:block/cave_fig_roots",
+        "side": "clinker:block/cave_fig_roots",
+        "end": "clinker:block/cave_fig_roots_end"
+    },
+    "elements": [
+        {
+            "from": [ 5, 5, 11 ], 
+            "to": [ 11, 11, 16 ], 
+            "faces": {
+                "east": { "texture": "#side", "uv": [ 0, 5, 5, 11 ] },
+                "south": { "texture": "#end", "uv": [ 5, 5, 11, 11 ], "cullface": "south" },
+                "west": { "texture": "#side", "uv": [ 11, 5, 16, 11 ] },
+                "up": { "texture": "#side", "uv": [ 5, 11, 11, 16 ] },
+                "down": { "texture": "#side", "uv": [ 5, 0, 11, 5 ] }
+            }
+        }
+    ]
+}

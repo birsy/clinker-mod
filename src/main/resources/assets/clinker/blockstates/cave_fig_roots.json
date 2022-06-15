@@ -1,0 +1,110 @@
+{
+    "multipart": [
+        {
+            "when": {
+                "north": "true"
+            },
+            "apply": {
+                "model": "clinker:block/cave_fig/cave_fig_roots_north"
+            }
+        },
+        {
+            "when": {
+                "east": "true"
+            },
+            "apply": {
+                "model": "clinker:block/cave_fig/cave_fig_roots_east"
+            }
+        },
+        {
+            "when": {
+                "south": "true"
+            },
+            "apply": {
+                "model": "clinker:block/cave_fig/cave_fig_roots_south"
+            }
+        },
+        {
+            "when": {
+                "west": "true"
+            },
+            "apply": {
+                "model": "clinker:block/cave_fig/cave_fig_roots_west"
+            }
+        },
+        {
+            "when": {
+                "up": "true"
+            },
+            "apply": {
+                "model": "clinker:block/cave_fig/cave_fig_roots_up"
+            }
+        },
+        {
+            "when": {
+                "down": "true"
+            },
+            "apply": {
+                "model": "clinker:block/cave_fig/cave_fig_roots_down"
+            }
+        },
+        {
+            "when": {
+                "north": "false"
+            },
+            "apply": {
+                "model": "clinker:block/cave_fig/cave_fig_roots_end"
+            }
+        },
+        {
+            "when": {
+                "east": "false"
+            },
+            "apply": {
+                "model": "clinker:block/cave_fig/cave_fig_roots_end",
+                "y": 90,
+                "uvlock": true
+            }
+        },
+        {
+            "when": {
+                "south": "false"
+            },
+            "apply": {
+                "model": "clinker:block/cave_fig/cave_fig_roots_end",
+                "y": 180,
+                "uvlock": true
+            }
+        },
+        {
+            "when": {
+                "west": "false"
+            },
+            "apply": {
+                "model": "clinker:block/cave_fig/cave_fig_roots_end",
+                "y": 270,
+                "uvlock": true
+            }
+        },
+        {
+            "when": {
+                "up": "false"
+            },
+            "apply": {
+                "model": "clinker:block/cave_fig/cave_fig_roots_end",
+                "x": 270,
+                "uvlock": true
+            }
+        },
+        {
+            "when": {
+                "down": "false"
+            },
+            "apply": {
+                "model": "clinker:block/cave_fig/cave_fig_roots_end",
+                "x": 90,
+                "uvlock": true
+            }
+        }
+    ]
+}

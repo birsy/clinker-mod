@@ -1,0 +1,7 @@
+{
+    "parent": "minecraft:block/cube_column",
+    "textures": {
+        "end": "clinker:block/cave_fig_stem_inside",
+        "side": "clinker:block/cave_fig_stem"
+    }
+}
