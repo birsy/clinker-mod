@@ -4,7 +4,6 @@ package birsy.clinker.common.item.food;
 import birsy.clinker.core.Clinker;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
@@ -37,6 +36,6 @@ public class GnomeatItem extends Item
 	
 	@OnlyIn(Dist.CLIENT)
 	public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
-		pTooltipComponents.add((new TranslatableComponent("item.gnomeat.lore")).withStyle(ChatFormatting.GRAY));
+		pTooltipComponents.add(Component.translatable("item.gnomeat.lore").withStyle(ChatFormatting.GRAY));
 	}
 }

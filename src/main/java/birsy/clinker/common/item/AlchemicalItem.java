@@ -3,7 +3,6 @@ package birsy.clinker.common.item;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
@@ -29,16 +28,16 @@ public class AlchemicalItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag isAdvanced) {
         if (this.getQuality(stack) != AlchemicalQuality.NONE) {
-            tooltip.add(new TranslatableComponent("item.clinker.quality").append(this.getQuality(stack).getTranslationComponent()));
+            tooltip.add(Component.translatable("item.clinker.quality").append(this.getQuality(stack).getTranslationComponent()));
         }
-        tooltip.add(new TranslatableComponent(this.getDescriptionId(stack) + ".description").withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC));
+        tooltip.add(Component.translatable(this.getDescriptionId(stack) + ".description").withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC));
         super.appendHoverText(stack, worldIn, tooltip, isAdvanced);
     }
 
     @Override
     public Component getName(ItemStack stack) {
         boolean isAcceptableQuality = this.getQuality(stack) != AlchemicalQuality.DUBIOUS;
-        return isAcceptableQuality ? new TranslatableComponent(this.getDescriptionId(stack)) : new TranslatableComponent(this.getDescriptionId(stack)).withStyle(ChatFormatting.RED);
+        return isAcceptableQuality ? Component.translatable(this.getDescriptionId(stack)) : Component.translatable(this.getDescriptionId(stack)).withStyle(ChatFormatting.RED);
     }
 
     public boolean hasQuality(ItemStack stack) {
@@ -86,8 +85,8 @@ public class AlchemicalItem extends Item {
             this.index = index;
         }
 
-        public TranslatableComponent getTranslationComponent() {
-            return (TranslatableComponent) new TranslatableComponent(this.getString()).withStyle(this.getColor());
+        public Component getTranslationComponent() {
+            return Component.translatable(this.getString()).withStyle(this.getColor());
         }
 
         public ChatFormatting getColor() {

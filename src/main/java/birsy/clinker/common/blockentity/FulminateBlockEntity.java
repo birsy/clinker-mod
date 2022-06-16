@@ -1,6 +1,7 @@
 package birsy.clinker.common.blockentity;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -45,9 +46,9 @@ public class FulminateBlockEntity extends BlockEntity {
         }
 
         @Override
-        public boolean handleGameEvent(Level pLevel, GameEvent pEvent, @Nullable Entity pEntity, BlockPos pPos) {
-            if (pEvent == GameEvent.LIGHTNING_STRIKE) {
-                BlockEntity fuliminate = pLevel.getBlockEntity(this.listenerSource.getPosition(pLevel).get());
+        public boolean handleGameEvent(ServerLevel pLevel, GameEvent.Message pEvent) {
+            if (pEvent.gameEvent() == GameEvent.LIGHTNING_STRIKE) {
+                BlockEntity fuliminate = pLevel.getBlockEntity(new BlockPos(this.listenerSource.getPosition(pLevel).get()));
                 if (fuliminate instanceof FulminateBlockEntity) {
                     ((FulminateBlockEntity) fuliminate).activate();
                     return true;

@@ -5,7 +5,7 @@ import birsy.clinker.core.Clinker;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Element extends net.minecraftforge.registries.ForgeRegistryEntry<Element> {
+public class Element {
 
     //Below or equal to 0, the element is considered "FIXED." Above zero, the element is considered "VOLATILE."
     //An element can only form *stable* bonds with an element whose nature is one away from itself.

@@ -21,8 +21,8 @@ import net.minecraftforge.client.ISkyRenderHandler;
 import javax.annotation.Nullable;
 import java.util.Random;
 
-public class OthershoreSkyRenderer implements ISkyRenderHandler {
-    private static final ResourceLocation SUN_TEXTURES = new ResourceLocation(Clinker.MOD_ID, "textures/environment/sun.png");
+public abstract class OthershoreSkyRenderer implements ISkyRenderHandler {
+    /*private static final ResourceLocation SUN_TEXTURES = new ResourceLocation(Clinker.MOD_ID, "textures/environment/sun.png");
     private static final ResourceLocation STAR_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/environment/star.png");
     private Minecraft mc;
     @Nullable
@@ -313,5 +313,5 @@ public class OthershoreSkyRenderer implements ISkyRenderHandler {
         RenderSystem.disableTexture();
         RenderSystem.disableBlend();
     }
-
+    */
 }

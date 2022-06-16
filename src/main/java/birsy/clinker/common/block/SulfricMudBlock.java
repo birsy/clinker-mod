@@ -5,7 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -26,13 +26,12 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.ticks.ScheduledTick;
 
 import javax.annotation.Nullable;
-import java.util.Random;
 
-public class MudBlock extends Block implements SimpleWaterloggedBlock {
+public class SulfricMudBlock extends Block implements SimpleWaterloggedBlock {
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final BooleanProperty SQUISHED = BooleanProperty.create("squished");
 
-    public MudBlock(Properties properties) {
+    public SulfricMudBlock(Properties properties) {
         super(properties.randomTicks());
         this.registerDefaultState(this.getStateDefinition().any().setValue(WATERLOGGED, false).setValue(SQUISHED, false));
     }
@@ -55,7 +54,7 @@ public class MudBlock extends Block implements SimpleWaterloggedBlock {
     }
 
     @Override
-    public void tick(BlockState pState, ServerLevel pLevel, BlockPos pPos, Random pRandom) {
+    public void tick(BlockState pState, ServerLevel pLevel, BlockPos pPos, RandomSource pRandomSource) {
         if (pState.getValue(SQUISHED) && !isSaturated(pLevel, pPos)) {
             float ySubtract = pState.getValue(WATERLOGGED) ? 0.8125F : 0.0F;
 
@@ -66,7 +65,7 @@ public class MudBlock extends Block implements SimpleWaterloggedBlock {
             }
         }
 
-        super.tick(pState, pLevel, pPos, pRandom);
+        super.tick(pState, pLevel, pPos, pRandomSource);
     }
 
     @Override

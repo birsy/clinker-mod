@@ -5,6 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -25,7 +26,7 @@ public class SalamanderBodyEntity extends AbstractSalamanderPartEntity {
     }
 
     @Override
-    protected boolean shouldDropExperience() {
+    public boolean shouldDropExperience() {
         return false;
     }
 
@@ -61,6 +62,48 @@ public class SalamanderBodyEntity extends AbstractSalamanderPartEntity {
         }
 
         return super.isSteppingCarefully();
+    }
+
+    @Override
+    public void checkDespawn() {
+        if (this.level.getDifficulty() == Difficulty.PEACEFUL && this.shouldDespawnInPeaceful()) {
+            this.despawn();
+        } else if (!this.isPersistenceRequired() && !this.requiresCustomPersistence()) {
+            Entity entity = this.level.getNearestPlayer(this, -1.0D);
+            net.minecraftforge.eventbus.api.Event.Result result = net.minecraftforge.event.ForgeEventFactory.canEntityDespawn(this);
+            if (result == net.minecraftforge.eventbus.api.Event.Result.DENY) {
+                noActionTime = 0;
+                entity = null;
+            } else if (result == net.minecraftforge.eventbus.api.Event.Result.ALLOW) {
+                this.despawn();
+                entity = null;
+            }
+            if (entity != null) {
+                double d0 = entity.distanceToSqr(this);
+                int i = this.getType().getCategory().getDespawnDistance();
+                int j = i * i;
+                if (d0 > (double)j && this.removeWhenFarAway(d0)) {
+                    this.despawn();
+                }
+
+                int k = this.getType().getCategory().getNoDespawnDistance();
+                int l = k * k;
+                if (this.noActionTime > 600 && this.random.nextInt(800) == 0 && d0 > (double)l && this.removeWhenFarAway(d0)) {
+                    this.despawn();
+                } else if (d0 < (double)l) {
+                    this.noActionTime = 0;
+                }
+            }
+        } else {
+            this.noActionTime = 0;
+        }
+    }
+
+    public void despawn() {
+        this.discard();
+        for (SalamanderBodyEntity segment : this.behindSegments) {
+            segment.discard();
+        }
     }
 
     public SalamanderHeadEntity turnToHead() {

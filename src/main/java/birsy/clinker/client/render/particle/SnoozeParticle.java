@@ -13,6 +13,8 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import java.util.Random;
+
 @OnlyIn(Dist.CLIENT)
 public class SnoozeParticle extends SimpleAnimatedParticle {
     final double initialX;

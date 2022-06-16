@@ -3,7 +3,7 @@ package birsy.clinker.common.block.plant;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.tags.BlockTags;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -14,14 +14,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
-import java.util.Random;
 
 public class MudReedsBlock extends BushBlock implements BonemealableBlock, net.minecraftforge.common.IForgeShearable, SimpleWaterloggedBlock {
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
@@ -45,11 +43,11 @@ public class MudReedsBlock extends BushBlock implements BonemealableBlock, net.m
         return true;
     }
 
-    public boolean isBonemealSuccess(Level pLevel, Random pRandom, BlockPos pPos, BlockState pState) {
+    public boolean isBonemealSuccess(Level pLevel, RandomSource pRandomSource, BlockPos pPos, BlockState pState) {
         return true;
     }
 
-    public void performBonemeal(ServerLevel pLevel, Random pRandom, BlockPos pPos, BlockState pState) {
+    public void performBonemeal(ServerLevel pLevel, RandomSource pRandomSource, BlockPos pPos, BlockState pState) {
         if (pState.is(ClinkerBlocks.SHORT_MUD_REEDS.get())) {
             pLevel.setBlock(pPos, copyWaterloggedFrom(pLevel, pPos, ClinkerBlocks.MUD_REEDS.get().defaultBlockState()).setValue(WATERLOGGED, pState.getValue(WATERLOGGED)), 2);
         } else {

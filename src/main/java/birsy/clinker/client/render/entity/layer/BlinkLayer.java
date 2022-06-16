@@ -36,7 +36,7 @@ public class BlinkLayer<T extends LivingEntity, M extends EntityModel<T>> extend
     public void render(PoseStack pMatrixStack, MultiBufferSource pBuffer, int pPackedLight, T pLivingEntity, float pLimbSwing, float pLimbSwingAmount, float pPartialTicks, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
         if (!pLivingEntity.isInvisible()) {
             float random = MathUtils.awfulRandom((float)(Math.round(pAgeInTicks * 0.3F + (pLivingEntity.getId() * 1234.0F))));
-            boolean blinking = true;//random > 0.95;
+            boolean blinking = random > 0.95;
             if (blinking || pLivingEntity.getPose() == Pose.SLEEPING || pLivingEntity.invulnerableTime > 15) {
                 RenderType BLINK = RenderType.entityCutout(blinkTexture);
                 VertexConsumer vertexconsumerBlink = pBuffer.getBuffer(BLINK);

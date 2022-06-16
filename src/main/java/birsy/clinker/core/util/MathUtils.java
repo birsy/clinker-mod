@@ -5,6 +5,7 @@ import com.mojang.math.Vector3f;
 import net.minecraft.Util;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.Vec3;
 
 import java.lang.reflect.Array;
@@ -120,6 +121,10 @@ public class MathUtils {
     public static float getRandomFloatBetween (Random rand, float min, float max) {
         return mapRange(0, 1, min, max, rand.nextFloat());
     }
+    public static float getRandomFloatBetween (RandomSource rand, float min, float max) {
+        return mapRange(0, 1, min, max, rand.nextFloat());
+    }
+
     public static float map(float value, float min, float max) {
         return mapRange(0, 1, min, max, value);
     }

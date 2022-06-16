@@ -7,6 +7,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
@@ -14,8 +15,11 @@ import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.world.item.ItemStack;
 
 public class GnomadItemBeltLayer<T extends GnomadAxemanEntity, M extends GnomadAxemanModel<T>> extends RenderLayer<T, M> {
-    public GnomadItemBeltLayer(RenderLayerParent<T, M> parent) {
+    private final ItemInHandRenderer itemInHandRenderer;
+
+    public GnomadItemBeltLayer(RenderLayerParent<T, M> parent, ItemInHandRenderer itemInHandRenderer) {
         super(parent);
+        this.itemInHandRenderer = itemInHandRenderer;
     }
 
     @Override
@@ -41,7 +45,7 @@ public class GnomadItemBeltLayer<T extends GnomadAxemanEntity, M extends GnomadA
             pMatrixStack.mulPose(Vector3f.YN.rotationDegrees(90.0F));
             pMatrixStack.mulPose(Vector3f.ZN.rotationDegrees(90.0F));
             pMatrixStack.scale(sheathedItemScale, sheathedItemScale, sheathedItemScale);
-            Minecraft.getInstance().getItemInHandRenderer().renderItem(pLivingEntity, sheathedItem, ItemTransforms.TransformType.FIXED, false, pMatrixStack, pBuffer, pPackedLight);
+            itemInHandRenderer.renderItem(pLivingEntity, sheathedItem, ItemTransforms.TransformType.FIXED, false, pMatrixStack, pBuffer, pPackedLight);
             pMatrixStack.popPose();
         }
 
@@ -56,7 +60,7 @@ public class GnomadItemBeltLayer<T extends GnomadAxemanEntity, M extends GnomadA
             pMatrixStack.mulPose(Vector3f.ZN.rotationDegrees(180.0F));
             pMatrixStack.mulPose(Vector3f.XN.rotationDegrees(-10.0F));
             pMatrixStack.mulPose(Vector3f.YN.rotationDegrees(-30.0F));
-            Minecraft.getInstance().getItemInHandRenderer().renderItem(pLivingEntity, potion, ItemTransforms.TransformType.FIXED, false, pMatrixStack, pBuffer, pPackedLight);
+            itemInHandRenderer.renderItem(pLivingEntity, potion, ItemTransforms.TransformType.FIXED, false, pMatrixStack, pBuffer, pPackedLight);
             pMatrixStack.popPose();
         }
 

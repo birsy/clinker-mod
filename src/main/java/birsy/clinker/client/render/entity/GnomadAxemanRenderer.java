@@ -23,8 +23,8 @@ public class GnomadAxemanRenderer extends ClinkerEntityRenderer<GnomadAxemanEnti
 
     public GnomadAxemanRenderer(EntityRendererProvider.Context context) {
         super(context, new GnomadAxemanModel<>(context.bakeLayer(GnomadAxemanModel.LAYER_LOCATION)), 0.5F);
-        this.addLayer(new ItemInHandLayer<>(this));
-        this.addLayer(new GnomadItemBeltLayer<>(this));
+        this.addLayer(new ItemInHandLayer<>(this, context.getItemInHandRenderer()));
+        this.addLayer(new GnomadItemBeltLayer<>(this, context.getItemInHandRenderer()));
     }
 
     @Override

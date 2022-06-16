@@ -161,7 +161,7 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity implements Inventor
     }
 
     @Override
-    public Container getInventory() {
+    public SimpleContainer getInventory() {
         return this.inventory;
     }
 

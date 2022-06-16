@@ -63,7 +63,7 @@ public class OthershoreFogRenderer {
         final Level world = player.level;
         final ClientLevel clientLevel = mc.level;
         if (world.dimension() == ClinkerDimensions.OTHERSHORE) {
-            float renderDist = (float) mc.options.renderDistance * 16.0F;
+            float renderDist = (float) mc.options.renderDistance().get() * 16.0F;
             event.setCanceled(true);
             event.setFarPlaneDistance(renderDist - (renderDist * 0.25F));
             event.setNearPlaneDistance(0.0F);
@@ -198,6 +198,6 @@ public class OthershoreFogRenderer {
     }
 
     private static float getLight(Level worldIn, BlockPos posIn, LightLayer lightType) {
-        return lightType != null ? worldIn.getBrightness(lightType, posIn) : worldIn.getBrightness(posIn);
+        return lightType != null ? worldIn.getBrightness(lightType, posIn) : worldIn.getRawBrightness(posIn, 0);
     }
 }

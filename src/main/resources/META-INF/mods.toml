@@ -31,7 +31,7 @@ logoFile="logo.png" #optional
 # A text field displayed in the mod UI
 credits="Thanks to all those who provided inspiration to the mod, and kept me going through everything." #optional
 # A text field displayed in the mod UI
-authors="A mod by CAPPIN. Additional artwork provided by RON." #optional
+authors="A mod by CAPPIN. Music by SQUIRE. Additional artwork provided by RON." #optional
 # The description text for the mod (multi line!) (#mandatory)
 description='''"...Among those who devote themselves to the transmutation of metals,
 
@@ -65,6 +65,6 @@ life and health. Hence, it is the most popular of all pursuits."'''
     modId="minecraft"
     mandatory=true
 # This version range declares a minimum of the current minecraft version up to but not including the next major version
-    versionRange="[1.18.1,1.19)"
+    versionRange="[1.19,1.20)"
     ordering="NONE"
     side="BOTH"

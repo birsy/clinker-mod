@@ -115,8 +115,8 @@ public class FermentationBarrelBlockEntity extends BlockEntity implements LidBlo
     @OnlyIn(Dist.CLIENT)
     public List<? extends FormattedText> getText(BlockEntity blockEntity) {
         ArrayList<Component> text = new ArrayList<>();
-        text.add(new TranslatableComponent("block.clinker.fermentation_barrel").withStyle(ChatFormatting.DARK_GRAY));
-        text.add(new TextComponent("sync chest noise later"));
+        text.add(Component.translatable("block.clinker.fermentation_barrel").withStyle(ChatFormatting.DARK_GRAY));
+        text.add(Component.literal("sync chest noise later"));
         return text;
     }
 

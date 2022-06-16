@@ -26,9 +26,10 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
         return false;
     }
 
-    @Nullable
+    //TODO: remake sky renderer
+    /*@Nullable
     @Override
     public ISkyRenderHandler getSkyRenderHandler() {
         return new OthershoreSkyRenderer(mc);
-    }
+    }*/
 }

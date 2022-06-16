@@ -4,6 +4,7 @@ import birsy.clinker.core.registry.ClinkerBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
@@ -19,7 +20,6 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.ticks.ScheduledTick;
 
 import javax.annotation.Nullable;
-import java.util.Random;
 
 public class CaveFigRootsBlock extends PipeBlock implements SimpleWaterloggedBlock {
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
@@ -100,7 +100,7 @@ public class CaveFigRootsBlock extends PipeBlock implements SimpleWaterloggedBlo
     }
 
     @Override
-    public void tick(BlockState pState, ServerLevel pLevel, BlockPos pPos, Random pRandom) {
+    public void tick(BlockState pState, ServerLevel pLevel, BlockPos pPos, RandomSource pRandomSource) {
         if (!pState.canSurvive(pLevel, pPos)) {
             pLevel.destroyBlock(pPos, true);
         }

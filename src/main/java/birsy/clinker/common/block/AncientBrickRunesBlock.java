@@ -6,7 +6,7 @@ import birsy.clinker.common.block.util.Rune;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -44,7 +44,7 @@ public class AncientBrickRunesBlock extends Block {
 			String name = property.toString().toUpperCase();
 			worldIn.setBlock(pos, blockstate, 18);
 			worldIn.playSound(player, pos, SoundEvents.GRINDSTONE_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
-			player.displayClientMessage(new TranslatableComponent("block.clinker.ancient_rune.carve", name.substring(0, 1).toUpperCase() + name.substring(1)), true);
+			player.displayClientMessage(Component.translatable("block.clinker.ancient_rune.carve", name.substring(0, 1).toUpperCase() + name.substring(1)), true);
 		}
 		return super.use(state, worldIn, pos, player, handIn, hit);
 	}

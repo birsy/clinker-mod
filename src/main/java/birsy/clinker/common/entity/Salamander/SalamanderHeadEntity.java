@@ -1,23 +1,20 @@
 package birsy.clinker.common.entity.Salamander;
 
-import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerEntities;
 import birsy.clinker.core.registry.ClinkerParticles;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Monster;
@@ -29,7 +26,6 @@ import net.minecraftforge.common.util.ITeleporter;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.List;
 
 public class SalamanderHeadEntity extends AbstractSalamanderPartEntity {
     private static final EntityDataAccessor<Boolean> IS_DECAPITATED_STUMP_ID = SynchedEntityData.defineId(SalamanderHeadEntity.class, EntityDataSerializers.BOOLEAN);
@@ -101,13 +97,13 @@ public class SalamanderHeadEntity extends AbstractSalamanderPartEntity {
         if (!this.isDeadOrDying()) {
             this.applyRopeConstraints(16);
         }
-        if (this.tickCount % 35 == 0 || this.random.nextInt(90) == 0) {
+        /*if (this.tickCount % 35 == 0 || this.random.nextInt(90) == 0) {
             Vec3 viewDirection = this.getViewVector(1.0F); //new Vec3(Mth.cos(this.getBodyRotY(1.0F)) * Mth.cos(this.getBodyRotX(1.0F)), Mth.sin(this.getBodyRotY(1.0F)) * Mth.cos(this.getBodyRotX(1.0F)), Mth.sin(this.getBodyRotX(1.0F)));
             Vec3 randomVector = new Vec3(random.nextDouble(), random.nextDouble(), random.nextDouble()).subtract(0.5, 0.5, 0.5).scale(2).normalize();
             Vec3 particleLocation = this.position().add(0, 0.5, 0).add(viewDirection.scale(0.9F)).add(0.0F, 0.0F, 0.0F);
             Vec3 particleColor = new Vec3(100.0F, 160.0F, 190.0F).scale(1.0F / 255.0F);
             this.level.addParticle(ClinkerParticles.SNOOZE.get(), particleLocation.x(), particleLocation.y(), particleLocation.z(), particleColor.x(), particleColor.y(), particleColor.z());
-        }
+        }*/
         if (!this.isDecaptiatedStump()) {
             //this.travel(new Vec3(Mth.sin(tickCount * 0.07F) * 0.25, 0, 1).normalize().scale(6.5F));
         }
@@ -135,6 +131,11 @@ public class SalamanderHeadEntity extends AbstractSalamanderPartEntity {
                 this.behindSegments.get(this.behindSegments.size() - 1).behind = null;
             }
         }
+    }
+
+    @Override
+    public void checkDespawn() {
+        super.checkDespawn();
     }
 
     @Override
