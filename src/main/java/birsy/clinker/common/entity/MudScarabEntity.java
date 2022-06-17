@@ -3,6 +3,7 @@ package birsy.clinker.common.entity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
@@ -20,11 +21,14 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec2;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.phys.*;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,10 +99,84 @@ public class MudScarabEntity extends AbstractBugEntity {
         AABB movementBox = this.getRidingBox();
         for(Entity entity : this.level.getEntities(this, movementBox, EntitySelector.NO_SPECTATORS.and((entity) -> !entity.isPassengerOfSameVehicle(this)))) {
             if (!(entity instanceof MudScarabEntity) && !entity.noPhysics && entity.isOnGround() && !entity.isPassenger()) {
-                entity.setDeltaMovement(entity.getDeltaMovement().x + this.getDeltaMovement().x, Math.abs(this.getDeltaMovement().y) > Math.abs(entity.getDeltaMovement().y) ? this.getDeltaMovement().y : entity.getDeltaMovement().y, entity.getDeltaMovement().z + this.getDeltaMovement().z);
+                //moveRiders(entity, this.getDeltaMovement().scale(4.0F));
+                float scale = 0.83F;
+                entity.setDeltaMovement(entity.getDeltaMovement().add(this.getDeltaMovement().multiply(scale, 1.0F, scale)));
+                if (this.getPosition(0.0F).y() < this.getPosition(1.0F).y()) {
+                    entity.move(MoverType.SELF, new Vec3(0, this.getPosition(1.0F).y() - this.getPosition(0.0F).y(), 0));
+                }
+                //entity.setDeltaMovement(entity.getDeltaMovement().x + this.getDeltaMovement().x, Math.abs(this.getDeltaMovement().y) > Math.abs(entity.getDeltaMovement().y) ? this.getDeltaMovement().y : entity.getDeltaMovement().y, entity.getDeltaMovement().z + this.getDeltaMovement().z);
             }
         }
         super.tick();
+    }
+
+    public void moveRiders(Entity entity, Vec3 pPos) {
+        if (!entity.noPhysics) {
+            Vec3 vec3 = collideNoEntityCollision(entity, pPos);
+            double d0 = vec3.lengthSqr();
+            if (d0 > 1.0E-7D) {
+                if (entity.fallDistance != 0.0F && d0 >= 1.0D) {
+                    BlockHitResult blockhitresult = entity.level.clip(new ClipContext(entity.position(), entity.position().add(vec3), ClipContext.Block.FALLDAMAGE_RESETTING, ClipContext.Fluid.WATER, entity));
+                    if (blockhitresult.getType() != HitResult.Type.MISS) {
+                        entity.resetFallDistance();
+                    }
+                }
+
+                entity.setPos(entity.getX() + vec3.x, entity.getY() + vec3.y, entity.getZ() + vec3.z);
+            }
+
+
+            boolean flag2 = !Mth.equal(pPos.x, vec3.x);
+            boolean flag = !Mth.equal(pPos.z, vec3.z);
+            entity.horizontalCollision = flag2 || flag;
+            entity.verticalCollision = pPos.y != vec3.y;
+            entity.verticalCollisionBelow = entity.verticalCollision && pPos.y < 0.0D;
+
+            entity.setOnGround(entity.verticalCollision && pPos.y < 0.0D);
+            BlockPos blockpos = entity.getOnPosLegacy();
+            BlockState blockstate = entity.level.getBlockState(blockpos);
+            //entity.checkFallDamage(vec3.y, entity.isOnGround(), blockstate, blockpos);
+            if (!entity.isRemoved()) {
+                if (entity.horizontalCollision) {
+                    Vec3 vec31 = entity.getDeltaMovement();
+                    entity.setDeltaMovement(flag2 ? 0.0D : vec31.x, vec31.y, flag ? 0.0D : vec31.z);
+                }
+
+                Block block = blockstate.getBlock();
+                if (pPos.y != vec3.y) {
+                    block.updateEntityAfterFallOn(entity.level, entity);
+                }
+
+                double d1 = vec3.x;
+                double d2 = vec3.y;
+                double d3 = vec3.z;
+                entity.flyDist = (float) ((double) entity.flyDist + vec3.length() * 0.6D);
+                boolean flag1 = blockstate.is(BlockTags.CLIMBABLE) || blockstate.is(Blocks.POWDER_SNOW);
+                if (!flag1) {
+                    d2 = 0.0D;
+                }
+                entity.moveDist += (float)Math.sqrt(d1 * d1 + d2 * d2 + d3 * d3) * 0.6F;
+
+
+                entity.setDeltaMovement(entity.getDeltaMovement());
+            }
+
+        }
+    }
+
+    private Vec3 collideNoEntityCollision(Entity entity, Vec3 pVec) {
+        AABB aabb = entity.getBoundingBox();
+        List<VoxelShape> list = entity.level.getEntityCollisions(entity, aabb.expandTowards(pVec));
+        Vec3 collidedVector = pVec.lengthSqr() == 0.0D ? pVec : collideBoundingBox(entity, pVec, aabb, entity.level, list);
+        collidedVector = new Vec3(pVec.x(), collidedVector.y(), pVec.z());
+        boolean collidedX = pVec.x != collidedVector.x;
+        boolean collidedVertically = pVec.y != collidedVector.y;
+        boolean collidedZ = pVec.z != collidedVector.z;
+        boolean isGrounded = entity.isOnGround() || collidedVertically && pVec.y < 0.0D;
+        float stepHeight = getStepHeight();
+
+        return collidedVector;
     }
 
     public AABB getRidingBox() {

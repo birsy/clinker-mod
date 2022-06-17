@@ -1,11 +1,16 @@
 package birsy.clinker.core.util;
 
 import com.ibm.icu.impl.Pair;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
+import com.mojang.math.Vector4f;
 import net.minecraft.Util;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 
 import java.lang.reflect.Array;
@@ -638,4 +643,24 @@ public class MathUtils {
         
         return c;
     }
+
+    /*public Vec3 getWorldPos(Entity entity, float partialTick) {
+        PoseStack matrixStack = new PoseStack();
+        Vec3 position = entity.getPosition(partialTick);
+        //float dx = (float) (entity.lastTickPosX + (entity.getPosX() - entity.lastTickPosX) * partialTick);
+        //float dy = (float) (entity.lastTickPosY + (entity.getPosY() - entity.lastTickPosY) * partialTick);
+        //float dz = (float) (entity.lastTickPosZ + (entity.getPosZ() - entity.lastTickPosZ) * partialTick);
+        matrixStack.translate(position.x(), position.y(), position.z());
+        float dYaw = entity.getViewYRot(partialTick);
+        matrixStack.mulPose(new Quaternion(0, -dYaw + 180, 0, true));
+        matrixStack.scale(-1, -1, 1);
+        matrixStack.translate(0, -1.5f, 0);
+        MowzieRenderUtils.matrixStackFromModel(matrixStack, this);
+        PoseStack.Pose matrixEntry = matrixStack.last();
+        Matrix4f matrix4f = matrixEntry.pose();
+
+        Vector4f vec = new Vector4f(0, 0, 0, 1);
+        vec.transform(matrix4f);
+        return new Vector3d(vec.getX(), vec.getY(), vec.getZ());
+    }*/
 }
