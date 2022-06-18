@@ -16,6 +16,7 @@ import net.minecraft.world.phys.Vec3;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Random;
+import java.util.function.Function;
 
 /* cappin's math utils
  * hope you find this useful :) */
@@ -642,6 +643,31 @@ public class MathUtils {
         float c = Mth.lerp(pct.y(), cA, cB);
         
         return c;
+    }
+
+    /** Find a minimum point for a bounded function. May be a local minimum.
+     * minX      : the smallest input value
+     * maxX      : the largest input value
+     * function  : a function that returns a value `y` given an `x`
+     * threshold : how close in `x` the bounds must be before returning
+     * returns   : the `x` value that produces the smallest `y`
+     */
+    public static double localMinimum(double minX, double maxX, Function<Double, Double> function, double threshold) {
+        if (Double.isNaN(threshold)) { threshold = 1e-10; }
+        double m = minX;
+        double n = maxX;
+        double k = (n + m) / 2;
+
+        while ((n - m) > threshold) {
+            k = (n + m) / 2;
+            if (function.apply(k - threshold) < function.apply(k + threshold)) {
+                n = k;
+            } else {
+                m = k;
+            }
+        }
+
+        return k;
     }
 
     /*public Vec3 getWorldPos(Entity entity, float partialTick) {

@@ -1,4 +1,4 @@
-package birsy.clinker.common.level.chunk;
+package birsy.clinker.common.level.chunk.gen;
 
 import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.core.util.noise.FastNoiseLite;

@@ -3,6 +3,7 @@ package birsy.clinker.core;
 import birsy.clinker.core.registry.*;
 import birsy.clinker.core.registry.world.ClinkerBiomeTest;
 import birsy.clinker.core.registry.world.ClinkerFeatures;
+import birsy.clinker.core.registry.world.ClinkerWorld;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 
 import org.apache.logging.log4j.LogManager;
@@ -35,6 +36,7 @@ public class Clinker
         ClinkerBlocks.ITEMS.register(modEventBus);
         ClinkerBlockEntities.BLOCK_ENTITIES.register(modEventBus);
         ClinkerEntities.ENTITIES.register(modEventBus);
+        ClinkerWorld.CHUNK_GENERATORS.register(modEventBus);
         ClinkerFeatures.FEATURES.register(modEventBus);
         //ClinkerElements.ELEMENTS.register(modEventBus);
         ClinkerParticles.PARTICLES.register(modEventBus);

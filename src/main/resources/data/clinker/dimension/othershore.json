@@ -1,8 +1,7 @@
 {
   "type": "clinker:othershore",
   "generator": {
-    "type": "minecraft:noise",
-    "seed": 0,
+    "type": "clinker:othershore_chunk_generator",
     "settings": "clinker:othershore",
     "biome_source": {
       "type": "minecraft:fixed",

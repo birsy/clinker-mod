@@ -1,19 +1,15 @@
 package birsy.clinker.client.render.world;
 
 import birsy.clinker.core.Clinker;
-import birsy.clinker.core.registry.ClinkerDimensions;
-import birsy.clinker.core.util.MathUtils;
+import birsy.clinker.core.registry.world.ClinkerWorld;
 import com.mojang.blaze3d.shaders.FogShape;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
-import net.minecraft.util.CubicSampler;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
-import net.minecraft.world.level.biome.BiomeManager;
-import net.minecraft.world.level.material.FogType;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
@@ -62,7 +58,7 @@ public class OthershoreFogRenderer {
         final Entity player = event.getCamera().getEntity();
         final Level world = player.level;
         final ClientLevel clientLevel = mc.level;
-        if (world.dimension() == ClinkerDimensions.OTHERSHORE) {
+        if (world.dimension() == ClinkerWorld.OTHERSHORE) {
             float renderDist = (float) mc.options.renderDistance().get() * 16.0F;
             event.setCanceled(true);
             event.setFarPlaneDistance(renderDist - (renderDist * 0.25F));

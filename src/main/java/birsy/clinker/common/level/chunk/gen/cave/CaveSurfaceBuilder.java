@@ -1,4 +1,4 @@
-package birsy.clinker.common.level;
+package birsy.clinker.common.level.chunk.gen.cave;
 
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;

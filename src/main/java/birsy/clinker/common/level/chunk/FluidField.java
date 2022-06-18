@@ -164,7 +164,7 @@ public class FluidField {
     }
 
     //TODO: make fluid properties fluid-field-wide rather than per-cell.
-    // this was a really dumb decision god damn.
+    // this was a really dumb decision.
     public static class FluidProperty<P> {
         final int amountOfAttributes;
         final GetAttributeFunction<P> getAttributes;
