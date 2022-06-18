@@ -1,5 +1,6 @@
 package birsy.clinker.core;
 
+import birsy.clinker.common.level.chunk.gen.OthershoreChunkGenerator;
 import birsy.clinker.core.registry.*;
 import birsy.clinker.core.registry.world.ClinkerBiomeTest;
 import birsy.clinker.core.registry.world.ClinkerFeatures;
@@ -54,6 +55,7 @@ public class Clinker
 	private void setup(final FMLCommonSetupEvent event)
     {
         event.enqueueWork(() -> {
+            OthershoreChunkGenerator.register();
             //AxeItem.STRIPPABLES.put(ClinkerBlocks.LOCUST_LOG.get(), ClinkerBlocks.STRIPPED_LOCUST_LOG.get());
             //AxeItem.STRIPPABLES.put(ClinkerBlocks.SWAMP_ASPEN_LOG.get(), ClinkerBlocks.STRIPPED_SWAMP_ASPEN_LOG.get());
         });
