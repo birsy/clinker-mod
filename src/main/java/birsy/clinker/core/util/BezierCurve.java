@@ -22,7 +22,7 @@ public class BezierCurve {
         Vec3[] tmps = this.controlPoints;
 
         if (this.controlPoints.length < 2) { throw new ArithmeticException("At least 2 control points are required"); }
-        for (int degree = this.controlPoints.length - 1; degree > 0; degree--) {
+        for (int degree = this.controlPoints.length - 2; degree > 0; degree--) {
             for (var i = 0; i <= degree; i++) {
                 tmps[i] = tmps[i].lerp(tmps[i+1], t);
             }

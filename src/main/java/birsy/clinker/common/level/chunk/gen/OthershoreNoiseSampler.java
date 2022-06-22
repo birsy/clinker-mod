@@ -1,20 +1,17 @@
 package birsy.clinker.common.level.chunk.gen;
 
-import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.core.util.noise.FastNoiseLite;
-import com.ibm.icu.impl.Pair;
-import net.minecraft.util.Mth;
-
-import java.util.Random;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.levelgen.XoroshiroRandomSource;
 
 /**
  * Samples the terrain noise's density at a given position, or set of positions.
  */
 public class OthershoreNoiseSampler {
     private final long seed;
-    private Random random;
+    private RandomSource random;
 
-    //Noise determining where ash plains and oceans lie. Very, very large, sampled in 2D.
+    /*//Noise determining where ash plains and oceans lie. Very, very large, sampled in 2D.
     public FastNoiseLite continentalNoiseGenerator;
     //Noise determining the basic height of the terrain. Ridged, sampled in 2D.
     public FastNoiseLite heightmapNoiseGenerator;
@@ -32,17 +29,41 @@ public class OthershoreNoiseSampler {
     //Noise determining the strength of the terraces across a large area.
     public FastNoiseLite terraceStrengthNoiseGenerator;
     //Noise for modulating the basic heightmap with overhangs.
-    public FastNoiseLite overhangNoiseGenerator;
+    public FastNoiseLite overhangNoiseGenerator;*/
+
+    public FastNoiseLite largeNoise;
+    public FastNoiseLite detailNoise;
 
     public OthershoreNoiseSampler(long seed) {
         this.seed = seed;
-        this.random = new Random(seed);
-
+        this.random = new XoroshiroRandomSource(seed);
         this.initNoise((int) seed);
     }
 
+    public OthershoreNoiseSampler setSeed(long seed) {
+        this.random.setSeed(seed);
+        this.largeNoise.SetSeed((int) seed);
+        this.detailNoise.SetSeed((int) seed + 1);
+        //initNoise((int)seed);
+        return this;
+    }
+
     private void initNoise(int seed) {
-        this.continentalNoiseGenerator = new FastNoiseLite((int) (seed + random.nextLong()));
+        this.largeNoise = new FastNoiseLite(seed);
+        this.largeNoise.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2S);
+        this.largeNoise.SetFrequency(0.04F);
+        this.largeNoise.SetFractalType(FastNoiseLite.FractalType.FBm);
+        this.largeNoise.SetFractalOctaves(1);
+        this.largeNoise.SetFractalLacunarity(0.5);
+        this.largeNoise.SetFractalGain(1.7F);
+        this.largeNoise.SetFractalWeightedStrength(0.0F);
+
+        this.detailNoise = new FastNoiseLite(seed + 1);
+        this.detailNoise.SetNoiseType(FastNoiseLite.NoiseType.ValueCubic);
+        this.detailNoise.SetFrequency(0.1F);
+        this.detailNoise.SetFractalType(FastNoiseLite.FractalType.None);
+
+        /*this.continentalNoiseGenerator = new FastNoiseLite((int) (seed + random.nextLong()));
         this.continentalNoiseGenerator.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
         this.continentalNoiseGenerator.SetFrequency(0.002F);
         this.continentalNoiseGenerator.SetFractalType(FastNoiseLite.FractalType.None);
@@ -86,37 +107,6 @@ public class OthershoreNoiseSampler {
         this.factorNoiseGenerator = new FastNoiseLite((int) (seed + random.nextLong()));
         this.factorNoiseGenerator.SetNoiseType(FastNoiseLite.NoiseType.ValueCubic);
         this.factorNoiseGenerator.SetFrequency(0.02F);
-        this.factorNoiseGenerator.SetFractalType(FastNoiseLite.FractalType.None);
-    }
-
-    private float sampleNoise(int x, int y, int z) {
-        Pair<Float, Float> surfaceNoise = sampleTerracedSurfaceNoise(x, y, z);
-        float overhangNoise = (float) overhangNoiseGenerator.GetNoise(x, y, z);
-        float overhangNoiseIntensity = surfaceNoise.second * MathUtils.invert(Mth.clamp(Math.abs(y - surfaceNoise.first) * 0.125F, 0, 1));
-        return surfaceNoise.first * (overhangNoise * overhangNoiseIntensity);
-    }
-
-
-
-    //This base layer will return a distance from Y. This is later modulated with some funky shit to allow overhangs, if only slightly. Should work!
-    private Pair<Float, Float> sampleTerracedSurfaceNoise(int x, int y, int z) {
-        float baseNoise = (float) ((heightmapNoiseGenerator.GetNoise(x, z) + 1) * 0.5F);
-        float terraceNoise = MathUtils.mapRange(-1, 1, 0.07F, 0.6F, (float) terraceNoiseGenerator.GetNoise(x, z));
-        float terraceStrengthGenerator = MathUtils.mapRange(-1, 1, 0.05F, 0.5F, (float) terraceStrengthNoiseGenerator.GetNoise(x, z));
-
-        Pair<Float, Float> terrace = MathUtils.terrace(baseNoise, terraceNoise, terraceStrengthGenerator);
-        float final2DNoise = (terrace.first * 2) - 1;
-        float terrainHeight = (final2DNoise * 70) + 55;
-
-        return Pair.of((terrainHeight - y) * 0.05F, terrace.second);
-    }
-
-    public enum HeightType {
-        MOUNTAIN,
-        PLATEAU,
-        SURFACE,
-        CANYON,
-        COASTAL,
-        WATER;
+        this.factorNoiseGenerator.SetFractalType(FastNoiseLite.FractalType.None);*/
     }
 }

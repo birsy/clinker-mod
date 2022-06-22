@@ -322,7 +322,7 @@ public class SalamanderBodyModel<T extends AbstractSalamanderPartEntity> extends
 		boolean isTail = false;
 		if (entity.getOriginalBodyLength() - entity.getOriginalSegmentID() < tailLength) {
 			float tailAmount = (float) (entity.getOriginalBodyLength() - entity.getOriginalSegmentID()) / tailLength;
-			float thickness = MathUtils.map(tailAmount, 0.5F, 1.0F);
+			float thickness = MathUtils.map(0.5F, 1.0F, tailAmount);
 			this.salamanderBodyRoot.setScale(thickness, thickness, 1.0F);
 			isTail = true;
 		}

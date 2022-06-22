@@ -23,7 +23,7 @@ public class OthershoreCaveNoiseProvider extends CaveNoiseProvider {
 
     public class BridgeCaveNoiseProvider extends CaveNoiseProvider {
         private final VoronoiGenerator bridgeCaveNoise;
-
+        private Pair<Double, Vec3>[] cornerVoronoiInfo;
         public BridgeCaveNoiseProvider(ChunkAccess chunk, long seed) {
             super(chunk, seed);
             this.bridgeCaveNoise = new VoronoiGenerator(seed);

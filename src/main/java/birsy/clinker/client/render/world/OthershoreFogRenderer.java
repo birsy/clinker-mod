@@ -61,9 +61,9 @@ public class OthershoreFogRenderer {
         if (world.dimension() == ClinkerWorld.OTHERSHORE) {
             float renderDist = (float) mc.options.renderDistance().get() * 16.0F;
             event.setCanceled(true);
-            event.setFarPlaneDistance(renderDist - (renderDist * 0.25F));
-            event.setNearPlaneDistance(0.0F);
-            event.setFogShape(FogShape.SPHERE);
+            event.setFarPlaneDistance((renderDist - (renderDist * 0.1F)));
+            event.setNearPlaneDistance(0.0F - (renderDist * 0.1F));
+            event.setFogShape(FogShape.CYLINDER);
         }
     }
 

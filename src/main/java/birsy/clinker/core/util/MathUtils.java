@@ -81,6 +81,7 @@ public class MathUtils {
      * @return The input with biasing applied.
      */
     public static double bias (double value, double bias) {
+        if (bias == 0) return value;
         double b = Math.pow(1-bias, 3);
         return (value*b)/(value*b-value+1);
     }
@@ -131,8 +132,8 @@ public class MathUtils {
         return mapRange(0, 1, min, max, rand.nextFloat());
     }
 
-    public static float map(float value, float min, float max) {
-        return mapRange(0, 1, min, max, value);
+    public static float map(float min, float max, float value) {
+        return value * (max - min) + min;
     }
 
 
@@ -323,6 +324,10 @@ public class MathUtils {
             double res = Math.pow(2, -k * a) + Math.pow(2, -k * b);
             return -MathUtils.log(2, res) / k;
         }
+    }
+
+    public static double smoothClampExpo(double value, double min, double max, double smoothness) {
+        return smoothMinExpo(smoothMinExpo(value, max, smoothness), min, -smoothness);
     }
 
     public static double smoothMinExpo2(double smoothness, double... nums) {
@@ -669,6 +674,19 @@ public class MathUtils {
 
         return k;
     }
+
+    public static double lerp(double delta, double a, double b) {
+        return a + delta * (b - a);
+    }
+
+    public static double lerp2(double deltaX, double deltaY, double aa, double ab, double ba, double bb) {
+        return lerp(deltaY, lerp(deltaX, aa, ab), lerp(deltaX, ba, bb));
+    }
+
+    public static double lerp3(double deltaX, double deltaY, double deltaZ, double aaa, double aba, double baa, double bba, double aab, double abb, double bab, double bbb) {
+        return lerp(deltaZ, lerp2(deltaX, deltaY, aaa, aba, baa, bba), lerp2(deltaX, deltaY, aab, abb, bab, bbb));
+    }
+
 
     /*public Vec3 getWorldPos(Entity entity, float partialTick) {
         PoseStack matrixStack = new PoseStack();
