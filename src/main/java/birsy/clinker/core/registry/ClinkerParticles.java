@@ -1,5 +1,6 @@
 package birsy.clinker.core.registry;
 
+import birsy.clinker.client.render.particle.AshCloudParticle;
 import birsy.clinker.client.render.particle.BugParticle;
 import birsy.clinker.client.render.particle.LightningParticle;
 import birsy.clinker.client.render.particle.SnoozeParticle;
@@ -29,6 +30,7 @@ public class ClinkerParticles
 	public static final RegistryObject<SimpleParticleType> RED_LIGHTNING = createParticle("red_lightning");
 	public static final RegistryObject<SimpleParticleType> BUG = createParticle("bug");
 	public static final RegistryObject<SimpleParticleType> SNOOZE = createParticle("snooze");
+	public static final RegistryObject<SimpleParticleType> ASH_CLOUD = createParticle("ash_cloud");
 
 	public static RegistryObject<SimpleParticleType> createParticle(String name) {
 		RegistryObject<SimpleParticleType> particle = PARTICLES.register(name, () -> new SimpleParticleType(false));
@@ -43,5 +45,6 @@ public class ClinkerParticles
 		engine.register(RED_LIGHTNING.get(), LightningParticle.Provider::new);
 		engine.register(BUG.get(), BugParticle.Provider::new);
 		engine.register(SNOOZE.get(), SnoozeParticle.Provider::new);
+		engine.register(ASH_CLOUD.get(), AshCloudParticle.Provider::new);
 	}
 }

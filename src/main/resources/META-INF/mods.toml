@@ -9,7 +9,7 @@ modLoader="javafml" #mandatory
 loaderVersion="[37,)" #mandatory This is typically bumped every Minecraft version by Forge. See our download page for lists of versions.
 # The license for you mod. This is mandatory metadata and allows for easier comprehension of your redistributive properties.
 # Review your options at https://choosealicense.com/. All rights reserved is the default copyright stance, and is thus the default here.
-license="All rights reserved"
+license="MIT License"
 # A URL to refer people to when problems occur with this mod
 #issueTrackerURL="https://change.me.to.your.issue.tracker.example.invalid/" #optional
 # A list of mods - how many allowed here is determined by the individual mod loader
@@ -21,7 +21,7 @@ modId="clinker" #mandatory
 # see the associated build.gradle script for how to populate this completely automatically during a build
 version="${file.jarVersion}" #mandatory
  # A display name for the mod
-displayName="\nclinker" #mandatory
+displayName="clinker" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification https://mcforge.readthedocs.io/en/latest/gettingstarted/autoupdate/
 #updateJSONURL="https://change.me.example.invalid/updates.json" #optional
 # A URL for the "homepage" for this mod, displayed in the mod UI
@@ -31,9 +31,17 @@ logoFile="logo.png" #optional
 # A text field displayed in the mod UI
 credits="Thanks to all those who provided inspiration to the mod, and kept me going through everything." #optional
 # A text field displayed in the mod UI
-authors="A mod by CAPPIN. Music by SQUIRE. Additional artwork provided by RON." #optional
+authors="A mod by CAPPIN. Music by SQUIRE. Additional artwork provided by RON. Additional music provided by PHIL_HE." #optional
 # The description text for the mod (multi line!) (#mandatory)
-description='''"...Among those who devote themselves to the transmutation of metals,
+description='''"Of the Claims of our Art, its Students, and its Method:
+
+All men who devote their lives to the study of any art, or to any kind of occupation, have before their eyes, as the aim of their efforts, perfection in the thing which they pursue.
+
+But only few attain to the goal of their wishes: there are many architects, but few masters of the art of architecture; many students of medicine, but few men like Hippocrates or Galen; many mathematicians, but few proficients like Archimedes; many poets, but few worthy to rank with Homer.
+
+Yet, even men who have nothing more than a respectable knowledge of their calling, are capable of being useful to society.
+
+Among those who devote themselves to the transmutation of metals,
 
 however, there can be no such thing as mediocrity of attainment.
 
@@ -47,7 +55,10 @@ of those who despise our Art. Those, indeed, who succeed in reaching the goal
 
 of the Magistery, have not only infinite riches, but the means of continued
 
-life and health. Hence, it is the most popular of all pursuits."'''
+life and health.
+
+
+Hence, it is the most popular of all pursuits."'''
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
 [[dependencies.examplemod]] #optional
     # the modid of the dependency

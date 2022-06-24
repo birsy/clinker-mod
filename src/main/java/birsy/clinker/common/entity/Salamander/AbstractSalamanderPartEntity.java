@@ -34,7 +34,6 @@ public abstract class AbstractSalamanderPartEntity extends Monster {
 
     protected AbstractSalamanderPartEntity(EntityType<? extends AbstractSalamanderPartEntity> entity, Level level) {
         super(entity, level);
-        this.maxUpStep = 1.0F;
         this.behindSegments = new ArrayList<>();
         airTime = 0;
     }
@@ -69,8 +68,6 @@ public abstract class AbstractSalamanderPartEntity extends Monster {
         this.setOriginalBodyLength(pCompound.getInt("Original Body Length"));
         this.setLegs(pCompound.getBoolean("Legs"));
     }
-
-
 
     public void setSegmentID(int id) {
         this.entityData.set(SEGMENT_ID_ID, id);
@@ -225,7 +222,7 @@ public abstract class AbstractSalamanderPartEntity extends Monster {
         if (!(pEntity instanceof AbstractSalamanderPartEntity)) {
             super.push(pEntity);
         } else {
-            if (this.position().distanceToSqr(pEntity.position()) < 0.5) {
+            if (this.position().distanceToSqr(pEntity.position()) < segmentLength * 0.5F) {
                 super.push(pEntity);
             }
         }

@@ -207,7 +207,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             basicNoise = MathUtils.mapRange(-1.0, 1.0, minHeight, maxHeight, basicNoise);
             basicNoise -= y;
 
-            double overhangStepSize = 0.12;
+            double overhangStepSize = 0.07;
             double overhangStepNoise = (s.largeNoise.GetNoise(x * overhangStepSize, 22.0, z * overhangStepSize) + 1.0F) / 2.0F;
             double overhangNoise = MathUtils.biasTowardsExtreme(tBaseNoise, 0.9F, 2) * 0.8 + detailNoise * 0.2;
             overhangNoise = MathUtils.mapRange(-1.0, 1.0, minHeight, maxHeight, overhangNoise);
@@ -223,8 +223,8 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             smoothingFactor = MathUtils.bias(smoothingFactor, -0.5F);
             smoothingFactor = MathUtils.map(0.0F, 0.9F, (float) smoothingFactor);
 
-            double shapeScale = 0.32;
-            double shapeNoise = MathUtils.bias((MathUtils.biasTowardsExtreme(s.largeNoise.GetNoise(x * shapeScale, -1234.0, z * shapeScale), 0.5F, 3) + 1.0F) / 2.0F, 0.6F);
+            double shapeScale = 0.24;
+            double shapeNoise = MathUtils.bias((MathUtils.biasTowardsExtreme(s.largeNoise.GetNoise(x * shapeScale, -1234.0, z * shapeScale), 0.5F, 3) + 1.0F) / 2.0F, 0.4F);
             terrainShape = Mth.lerp(shapeNoise, terracedNoise, overhangNoise);
             terrainShape = Mth.lerp(smoothingFactor, terrainShape, basicNoise);
 
