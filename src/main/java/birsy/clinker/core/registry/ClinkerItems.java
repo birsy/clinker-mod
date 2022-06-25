@@ -1,6 +1,7 @@
 package birsy.clinker.core.registry;
 
 import birsy.clinker.common.item.AlchemicalItem;
+import birsy.clinker.common.item.AlchemyBookItem;
 import birsy.clinker.common.item.LadleItem;
 import birsy.clinker.common.item.food.GnomeatItem;
 import birsy.clinker.common.item.food.GnomeatJerkyItem;
@@ -20,7 +21,10 @@ public class ClinkerItems
 	{
 		ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
 	}
-	
+
+	public static final RegistryObject<Item> ALCHEMY_BOOK = ITEMS.register("alchemy_book", () -> new AlchemyBookItem(new Item.Properties().fireResistant().rarity(Rarity.UNCOMMON).tab(Clinker.CLINKER_MISC)));
+
+
 	/**
 	 * MISC ITEMS
 	 */

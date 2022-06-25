@@ -1,11 +1,14 @@
 {
-	"lore.clinker.gather_nigredo": "First Aspect Attained.",
-	"lore.clinker.gather_albedo": "Second Aspect Attained.",
-	"lore.clinker.gather_xanthosis": "Third Aspect Attained.",
-	"lore.clinker.gather_rubedo": "Fourth Aspect Attained.",
-	"lore.clinker.work_completion": "What is done cannot be undone.",
+	"story.clinker.gather_nigredo":   "First Aspect Attained.",
+	"story.clinker.gather_albedo":    "Second Aspect Attained.",
+	"story.clinker.gather_xanthosis": "Third Aspect Attained.",
+	"story.clinker.gather_rubedo":    "Fourth Aspect Attained.",
+	"story.clinker.work_completion":  "What is done cannot be undone.",
 
 	//**ITEMS
+	"item.clinker.alchemy_book": "Liber Hermetis",
+	"item.clinker.alchemy_book.description": "Notes and guidance for those completing the Work.",
+
 	"item.clinker.quality": "Quality: ",
 	"item.clinker.quality.bad": "Dubious",
 	"item.clinker.quality.average": "Acceptable",
@@ -150,5 +153,7 @@
 	
 	//**SUBTITLES
 	"subtitles.entity.gnome.ambient": "Gnome grunts",
-	"subtitles.entity.gnome.hurt": "Gnome hurts" 
+	"subtitles.entity.gnome.hurt": "Gnome hurts"
+
+	//**BOOK PAGES
 }

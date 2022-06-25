@@ -1,10 +1,12 @@
 package birsy.clinker.core;
 
+import birsy.clinker.client.render.world.item.AlchemyBookRenderer;
 import birsy.clinker.common.level.chunk.gen.OthershoreChunkGenerator;
 import birsy.clinker.core.registry.*;
 import birsy.clinker.core.registry.world.ClinkerBiomeTest;
 import birsy.clinker.core.registry.world.ClinkerFeatures;
 import birsy.clinker.core.registry.world.ClinkerWorld;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 
 import org.apache.logging.log4j.LogManager;

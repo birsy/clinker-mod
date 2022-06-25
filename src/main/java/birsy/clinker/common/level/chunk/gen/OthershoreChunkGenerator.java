@@ -177,7 +177,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                 terrainShapeSamplePoints[sMax.getX()][sMin.getY()][sMin.getZ()], terrainShapeSamplePoints[sMax.getX()][sMax.getY()][sMin.getZ()],
                 terrainShapeSamplePoints[sMin.getX()][sMin.getY()][sMax.getZ()], terrainShapeSamplePoints[sMin.getX()][sMax.getY()][sMax.getZ()],
                 terrainShapeSamplePoints[sMax.getX()][sMin.getY()][sMax.getZ()], terrainShapeSamplePoints[sMax.getX()][sMax.getY()][sMax.getZ()]);*/
-        double duneNoise; /*= MathUtils.lerp3(sFrac.x(), sFrac.y(), sFrac.z(),
+        double duneShape; /*= MathUtils.lerp3(sFrac.x(), sFrac.y(), sFrac.z(),
                 duneSamplePoints[sMin.getX()][sMin.getY()][sMin.getZ()], duneSamplePoints[sMin.getX()][sMax.getY()][sMin.getZ()],
                 duneSamplePoints[sMax.getX()][sMin.getY()][sMin.getZ()], duneSamplePoints[sMax.getX()][sMax.getY()][sMin.getZ()],
                 duneSamplePoints[sMin.getX()][sMin.getY()][sMax.getZ()], duneSamplePoints[sMin.getX()][sMax.getY()][sMax.getZ()],
@@ -185,10 +185,10 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
         if (y > maxHeight + 10) {
             terrainShape = -100000.0;
-            duneNoise = -100000.0;
+            duneShape = -100000.0;
         } else if (y < minHeight - 30) {
             terrainShape = 100000.0;
-            duneNoise = 100000.0;
+            duneShape = 100000.0;
         } else {
             double frequency = 0.05;
 
@@ -213,7 +213,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             overhangNoise = MathUtils.mapRange(-1.0, 1.0, minHeight, maxHeight, overhangNoise);
             overhangNoise -= overhang(y, MathUtils.map(4.0F, 8.0F, (float) MathUtils.bias(overhangStepNoise, 0.0)), 64, 240);
 
-            double stepSize = 0.2;
+            double stepSize = 0.15;
             double terrainStepNoise = (s.largeNoise.GetNoise(x * stepSize, 2342.0, z * stepSize) + 1.0F) / 2.0F;
             double terracedNoise = MathUtils.terrace((float) (baseNoise * 0.83 + detailNoise * 0.17), 1.0F / (MathUtils.map(4.5F, 0.5F, (float) MathUtils.bias(terrainStepNoise, 0.0F)) + (float)((overhangStepNoise * 2) - 1)*0.1F), 0.0F).first;
             terracedNoise = MathUtils.mapRange(-1.0, 1.0, minHeight, maxHeight, terracedNoise);
@@ -223,35 +223,36 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             smoothingFactor = MathUtils.bias(smoothingFactor, -0.5F);
             smoothingFactor = MathUtils.map(0.0F, 0.9F, (float) smoothingFactor);
 
-            double shapeScale = 0.24;
+            double shapeScale = 0.3;
             double shapeNoise = MathUtils.bias((MathUtils.biasTowardsExtreme(s.largeNoise.GetNoise(x * shapeScale, -1234.0, z * shapeScale), 0.5F, 3) + 1.0F) / 2.0F, 0.4F);
             terrainShape = Mth.lerp(shapeNoise, terracedNoise, overhangNoise);
             terrainShape = Mth.lerp(smoothingFactor, terrainShape, basicNoise);
 
             double duneSize = 0.7;
-            duneNoise = (1 - Math.abs(s.detailNoise.GetNoise(x * duneSize, z * duneSize)));
-            duneNoise *= duneNoise;
-            duneNoise *= 1 + (1 - smoothingFactor);
-            duneNoise *= MathUtils.mapRange(-1.0, 1.0, 3.0, 5.0, tBaseNoise);
-            duneNoise += basicNoise;
-            duneNoise += ((terrainStepNoise * 2) - 1) * 4;
-            duneNoise -= MathUtils.map(2, 15, (float) Math.min(shapeNoise, 1 - smoothingFactor));
-            duneNoise += MathUtils.mapRange(-1.0, 1.0, 6.0, 0.0, tBaseNoise);
-            duneNoise -= (1 - smoothingFactor) * 11;
+            duneShape = (1 - Math.abs(s.detailNoise.GetNoise(x * duneSize, z * duneSize)));
+            duneShape *= duneShape;
+            duneShape *= 1 + (1 - smoothingFactor);
+            duneShape *= MathUtils.mapRange(-1.0, 1.0, 3.0, 5.0, tBaseNoise);
+            duneShape += basicNoise;
+            duneShape += ((terrainStepNoise * 2) - 1) * 4;
+            duneShape -= MathUtils.map(2, 15, (float) Math.min(shapeNoise, 1 - smoothingFactor));
+            duneShape += MathUtils.mapRange(-1.0, 1.0, 6.0, 0.0, tBaseNoise);
+            duneShape -= (1 - smoothingFactor) * 11;
         }
 
         //SPAGHETTI CAVE NOISE
-        double spaghettiFrequency1 = 0.3;
+        /*double spaghettiFrequency1 = 0.3;
         double spaghettiNoise1 = s.largeNoise.GetNoise(x * spaghettiFrequency1, y * spaghettiFrequency1, z * spaghettiFrequency1);
         double spaghettiFrequency2 = spaghettiFrequency1 * 1.1;
         double spaghettiNoise2 = s.largeNoise.GetNoise(x * spaghettiFrequency2, (y + 1000) * spaghettiFrequency2, z * spaghettiFrequency2);
         double spaghettiNoise = (spaghettiNoise1 * spaghettiNoise1) + (spaghettiNoise2 * spaghettiNoise2);
-        double spagCaveThreshold = 0.01;
+        double spagCaveThreshold = 0.01;*/
 
-        double thresholdedSpaghettiNoise = spaghettiNoise - spagCaveThreshold;
+        double thresholdedSpaghettiNoise = 0.0; //spaghettiNoise - spagCaveThreshold;
 
         double smoothness = 0.0;
-        return MathUtils.smoothMinExpo(terrainShape, thresholdedSpaghettiNoise, smoothness) > 0 ? this.getStone(x, y, z) : MathUtils.smoothMinExpo(duneNoise, thresholdedSpaghettiNoise, smoothness) > 0 ? ClinkerBlocks.ASH.get().defaultBlockState() : this.getAir(x, y, z);
+        return terrainShape > 0 ? this.getStone(x, y, z) : duneShape > 0 ? ClinkerBlocks.ASH.get().defaultBlockState() : this.getAir(x, y, z);
+        //return MathUtils.smoothMinExpo(terrainShape, thresholdedSpaghettiNoise, smoothness) > 0 ? this.getStone(x, y, z) : MathUtils.smoothMinExpo(duneShape, thresholdedSpaghettiNoise, smoothness) > 0 ? ClinkerBlocks.ASH.get().defaultBlockState() : this.getAir(x, y, z);
     }
 
     public double[] sampleTerrainAndDuneShapeNoise(double x, double y, double z, long seed) {
@@ -310,7 +311,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         double a = Mth.frac(dist * overhangAmount);
 
         double topSteepness = 0.08;
-        double overhangDepth = 3.5;
+        double overhangDepth = 3.0;
 
         double i = MathUtils.smoothClampExpo((a - 1)/topSteepness + 1, 0, 1, 0.2);
         double o = ((a - 1)*(a - 1)*(a - 1) + (a - 1)*(a - 1)) * overhangDepth;

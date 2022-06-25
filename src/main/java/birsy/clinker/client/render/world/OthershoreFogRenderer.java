@@ -28,8 +28,7 @@ public class OthershoreFogRenderer {
     private static boolean devMode = true;
 
     @SubscribeEvent
-    public static void onRenderFog(EntityViewRenderEvent.RenderFogEvent event)
-    {
+    public static void onRenderFog(EntityViewRenderEvent.RenderFogEvent event) {
         /*final Entity player = event.getCamera().getEntity();
         final Level world = player.level;
         final ClientLevel clientLevel = mc.level;

@@ -2,6 +2,7 @@ package birsy.clinker.core.registry;
 
 import birsy.clinker.client.render.entity.*;
 import birsy.clinker.client.render.entity.model.*;
+import birsy.clinker.client.render.world.item.AlchemyBookRenderer;
 import birsy.clinker.common.entity.*;
 import birsy.clinker.common.entity.Salamander.SalamanderBodyEntity;
 import birsy.clinker.common.entity.Salamander.SalamanderHeadEntity;
