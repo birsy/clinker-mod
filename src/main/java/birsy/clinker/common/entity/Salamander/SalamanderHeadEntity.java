@@ -201,6 +201,8 @@ public class SalamanderHeadEntity extends AbstractSalamanderPartEntity {
             getSegmentFromIndex(i - 1).behind = segment;
             segment.ahead = getSegmentFromIndex(i - 1);
 
+            segment.setTailAmount(Mth.clamp(i - (salamanderLength - 3), 0, 2));
+
             this.behindSegments.add(segment);
         }
         this.setPos(this.position().add(1 * minCircleRadius, 0.0, 0 * minCircleRadius));
@@ -209,7 +211,7 @@ public class SalamanderHeadEntity extends AbstractSalamanderPartEntity {
 
     public boolean hurtFromBody(SalamanderBodyEntity part, int segmentID, DamageSource pSource, float pAmount) {
         if (!pSource.isFall()) {
-            return super.hurt(pSource, pAmount);
+            return super.hurt(DamageSource.STARVE, pAmount);
         } else {
             return false;
         }

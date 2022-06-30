@@ -6,7 +6,10 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -57,13 +60,26 @@ public class AlchemyBookItem extends Item {
     @SubscribeEvent
     public static void onClick(InputEvent.ClickInputEvent event) {
         Minecraft mc = Minecraft.getInstance();
-        ItemStack book = mc.player.getItemInHand(event.getHand());
-        if (book.getItem() instanceof AlchemyBookItem && (event.isAttack() || event.isUseItem())) {
-            boolean direction = !event.isAttack();
-            boolean didTurnPage = turnPage(book, direction, 1);
-            if (didTurnPage) {
-                event.setSwingHand(false);
-                event.setCanceled(true);
+        ItemStack mainHandItem = mc.player.getItemInHand(InteractionHand.MAIN_HAND);
+        ItemStack offHandItem = mc.player.getItemInHand(InteractionHand.OFF_HAND);
+        ItemStack book = null;
+
+        if (mainHandItem.getItem() instanceof AlchemyBookItem) {
+            book = mainHandItem;
+        } else if (offHandItem.getItem() instanceof AlchemyBookItem) {
+            book = offHandItem;
+        }
+
+        if (book != null) {
+            if (book.getItem() instanceof AlchemyBookItem && (event.isAttack() || event.isUseItem()) && mc.cameraEntity.getViewXRot(1.0F) > 20.25) {
+                boolean direction = !event.isAttack();
+                boolean didTurnPage = turnPage(book, direction, 1);
+                if (didTurnPage) {
+                    event.setSwingHand(false);
+                    event.setCanceled(true);
+                    mc.level.playSound(mc.player, mc.cameraEntity, SoundEvents.BOOK_PAGE_TURN, SoundSource.BLOCKS, 1.0f, 1.0f);
+                    Clinker.LOGGER.info(mc.cameraEntity.getViewXRot(1.0F));
+                }
             }
         }
     }

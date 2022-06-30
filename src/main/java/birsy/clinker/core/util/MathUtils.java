@@ -688,6 +688,36 @@ public class MathUtils {
     }
 
 
+    public Vector3f getBlackbodyColor(double temperature) {
+        // Temperature must fit between 1000 and 40000 degrees. I recommend you set the range between 1500 and 15000.
+        temperature = Mth.clamp(temperature, 1000, 40000);
+        temperature /= 100;
+
+        float red, green, blue;
+
+        // Red
+        if (temperature <= 66) red = 255;
+        else {
+            red = (float) (329.698727446 * (Math.pow(temperature - 60, -0.1332047592)));
+            red = Mth.clamp(red, 0, 255);
+        }
+
+        // Green
+        if (temperature <= 66) green = (float) (99.4708025861 * Math.log(temperature) - 161.1195681661);
+        else green = (float) (288.1221695283 * (Math.pow(temperature - 60, -0.0755148492)));
+        green = Mth.clamp(green, 0, 255);
+
+        // Blue
+        if (temperature >= 66) blue = 255;
+        else if (temperature <= 19) blue = 0;
+        else {
+            blue = (float) (138.5177312231 * Math.log(temperature - 10) - 305.0447927307);
+            blue = Mth.clamp(blue, 0, 255);
+        }
+
+        return new Vector3f(red, green, blue);
+    }
+
     /*public Vec3 getWorldPos(Entity entity, float partialTick) {
         PoseStack matrixStack = new PoseStack();
         Vec3 position = entity.getPosition(partialTick);

@@ -1,6 +1,7 @@
 package birsy.clinker.client.render.entity;
 
 import birsy.clinker.client.render.entity.layer.BlinkLayer;
+import birsy.clinker.client.render.entity.layer.SalamanderGlowLayer;
 import birsy.clinker.client.render.entity.layer.SalamanderHeadGlowLayer;
 import birsy.clinker.client.render.entity.model.SalamanderHeadModel;
 import birsy.clinker.common.entity.Salamander.SalamanderHeadEntity;
@@ -8,19 +9,22 @@ import birsy.clinker.common.entity.Salamander.SalamanderHeadEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 
 public class SalamanderHeadRenderer extends SalamanderRenderer<SalamanderHeadEntity, SalamanderHeadModel<SalamanderHeadEntity>> {
     private static final ResourceLocation SALAMANDER_HEAD_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/entity/salamander/salamander_head/salamander_head.png");
     private static final ResourceLocation SALAMANDER_HEAD_BLINK_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/entity/salamander/salamander_head/salamander_head_blink.png");
+    private static final ResourceLocation GLOW = new ResourceLocation(Clinker.MOD_ID, "textures/entity/salamander/salamander_head/salamander_head_glow.png");
+    private static final ResourceLocation FIRE = new ResourceLocation(Clinker.MOD_ID, "textures/entity/salamander/salamander_head/salamander_head_fire_glow.png");
     private final SalamanderBodyRenderer bodyRenderer;
 
     public SalamanderHeadRenderer(EntityRendererProvider.Context context) {
         super(context, new SalamanderHeadModel<>(context.bakeLayer(SalamanderHeadModel.LAYER_LOCATION)));
         this.bodyRenderer = new SalamanderBodyRenderer(context);
         this.addLayer(new BlinkLayer<>(this, SALAMANDER_HEAD_BLINK_TEXTURE, 10.0F, 0.1F));
-        this.addLayer(new SalamanderHeadGlowLayer<>(this));
+        this.addLayer(new SalamanderGlowLayer<>(this, GLOW, GLOW, FIRE));
     }
 
 

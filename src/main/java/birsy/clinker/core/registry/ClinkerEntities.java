@@ -62,14 +62,16 @@ public class ClinkerEntities {
         event.registerEntityRenderer(ClinkerEntities.MUD_SCARAB.get(), MudScarabRenderer::new);
         event.registerEntityRenderer(ClinkerEntities.SALAMANDER_HEAD.get(), SalamanderHeadRenderer::new);
         event.registerEntityRenderer(ClinkerEntities.SALAMANDER_BODY.get(), SalamanderBodyRenderer::new);
+
         event.registerEntityRenderer(ClinkerEntities.SEA_HAG.get(), SeaHagRenderer::new);
         event.registerEntityRenderer(ClinkerEntities.GNOMAD_AXEMAN.get(), GnomadAxemanRenderer::new);
     }
 
     @SubscribeEvent
     public static void registerLayerDefinition(EntityRenderersEvent.RegisterLayerDefinitions event) {
-        event.registerLayerDefinition(SalamanderBodyModel.LAYER_LOCATION, SalamanderBodyModel::createBodyLayer);
         event.registerLayerDefinition(SalamanderHeadModel.LAYER_LOCATION, SalamanderHeadModel::createBodyLayer);
+        event.registerLayerDefinition(SalamanderBodyModel.LAYER_LOCATION, SalamanderBodyModel::createBodyLayer);
+        event.registerLayerDefinition(SalamanderTailModel.LAYER_LOCATION, SalamanderTailModel::createBodyLayer);
 
         event.registerLayerDefinition(MudScarabModel.LAYER_LOCATION, MudScarabModel::createBodyLayer);
         event.registerLayerDefinition(SeaHagModel.LAYER_LOCATION, SeaHagModel::createBodyLayer);

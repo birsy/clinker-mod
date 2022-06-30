@@ -197,7 +197,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
             double plateauSize = 2.0;
             double cliffsideSize = 1.5;
-            double erosion =  MathUtils.mapRange(-1, 1, 0.4, 0.8, MathUtils.biasTowardsExtreme(s.largeNoise.GetNoise((x + 4233) * frequency * 2, (z + 3234) * frequency) * 2, 0.75F, 2));
+            double erosion =  MathUtils.mapRange(-1, 1, 0.2, 0.8, MathUtils.biasTowardsExtreme(s.largeNoise.GetNoise((x + 4233) * frequency * 3, (z + 3234) * frequency) * 3, 0.2F, 1));
             double tBaseNoise = s.largeNoise.GetNoise(x * frequency, z * frequency);
             tBaseNoise = MathUtils.smoothMinExpo((tBaseNoise * plateauSize + plateauSize) - 1, 1, 0.0);
             tBaseNoise = tBaseNoise < 0.0 ? MathUtils.smoothMinExpo(tBaseNoise * cliffsideSize, -1, -0.1) : tBaseNoise;
@@ -215,7 +215,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
             double stepSize = 0.15;
             double terrainStepNoise = (s.largeNoise.GetNoise(x * stepSize, 2342.0, z * stepSize) + 1.0F) / 2.0F;
-            double terracedNoise = MathUtils.terrace((float) (baseNoise * 0.83 + detailNoise * 0.17), 1.0F / (MathUtils.map(4.5F, 0.5F, (float) MathUtils.bias(terrainStepNoise, 0.0F)) + (float)((overhangStepNoise * 2) - 1)*0.1F), 0.0F).first;
+            double terracedNoise = MathUtils.terrace((float) (baseNoise * 0.9 + detailNoise * 0.1), 1.0F / (MathUtils.map(4.5F, 0.5F, (float) MathUtils.bias(terrainStepNoise, 0.0F)) + (float)((overhangStepNoise * 2) - 1)*0.1F), 0.05F).first;
             terracedNoise = MathUtils.mapRange(-1.0, 1.0, minHeight, maxHeight, terracedNoise);
             terracedNoise -= y;
 
@@ -223,7 +223,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             smoothingFactor = MathUtils.bias(smoothingFactor, -0.5F);
             smoothingFactor = MathUtils.map(0.0F, 0.9F, (float) smoothingFactor);
 
-            double shapeScale = 0.3;
+            double shapeScale = 0.25;
             double shapeNoise = MathUtils.bias((MathUtils.biasTowardsExtreme(s.largeNoise.GetNoise(x * shapeScale, -1234.0, z * shapeScale), 0.5F, 3) + 1.0F) / 2.0F, 0.4F);
             terrainShape = Mth.lerp(shapeNoise, terracedNoise, overhangNoise);
             terrainShape = Mth.lerp(smoothingFactor, terrainShape, basicNoise);
@@ -241,18 +241,18 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         }
 
         //SPAGHETTI CAVE NOISE
-        /*double spaghettiFrequency1 = 0.3;
+        double spaghettiFrequency1 = 0.3;
         double spaghettiNoise1 = s.largeNoise.GetNoise(x * spaghettiFrequency1, y * spaghettiFrequency1, z * spaghettiFrequency1);
         double spaghettiFrequency2 = spaghettiFrequency1 * 1.1;
         double spaghettiNoise2 = s.largeNoise.GetNoise(x * spaghettiFrequency2, (y + 1000) * spaghettiFrequency2, z * spaghettiFrequency2);
         double spaghettiNoise = (spaghettiNoise1 * spaghettiNoise1) + (spaghettiNoise2 * spaghettiNoise2);
-        double spagCaveThreshold = 0.01;*/
+        double spagCaveThreshold = 0.01;
 
-        double thresholdedSpaghettiNoise = 0.0; //spaghettiNoise - spagCaveThreshold;
+        double thresholdedSpaghettiNoise = spaghettiNoise - spagCaveThreshold;
 
         double smoothness = 0.0;
-        return terrainShape > 0 ? this.getStone(x, y, z) : duneShape > 0 ? ClinkerBlocks.ASH.get().defaultBlockState() : this.getAir(x, y, z);
-        //return MathUtils.smoothMinExpo(terrainShape, thresholdedSpaghettiNoise, smoothness) > 0 ? this.getStone(x, y, z) : MathUtils.smoothMinExpo(duneShape, thresholdedSpaghettiNoise, smoothness) > 0 ? ClinkerBlocks.ASH.get().defaultBlockState() : this.getAir(x, y, z);
+        //return terrainShape > 0 ? this.getStone(x, y, z) : duneShape > 0 ? ClinkerBlocks.ASH.get().defaultBlockState() : this.getAir(x, y, z);
+        return MathUtils.smoothMinExpo(terrainShape, thresholdedSpaghettiNoise, smoothness) > 0 ? this.getStone(x, y, z) : MathUtils.smoothMinExpo(duneShape, thresholdedSpaghettiNoise, smoothness) > 0 ? ClinkerBlocks.ASH.get().defaultBlockState() : this.getAir(x, y, z);
     }
 
     public double[] sampleTerrainAndDuneShapeNoise(double x, double y, double z, long seed) {

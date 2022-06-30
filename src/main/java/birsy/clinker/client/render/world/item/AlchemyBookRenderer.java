@@ -23,10 +23,13 @@ import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderHandEvent;
+import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -39,45 +42,80 @@ public class AlchemyBookRenderer {
     public static final AlchemyBookModel bookModel = new AlchemyBookModel();
     public static final ResourceLocation bookTexture = new ResourceLocation(Clinker.MOD_ID, "textures/book/book_cover.png");
 
+    //TODO: mixin to the player renderer so the arms hold the book properly.
+    @SubscribeEvent
+    public static void onRenderPlayer(RenderPlayerEvent.Pre event) {
+        ItemStack mainHandItem = event.getPlayer().getItemInHand(InteractionHand.MAIN_HAND);
+        ItemStack offHandItem = event.getPlayer().getItemInHand(InteractionHand.OFF_HAND);
+        if (mainHandItem.getItem() instanceof AlchemyBookItem || offHandItem.getItem() instanceof AlchemyBookItem) {
+            PoseStack stack = event.getPoseStack();
+            float scale = 0.225F;
+            stack.pushPose();
+            stack.mulPose(Vector3f.YP.rotationDegrees(-Mth.lerp(event.getPartialTick(), event.getPlayer().yBodyRotO, event.getPlayer().yBodyRot)));
+            //stack.mulPose(Vector3f.YP.rotationDegrees(180));
+            float bob = Mth.lerp(event.getPartialTick(), event.getPlayer().oBob, event.getPlayer().bob) * Mth.sin(Mth.lerp(event.getPartialTick(), event.getPlayer().walkDistO, event.getPlayer().walkDist) * 5);
+            stack.translate(0, 0.9 + (bob * 0.5), 0.5);
+            stack.mulPose(Vector3f.XP.rotationDegrees(-110));
+            stack.scale(scale, scale, scale);
+            AlchemyBookModel model = new AlchemyBookModel();
+            model.bookSpine.yRot = -(float)(Math.PI / 2);
+            model.bookSpine.x = 24.5F;
+            model.renderToBuffer(stack, event.getMultiBufferSource().getBuffer(RenderType.entitySolid(bookTexture)), event.getPackedLight(), OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+            stack.popPose();
+        }
+    }
+
     @SubscribeEvent
     public static void onRenderHand(RenderHandEvent event) {
         if (event.getItemStack().getItem() instanceof AlchemyBookItem) {
             event.setCanceled(true);
             PoseStack stack = event.getPoseStack();
-            float xRot = Minecraft.getInstance().cameraEntity.getViewXRot(event.getPartialTick());
+            float xRot = event.getInterpolatedPitch(); //Minecraft.getInstance().cameraEntity.getViewXRot(event.getPartialTick());
             float yRot = Minecraft.getInstance().cameraEntity.getViewYRot(event.getPartialTick());
             float scale = 0.5F;
             double distance = 2.0;
-            float lookAtFactor = Mth.clamp(MathUtils.mapRange(0, 45, 0, 1, xRot), 0, 1);
+            float lookAtFactor = Mth.clamp(MathUtils.mapRange(0, 75, 0.2F, 1, xRot), 0, 1);
 
             Vec3 position = Vec3.directionFromRotation(xRot, yRot);
             position = position.multiply(0, 1, 0).add(0, 0, 1).normalize().scale(distance);
 
             stack.pushPose();
+
             stack.mulPose(Vector3f.YP.rotationDegrees(180.0F));
             stack.mulPose(Vector3f.ZP.rotationDegrees(180.0F));
             stack.scale(scale, scale, scale);
-            stack.translate(0, 2 * event.getEquipProgress(), 0);
+            stack.translate(0, 1.8 * event.getEquipProgress(), 0);
+
             stack.translate(Mth.lerp(lookAtFactor, position.x(), 0), Mth.lerp(lookAtFactor, position.y() + 2, 0), Mth.lerp(lookAtFactor, position.z(), distance));
+
             stack.mulPose(Vector3f.YP.rotationDegrees(180));
             stack.mulPose(Vector3f.XP.rotationDegrees(90));
+
             stack.mulPose(Vector3f.XP.rotationDegrees(Mth.lerp(lookAtFactor, -xRot, -90)));
             stack.scale(0.45F, 0.45F, 0.45F);
 
+            //Renders the player's hands.
             if (!mc.player.isInvisible()) {
                 stack.pushPose();
-                //stack.mulPose(Vector3f.YP.rotationDegrees(90.0F));
-                //PlayerRenderer playerrenderer = (PlayerRenderer)mc.getEntityRenderDispatcher().<AbstractClientPlayer>getRenderer(mc.player);
-                //playerrenderer.renderRightHand(stack, event.getMultiBufferSource(), event.getPackedLight(), mc.player);
+                HumanoidArm mainHandSide = mc.options.mainHand().get();
+                ItemStack mainHandItem = mc.player.getItemInHand(InteractionHand.MAIN_HAND);
+                ItemStack offHandItem = mc.player.getItemInHand(InteractionHand.OFF_HAND);
+                ItemStack rightArmItem = mainHandSide == HumanoidArm.RIGHT ? mainHandItem : offHandItem;
+                ItemStack leftArmItem = mainHandSide == HumanoidArm.RIGHT ? offHandItem : mainHandItem;
 
-                renderHand(stack, event.getMultiBufferSource(), event.getPackedLight(), HumanoidArm.RIGHT);
-                renderHand(stack, event.getMultiBufferSource(), event.getPackedLight(), HumanoidArm.LEFT);
+                if ((rightArmItem == ItemStack.EMPTY && mainHandSide != HumanoidArm.RIGHT) || rightArmItem.getItem() instanceof AlchemyBookItem) {
+                    renderHand(stack, event.getMultiBufferSource(), event.getPackedLight(), HumanoidArm.RIGHT);
+                }
+                if ((leftArmItem == ItemStack.EMPTY && mainHandSide != HumanoidArm.LEFT) || leftArmItem.getItem() instanceof AlchemyBookItem) {
+                    renderHand(stack, event.getMultiBufferSource(), event.getPackedLight(), HumanoidArm.LEFT);
+                }
+
                 stack.popPose();
             }
+            stack.mulPose(Vector3f.XP.rotationDegrees(40 * (MathUtils.ease(event.getEquipProgress(), MathUtils.EasingType.easeInOutBack))));
 
             bookModel.bookSpine.yRot = -(float)(Math.PI / 2);
             bookModel.bookSpine.x = 24.5F;
-            bookModel.bookBack.yRot = -1.5708F;
             bookModel.renderToBuffer(stack, event.getMultiBufferSource().getBuffer(RenderType.entitySolid(bookTexture)), event.getPackedLight(), OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
 
             stack.popPose();

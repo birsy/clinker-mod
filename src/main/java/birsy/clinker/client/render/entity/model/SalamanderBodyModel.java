@@ -318,21 +318,17 @@ public class SalamanderBodyModel<T extends AbstractSalamanderPartEntity> extends
 		AnimFunctions.swing(this.salamanderRightLeftClaw, walkSpeed, 0.1f * globalDegree, true, 1.5F, 0.5F, f, f1, AnimFunctions.Axis.X);
 		AnimFunctions.swing(this.salamanderRightRightClaw, walkSpeed, 0.1f * globalDegree, true, 1.5F, 0.5F, f, f1, AnimFunctions.Axis.X);
 
-		float tailLength = 4;
+		/*float tailLength = 4;
 		boolean isTail = false;
 		if (entity.getOriginalBodyLength() - entity.getOriginalSegmentID() < tailLength) {
 			float tailAmount = (float) (entity.getOriginalBodyLength() - entity.getOriginalSegmentID()) / tailLength;
 			float thickness = MathUtils.map(0.5F, 1.0F, tailAmount);
 			this.salamanderBodyRoot.setScale(thickness, thickness, 1.0F);
 			isTail = true;
-		}
+		}*/
 
 		this.salamanderFurTop.visible = false;
-		if (!isTail) {
-			this.salamanderLegsRoot.visible = entity.hasLegs();
-		} else {
-			this.salamanderLegsRoot.visible = false;
-		}
+		this.salamanderLegsRoot.visible = entity.hasLegs();
 	}
 
 	@Override

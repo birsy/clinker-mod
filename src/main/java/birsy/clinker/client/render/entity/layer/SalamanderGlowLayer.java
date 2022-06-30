@@ -1,7 +1,9 @@
 package birsy.clinker.client.render.entity.layer;
 
+import birsy.clinker.client.render.entity.model.AbstractSalamanderModel;
 import birsy.clinker.client.render.entity.model.SalamanderBodyModel;
 import birsy.clinker.common.entity.Salamander.AbstractSalamanderPartEntity;
+import birsy.clinker.common.entity.Salamander.SalamanderBodyEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -13,13 +15,16 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
-public class SalamanderBodyGlowLayer<T extends AbstractSalamanderPartEntity, M extends SalamanderBodyModel<T>> extends RenderLayer<T, M> {
-    private static final RenderType GLOW = RenderType.entityTranslucent(new ResourceLocation(Clinker.MOD_ID, "textures/entity/salamander/salamander_body/salamander_body_glow.png"));
-    private static final RenderType CHARRED_GLOW = RenderType.entityTranslucent(new ResourceLocation(Clinker.MOD_ID, "textures/entity/salamander/salamander_body/charred_salamander_body_glow.png"));
-    private static final RenderType FIRE = RenderType.entityTranslucent(new ResourceLocation(Clinker.MOD_ID, "textures/entity/salamander/salamander_body/salamander_body_fire_glow.png"));
+public class SalamanderGlowLayer<T extends AbstractSalamanderPartEntity, M extends AbstractSalamanderModel<T>> extends RenderLayer<T, M> {
+    private final RenderType GLOW;// = RenderType.entityTranslucent(new ResourceLocation(Clinker.MOD_ID, "textures/entity/salamander/salamander_body/salamander_body_glow.png"));
+    private final RenderType CHARRED_GLOW;// = RenderType.entityTranslucent(new ResourceLocation(Clinker.MOD_ID, "textures/entity/salamander/salamander_body/charred_salamander_body_glow.png"));
+    private final RenderType FIRE;// = RenderType.entityTranslucent(new ResourceLocation(Clinker.MOD_ID, "textures/entity/salamander/salamander_body/salamander_body_fire_glow.png"));
 
-    public SalamanderBodyGlowLayer(RenderLayerParent<T, M> parent) {
+    public SalamanderGlowLayer(RenderLayerParent<T, M> parent, ResourceLocation glow, ResourceLocation charredGlow, ResourceLocation fire) {
         super(parent);
+        this.GLOW = RenderType.entityTranslucent(glow);
+        this.CHARRED_GLOW = RenderType.entityTranslucent(charredGlow);
+        this.FIRE = RenderType.entityTranslucent(fire);
     }
 
     @Override

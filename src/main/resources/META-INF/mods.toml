@@ -30,9 +30,9 @@ displayName="clinker" #mandatory
 logoFile="logo.png" #optional
 # A text field displayed in the mod UI
 credits="Thanks to all those who provided inspiration to the mod, and kept me going through everything." #optional
-# A text field displayed in the mod UI
+
 authors="A mod by CAPPIN. Music by SQUIRE. Additional artwork provided by RON. Additional music provided by PHIL_HE." #optional
-# The description text for the mod (multi line!) (#mandatory)
+
 description='''"Of the Claims of our Art, its Students, and its Method:
 
 All men who devote their lives to the study of any art, or to any kind of occupation, have before their eyes, as the aim of their efforts, perfection in the thing which they pursue.

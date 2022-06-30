@@ -4,6 +4,9 @@ import birsy.clinker.core.registry.ClinkerEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.DamageSource;
@@ -20,9 +23,35 @@ import javax.annotation.Nullable;
 
 public class SalamanderBodyEntity extends AbstractSalamanderPartEntity {
     public SalamanderHeadEntity head;
+    private static final EntityDataAccessor<Integer> TAIL_AMOUNT_ID = SynchedEntityData.defineId(SalamanderBodyEntity.class, EntityDataSerializers.INT);
 
     public SalamanderBodyEntity(EntityType<? extends AbstractSalamanderPartEntity> entity, Level level) {
         super(entity, level);
+    }
+
+    @Override
+    public void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(TAIL_AMOUNT_ID, 0);
+    }
+
+    @Override
+    public void addAdditionalSaveData(CompoundTag pCompound) {
+        super.addAdditionalSaveData(pCompound);
+        pCompound.putInt("Tail Amount", this.getTailAmount());
+    }
+
+    @Override
+    public void readAdditionalSaveData(CompoundTag pCompound) {
+        super.readAdditionalSaveData(pCompound);
+        this.setTailAmount(pCompound.getInt("Tail Amount"));
+    }
+
+    public void setTailAmount(int id) {
+        this.entityData.set(TAIL_AMOUNT_ID, id);
+    }
+    public int getTailAmount() {
+        return this.entityData.get(TAIL_AMOUNT_ID);
     }
 
     @Override
