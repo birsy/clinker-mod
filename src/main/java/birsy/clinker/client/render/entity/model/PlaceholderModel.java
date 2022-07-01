@@ -1,5 +1,7 @@
 package birsy.clinker.client.render.entity.model;
 
+import birsy.clinker.client.render.entity.model.base.AnimFunctions;
+import birsy.clinker.client.render.entity.model.base.CappinModelPart;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;

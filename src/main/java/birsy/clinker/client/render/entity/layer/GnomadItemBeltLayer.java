@@ -1,12 +1,11 @@
 package birsy.clinker.client.render.entity.layer;
 
-import birsy.clinker.client.render.entity.model.AnimFunctions;
+import birsy.clinker.client.render.entity.model.base.AnimFunctions;
 import birsy.clinker.client.render.entity.model.GnomadAxemanModel;
 import birsy.clinker.common.entity.GnomadAxemanEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import net.minecraft.Util;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;

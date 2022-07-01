@@ -1,4 +1,4 @@
-package birsy.clinker.client.render.entity.model;
+package birsy.clinker.client.render.entity.model.base;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -12,8 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.stream.Stream;
 
+@Deprecated
 public class CappinModelPart extends ModelPart {
     public float xScale = 1.0F;
     public float yScale = 1.0F;

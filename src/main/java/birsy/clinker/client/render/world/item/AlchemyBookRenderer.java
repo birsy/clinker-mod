@@ -1,7 +1,6 @@
 package birsy.clinker.client.render.world.item;
 
-import birsy.clinker.client.render.entity.model.BasicModelPart;
-import birsy.clinker.client.render.entity.model.CappinModelPart;
+import birsy.clinker.client.render.entity.model.base.BasicModelPart;
 import birsy.clinker.common.item.AlchemyBookItem;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
@@ -11,9 +10,6 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.Model;
-import net.minecraft.client.model.geom.EntityModelSet;
-import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -32,9 +28,6 @@ import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-
-import java.util.List;
-import java.util.function.Function;
 
 @Mod.EventBusSubscriber(modid = Clinker.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class AlchemyBookRenderer {

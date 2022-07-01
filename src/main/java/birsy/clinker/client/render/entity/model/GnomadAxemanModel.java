@@ -3,6 +3,8 @@ package birsy.clinker.client.render.entity.model;// Made with Blockbench 4.1.3
 // Paste this class into your mod and generate all required imports
 
 
+import birsy.clinker.client.render.entity.model.base.AnimFunctions;
+import birsy.clinker.client.render.entity.model.base.CappinModelPart;
 import birsy.clinker.common.entity.GnomadAxemanEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;

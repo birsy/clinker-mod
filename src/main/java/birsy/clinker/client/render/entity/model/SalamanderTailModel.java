@@ -3,6 +3,8 @@ package birsy.clinker.client.render.entity.model;// Made with Blockbench 4.0.1
 // Paste this class into your mod and generate all required imports
 
 
+import birsy.clinker.client.render.entity.model.base.AnimFunctions;
+import birsy.clinker.client.render.entity.model.base.CappinModelPart;
 import birsy.clinker.common.entity.Salamander.AbstractSalamanderPartEntity;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;

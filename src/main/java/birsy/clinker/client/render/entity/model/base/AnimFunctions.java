@@ -1,4 +1,4 @@
-package birsy.clinker.client.render.entity.model;
+package birsy.clinker.client.render.entity.model.base;
 
 import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
