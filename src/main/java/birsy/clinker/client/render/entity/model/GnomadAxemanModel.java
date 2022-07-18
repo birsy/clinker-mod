@@ -1,7 +1,4 @@
-package birsy.clinker.client.render.entity.model;// Made with Blockbench 4.1.3
-// Exported for Minecraft version 1.17 with Mojang mappings
-// Paste this class into your mod and generate all required imports
-
+package birsy.clinker.client.render.entity.model;
 
 import birsy.clinker.client.render.entity.model.base.AnimFunctions;
 import birsy.clinker.client.render.entity.model.base.CappinModelPart;

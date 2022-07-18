@@ -1,35 +1,34 @@
 package birsy.clinker.client.render.entity.model;
 
-import birsy.clinker.client.render.entity.model.base.AnimFunctions;
-import birsy.clinker.client.render.entity.model.base.CappinModelPart;
-import birsy.clinker.core.Clinker;
+import birsy.clinker.client.render.entity.model.base.BasicModelPart;
+import birsy.clinker.client.render.entity.model.base.DynamicModel;
+import birsy.clinker.client.render.entity.model.base.DynamicModelPart;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
-import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.model.geom.builders.CubeDeformation;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 
 public class PlaceholderModel<T extends Entity> extends EntityModel<T> {
-	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation(Clinker.MOD_ID, "placeholder"), "main");
-	public final CappinModelPart part;
+	public final DynamicModelPart part;
+	public final DynamicModel skeleton;
 	private float r, g, b, a = 1.0F;
 
-	public PlaceholderModel (ModelPart root) {
-		this.part = CappinModelPart.fromModelPart(root.getChild("part"));
+	public PlaceholderModel () {
+		this.skeleton = new DynamicModel(64, 32);
+		//this.part = new DynamicModelPart(skeleton, BasicModelPart.toCubeList(CubeListBuilder.create().texOffs(0, 0).addBox(-8.0F, -8.0F, -8.0F, 16.0F, 16.0F, 16.0F), 64, 32), PartPose.offset(0.0F, 16.0F, 0.0F));
+		this.part = new DynamicModelPart(skeleton, 0, 0);
+		this.part.addCube("head", -8.0F, -8.0F,-8.0F, 16.0F, 16.0F, 16.0F,0.0F,0.0F, 0.0F);
+		this.part.setInitialPosition(0.0F, 16.0F, 0.0F);
+		this.part.setInitialRotation(0.0F, 0.0F, 0.0F);
+		this.part.setInitialScale(1.0F, 1.0F, 1.0F);
+
+		this.part.createDynamics(1, 0.5F, 1);
 	}
 
-	public static LayerDefinition createBodyLayer() {
-		MeshDefinition meshdefinition = new MeshDefinition();
-		PartDefinition partdefinition = meshdefinition.getRoot();
-
-		PartDefinition part = partdefinition.addOrReplaceChild("part", CubeListBuilder.create().texOffs(0, 0).addBox(-8.0F, -8.0F, -8.0F, 16.0F, 16.0F, 16.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 16.0F, 0.0F));
-
-		return LayerDefinition.create(meshdefinition, 64, 32);
-	}
 	public void setColors(float red, float green, float blue, float alpha) {
 		this.r = red;
 		this.g = green;
@@ -43,14 +42,17 @@ public class PlaceholderModel<T extends Entity> extends EntityModel<T> {
 
 	@Override
 	public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-		this.part.setPos(0.0F, 16.0F, 0.0F);
-		this.part.setRotation(0.0F, 0.0F, 0.0F);
-		this.part.setScale(1.0F, 1.0F, 1.0F);
-		AnimFunctions.look(this.part, netHeadYaw, headPitch, 1.0F, 1.0F);
+		skeleton.resetPose();
+
+	}
+
+	public void update() {
+		this.part.update();
 	}
 
 	@Override
 	public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+		this.part.update();
 		this.part.render(poseStack, buffer, packedLight, packedOverlay, red * r, green * g, blue * b, alpha * a);
 	}
 }

@@ -7,19 +7,24 @@ import java.util.List;
  * Manages animation of models.
  * TODO: basic keyframed animation. can use linear interpolation for just about everything, as the ComplexModelParts automatically calculate some basic follow-through. just need something that can go through poses!
  */
-public class ModelSkeleton {
-    List<ComplexModelPart> parts;
-    
-    public ModelSkeleton() {
+public class DynamicModel {
+    List<DynamicModelPart> parts;
+    public final float textureWidth;
+    public final float textureHeight;
+    public DynamicModel(float textureWidth, float textureHeight) {
+        this.textureWidth = textureWidth;
+        this.textureHeight = textureHeight;
         this.parts = new ArrayList<>();
     }
     
-    public void addPart(ComplexModelPart part) {
+    public void addPart(DynamicModelPart part) {
         this.parts.add(part);
+        part.textureWidth = this.textureWidth;
+        part.textureHeight = this.textureHeight;
     }
     
     public void resetPose() {
-        for (ComplexModelPart part : this.parts) {
+        for (DynamicModelPart part : this.parts) {
             part.resetPose();
         }
     }

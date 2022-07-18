@@ -38,15 +38,15 @@ public class AlchemyBookRenderer {
     //TODO: mixin to the player renderer so the arms hold the book properly.
     @SubscribeEvent
     public static void onRenderPlayer(RenderPlayerEvent.Pre event) {
-        ItemStack mainHandItem = event.getPlayer().getItemInHand(InteractionHand.MAIN_HAND);
-        ItemStack offHandItem = event.getPlayer().getItemInHand(InteractionHand.OFF_HAND);
+        ItemStack mainHandItem = event.getEntity().getItemInHand(InteractionHand.MAIN_HAND);
+        ItemStack offHandItem = event.getEntity().getItemInHand(InteractionHand.OFF_HAND);
         if (mainHandItem.getItem() instanceof AlchemyBookItem || offHandItem.getItem() instanceof AlchemyBookItem) {
             PoseStack stack = event.getPoseStack();
             float scale = 0.225F;
             stack.pushPose();
-            stack.mulPose(Vector3f.YP.rotationDegrees(-Mth.lerp(event.getPartialTick(), event.getPlayer().yBodyRotO, event.getPlayer().yBodyRot)));
+            stack.mulPose(Vector3f.YP.rotationDegrees(-Mth.lerp(event.getPartialTick(), event.getEntity().yBodyRotO, event.getEntity().yBodyRot)));
             //stack.mulPose(Vector3f.YP.rotationDegrees(180));
-            float bob = Mth.lerp(event.getPartialTick(), event.getPlayer().oBob, event.getPlayer().bob) * Mth.sin(Mth.lerp(event.getPartialTick(), event.getPlayer().walkDistO, event.getPlayer().walkDist) * 5);
+            float bob = Mth.lerp(event.getPartialTick(), event.getEntity().oBob, event.getEntity().bob) * Mth.sin(Mth.lerp(event.getPartialTick(), event.getEntity().walkDistO, event.getEntity().walkDist) * 5);
             stack.translate(0, 0.9 + (bob * 0.5), 0.5);
             stack.mulPose(Vector3f.XP.rotationDegrees(-110));
             stack.scale(scale, scale, scale);

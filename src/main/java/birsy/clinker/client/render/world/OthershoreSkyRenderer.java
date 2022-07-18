@@ -16,12 +16,11 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.ISkyRenderHandler;
 
 import javax.annotation.Nullable;
 import java.util.Random;
 
-public class OthershoreSkyRenderer implements ISkyRenderHandler {
+public class OthershoreSkyRenderer {
     private static final ResourceLocation STAR_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/environment/star.png");
     private Minecraft mc;
     public OthershoreSkyRenderer(Minecraft mc) {
@@ -40,10 +39,5 @@ public class OthershoreSkyRenderer implements ISkyRenderHandler {
         }
 
         pBuilder.end();
-    }
-
-    @Override
-    public void render(int ticks, float partialTick, PoseStack poseStack, ClientLevel level, Minecraft minecraft) {
-
     }
 }

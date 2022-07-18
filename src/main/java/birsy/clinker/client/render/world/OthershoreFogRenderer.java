@@ -16,7 +16,7 @@ import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.level.material.FogType;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.EntityViewRenderEvent;
+import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -32,7 +32,7 @@ public class OthershoreFogRenderer {
     private static boolean devMode = true;
 
     @SubscribeEvent
-    public static void onRenderFog(EntityViewRenderEvent.RenderFogEvent event) {
+    public static void onRenderFog(ViewportEvent.RenderFog event) {
         final Entity player = event.getCamera().getEntity();
         final Level world = player.level;
         final ClientLevel clientLevel = mc.level;
@@ -47,12 +47,12 @@ public class OthershoreFogRenderer {
             final float darknessAmount = (calculateInterpolatedLight(world, playerPos, playerVecPos, LightLayer.SKY, false) / 16.0F);
             final float blockDarknessAmount = (calculateInterpolatedLight(world, playerPos, playerVecPos, LightLayer.BLOCK, false) / 16.0F);
 
-            if (event.getMode() == FogType.NONE) {
+            if (event.getType() == FogType.NONE) {
                 event.setFogShape(FogShape.CYLINDER);
                 float farPlaneDistance = event.getFarPlaneDistance();
                 event.setFarPlaneDistance(farPlaneDistance - (darknessAmount * (farPlaneDistance * 0.2F)));
                 event.setNearPlaneDistance(0.0F - (darknessAmount * (farPlaneDistance * 0.2F)));
-            } else if (event.getMode() != FogType.LAVA) {
+            } else if (event.getType() != FogType.LAVA) {
                 event.setFogShape(FogShape.SPHERE);
                 float iDarknessAmount = blockDarknessAmount;
                 //Clinker.LOGGER.info(darknessAmount);
@@ -64,7 +64,7 @@ public class OthershoreFogRenderer {
     }
 
     @SubscribeEvent
-    public static void onRenderFogColors(EntityViewRenderEvent.FogColors event)
+    public static void onRenderFogColors(ViewportEvent.ComputeFogColor event)
     {
         final Entity player = event.getRenderer().getMainCamera().getEntity();
         final Level world = player.level;

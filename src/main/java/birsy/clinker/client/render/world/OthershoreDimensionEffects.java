@@ -5,10 +5,6 @@ import net.minecraft.client.renderer.DimensionSpecialEffects;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.ICloudRenderHandler;
-import net.minecraftforge.client.ISkyRenderHandler;
-
-import javax.annotation.Nullable;
 
 @OnlyIn(Dist.CLIENT)
 public class OthershoreDimensionEffects extends DimensionSpecialEffects {
@@ -24,12 +20,5 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
 
     public boolean isFoggyAt(int x, int z) {
         return false;
-    }
-
-    //TODO: remake sky renderer
-    @Nullable
-    @Override
-    public ISkyRenderHandler getSkyRenderHandler() {
-        return new OthershoreSkyRenderer(mc);
     }
 }

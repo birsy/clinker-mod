@@ -35,9 +35,9 @@ public class BasicModelPart {
     public boolean visible = true;
     public boolean skipDraw;
 
-    public List<ModelPart.Cube> cubes;
     public BasicModelPart parent;
     public List<BasicModelPart> children = new ArrayList<>();
+    public List<ModelPart.Cube> cubes;
 
     public BasicModelPart(List<ModelPart.Cube> pCubes, PartPose pose) {
         this(pose, pCubes);

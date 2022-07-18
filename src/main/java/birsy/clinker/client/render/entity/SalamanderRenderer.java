@@ -124,12 +124,10 @@ public abstract class SalamanderRenderer<T extends AbstractSalamanderPartEntity,
 
         pMatrixStack.popPose();
 
-        net.minecraftforge.client.event.RenderNameplateEvent renderNameplateEvent = new net.minecraftforge.client.event.RenderNameplateEvent(pEntity, pEntity.getDisplayName(), this, pMatrixStack, pBuffer, pPackedLight, pPartialTicks);
-        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(renderNameplateEvent);
-        if (renderNameplateEvent.getResult() != net.minecraftforge.eventbus.api.Event.Result.DENY && (renderNameplateEvent.getResult() == net.minecraftforge.eventbus.api.Event.Result.ALLOW || this.shouldShowName(pEntity))) {
-            this.renderNameTag(pEntity, renderNameplateEvent.getContent(), pMatrixStack, pBuffer, pPackedLight);
+        var renderNameTagEvent = new net.minecraftforge.client.event.RenderNameTagEvent(pEntity, pEntity.getDisplayName(), this, pMatrixStack, pBuffer, pPackedLight, pPartialTicks);
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(renderNameTagEvent);
+        if (renderNameTagEvent.getResult() != net.minecraftforge.eventbus.api.Event.Result.DENY && (renderNameTagEvent.getResult() == net.minecraftforge.eventbus.api.Event.Result.ALLOW || this.shouldShowName(pEntity))) {
+            this.renderNameTag(pEntity, renderNameTagEvent.getContent(), pMatrixStack, pBuffer, pPackedLight);
         }
-
-
     }
 }

@@ -2,8 +2,6 @@ package birsy.clinker.core.util;
 
 import net.minecraft.util.Mth;
 
-import javax.annotation.Nullable;
-
 public class SecondOrderDynamics {
     private float xp; // previous input
     private float y, yd; // state variables

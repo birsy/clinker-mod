@@ -58,29 +58,34 @@ public class AlchemyBookItem extends Item {
     }
 
     @SubscribeEvent
-    public static void onClick(InputEvent.ClickInputEvent event) {
+    public static void onClick(InputEvent.MouseButton.Pre event) {
         Minecraft mc = Minecraft.getInstance();
-        ItemStack mainHandItem = mc.player.getItemInHand(InteractionHand.MAIN_HAND);
-        ItemStack offHandItem = mc.player.getItemInHand(InteractionHand.OFF_HAND);
-        ItemStack book = null;
+        if (mc.player != null){
+            ItemStack mainHandItem = mc.player.getItemInHand(InteractionHand.MAIN_HAND);
+            ItemStack offHandItem = mc.player.getItemInHand(InteractionHand.OFF_HAND);
+            ItemStack book = null;
 
-        if (mainHandItem.getItem() instanceof AlchemyBookItem) {
-            book = mainHandItem;
-        } else if (offHandItem.getItem() instanceof AlchemyBookItem) {
-            book = offHandItem;
-        }
+            boolean isRightClick = event.getButton() == 0;
+            boolean isLeftClick = event.getButton() == 1;
 
-        if (book != null) {
-            if (book.getItem() instanceof AlchemyBookItem && (event.isAttack() || event.isUseItem()) && mc.cameraEntity.getViewXRot(1.0F) > 20.25) {
-                boolean direction = !event.isAttack();
-                boolean didTurnPage = turnPage(book, direction, 1);
-                if (didTurnPage) {
-                    event.setSwingHand(false);
-                    event.setCanceled(true);
-                    mc.level.playSound(mc.player, mc.cameraEntity, SoundEvents.BOOK_PAGE_TURN, SoundSource.BLOCKS, 1.0f, 1.0f);
-                    Clinker.LOGGER.info(mc.cameraEntity.getViewXRot(1.0F));
+            if (mainHandItem.getItem() instanceof AlchemyBookItem) {
+                book = mainHandItem;
+            } else if (offHandItem.getItem() instanceof AlchemyBookItem) {
+                book = offHandItem;
+            }
+
+            if (book != null) {
+                if (book.getItem() instanceof AlchemyBookItem && (isRightClick || isLeftClick) && mc.cameraEntity.getViewXRot(1.0F) > 20.25) {
+                    boolean direction = !isRightClick;
+                    boolean didTurnPage = turnPage(book, direction, 1);
+                    if (didTurnPage) {
+                        event.setCanceled(true);
+                        mc.level.playSound(mc.player, mc.cameraEntity, SoundEvents.BOOK_PAGE_TURN, SoundSource.BLOCKS, 1.0f, 1.0f);
+                        Clinker.LOGGER.info(mc.cameraEntity.getViewXRot(1.0F));
+                    }
                 }
             }
         }
+
     }
 }

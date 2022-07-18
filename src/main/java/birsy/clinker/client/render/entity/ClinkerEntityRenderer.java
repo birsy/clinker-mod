@@ -2,6 +2,7 @@ package birsy.clinker.client.render.entity;
 
 import birsy.clinker.common.entity.GnomadAxemanEntity;
 import birsy.clinker.common.entity.IVelocityTilt;
+import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Vector3f;
@@ -13,12 +14,15 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.Pose;
 
 public abstract class ClinkerEntityRenderer<T extends Mob, M extends EntityModel<T>> extends MobRenderer<T, M> {
+    protected static final ResourceLocation PLACEHOLDER_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/entity/placeholder.png");;
+
     public ClinkerEntityRenderer(EntityRendererProvider.Context context, M model, float shadowSize) {
         super(context, model, shadowSize);
     }
@@ -112,10 +116,10 @@ public abstract class ClinkerEntityRenderer<T extends Mob, M extends EntityModel
 
         pMatrixStack.popPose();
 
-        net.minecraftforge.client.event.RenderNameplateEvent renderNameplateEvent = new net.minecraftforge.client.event.RenderNameplateEvent(pEntity, pEntity.getDisplayName(), this, pMatrixStack, pBuffer, pPackedLight, pPartialTicks);
-        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(renderNameplateEvent);
-        if (renderNameplateEvent.getResult() != net.minecraftforge.eventbus.api.Event.Result.DENY && (renderNameplateEvent.getResult() == net.minecraftforge.eventbus.api.Event.Result.ALLOW || this.shouldShowName(pEntity))) {
-            this.renderNameTag(pEntity, renderNameplateEvent.getContent(), pMatrixStack, pBuffer, pPackedLight);
+        var renderNameTagEvent = new net.minecraftforge.client.event.RenderNameTagEvent(pEntity, pEntity.getDisplayName(), this, pMatrixStack, pBuffer, pPackedLight, pPartialTicks);
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(renderNameTagEvent);
+        if (renderNameTagEvent.getResult() != net.minecraftforge.eventbus.api.Event.Result.DENY && (renderNameTagEvent.getResult() == net.minecraftforge.eventbus.api.Event.Result.ALLOW || this.shouldShowName(pEntity))) {
+            this.renderNameTag(pEntity, renderNameTagEvent.getContent(), pMatrixStack, pBuffer, pPackedLight);
         }
     }
 }

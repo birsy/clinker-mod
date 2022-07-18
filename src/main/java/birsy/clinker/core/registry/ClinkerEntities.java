@@ -21,7 +21,7 @@ import net.minecraftforge.registries.RegistryObject;
 
 @Mod.EventBusSubscriber(modid = Clinker.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ClinkerEntities {
-    public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITIES, Clinker.MOD_ID);
+    public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, Clinker.MOD_ID);
 
     public static final RegistryObject<EntityType<MudScarabEntity>> MUD_SCARAB = ENTITIES.register("mud_scarab", () ->
             EntityType.Builder.of(MudScarabEntity::new, MobCategory.MONSTER)
