@@ -1,8 +1,8 @@
 package birsy.clinker.client.render.entity.layer;
 
+import birsy.clinker.client.render.entity.model.GnomadAxemanDynamicModel;
 import birsy.clinker.client.render.entity.model.base.AnimFunctions;
-import birsy.clinker.client.render.entity.model.GnomadAxemanModel;
-import birsy.clinker.common.entity.GnomadAxemanEntity;
+import birsy.clinker.common.entity.gnomad.GnomadAxemanEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import net.minecraft.Util;
@@ -13,7 +13,7 @@ import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.world.item.ItemStack;
 
-public class GnomadItemBeltLayer<T extends GnomadAxemanEntity, M extends GnomadAxemanModel<T>> extends RenderLayer<T, M> {
+public class GnomadItemBeltLayer<T extends GnomadAxemanEntity, M extends GnomadAxemanDynamicModel<T>> extends RenderLayer<T, M> {
     private final ItemInHandRenderer itemInHandRenderer;
 
     public GnomadItemBeltLayer(RenderLayerParent<T, M> parent, ItemInHandRenderer itemInHandRenderer) {

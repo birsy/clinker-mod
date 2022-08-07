@@ -1,4 +1,4 @@
-package birsy.clinker.common.level.chunk.gen.cave;
+package birsy.clinker.common.level.chunk.gen.noiseproviders;
 
 import birsy.clinker.core.util.BezierCurve;
 import birsy.clinker.core.util.noise.VoronoiGenerator;
@@ -9,19 +9,21 @@ import net.minecraft.world.phys.Vec3;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OthershoreCaveNoiseProvider extends CaveNoiseProvider {
-    private final BridgeCaveNoiseProvider bridgeCaveNoise;
+public abstract class OthershoreCaveNoiseProvider extends NoiseProvider {
+    public OthershoreCaveNoiseProvider(ChunkAccess chunk, long seed, List<Boolean> createsDerivatives, List<Boolean> easeY, int horizontalSamples, int verticalSamples) {
+        super(chunk, seed, createsDerivatives, easeY, horizontalSamples, verticalSamples);
+    }
+    /*private final BridgeCaveNoiseProvider bridgeCaveNoise;
     public OthershoreCaveNoiseProvider(ChunkAccess chunk, long seed) {
-        super(chunk, seed);
-        bridgeCaveNoise = new BridgeCaveNoiseProvider(chunk, seed);
+        //super(chunk, seed);
+        //bridgeCaveNoise = new BridgeCaveNoiseProvider(chunk, seed);
     }
 
-    @Override
     public double[][][] getNoiseInChunk(int chunkX, int chunkZ) {
         return new double[16][chunk.getHeight()][16];
     }
 
-    public class BridgeCaveNoiseProvider extends CaveNoiseProvider {
+    public abstract class BridgeCaveNoiseProvider extends NoiseProvider {
         private final VoronoiGenerator bridgeCaveNoise;
         private Pair<Double, Vec3>[] cornerVoronoiInfo;
         public BridgeCaveNoiseProvider(ChunkAccess chunk, long seed) {
@@ -57,9 +59,10 @@ public class OthershoreCaveNoiseProvider extends CaveNoiseProvider {
             return new BezierCurve((Vec3[]) bridgePoints.toArray());
         }
 
-        @Override
         public double[][][] getNoiseInChunk(int chunkX, int chunkZ) {
             return new double[16][chunk.getHeight()][16];
         }
-    }
+    }*/
+
+
 }

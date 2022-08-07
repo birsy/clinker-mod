@@ -33,6 +33,7 @@ public class SecondOrderDynamics {
         this.enabled = true;
     }
 
+
     public void setDynamics(float frequency, float damping, float response) {
         this.w = (float) (2 * Math.PI * frequency);
         this.z = damping;

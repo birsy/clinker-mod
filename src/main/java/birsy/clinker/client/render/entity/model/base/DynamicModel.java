@@ -28,4 +28,10 @@ public class DynamicModel {
             part.resetPose();
         }
     }
+
+    public void setDynamics(float frequency, float damping, float response) {
+        for (DynamicModelPart part : this.parts) {
+            part.setDynamics(frequency, damping, response);
+        }
+    }
 }

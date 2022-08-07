@@ -1,10 +1,8 @@
 package birsy.clinker.client.render.entity.layer;
 
+import birsy.clinker.client.render.ClinkerRenderTypes;
 import birsy.clinker.client.render.entity.model.AbstractSalamanderModel;
-import birsy.clinker.client.render.entity.model.SalamanderBodyModel;
 import birsy.clinker.common.entity.Salamander.AbstractSalamanderPartEntity;
-import birsy.clinker.common.entity.Salamander.SalamanderBodyEntity;
-import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -22,9 +20,9 @@ public class SalamanderGlowLayer<T extends AbstractSalamanderPartEntity, M exten
 
     public SalamanderGlowLayer(RenderLayerParent<T, M> parent, ResourceLocation glow, ResourceLocation charredGlow, ResourceLocation fire) {
         super(parent);
-        this.GLOW = RenderType.entityTranslucent(glow);
-        this.CHARRED_GLOW = RenderType.entityTranslucent(charredGlow);
-        this.FIRE = RenderType.entityTranslucent(fire);
+        this.GLOW = ClinkerRenderTypes.entityTranslucentUnlit(glow);
+        this.CHARRED_GLOW = ClinkerRenderTypes.entityTranslucentUnlit(charredGlow);
+        this.FIRE = ClinkerRenderTypes.entityTranslucentUnlit(fire);
     }
 
     @Override

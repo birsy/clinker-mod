@@ -33,8 +33,25 @@ public class MathUtils {
     public static float arccos(float pValue) { return (float) ((arcsin(pValue) * -1) + (Math.PI / 2));}
 
     public static Vec3 vec3Lerp(float delta, Vec3 start, Vec3 end) {
-        return new Vec3(Mth.lerp(delta, start.x(), start.x()), Mth.lerp(delta, start.y(), start.y()), Mth.lerp(delta, start.z(), start.z()));
+        return new Vec3(Mth.lerp(delta, start.x(), end.x()), Mth.lerp(delta, start.y(), end.y()), Mth.lerp(delta, start.z(), end.z()));
     }
+
+    public static Vec3 vec3Lerp(double delta, Vec3 start, Vec3 end) {
+        return new Vec3(Mth.lerp(delta, start.x(), end.x()), Mth.lerp(delta, start.y(), end.y()), Mth.lerp(delta, start.z(), end.z()));
+    }
+
+    public static Vec3 rotateVectorY(Vec3 vector, float rotation) {
+        /*Vec3 nV = vector.normalize();
+        double currentAngle = Mth.atan2(nV.z, nV.x);
+        double currentRadius = vector.multiply(1, 0, 1).length();
+        double x = Mth.sin((float) currentAngle + rotation) * currentRadius;
+        double z = Mth.cos((float) currentAngle + rotation) * currentRadius;
+
+        return new Vec3(x, vector.y, z);*/
+        return new Vec3(vector.x * Math.cos(rotation) - vector.z * Math.sin(rotation), vector.y, vector.z * Math.cos(rotation) + vector.x * Math.sin(rotation));
+    }
+
+
 
     /**
      * Maps one range of numbers to another. Incredibly useful function for lazy people like me.
@@ -135,7 +152,9 @@ public class MathUtils {
     public static float map(float min, float max, float value) {
         return value * (max - min) + min;
     }
-
+    public static double map(double min, double max, double value) {
+        return value * (max - min) + min;
+    }
 
     public static Vec3 adjustAxis(Vec3 vector, double desiredLength, Direction.Axis axis) {
         double lSqr = desiredLength * desiredLength;
@@ -194,6 +213,28 @@ public class MathUtils {
         float s = Math.min(2.0f * f, 1.0f);
 
         float terraceMultiplier = Mth.clamp(MathUtils.invert(Math.abs(s - 1.0F)), 0.0F, 1.0F);
+
+        return Pair.of(Mth.lerp(erosion,(k + s) * terraceWidth, height), terraceMultiplier);
+    }
+
+    /**
+     * Applies a series of distinct stairs (terraces) to a number. Very useful for terrain.
+     * @param height A float between 0 and 1. The input height that you want to be terraced.
+     * @param width A float between 0 and 1. The width of each "step" on the terrace.
+     * @param erosion A float between 0 and 1. The factor of influence for the terrace.
+     * @return The inputted height with the terraced step effect applied.
+     */
+    public static Pair<Double, Double> terrace (double height, double width, double erosion) {
+        double terraceWidth = width * 0.5f;
+        if (terraceWidth == 0) {
+            terraceWidth += 0.0001f;
+        }
+
+        double k = (float) Math.floor(height / terraceWidth);
+        double f = (height - k * terraceWidth) / terraceWidth;
+        double s = Math.min(2.0f * f, 1.0f);
+
+        double terraceMultiplier = Mth.clamp(MathUtils.invert(Math.abs(s - 1.0F)), 0.0F, 1.0F);
 
         return Pair.of(Mth.lerp(erosion,(k + s) * terraceWidth, height), terraceMultiplier);
     }

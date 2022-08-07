@@ -1,0 +1,14 @@
+{
+    "variants": {
+        "": [
+            { "model": "clinker:block/ashen_regolith" },
+            { "model": "clinker:block/ashen_regolith_mirrored" },
+            { "model": "clinker:block/ashen_regolith", "y": 90 },
+            { "model": "clinker:block/ashen_regolith_mirrored", "y": 90 },
+            { "model": "clinker:block/ashen_regolith", "y": 180 },
+            { "model": "clinker:block/ashen_regolith_mirrored", "y": 180 },
+            { "model": "clinker:block/ashen_regolith", "y": 270 },
+            { "model": "clinker:block/ashen_regolith_mirrored", "y": 270 }
+        ]
+    }
+}

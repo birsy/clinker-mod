@@ -1,15 +1,11 @@
 package birsy.clinker.client.render.entity.model.base;
 
-import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.SecondOrderDynamics;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.model.geom.PartPose;
-import net.minecraft.client.model.geom.builders.CubeDefinition;
-import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
@@ -21,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+//TODO: fix second order dynamics being shared between entities, somehow :P
 @OnlyIn(Dist.CLIENT)
 public class DynamicModelPart {
     public SecondOrderDynamics xPosDynamics = new SecondOrderDynamics();
@@ -52,6 +49,10 @@ public class DynamicModelPart {
     public float xScaleInit = 1.0F;
     public float yScaleInit = 1.0F;
     public float zScaleInit = 1.0F;
+
+    public boolean translationalDynamicsEnabled = false;
+    public boolean rotationalDynamicsEnabled = false;
+    public boolean scalarDynamicsEnabled = false;
 
     public boolean mirror;
     public boolean visible = true;
@@ -116,13 +117,50 @@ public class DynamicModelPart {
         this.xPosDynamics.createDynamics(frequency, damping, response, this.x);
         this.yPosDynamics.createDynamics(frequency, damping, response, this.y);
         this.zPosDynamics.createDynamics(frequency, damping, response, this.z);
+        this.translationalDynamicsEnabled = true;
         this.xRotDynamics.createDynamics(frequency, damping, response, this.xRot);
         this.yRotDynamics.createDynamics(frequency, damping, response, this.yRot);
         this.zRotDynamics.createDynamics(frequency, damping, response, this.zRot);
+        this.rotationalDynamicsEnabled = true;
         this.xScaleDynamics.createDynamics(frequency, damping, response, this.xScale);
         this.yScaleDynamics.createDynamics(frequency, damping, response, this.yScale);
         this.zScaleDynamics.createDynamics(frequency, damping, response, this.zScale);
+        this.scalarDynamicsEnabled = true;
     }
+
+    public void setDynamics(float frequency, float damping, float response) {
+        this.xPosDynamics.setDynamics(frequency, damping, response);
+        this.yPosDynamics.setDynamics(frequency, damping, response);
+        this.zPosDynamics.setDynamics(frequency, damping, response);
+        this.xRotDynamics.setDynamics(frequency, damping, response);
+        this.yRotDynamics.setDynamics(frequency, damping, response);
+        this.zRotDynamics.setDynamics(frequency, damping, response);
+        this.xScaleDynamics.setDynamics(frequency, damping, response);
+        this.yScaleDynamics.setDynamics(frequency, damping, response);
+        this.zScaleDynamics.setDynamics(frequency, damping, response);
+    }
+
+    public void setTranslationalDynamics(boolean enabled) {
+        this.xPosDynamics.enabled = enabled;
+        this.yPosDynamics.enabled = enabled;
+        this.zPosDynamics.enabled = enabled;
+        this.translationalDynamicsEnabled = enabled;
+    }
+
+    public void setRotationalDynamics(boolean enabled) {
+        this.xRotDynamics.enabled = enabled;
+        this.yRotDynamics.enabled = enabled;
+        this.zRotDynamics.enabled = enabled;
+        this.rotationalDynamicsEnabled = enabled;
+    }
+
+    public void setScalarDynamics(boolean enabled) {
+        this.xScaleDynamics.enabled = enabled;
+        this.yScaleDynamics.enabled = enabled;
+        this.zScaleDynamics.enabled = enabled;
+        this.scalarDynamicsEnabled = enabled;
+    }
+
 
     public void resetPose() {
         this.x = xInit;
@@ -143,40 +181,69 @@ public class DynamicModelPart {
     }
 
     public void translateAndRotateAndScale(PoseStack pPoseStack) {
-        pPoseStack.translate(this.xPosDynamics.getValue() / 16.0F, this.yPosDynamics.getValue() / 16.0F, this.zPosDynamics.getValue() / 16.0F);
-
-        if (this.zRotDynamics.getValue() != 0.0F) {
-            pPoseStack.mulPose(Vector3f.ZP.rotation(this.zRotDynamics.getValue()));
+        if (translationalDynamicsEnabled) {
+            pPoseStack.translate(this.xPosDynamics.getValue() / 16.0F, this.yPosDynamics.getValue() / 16.0F, this.zPosDynamics.getValue() / 16.0F);
+        } else {
+            pPoseStack.translate(this.x / 16.0F, this.y / 16.0F, this.z / 16.0F);
         }
 
-        if (this.yRotDynamics.getValue() != 0.0F) {
-            pPoseStack.mulPose(Vector3f.YP.rotation(this.yRotDynamics.getValue()));
+        if (this.rotationalDynamicsEnabled) {
+            if (this.zRotDynamics.getValue() != 0.0F) {
+                pPoseStack.mulPose(Vector3f.ZP.rotation(this.zRotDynamics.getValue()));
+            }
+
+            if (this.yRotDynamics.getValue() != 0.0F) {
+                pPoseStack.mulPose(Vector3f.YP.rotation(this.yRotDynamics.getValue()));
+            }
+
+            if (this.xRotDynamics.getValue() != 0.0F) {
+                pPoseStack.mulPose(Vector3f.XP.rotation(this.xRotDynamics.getValue()));
+            }
+        } else {
+            if (this.zRot != 0.0F) {
+                pPoseStack.mulPose(Vector3f.ZP.rotation(this.zRot));
+            }
+
+            if (this.yRot != 0.0F) {
+                pPoseStack.mulPose(Vector3f.YP.rotation(this.yRot));
+            }
+
+            if (this.xRot != 0.0F) {
+                pPoseStack.mulPose(Vector3f.XP.rotation(this.xRot));
+            }
         }
 
-        if (this.xRotDynamics.getValue() != 0.0F) {
-            pPoseStack.mulPose(Vector3f.XP.rotation(this.xRotDynamics.getValue()));
+        if (this.scalarDynamicsEnabled) {
+            pPoseStack.scale(xScaleDynamics.getValue(), yScaleDynamics.getValue(), zScaleDynamics.getValue());
+        } else {
+            pPoseStack.scale(xScale, yScale, zScale);
         }
 
-        pPoseStack.scale(xScaleDynamics.getValue(), yScaleDynamics.getValue(), zScaleDynamics.getValue());
     }
 
     // Run every frame, updates the dynamics. Should be able to handle time-steps of any value!
     // With some impacts on accuracy, of course - but no system instability.
-    public void update() {
+    public void update(float timeMultiplier) {
         if (!mc.isPaused()) {
-            float deltaTime = mc.getDeltaFrameTime() / 20.0F;
+            float deltaTime = (mc.getDeltaFrameTime() / 20.0F) * timeMultiplier;
 
-            xPosDynamics.update(deltaTime, x);
-            yPosDynamics.update(deltaTime, y);
-            zPosDynamics.update(deltaTime, z);
+            if (translationalDynamicsEnabled) {
+                xPosDynamics.update(deltaTime, x);
+                yPosDynamics.update(deltaTime, y);
+                zPosDynamics.update(deltaTime, z);
+            }
 
-            xRotDynamics.update(deltaTime, xRot);
-            yRotDynamics.update(deltaTime, yRot);
-            zRotDynamics.update(deltaTime, zRot);
+            if (rotationalDynamicsEnabled) {
+                xRotDynamics.update(deltaTime, xRot);
+                yRotDynamics.update(deltaTime, yRot);
+                zRotDynamics.update(deltaTime, zRot);
+            }
 
-            xScaleDynamics.update(deltaTime, xScale);
-            yScaleDynamics.update(deltaTime, yScale);
-            zScaleDynamics.update(deltaTime, zScale);
+            if (scalarDynamicsEnabled) {
+                xScaleDynamics.update(deltaTime, xScale);
+                yScaleDynamics.update(deltaTime, yScale);
+                zScaleDynamics.update(deltaTime, zScale);
+            }
 
             //Clinker.LOGGER.info("Pos: "   + xPosDynamics.getValue() + ", "   + yPosDynamics.getValue() + ", "   + zPosDynamics.getValue() + ", ");
             //Clinker.LOGGER.info("Rot: "   + xRotDynamics.getValue() + ", "   + yRotDynamics.getValue() + ", "   + zRotDynamics.getValue() + ", ");
@@ -186,6 +253,10 @@ public class DynamicModelPart {
                 child.update();
             }
         }
+    }
+
+    public void update() {
+        this.update(1.0F);
     }
 
     public void render(PoseStack pPoseStack, VertexConsumer pVertexConsumer, int pPackedLight, int pPackedOverlay) {
@@ -219,6 +290,11 @@ public class DynamicModelPart {
 
     public DynamicModelPart getParent() {
         return this.parent;
+    }
+
+    public void addChild(DynamicModelPart part) {
+        part.parent = this;
+        this.children.add(part);
     }
 
     public void getGlobalTransForm(PoseStack matrixStack) {

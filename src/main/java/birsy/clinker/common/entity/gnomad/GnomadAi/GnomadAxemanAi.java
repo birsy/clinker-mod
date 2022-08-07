@@ -1,6 +1,6 @@
-package birsy.clinker.common.entity.ai.GnomadAi;
+package birsy.clinker.common.entity.gnomad.GnomadAi;
 
-import birsy.clinker.common.entity.GnomadAxemanEntity;
+import birsy.clinker.common.entity.gnomad.GnomadAxemanEntity;
 import birsy.clinker.core.registry.ClinkerEntities;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -8,14 +8,10 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.behavior.*;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
-import net.minecraft.world.entity.ai.sensing.Sensor;
 import net.minecraft.world.entity.monster.piglin.*;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.schedule.Activity;
 
 import java.util.Optional;

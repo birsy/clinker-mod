@@ -2,10 +2,10 @@ package birsy.clinker.core.registry;
 
 import birsy.clinker.client.render.entity.*;
 import birsy.clinker.client.render.entity.model.*;
-import birsy.clinker.client.render.world.item.AlchemyBookRenderer;
 import birsy.clinker.common.entity.*;
 import birsy.clinker.common.entity.Salamander.SalamanderBodyEntity;
 import birsy.clinker.common.entity.Salamander.SalamanderHeadEntity;
+import birsy.clinker.common.entity.gnomad.GnomadAxemanEntity;
 import birsy.clinker.core.Clinker;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
@@ -40,7 +40,7 @@ public class ClinkerEntities {
 
     public static final RegistryObject<EntityType<SeaHagEntity>> SEA_HAG = ENTITIES.register("sea_hag", () ->
             EntityType.Builder.of(SeaHagEntity::new, MobCategory.MONSTER)
-                    .sized(2.5F, 6.4F)
+                    .sized(2.5F, 2.5F)
                     .build(new ResourceLocation(Clinker.MOD_ID, "sea_hag").toString()));
 
     public static final RegistryObject<EntityType<GnomadAxemanEntity>> GNOMAD_AXEMAN = ENTITIES.register("gnomad_axeman", () ->

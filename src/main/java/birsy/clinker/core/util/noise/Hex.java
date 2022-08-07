@@ -1,5 +1,5 @@
 
-package birsy.clinker.core.util;
+package birsy.clinker.core.util.noise;
 
 /*
  * Ripped from the HexLands mod! Code by AlcatrazEscape, I assume.

@@ -51,6 +51,8 @@ public class ClinkerBlocks
 	public static final RegistryObject<Block> ROCKY_PACKED_ASH = createBlock("rocky_packed_ash", () -> new Block(Block.Properties.of(Material.CLAY, MaterialColor.COLOR_GRAY).strength(0.5F).sound(SoundType.GRAVEL)), Clinker.CLINKER_BLOCKS);
 	public static final RegistryObject<Block> ROOTED_PACKED_ASH = createBlock("rooted_packed_ash", () -> new RootedAshBlock(PACKED_ASH.get()), Clinker.CLINKER_BLOCKS);
 
+	public static final RegistryObject<Block> ASHEN_REGOLITH = createBlock("ashen_regolith", () -> new MudBlock(Block.Properties.of(Material.DIRT, MaterialColor.COLOR_GRAY).strength(0.5F).sound(SoundType.NYLIUM)), Clinker.CLINKER_BLOCKS);
+
 	public static final RegistryObject<Block> MUD = createBlock("mud", () -> new SulfricMudBlock(Block.Properties.of(Material.DIRT, MaterialColor.TERRACOTTA_BROWN).strength(0.5F).sound(SoundType.WET_GRASS)), Clinker.CLINKER_BLOCKS);
 
 	public static final RegistryObject<Block> WHITE_MOLD = createBlock("white_mold", () -> new Block(Block.Properties.of(Material.MOSS, MaterialColor.COLOR_GRAY).strength(0.5F).sound(SoundType.MOSS)), Clinker.CLINKER_BLOCKS);

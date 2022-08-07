@@ -26,13 +26,4 @@ public class AshBlock extends FallingBlock
 	public int getDustColor(BlockState pState, BlockGetter pLevel, BlockPos pPos) {
 		return this.dustColor;
 	}
-
-	@Override
-	public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
-		super.animateTick(state, level, pos, random);
-		if (random.nextInt(1) == 0 && level.getLightEngine().getLayerListener(LightLayer.SKY).getLightValue(pos.above()) > 10 && level.dimension() == ClinkerWorld.OTHERSHORE) {
-			float range = 1.2F;
-			level.addParticle(ClinkerParticles.ASH_CLOUD.get(), pos.getX() + (random.nextGaussian() * range), pos.getY() + (random.nextGaussian() * range), pos.getZ() + (random.nextGaussian() * range), 0.0, 0.0, 0.0);
-		}
-	}
 }

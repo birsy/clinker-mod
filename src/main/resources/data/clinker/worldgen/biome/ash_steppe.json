@@ -20,9 +20,9 @@
     },
     "particle": {
       "options": {
-        "type": "minecraft:ash"
+        "type": "minecraft:white_ash"
       },
-      "probability": 0.0
+      "probability": 0.01
     },
     "ambient_sound": "clinker:ambient.ash_plains.loop",
     "sky_color": 4209726,

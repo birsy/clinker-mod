@@ -21,6 +21,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
@@ -64,15 +65,21 @@ public class AlchemyBookRenderer {
             event.setCanceled(true);
             PoseStack stack = event.getPoseStack();
             float xRot = event.getInterpolatedPitch(); //Minecraft.getInstance().cameraEntity.getViewXRot(event.getPartialTick());
-            float yRot = Minecraft.getInstance().cameraEntity.getViewYRot(event.getPartialTick());
+            float yVRot = Minecraft.getInstance().cameraEntity.getViewYRot(event.getPartialTick());
+            float yRot = yVRot;
+            if (Minecraft.getInstance().cameraEntity instanceof LivingEntity) {
+                yRot = Mth.lerp(mc.getPartialTick(), ((LivingEntity) Minecraft.getInstance().cameraEntity).yBodyRotO, ((LivingEntity) Minecraft.getInstance().cameraEntity).yBodyRot);
+            }
             float scale = 0.5F;
             double distance = 2.0;
             float lookAtFactor = Mth.clamp(MathUtils.mapRange(0, 75, 0.2F, 1, xRot), 0, 1);
 
-            Vec3 position = Vec3.directionFromRotation(xRot, yRot);
+            Vec3 position = Vec3.directionFromRotation(xRot, yVRot);
             position = position.multiply(0, 1, 0).add(0, 0, 1).normalize().scale(distance);
 
             stack.pushPose();
+            stack.mulPose(Vector3f.YP.rotationDegrees(yVRot));
+            stack.mulPose(Vector3f.YP.rotationDegrees(Mth.lerp(0.9F, -yRot, -yVRot)));
 
             stack.mulPose(Vector3f.YP.rotationDegrees(180.0F));
             stack.mulPose(Vector3f.ZP.rotationDegrees(180.0F));

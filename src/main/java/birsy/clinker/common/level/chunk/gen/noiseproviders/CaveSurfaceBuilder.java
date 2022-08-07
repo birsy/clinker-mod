@@ -1,4 +1,4 @@
-package birsy.clinker.common.level.chunk.gen.cave;
+package birsy.clinker.common.level.chunk.gen.noiseproviders;
 
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
@@ -133,7 +133,7 @@ public class CaveSurfaceBuilder {
         //Offset set exactly to prevent intersection!
         bridgeCaveNoise.setOffsetAmount((scale - ((tunnelMinDistance + tunnelMaxDistance) * 0.5)) / scale);
 
-        ArrayList<Pair<double[], Vec3>> cavernSamples = new ArrayList<>(chunkIn.getHeight() + 1);
+        ArrayList<VoronoiGenerator.VoronoiInfo> cavernSamples = new ArrayList<>(chunkIn.getHeight() + 1);
         double[] bridgeSamples = new double[chunkIn.getHeight() + 1];
         Vec3[] localPoses = new Vec3[chunkIn.getHeight() + 1];
         for (int y = 0; y < bridgeSamples.length; y++) {
@@ -145,12 +145,12 @@ public class CaveSurfaceBuilder {
             double ampedNoise = noise * ((cavernRadius / scale) * 0.5);
             cavernSamples.add(y, bridgeCaveNoise.get3(coords.x() + ampedNoise, coords.y(), coords.z() + ampedNoise));
 
-            double ampedNoise2 = noise * Math.max(cavernSamples.get(y).getFirst()[0] - (cavernRadius / scale), 0);
+            double ampedNoise2 = noise * Math.max(cavernSamples.get(y).distance() - (cavernRadius / scale), 0);
 
-            Pair<double[], Vec3> voronoiSample = bridgeCaveNoise.get3(coords.x(), coords.y(), coords.z());
-            Vec3 localPos = cavernSamples.get(y).getSecond();
+            VoronoiGenerator.VoronoiInfo voronoiSample = bridgeCaveNoise.get3(coords.x(), coords.y(), coords.z());
+            Vec3 localPos = voronoiSample.localPos();
             localPoses[y] = localPos;
-            bridgeSamples[y] = sampleCavernBridgeNoise(voronoiSample.getSecond().multiply(1, cavernHeightMult, 1).add(ampedNoise2, ampedNoise2, ampedNoise2), voronoiSample.getSecond(), voronoiSample.getFirst()[1], cavernRadius / scale, (cavernRadius * cavernHeightMult) / scale);
+            bridgeSamples[y] = sampleCavernBridgeNoise(voronoiSample.localPos().multiply(1, cavernHeightMult, 1).add(ampedNoise2, ampedNoise2, ampedNoise2), voronoiSample.localPos(), voronoiSample.hash(), cavernRadius / scale, (cavernRadius * cavernHeightMult) / scale);
         }
 
         for (int y = chunkIn.getMaxBuildHeight(); y > chunkIn.getMinBuildHeight(); y--) {
@@ -189,15 +189,15 @@ public class CaveSurfaceBuilder {
         }
     }
 
-    private double[] sampleBridgedCavernNoise(ChunkAccess chunk, int x, int y, int z, int maxHeight, int minHeight, double scale, double cavernRadius, double tunnelMinDistance, double tunnelMaxDistance, double bridgeRadius, double tunnelRadius, ArrayList<Pair<double[], Vec3>> cavernSamples, double[] bridgeSamples) {
+    private double[] sampleBridgedCavernNoise(ChunkAccess chunk, int x, int y, int z, int maxHeight, int minHeight, double scale, double cavernRadius, double tunnelMinDistance, double tunnelMaxDistance, double bridgeRadius, double tunnelRadius, ArrayList<VoronoiGenerator.VoronoiInfo> cavernSamples, double[] bridgeSamples) {
         double upperHeightThrottling = Mth.clamp(MathUtils.mapRange(maxHeight, maxHeight - 20.0F, 0, 1, y), 0, 1);
         double lowerHeightThrottling = Mth.clamp(MathUtils.mapRange(minHeight + 3, minHeight + 20.0F, 0, 1, y), 0, 1);
         double heightThrottling = y > (maxHeight + minHeight / 2) ? upperHeightThrottling : lowerHeightThrottling;
 
-        Pair<double[], Vec3> voronoiSample = cavernSamples.get(y - chunk.getMinBuildHeight());
+        VoronoiGenerator.VoronoiInfo voronoiSample = cavernSamples.get(y - chunk.getMinBuildHeight());
 
-        double distanceMul1 = Mth.clamp(MathUtils.mapRange(100 / scale, tunnelMinDistance / scale, 2, 1, voronoiSample.getFirst()[0]), 0, 1);
-        double distanceMul2 = Mth.clamp(MathUtils.mapRange(tunnelMaxDistance / scale, tunnelMinDistance / scale, 5, 1, voronoiSample.getFirst()[0]), 1, 5);
+        double distanceMul1 = Mth.clamp(MathUtils.mapRange(100 / scale, tunnelMinDistance / scale, 2, 1, voronoiSample.distance()), 0, 1);
+        double distanceMul2 = Mth.clamp(MathUtils.mapRange(tunnelMaxDistance / scale, tunnelMinDistance / scale, 5, 1, voronoiSample.distance()), 1, 5);
 
         double bridgeSample = bridgeSamples[y - chunk.getMinBuildHeight()] - (bridgeRadius / scale);
 
@@ -207,7 +207,7 @@ public class CaveSurfaceBuilder {
         double tunnelSample2 = (tunnelSampleY > chunk.getHeight() || tunnelSampleY < 0) ? 1.0 : bridgeSamples[tunnelSampleY] - (((tunnelRadius * heightThrottling) * distanceMul2) / scale);
         tunnelSample2 *= -1;
 
-        double cavernSample = (voronoiSample.getFirst()[0] * -1) + ((cavernRadius * heightThrottling) / scale);
+        double cavernSample = (voronoiSample.distance() * -1) + ((cavernRadius * heightThrottling) / scale);
 
         return new double[]{MathUtils.smoothMinExpo(MathUtils.smoothMinExpo(tunnelSample1, cavernSample, -0.01), bridgeSample, 0.03), MathUtils.smoothMinExpo(MathUtils.smoothMinExpo(tunnelSample2, cavernSample, -0.01), bridgeSample, 0.03)};
     }
@@ -258,7 +258,7 @@ public class CaveSurfaceBuilder {
     }
 
 
-    private double sampleCaveNoise(int x, int y, int z, int startHeight, int minheight, double altNoise, float aquiferUpperRange, float aquiferMidHeight, float aquiferLowerRange, double liquidShellNoise, Pair<double[], Vec3> cavernVoronoiSample, double cavernNoiseSmall, double cavernNoiseTunnel, double cavernMinInfluence, double cavernMaxInfluence, double cavernScale) {
+    private double sampleCaveNoise(int x, int y, int z, int startHeight, int minheight, double altNoise, float aquiferUpperRange, float aquiferMidHeight, float aquiferLowerRange, double liquidShellNoise, VoronoiGenerator.VoronoiInfo cavernVoronoiSample, double cavernNoiseSmall, double cavernNoiseTunnel, double cavernMinInfluence, double cavernMaxInfluence, double cavernScale) {
         //STALAGMITES
         double stalagmiteFrequency = 2.5;
         //Determines the area that the stalagmite effects surrounding it. Higher values = more blend-y stalagmites.
@@ -270,10 +270,10 @@ public class CaveSurfaceBuilder {
         double cavernStrength = 15000;
         double tunnelEncouragement = 10;
         double lowerBridgeCavernHeightClamping = Mth.clamp(MathUtils.mapRange(aquiferLowerRange + 2.0F, aquiferLowerRange + 12.0F, 0, 1, y), 0, 1);
-        double intensityDistance = Mth.clamp(MathUtils.mapRange(cavernMinInfluence / cavernScale, cavernMaxInfluence / cavernScale, 0, 1, cavernVoronoiSample.getFirst()[0]), 0, 1);
+        double intensityDistance = Mth.clamp(MathUtils.mapRange(cavernMinInfluence / cavernScale, cavernMaxInfluence / cavernScale, 0, 1, cavernVoronoiSample.distance()), 0, 1);
         double intensityMultiplier1 = Mth.lerp(intensityDistance, cavernStrength, tunnelEncouragement) * lowerBridgeCavernHeightClamping;
         double intensityMultiplier2 = Mth.lerp(intensityDistance, cavernStrength, cavernStrength * 10) * lowerBridgeCavernHeightClamping;
-        double bridgeCavernNoise = Math.max(Math.max(cavernNoiseTunnel * intensityMultiplier1, cavernNoiseSmall * intensityMultiplier2), 0) + Mth.clamp(MathUtils.mapRange((cavernMinInfluence - (cavernMinInfluence / 2)) / cavernScale, cavernMaxInfluence / cavernScale, 0, 1, cavernVoronoiSample.getFirst()[0]), 0, 1);
+        double bridgeCavernNoise = Math.max(Math.max(cavernNoiseTunnel * intensityMultiplier1, cavernNoiseSmall * intensityMultiplier2), 0) + Mth.clamp(MathUtils.mapRange((cavernMinInfluence - (cavernMinInfluence / 2)) / cavernScale, cavernMaxInfluence / cavernScale, 0, 1, cavernVoronoiSample.distance()), 0, 1);
 
         //CAVE SIZE
         double lowerCaveHeightClamping = Mth.clamp(MathUtils.mapRange(minheight + 5.0F, minheight + 20.0F, 0, 1, y), 0, 1);

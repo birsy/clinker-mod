@@ -1,6 +1,7 @@
 package birsy.clinker.common.level.chunk.gen;
 
 import birsy.clinker.core.util.noise.FastNoiseLite;
+import birsy.clinker.core.util.noise.VoronoiGenerator;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.levelgen.XoroshiroRandomSource;
 
@@ -33,6 +34,8 @@ public class OthershoreNoiseSampler {
 
     public FastNoiseLite largeNoise;
     public FastNoiseLite detailNoise;
+    public FastNoiseLite cellularNoise;
+    public VoronoiGenerator voronoiGenerator;
 
     public OthershoreNoiseSampler(long seed) {
         this.seed = seed;
@@ -44,7 +47,8 @@ public class OthershoreNoiseSampler {
         this.random.setSeed(seed);
         this.largeNoise.SetSeed((int) seed);
         this.detailNoise.SetSeed((int) seed + 1);
-        //initNoise((int)seed);
+        this.cellularNoise.SetSeed((int) seed + 2);
+        this.voronoiGenerator.setSeed(seed);
         return this;
     }
 
@@ -63,6 +67,12 @@ public class OthershoreNoiseSampler {
         this.detailNoise.SetFrequency(0.1F);
         this.detailNoise.SetFractalType(FastNoiseLite.FractalType.None);
 
+        this.cellularNoise = new FastNoiseLite(seed + 2);
+        this.cellularNoise.SetNoiseType(FastNoiseLite.NoiseType.Cellular);
+        this.cellularNoise.SetFrequency(0.1F);
+        this.cellularNoise.SetFractalType(FastNoiseLite.FractalType.None);
+
+        this.voronoiGenerator = new VoronoiGenerator(seed);
         /*this.continentalNoiseGenerator = new FastNoiseLite((int) (seed + random.nextLong()));
         this.continentalNoiseGenerator.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
         this.continentalNoiseGenerator.SetFrequency(0.002F);

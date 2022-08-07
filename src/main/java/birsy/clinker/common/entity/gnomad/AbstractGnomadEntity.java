@@ -1,5 +1,6 @@
-package birsy.clinker.common.entity;
+package birsy.clinker.common.entity.gnomad;
 
+import birsy.clinker.common.entity.IVelocityTilt;
 import birsy.clinker.common.entity.ai.ISitter;
 import birsy.clinker.core.util.MathUtils;
 import net.minecraft.util.Mth;
