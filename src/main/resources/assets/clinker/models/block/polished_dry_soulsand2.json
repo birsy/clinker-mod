@@ -1,6 +1,0 @@
-{
-   "parent": "block/cube_all",
-   "textures": {
-       "all": "clinker:block/dried_soulsand/polished_dry_soulsand_var/polished_dry_soulsand2"
-   }
-}

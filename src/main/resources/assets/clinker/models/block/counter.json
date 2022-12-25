@@ -1,0 +1,8 @@
+{
+    "parent": "minecraft:block/cube_bottom_top",
+    "textures": {
+        "bottom": "clinker:block/counter_bottom",
+        "side": "clinker:block/counter",
+        "top": "clinker:block/counter_top"
+    }
+}

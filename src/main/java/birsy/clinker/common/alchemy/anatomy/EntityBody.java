@@ -10,7 +10,6 @@ import java.util.List;
 public class EntityBody {
     final EntityBodyPart[] bodyParts;
     final float totalBlood;
-    public Chemical bloodMaterial;
     public final LivingEntity bodyOwner;
 
     public EntityBody( LivingEntity bodyOwner, float totalBlood, EntityBodyPart... bodyParts ) {
@@ -26,7 +25,7 @@ public class EntityBody {
         public List<EntityOrgan> organs;
         public Mixture chemicalMakeup;
         public Chemical fleshMaterial;
-        boolean hasBloodflow = true;
+        public boolean hasBloodflow = true;
 
         public EntityBodyPart(EntityBodyPart parent, boolean isVital, EntityOrgan... organs) {
             this.parent = parent;

@@ -2,10 +2,7 @@ package birsy.clinker.core.util;
 
 import com.ibm.icu.impl.Pair;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
-import com.mojang.math.Vector4f;
+import com.mojang.math.*;
 import net.minecraft.Util;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
@@ -51,7 +48,37 @@ public class MathUtils {
         return new Vec3(vector.x * Math.cos(rotation) - vector.z * Math.sin(rotation), vector.y, vector.z * Math.cos(rotation) + vector.x * Math.sin(rotation));
     }
 
+    public static double norm(Quaternion q) {
+        return Math.sqrt(q.r()*q.r() + q.i()*q.i() + q.j()*q.j() + q.k()*q.k());
+    }
 
+    public static Quaternion inverse(Quaternion q) {
+        float norm = (float) norm(q);
+        return new Quaternion(-q.i() / norm, -q.j() / norm, -q.k() / norm, q.r() / norm);
+    }
+
+    public static Quaternion add(Quaternion q1, Quaternion q2) {
+        return new Quaternion(q1.i() + q2.i(), q1.j() + q2.j(), q1.k() + q2.k(), q1.r() + q2.r());
+    }
+
+    public static Quaternion addVector(Quaternion q, Vec3 v) {
+        Quaternion vQuat = new Quaternion((float) 0, (float) v.x(), (float) v.y(), (float) v.z());
+        return add(q, vQuat);
+    }
+
+    public static Vec3 rotate(Quaternion q, Vec3 v) {
+        Quaternion quat = new Quaternion(q);
+        quat.mul(new Quaternion((float) v.x(), (float) v.y(), (float) v.z(), 0));
+        quat.mul(inverse(q));
+        return new Vec3(quat.i(), quat.j(), quat.k());
+    }
+
+    public static Vec3 multiply(Vec3 v, Matrix3f m) {
+        double x = v.x()*m.m00 + v.y()*m.m01 + v.z()*m.m02;
+        double y = v.x()*m.m10 + v.y()*m.m11 + v.z()*m.m12;
+        double z = v.x()*m.m20 + v.y()*m.m21 + v.z()*m.m22;
+        return new Vec3(x, y, z);
+    }
 
     /**
      * Maps one range of numbers to another. Incredibly useful function for lazy people like me.
@@ -169,6 +196,10 @@ public class MathUtils {
     }
 
     public static float awfulRandom(float seed) {
+        return Mth.frac(Mth.sin((float) (seed * Math.tan(Mth.sqrt(Math.abs(seed - seed * 0.5F))))) * 100000.0F);
+    }
+
+    public static float awfulRandom(double seed) {
         return Mth.frac(Mth.sin((float) (seed * Math.tan(Mth.sqrt((float) Math.abs(seed - seed * 0.5F))))) * 100000.0F);
     }
 
@@ -305,11 +336,12 @@ public class MathUtils {
 
     public static float wave (WaveType type, float x, float frequency, float amplitude) {
         float value = 0;
+        double sin = Math.sin((Math.PI * x) / frequency);
         switch (type) {
             case sine:
-                value = (float) Math.sin((Math.PI * x) / frequency);
+                value = (float) sin;
             case square:
-                value = 2.0F * Math.round((Math.sin((Math.PI * x) / frequency) + 1.0F) / 2.0F) - 1.0F;
+                value = 2.0F * Math.round((sin + 1.0F) / 2.0F) - 1.0F;
             case triangle:
                 value = (-1 * ((((x + (frequency / 2)) % (2 * frequency)) - frequency) / frequency / 2)) + 1;
             case sawtooth:
@@ -672,7 +704,7 @@ public class MathUtils {
             }
         }
     }
-    
+
     public interface IEasingFunction {
         float ease(float x);
     }
@@ -682,12 +714,12 @@ public class MathUtils {
         float cAB = Mth.lerp(pct.x(), cAAB, cBAB);
         float cBB = Mth.lerp(pct.x(), cABB, cBBB);
         float cBA = Mth.lerp(pct.x(), cABA, cBBA);
-        
+
         float cA = Mth.lerp(pct.z(), cAA, cBA);
         float cB = Mth.lerp(pct.z(), cAB, cBB);
-        
+
         float c = Mth.lerp(pct.y(), cA, cB);
-        
+
         return c;
     }
 

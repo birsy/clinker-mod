@@ -1,10 +1,12 @@
 package birsy.clinker.common.entity.gnomad;
 
 import birsy.clinker.common.entity.gnomad.GnomadAi.GnomadAxemanAi;
+import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerItems;
 import birsy.clinker.core.util.MathUtils;
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Dynamic;
+import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -15,10 +17,12 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.SmoothSwimmingMoveControl;
@@ -32,7 +36,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 
 import javax.annotation.Nullable;
-import java.util.UUID;
+import java.util.HashMap;
 
 public class GnomadAxemanEntity extends AbstractGnomadEntity implements InventoryCarrier {
     protected static final ImmutableList<SensorType<? extends Sensor<? super GnomadAxemanEntity>>> SENSOR_TYPES = ImmutableList.of(
@@ -75,24 +79,16 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity implements Inventor
      */
     private final SimpleContainer inventory = new SimpleContainer(8);
 
-    
-    private static final EntityDataAccessor<Boolean> DATA_HELMET_ID = SynchedEntityData.defineId(GnomadAxemanEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> DATA_HELMET_VISOR_ID = SynchedEntityData.defineId(GnomadAxemanEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> DATA_LEFT_PAULDRON_ID = SynchedEntityData.defineId(GnomadAxemanEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> DATA_RIGHT_PAULDRON_ID = SynchedEntityData.defineId(GnomadAxemanEntity.class, EntityDataSerializers.BOOLEAN);
-
-    private static final AttributeModifier ARMOR_MODIFIER_HELMET =     new AttributeModifier(UUID.randomUUID(), "Helmet Armor Bonus",       3.0F,  AttributeModifier.Operation.ADDITION);
-    private static final AttributeModifier SPEED_MODIFIER_HELMET =     new AttributeModifier(UUID.randomUUID(), "Helmet Speed Negation",    -0.0025F, AttributeModifier.Operation.ADDITION);
-    private static final AttributeModifier KNOCKBACK_MODIFIER_HELMET = new AttributeModifier(UUID.randomUUID(), "Helmet Knockback Negation",0.0125F, AttributeModifier.Operation.MULTIPLY_BASE);
-    private static final AttributeModifier ARMOR_MODIFIER_VISOR =     new AttributeModifier(UUID.randomUUID(), "Helmet Visor Armor Bonus",       1.0,  AttributeModifier.Operation.ADDITION);
-    private static final AttributeModifier SPEED_MODIFIER_VISOR =     new AttributeModifier(UUID.randomUUID(), "Helmet Visor Speed Negation",    -0.004F, AttributeModifier.Operation.ADDITION);
-    private static final AttributeModifier KNOCKBACK_MODIFIER_VISOR = new AttributeModifier(UUID.randomUUID(), "Helmet Visor Knockback Negation",0.2F, AttributeModifier.Operation.MULTIPLY_BASE);
-    private static final AttributeModifier ARMOR_MODIFIER_LEFT_PAULDRON =     new AttributeModifier(UUID.randomUUID(), "Left Pauldron Armor Bonus",       1.0, AttributeModifier.Operation.ADDITION);
-    private static final AttributeModifier SPEED_MODIFIER_LEFT_PAULDRON =     new AttributeModifier(UUID.randomUUID(), "Left Pauldron Speed Negation",    -0.0025F, AttributeModifier.Operation.ADDITION);
-    private static final AttributeModifier KNOCKBACK_MODIFIER_LEFT_PAULDRON = new AttributeModifier(UUID.randomUUID(), "Left Pauldron Knockback Negation",0.0125F, AttributeModifier.Operation.MULTIPLY_BASE);
-    private static final AttributeModifier ARMOR_MODIFIER_RIGHT_PAULDRON =     new AttributeModifier(UUID.randomUUID(), "Right Pauldron Armor Bonus",       1.0, AttributeModifier.Operation.ADDITION);
-    private static final AttributeModifier SPEED_MODIFIER_RIGHT_PAULDRON =     new AttributeModifier(UUID.randomUUID(), "Right Pauldron Speed Negation",    -0.0025F, AttributeModifier.Operation.ADDITION);
-    private static final AttributeModifier KNOCKBACK_MODIFIER_RIGHT_PAULDRON = new AttributeModifier(UUID.randomUUID(), "Right Pauldron Knockback Negation",0.0125F, AttributeModifier.Operation.MULTIPLY_BASE);
+    private static final EntityDataAccessor<Integer>[] DATA_ARMOR_IDS = Util.make(new EntityDataAccessor[GnomadArmor.GnomadArmorLocation.values().length], (array) -> {
+        for (int i = 0; i < array.length; i++) {
+            array[i] = SynchedEntityData.defineId(GnomadAxemanEntity.class, EntityDataSerializers.INT);
+        }
+    });
+    public HashMap<GnomadArmor.GnomadArmorLocation, GnomadArmor> WORN_ARMOR = Util.make(new HashMap<>(), (map) -> {
+        for (GnomadArmor.GnomadArmorLocation armorLocation : GnomadArmor.GnomadArmorLocation.values()) {
+            map.put(armorLocation, GnomadArmor.getArmorFromID(armorLocation, 0));
+        }
+    });
 
     public GnomadAxemanEntity(EntityType<? extends GnomadAxemanEntity> entityType, Level level) {
         super(entityType, level);
@@ -114,10 +110,9 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity implements Inventor
     public void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(DATA_VARIANT_ID, 0);
-        this.entityData.define(DATA_HELMET_ID, false);
-        this.entityData.define(DATA_HELMET_VISOR_ID,   false);
-        this.entityData.define(DATA_LEFT_PAULDRON_ID,  false);
-        this.entityData.define(DATA_RIGHT_PAULDRON_ID, false);
+        for (EntityDataAccessor<Integer> DATA_ID : DATA_ARMOR_IDS) {
+            this.entityData.define(DATA_ID, 0);
+        }
     }
 
     public void addAdditionalSaveData(CompoundTag pCompound) {
@@ -125,17 +120,24 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity implements Inventor
         pCompound.put("Inventory", this.inventory.createTag());
         pCompound.putInt("Variant", this.getVariant());
 
-        pCompound.putBoolean("Helmet", this.getArmor()[0]);
-        pCompound.putBoolean("Helmet Visor", this.getArmor()[1]);
-        pCompound.putBoolean("Left Pauldron", this.getArmor()[2]);
-        pCompound.putBoolean("Right Pauldron", this.getArmor()[3]);
-
+        CompoundTag armorTag = new CompoundTag();
+        for (GnomadArmor.GnomadArmorLocation location : GnomadArmor.GnomadArmorLocation.values()) {
+            armorTag.putInt(location.name, this.getEntityData().get(DATA_ARMOR_IDS[location.index]));
+            Clinker.LOGGER.info(location.name + ", " + this.getEntityData().get(DATA_ARMOR_IDS[location.index]));
+        }
+        pCompound.put("Armor", armorTag);
     }
     public void readAdditionalSaveData(CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
         this.inventory.fromTag(pCompound.getList("Inventory", 10));
         this.setVariant(pCompound.getInt("Variant"));
-        this.setArmor(pCompound.getBoolean("Helmet"), pCompound.getBoolean("Helmet Visor"), pCompound.getBoolean("Left Pauldron"), pCompound.getBoolean("Right Pauldron"));
+
+        CompoundTag armorTag = pCompound.getCompound("Armor");
+        for (GnomadArmor.GnomadArmorLocation location : GnomadArmor.GnomadArmorLocation.values()) {
+            int armorID = armorTag.getInt(location.name);
+            this.setArmor(location, GnomadArmor.getArmorFromID(location, armorID));
+            Clinker.LOGGER.info(GnomadArmor.getArmorFromID(location, armorID).name());
+        }
     }
 
     @Override
@@ -150,55 +152,29 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity implements Inventor
         return this.getEntityData().get(DATA_VARIANT_ID);
     }
 
-    public void setArmor(boolean helmet, boolean visor, boolean leftPauldron, boolean rightPauldron) {
-        this.getEntityData().set(DATA_HELMET_ID, helmet);
-        this.getEntityData().set(DATA_HELMET_VISOR_ID,  visor);
-        this.getEntityData().set(DATA_LEFT_PAULDRON_ID,  leftPauldron);
-        this.getEntityData().set(DATA_RIGHT_PAULDRON_ID, rightPauldron);
+    public void setArmor(GnomadArmor.GnomadArmorLocation location, GnomadArmor armor) {
+        this.getEntityData().set(DATA_ARMOR_IDS[location.index], armor.id);
 
-        AttributeInstance armor = this.getAttribute(Attributes.ARMOR);
-        AttributeInstance speed = this.getAttribute(Attributes.MOVEMENT_SPEED);
-        AttributeInstance knockback = this.getAttribute(Attributes.KNOCKBACK_RESISTANCE);
+        AttributeInstance armorAttribute = this.getAttribute(Attributes.ARMOR);
+        AttributeInstance speedAttribute = this.getAttribute(Attributes.MOVEMENT_SPEED);
+        AttributeInstance knockbackAttribute = this.getAttribute(Attributes.KNOCKBACK_RESISTANCE);
 
-        if (helmet || visor || leftPauldron || rightPauldron) {
+        if (armor.id != 0) {
             this.playSound(SoundEvents.ARMOR_EQUIP_IRON, 0.5F, 0.5F);
         }
 
-        armor.removeModifier(ARMOR_MODIFIER_HELMET);
-        speed.removeModifier(SPEED_MODIFIER_HELMET);
-        knockback.removeModifier(KNOCKBACK_MODIFIER_HELMET);
-        if (helmet) {
-            armor.addTransientModifier(ARMOR_MODIFIER_HELMET);
-            speed.addTransientModifier(SPEED_MODIFIER_HELMET);
-            knockback.addTransientModifier(KNOCKBACK_MODIFIER_HELMET);
-        }
-        armor.removeModifier(ARMOR_MODIFIER_VISOR);
-        speed.removeModifier(SPEED_MODIFIER_VISOR);
-        knockback.removeModifier(KNOCKBACK_MODIFIER_VISOR);
-        if (helmet && visor) {
-            armor.addTransientModifier(ARMOR_MODIFIER_VISOR);
-            speed.addTransientModifier(SPEED_MODIFIER_VISOR);
-            knockback.addTransientModifier(KNOCKBACK_MODIFIER_VISOR);
-        }
-        armor.removeModifier(ARMOR_MODIFIER_LEFT_PAULDRON);
-        speed.removeModifier(SPEED_MODIFIER_LEFT_PAULDRON);
-        knockback.removeModifier(KNOCKBACK_MODIFIER_LEFT_PAULDRON);
-        if (leftPauldron) {
-            armor.addTransientModifier(ARMOR_MODIFIER_LEFT_PAULDRON);
-            speed.addTransientModifier(SPEED_MODIFIER_LEFT_PAULDRON);
-            knockback.addTransientModifier(KNOCKBACK_MODIFIER_LEFT_PAULDRON);
-        }
-        armor.removeModifier(ARMOR_MODIFIER_RIGHT_PAULDRON);
-        speed.removeModifier(SPEED_MODIFIER_RIGHT_PAULDRON);
-        knockback.removeModifier(KNOCKBACK_MODIFIER_RIGHT_PAULDRON);
-        if (rightPauldron) {
-            armor.addTransientModifier(ARMOR_MODIFIER_RIGHT_PAULDRON);
-            speed.addTransientModifier(SPEED_MODIFIER_RIGHT_PAULDRON);
-            knockback.addTransientModifier(KNOCKBACK_MODIFIER_RIGHT_PAULDRON);
-        }
+        armorAttribute.removeModifier(armor.armorModifier);
+        speedAttribute.removeModifier(armor.speedModifier);
+        knockbackAttribute.removeModifier(armor.knockbackModifier);
+
+        armorAttribute.addTransientModifier(armor.armorModifier);
+        speedAttribute.addTransientModifier(armor.speedModifier);
+        knockbackAttribute.addTransientModifier(armor.knockbackModifier);
     }
-    public boolean[] getArmor() {
-        return new boolean[]{this.entityData.get(DATA_HELMET_ID), this.entityData.get(DATA_HELMET_VISOR_ID), this.entityData.get(DATA_LEFT_PAULDRON_ID), this.entityData.get(DATA_RIGHT_PAULDRON_ID)};
+
+    public GnomadArmor getArmor(GnomadArmor.GnomadArmorLocation location) {
+        return GnomadArmor.getArmorFromID(location, this.getEntityData().get(DATA_ARMOR_IDS[location.index]));
+
     }
 
     @Override
@@ -232,8 +208,6 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity implements Inventor
 
     @Override
     public void tick() {
-        //this.setSitting(true);
-        //this.setDeltaMovement(0.0, this.getDeltaMovement().y, 0.0);
         super.tick();
     }
 
@@ -257,8 +231,12 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity implements Inventor
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
         float gnomePower = MathUtils.bias(pLevel.getRandom().nextFloat(), 0.1F);
         float difficultyValue = (pDifficulty.getEffectiveDifficulty() / 3.0F) * gnomePower;
-        boolean hasHelmet = pLevel.getRandom().nextFloat() < difficultyValue;
-        this.setArmor(hasHelmet, hasHelmet && pLevel.getRandom().nextFloat() < difficultyValue, pLevel.getRandom().nextFloat() < difficultyValue, pLevel.getRandom().nextFloat() < difficultyValue);
+
+        this.setArmor(GnomadArmor.GnomadArmorLocation.HELMET, pLevel.getRandom().nextFloat() < 0.1F ? GnomadArmor.HELMET_HAT : GnomadArmor.HELMET_EMPTY);
+        for (GnomadArmor.GnomadArmorLocation armorLocation : GnomadArmor.GnomadArmorLocation.values()) {
+            this.setArmor(armorLocation, GnomadArmor.getRandomArmorPiece(armorLocation, pLevel.getRandom()));
+        }
+
         this.setVariant(pLevel.getRandom().nextInt(GnomadAxemanEntity.VARIANT_AMOUNT));
 
         return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);

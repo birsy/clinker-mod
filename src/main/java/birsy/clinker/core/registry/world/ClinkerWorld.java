@@ -1,7 +1,9 @@
 package birsy.clinker.core.registry.world;
 
 import birsy.clinker.client.render.world.OthershoreDimensionEffects;
+import birsy.clinker.common.level.chunk.gen.CaveChunkGenerator;
 import birsy.clinker.common.level.chunk.gen.OthershoreChunkGenerator;
+import birsy.clinker.common.level.chunk.gen.TestChunkGenerator;
 import birsy.clinker.core.Clinker;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.Registry;
@@ -22,6 +24,8 @@ public class ClinkerWorld {
 
     public static final ResourceKey<Level> OTHERSHORE = ResourceKey.create(Registry.DIMENSION_REGISTRY, name("othershore"));
     public static final RegistryObject<Codec<OthershoreChunkGenerator>> OTHERSHORE_CHUNK_GENERATOR = CHUNK_GENERATORS.register("othershore_chunk_generator", () -> OthershoreChunkGenerator.CODEC);
+    public static final RegistryObject<Codec<TestChunkGenerator>> TEST_CHUNK_GENERATOR = CHUNK_GENERATORS.register("test_chunk_generator", () -> TestChunkGenerator.CODEC);
+    public static final RegistryObject<Codec<CaveChunkGenerator>> CAVE_CHUNK_GENERATOR = CHUNK_GENERATORS.register("cave_chunk_generator", () -> CaveChunkGenerator.CODEC);
 
     @SubscribeEvent
     public static void registerDimensionEffects(RegisterDimensionSpecialEffectsEvent event) {

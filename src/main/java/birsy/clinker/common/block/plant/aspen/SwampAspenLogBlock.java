@@ -130,19 +130,19 @@ public class SwampAspenLogBlock extends RotatedPillarBlock implements SimpleWate
         return null;
     }
 
-    private BooleanProperty directionToProperty(Direction direction) {
+    public static BooleanProperty directionToProperty(Direction direction) {
         if (direction == null) {
             return null;
         } else {
             switch (direction) {
                 case NORTH:
-                    return this.NORTH;
+                    return NORTH;
                 case SOUTH:
-                    return this.SOUTH;
+                    return SOUTH;
                 case EAST:
-                    return this.EAST;
+                    return EAST;
                 case WEST:
-                    return this.WEST;
+                    return WEST;
                 default:
                     return null;
             }

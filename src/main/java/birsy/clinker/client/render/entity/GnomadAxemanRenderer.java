@@ -1,7 +1,8 @@
 package birsy.clinker.client.render.entity;
 
+import birsy.clinker.client.render.entity.layer.GnomadArmorLayer;
 import birsy.clinker.client.render.entity.layer.GnomadItemBeltLayer;
-import birsy.clinker.client.render.entity.model.GnomadAxemanDynamicModel;
+import birsy.clinker.client.render.entity.model.gnomad.GnomadAxemanDynamicModel;
 import birsy.clinker.common.entity.gnomad.GnomadAxemanEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -22,6 +23,7 @@ public class GnomadAxemanRenderer extends ClinkerEntityRenderer<GnomadAxemanEnti
         super(context, new GnomadAxemanDynamicModel<>(), 0.5F);
         this.addLayer(new ItemInHandLayer<>(this, context.getItemInHandRenderer()));
         this.addLayer(new GnomadItemBeltLayer<>(this, context.getItemInHandRenderer()));
+        this.addLayer(new GnomadArmorLayer<>(this));
     }
 
     @Override

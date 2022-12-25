@@ -94,23 +94,88 @@ public class MudScarabEntity extends AbstractBugEntity {
         return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 100.0D).add(Attributes.MOVEMENT_SPEED, 0.25D).add(Attributes.ATTACK_DAMAGE, 2.0D);
     }
 
-    @Override
     public void tick() {
+        // this is utterly fucked but until i get my hands on landlord it's the best i can be bothered to do
         AABB movementBox = this.getRidingBox();
         for(Entity entity : this.level.getEntities(this, movementBox, EntitySelector.NO_SPECTATORS.and((entity) -> !entity.isPassengerOfSameVehicle(this)))) {
             if (!(entity instanceof MudScarabEntity) && !entity.noPhysics && entity.isOnGround() && !entity.isPassenger()) {
-                //moveRiders(entity, this.getDeltaMovement().scale(4.0F));
                 float scale = 0.83F;
                 entity.setDeltaMovement(entity.getDeltaMovement().add(this.getDeltaMovement().multiply(scale, 1.0F, scale)));
+
+                // check for jumping. does not work though. try not to make them jump?
                 if (this.getPosition(0.0F).y() < this.getPosition(1.0F).y()) {
                     entity.move(MoverType.SELF, new Vec3(0, this.getPosition(1.0F).y() - this.getPosition(0.0F).y(), 0));
                 }
-                //entity.setDeltaMovement(entity.getDeltaMovement().x + this.getDeltaMovement().x, Math.abs(this.getDeltaMovement().y) > Math.abs(entity.getDeltaMovement().y) ? this.getDeltaMovement().y : entity.getDeltaMovement().y, entity.getDeltaMovement().z + this.getDeltaMovement().z);
             }
         }
         super.tick();
     }
 
+    public AABB getRidingBox() {
+        return this.getBoundingBox().move(0, this.getBbHeight() / 2, 0).deflate(0, this.getBbHeight() * 0.8F, 0).move(0, -this.getBbHeight() * 0.1F, 0);
+    }
+
+    public boolean canBeCollidedWith() {
+        return this.isAlive();
+    }
+
+    public void push(Entity pEntity) {
+        if (pEntity instanceof MudScarabEntity) {
+            super.push(pEntity);
+        } else if (pEntity.getBoundingBox().minY <= this.getBoundingBox().minY) {
+            super.push(pEntity);
+        }
+    }
+
+    protected BodyRotationControl createBodyControl() {
+        return new MudScarabEntity.MudScarabBodyRotationControl(this);
+    }
+
+    protected float getStandingEyeHeight(Pose pPose, EntityDimensions pSize) {
+        return 0.4375F;
+    }
+
+    @Override
+    public double getPassengersRidingOffset() {
+        return this.getBbHeight();
+    }
+
+    @Override
+    public int getMaxHeadYRot() {
+        return 80;
+    }
+
+    @Override
+    public int getMaxHeadXRot() {
+        return 70;
+    }
+
+    @Override
+    public int getHeadRotSpeed() {
+        return super.getHeadRotSpeed() / 2;
+    }
+
+    protected Entity.MovementEmission getMovementEmission() {
+        return Entity.MovementEmission.EVENTS;
+    }
+
+    protected SoundEvent getAmbientSound() {
+        return null;
+    }
+
+    protected SoundEvent getHurtSound(DamageSource pDamageSource) {
+        return SoundEvents.ENDERMITE_HURT;
+    }
+
+    protected SoundEvent getDeathSound() {
+        return SoundEvents.ENDERMITE_DEATH;
+    }
+
+    protected void playStepSound(BlockPos pPos, BlockState pBlock) {
+        this.playSound(SoundEvents.SPIDER_STEP, 0.15F, 0.5F);
+    }
+
+    // unused :P
     public void moveRiders(Entity entity, Vec3 pPos) {
         if (!entity.noPhysics) {
             Vec3 vec3 = collideNoEntityCollision(entity, pPos);
@@ -164,7 +229,6 @@ public class MudScarabEntity extends AbstractBugEntity {
 
         }
     }
-
     private Vec3 collideNoEntityCollision(Entity entity, Vec3 pVec) {
         AABB aabb = entity.getBoundingBox();
         List<VoxelShape> list = entity.level.getEntityCollisions(entity, aabb.expandTowards(pVec));
@@ -179,75 +243,7 @@ public class MudScarabEntity extends AbstractBugEntity {
         return collidedVector;
     }
 
-    public AABB getRidingBox() {
-        return this.getBoundingBox().move(0, this.getBbHeight() / 2, 0).deflate(0, this.getBbHeight() * 0.95F, 0);
-    }
-
-    public boolean canBeCollidedWith() {
-        return this.isAlive();
-    }
-    public void push(Entity pEntity) {
-        if (pEntity instanceof MudScarabEntity) {
-            super.push(pEntity);
-        } else if (pEntity.getBoundingBox().minY <= this.getBoundingBox().minY) {
-            super.push(pEntity);
-        }
-
-    }
-
-    protected BodyRotationControl createBodyControl() {
-        return new MudScarabEntity.MudScarabBodyRotationControl(this);
-    }
-
-    protected float getStandingEyeHeight(Pose pPose, EntityDimensions pSize) {
-        return 0.4375F;
-    }
-
-    @Override
-    public double getPassengersRidingOffset() {
-        return this.getBbHeight();
-    }
-
-    @Override
-    public int getMaxHeadYRot() {
-        return 80;
-    }
-
-    @Override
-    public int getMaxHeadXRot() {
-        return 70;
-    }
-
-    @Override
-    public int getHeadRotSpeed() {
-        return super.getHeadRotSpeed() / 2;
-    }
-
-    protected Entity.MovementEmission getMovementEmission() {
-        return Entity.MovementEmission.EVENTS;
-    }
-
-    protected SoundEvent getAmbientSound() {
-        return null;
-    }
-
-    protected SoundEvent getHurtSound(DamageSource pDamageSource) {
-        return SoundEvents.ENDERMITE_HURT;
-    }
-
-    protected SoundEvent getDeathSound() {
-        return SoundEvents.ENDERMITE_DEATH;
-    }
-
-    protected void playStepSound(BlockPos pPos, BlockState pBlock) {
-        this.playSound(SoundEvents.SPIDER_STEP, 0.15F, 0.5F);
-    }
-
-    public MobType getMobType() {
-        return MobType.ARTHROPOD;
-    }
-
-    //Easy solution for body rotation - don't!
+    // Easy solution for body rotation - don't!
     public class MudScarabBodyRotationControl extends BodyRotationControl {
         private final Mob mob;
         private int headStableTime;

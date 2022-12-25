@@ -2,6 +2,8 @@ package birsy.clinker.client.render.particle;
 
 import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3f;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
@@ -44,10 +46,7 @@ public class AshCloudParticle extends TextureSheetParticle {
         this.move(0, 0, 0.5 * MathUtils.bias(progress, -0.5));
     }
 
-    @Override
-    public void render(VertexConsumer pBuffer, Camera pRenderInfo, float pPartialTicks) {
-        super.render(pBuffer, pRenderInfo, pPartialTicks);
-    }
+
 
     @Override
     public ParticleRenderType getRenderType() {
@@ -57,6 +56,47 @@ public class AshCloudParticle extends TextureSheetParticle {
     public void move(double pX, double pY, double pZ) {
         this.setBoundingBox(this.getBoundingBox().move(pX, pY, pZ));
         this.setLocationFromBoundingbox();
+    }
+
+    public void render(VertexConsumer pBuffer, Camera camera, float pPartialTicks) {
+        Vec3 vec3 = camera.getPosition();
+        float x = (float)(Mth.lerp(pPartialTicks, this.xo, this.x) - vec3.x());
+        float y = (float)(Mth.lerp(pPartialTicks, this.yo, this.y) - vec3.y());
+        float z = (float)(Mth.lerp(pPartialTicks, this.zo, this.z) - vec3.z());
+
+        Quaternion rotation;
+
+        if (this.roll == 0.0F) {
+            rotation = camera.rotation();
+        } else {
+            rotation = new Quaternion(camera.rotation());
+            float roll = Mth.lerp(pPartialTicks, this.oRoll, this.roll);
+            rotation.mul(Vector3f.ZP.rotation(roll));
+        }
+
+        Vector3f[] verticies = new Vector3f[]{
+                new Vector3f(-1.0F, -1.0F, 0.0F),
+                new Vector3f(-1.0F, 1.0F, 0.0F),
+                new Vector3f(1.0F, 1.0F, 0.0F),
+                new Vector3f(1.0F, -1.0F, 0.0F)
+        };
+        float quadSize = this.getQuadSize(pPartialTicks);
+
+        for (Vector3f vertex : verticies) {
+            vertex.transform(rotation);
+            vertex.mul(quadSize);
+            vertex.add(x, y, z);
+        }
+
+        float u0 = this.getU0();
+        float u1 = this.getU1();
+        float v0 = this.getV0();
+        float v1 = this.getV1();
+        int packedLight = this.getLightColor(pPartialTicks);
+        pBuffer.vertex(verticies[0].x(), verticies[0].y(), verticies[0].z()).uv(u1, v1).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(packedLight).endVertex();
+        pBuffer.vertex(verticies[1].x(), verticies[1].y(), verticies[1].z()).uv(u1, v0).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(packedLight).endVertex();
+        pBuffer.vertex(verticies[2].x(), verticies[2].y(), verticies[2].z()).uv(u0, v0).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(packedLight).endVertex();
+        pBuffer.vertex(verticies[3].x(), verticies[3].y(), verticies[3].z()).uv(u0, v1).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(packedLight).endVertex();
     }
 
     @OnlyIn(Dist.CLIENT)

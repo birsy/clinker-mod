@@ -60,7 +60,7 @@ public class AlchemyBookItem extends Item {
     @SubscribeEvent
     public static void onClick(InputEvent.MouseButton.Pre event) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player != null){
+        if (mc.player != null && mc.cameraEntity != null ) {
             ItemStack mainHandItem = mc.player.getItemInHand(InteractionHand.MAIN_HAND);
             ItemStack offHandItem = mc.player.getItemInHand(InteractionHand.OFF_HAND);
             ItemStack book = null;

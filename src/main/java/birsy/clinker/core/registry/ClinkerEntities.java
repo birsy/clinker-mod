@@ -21,32 +21,37 @@ import net.minecraftforge.registries.RegistryObject;
 
 @Mod.EventBusSubscriber(modid = Clinker.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ClinkerEntities {
-    public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, Clinker.MOD_ID);
+    public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, Clinker.MOD_ID);
 
-    public static final RegistryObject<EntityType<MudScarabEntity>> MUD_SCARAB = ENTITIES.register("mud_scarab", () ->
+    public static final RegistryObject<EntityType<MudScarabEntity>> MUD_SCARAB = ENTITY_TYPES.register("mud_scarab", () ->
             EntityType.Builder.of(MudScarabEntity::new, MobCategory.MONSTER)
             .sized(2.0F, 1.9F)
             .build(new ResourceLocation(Clinker.MOD_ID, "mud_scarab").toString()));
 
-    public static final RegistryObject<EntityType<SalamanderHeadEntity>> SALAMANDER_HEAD = ENTITIES.register("salamander_head", () ->
+    public static final RegistryObject<EntityType<SalamanderHeadEntity>> SALAMANDER_HEAD = ENTITY_TYPES.register("salamander_head", () ->
             EntityType.Builder.of(SalamanderHeadEntity::new, MobCategory.MONSTER).fireImmune()
                     .sized(1.0F, 1.0F)
                     .build(new ResourceLocation(Clinker.MOD_ID, "salamander_head").toString()));
-    public static final RegistryObject<EntityType<SalamanderBodyEntity>> SALAMANDER_BODY = ENTITIES.register("salamander_body", () ->
+    public static final RegistryObject<EntityType<SalamanderBodyEntity>> SALAMANDER_BODY = ENTITY_TYPES.register("salamander_body", () ->
             EntityType.Builder.of(SalamanderBodyEntity::new, MobCategory.MONSTER).fireImmune()
                     .sized(1.0F, 1.0F)
                     .noSave().noSummon()
                     .build(new ResourceLocation(Clinker.MOD_ID, "salamander_body").toString()));
 
-    public static final RegistryObject<EntityType<SeaHagEntity>> SEA_HAG = ENTITIES.register("sea_hag", () ->
+    public static final RegistryObject<EntityType<SeaHagEntity>> SEA_HAG = ENTITY_TYPES.register("sea_hag", () ->
             EntityType.Builder.of(SeaHagEntity::new, MobCategory.MONSTER)
                     .sized(2.5F, 2.5F)
                     .build(new ResourceLocation(Clinker.MOD_ID, "sea_hag").toString()));
 
-    public static final RegistryObject<EntityType<GnomadAxemanEntity>> GNOMAD_AXEMAN = ENTITIES.register("gnomad_axeman", () ->
+    public static final RegistryObject<EntityType<GnomadAxemanEntity>> GNOMAD_AXEMAN = ENTITY_TYPES.register("gnomad_axeman", () ->
             EntityType.Builder.of(GnomadAxemanEntity::new, MobCategory.MONSTER)
                     .sized(1.0f, 1.5f)
                     .build(new ResourceLocation(Clinker.MOD_ID, "gnomad_axeman").toString()));
+
+    public static final RegistryObject<EntityType<LumberingAspenEntity>> LUMBERING_ASPEN = ENTITY_TYPES.register("lumbering_aspen", () ->
+            EntityType.Builder.of(LumberingAspenEntity::new, MobCategory.AMBIENT)
+                    .sized(1.0f, 1.0f)
+                    .build(new ResourceLocation(Clinker.MOD_ID, "lumbering_aspen").toString()));
 
     @SubscribeEvent
     public static void registerEntityAttribute(EntityAttributeCreationEvent event) {
@@ -54,7 +59,8 @@ public class ClinkerEntities {
         event.put(SALAMANDER_HEAD.get(), SalamanderHeadEntity.createAttributes().build());
         event.put(SALAMANDER_BODY.get(), SalamanderBodyEntity.createAttributes().build());
         event.put(SEA_HAG.get(), SeaHagEntity.createAttributes().build());
-        event.put(GNOMAD_AXEMAN.get(), SeaHagEntity.createAttributes().build());
+        event.put(GNOMAD_AXEMAN.get(), GnomadAxemanEntity.createAttributes().build());
+        event.put(LUMBERING_ASPEN.get(), LumberingAspenEntity.createAttributes().build());
     }
 
     @SubscribeEvent
@@ -65,6 +71,7 @@ public class ClinkerEntities {
 
         event.registerEntityRenderer(ClinkerEntities.SEA_HAG.get(), SeaHagRenderer::new);
         event.registerEntityRenderer(ClinkerEntities.GNOMAD_AXEMAN.get(), GnomadAxemanRenderer::new);
+        event.registerEntityRenderer(ClinkerEntities.LUMBERING_ASPEN.get(), LumberingAspenRenderer::new);
     }
 
     @SubscribeEvent

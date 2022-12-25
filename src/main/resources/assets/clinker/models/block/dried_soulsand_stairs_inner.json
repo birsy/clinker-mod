@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/inner_stairs",
-  "textures": {
-    "bottom": "clinker:block/dried_soulsand/dried_soulsand_slab_var/dried_soulsand_slab",
-    "top": "clinker:block/dried_soulsand/dried_soulsand_slab_var/dried_soulsand_slab",
-    "side": "clinker:block/dried_soulsand/dried_soulsand_slab_var/dried_soulsand_slab"
-  }
-}

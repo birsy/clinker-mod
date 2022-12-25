@@ -1,0 +1,28 @@
+{
+    "textures": {
+        "particle": "clinker:block/smooth_brimstone",
+        "inner_shell": "clinker:block/sarcophagus/sarcophagus_inside",
+        "outer_shell": "clinker:block/smooth_brimstone_1",
+        "shell_side": "clinker:block/sarcophagus/sarcophagus_side"
+    },
+    "elements": [
+        {
+            "from": [ 0, 0, 0 ], 
+            "to": [ 16, 16, 2 ],
+            "faces": {
+                "north": { "texture": "#outer_shell", "uv": [ 0, 0, 16, 16 ], "cullface": "north" },
+                "south": { "texture": "#inner_shell", "uv": [ 0, 0, 16, 16 ] }
+            }
+        },
+        {
+            "from": [ 0.005, 0.005, 0 ],
+            "to": [ 15.995, 15.995, 2 ],
+            "faces": {
+                "east": { "texture": "#shell_side", "uv": [ 0, 0, 2, 16 ], "rotation": 180, "cullface": "east" },
+                "west": { "texture": "#shell_side", "uv": [ 0, 0, 2, 16 ], "cullface": "west" },
+                "up": { "texture": "#shell_side", "uv": [ 0, 0, 2, 16 ], "rotation": 90, "cullface": "up" },
+                "down": { "texture": "#shell_side", "uv": [ 0, 0, 2, 16 ], "rotation": 270, "cullface": "down" }
+            }
+        }
+    ]
+}

@@ -1,10 +1,8 @@
 package birsy.clinker.core.registry;
 
 import birsy.clinker.common.block.*;
-import birsy.clinker.common.block.plant.CaveFigRootsBlock;
+import birsy.clinker.common.block.plant.*;
 import birsy.clinker.common.block.plant.aspen.SwampAspenLogBlock;
-import birsy.clinker.common.block.plant.DoubleMudReedsBlock;
-import birsy.clinker.common.block.plant.MudReedsBlock;
 import birsy.clinker.core.Clinker;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.BlockItem;
@@ -26,17 +24,19 @@ import java.util.function.Supplier;
 public class ClinkerBlocks
 {
 	public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, Clinker.MOD_ID);
-	public static final DeferredRegister<Item>  ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Clinker.MOD_ID);
+	public static final DeferredRegister<Item> BLOCK_ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Clinker.MOD_ID);
 	
 	public static void init()
 	{
 		BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
-		ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
+		BLOCK_ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
 	}
 	
 	// Blocks
 	//Alchemy
 	public static final RegistryObject<Block> FERMENTATION_BARREL = createBlock("fermentation_barrel", FermentationBarrelBlock::new, Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> BLANK_SARCOPHAGUS = createBlock("blank_sarcophagus", () -> new SarcophagusBlock(getBrimstoneProperties().noOcclusion()), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> COUNTER = createBlock("counter", () -> new CounterBlock(BlockBehaviour.Properties.of(Material.WOOD, MaterialColor.COLOR_LIGHT_GRAY).strength(1.0f, 2.0f).sound(SoundType.WOOD)), Clinker.CLINKER_BLOCKS);
 
 	//Material Blocks
 	public static final RegistryObject<Block> LEAD_BLOCK = createBlock("lead_block", () -> new Block(BlockBehaviour.Properties.of(Material.METAL, MaterialColor.COLOR_LIGHT_GRAY).strength(5.0f, 6.0f).sound(SoundType.NETHERITE_BLOCK)), Clinker.CLINKER_BLOCKS);
@@ -87,6 +87,9 @@ public class ClinkerBlocks
 	public static final RegistryObject<Block> BRIMSTONE_BRICKS_SLAB = createBlock("brimstone_bricks_slab", () -> new SlabBlock(getBrimstoneProperties()), Clinker.CLINKER_BLOCKS);
 	public static final RegistryObject<Block> BRIMSTONE_BRICKS_STAIRS = createBlock("brimstone_bricks_stairs", () -> new StairBlock(() -> BRIMSTONE_BRICKS.get().defaultBlockState(), getBrimstoneProperties()), Clinker.CLINKER_BLOCKS);
 	public static final RegistryObject<Block> BRIMSTONE_BRICKS_WALL = createBlock("brimstone_bricks_wall", () -> new WallBlock(getBrimstoneProperties()), Clinker.CLINKER_BLOCKS);
+
+	public static final RegistryObject<Block> SMOOTH_BRIMSTONE = createBlock("smooth_brimstone", () -> new Block(getBrimstoneProperties()), Clinker.CLINKER_BLOCKS);
+
 
 	//Calamine
 	public static BlockBehaviour.Properties getCalamineProperties() {
@@ -141,28 +144,6 @@ public class ClinkerBlocks
 			.strength(1.5F, 6.0F)
 			.sound(SoundType.GILDED_BLACKSTONE)), Clinker.CLINKER_BLOCKS);
 
-
-	//Scorstone
-	public static BlockBehaviour.Properties getScorstoneProperties() {
-		return BlockBehaviour.Properties.of(Material.STONE, MaterialColor.TERRACOTTA_LIGHT_GRAY)
-				  .strength(1.5F, 6.0F)
-				  .sound(SoundType.BASALT);
-	}
-	
-	public static final RegistryObject<Block> SCORSTONE = createBlock("scorstone", () -> new Block(getScorstoneProperties()), Clinker.CLINKER_BLOCKS);
-	
-	public static final RegistryObject<Block> SCORSTONE_SLAB = createBlock("scorstone_slab", () -> new SlabBlock(getScorstoneProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> SCORSTONE_STAIRS = createBlock("scorstone_stairs", () -> new StairBlock(() -> SCORSTONE.get().defaultBlockState(), getScorstoneProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> SCORSTONE_WALL = createBlock("scorstone_wall", () -> new WallBlock(getScorstoneProperties()), Clinker.CLINKER_BLOCKS);
-	
-	public static final RegistryObject<Block> SCORSTONE_BRICKS = createBlock("scorstone_bricks", () -> new Block(getScorstoneProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> SCORSTONE_BRICKS_WALL = createBlock("scorstone_bricks_wall", () -> new WallBlock(getScorstoneProperties()), Clinker.CLINKER_BLOCKS);
-	
-	public static final RegistryObject<Block> COBBLED_SCORSTONE = createBlock("cobbled_scorstone", () -> new Block(getScorstoneProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> POLISHED_SCORSTONE = createBlock("polished_scorstone", () -> new Block(getScorstoneProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> CHISELED_SCORSTONE = createBlock("chiseled_scorstone", () -> new Block(getScorstoneProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> SCORSTONE_PILLAR = createBlock("scorstone_pillar", () -> new RotatedPillarBlock(getScorstoneProperties()), Clinker.CLINKER_BLOCKS);
-	
 	//Shale
 	public static BlockBehaviour.Properties getShaleProperties() {
 		return BlockBehaviour.Properties.of(Material.STONE, MaterialColor.TERRACOTTA_GRAY)
@@ -252,12 +233,15 @@ public class ClinkerBlocks
 	public static final RegistryObject<Block> CAVE_FIG_STEM = createBlock("cave_fig_stem", () -> new HugeMushroomBlock(BlockBehaviour.Properties.of(Material.WOOD, MaterialColor.COLOR_GRAY).sound(SoundType.CALCITE)), Clinker.CLINKER_BLOCKS);
 	public static final RegistryObject<Block> CAVE_FIG_ROOTS = createBlock("cave_fig_roots", () -> new CaveFigRootsBlock(BlockBehaviour.Properties.of(Material.WOOD, MaterialColor.COLOR_GRAY).noOcclusion().sound(SoundType.CALCITE)), Clinker.CLINKER_BLOCKS);
 
+	public static final RegistryObject<Block> TWIZZLING_VINE = createBlock("twizzling_vine", () -> new TwizzlingVineBlock(BlockBehaviour.Properties.of(Material.REPLACEABLE_PLANT).noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS)), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> TWIZZLING_VINE_PLANT = createBlock("twizzling_vine_plant", () -> new TwizzlingVinePlantBlock(BlockBehaviour.Properties.of(Material.REPLACEABLE_PLANT).noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS)), Clinker.CLINKER_BLOCKS);
+
 	//Special
 
 	public static RegistryObject<Block> createBlock(String name, final Supplier<? extends Block> supplier, @Nullable CreativeModeTab group) {
 		RegistryObject<Block> block = BLOCKS.register(name, supplier);
 		if (group != null) {
-			ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties().tab(group)));
+			BLOCK_ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties().tab(group)));
 		}
 		return block;
 	}

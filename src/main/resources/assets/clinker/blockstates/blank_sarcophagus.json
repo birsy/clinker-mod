@@ -1,0 +1,62 @@
+{
+    "multipart": [
+        {
+            "when": {
+                "north": "true"
+            },
+            "apply": {
+                "model": "clinker:block/sarcophagus/sarcophagus_shell"
+            }
+        },
+        {
+            "when": {
+                "east": "true"
+            },
+            "apply": {
+                "model": "clinker:block/sarcophagus/sarcophagus_shell",
+                "y": 90,
+                "uvlock": false
+            }
+        },
+        {
+            "when": {
+                "south": "true"
+            },
+            "apply": {
+                "model": "clinker:block/sarcophagus/sarcophagus_shell",
+                "y": 180,
+                "uvlock": false
+            }
+        },
+        {
+            "when": {
+                "west": "true"
+            },
+            "apply": {
+                "model": "clinker:block/sarcophagus/sarcophagus_shell",
+                "y": 270,
+                "uvlock": false
+            }
+        },
+        {
+            "when": {
+                "up": "true"
+            },
+            "apply": {
+                "model": "clinker:block/sarcophagus/sarcophagus_shell",
+                "x": 270,
+                "uvlock": false
+            }
+        },
+        {
+            "when": {
+                "down": "true"
+            },
+            "apply": {
+                "model": "clinker:block/sarcophagus/sarcophagus_shell",
+                "x": 90,
+                "uvlock": false
+            }
+        }
+    ]
+}

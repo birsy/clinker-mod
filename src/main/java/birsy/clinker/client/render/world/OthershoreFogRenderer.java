@@ -45,14 +45,15 @@ public class OthershoreFogRenderer {
             //Make it a little foggier when it's darker....
             final float darknessAmount = (calculateInterpolatedLight(world, playerVecPos, LightLayer.SKY, false) / 16.0F);
             final float deepCaveHeightMultiplier = Mth.clamp(MathUtils.mapRange(-10, 10, 1.0F, 0, (float) playerVecPos.y), 0, 0.5F);
+            float multiplier = 1.8F;
 
             if (event.getType() == FogType.NONE) {
                 event.setFogShape(FogShape.CYLINDER);
                 float farPlaneDistance = event.getFarPlaneDistance();
                 float deepCaveNearFog = (float) Mth.lerp(darknessAmount, 1.0, Mth.lerp(deepCaveHeightMultiplier, 1.0, 3.0));
-                float deepCaveFarFog = (float) Mth.lerp(darknessAmount, 1.0, Mth.lerp(deepCaveHeightMultiplier, 1.0, 2.0));
-                event.setFarPlaneDistance(farPlaneDistance - (darknessAmount * (farPlaneDistance * 0.5F) * deepCaveFarFog));
-                event.setNearPlaneDistance(0.0F - (darknessAmount * (farPlaneDistance * 0.1F) * deepCaveNearFog));
+                float deepCaveFarFog = (float) Mth.lerp(darknessAmount, 1.0, Mth.lerp(deepCaveHeightMultiplier, 1.0, 1.2));
+                event.setFarPlaneDistance(multiplier * farPlaneDistance - (darknessAmount * (farPlaneDistance * 0.8F) * deepCaveFarFog));
+                event.setNearPlaneDistance(0.0F - (darknessAmount * (farPlaneDistance * 0.05F) * deepCaveNearFog));
             } else if (event.getType() != FogType.LAVA) {
                 final float interpolatedAllLight = calculateInterpolatedLight(world, playerVecPos, null, true);
                 event.setFogShape(FogShape.SPHERE);
@@ -92,9 +93,10 @@ public class OthershoreFogRenderer {
             float blue = (float) Mth.lerp(deepCaveHeightMultiplier, baseColor.z(), seafogColor.z());
 
             if (event.getRenderer().getMainCamera().getFluidInCamera() == FogType.NONE) {
-                event.setRed  ((float) Mth.lerp(interpolatedLight, red, red * darkFogColor.x()));
-                event.setGreen((float) Mth.lerp(interpolatedLight, green, green * darkFogColor.y()));
-                event.setBlue ((float) Mth.lerp(interpolatedLight, blue, blue * darkFogColor.z()));
+                float darker = (float) Mth.clamp(MathUtils.mapRange(64.0F, 200.0F, 0.7F, 1.0F, player.getEyePosition((float) event.getPartialTick()).y), 0.1F, 1.0F);
+                event.setRed  ((float) Mth.lerp(interpolatedLight, red * darker, red * darkFogColor.x()));
+                event.setGreen((float) Mth.lerp(interpolatedLight, green * darker, green * darkFogColor.y()));
+                event.setBlue ((float) Mth.lerp(interpolatedLight, blue * darker, blue * darkFogColor.z()));
             } else if (event.getRenderer().getMainCamera().getFluidInCamera() != FogType.LAVA){
                 final float interpolatedAllLight = calculateInterpolatedLight(world, playerVecPos, null, true);
                 float fluidDark = MathUtils.map(0.0F, 0.9F, interpolatedAllLight);
@@ -107,8 +109,8 @@ public class OthershoreFogRenderer {
     }
 
     public static Vec3 getDarknessFogColors() {
-        float brightness = 0.9f;
-        return new Vec3(0.14f * brightness, 0.175f * brightness, 0.17f * brightness);
+        float brightness = 1.2f;
+        return new Vec3(0.17f * brightness, 0.23f * brightness, 0.14f * brightness);
     }
 
     public static float calculateInterpolatedLight(Level world, Vec3 playerVecPos, LightLayer lightType) {

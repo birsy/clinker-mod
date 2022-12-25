@@ -1,118 +1,120 @@
 package birsy.clinker.common.alchemy.chemicals;
 
-import java.util.ArrayList;
-import java.util.List;
+import birsy.clinker.common.alchemy.anatomy.EntityBody;
+import net.minecraft.world.item.Rarity;
 
-/**
- * Holds elements, and the bonds between them.
- * Bonds can also form between distinct chemicals.
- */
-public class Chemical {
-    public ElementNode[] elementNodes;
-    public ElementBond[] elementBonds;
+import java.util.Map;
 
-    public Chemical(ElementNode... nodes) {
-        this();
-        this.addNodes(nodes);
-    }
-    
-    public Chemical() {}
+public abstract class Chemical {
+    public final Rarity rarity = Rarity.COMMON;
+    public float density;
+    public float hardness;
+    public float malleability;
+    public float conductivity;
+    public float volatility;
 
-    public Chemical addNodes(ElementNode... nodes) {
-        for (ElementNode node : nodes) {
-            node.add(elementNodes);
-        }
-        return this;
-    }
+    public Map<Solvent, Float> solubility;
+    public boolean solvent;
 
+    public float meltingPoint;
+    public float boilingPoint;
+    public float burningPoint;
+    public int color;
 
-    public ElementBond bondNodes(int nodeIndex1, int nodeIndex2) {
-        return new ElementBond(this, nodeIndex1, nodeIndex2);
-    }
-    
-    public List<ElementBond> getBondsFromNode(int nodeIndex) {
-        List<ElementBond> elementBondsList = new ArrayList<>();
+    public Chemical(Chemical.Properties properties) {
+        this.density = properties.density;
+        this.hardness = properties.hardness;
+        this.malleability = properties.malleability;
+        this.conductivity = properties.conductivity;
+        this.volatility = properties.volatility;
 
-        for (ElementBond elementBond : elementBonds) {
-            if (elementBond.nodeIndex1 == nodeIndex || elementBond.nodeIndex2 == nodeIndex) {
-                elementBondsList.add(elementBond);
-            }
-        }
+        this.solubility = properties.solubility;
+        this.solvent = properties.solvent;
 
-        return elementBondsList;
+        this.meltingPoint = properties.meltingPoint;
+        this.boilingPoint = properties.boilingPoint;
+        this.burningPoint = properties.burningPoint;
+
+        this.color = properties.color;
     }
 
+    public void tick(Mixture currentMixture, float deltaTime) {}
+    public abstract void affectOrgan(EntityBody.EntityOrgan organ, float dillution);
 
-    public class ElementNode {
-        public final Element element;
-        private int index;
-        protected List<Integer> connectedNodes;
+    public static class Properties {
+        Rarity rarity = Rarity.COMMON;
+        float density = 1.0F;
+        float hardness = 1.0F;
+        float malleability = 0.0F;
+        float conductivity = 0.0F;
+        float volatility = 0.0F;
 
-        public ElementNode(Element element, ElementNode[] chemicalNodeList) {
-            this(element);
+        Map<Solvent, Float> solubility;
+        boolean solvent;
 
-            this.index = chemicalNodeList.length + 1;
-            chemicalNodeList[this.index] = this;
+        //degrees measured in celsius
+        float meltingPoint = 0.0F;
+        float boilingPoint = 100.0F;
+        float burningPoint = 120.0F;
+        int color;
+
+        public Properties rarity(Rarity rarity) {
+            this.rarity = rarity;
+            return this;
         }
 
-        public ElementNode(Element element) {
-            this.element = element;
-            connectedNodes = new ArrayList<>(element.getBondStrength());
+        public Properties density(float density) {
+            this.density = density;
+            return this;
+        }
+        public Properties hardness(float hardness) {
+            this.hardness = hardness;
+            return this;
+        }
+        public Properties malleability(float malleability) {
+            this.malleability = malleability;
+            return this;
+        }
+        public Properties conductivity(float conductivity) {
+            this.conductivity = conductivity;
+            return this;
+        }
+        public Properties volatility(float volatility) {
+            this.volatility = volatility;
+            return this;
         }
 
-        public void add(ElementNode[] chemicalElementNodeList) {
-            chemicalElementNodeList[this.index] = this;
-            this.index = chemicalElementNodeList.length;
+        public Properties solvent(boolean solvent) {
+            this.solvent = solvent;
+            return this;
         }
-    }
-    
-    public class ElementBond {
-        public final Chemical chemical;
-        public final int nodeIndex1;
-        public final int nodeIndex2;
-
-        public float bondStrength = 1.0F;
-        public float vitriol = 0.0F;
-
-        private ElementBond(Chemical chemical, int nodeIndex1, int nodeIndex2) {
-            this(chemical, nodeIndex1, nodeIndex2, 1.0F);
+        public Properties solubility(Solvent solvent, float solubility) {
+            this.solubility.put(solvent, solubility);
+            return this;
         }
 
-        private ElementBond(Chemical chemical, int nodeIndex1, int nodeIndex2, float bondStrength) {
-            this.chemical = chemical;
-            this.nodeIndex1 = nodeIndex1;
-            this.nodeIndex2 = nodeIndex2;
-
-            this.initializeBond(bondStrength);
-
-            this.getNodeOne().connectedNodes.add(nodeIndex2);
-            this.getNodeTwo().connectedNodes.add(nodeIndex1);
+        public Properties meltingPoint(float meltingPoint) {
+            this.meltingPoint = meltingPoint;
+            return this;
+        }
+        public Properties boilingPoint(float boilingPoint) {
+            this.boilingPoint = boilingPoint;
+            return this;
+        }
+        public Properties burningPoint(float burningPoint) {
+            this.burningPoint = burningPoint;
+            return this;
         }
 
-        private void initializeBond(float baseBondStrength) {
-            float natureDifference = Math.abs(this.getNodeOne().element.elementNature - getNodeTwo().element.elementNature);
-
-            this.bondStrength = baseBondStrength;
-            if (natureDifference - 1.0F > 0.0F) {
-                this.vitriol = natureDifference - 1.0F;
-            }
+        public Properties color(float r, float g, float b) {
+            return this.color((int) r * 255, (int) g * 255, (int) b * 255);
         }
-
-        public void destroy() {
-            this.getNodeOne().connectedNodes.remove(nodeIndex2);
-            this.getNodeTwo().connectedNodes.remove(nodeIndex1);
+        public Properties color(int r, int g, int b) {
+            return  this.color((r << 16) & (g << 8) & b);
         }
-
-        public float getBondStrength(float temperature) {
-            return bondStrength;
-        }
-
-        public ElementNode getNodeOne() {
-            return chemical.elementNodes[nodeIndex1];
-        }
-
-        public ElementNode getNodeTwo() {
-            return chemical.elementNodes[nodeIndex2];
+        public Properties color(int color) {
+            this.color = color;
+            return this;
         }
     }
 }

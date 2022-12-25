@@ -1,14 +1,23 @@
 package birsy.clinker.core;
 
-import birsy.clinker.client.render.world.item.AlchemyBookRenderer;
+import birsy.clinker.client.render.GUIRenderer;
+import birsy.clinker.client.render.gui.AlchemyBundleGUIRenderer;
+import birsy.clinker.client.render.gui.GUIHelperFunctions;
 import birsy.clinker.common.level.chunk.gen.OthershoreChunkGenerator;
+import birsy.clinker.common.level.chunk.gen.TestChunkGenerator;
 import birsy.clinker.core.registry.*;
 import birsy.clinker.core.registry.world.ClinkerBiomeTest;
 import birsy.clinker.core.registry.world.ClinkerFeatures;
 import birsy.clinker.core.registry.world.ClinkerWorld;
+import birsy.clinker.core.util.ClinkerFontManager;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.font.FontManager;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,10 +34,10 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 @Mod(Clinker.MOD_ID)
 public class Clinker
 {
-    //TODO: Figure out what the fuck is going on with intellij's errors and records.
 	public static final String MOD_ID = "clinker";
 	public static boolean devmode = true;
 	public static final Logger LOGGER = LogManager.getLogger(MOD_ID.toUpperCase());
+    public static ClinkerFontManager fontManager;
 
 	public Clinker() throws InterruptedException {
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -36,9 +45,10 @@ public class Clinker
         ClinkerSounds.SOUNDS.register(modEventBus);
         ClinkerItems.ITEMS.register(modEventBus);
         ClinkerBlocks.BLOCKS.register(modEventBus);
-        ClinkerBlocks.ITEMS.register(modEventBus);
-        ClinkerBlockEntities.BLOCK_ENTITIES.register(modEventBus);
-        ClinkerEntities.ENTITIES.register(modEventBus);
+        ClinkerBlocks.BLOCK_ITEMS.register(modEventBus);
+        ClinkerBlockEntities.BLOCK_ENTITY_TYPES.register(modEventBus);
+        Clinker.LOGGER.info("block entities setup!");
+        ClinkerEntities.ENTITY_TYPES.register(modEventBus);
         ClinkerWorld.CHUNK_GENERATORS.register(modEventBus);
         ClinkerFeatures.FEATURES.register(modEventBus);
         //ClinkerElements.ELEMENTS.register(modEventBus);
@@ -48,16 +58,18 @@ public class Clinker
 
         ClinkerBiomeTest.BIOMES.register(modEventBus);
 
-		modEventBus.addListener(this::setup);
-		modEventBus.addListener(this::doClientStuff);
-        
+        modEventBus.addListener(this::setup);
+        modEventBus.addListener(this::doClientStuff);
+
         MinecraftForge.EVENT_BUS.register(this);
+
     }
 	
 	private void setup(final FMLCommonSetupEvent event)
     {
         event.enqueueWork(() -> {
             OthershoreChunkGenerator.register();
+            TestChunkGenerator.register();
             //AxeItem.STRIPPABLES.put(ClinkerBlocks.LOCUST_LOG.get(), ClinkerBlocks.STRIPPED_LOCUST_LOG.get());
             //AxeItem.STRIPPABLES.put(ClinkerBlocks.SWAMP_ASPEN_LOG.get(), ClinkerBlocks.STRIPPED_SWAMP_ASPEN_LOG.get());
         });
@@ -66,6 +78,7 @@ public class Clinker
     private void doClientStuff(final FMLClientSetupEvent event)
     {
         ClinkerBlockEntities.registerTileEntityRenderers();
+
         ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.LOCUST_LOG.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.LOCUST_LEAVES.get(), RenderType.cutoutMipped());
         ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.LOCUST_DOOR.get(), RenderType.cutout());
@@ -75,6 +88,9 @@ public class Clinker
         ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.TALL_MUD_REEDS.get(), RenderType.cutout());
 
         ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.BUGSTALK.get(), RenderType.cutout());
+
+        fontManager = new ClinkerFontManager(Minecraft.getInstance());
+        GUIRenderer.alchemyBundleGUIRenderer = new AlchemyBundleGUIRenderer(Minecraft.getInstance());
     }
 
     @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD, modid = Clinker.MOD_ID)

@@ -16,6 +16,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
 
+@Deprecated
 public class GnomadAxemanModel<T extends GnomadAxemanEntity> extends EntityModel<T> implements ArmedModel {
 	// This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
 	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation(Clinker.MOD_ID, "gnomad_axeman"), "main");
@@ -290,11 +291,10 @@ public class GnomadAxemanModel<T extends GnomadAxemanEntity> extends EntityModel
 		this.headJoint.yRot -= this.gnomadNeck.yRot;
 		this.headJoint.zRot -= this.gnomadNeck.zRot;
 
-		boolean[] armorArray = entity.getArmor();
-		this.gnomadHelmet.visible = armorArray[0];
-		this.gnomadVisor.visible = armorArray[1];
-		this.gnomadLeftPauldron.visible = armorArray[2];
-		this.gnomadRightPauldron.visible = armorArray[3];
+		this.gnomadHelmet.visible = false;
+		this.gnomadVisor.visible = false;
+		this.gnomadLeftPauldron.visible = false;
+		this.gnomadRightPauldron.visible = false;
 	}
 
 	@Override

@@ -1,6 +1,0 @@
-{
-   "parent": "minecraft:block/fence_side",
-   "textures": {
-       "texture": "clinker:block/dried_soulsand/dried_soulsand_bricks_var/dried_soulsand_bricks"
-   }
-}

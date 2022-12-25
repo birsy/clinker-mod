@@ -146,7 +146,28 @@
 	"item.clinker.box_beetle_spawn_egg": "Box Beetle Spawn Egg",
 	"entity.clinker.termite": "Termite Warrior",
 	"entity.clinker.witch_golem": "Witch Golem",
-	
+
+	"entity.clinker.face_beetle.dialogue.1A": "And when he had opened the fourth seal, I heard the voice of the fourth beast say, Come and see.",
+	"entity.clinker.face_beetle.dialogue.1B": "And I looked, and behold, a pale horse: and his name that sat on him was Death, and Hell followed with him.",
+
+	"entity.clinker.face_beetle.dialogue.2A": "Through long nursery nights he stood",
+	"entity.clinker.face_beetle.dialogue.2B": "By my bed unwearying,",
+	"entity.clinker.face_beetle.dialogue.2C": "Loomed gigantic, formless, queer,",
+	"entity.clinker.face_beetle.dialogue.2D": "Purring in my haunted ear",
+	"entity.clinker.face_beetle.dialogue.2E": "That same hideous nightmare thing,",
+	"entity.clinker.face_beetle.dialogue.2F": "Talking, as he lapped my blood,",
+	"entity.clinker.face_beetle.dialogue.2G": "In a voice cruel and flat,",
+	"entity.clinker.face_beetle.dialogue.2H": "Saying for ever, \"Cat! ... Cat! ... Cat!...\"",
+
+	"entity.clinker.face_beetle.dialogue.3A": "It took Moses forty years to cross the desert.",
+
+	"entity.clinker.face_beetle.dialogue.4A": "The whispers in the night,",
+	"entity.clinker.face_beetle.dialogue.4B": "That haunted misty face...",
+	"entity.clinker.face_beetle.dialogue.4C": "A manifestation of our doomed world.",
+	"entity.clinker.face_beetle.dialogue.4D": "I see that cyan flame, flickering.",
+	"entity.clinker.face_beetle.dialogue.4E": "Such rage! Such power!",
+	"entity.clinker.face_beetle.dialogue.4F": "Ye mighty shall despair...",
+
 	//**CREATIVE TABS
 	"itemGroup.clinkerItems": "Clinker Items",
 	"itemGroup.clinkerBlocks": "Clinker Blocks",
@@ -157,3 +178,5 @@
 
 	//**BOOK PAGES
 }
+
+

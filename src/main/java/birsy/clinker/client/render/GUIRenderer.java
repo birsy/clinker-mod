@@ -1,41 +1,26 @@
 package birsy.clinker.client.render;
 
-import birsy.clinker.common.blockentity.IAlchemicalInfo;
+import birsy.clinker.client.render.gui.AlchemyBundleGUIRenderer;
 import birsy.clinker.core.Clinker;
-import com.mojang.blaze3d.platform.Window;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
-import net.minecraft.client.Camera;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.core.BlockPos;
-import net.minecraft.locale.Language;
-import net.minecraft.network.chat.FormattedText;
-import net.minecraft.network.chat.Style;
-import net.minecraft.util.Mth;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderTooltipEvent;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.client.event.RenderGuiEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
-
 @Mod.EventBusSubscriber(modid = Clinker.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class GUIRenderer {
+    public static AlchemyBundleGUIRenderer alchemyBundleGUIRenderer;
+
+    @SubscribeEvent
+    public static void onRenderGUI(RenderGuiEvent.Post event) {
+       // alchemyBundleGUIRenderer.render(event.getPoseStack(), event.getPartialTick());
+    }
+
+    @SubscribeEvent
+    public static void onGUITick(TickEvent.ClientTickEvent event) {
+        //alchemyBundleGUIRenderer.tick();
+    }
     /*@SubscribeEvent
     public static void onRenderGUI(RenderGameOverlayEvent.Post event) {
         Minecraft mc = Minecraft.getInstance();

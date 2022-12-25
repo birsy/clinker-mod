@@ -122,8 +122,6 @@ public class SeaHagEntity extends Monster {
         setPartDir("bodyMiddle", vect.x(), vect.y(), vect.z() + (offset * 2));
         setPartDir("bodyTop",    vect.x(), vect.y(), vect.z() + (offset * 3));
         setPartDir("head",       vect.x(), vect.y(), vect.z() + (offset * 4));
-        this.subEntities[this.tickCount % 4].setId(this.getId());
-        this.parts.forEach((name, part) -> Clinker.LOGGER.info(name + ", " + part.getId()));
     }
 
     public boolean hurt(SeaHagPartEntity pPart, DamageSource pSource, float pAmount) {
@@ -133,7 +131,6 @@ public class SeaHagEntity extends Monster {
     @Override
     public void recreateFromPacket(ClientboundAddEntityPacket entityPacket) {
         super.recreateFromPacket(entityPacket);
-        this.parts.forEach((name, part) -> part.setId(entityPacket.getId()));
     }
 
     @Override

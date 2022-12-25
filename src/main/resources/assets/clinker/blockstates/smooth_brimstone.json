@@ -1,0 +1,10 @@
+{
+    "variants": {
+        "": [
+            { "model": "clinker:block/smooth_brimstone" },
+            { "model": "clinker:block/smooth_brimstone_mirrored"},
+            { "model": "clinker:block/smooth_brimstone_1" },
+            { "model": "clinker:block/smooth_brimstone_1_mirrored"}
+        ]
+    }
+}

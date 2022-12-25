@@ -1,6 +1,6 @@
 package birsy.clinker.client.render.entity.layer;
 
-import birsy.clinker.client.render.entity.model.GnomadAxemanDynamicModel;
+import birsy.clinker.client.render.entity.model.gnomad.GnomadAxemanDynamicModel;
 import birsy.clinker.client.render.entity.model.base.AnimFunctions;
 import birsy.clinker.common.entity.gnomad.GnomadAxemanEntity;
 import com.mojang.blaze3d.vertex.PoseStack;

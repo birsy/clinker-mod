@@ -1,0 +1,22 @@
+{
+  "targets": [
+    "final"
+  ],
+  "passes": [
+    {
+      "name": "clinker:volumetrics",
+      "intarget": "minecraft:main",
+      "outtarget": "final",
+      "auxtargets": [
+        {"name": "DiffuseDepthSampler",
+          "id": "minecraft:main:depth"
+        }
+      ]
+    },
+    {
+      "name": "blit",
+      "intarget": "final",
+      "outtarget": "minecraft:main"
+    }
+  ]
+}

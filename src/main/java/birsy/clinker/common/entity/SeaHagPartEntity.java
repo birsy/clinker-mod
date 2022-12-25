@@ -30,11 +30,9 @@ import java.util.List;
 public class SeaHagPartEntity extends PartEntity<SeaHagEntity> {
     private final EntityDimensions size;
     public final String name;
-    private final SeaHagEntity parent;
 
     public SeaHagPartEntity(SeaHagEntity parent, String name, float w, float h) {
         super(parent);
-        this.parent = parent;
         this.name = name;
         this.size = EntityDimensions.scalable(w, h);
         this.refreshDimensions();
@@ -49,6 +47,20 @@ public class SeaHagPartEntity extends PartEntity<SeaHagEntity> {
     protected void addAdditionalSaveData(CompoundTag pCompound) {
 
     }
+
+    @Override
+    public int getId() {
+        return this.getParent().getId();
+    }
+
+    public boolean equals(Object pObject) {
+        if (pObject instanceof Entity) {
+            return ((Entity)pObject).getId() == this.getId();
+        } else {
+            return false;
+        }
+    }
+
     public Packet<?> getAddEntityPacket() {
         throw new UnsupportedOperationException();
     }
@@ -66,11 +78,6 @@ public class SeaHagPartEntity extends PartEntity<SeaHagEntity> {
 
     public boolean hurt(DamageSource pSource, float pAmount) {
         return this.getParent().hurt(this, pSource, pAmount);
-    }
-
-    @Override
-    public SeaHagEntity getParent() {
-        return this.parent;
     }
 
     public boolean is(Entity pEntity) {

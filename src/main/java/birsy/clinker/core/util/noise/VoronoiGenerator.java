@@ -26,6 +26,8 @@ public class VoronoiGenerator {
         this.seed = seed;
     }
 
+    public long getSeed() { return seed; }
+
     public void setOffsetAmount(double offsetAmount) {
         this.offsetAmount = offsetAmount;
     }
@@ -75,7 +77,7 @@ public class VoronoiGenerator {
             xPrimed += PrimeX;
         }
 
-        return new VoronoiInfo(distanceType.getDistance(distance0), distanceType.getDistance(distance1), closestHash * (1 / 2147483648.0D), cellPos, localPos, new CellInfo(closestHash * (1 / 2147483648.0D), cellPos));
+        return new VoronoiInfo(distanceType.getDistance(distance0), distanceType.getDistance(distance1), closestHash * (1 / 2147483648.0D), cellPos, localPos);
     }
 
     public Pair<VoronoiInfo, List<CellInfo>> get2SurroundingCells(double x, double z) {
@@ -128,7 +130,7 @@ public class VoronoiGenerator {
             xIndex++;
         }
 
-        return Pair.of(new VoronoiInfo(distanceType.getDistance(distance0), distanceType.getDistance(distance1), closestHash * (1 / 2147483648.0D), cellPos, localPos, new CellInfo(closestHash * (1 / 2147483648.0D), cellPos)), cellInfo);
+        return Pair.of(new VoronoiInfo(distanceType.getDistance(distance0), distanceType.getDistance(distance1), closestHash * (1 / 2147483648.0D), cellPos, localPos), cellInfo);
     }
 
     //closestHash * (1 / 2147483648.0f)
@@ -185,7 +187,7 @@ public class VoronoiGenerator {
             xPrimed += PrimeX;
         }
 
-        return new VoronoiInfo(distanceType.getDistance(distance0), distanceType.getDistance(distance1), closestHash * (1 / 2147483648.0D), cellPos, localPos, new CellInfo(closestHash * (1 / 2147483648.0D), cellPos));
+        return new VoronoiInfo(distanceType.getDistance(distance0), distanceType.getDistance(distance1), closestHash * (1 / 2147483648.0D), cellPos, localPos);
     }
 
     private static int hash(int seed, int... primedCoords) {
@@ -269,7 +271,7 @@ public class VoronoiGenerator {
     };
 
     public record CellInfo(double hash, Vec3 cellPos) {}
-    public record VoronoiInfo(double distance, double distance1, double hash, Vec3 cellPos, Vec3 localPos, CellInfo cellInfo) {}
+    public record VoronoiInfo(double distance, double distance1, double hash, Vec3 cellPos, Vec3 localPos) {}
 
     public enum DistanceType implements iDistanceType {
         euclidean {

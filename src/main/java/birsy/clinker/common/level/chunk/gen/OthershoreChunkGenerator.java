@@ -108,7 +108,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         Heightmap[] heightmaps = {chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.OCEAN_FLOOR_WG), chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.WORLD_SURFACE_WG)};
 
         this.beardifier = Beardifier.forStructuresInChunk(structureManager, chunk.getPos());
-        //fillNoiseSampleArrays(chunk, random.legacyLevelSeed());
+        fillNoiseSampleArrays(chunk, random.legacyLevelSeed());
 
         for(int x = 0; x < 16; ++x) {
             for(int z = 0; z < 16; ++z) {
@@ -313,7 +313,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         int minHeight = 64;
 
         //Clinker.LOGGER.info("" + mod(x, 16) +" "+ y +" "+ mod(z, 16));
-        /*double terrainShape = lerpSample(terrainShapeSamplePoints, 0, -64, 0, 16, 320, 16, mod(x, 16), y, mod(z, 16), MathUtils.EasingType.easeInOutQuad);
+        double terrainShape = lerpSample(terrainShapeSamplePoints, 0, -64, 0, 16, 320, 16, mod(x, 16), y, mod(z, 16), MathUtils.EasingType.easeInOutQuad);
         boolean surfaceFluid = (terrainShape < 0);
 
         double caveShape = lerpSample(caveShapeSamplePoints, 0, -64, 0, 16, 320, 16, mod(x, 16), y, mod(z, 16), MathUtils.EasingType.easeInOutQuad);
@@ -333,9 +333,9 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         return terrainShape > 0 ?
                 (terrainShape > 6 ? this.settings.defaultBlock() : terrainShape > edgeDeriv ? this.getStone(x, y, z, facingUp) : this.settings.defaultBlock()) :
                 (duneShape > 0 ? ClinkerBlocks.ASH.get().defaultBlockState() :
-                        surfaceFluid ? (y > 75 ? Blocks.AIR.defaultBlockState() : settings.defaultFluid()) : this.getAir(x, y, z, seed));*/
-        OthershoreNoiseSampler s = this.getOrCreateNoiseSampler(seed);
-        /*s.voronoiGenerator.setOffsetAmount(1.0);
+                        surfaceFluid ? (y > 75 ? Blocks.AIR.defaultBlockState() : settings.defaultFluid()) : this.getAir(x, y, z, seed));
+        /*OthershoreNoiseSampler s = this.getOrCreateNoiseSampler(seed);
+        s.voronoiGenerator.setOffsetAmount(1.0);
         double cellSize = 16.0;
         VoronoiGenerator.VoronoiInfo cell = s.voronoiGenerator.get2(x / cellSize, z / cellSize);
 
@@ -355,7 +355,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             riverGradient = cell.distance();
         }
         noise = MathUtils.mapRange(-1, 1, minHeight, maxHeight, noise);
-        noise -= y;*/
+        noise -= y;
         double cellSize = 128.0;
         VoronoiGenerator.VoronoiInfo cell = s.voronoiGenerator.get2(x / cellSize, z / cellSize);
 
@@ -372,7 +372,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         double riverHeight = MathUtils.map(0, 32, cell.hash());
         riverHeight -= y;
         noise *= Math.abs(riverHeight) - 8;
-        return noise > 0 ? settings.defaultBlock() : Blocks.AIR.defaultBlockState();
+        return noise > 0 ? settings.defaultBlock() : Blocks.AIR.defaultBlockState();*/
     }
 
     public double[] sampleTerrainAndDuneShapeNoise(double x, double y, double z, long seed) {
@@ -401,7 +401,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             erosion = (erosion + 1) * 0.5;
             erosion = Mth.clamp(erosion, 0.0, 1.0);
             erosion = MathUtils.bias(erosion, 0.3F);
-            erosion = MathUtils.mapRange(0.0, 1.0, 0.2, 0.8, erosion);
+            erosion = MathUtils.mapRange(0.0, 1.0, 0.0, 0.5, erosion);
             double tBaseNoise = s.largeNoise.GetNoise(x * frequency, z * frequency);
             tBaseNoise = MathUtils.smoothMinExpo((tBaseNoise * plateauSize + plateauSize) - 1, 1, 0.0);
             tBaseNoise = tBaseNoise < 0.0 ? MathUtils.smoothMinExpo(tBaseNoise * cliffsideSize, -1, -0.1) : tBaseNoise;
@@ -413,7 +413,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
             double overhangStepSize = 0.07;
             double overhangStepNoise = (s.largeNoise.GetNoise(x * overhangStepSize, 22.0, z * overhangStepSize) + 1.0F) / 2.0F;
-            overhangStepNoise = MathUtils.map(4.0, 8.0, overhangStepNoise);
+            overhangStepNoise = MathUtils.map(2.0, 8.0, overhangStepNoise);
             double detailIntensityO = 0.3;//0.23;
             double overhangNoise = (MathUtils.biasTowardsExtreme(tBaseNoise, 0.9F, 2) * (1 - detailIntensityO)) + (detailNoise * detailIntensityO);
             overhangNoise = MathUtils.mapRange(-1.0, 1.0, minHeight, maxHeight, overhangNoise);
@@ -422,7 +422,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             double stepSize = 0.15;
             double terrainStepNoise = (s.largeNoise.GetNoise(x * stepSize, 2342.0, z * stepSize) + 1.0F) / 2.0F;
             double detailIntensityT = 0.04;
-            double terracedNoise = MathUtils.terrace((float) ((baseNoise * (1 - detailIntensityT)) + (detailNoise * detailIntensityT)), 1.0F / (MathUtils.map(3.3, 1.2, MathUtils.bias(terrainStepNoise, -0.2F))), 0.08F).first;
+            double terracedNoise = MathUtils.terrace((float) ((baseNoise * (1 - detailIntensityT)) + (detailNoise * detailIntensityT)), 1.0F / (MathUtils.map(3.3, 1.2, MathUtils.bias(terrainStepNoise, -0.2F))), 0.0F).first;
             terracedNoise = MathUtils.mapRange(-1.0, 1.0, minHeight, maxHeight, terracedNoise);
             terracedNoise -= y;
 
@@ -431,8 +431,12 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             smoothingFactor = MathUtils.map(0.0, 0.9, smoothingFactor);
 
             double shapeScale = 0.4;
-            double shapeNoise = MathUtils.bias((MathUtils.biasTowardsExtreme(s.largeNoise.GetNoise(x * shapeScale, -1234.0, z * shapeScale), 0.8F, 1) + 1.0F) / 2.0F, 0.35F);
+            double shapeNoise = MathUtils.bias((MathUtils.biasTowardsExtreme(s.largeNoise.GetNoise(x * shapeScale, -1234.0, z * shapeScale), 0.8F, 3) + 1.0F) / 2.0F, 0.35F);
             terrainShape = Mth.lerp(shapeNoise, terracedNoise, overhangNoise);
+            //double shapeScale2 = 0.4;
+            //double shapeNoise2 = MathUtils.bias((MathUtils.biasTowardsExtreme(s.largeNoise.GetNoise(x * shapeScale2, -4234.0, z * shapeScale2), 0.8F, 3) + 1.0F) / 2.0F, 0.35F);
+            //terrainShape = Mth.lerp(shapeNoise2, terrainShape, Math.max(terracedNoise, overhangNoise));
+
             terrainShape = Mth.lerp(smoothingFactor, terrainShape, basicNoise);
 
             double duneSize = 0.7;
@@ -452,20 +456,35 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
     }
 
     public double overhang(double y, double overhangAmount, int minHeight, int maxHeight) {
-        double dist = MathUtils.mapRange(minHeight, maxHeight, 0, 1, y);
+        /*double dist = MathUtils.mapRange(minHeight, maxHeight, 0, 1, y);
         double a = Mth.frac(dist * overhangAmount);
 
-        double topSteepness = 0.08;
+        double topSteepness = 0.001;
         double overhangDepth = 4.1;
 
         double i = MathUtils.smoothClampExpo((a - 1)/topSteepness + 1, 0, 1, 0.2);
         double o = ((a - 1)*(a - 1)*(a - 1) + (a - 1)*(a - 1)) * overhangDepth;
-        double s = MathUtils.bias(a, 0.7);
-        a = Mth.lerp(i, o, s);
+        double s = MathUtils.bias(a, 1.0);
+        double combined = MathUtils.smoothMinExpo(i, o, -0.01);
+        a = Mth.lerp(i, combined, s);
 
         //a = OVERHANG_CURVE.bezierPoint(a).y();
         //a = (7.466 * a * a * a - 11.2 * a * a + 4.733 * a);
         double b = Math.floor(dist * overhangAmount);
+
+        double overhang = (a + b) / overhangAmount;
+        return MathUtils.map(64, 240, overhang);*/
+        double dist = MathUtils.mapRange(minHeight, maxHeight, 0, 1, y);
+        double a = Mth.frac(dist * overhangAmount);
+        double b = Math.floor(dist * overhangAmount);
+
+        a = MathUtils.bias(a, 1.0) * 0.3;
+
+        double topSteepness = 0.001;
+        double i = MathUtils.smoothClampExpo((a - 1)/topSteepness + 1, 0, 1, 0.2);
+        double s = MathUtils.bias(a, 1.0);
+        double combined = MathUtils.smoothMinExpo(i, a, -0.02);
+        a = Mth.lerp(i, combined, s);
 
         double overhang = (a + b) / overhangAmount;
         return MathUtils.map(64, 240, overhang);
@@ -635,7 +654,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
     }
 
     public BlockState getAir(int x, int y, int z, long seed) {
-        double awfulRandom = Mth.frac(Mth.frac(x * 32.2312343) * Mth.frac(z * 433.4445323) * 314159.32342);
+        /*double awfulRandom = Mth.frac(Mth.frac(x * 32.2312343) * Mth.frac(z * 433.4445323) * 314159.32342);
         //Clinker.LOGGER.info(awfulRandom);
         boolean waterfall = awfulRandom < (1.0 / 256.0);
         double aquifer = sampleAquiferNoise(x, y, z, seed);
@@ -654,9 +673,9 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             aNoise = 1.0;
         }
 
-        BlockState state = aNoise > 0 && !waterfall ? settings.defaultBlock() : aquifer > 0 ? settings.defaultFluid() : (y < -45 ? settings.defaultFluid() : Blocks.AIR.defaultBlockState());
+        BlockState state = aNoise > 0 && !waterfall ? settings.defaultBlock() : aquifer > 0 ? settings.defaultFluid() : (y < -45 ? settings.defaultFluid() : Blocks.AIR.defaultBlockState());*/
 
-        return state;//y > 70 ? Blocks.AIR.defaultBlockState() : settings.defaultFluid();
+        return y > 70 ? Blocks.AIR.defaultBlockState() : settings.defaultFluid();
     }
 
     public int getBaseHeight(int x, int y, Heightmap.Types heightmap, LevelHeightAccessor level, RandomState random) {
