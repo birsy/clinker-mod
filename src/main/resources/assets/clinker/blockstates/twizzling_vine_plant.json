@@ -1,0 +1,11 @@
+{
+  "variants": {
+    "attached=false": [
+      {"model": "clinker:block/twizzling_vine/twizzling_vine_plant"},
+      {"model": "clinker:block/twizzling_vine/twizzling_vine_plant_twizzle"}
+    ],
+    "attached=true": {
+      "model": "clinker:block/twizzling_vine/twizzling_vine_base_plant"
+    }
+  }
+}

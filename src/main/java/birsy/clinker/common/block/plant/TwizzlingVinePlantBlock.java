@@ -1,36 +1,36 @@
 package birsy.clinker.common.block.plant;
 
+import birsy.clinker.core.registry.ClinkerBlocks;
+import birsy.clinker.core.registry.ClinkerItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.GrowingPlantBodyBlock;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.GrowingPlantHeadBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
-public class TwizzlingVinePlantBlock extends GrowingPlantBodyBlock implements TwizzlingVine {
+public class TwizzlingVinePlantBlock extends AttachedGrowingPlantBodyBlock {
+    static VoxelShape SHAPE = Block.box(1.0D, 0.0D, 1.0D, 15.0D, 16.0D, 15.0D);
+
     public TwizzlingVinePlantBlock(Properties pProperties) {
         super(pProperties, Direction.DOWN, SHAPE, false);
+        this.registerDefaultState(this.getStateDefinition().any().setValue(ATTACHED, false));
     }
 
-    @Nullable
-    @Override
-    public BlockState getStateForPlacement(BlockPlaceContext pContext) {
-        BlockState state = super.getStateForPlacement(pContext);
-        return TwizzlingVine.getAttachedState(state, pContext.getLevel(), pContext.getClickedPos());
+    public GrowingPlantHeadBlock getHeadBlock() {
+        return (GrowingPlantHeadBlock) ClinkerBlocks.TWIZZLING_VINE.get();
     }
 
-    @Override
-    public BlockState updateShape(BlockState pState, Direction pFacing, BlockState pFacingState, LevelAccessor pLevel, BlockPos pCurrentPos, BlockPos pFacingPos) {
-        BlockState state = super.updateShape(pState, pFacing, pFacingState, pLevel, pCurrentPos, pFacingPos);
-        if (pFacing == Direction.UP) { return TwizzlingVine.getAttachedState(state, pLevel, pCurrentPos); }
-
-        return state;
+    public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
+        Vec3 vec3 = pState.getOffset(pLevel, pPos);
+        return SHAPE.move(vec3.x, vec3.y, vec3.z);
     }
 
-    @Override
-    protected GrowingPlantHeadBlock getHeadBlock() {
-        return null;
+    public ItemStack getCloneItemStack(BlockGetter getter, BlockPos pos, BlockState state) {
+        return new ItemStack(ClinkerItems.TWIZZLING_VINE_ITEM.get());
     }
 }

@@ -1,9 +1,11 @@
 package birsy.clinker.core.registry;
 
 import birsy.clinker.client.render.world.blockentity.CounterRenderer;
+import birsy.clinker.client.render.world.blockentity.FairyFruitRenderer;
 import birsy.clinker.client.render.world.blockentity.FermentationBarrelRenderer;
 import birsy.clinker.client.render.world.blockentity.SarcophagusInnardsRenderer;
 import birsy.clinker.common.blockentity.CounterBlockEntity;
+import birsy.clinker.common.blockentity.FairyFruitBlockEntity;
 import birsy.clinker.common.blockentity.FermentationBarrelBlockEntity;
 import birsy.clinker.common.blockentity.SarcophagusBlockEntity;
 import birsy.clinker.core.Clinker;
@@ -37,10 +39,14 @@ public class ClinkerBlockEntities {
     public static final RegistryObject<BlockEntityType<CounterBlockEntity>> COUNTER = BLOCK_ENTITY_TYPES.register("counter",
             () -> BlockEntityType.Builder.of(CounterBlockEntity::new, ClinkerBlocks.COUNTER.get()).build(null));
 
+    public static final RegistryObject<BlockEntityType<FairyFruitBlockEntity>> FAIRY_FRUIT = BLOCK_ENTITY_TYPES.register("fairy_fruit",
+            () -> BlockEntityType.Builder.of(FairyFruitBlockEntity::new, ClinkerBlocks.FAIRY_FRUIT_BLOCK.get()).build(null));
+
     public static void registerTileEntityRenderers() {
         BlockEntityRenderers.register(ClinkerBlockEntities.FERMENTATION_BARREL.get(), FermentationBarrelRenderer::new);
         BlockEntityRenderers.register(ClinkerBlockEntities.SARCOPHAGUS_INNARDS.get(), SarcophagusInnardsRenderer::new);
         BlockEntityRenderers.register(ClinkerBlockEntities.COUNTER.get(), CounterRenderer::new);
+        BlockEntityRenderers.register(ClinkerBlockEntities.FAIRY_FRUIT.get(), FairyFruitRenderer::new);
     }
 
     @SubscribeEvent

@@ -233,8 +233,11 @@ public class ClinkerBlocks
 	public static final RegistryObject<Block> CAVE_FIG_STEM = createBlock("cave_fig_stem", () -> new HugeMushroomBlock(BlockBehaviour.Properties.of(Material.WOOD, MaterialColor.COLOR_GRAY).sound(SoundType.CALCITE)), Clinker.CLINKER_BLOCKS);
 	public static final RegistryObject<Block> CAVE_FIG_ROOTS = createBlock("cave_fig_roots", () -> new CaveFigRootsBlock(BlockBehaviour.Properties.of(Material.WOOD, MaterialColor.COLOR_GRAY).noOcclusion().sound(SoundType.CALCITE)), Clinker.CLINKER_BLOCKS);
 
-	public static final RegistryObject<Block> TWIZZLING_VINE = createBlock("twizzling_vine", () -> new TwizzlingVineBlock(BlockBehaviour.Properties.of(Material.REPLACEABLE_PLANT).noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS)), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> TWIZZLING_VINE_PLANT = createBlock("twizzling_vine_plant", () -> new TwizzlingVinePlantBlock(BlockBehaviour.Properties.of(Material.REPLACEABLE_PLANT).noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS)), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> TWIZZLING_VINE = createBlock("twizzling_vine", () -> new TwizzlingVineBlock(BlockBehaviour.Properties.of(Material.REPLACEABLE_PLANT).noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS).offsetType(BlockBehaviour.OffsetType.XZ)), null);
+	public static final RegistryObject<Block> TWIZZLING_VINE_PLANT = createBlock("twizzling_vine_plant", () -> new TwizzlingVinePlantBlock(BlockBehaviour.Properties.of(Material.REPLACEABLE_PLANT).noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS).offsetType(BlockBehaviour.OffsetType.XZ)), null);
+
+	public static final RegistryObject<Block> FAIRY_FRUIT_BLOCK = createBlock("fairy_fruit_block", () -> new FairyFruitBlock(BlockBehaviour.Properties.of(Material.REPLACEABLE_PLANT).noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS).offsetType(BlockBehaviour.OffsetType.XZ)), null);
+	public static final RegistryObject<Block> FAIRY_FRUIT_VINE = createBlock("fairy_fruit_vine", () -> new FairyFruitVineBlock(BlockBehaviour.Properties.of(Material.REPLACEABLE_PLANT).noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS).offsetType(BlockBehaviour.OffsetType.XZ)), null);
 
 	//Special
 
