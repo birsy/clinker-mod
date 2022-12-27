@@ -1,5 +1,5 @@
 {
-  "parent": "minecraft:block/cross",
+  "parent": "clinker:block/thick_grass",
   "render_type": "cutout",
   "textures": {
     "cross": "clinker:block/fairy_fruit_base"

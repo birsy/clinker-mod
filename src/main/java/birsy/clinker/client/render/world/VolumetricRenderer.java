@@ -94,10 +94,10 @@ public class VolumetricRenderer {
 
                 getChunkLightTexture().ifPresent((chunkLight) -> pass.effect.setSampler("ChunkLightSampler", chunkLight.lightTexture::getId));
 
-                //pass.process(postChain.time / 20.0F);
+         //       pass.process(postChain.time / 20.0F);
             }
         });
-        //minecraft.getMainRenderTarget().bindWrite(false);
+       // minecraft.getMainRenderTarget().bindWrite(false);
     }
 
     public static void init() throws IOException {

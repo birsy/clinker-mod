@@ -2,12 +2,14 @@ package birsy.clinker.client.render.world.blockentity;
 
 import birsy.clinker.client.render.ClinkerRenderTypes;
 import birsy.clinker.client.render.entity.model.base.BasicModelPart;
+import birsy.clinker.client.render.world.VolumetricRenderer;
 import birsy.clinker.common.blockentity.FairyFruitBlockEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
+import com.mojang.math.Vector4f;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.renderer.LightTexture;
@@ -22,6 +24,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.List;
 import java.util.function.Function;
 
 public class FairyFruitRenderer<T extends FairyFruitBlockEntity> implements BlockEntityRenderer<T> {
@@ -41,15 +44,48 @@ public class FairyFruitRenderer<T extends FairyFruitBlockEntity> implements Bloc
 
     @Override
     public void render(T pBlockEntity, float pPartialTick, PoseStack pPoseStack, MultiBufferSource pBufferSource, int pPackedLight, int pPackedOverlay) {
-        Vec3 fruitPos = pBlockEntity.pFruitLocation.lerp(pBlockEntity.fruitLocation, pPartialTick);
-        Vec3 basePos = pBlockEntity.baseLocation.add(0, 0.5, 0);
-        Vec3 dif = fruitPos.subtract(basePos);
-        float length = (float) dif.length();
-        Vec3 direction = dif.scale(1.0 / length);
+        List<Vec3> positions = pBlockEntity.locations;
+        List<Vec3> pPositions = pBlockEntity.pLocations;
+
+        if (positions.isEmpty()) return;
+
+        // rendering the vine
+        pPoseStack.pushPose();
+        pPoseStack.translate(0.5, 0.5, 0.5);
+        VertexConsumer buffer3 = pBufferSource.getBuffer(RenderType.entityCutoutNoCull(TEXTURE));
+        float totalLength = 0;
+        for (int i = 1; i < positions.size(); i++) {
+            Vec3 pos1 = pPositions.get(i - 1).lerp(positions.get(i - 1), pPartialTick);
+            Vec3 pos2 = pPositions.get(i).lerp(positions.get(i), pPartialTick);
+
+            Vec3 dir = pos2.subtract(pos1).normalize();
+
+            Vec3 dir1 = dir;
+            Vec3 dir2 = dir;
+
+            // averaging current and previous/next directions to ensure no gaps in the rope...
+            if (i - 1 > 0) {
+                Vec3 pos0 = pPositions.get(0).lerp(positions.get(0), pPartialTick);
+                dir1 = dir1.add(pos1.subtract(pos0).normalize()).scale(0.5).normalize();
+            }
+            if (i + 1 < positions.size()) {
+                Vec3 pos3 = pPositions.get(i + 1).lerp(positions.get(i + 1), pPartialTick);
+                dir2 = dir2.add(pos3.subtract(pos2).normalize()).scale(0.5).normalize();
+            }
+
+            drawVineBetweenPoints(pBlockEntity, pos1, dir1, pos2, dir2, totalLength, buffer3, pPoseStack, pPackedLight, pPackedOverlay);
+            totalLength += pos1.distanceTo(pos2);
+        }
+        pPoseStack.popPose();
 
         // rendering the fruits
-        pPoseStack.pushPose();
+        Vec3 fruitPos = pPositions.get(positions.size() - 1).lerp(positions.get(positions.size() - 1), pPartialTick);
+        Vec3 basePos = fruitPos;
+        if (positions.size() > 1) basePos = pPositions.get(positions.size() - 2).lerp(positions.get(positions.size() - 2), pPartialTick);
+        
+        Vec3 direction = fruitPos.subtract(basePos).normalize();
 
+        pPoseStack.pushPose();
         pPoseStack.translate(0.5, 0.5, 0.5);
 
         pPoseStack.translate(fruitPos.x(), fruitPos.y(), fruitPos.z());
@@ -64,25 +100,16 @@ public class FairyFruitRenderer<T extends FairyFruitBlockEntity> implements Bloc
         leavesModel.renderToBuffer(pPoseStack, buffer1, pPackedLight, pPackedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
         VertexConsumer buffer2 = pBufferSource.getBuffer(ClinkerRenderTypes.entityTranslucentUnlit(TEXTURE));
         fruitModel.renderToBuffer(pPoseStack, buffer2, LightTexture.pack(15, 0),  OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
-
-        pPoseStack.popPose();
-
-        // rendering the vine
-        pPoseStack.pushPose();
-        pPoseStack.translate(0.5, 0.5, 0.5);
-
-        VertexConsumer buffer3 = pBufferSource.getBuffer(RenderType.entityCutoutNoCull(TEXTURE));
-        drawVineBetweenPoints(pBlockEntity, basePos, direction, fruitPos, direction, buffer3, pPoseStack, pPackedLight, pPackedOverlay);
         pPoseStack.popPose();
     }
 
-    private void drawVineBetweenPoints(T entity, Vec3 point1, Vec3 point1Dir, Vec3 point2, Vec3 point2Dir, VertexConsumer buffer, PoseStack stack, int packedLight, int packedOverlay) {
+    private void drawVineBetweenPoints(T entity, Vec3 point1, Vec3 point1Dir, Vec3 point2, Vec3 point2Dir, float uvOffset, VertexConsumer buffer, PoseStack stack, int packedLight, int packedOverlay) {
         Matrix4f matrix = stack.last().pose();
-        float thickness = ((3.0F / 16.0F) * 0.5F) / Mth.sqrt(2);
         float length = (float) point1.distanceTo(point2);
+        float thickness = ((3.0F / 16.0F) * 0.5F) / Mth.sqrt(2);
 
-        BlockPos samplePos1 = entity.getBlockPos().offset(point1.x() + 0.5, point1.y() + 0.5, point1.z() + 0.5);
-        BlockPos samplePos2 = entity.getBlockPos().offset(point2.x() + 0.5, point2.y() + 0.5, point2.z() + 0.5);
+        BlockPos samplePos1 = entity.getBlockPos().offset(point1.x() + 0.5, point1.y() - 1, point1.z() + 0.5);
+        BlockPos samplePos2 = entity.getBlockPos().offset(point2.x() + 0.5, point2.y(), point2.z() + 0.5);
         int light1 = packedLight;
         int light2 = packedLight;
         if (entity.hasLevel()) {
@@ -93,48 +120,60 @@ public class FairyFruitRenderer<T extends FairyFruitBlockEntity> implements Bloc
         Rotation rot1 = new Rotation(point1Dir);
         Rotation rot2 = new Rotation(point2Dir);
 
+        float n = Mth.sqrt(2);
+        Vector3f normal1 = new Vector3f(n, 0, n);
+        normal1.transform(Vector3f.ZP.rotation(-rot1.zRot));
+        normal1.transform(Vector3f.XP.rotation(-rot1.xRot));
+        normal1.transform(stack.last().normal());
+
+        Vector3f normal2 = new Vector3f(n, 0, n);
+        normal2.transform(Vector3f.ZP.rotation(-rot2.zRot));
+        normal2.transform(Vector3f.XP.rotation(-rot2.xRot));
+        normal2.transform(stack.last().normal());
+
         // a little monstrous but it works and i will never have to touch this again!
         vertex(buffer, matrix, point1, -thickness, 0 , -thickness, rot1.xRot, rot1.zRot)
                 .color(1.0F, 1.0F, 1.0F, 1.0F)
-                .uv(0, 0)
+                .uv(0, uvOffset * 0.5F)
                 .overlayCoords(packedOverlay).uv2(light1)
-                .normal(1, 0, 0).endVertex();
+                .normal(normal1.x(), normal1.y(), normal1.z()).endVertex();
         vertex(buffer, matrix, point1, thickness, 0, thickness, rot1.xRot, rot1.zRot)
                 .color(1.0F, 1.0F, 1.0F, 1.0F)
-                .uv( (3.0F / 32.0F), 0)
+                .uv( (3.0F / 32.0F), uvOffset * 0.5F)
                 .overlayCoords(packedOverlay).uv2(light1)
-                .normal(1, 0, 0).endVertex();
+                .normal(normal1.x(), normal1.y(), normal1.z()).endVertex();
         vertex(buffer, matrix, point2, thickness, 0, thickness, rot2.xRot, rot2.zRot)
                 .color(1.0F, 1.0F, 1.0F, 1.0F)
-                .uv( (3.0F / 32.0F), length * 0.5F)
+                .uv( (3.0F / 32.0F), (uvOffset + length) * 0.5F)
                 .overlayCoords(packedOverlay).uv2(light2)
-                .normal(1, 0, 0).endVertex();
+                .normal(normal2.x(), normal2.y(), normal2.z()).endVertex();
         vertex(buffer, matrix, point2, -thickness, 0, -thickness, rot2.xRot, rot2.zRot)
                 .color(1.0F, 1.0F, 1.0F, 1.0F)
-                .uv( 0, length * 0.5F)
+                .uv( 0, (uvOffset + length) * 0.5F)
                 .overlayCoords(packedOverlay).uv2(light2)
-                .normal(1, 0, 0).endVertex();
+                .normal(normal2.x(), normal2.y(), normal2.z()).endVertex();
+
 
         vertex(buffer, matrix, point1, thickness, 0 , -thickness, rot1.xRot, rot1.zRot)
                 .color(1.0F, 1.0F, 1.0F, 1.0F)
-                .uv(0, 0)
+                .uv(0, uvOffset * 0.5F)
                 .overlayCoords(packedOverlay).uv2(light1)
-                .normal(1, 0, 0).endVertex();
+                .normal(normal1.x(), normal1.y(), normal1.z()).endVertex();
         vertex(buffer, matrix, point1, -thickness, 0, thickness, rot1.xRot, rot1.zRot)
                 .color(1.0F, 1.0F, 1.0F, 1.0F)
-                .uv( (3.0F / 32.0F), 0)
+                .uv( (3.0F / 32.0F), uvOffset * 0.5F)
                 .overlayCoords(packedOverlay).uv2(light1)
-                .normal(1, 0, 0).endVertex();
+                .normal(normal1.x(), normal1.y(), normal1.z()).endVertex();
         vertex(buffer, matrix, point2, -thickness, 0, thickness, rot2.xRot, rot2.zRot)
                 .color(1.0F, 1.0F, 1.0F, 1.0F)
-                .uv( (3.0F / 32.0F), length * 0.5F)
+                .uv( (3.0F / 32.0F), (uvOffset + length) * 0.5F)
                 .overlayCoords(packedOverlay).uv2(light2)
-                .normal(1, 0, 0).endVertex();
+                .normal(normal2.x(), normal2.y(), normal2.z()).endVertex();
         vertex(buffer, matrix, point2, thickness, 0, -thickness, rot2.xRot, rot2.zRot)
                 .color(1.0F, 1.0F, 1.0F, 1.0F)
-                .uv( 0, length * 0.5F)
+                .uv( 0, (uvOffset + length) * 0.5F)
                 .overlayCoords(packedOverlay).uv2(light2)
-                .normal(1, 0, 0).endVertex();
+                .normal(normal2.x(), normal2.y(), normal2.z()).endVertex();
     }
 
     public static VertexConsumer vertex(VertexConsumer buffer, Matrix4f matrix, Vec3 base, float x, float y, float z, float xRot, float zRot) {
