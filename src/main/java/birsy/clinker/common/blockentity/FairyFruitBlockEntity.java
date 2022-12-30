@@ -163,7 +163,6 @@ public class FairyFruitBlockEntity extends BlockEntity {
         if (value != this.ropeHeight) {
             this.ropeHeight = value;
             generateRopePoints();
-            Clinker.LOGGER.info(this.ropeHeight);
         }
     }
 

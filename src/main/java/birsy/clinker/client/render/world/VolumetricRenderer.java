@@ -49,7 +49,7 @@ public class VolumetricRenderer {
     @SubscribeEvent
     public static void inputEvent(InputEvent.Key event) {
         if (event.getKey() == InputConstants.KEY_R && Clinker.devmode) {
-            updateLightmap();
+            //updateLightmap();
         }
     }
 

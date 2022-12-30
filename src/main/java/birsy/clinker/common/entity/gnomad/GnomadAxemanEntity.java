@@ -123,7 +123,6 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity implements Inventor
         CompoundTag armorTag = new CompoundTag();
         for (GnomadArmor.GnomadArmorLocation location : GnomadArmor.GnomadArmorLocation.values()) {
             armorTag.putInt(location.name, this.getEntityData().get(DATA_ARMOR_IDS[location.index]));
-            Clinker.LOGGER.info(location.name + ", " + this.getEntityData().get(DATA_ARMOR_IDS[location.index]));
         }
         pCompound.put("Armor", armorTag);
     }
@@ -136,7 +135,6 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity implements Inventor
         for (GnomadArmor.GnomadArmorLocation location : GnomadArmor.GnomadArmorLocation.values()) {
             int armorID = armorTag.getInt(location.name);
             this.setArmor(location, GnomadArmor.getArmorFromID(location, armorID));
-            Clinker.LOGGER.info(GnomadArmor.getArmorFromID(location, armorID).name());
         }
     }
 

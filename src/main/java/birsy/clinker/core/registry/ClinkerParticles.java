@@ -1,9 +1,6 @@
 package birsy.clinker.core.registry;
 
-import birsy.clinker.client.render.particle.AshCloudParticle;
-import birsy.clinker.client.render.particle.BugParticle;
-import birsy.clinker.client.render.particle.LightningParticle;
-import birsy.clinker.client.render.particle.SnoozeParticle;
+import birsy.clinker.client.render.particle.*;
 import birsy.clinker.core.Clinker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.ParticleEngine;
@@ -31,6 +28,7 @@ public class ClinkerParticles
 	public static final RegistryObject<SimpleParticleType> BUG = createParticle("bug");
 	public static final RegistryObject<SimpleParticleType> SNOOZE = createParticle("snooze");
 	public static final RegistryObject<SimpleParticleType> ASH_CLOUD = createParticle("ash_cloud");
+	public static final RegistryObject<SimpleParticleType> MOTH = createParticle("moth");
 
 	public static RegistryObject<SimpleParticleType> createParticle(String name) {
 		RegistryObject<SimpleParticleType> particle = PARTICLES.register(name, () -> new SimpleParticleType(false));
@@ -39,12 +37,11 @@ public class ClinkerParticles
 
 	@SubscribeEvent
 	public static void registerParticleFactories(RegisterParticleProvidersEvent event) {
-		ParticleEngine engine = Minecraft.getInstance().particleEngine;
-
-		engine.register(LIGHTNING.get(), LightningParticle.Provider::new);
-		engine.register(RED_LIGHTNING.get(), LightningParticle.Provider::new);
-		engine.register(BUG.get(), BugParticle.Provider::new);
-		engine.register(SNOOZE.get(), SnoozeParticle.Provider::new);
-		engine.register(ASH_CLOUD.get(), AshCloudParticle.Provider::new);
+		event.register(LIGHTNING.get(), LightningParticle.Provider::new);
+		event.register(RED_LIGHTNING.get(), LightningParticle.Provider::new);
+		event.register(BUG.get(), BugParticle.Provider::new);
+		event.register(SNOOZE.get(), SnoozeParticle.Provider::new);
+		event.register(ASH_CLOUD.get(), AshCloudParticle.Provider::new);
+		event.register(MOTH.get(), MothParticle.Provider::new);
 	}
 }

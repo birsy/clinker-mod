@@ -81,7 +81,6 @@ public class AlchemyBookItem extends Item {
                     if (didTurnPage) {
                         event.setCanceled(true);
                         mc.level.playSound(mc.player, mc.cameraEntity, SoundEvents.BOOK_PAGE_TURN, SoundSource.BLOCKS, 1.0f, 1.0f);
-                        Clinker.LOGGER.info(mc.cameraEntity.getViewXRot(1.0F));
                     }
                 }
             }
