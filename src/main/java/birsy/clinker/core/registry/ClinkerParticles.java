@@ -25,7 +25,6 @@ public class ClinkerParticles
 
 	public static final RegistryObject<SimpleParticleType> LIGHTNING = createParticle("lightning");
 	public static final RegistryObject<SimpleParticleType> RED_LIGHTNING = createParticle("red_lightning");
-	public static final RegistryObject<SimpleParticleType> BUG = createParticle("bug");
 	public static final RegistryObject<SimpleParticleType> SNOOZE = createParticle("snooze");
 	public static final RegistryObject<SimpleParticleType> ASH_CLOUD = createParticle("ash_cloud");
 	public static final RegistryObject<SimpleParticleType> MOTH = createParticle("moth");
@@ -39,7 +38,6 @@ public class ClinkerParticles
 	public static void registerParticleFactories(RegisterParticleProvidersEvent event) {
 		event.register(LIGHTNING.get(), LightningParticle.Provider::new);
 		event.register(RED_LIGHTNING.get(), LightningParticle.Provider::new);
-		event.register(BUG.get(), BugParticle.Provider::new);
 		event.register(SNOOZE.get(), SnoozeParticle.Provider::new);
 		event.register(ASH_CLOUD.get(), AshCloudParticle.Provider::new);
 		event.register(MOTH.get(), MothParticle.Provider::new);

@@ -8,7 +8,8 @@
       "intarget": "minecraft:main",
       "outtarget": "final",
       "auxtargets": [
-        {"name": "DiffuseDepthSampler",
+        {
+          "name": "DiffuseDepthSampler",
           "id": "minecraft:main:depth"
         }
       ]

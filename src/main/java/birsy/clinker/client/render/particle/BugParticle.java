@@ -1,93 +1,103 @@
 package birsy.clinker.client.render.particle;
 
-import birsy.clinker.core.Clinker;
-import birsy.clinker.core.util.MathUtils;
+import birsy.clinker.core.util.noise.FastNoiseLite;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Matrix4f;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.*;
-import net.minecraft.core.BlockPos;
+import net.minecraft.client.particle.Particle;
+import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.core.Vec3i;
 import net.minecraft.util.Mth;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
-@OnlyIn(Dist.CLIENT)
-public class BugParticle extends TextureSheetParticle {
-    protected final SpriteSet sprites;
-    private float jitter;
-    private float speed;
-    private Vec3 desiredDirection;
-    private Vec3 pDesiredDirection;
-    private Vec3 movementPlane;
-    protected BugParticle(ClientLevel pLevel, double pX, double pY, double pZ, double pXSpeed, double pYSpeed, double pZSpeed, SpriteSet pSprites) {
+public abstract class BugParticle extends Particle {
+    protected TextureAtlasSprite sprite;
+    protected static final FastNoiseLite noise;
+    static { noise = new FastNoiseLite(); noise.SetNoiseType(FastNoiseLite.NoiseType.ValueCubic); }
+
+    protected Vec3 heading;
+    protected Direction attachmentDirection;
+    protected boolean attached;
+    protected float seed;
+    protected float distanceMoved;
+
+    public BugParticle(ClientLevel pLevel, double pX, double pY, double pZ, SpriteSet pSprites) {
         super(pLevel, pX, pY, pZ);
-        this.sprites = pSprites;
-        this.xd = pXSpeed;
-        this.yd = pYSpeed;
-        this.zd = pZSpeed;
-        this.quadSize *= 0.75F;
-        this.lifetime = 60 + this.random.nextInt(12);
-        this.jitter = (float) this.random.nextGaussian() * 0.001F;
-        this.speed = (float) ((this.random.nextGaussian() * 0.5F) + 0.5F) * 0.005F;
-        Direction.Axis axis = Direction.Axis.getRandom(this.random);
-        this.movementPlane = new Vec3(axis == Direction.Axis.X ? 0 : 1, axis == Direction.Axis.Y ? 0 : 1, axis == Direction.Axis.Z ? 0 : 1);
-        this.desiredDirection = new Vec3((this.random.nextFloat() * 2.0) - 1.0, (this.random.nextFloat() * 2.0) - 1.0, (this.random.nextFloat() * 2.0) - 1.0).normalize();
-        this.pDesiredDirection = this.desiredDirection;
-        this.roll = (float) (this.random.nextGaussian() * Math.PI * 2.0F);
-        this.oRoll = this.roll;
-        this.pickSprite(pSprites);
+        this.sprite = pSprites.get(pLevel.random);
+        this.seed = pLevel.random.nextFloat();
+        this.distanceMoved = 0;
     }
 
     @Override
     public void tick() {
         super.tick();
-        this.oRoll = this.roll;
-        this.pDesiredDirection = this.desiredDirection;
-        this.desiredDirection = this.desiredDirection.add(new Vec3((this.random.nextFloat() * 2.0) - 1.0, (this.random.nextFloat() * 2.0) - 1.0, (this.random.nextFloat() * 2.0) - 1.0).scale(0.01F)).normalize();
-        Vec3 velocity = this.desiredDirection.scale(speed * ((this.random.nextGaussian() * 0.5F) + 0.5F));
-        this.move(velocity.x(), velocity.y(), velocity.z());
-        this.move(this.random.nextFloat() * this.jitter * 2 - this.jitter, this.random.nextFloat() * this.jitter * 2 - this.jitter, this.random.nextFloat() * this.jitter * 2 - this.jitter);
-        this.roll = (float) (this.roll + (this.random.nextGaussian() * 0.01F));
-        BlockState block = this.level.getBlockState(new BlockPos(this.x, this.y, this.z));
-        //Clinker.LOGGER.info(block.getRegistryName().toString());
-        if (block.isAir()) {
-            //this.gravity = 1.0F;
+        if (this.attached) {
+            this.tickOnLand();
         } else {
-            this.gravity = 0.0F;
+            this.tickInAir();
         }
     }
 
-    @Override
-    public void render(VertexConsumer pBuffer, Camera pRenderInfo, float pPartialTicks) {
-        super.render(pBuffer, pRenderInfo, pPartialTicks);
-    }
+    public abstract void tickOnLand();
+    public abstract void tickInAir();
 
-    @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+    protected Vec3 getRandomNoiseHeading(float hSpeed, float vSpeed) {
+        float noiseY = this.seed * 256;
+        Vec3 randomHeading = new Vec3(this.noise.GetNoise(this.age * hSpeed, noiseY + 128), this.noise.GetNoise(this.age * vSpeed, noiseY), this.noise.GetNoise(this.age * hSpeed,noiseY + 512));
+        Vec3i normal = this.attachmentDirection.getNormal();
+        if (this.attached) randomHeading = randomHeading.multiply(1 - normal.getX(), 1 - normal.getY(), 1 - normal.getZ());
+        return randomHeading;
     }
 
     public void move(double pX, double pY, double pZ) {
-        this.setBoundingBox(this.getBoundingBox().move(pX, pY, pZ));
+        Vec3 pos = new Vec3(this.x, this.y, this.z);
+        Vec3 nextPos = pos.add(pX, pY, pZ);
+        BlockHitResult raycast = this.level.clip(new ClipContext(pos, nextPos, ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, null));
+
+        this.distanceMoved += raycast.getLocation().distanceTo(pos);
+
+        this.setBoundingBox(this.getBoundingBox().move(raycast.getLocation().subtract(pos)));
         this.setLocationFromBoundingbox();
+
+        if (raycast.getType() == HitResult.Type.BLOCK && this.canCollide()) this.onCollide(raycast);
     }
 
-    @OnlyIn(Dist.CLIENT)
-    public static class Provider implements ParticleProvider<SimpleParticleType> {
-        private final SpriteSet sprites;
+    @Override
+    public void render(VertexConsumer pBuffer, Camera camera, float pPartialTicks) {
+        Vec3 vec3 = camera.getPosition();
+        float x = (float)(Mth.lerp(pPartialTicks, this.xo, this.x) - vec3.x());
+        float y = (float)(Mth.lerp(pPartialTicks, this.yo, this.y) - vec3.y());
+        float z = (float)(Mth.lerp(pPartialTicks, this.zo, this.z) - vec3.z());
 
-        public Provider(SpriteSet pSprites) {
-            this.sprites = pSprites;
-        }
+        PoseStack posestack = new PoseStack();
+        posestack.translate(x, y, z);
+        renderBug(posestack, pBuffer, camera, pPartialTicks);
+    }
 
-        public Particle createParticle(SimpleParticleType pType, ClientLevel pLevel, double pX, double pY, double pZ, double pXSpeed, double pYSpeed, double pZSpeed) {
-            return new BugParticle(pLevel, pX, pY, pZ, pXSpeed, pYSpeed, pZSpeed, this.sprites);
-        }
+    public abstract void renderBug(PoseStack posestack, VertexConsumer pBuffer, Camera camera, float pPartialTicks);
+
+    public abstract boolean canCollide();
+
+    public void onCollide(BlockHitResult raycast) {
+        this.attachmentDirection = raycast.getDirection();
+    }
+
+    private void drawDoubleSidedQuad(VertexConsumer pBuffer, Matrix4f matrix, float maxX, float maxZ, float minX, float minZ, float maxU, float maxV, float minU, float minV, int packedLight) {
+        pBuffer.vertex(matrix, maxX, 0, maxZ).uv(maxU, minV).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(packedLight).endVertex();
+        pBuffer.vertex(matrix, maxX, 0, minZ).uv(maxU, maxV).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(packedLight).endVertex();
+        pBuffer.vertex(matrix, minX, 0, minZ).uv(minU, maxV).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(packedLight).endVertex();
+        pBuffer.vertex(matrix, minX, 0, maxZ).uv(minU, minV).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(packedLight).endVertex();
+
+        pBuffer.vertex(matrix, minX, 0, maxZ).uv(minU, minV).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(packedLight).endVertex();
+        pBuffer.vertex(matrix, minX, 0, minZ).uv(minU, maxV).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(packedLight).endVertex();
+        pBuffer.vertex(matrix, maxX, 0, minZ).uv(maxU, maxV).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(packedLight).endVertex();
+        pBuffer.vertex(matrix, maxX, 0, maxZ).uv(maxU, minV).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(packedLight).endVertex();
     }
 }

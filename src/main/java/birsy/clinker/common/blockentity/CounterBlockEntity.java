@@ -20,19 +20,22 @@ public class CounterBlockEntity extends BlockEntity {
     public CounterBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(ClinkerBlockEntities.COUNTER.get(), pPos, pBlockState);
         this.workstation = new AlchemicalWorkstation(this.level, this.getBlockPos());
+        this.workstation.subSteps = 32;
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, CounterBlockEntity entity) {
         entity.workstation.level = level;
-        entity.timeSinceLastItem++;
-        if (entity.timeSinceLastItem > 30 && entity.workstation.getItems().size() < 64) {
+        //if (!entity.workstation.filledCollisions) entity.workstation.fillCollisions(level, pos);
+
+        /*entity.timeSinceLastItem++;
+        if (entity.timeSinceLastItem > 30 && entity.workstation.getItems().size() < 30) {
 
             Collection<Item> items = ForgeRegistries.ITEMS.getValues();
             Item item = (Item) items.toArray()[level.random.nextInt(items.size())];
 
-            entity.workstation.addItem(new ItemStack(item, 1), new Vec3(pos.getX() + 0.5 + level.random.nextGaussian() * 0.5, pos.getY() + 4 + level.random.nextFloat(), pos.getZ() + 0.5 + level.random.nextGaussian() * 0.5));
+            entity.workstation.addItem(new ItemStack(item, 1), new Vec3(pos.getX() + level.random.nextFloat(), pos.getY() + 1 + level.random.nextFloat(), pos.getZ() + level.random.nextFloat()));
             entity.timeSinceLastItem = 0;
-        }
+        }*/
         entity.workstation.tick(1.0F / 20.0F);
     }
 }

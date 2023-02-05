@@ -10,6 +10,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
 import com.mojang.math.Vector4f;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.renderer.LightTexture;
@@ -17,11 +18,13 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.LightLayer;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
@@ -31,15 +34,21 @@ public class FairyFruitRenderer<T extends FairyFruitBlockEntity> implements Bloc
     public static final ResourceLocation TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/block/fairy_fruit.png");
     public final FairyFruitModel leavesModel;
     public final FairyFruitModel fruitModel;
-
+    private final Minecraft mc;
     public FairyFruitRenderer(BlockEntityRendererProvider.Context context) {
         super();
-
+        this.mc = Minecraft.getInstance();
         this.leavesModel = new FairyFruitModel(RenderType::entityCutout);
         this.leavesModel.fruit.visible = false;
         this.fruitModel = new FairyFruitModel(ClinkerRenderTypes::entityTranslucentUnlit);
         this.fruitModel.leaf1.visible = false;
         this.fruitModel.leaf2.visible = false;
+    }
+
+    @Override
+    public boolean shouldRender(T pBlockEntity, Vec3 pCameraPos) {
+        Frustum frustum = mc.levelRenderer.cullingFrustum;
+        return BlockEntityRenderer.super.shouldRender(pBlockEntity, pCameraPos) && frustum.isVisible(new AABB(pBlockEntity.getBlockPos(), pBlockEntity.getBlockPos().above(pBlockEntity.ropeHeight)).inflate(1.5));
     }
 
     @Override

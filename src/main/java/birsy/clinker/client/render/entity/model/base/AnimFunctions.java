@@ -404,8 +404,13 @@ public class AnimFunctions {
     }
 
     public static Vec3 getWorldPos(Entity entity, CappinModelPart part, float partialTick) {
+        return getWorldPos(Vec3.ZERO, entity, part, partialTick);
+
+    }
+
+    public static Vec3 getWorldPos(Vec3 offset, Entity entity, CappinModelPart part, float partialTick) {
         PoseStack matrixStack = new PoseStack();
-        Vec3 position = entity.getPosition(partialTick);
+        Vec3 position = entity.getPosition(partialTick).add(offset);
         matrixStack.translate(position.x(), position.y(), position.z());
         matrixStack.mulPose(new Quaternion(0, -Mth.rotLerp(partialTick, ((LivingEntity)entity).yBodyRotO, ((LivingEntity)entity).yBodyRot) + 180, 0, true));
         matrixStack.scale(-1, 1, 1);

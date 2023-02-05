@@ -1,5 +1,6 @@
 package birsy.clinker.common.entity;
 
+import birsy.clinker.core.Clinker;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -34,12 +35,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MudScarabEntity extends AbstractBugEntity {
+    private float pHeight = 0;
+    private float height = 0;
+    private Vec3 pNormal = new Vec3(0, 1, 0);
+    private Vec3 normal = new Vec3(0, 1, 0);
 
     public MudScarabEntity(EntityType<? extends MudScarabEntity> entityType, Level world) {
         super(entityType, world);
         this.xpReward = 3;
         this.moveControl = new SmoothSwimmingMoveControl(this, 6, 5, 4.0F, 1.0F, false);
-        this.maxUpStep = 1.0F;
+        this.height =  (float) this.position().y;
+        this.pHeight = (float) this.position().y;
     }
 
     protected void registerGoals() {
@@ -94,6 +100,12 @@ public class MudScarabEntity extends AbstractBugEntity {
         return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 100.0D).add(Attributes.MOVEMENT_SPEED, 0.25D).add(Attributes.ATTACK_DAMAGE, 2.0D);
     }
 
+    @Override
+    public boolean onClimbable() {
+        BlockHitResult raycast = this.level.clip(new ClipContext(this.position(), this.position().add(0, this.getBbHeight() * -0.5, 0), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
+        return raycast.getType() == HitResult.Type.BLOCK;
+    }
+
     public void tick() {
         // this is utterly fucked but until i get my hands on landlord it's the best i can be bothered to do
         AABB movementBox = this.getRidingBox();
@@ -108,11 +120,58 @@ public class MudScarabEntity extends AbstractBugEntity {
                 }
             }
         }
+
+        if (this.getLevel().isClientSide()) this.calculateNormalAndHeight(0.2F);
         super.tick();
     }
 
     public AABB getRidingBox() {
         return this.getBoundingBox().move(0, this.getBbHeight() / 2, 0).deflate(0, this.getBbHeight() * 0.8F, 0).move(0, -this.getBbHeight() * 0.1F, 0);
+    }
+
+    public void calculateNormalAndHeight(float interpolationSpeed) {
+        AABB boundingBox = this.getBoundingBox();
+        Vec3[] corners = {new Vec3(boundingBox.maxX, boundingBox.minY, boundingBox.maxZ),
+                          new Vec3(boundingBox.minX, boundingBox.minY, boundingBox.maxZ),
+                          new Vec3(boundingBox.maxX, boundingBox.minY, boundingBox.minZ),
+                          new Vec3(boundingBox.minX, boundingBox.minY, boundingBox.minZ)};
+        Vec3[] castPoses = new Vec3[4];
+
+        for (int i = 0; i < corners.length; i++) {
+            Vec3 pos = corners[i];
+            BlockHitResult raycast = this.level.clip(new ClipContext(pos, pos.add(0, -this.getBbHeight() - 1.0, 0).add(this.getLookAngle()), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
+            if (raycast.getType() == HitResult.Type.MISS) {
+                castPoses[i] = pos;
+            } else {
+                castPoses[i] = raycast.getLocation();
+            }
+        }
+
+        Vec3 normal1 = calculateNormalFromTriangle(castPoses[0], castPoses[1], castPoses[2]);
+        Vec3 normal2 = calculateNormalFromTriangle(castPoses[1], castPoses[2], castPoses[3]);
+        Vec3 normal = normal1.add(normal2).normalize();
+
+        //Clinker.LOGGER.info(normal);
+
+        this.pNormal = this.normal;
+        this.normal = this.normal.lerp(normal2, interpolationSpeed);
+        this.pHeight = this.height;
+        float h = 0; for (Vec3 castPos : castPoses) h += castPos.y; h /= 4.0F;
+        this.height = Mth.lerp(interpolationSpeed, this.height, h);
+    }
+
+    private Vec3 calculateNormalFromTriangle(Vec3 a, Vec3 b, Vec3 c) {
+        Vec3 dir = b.subtract(a).cross(c.subtract(a));
+        Vec3 norm = dir.normalize();
+        if (new Vec3(0, 1, 0).dot(norm) < 0.0) norm = norm.scale(-1.0F);
+        return norm;
+    }
+
+    public float getHeight(float partialTick) {
+        return Mth.lerp(partialTick, this.pHeight, this.height);
+    }
+    public Vec3 getNormal(float partialTick) {
+        return this.pNormal.lerp(this.normal, partialTick);
     }
 
     public boolean canBeCollidedWith() {

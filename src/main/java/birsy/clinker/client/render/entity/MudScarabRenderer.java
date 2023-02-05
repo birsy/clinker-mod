@@ -5,6 +5,7 @@ import birsy.clinker.client.render.world.blockentity.VinePlantRenderer;
 import birsy.clinker.common.entity.MudScarabEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
@@ -23,8 +24,18 @@ public class MudScarabRenderer extends ClinkerEntityRenderer<MudScarabEntity, Mu
 
 
     @Override
+    protected void setupRotations(MudScarabEntity pEntity, PoseStack pMatrixStack, float pAgeInTicks, float pRotationYaw, float pPartialTicks) {
+        Vec3 normal = pEntity.getNormal(pPartialTicks).lerp(new Vec3(0, 1, 0), 0.25F);
+        float height = pEntity.getHeight(pPartialTicks);
+        height += (1.0 - normal.dot(new Vec3(0, 1, 0)));
+        pMatrixStack.translate(0, height - pEntity.getPosition(pPartialTicks).y(), 0);
+        pMatrixStack.mulPose(Vector3f.ZP.rotation((float) -Math.atan2(normal.x(), normal.y())));
+        pMatrixStack.mulPose(Vector3f.XP.rotation((float) Math.atan2(normal.z(), normal.y())));
+        super.setupRotations(pEntity, pMatrixStack, pAgeInTicks, pRotationYaw, pPartialTicks);
+    }
+
+    @Override
     public void render(MudScarabEntity pEntity, float pEntityYaw, float pPartialTicks, PoseStack pMatrixStack, MultiBufferSource pBuffer, int pPackedLight) {
-        //VinePlantRenderer.renderVine(pEntity.getPosition(pPartialTicks), Vec3.ZERO, pMatrixStack, pBuffer);
         super.render(pEntity, pEntityYaw, pPartialTicks, pMatrixStack, pBuffer, pPackedLight);
     }
 

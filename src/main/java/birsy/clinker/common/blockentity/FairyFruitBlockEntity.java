@@ -70,7 +70,7 @@ public class FairyFruitBlockEntity extends BlockEntity {
         if (this.hasLevel()) this.updateCollisions(this.getLevel(), tempLocations);
 
         // iteration to correct rope lengths
-        for (int iterations = 0; iterations < 32; iterations++) {
+        for (int iterations = 0; iterations < 256; iterations++) {
             for (int i = 0; i < locations.size() - 1; i++) {
                 Vec3 segmentA = tempLocations.get(i);
                 Vec3 segmentB = tempLocations.get(i + 1);

@@ -105,7 +105,7 @@ vec3 normalFromFourPoints(vec3 a, vec3 b, vec3 c, vec3 d, vec3 cameraRay) {
 
 
 void main() {
-    float offset = 1.0;
+    float offset = 2.0;
     float pixelX = texCoord.x * ScreenSize.x;
     float pixelXd = pixelX + offset;
     float pixelY = texCoord.y * ScreenSize.y;
@@ -126,9 +126,10 @@ void main() {
     vec3 sceneColor = texture(DiffuseSampler, texCoord).xyz;
 
     //vec3 light1 = getLightColor(pixelPos.worldSpace, normal, CameraPosition, vec3(1.0, 96.0F / 255.0, 0.0F), 16.0, 3.0, 5.0, true);
-    vec3 light = getLightColor(pixelPos.worldSpace, normal, LightPosition, vec3(255.0F / 255.0, 212.0F / 255.0, 158.0F / 255.0), 1.0, 0.1, 5.0, true);
+    vec3 light1 = getLightColor(pixelPos.worldSpace, normal, vec3(-7187.0, 101.5, -8625.0), vec3(10.0F / 255.0, 10.0F / 255.0, 212.0F / 255.0), 16.0, 2.1, 5.0, true);
+    vec3 light2 = getLightColor(pixelPos.worldSpace, normal, vec3(-7180.0, 101.5, -8625.0), vec3(255.0F / 255.0, 100.0F / 255.0, 100.0F / 255.0), 16.0, 2.1, 5.0, true);
     //vec3 light2 = getDirectionalLightColor(pixelPos.worldSpace, normal, vec3(0.5, 1.0, 0.5), vec3(1.0, 1.0, 1.0), 1.0, 0.8);
     //Multiply by the s
-    vec3 totalLightEffect = light * sceneColor;
+    vec3 totalLightEffect = (light1 + light2) * sceneColor;
     fragColor = vec4((sceneColor * 0.1) + totalLightEffect, 1.0);
 }

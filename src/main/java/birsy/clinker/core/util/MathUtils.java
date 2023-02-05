@@ -52,6 +52,38 @@ public class MathUtils {
         return Math.sqrt(q.r()*q.r() + q.i()*q.i() + q.j()*q.j() + q.k()*q.k());
     }
 
+    public static Matrix3f matrix(float m00, float m01, float m02, float m10, float m11, float m12, float m20, float m21, float m22) {
+        Matrix3f m = new Matrix3f();
+        m.m00 = m00;
+        m.m01 = m01;
+        m.m02 = m02;
+        m.m10 = m10;
+        m.m11 = m11;
+        m.m12 = m12;
+        m.m20 = m20;
+        m.m21 = m21;
+        m.m22 = m22;
+        return m;
+    }
+
+
+    public static Quaternion slerp(Quaternion q1, Quaternion q2, float t) {
+        float dot = q1.i() * q1.i() + q1.j() * q1.j() + q1.k() * q1.k() + q1.r() * q1.r();
+        float theta = (float) Math.acos(dot);
+        float sinTheta = (float) Math.sin(theta);
+
+        float s1 = (float) Math.sin((1 - t) * theta) / sinTheta;
+        float s2 = (float) Math.sin(t * theta) / sinTheta;
+
+        return new Quaternion(
+                q1.i() * s1 + q2.i() * s2,
+                q1.j() * s1 + q1.j() * s2,
+                q1.k() * s1 + q1.k() * s2,
+                q1.r() * s1 + q1.r() * s2
+        );
+    }
+
+
     public static Quaternion inverse(Quaternion q) {
         float norm = (float) norm(q);
         return new Quaternion(-q.i() / norm, -q.j() / norm, -q.k() / norm, q.r() / norm);
@@ -66,11 +98,13 @@ public class MathUtils {
         return add(q, vQuat);
     }
 
-    public static Vec3 rotate(Quaternion q, Vec3 v) {
-        Quaternion quat = new Quaternion(q);
-        quat.mul(new Quaternion((float) v.x(), (float) v.y(), (float) v.z(), 0));
-        quat.mul(inverse(q));
-        return new Vec3(quat.i(), quat.j(), quat.k());
+    public static Vec3 transform(Vec3 v, Quaternion pQuaternion) {
+        Quaternion quaternion = new Quaternion(pQuaternion);
+        quaternion.mul(new Quaternion((float) v.x(), (float) v.y(), (float) v.z(), 0.0F));
+        Quaternion quaternion1 = new Quaternion(pQuaternion);
+        quaternion1.conj();
+        quaternion.mul(quaternion1);
+        return new Vec3(quaternion.i(), quaternion.j(), quaternion.k());
     }
 
     public static Vec3 multiply(Vec3 v, Matrix3f m) {
