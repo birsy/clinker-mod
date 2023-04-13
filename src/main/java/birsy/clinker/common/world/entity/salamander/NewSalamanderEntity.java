@@ -29,6 +29,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+// todo:
+//  entity - entity collisions
+//  slipperiness, slime blocks, moving blocks (pistons, shulkers, etc.)
+//  how to respond to Block#onWalk / onTouch etc? (don't bother?? maybe add special cases for those...)
+//  legs~!
+//  reimplement ai
+//  graphics...
+
 public class NewSalamanderEntity extends LivingEntity implements InteractableParent {
     public SalamanderJoint headJoint;
     public SalamanderSegment headSegment;
