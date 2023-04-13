@@ -2,22 +2,17 @@ package birsy.clinker.core;
 
 import birsy.clinker.client.render.GUIRenderer;
 import birsy.clinker.client.render.gui.AlchemyBundleGUIRenderer;
-import birsy.clinker.client.render.gui.GUIHelperFunctions;
-import birsy.clinker.common.level.chunk.gen.OthershoreChunkGenerator;
-import birsy.clinker.common.level.chunk.gen.TestChunkGenerator;
+import birsy.clinker.common.networking.ClinkerPacketHandler;
+import birsy.clinker.common.world.level.chunk.gen.OthershoreChunkGenerator;
+import birsy.clinker.common.world.level.chunk.gen.TestChunkGenerator;
 import birsy.clinker.core.registry.*;
 import birsy.clinker.core.registry.world.ClinkerBiomeTest;
 import birsy.clinker.core.registry.world.ClinkerFeatures;
 import birsy.clinker.core.registry.world.ClinkerWorld;
 import birsy.clinker.core.util.ClinkerFontManager;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.font.FontManager;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -42,14 +37,15 @@ public class Clinker
 	public Clinker() throws InterruptedException {
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
+        ClinkerPacketHandler.register();
         ClinkerSounds.SOUNDS.register(modEventBus);
         ClinkerItems.ITEMS.register(modEventBus);
         ClinkerBlocks.BLOCKS.register(modEventBus);
         ClinkerBlocks.BLOCK_ITEMS.register(modEventBus);
+        ClinkerWorld.CHUNK_GENERATORS.register(modEventBus);
         ClinkerBlockEntities.BLOCK_ENTITY_TYPES.register(modEventBus);
         Clinker.LOGGER.info("block entities setup!");
         ClinkerEntities.ENTITY_TYPES.register(modEventBus);
-        ClinkerWorld.CHUNK_GENERATORS.register(modEventBus);
         ClinkerFeatures.FEATURES.register(modEventBus);
         //ClinkerElements.ELEMENTS.register(modEventBus);
         ClinkerParticles.PARTICLES.register(modEventBus);

@@ -1,6 +1,6 @@
 package birsy.clinker.client.render.entity;
 
-import birsy.clinker.common.entity.IVelocityTilt;
+import birsy.clinker.common.world.entity.IVelocityTilt;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;

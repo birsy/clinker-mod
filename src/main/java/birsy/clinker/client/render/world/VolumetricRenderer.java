@@ -1,17 +1,19 @@
 package birsy.clinker.client.render.world;
 
 import birsy.clinker.core.Clinker;
+import birsy.clinker.core.registry.world.ClinkerWorld;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Matrix4f;
+import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
@@ -40,8 +42,8 @@ public class VolumetricRenderer {
 
     @SubscribeEvent
     public static void renderLevel(RenderLevelStageEvent event) {
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_WEATHER) {
-            render();
+        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_WEATHER && minecraft.level.dimension() == ClinkerWorld.OTHERSHORE) {
+            runShaders();
         }
     }
 
@@ -53,7 +55,7 @@ public class VolumetricRenderer {
         }
     }
 
-    public static void render() {
+    public static void runShaders() {
         getPostChain().ifPresent((postChain) -> {
             //custom postchain processing because minecraft's is fucking ass and doesnt support custom uniforms :P
             float partialTick = minecraft.getFrameTime();
@@ -71,6 +73,24 @@ public class VolumetricRenderer {
             Vector3f cameraUp = camera.getUpVector();
             Vector3f cameraLeft = camera.getLeftVector();
 
+            if (minecraft.options.bobView().get() && minecraft.getCameraEntity() instanceof Player) {
+                Player player = (Player)minecraft.getCameraEntity();
+                float f = player.walkDist - player.walkDistO;
+                float f1 = -(player.walkDist + f * partialTick);
+                float f2 = Mth.lerp(partialTick, player.oBob, player.bob);
+                cameraPos = cameraPos.add(Mth.sin(f1 * (float)Math.PI) * f2 * 0.5F, (double)(-Math.abs(Mth.cos(f1 * (float)Math.PI) * f2)), 0.0D);
+
+                Quaternion bobXRotation = Vector3f.XP.rotationDegrees(Math.abs(Mth.cos(f1 * (float)Math.PI - 0.2F) * f2) *- 5.0F);
+                Quaternion bobZRotation = Vector3f.ZP.rotationDegrees(Mth.sin(f1 * (float)Math.PI) * f2 * -3.0F);
+
+                cameraLook.transform(bobXRotation);
+                cameraLook.transform(bobZRotation);
+                cameraUp.transform(bobXRotation);
+                cameraUp.transform(bobZRotation);
+                cameraLeft.transform(bobXRotation);
+                cameraLeft.transform(bobZRotation);
+            }
+
             float clipStart = 0.05F;
             float clipEnd = minecraft.gameRenderer.getDepthFar();
             float fov = (float) minecraft.gameRenderer.getFov(camera, partialTick, true);
@@ -78,7 +98,7 @@ public class VolumetricRenderer {
             int aspectY = minecraft.getWindow().getHeight();
 
             for(PostPass pass : postChain.passes) {
-                pass.effect.safeGetUniform("GameTime").set(minecraft.levelRenderer.ticks + minecraft.getPartialTick());
+                pass.effect.safeGetUniform("GameTime").set(1.5F);
 
                 pass.effect.safeGetUniform("CameraPosition").set((float) cameraPos.x(), (float) cameraPos.y(), (float) cameraPos.z());
                 pass.effect.safeGetUniform("CameraForward").set(cameraLook);
@@ -91,6 +111,9 @@ public class VolumetricRenderer {
                 pass.effect.safeGetUniform("ScreenSize").set((float) aspectX, (float) aspectY);
 
                 pass.effect.safeGetUniform("TimeOfDay").set(minecraft.level.getTimeOfDay(minecraft.getPartialTick()) / 24000.0F);
+
+                pass.effect.safeGetUniform("LightPosition").set(7215.50F, 74.00F, 7224.50F);
+
 
                 getChunkLightTexture().ifPresent((chunkLight) -> pass.effect.setSampler("ChunkLightSampler", chunkLight.lightTexture::getId));
 

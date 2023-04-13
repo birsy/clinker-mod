@@ -2,10 +2,13 @@ package birsy.clinker.core.registry;
 
 import birsy.clinker.client.render.entity.*;
 import birsy.clinker.client.render.entity.model.*;
-import birsy.clinker.common.entity.*;
-import birsy.clinker.common.entity.Salamander.SalamanderBodyEntity;
-import birsy.clinker.common.entity.Salamander.SalamanderHeadEntity;
-import birsy.clinker.common.entity.gnomad.GnomadAxemanEntity;
+import birsy.clinker.common.world.entity.LumberingAspenEntity;
+import birsy.clinker.common.world.entity.MudScarabEntity;
+import birsy.clinker.common.world.entity.salamander.NewSalamanderEntity;
+import birsy.clinker.common.world.entity.salamander.SalamanderBodyEntity;
+import birsy.clinker.common.world.entity.salamander.SalamanderHeadEntity;
+import birsy.clinker.common.world.entity.SeaHagEntity;
+import birsy.clinker.common.world.entity.gnomad.GnomadAxemanEntity;
 import birsy.clinker.core.Clinker;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
@@ -38,6 +41,11 @@ public class ClinkerEntities {
                     .noSave().noSummon()
                     .build(new ResourceLocation(Clinker.MOD_ID, "salamander_body").toString()));
 
+    public static final RegistryObject<EntityType<NewSalamanderEntity>> SALAMANDER = ENTITY_TYPES.register("salamander", () ->
+            EntityType.Builder.of(NewSalamanderEntity::new, MobCategory.MONSTER).fireImmune()
+                    .sized(1.0F, 1.0F)
+                    .build(new ResourceLocation(Clinker.MOD_ID, "salamander").toString()));
+
     public static final RegistryObject<EntityType<SeaHagEntity>> SEA_HAG = ENTITY_TYPES.register("sea_hag", () ->
             EntityType.Builder.of(SeaHagEntity::new, MobCategory.MONSTER)
                     .sized(2.5F, 2.5F)
@@ -68,6 +76,8 @@ public class ClinkerEntities {
         event.registerEntityRenderer(ClinkerEntities.MUD_SCARAB.get(), MudScarabRenderer::new);
         event.registerEntityRenderer(ClinkerEntities.SALAMANDER_HEAD.get(), SalamanderHeadRenderer::new);
         event.registerEntityRenderer(ClinkerEntities.SALAMANDER_BODY.get(), SalamanderBodyRenderer::new);
+
+        event.registerEntityRenderer(ClinkerEntities.SALAMANDER.get(), NewSalamanderRenderer::new);
 
         event.registerEntityRenderer(ClinkerEntities.SEA_HAG.get(), SeaHagRenderer::new);
         event.registerEntityRenderer(ClinkerEntities.GNOMAD_AXEMAN.get(), GnomadAxemanRenderer::new);

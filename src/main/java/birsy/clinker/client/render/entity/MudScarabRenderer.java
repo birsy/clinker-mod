@@ -1,8 +1,7 @@
 package birsy.clinker.client.render.entity;
 
 import birsy.clinker.client.render.entity.model.MudScarabModel;
-import birsy.clinker.client.render.world.blockentity.VinePlantRenderer;
-import birsy.clinker.common.entity.MudScarabEntity;
+import birsy.clinker.common.world.entity.MudScarabEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;

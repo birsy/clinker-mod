@@ -3,8 +3,8 @@ package birsy.clinker.client.render.entity.layer;
 import birsy.clinker.client.render.entity.model.gnomad.GnomadAccessoryModel;
 import birsy.clinker.client.render.entity.model.gnomad.GnomadAxemanDynamicModel;
 import birsy.clinker.client.render.entity.model.gnomad.armor.*;
-import birsy.clinker.common.entity.gnomad.GnomadArmor;
-import birsy.clinker.common.entity.gnomad.GnomadAxemanEntity;
+import birsy.clinker.common.world.entity.gnomad.GnomadArmor;
+import birsy.clinker.common.world.entity.gnomad.GnomadAxemanEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -17,7 +17,6 @@ import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.codehaus.plexus.util.dag.Vertex;
 
 import java.util.HashMap;
 

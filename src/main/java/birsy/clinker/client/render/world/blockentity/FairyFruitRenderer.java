@@ -2,14 +2,12 @@ package birsy.clinker.client.render.world.blockentity;
 
 import birsy.clinker.client.render.ClinkerRenderTypes;
 import birsy.clinker.client.render.entity.model.base.BasicModelPart;
-import birsy.clinker.client.render.world.VolumetricRenderer;
-import birsy.clinker.common.blockentity.FairyFruitBlockEntity;
+import birsy.clinker.common.world.block.blockentity.FairyFruitBlockEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
-import com.mojang.math.Vector4f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;

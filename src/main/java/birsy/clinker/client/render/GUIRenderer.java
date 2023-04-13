@@ -14,7 +14,7 @@ public class GUIRenderer {
 
     @SubscribeEvent
     public static void onRenderGUI(RenderGuiEvent.Post event) {
-       // alchemyBundleGUIRenderer.render(event.getPoseStack(), event.getPartialTick());
+       //alchemyBundleGUIRenderer.runShaders(event.getPoseStack(), event.getPartialTick());
     }
 
     @SubscribeEvent

@@ -7,5 +7,10 @@
   "refmap": "mixins.clinker.refmap.json",
   "client": [
     "client.LevelRendererMixin"
+  ],
+  "mixins": [
+    "common.ServerLevelMixin",
+    "common.ClientLevelMixin",
+    "common.ChunkMapMixin"
   ]
 }

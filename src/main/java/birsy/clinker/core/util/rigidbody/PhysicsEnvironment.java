@@ -43,26 +43,30 @@ public class PhysicsEnvironment {
 
         Set<PotentialCollisionPair> potentialCollisions = this.collideBroadPhase();
         Set<CollisionPair> collisions = this.collideNarrowPhase(potentialCollisions);
-        this.collisionResponse(collisions);
+        this.collisionResponse(collisions, deltaTime);
     }
 
     private Set<PotentialCollisionPair> collideBroadPhase() {
         Set<PotentialCollisionPair> set = new HashSet<>();
 
         for (IBody body1 : bodies) {
-            if (!(body1 instanceof ICollidable)) continue;
+            if (body1 instanceof ICollidable cb1) {
+                for (IBody body2 : bodies) {
+                    if (body2 instanceof ICollidable cb2) {
+                        if (body1 == body2) continue;
+                        double minDist = cb1.getCollisionShape().getRadius() + cb2.getCollisionShape().getRadius();
+                        if (body1.getTransform().getPosition().distanceToSqr(body2.getTransform().getPosition()) > minDist * minDist) continue;
+                        AABB shape1 = cb1.getCollisionShape().getBounds();
+                        AABB shape2 = cb2.getCollisionShape().getBounds();
 
-            for (IBody body2 : bodies) {
-                if (!(body2 instanceof ICollidable) || body1 == body2) continue;
+                        if (shape1.intersects(shape2)) {
+                            set.add(new PotentialCollisionPair((ICollidable) body1, (ICollidable) body2));
+                        }
+                    }
 
-                AABB shape1 = ((ICollidable) body1).getCollisionShape().getBounds();
-                AABB shape2 = ((ICollidable) body2).getCollisionShape().getBounds();
-
-                if (shape1.intersects(shape2)) {
-                    set.add(new PotentialCollisionPair((ICollidable) body1, (ICollidable) body2));
-                    //Clinker.LOGGER.info("potential collision between " + body1 + " and " + body2);
                 }
             }
+
         }
 
         return set;
@@ -81,21 +85,22 @@ public class PhysicsEnvironment {
         return set;
     }
 
-    private void collisionResponse(Set<CollisionPair> collisionPairs) {
+    private void collisionResponse(Set<CollisionPair> collisionPairs, float deltaTime) {
         //TODO: conservation of momentum
-        float inelasticity = 1.0F;
 
         for (CollisionPair collisionPair : collisionPairs) {
             Vec3 collisionVector = collisionPair.manifold.normal().scale(collisionPair.manifold.depth());
 
             if (collisionPair.body1() instanceof IPhysicsBody pBody1 && collisionPair.body2() instanceof IPhysicsBody pBody2) {
                 float totalMass = (pBody1.mass() + pBody2.mass());
-                pBody1.applyImpulse(collisionVector.scale(-pBody1.mass() / totalMass), collisionPair.manifold.contactPointA());
-                pBody2.applyImpulse(collisionVector.scale(pBody2.mass() / totalMass), collisionPair.manifold.contactPointB());
+                //pBody1.accelerate(collisionVector.scale(-pBody1.mass() / totalMass).scale(1.0 / deltaTime), collisionPair.manifold.contactPointA());
+                //pBody2.accelerate(collisionVector.scale( pBody2.mass() / totalMass).scale(1.0 / deltaTime), collisionPair.manifold.contactPointB());
+
             } else if (collisionPair.body1() instanceof IPhysicsBody pBody1) {
-                pBody1.applyImpulse(collisionVector.scale(-1.0), collisionPair.manifold.contactPointA());
+                pBody1.accelerate(collisionVector.scale(-1.0 / deltaTime), collisionPair.manifold.contactPointA());
             } else if (collisionPair.body2() instanceof IPhysicsBody pBody2) {
-                pBody2.applyImpulse(collisionVector.scale(1.0), collisionPair.manifold.contactPointB());
+                pBody2.accelerate(collisionVector.scale(1.0 / deltaTime), collisionPair.manifold.contactPointB());
+
             }
         }
     }

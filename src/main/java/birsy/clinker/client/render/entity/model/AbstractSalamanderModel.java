@@ -1,7 +1,6 @@
 package birsy.clinker.client.render.entity.model;
 
-import birsy.clinker.common.entity.Salamander.AbstractSalamanderPartEntity;
-import birsy.clinker.common.entity.Salamander.SalamanderHeadEntity;
+import birsy.clinker.common.world.entity.salamander.AbstractSalamanderPartEntity;
 import net.minecraft.client.model.EntityModel;
 
 public abstract class AbstractSalamanderModel<T extends AbstractSalamanderPartEntity> extends EntityModel<T> {

@@ -1,7 +1,7 @@
 package birsy.clinker.client.render.world.item;
 
 import birsy.clinker.client.render.entity.model.base.BasicModelPart;
-import birsy.clinker.common.item.AlchemyBookItem;
+import birsy.clinker.common.world.item.AlchemyBookItem;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.systems.RenderSystem;

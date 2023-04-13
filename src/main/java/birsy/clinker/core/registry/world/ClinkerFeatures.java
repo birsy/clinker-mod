@@ -1,8 +1,8 @@
 package birsy.clinker.core.registry.world;
 
-import birsy.clinker.common.level.feature.AshBuildupFeature;
-import birsy.clinker.common.level.feature.AshPileFeature;
-import birsy.clinker.common.level.feature.LayeredReplacementFeature;
+import birsy.clinker.common.world.level.feature.AshBuildupFeature;
+import birsy.clinker.common.world.level.feature.AshPileFeature;
+import birsy.clinker.common.world.level.feature.LayeredReplacementFeature;
 import birsy.clinker.core.Clinker;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;

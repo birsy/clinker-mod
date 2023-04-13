@@ -1,15 +1,8 @@
 package birsy.clinker.client.render.entity;
 
-import birsy.clinker.client.render.entity.layer.GnomadArmorLayer;
-import birsy.clinker.client.render.entity.layer.GnomadItemBeltLayer;
-import birsy.clinker.client.render.entity.model.gnomad.GnomadAxemanDynamicModel;
-import birsy.clinker.common.entity.LumberingAspenEntity;
-import birsy.clinker.common.entity.gnomad.GnomadAxemanEntity;
-import birsy.clinker.core.Clinker;
-import birsy.clinker.core.registry.ClinkerBlocks;
+import birsy.clinker.common.world.entity.LumberingAspenEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -17,8 +10,6 @@ import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Vec3i;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;

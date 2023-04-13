@@ -5,7 +5,7 @@
     "dstrgb": "zero"
   },
   "vertex": "minecraft:screenquad",
-  "fragment": "clinker:normal",
+  "fragment": "clinker:grease",
   "attributes": [ "Position" ],
   "samplers": [
     { "name": "DiffuseSampler" },

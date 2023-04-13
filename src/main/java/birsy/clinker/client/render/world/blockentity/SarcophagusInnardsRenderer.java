@@ -1,23 +1,11 @@
 package birsy.clinker.client.render.world.blockentity;
 
-import birsy.clinker.common.block.FermentationBarrelBlock;
-import birsy.clinker.common.block.SarcophagusBlock;
-import birsy.clinker.common.blockentity.FermentationBarrelBlockEntity;
-import birsy.clinker.common.blockentity.SarcophagusBlockEntity;
+import birsy.clinker.common.world.block.blockentity.SarcophagusBlockEntity;
 import birsy.clinker.core.Clinker;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
 import com.mojang.math.Vector4f;
-import net.minecraft.Util;
-import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.model.geom.PartPose;
-import net.minecraft.client.model.geom.builders.CubeListBuilder;
-import net.minecraft.client.model.geom.builders.LayerDefinition;
-import net.minecraft.client.model.geom.builders.MeshDefinition;
-import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;

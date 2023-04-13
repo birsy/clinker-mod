@@ -210,7 +210,8 @@ public class AlchemyBundleGUIRenderer extends GuiComponent {
         protected void render(ItemRenderer renderer, Player player, PoseStack pPoseStack, float floatProgress, float ticks, float partialTick, int z) {
             float x = Mth.lerp(partialTick, previousPosition.x, currentPosition.x) + (Mth.sin(z + ticks * 0.05F) * floatProgress * 0.5F);
             float y = Mth.lerp(partialTick, previousPosition.y, currentPosition.y) + (Mth.cos(z + ticks * 0.07F) * floatProgress * 0.5F);
-            GUIHelperFunctions.tryRenderGuiItem(renderer, stack, x, y, 0.5F);
+            float rot = ticks + partialTick + z;
+            GUIHelperFunctions.tryRenderGuiItem(renderer, stack, rot, x, y, 0.5F);
             RenderSystem.setShader(GameRenderer::getPositionColorShader);
             GUIHelperFunctions.renderGuiItemDecorations(renderer, Minecraft.getInstance().fontFilterFishy, stack, x, y, 0.5F, null);
         }

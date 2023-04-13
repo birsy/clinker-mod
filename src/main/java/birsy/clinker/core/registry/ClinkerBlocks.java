@@ -1,8 +1,8 @@
 package birsy.clinker.core.registry;
 
-import birsy.clinker.common.block.*;
-import birsy.clinker.common.block.plant.*;
-import birsy.clinker.common.block.plant.aspen.SwampAspenLogBlock;
+import birsy.clinker.common.world.block.*;
+import birsy.clinker.common.world.block.plant.*;
+import birsy.clinker.common.world.block.plant.aspen.SwampAspenLogBlock;
 import birsy.clinker.core.Clinker;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.BlockItem;

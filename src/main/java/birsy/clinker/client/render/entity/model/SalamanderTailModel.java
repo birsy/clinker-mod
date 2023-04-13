@@ -5,7 +5,7 @@ package birsy.clinker.client.render.entity.model;// Made with Blockbench 4.0.1
 
 import birsy.clinker.client.render.entity.model.base.AnimFunctions;
 import birsy.clinker.client.render.entity.model.base.CappinModelPart;
-import birsy.clinker.common.entity.Salamander.AbstractSalamanderPartEntity;
+import birsy.clinker.common.world.entity.salamander.AbstractSalamanderPartEntity;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.vertex.PoseStack;

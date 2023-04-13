@@ -102,8 +102,13 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
 
     @Override
     public void adjustLightmapColors(ClientLevel level, float partialTicks, float skyDarken, float skyLight, float blockLight, int pixelX, int pixelY, Vector3f colors) {
+        // skylight, between 1 and 0 so it's easier to work with.
         float skyL = (float) pixelY / 15.0F;
+        // ditto
         float blockL = (float) pixelX / 15.0F;
+
+        //colors.set(Math.max(skyL, blockL), Math.max(skyL, blockL), Math.max(skyL, blockL));
+
 
         // Start off with an orange base
         Vector3f blockLightColor = new Vector3f(255.0F / 255.0F, 96.0F / 255.0F, 0.0F / 255.0F);
@@ -117,13 +122,15 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
         // Add some white to it.
         float b2 = blockL;
         b2 = (float) Math.pow(b2, 15.0F);
+        // torch flicker
         float flicker = 1.0F + MathUtils.awfulRandom(((level.getGameTime() + partialTicks) % 20000.0F)) * 0.1F;
         b2 *= flicker;
         b2 *= 8.0;
         blockLightColor.add(b2, b2, b2 * 0.5F);
 
-        // Quite dark!
+        // The othershore's default skylight color. Quite dark! (it has no sun, so makes sense.)
         Vector3f skyLightColor = new Vector3f(75.0F / 255.0F, 65.0F / 255.0F, 59.0F / 255.0F);
+        // some math to make it all a little smoother and fancy looking. just kept adding functions until it looked good.
         skyLightColor.lerp(new Vector3f(0.0f, 0.0f, 1.0f), (float) Math.pow((1 - skyL), 1.1));
         skyL = ((1 / ((1.5F * skyL * skyL * skyL) - 2)) + 2) / 1.5F;
         skyLightColor.lerp(Vector3f.ZERO, skyL);
@@ -407,5 +414,10 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
     @Override
     public boolean renderSnowAndRain(ClientLevel level, int ticks, float partialTick, LightTexture lightTexture, double camX, double camY, double camZ) {
         return true;//super.renderSnowAndRain(level, ticks, partialTick, lightTexture, camX, camY, camZ);
+    }
+
+    @Override
+    public boolean tickRain(ClientLevel level, int ticks, Camera camera) {
+        return true;
     }
 }

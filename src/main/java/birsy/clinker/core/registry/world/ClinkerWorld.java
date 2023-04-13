@@ -1,9 +1,9 @@
 package birsy.clinker.core.registry.world;
 
 import birsy.clinker.client.render.world.OthershoreDimensionEffects;
-import birsy.clinker.common.level.chunk.gen.CaveChunkGenerator;
-import birsy.clinker.common.level.chunk.gen.OthershoreChunkGenerator;
-import birsy.clinker.common.level.chunk.gen.TestChunkGenerator;
+import birsy.clinker.common.world.level.chunk.gen.CaveChunkGenerator;
+import birsy.clinker.common.world.level.chunk.gen.OthershoreChunkGenerator;
+import birsy.clinker.common.world.level.chunk.gen.TestChunkGenerator;
 import birsy.clinker.core.Clinker;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.Registry;
@@ -11,7 +11,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterDimensionSpecialEffectsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -29,7 +28,7 @@ public class ClinkerWorld {
 
     @SubscribeEvent
     public static void registerDimensionEffects(RegisterDimensionSpecialEffectsEvent event) {
-        event.register(name("othershore"), new OthershoreDimensionEffects());
+        event.register(new ResourceLocation(Clinker.MOD_ID, "othershore"), new OthershoreDimensionEffects());
     }
 
     private static ResourceLocation name(String name) {

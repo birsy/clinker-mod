@@ -1,14 +1,12 @@
 package birsy.clinker.core.util.rigidbody;
 
-import birsy.clinker.core.Clinker;
-import birsy.clinker.core.util.MathUtils;
+import birsy.clinker.core.util.Quaterniond;
 import birsy.clinker.core.util.rigidbody.colliders.ICollisionShape;
 import com.mojang.math.Matrix3f;
-import com.mojang.math.Quaternion;
 import net.minecraft.world.phys.Vec3;
 
 public class RigidBody implements ICollidable, IBody, IPhysicsBody, ITickableBody {
-    public Transform previousTransform;
+    public Transform lastTickTransform;
     public Transform transform;
     public Vec3 velocity;
     public Vec3 angularVelocity;
@@ -20,9 +18,9 @@ public class RigidBody implements ICollidable, IBody, IPhysicsBody, ITickableBod
     public ICollisionShape collisionShape;
     private Vec3 localCenterOfMass;
 
-    public RigidBody(Vec3 initialPosition, Vec3 initialVelocity, Quaternion initialOrientation, Vec3 initialAngularVelocity, float mass, Matrix3f inertiaTensor, ICollisionShape collisionShape) {
+    public RigidBody(Vec3 initialPosition, Vec3 initialVelocity, Quaterniond initialOrientation, Vec3 initialAngularVelocity, float mass, Matrix3f inertiaTensor, ICollisionShape collisionShape) {
         this.transform = new Transform(initialPosition, initialOrientation);
-        this.previousTransform = this.transform.copy();
+        this.lastTickTransform = this.transform.copy();
         this.velocity = initialVelocity;
         this.angularVelocity = initialAngularVelocity;
         this.inverseMass = 1.0f / mass;
@@ -39,7 +37,6 @@ public class RigidBody implements ICollidable, IBody, IPhysicsBody, ITickableBod
         velocity = velocity.add(force.scale(inverseMass));
 
         Vec3 r = point.subtract(this.getCenterOfMass());
-        //Clinker.LOGGER.info(point.subtract(this.getCenterOfMass()));
         Vec3 torque = r.cross(force);
         this.angularVelocity = this.angularVelocity.add(torque);
     }
@@ -76,9 +73,7 @@ public class RigidBody implements ICollidable, IBody, IPhysicsBody, ITickableBod
     }
 
     public Transform getTransform(float partialTicks) {
-        Quaternion orientation = MathUtils.slerp(this.previousTransform.orientation, this.transform.orientation, partialTicks);
-        orientation.normalize();
-        return new Transform(this.previousTransform.position.lerp(this.transform.position, partialTicks), orientation);
+        return this.lastTickTransform.lerp(this.transform, partialTicks);
     }
 
     @Override
@@ -89,6 +84,6 @@ public class RigidBody implements ICollidable, IBody, IPhysicsBody, ITickableBod
 
     @Override
     public void tick(float deltaTime) {
-        this.previousTransform = this.transform.copy();
+        this.lastTickTransform = this.transform.copy();
     }
 }

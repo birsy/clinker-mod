@@ -1,13 +1,14 @@
 package birsy.clinker.core.util;
 
 import com.ibm.icu.impl.Pair;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.*;
+import com.mojang.math.Matrix3f;
+import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3f;
 import net.minecraft.Util;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 
 import java.lang.reflect.Array;
@@ -18,16 +19,20 @@ import java.util.function.Function;
 /* cappin's math utils
  * hope you find this useful :) */
 public class MathUtils {
-    private static final float[] ASIN = Util.make(new float[65536], (array) -> {
+    private static final double[] ASIN = Util.make(new double[65536], (array) -> {
         for(int i = 0; i < array.length; ++i) {
-            array[i] = (float)Math.sin((double)i * Math.PI * 2.0D / (double)array.length);
+            array[i] = Math.sin((double)i * Math.PI * 2.0D / (double)array.length);
         }
     });
 
-    public static float arcsin(float pValue) {
+    public static double arcsin(double pValue) {
         return ASIN[(int)(pValue * 10430.378F) & '\uffff'];
     }
-    public static float arccos(float pValue) { return (float) ((arcsin(pValue) * -1) + (Math.PI / 2));}
+    public static double arccos(double pValue) { return (float) ((arcsin(pValue) * -1) + (Math.PI / 2));}
+
+    public static BlockPos blockPosFromVec3(Vec3 vector) {
+        return new BlockPos(vector.x(), vector.y(), vector.z());
+    }
 
     public static Vec3 vec3Lerp(float delta, Vec3 start, Vec3 end) {
         return new Vec3(Mth.lerp(delta, start.x(), end.x()), Mth.lerp(delta, start.y(), end.y()), Mth.lerp(delta, start.z(), end.z()));
@@ -48,9 +53,6 @@ public class MathUtils {
         return new Vec3(vector.x * Math.cos(rotation) - vector.z * Math.sin(rotation), vector.y, vector.z * Math.cos(rotation) + vector.x * Math.sin(rotation));
     }
 
-    public static double norm(Quaternion q) {
-        return Math.sqrt(q.r()*q.r() + q.i()*q.i() + q.j()*q.j() + q.k()*q.k());
-    }
 
     public static Matrix3f matrix(float m00, float m01, float m02, float m10, float m11, float m12, float m20, float m21, float m22) {
         Matrix3f m = new Matrix3f();
@@ -66,45 +68,19 @@ public class MathUtils {
         return m;
     }
 
-
-    public static Quaternion slerp(Quaternion q1, Quaternion q2, float t) {
-        float dot = q1.i() * q1.i() + q1.j() * q1.j() + q1.k() * q1.k() + q1.r() * q1.r();
-        float theta = (float) Math.acos(dot);
-        float sinTheta = (float) Math.sin(theta);
-
-        float s1 = (float) Math.sin((1 - t) * theta) / sinTheta;
-        float s2 = (float) Math.sin(t * theta) / sinTheta;
-
-        return new Quaternion(
-                q1.i() * s1 + q2.i() * s2,
-                q1.j() * s1 + q1.j() * s2,
-                q1.k() * s1 + q1.k() * s2,
-                q1.r() * s1 + q1.r() * s2
-        );
+    public static Vec3 transformInverse(Vec3 vec, Quaternion q) {
+        return transformInverse(vec.x, vec.y, vec.z, q);
     }
 
-
-    public static Quaternion inverse(Quaternion q) {
-        float norm = (float) norm(q);
-        return new Quaternion(-q.i() / norm, -q.j() / norm, -q.k() / norm, q.r() / norm);
-    }
-
-    public static Quaternion add(Quaternion q1, Quaternion q2) {
-        return new Quaternion(q1.i() + q2.i(), q1.j() + q2.j(), q1.k() + q2.k(), q1.r() + q2.r());
-    }
-
-    public static Quaternion addVector(Quaternion q, Vec3 v) {
-        Quaternion vQuat = new Quaternion((float) 0, (float) v.x(), (float) v.y(), (float) v.z());
-        return add(q, vQuat);
-    }
-
-    public static Vec3 transform(Vec3 v, Quaternion pQuaternion) {
-        Quaternion quaternion = new Quaternion(pQuaternion);
-        quaternion.mul(new Quaternion((float) v.x(), (float) v.y(), (float) v.z(), 0.0F));
-        Quaternion quaternion1 = new Quaternion(pQuaternion);
-        quaternion1.conj();
-        quaternion.mul(quaternion1);
-        return new Vec3(quaternion.i(), quaternion.j(), quaternion.k());
+    public static Vec3 transformInverse(double x, double y, double z, Quaternion q) {
+        double n = 1.0 / Math.fma(q.i(), q.i(), Math.fma(q.j(), q.j(), Math.fma(q.k(), q.k(), q.r() * q.r())));
+        double qx = q.i() * n, qy = q.j() * n, qz = q.k() * n, qw = q.r() * n;
+        double xx = qx * qx, yy = qy * qy, zz = qz * qz, ww = qw * qw;
+        double xy = qx * qy, xz = qx * qz, yz = qy * qz, xw = qx * qw;
+        double zw = qz * qw, yw = qy * qw, k = 1 / (xx + yy + zz + ww);
+        return new Vec3(Math.fma((xx - yy - zz + ww) * k, x, Math.fma(2 * (xy + zw) * k, y, (2 * (xz - yw) * k) * z)),
+                Math.fma(2 * (xy - zw) * k, x, Math.fma((yy - xx - zz + ww) * k, y, (2 * (yz + xw) * k) * z)),
+                Math.fma(2 * (xz + yw) * k, x, Math.fma(2 * (yz - xw) * k, y, ((zz - xx - yy + ww) * k) * z)));
     }
 
     public static Vec3 multiply(Vec3 v, Matrix3f m) {

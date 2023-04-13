@@ -1,6 +1,7 @@
 buildscript {
     repositories {
         maven { url = 'https://maven.minecraftforge.net' }
+        maven { url 'https://jitpack.io' }
         mavenCentral()
     }
     dependencies {
@@ -13,14 +14,18 @@ plugins {
     id 'maven-publish'
     id 'net.minecraftforge.gradle' version '5.1.+'
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
+    id 'com.github.johnrengelman.shadow' version '7.1.0'
 }
 apply plugin: 'org.spongepowered.mixin'
 
-version = "1.19.2-0.0.3.1"
-group = 'birsy.clinker' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+configurations {
+    implementation.extendsFrom(shadow)
+}
+
+version = "1.19.2-0.0.5.4"
+group = 'birsy.clinker'
 archivesBaseName = 'clinker'
 
-// Mojang ships Java 17 to end users in 1.18+, so your mod should target Java 17.
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
@@ -32,13 +37,9 @@ minecraft {
     runs {
         client {
             workingDirectory project.file('run')
-
             property 'forge.logging.markers', 'REGISTRIES'
-
             property 'forge.logging.console.level', 'debug'
-
             property 'forge.enabledGameTestNamespaces', 'clinker'
-
             mods {
                 clinker {
                     source sourceSets.main
@@ -48,13 +49,9 @@ minecraft {
 
         server {
             workingDirectory project.file('run')
-
             property 'forge.logging.markers', 'REGISTRIES'
-
             property 'forge.logging.console.level', 'debug'
-
             property 'forge.enabledGameTestNamespaces', 'clinker'
-
             mods {
                 clinker {
                     source sourceSets.main
@@ -64,13 +61,9 @@ minecraft {
 
         gameTestServer {
             workingDirectory project.file('run')
-
             property 'forge.logging.markers', 'REGISTRIES'
-
             property 'forge.logging.console.level', 'debug'
-
             property 'forge.enabledGameTestNamespaces', 'clinker'
-
             mods {
                 clinker {
                     source sourceSets.main
@@ -80,14 +73,9 @@ minecraft {
 
         data {
             workingDirectory project.file('run')
-
             property 'forge.logging.markers', 'REGISTRIES'
-
             property 'forge.logging.console.level', 'debug'
-
-            // Specify the clinker for data generation, where to output the resulting resource, and where to look for existing resources.
             args '--mod', 'clinker', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-
             mods {
                 clinker {
                     source sourceSets.main
@@ -103,15 +91,32 @@ repositories {
 
 }
 
+project.ext.jomlVersion = "1.10.5"
+shadowJar{
+    configurations = [project.configurations.shadow]
+    relocate 'org.joml', 'clinker.joml'
+    mergeServiceFiles()
+}
+
 dependencies {
     minecraft 'net.minecraftforge:forge:1.19.2-43.1.3'
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     implementation fg.deobf('org.ode4j:core:0.4.0')
+    shadow("org.joml:joml:1.10.5")
+    implementation (jarJar("org.joml:joml:1.10.5"){
+        jarJar.ranged(it, "[1.10.5,)")
+    })
 }
+
 
 mixin {
     add sourceSets.main, 'mixins.clinker.refmap.json'
     config "clinker.mixins.json"
+}
+
+jarJar.enable()
+reobf {
+    jarJar{}
 }
 
 jar {

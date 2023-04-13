@@ -5,7 +5,7 @@ package birsy.clinker.client.render.entity.model;// Made with Blockbench 4.0.1
 
 import birsy.clinker.client.render.entity.model.base.AnimFunctions;
 import birsy.clinker.client.render.entity.model.base.CappinModelPart;
-import birsy.clinker.common.entity.MudScarabEntity;
+import birsy.clinker.common.world.entity.MudScarabEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;

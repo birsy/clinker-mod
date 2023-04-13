@@ -1,7 +1,7 @@
 package birsy.clinker.client.render.entity.model.gnomad;
 
 import birsy.clinker.client.render.entity.model.base.DynamicModel;
-import birsy.clinker.common.entity.gnomad.AbstractGnomadEntity;
+import birsy.clinker.common.world.entity.gnomad.AbstractGnomadEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.EntityModel;

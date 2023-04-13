@@ -1,7 +1,7 @@
 package birsy.clinker.client.render.world.blockentity;
 
-import birsy.clinker.common.block.FermentationBarrelBlock;
-import birsy.clinker.common.blockentity.FermentationBarrelBlockEntity;
+import birsy.clinker.common.world.block.FermentationBarrelBlock;
+import birsy.clinker.common.world.block.blockentity.FermentationBarrelBlockEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
@@ -17,7 +17,6 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.block.entity.LidBlockEntity;
 
 public class FermentationBarrelRenderer<T extends FermentationBarrelBlockEntity> implements BlockEntityRenderer<T> {
     public static final ResourceLocation TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/block/fermentation_barrel/fermentation_barrel_lid.png");

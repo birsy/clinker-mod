@@ -1,72 +1,138 @@
 package birsy.clinker.core.util.rigidbody;
 
-import birsy.clinker.core.util.MathUtils;
-import com.mojang.math.Matrix3f;
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
+import birsy.clinker.core.util.Quaterniond;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.phys.Vec3;
 
 public class Transform {
     public Vec3 position;
-    public Quaternion orientation;
+    public Quaterniond orientation;
 
-    public Transform(Vec3 initialPosition, Quaternion initialOrientation) {
+    public Transform(Vec3 initialPosition, Quaterniond initialOrientation) {
         this.position = initialPosition;
         this.orientation = initialOrientation;
     }
 
     public Transform() {
         this.position = Vec3.ZERO;
-        this.orientation = Quaternion.ONE;
+        this.orientation = new Quaterniond();
     }
 
     public Vec3 getPosition() {
         return this.position;
     }
-    public void setPosition(Vec3 pos) {
+    public Transform setPosition(Vec3 pos) {
         this.position = pos;
+        return this;
     }
-    public void setPosition(float x, float y, float z) {
+    public Transform setPosition(double x, double y, double z) {
         this.setPosition(new Vec3(x, y, z));
-    }
-    public void addPosition(Vec3 pos) {
-        this.position = this.position.add(pos);
-    }
-    public void addPosition(float x, float y, float z) {
-        this.position = this.position.add(x, y, z);
-    }
-    
-    public Quaternion getOrientation() {
-        return this.orientation;
-    }
-    public void setOrientation(Quaternion rot) {
-        this.orientation = rot;
+        return this;
     }
 
-    public void rotate(Quaternion rot) {
+    public Transform addPosition(Vec3 pos) {
+        this.position = this.position.add(pos);
+        return this;
+    }
+    public Transform addPosition(double x, double y, double z) {
+        this.position = this.position.add(x, y, z);
+        return this;
+    }
+
+    public Quaterniond getOrientation() {
+        return this.orientation;
+    }
+    public Transform setOrientation(Quaterniond rot) {
+        this.orientation = rot;
+        return this;
+    }
+
+    public Transform rotate(Quaterniond rot) {
         this.orientation.mul(rot);
+        return this;
     }
-    public void addOrientation(Vec3 angularVel) {
-        this.orientation = MathUtils.addVector(orientation, angularVel);
+    public Transform addOrientation(Vec3 angularVel) {
+        this.orientation = orientation.rotateXYZ(angularVel.x(), angularVel.y(), angularVel.z());
         this.orientation.normalize();
+        return this;
     }
-    public void addOrientation(Quaternion rot) {
-        this.orientation = MathUtils.add(orientation, rot);
+    public Transform addOrientation(Quaterniond rot) {
+        this.orientation.mul(rot);
         this.orientation.normalize();
+        return this;
     }
+
     public Vec3 toWorldSpace(Vec3 vec) {
-        vec = MathUtils.transform(vec, this.orientation);
-        vec = vec.add(this.position);
-        return vec;
+        Vec3 v = this.rotate(vec);
+        v = v.add(this.position);
+        return v;
     }
-    
     public Vec3 toLocalSpace(Vec3 vec) {
-        vec = vec.subtract(this.position);
-        vec = MathUtils.transform(vec, MathUtils.inverse(this.orientation));
-        return vec;
+        Vec3 v = vec.subtract(this.position);
+        return rotateInverse(v);
+    }
+
+    public Vec3 rotate(Vec3 vec) {
+        return this.orientation.transform(vec);
+    }
+
+    public Vec3 rotateInverse(Vec3 vec) {
+        return this.orientation.transformInverse(vec);
+    }
+
+    public Transform lerp(Transform t, double alpha) {
+        Quaterniond orientation = this.orientation.slerp(t.getOrientation(), alpha);
+        orientation.normalize();
+        return new Transform(this.getPosition().lerp(t.getPosition(), alpha), orientation);
     }
 
     public Transform copy() {
-        return new Transform(this.position.add(0, 0, 0), this.orientation.copy());
+        return new Transform(this.position.add(0, 0, 0), new Quaterniond(this.orientation.x, this.orientation.y, this.orientation.z, this.orientation.w));
+    }
+    public CompoundTag serialize() {
+        return this.serialize(null);
+    }
+    public CompoundTag serialize(CompoundTag tag) {
+        if (tag == null) tag = new CompoundTag();
+        Vec3 pos = this.getPosition();
+        Quaterniond rot = this.getOrientation();
+
+        tag.putDouble("x", pos.x());
+        tag.putDouble("y", pos.y());
+        tag.putDouble("z", pos.z());
+
+        tag.putDouble("i", rot.x());
+        tag.putDouble("j", rot.y());
+        tag.putDouble("k", rot.z());
+        tag.putDouble("r", rot.w());
+
+        return tag;
+    }
+
+    public void deserialize(CompoundTag tag) {
+        double x = tag.getDouble("x");
+        double y = tag.getDouble("y");
+        double z = tag.getDouble("z");
+
+        float i = (float) tag.getDouble("i");
+        float j = (float) tag.getDouble("j");
+        float k = (float) tag.getDouble("k");
+        float r = (float) tag.getDouble("r");
+
+        this.setPosition(x, y, z);
+        this.setOrientation(new Quaterniond(i, j, k, r));
+    }
+
+    public static Transform fromNBT(CompoundTag tag) {
+        double x = tag.getDouble("x");
+        double y = tag.getDouble("y");
+        double z = tag.getDouble("z");
+
+        float i = (float) tag.getDouble("i");
+        float j = (float) tag.getDouble("j");
+        float k = (float) tag.getDouble("k");
+        float r = (float) tag.getDouble("r");
+
+        return new Transform(new Vec3(x, y, z), new Quaterniond(i, j, k, r));
     }
 }

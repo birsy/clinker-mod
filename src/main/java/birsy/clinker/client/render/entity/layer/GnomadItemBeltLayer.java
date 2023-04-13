@@ -2,7 +2,7 @@ package birsy.clinker.client.render.entity.layer;
 
 import birsy.clinker.client.render.entity.model.gnomad.GnomadAxemanDynamicModel;
 import birsy.clinker.client.render.entity.model.base.AnimFunctions;
-import birsy.clinker.common.entity.gnomad.GnomadAxemanEntity;
+import birsy.clinker.common.world.entity.gnomad.GnomadAxemanEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import net.minecraft.Util;

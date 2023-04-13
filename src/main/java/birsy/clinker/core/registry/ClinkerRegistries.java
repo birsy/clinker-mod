@@ -1,9 +1,8 @@
 package birsy.clinker.core.registry;
 
-import birsy.clinker.common.alchemy.chemicals.Chemical;
+import birsy.clinker.common.world.alchemy.chemicals.Chemical;
 import birsy.clinker.core.Clinker;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.IForgeRegistry;

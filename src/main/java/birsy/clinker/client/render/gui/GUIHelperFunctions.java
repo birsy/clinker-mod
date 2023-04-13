@@ -1,17 +1,15 @@
 package birsy.clinker.client.render.gui;
 
-import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Vector3f;
 import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportedException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.font.FontManager;
-import net.minecraft.client.gui.font.FontSet;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -20,7 +18,6 @@ import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
@@ -30,13 +27,13 @@ import javax.annotation.Nullable;
 
 @OnlyIn(Dist.CLIENT)
 public class GUIHelperFunctions {
-    public static void tryRenderGuiItem(ItemRenderer renderer, ItemStack pStack, float pX, float pY, float alpha) {
+    public static void tryRenderGuiItem(ItemRenderer renderer, ItemStack pStack, float rotation, float pX, float pY, float alpha) {
         if (!pStack.isEmpty()) {
             BakedModel bakedmodel = renderer.getModel(pStack, null, Minecraft.getInstance().player, 0);
             renderer.blitOffset = bakedmodel.isGui3d() ? renderer.blitOffset + 50.0F : renderer.blitOffset + 50.0F;
 
             try {
-                renderGuiItem(renderer, pStack, pX, pY, bakedmodel, alpha);
+                renderGuiItem(renderer, pStack, rotation, pX, pY, bakedmodel, alpha);
             } catch (Throwable throwable) {
                 CrashReport crashreport = CrashReport.forThrowable(throwable, "Rendering item");
                 CrashReportCategory crashreportcategory = crashreport.addCategory("Item being rendered");
@@ -52,7 +49,7 @@ public class GUIHelperFunctions {
         }
     }
 
-    protected static void renderGuiItem(ItemRenderer renderer, ItemStack pStack, float pX, float pY, BakedModel pBakedModel, float alpha) {
+    protected static void renderGuiItem(ItemRenderer renderer, ItemStack pStack, float rotation, float pX, float pY, BakedModel pBakedModel, float alpha) {
         Minecraft mc = Minecraft.getInstance();
         mc.textureManager.getTexture(TextureAtlas.LOCATION_BLOCKS).setFilter(false, false);
         RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
@@ -63,6 +60,7 @@ public class GUIHelperFunctions {
         posestack.pushPose();
         posestack.translate(pX, pY, 100.0F + mc.getItemRenderer().blitOffset);
         posestack.translate(8.0D, 8.0D, 0.0D);
+        posestack.mulPose(Vector3f.YP.rotationDegrees(rotation));
         posestack.scale(1.0F, -1.0F, 1.0F);
         posestack.scale(16.0F, 16.0F, 16.0F);
         RenderSystem.applyModelViewMatrix();
@@ -84,6 +82,7 @@ public class GUIHelperFunctions {
         RenderSystem.applyModelViewMatrix();
     }
 
+    @OnlyIn(Dist.CLIENT)
     public static void renderGuiItemDecorations(ItemRenderer renderer, Font font, ItemStack pStack, float pXPosition, float pYPosition, float alpha, @Nullable String pText) {
         if (!pStack.isEmpty()) {
             PoseStack posestack = new PoseStack();

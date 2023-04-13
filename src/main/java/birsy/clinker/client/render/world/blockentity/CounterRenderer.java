@@ -1,26 +1,20 @@
 package birsy.clinker.client.render.world.blockentity;
 
-import birsy.clinker.common.alchemy.workstation.PhysicalItem;
-import birsy.clinker.common.blockentity.CounterBlockEntity;
-import birsy.clinker.core.Clinker;
-import birsy.clinker.core.util.rigidbody.IBody;
-import birsy.clinker.core.util.rigidbody.ICollidable;
+import birsy.clinker.common.world.alchemy.workstation.PhysicalItem;
+import birsy.clinker.common.world.block.blockentity.CounterBlockEntity;
+import birsy.clinker.core.util.Quaterniond;
 import birsy.clinker.core.util.rigidbody.Transform;
-import birsy.clinker.core.util.rigidbody.colliders.MeshCollisionShape;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Matrix3f;
 import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 public class CounterRenderer<T extends CounterBlockEntity> implements BlockEntityRenderer<T> {
@@ -39,7 +33,7 @@ public class CounterRenderer<T extends CounterBlockEntity> implements BlockEntit
             Vec3 position = transform.getPosition().subtract(pBlockEntity.getBlockPos().getX(), pBlockEntity.getBlockPos().getY(), pBlockEntity.getBlockPos().getZ());
             pPoseStack.translate(position.x, position.y, position.z);
             pPoseStack.scale(scale, scale, scale);
-            pPoseStack.mulPose(transform.getOrientation());
+            pPoseStack.mulPose(transform.getOrientation().toMojangQuaternion());
             //pPoseStack.mulPose(Vector3f.YP.rotationDegrees(items * 3312.53829F));
 
             int lightColor = 15728880;
@@ -53,7 +47,7 @@ public class CounterRenderer<T extends CounterBlockEntity> implements BlockEntit
             items++;
         }
 
-        for (IBody body : pBlockEntity.workstation.bodies) {
+       /*for (IBody body : pBlockEntity.workstation.bodies) {
             if (body instanceof ICollidable cBody) {
                 if (cBody.getCollisionShape() instanceof MeshCollisionShape shape) {
                     for (Vec3 vertex1 : shape.vertices) {
@@ -70,7 +64,7 @@ public class CounterRenderer<T extends CounterBlockEntity> implements BlockEntit
                 //AABB box = cBody.getCollisionShape().getBounds().move(pBlockEntity.getBlockPos().multiply(-1));
                 //LevelRenderer.renderLineBox(pPoseStack, pBufferSource.getBuffer(RenderType.LINES), box, 1.0F, 1.0F, 1.0F, 0.1F);
             }
-        }
+        }*/
     }
 
     public static void renderLine(PoseStack pPoseStack, VertexConsumer pConsumer, Vec3 min, Vec3 max, float pRed, float pGreen, float pBlue, float pAlpha) {

@@ -2,7 +2,7 @@ package birsy.clinker.client.render.entity.layer;
 
 import birsy.clinker.client.render.ClinkerRenderTypes;
 import birsy.clinker.client.render.entity.model.SalamanderHeadModel;
-import birsy.clinker.common.entity.Salamander.SalamanderHeadEntity;
+import birsy.clinker.common.world.entity.salamander.SalamanderHeadEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;

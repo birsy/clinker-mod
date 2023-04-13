@@ -1,7 +1,7 @@
 package birsy.clinker.core.registry.alchemy;
 
-import birsy.clinker.common.alchemy.chemicals.Chemical;
-import birsy.clinker.common.alchemy.chemicals.Solvent;
+import birsy.clinker.common.world.alchemy.chemicals.Chemical;
+import birsy.clinker.common.world.alchemy.chemicals.Solvent;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerRegistries;
 import net.minecraftforge.registries.DeferredRegister;

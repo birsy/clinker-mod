@@ -1,8 +1,10 @@
 package birsy.clinker.core.util.rigidbody.colliders;
 
 import birsy.clinker.core.util.rigidbody.Transform;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.checkerframework.checker.units.qual.C;
 
 /**
  * Interface for convex shapes, desgined for use with GJK.
@@ -37,4 +39,17 @@ public interface ICollisionShape {
     Transform getTransform();
 
     Vec3 applyTransform(Vec3 vec);
+
+    /**
+     * Returns the maximum distance a point gets from the transform center.
+     *
+     * @return the maximum distance a point gets from the transform center.
+     */
+    double getRadius();
+
+    default CompoundTag serialize() {
+        return this.serialize(new CompoundTag());
+    }
+    CompoundTag serialize(CompoundTag tag);
+    ICollisionShape deserialize(CompoundTag tag);
 }

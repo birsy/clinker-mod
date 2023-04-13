@@ -2,24 +2,17 @@ package birsy.clinker.client.render.entity;
 
 import birsy.clinker.client.render.entity.model.SeaHagModel;
 import birsy.clinker.client.render.entity.model.base.AnimFunctions;
-import birsy.clinker.common.entity.SeaHagEntity;
+import birsy.clinker.common.world.entity.SeaHagEntity;
 import birsy.clinker.core.Clinker;
-import birsy.clinker.core.util.MathUtils;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix3f;
 import com.mojang.math.Matrix4f;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.debug.DebugRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.phys.Vec3;
 
 public class SeaHagRenderer extends ClinkerEntityRenderer<SeaHagEntity, SeaHagModel<SeaHagEntity>> {
@@ -50,7 +43,7 @@ public class SeaHagRenderer extends ClinkerEntityRenderer<SeaHagEntity, SeaHagMo
         float horizontalScale = MathUtils.mapRange(0, 1, 1, 1 / scaleFactor, deathTime);
         pMatrixStack.pushPose();
         pMatrixStack.scale(horizontalScale, MathUtils.mapRange(0, 1, scaleFactor, 1, MathUtils.invert(deathTime) - -1), horizontalScale);
-        super.render(pEntity, pEntityYaw, pPartialTicks, pMatrixStack, pBuffer, pPackedLight);
+        super.runShaders(pEntity, pEntityYaw, pPartialTicks, pMatrixStack, pBuffer, pPackedLight);
         //Clinker.LOGGER.info(deathTime);
         pMatrixStack.popPose();
         */

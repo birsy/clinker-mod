@@ -5,7 +5,7 @@ package birsy.clinker.client.render.entity.model;// Made with Blockbench 4.1.3
 
 import birsy.clinker.client.render.entity.model.base.AnimFunctions;
 import birsy.clinker.client.render.entity.model.base.CappinModelPart;
-import birsy.clinker.common.entity.SeaHagEntity;
+import birsy.clinker.common.world.entity.SeaHagEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -14,9 +14,7 @@ import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.phys.Vec3;
 
 public class SeaHagModel<T extends SeaHagEntity> extends EntityModel<T> {
 	//0 - Front

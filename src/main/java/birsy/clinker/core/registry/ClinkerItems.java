@@ -1,14 +1,13 @@
 package birsy.clinker.core.registry;
 
-import birsy.clinker.common.item.AlchemicalItem;
-import birsy.clinker.common.item.AlchemyBookItem;
-import birsy.clinker.common.item.LadleItem;
-import birsy.clinker.common.item.food.GnomeatItem;
-import birsy.clinker.common.item.food.GnomeatJerkyItem;
-import birsy.clinker.common.item.materials.enums.ClinkerItemTier;
+import birsy.clinker.common.world.item.AlchemicalItem;
+import birsy.clinker.common.world.item.AlchemyBookItem;
+import birsy.clinker.common.world.item.LadleItem;
+import birsy.clinker.common.world.item.food.GnomeatItem;
+import birsy.clinker.common.world.item.food.GnomeatJerkyItem;
+import birsy.clinker.common.world.item.materials.enums.ClinkerItemTier;
 import birsy.clinker.core.Clinker;
 import net.minecraft.world.item.*;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
