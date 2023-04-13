@@ -58,8 +58,8 @@ public class InteractableManager {
         BlockPos blockPos = new BlockPos(position.x(), position.y(), position.z());
 
         LevelChunk chunk = level.getChunkAt(blockPos);
-        ClinkerPacketHandler.NETWORK.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk), new ClientboundInteractableAddPacket(new ClientDummyInteractable(interactable.shape, interactable.uuid)));
-        ClinkerPacketHandler.NETWORK.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk), new ClientboundInteractableSyncPacket(interactable));
+        ClinkerPacketHandler.sendToClientsInChunk((chunk), new ClientboundInteractableAddPacket(new ClientDummyInteractable(interactable.shape, interactable.uuid)));
+        ClinkerPacketHandler.sendToClientsInChunk((chunk), new ClientboundInteractableSyncPacket(interactable));
 
         try {
             serverInteractableManagers.get(level).addInteractable(interactable);
@@ -121,7 +121,7 @@ public class InteractableManager {
                 interactableMap.remove(interactable.uuid);
                 removeInteractableFromChunk(nextChunk.getPos(), interactable);
                 if (!level.isClientSide()) {
-                    ClinkerPacketHandler.NETWORK.send(PacketDistributor.TRACKING_CHUNK.with(() -> nextChunk), new ClientboundInteractableRemovePacket(interactable.uuid));
+                    ClinkerPacketHandler.sendToClientsInChunk((nextChunk), new ClientboundInteractableRemovePacket(interactable.uuid));
                 }
             }
 
@@ -178,7 +178,7 @@ public class InteractableManager {
             if (interactable.getTransform() != interactable.previousTransform) {
                 BlockPos blockPos = MathUtils.blockPosFromVec3(interactable.getTransform().getPosition());
                 LevelChunk chunk = level.getChunkAt(blockPos);
-                ClinkerPacketHandler.NETWORK.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk), new ClientboundInteractableSyncPacket(interactable));
+                ClinkerPacketHandler.sendToClientsInChunk((chunk), new ClientboundInteractableSyncPacket(interactable));
             }
 
             float rot = 1.0F;
@@ -254,7 +254,7 @@ public class InteractableManager {
     public void loadChunkToPlayer(ChunkPos chunkPos, ServerPlayer player) {
         List<Interactable> list = this.getInteractablesInChunk(chunkPos);
         for (int i = 0; i < list.size(); i++) {
-            ClinkerPacketHandler.NETWORK.send(PacketDistributor.PLAYER.with(() -> player), new ClientboundInteractableAddPacket(list.get(i)));
+            ClinkerPacketHandler.sendToClient(player, new ClientboundInteractableAddPacket(list.get(i)));
         }
     }
 

@@ -126,6 +126,15 @@ public abstract class Interactable {
     }
 
     /**
+     * Sets the rotation of the interactable.
+     *
+     * @param rotation the new rotation.
+     */
+    public void setRotation(Quaterniond rotation) {
+        this.getTransform().setOrientation(rotation);
+    }
+
+    /**
      * Rotates the interactable according to the quaternion.
      *
      * @param rotation the rotation to apply.

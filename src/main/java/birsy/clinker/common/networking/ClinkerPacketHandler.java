@@ -1,9 +1,6 @@
 package birsy.clinker.common.networking;
 
-import birsy.clinker.common.networking.packet.ClientboundInteractableAddPacket;
-import birsy.clinker.common.networking.packet.ClientboundInteractableRemovePacket;
-import birsy.clinker.common.networking.packet.ServerboundInteractableInteractionPacket;
-import birsy.clinker.common.networking.packet.ClientboundInteractableSyncPacket;
+import birsy.clinker.common.networking.packet.*;
 import birsy.clinker.core.Clinker;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -35,16 +32,12 @@ public class ClinkerPacketHandler {
     }
 
     public static void registerPackets() {
-        NETWORK.registerMessage(createId(),
-                ClientboundInteractableAddPacket.class,
-                ClientboundInteractableAddPacket::toBytes,
-                ClientboundInteractableAddPacket::new,
-                ClientboundInteractableAddPacket::handle);
-
+        NETWORK.registerMessage(createId(), ClientboundInteractableAddPacket.class, ClientboundInteractableAddPacket::toBytes, ClientboundInteractableAddPacket::new, ClientboundInteractableAddPacket::handle);
         NETWORK.registerMessage(createId(), ClientboundInteractableRemovePacket.class, ClientboundInteractableRemovePacket::toBytes, ClientboundInteractableRemovePacket::new, ClientboundInteractableRemovePacket::handle);
         NETWORK.registerMessage(createId(), ClientboundInteractableSyncPacket.class, ClientboundInteractableSyncPacket::toBytes, ClientboundInteractableSyncPacket::new, ClientboundInteractableSyncPacket::handle);
-
         NETWORK.registerMessage(createId(), ServerboundInteractableInteractionPacket.class, ServerboundInteractableInteractionPacket::toBytes, ServerboundInteractableInteractionPacket::new, ServerboundInteractableInteractionPacket::handle);
+        NETWORK.registerMessage(createId(), ClientboundSalamanderSyncPacket.class, ClientboundSalamanderSyncPacket::toBytes, ClientboundSalamanderSyncPacket::new, ClientboundSalamanderSyncPacket::handle);
+
 
         Clinker.LOGGER.info("REGISTERED PACKETS!!!");
         /*NETWORK.messageBuilder(ClientboundInteractableAddPacket.class, createId(), NetworkDirection.PLAY_TO_CLIENT)
@@ -72,16 +65,16 @@ public class ClinkerPacketHandler {
                 .add();*/
     }
 
-    public static <M> void sendToServer(M... packet) {
+    public static <M> void sendToServer(M packet) {
         NETWORK.sendToServer(packet);
     }
-    public static <M> void sendToClient(ServerPlayer client, M... packet) {
+    public static <M> void sendToClient(ServerPlayer client, M packet) {
         NETWORK.send(PacketDistributor.PLAYER.with(() -> client), packet);
     }
-    public static <M> void sendToAllClients(M... packet) {
+    public static <M> void sendToAllClients(M packet) {
         NETWORK.send(PacketDistributor.ALL.noArg(), packet);
     }
-    public static <M> void sendToClientsInChunk(LevelChunk chunk, M... packet) {
+    public static <M> void sendToClientsInChunk(LevelChunk chunk, M packet) {
         NETWORK.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk), packet);
     }
 }

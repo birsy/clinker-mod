@@ -43,14 +43,15 @@ public class NewSalamanderRenderer extends EntityRenderer<NewSalamanderEntity> {
         int amount = 0;
         for (NewSalamanderEntity.SalamanderJoint joint : pEntity.joints) {
             float brightness = 1 - (amount / (float)pEntity.joints.size());
-            DebugRenderUtil.renderCircle(pPoseStack, pBuffer.getBuffer(RenderType.LINES), 10, (float)joint.radius, joint.position.x, joint.position.y, joint.position.z, joint.isHead ? 1.0F : 0.2F, 0.2F, 0.8F * brightness, 1.0F);
+            Vec3 jPos = joint.getPosition(pPartialTick);
+            DebugRenderUtil.renderSphere(pPoseStack, pBuffer.getBuffer(RenderType.LINES), 32, (float)joint.radius, jPos.x, jPos.y, jPos.z, joint.isHead ? 1.0F : 0.2F, 0.2F, 0.8F * brightness, 1.0F);
             amount ++;
         }
 
         boolean color1 = true;
         for (NewSalamanderEntity.SalamanderSegment segment : pEntity.segments) {
-            Vec3 pos1 = segment.joint1.position;
-            Vec3 pos2 = segment.joint2.position;
+            Vec3 pos1 = segment.joint1.getPosition(pPartialTick);
+            Vec3 pos2 = segment.joint2.getPosition(pPartialTick);
             DebugRenderUtil.renderLine(pPoseStack, pBuffer.getBuffer(RenderType.LINES), pos1.x(), pos1.y(), pos1.z(), pos2.x(), pos2.y(), pos2.z(), 1, color1 ? 1 : 0, segment.isHead() ? 1 : 0, 1);
             color1 = !color1;
         }

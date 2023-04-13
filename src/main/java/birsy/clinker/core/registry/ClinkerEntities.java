@@ -66,6 +66,7 @@ public class ClinkerEntities {
         event.put(MUD_SCARAB.get(), MudScarabEntity.createAttributes().build());
         event.put(SALAMANDER_HEAD.get(), SalamanderHeadEntity.createAttributes().build());
         event.put(SALAMANDER_BODY.get(), SalamanderBodyEntity.createAttributes().build());
+        event.put(SALAMANDER.get(), NewSalamanderEntity.createAttributes().build());
         event.put(SEA_HAG.get(), SeaHagEntity.createAttributes().build());
         event.put(GNOMAD_AXEMAN.get(), GnomadAxemanEntity.createAttributes().build());
         event.put(LUMBERING_ASPEN.get(), LumberingAspenEntity.createAttributes().build());

@@ -2108,5 +2108,23 @@ public class Quaterniond implements Externalizable, Cloneable {
         return new Quaternion((float) x, (float) y, (float) z, (float) w);
     }
 
+    public static Quaterniond lookAt(Vec3 sourcePoint, Vec3 destPoint, Vec3 forward) {
+        Vec3 forwardVector = destPoint.subtract(sourcePoint).normalize();
+
+        double dot = forward.dot(forwardVector);
+
+        if (Math.abs(dot - (-1.0f)) < 0.000001f) {
+            return new Quaterniond(0, 1, 0, Math.PI);
+        }
+        if (Math.abs(dot - (1.0f)) < 0.000001f) {
+            return new Quaterniond();
+        }
+
+        double rotAngle = Math.acos(dot);
+        Vec3 rotAxis = forward.cross(forwardVector);
+        rotAxis = rotAxis.normalize();
+        return new Quaterniond(rotAxis, rotAngle);
+    }
+
 }
 

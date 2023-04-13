@@ -39,7 +39,7 @@ public class DebugRenderUtil {
         pBuffer.vertex(verticies[3].x(), verticies[3].y(), verticies[3].z(), r, g, b, a, 0, 1, OverlayTexture.NO_OVERLAY, LightTexture.FULL_BRIGHT, normal.x(), normal.y(), normal.z());
     }*/
 
-    public static void renderCircle(PoseStack pPoseStack, VertexConsumer pConsumer, int resolution, float radius, double x, double y, double z, float pRed, float pGreen, float pBlue, float pAlpha) {
+    public static void renderSphere(PoseStack pPoseStack, VertexConsumer pConsumer, int resolution, float radius, double x, double y, double z, float pRed, float pGreen, float pBlue, float pAlpha) {
         Minecraft mc = Minecraft.getInstance();
         Camera pRenderInfo = mc.gameRenderer.getMainCamera();
 
@@ -47,7 +47,7 @@ public class DebugRenderUtil {
         pPoseStack.pushPose();
         pPoseStack.translate(x, y, z);
 
-        for (int i = 0; i < 3; i++) {
+        /*for (int i = 0; i < 3; i++) {
             pPoseStack.pushPose();
             switch (i) {
                 case 1: pPoseStack.mulPose(Vector3f.YP.rotationDegrees(90)); break;
@@ -70,8 +70,58 @@ public class DebugRenderUtil {
                 renderLine(matrix4f, matrix3f, pConsumer, s1, c1, 0, s2, c2, 0, pRed, pGreen, pBlue, pAlpha);
             }
             pPoseStack.popPose();
+        }*/
+        for (int i = -1; i < 2; i+=2) {
+            pPoseStack.pushPose();
+            pPoseStack.translate(i * 0.5, 0, 0);
+            pPoseStack.mulPose(Vector3f.YP.rotationDegrees(90));
+            Matrix4f matrix4f = pPoseStack.last().pose();
+            Matrix3f matrix3f = pPoseStack.last().normal();
+            for (int segment = 0; segment < resolution; segment++) {
+                float angle1 = (segment / (float)resolution) * Mth.TWO_PI;
+                float angle2 = ((segment + 1) / (float)resolution) * Mth.TWO_PI;
+                float s1 = Mth.sin(angle1) * radius;
+                float c1 = Mth.cos(angle1) * radius;
+                float s2 = Mth.sin(angle2) * radius;
+                float c2 = Mth.cos(angle2) * radius;
+
+                Vector3f normal = new Vector3f(s1, 0, c1);
+                normal.sub(new Vector3f(s2, 0, c2));
+                normal.normalize();
+
+                renderLine(matrix4f, matrix3f, pConsumer, s1, c1, 0, s2, c2, 0, pRed, pGreen, pBlue, pAlpha);
+            }
+            pPoseStack.popPose();
         }
 
+        pPoseStack.popPose();
+    }
+
+    public static void renderCircle(PoseStack pPoseStack, VertexConsumer pConsumer, int resolution, float radius, double x, double y, double z, float pRed, float pGreen, float pBlue, float pAlpha) {
+        Minecraft mc = Minecraft.getInstance();
+        Camera pRenderInfo = mc.gameRenderer.getMainCamera();
+
+        Quaternion rotation = pRenderInfo.rotation();
+        pPoseStack.pushPose();
+        pPoseStack.translate(x, y, z);
+        pPoseStack.mulPose(rotation);
+
+        Matrix4f matrix4f = pPoseStack.last().pose();
+        Matrix3f matrix3f = pPoseStack.last().normal();
+        for (int segment = 0; segment < resolution; segment++) {
+            float angle1 = (segment / (float)resolution) * Mth.TWO_PI;
+            float angle2 = ((segment + 1) / (float)resolution) * Mth.TWO_PI;
+            float s1 = Mth.sin(angle1) * radius;
+            float c1 = Mth.cos(angle1) * radius;
+            float s2 = Mth.sin(angle2) * radius;
+            float c2 = Mth.cos(angle2) * radius;
+
+            Vector3f normal = new Vector3f(s1, 0, c1);
+            normal.sub(new Vector3f(s2, 0, c2));
+            normal.normalize();
+
+            renderLine(matrix4f, matrix3f, pConsumer, s1, c1, 0, s2, c2, 0, pRed, pGreen, pBlue, pAlpha);
+        }
 
         pPoseStack.popPose();
     }
