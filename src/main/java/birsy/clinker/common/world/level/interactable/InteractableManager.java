@@ -6,6 +6,7 @@ import birsy.clinker.common.networking.packet.ClientboundInteractableRemovePacke
 import birsy.clinker.common.networking.packet.ClientboundInteractableSyncPacket;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
+import birsy.clinker.core.util.Quaterniond;
 import birsy.clinker.core.util.rigidbody.colliders.OBBCollisionShape;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
@@ -109,11 +110,13 @@ public class InteractableManager {
         List<Interactable> iValues = interactableMap.values().stream().toList();
 
         for (Interactable interactable : iValues) {
+            //if (interactable.previousTransform != interactable.getTransform()) interactable.incomingRays.clear();
             interactable.tick();
             BlockPos pBlockPos = MathUtils.blockPosFromVec3(interactable.previousTransform.getPosition());
             BlockPos blockPos = MathUtils.blockPosFromVec3(interactable.getTransform().getPosition());
             LevelChunk currentChunk = level.getChunkAt(pBlockPos);
             LevelChunk nextChunk = level.getChunkAt(blockPos);
+
 
             // remove any interactables that are marked for removal.
             if (interactable.shouldBeRemoved) {
@@ -181,8 +184,8 @@ public class InteractableManager {
                 ClinkerPacketHandler.sendToClientsInChunk((chunk), new ClientboundInteractableSyncPacket(interactable));
             }
 
-            float rot = 1.0F;
-            //interactable.getTransform().rotate(Vector3f.XP.rotationDegrees(rot));
+            float rot = 45.0F;
+            interactable.getTransform().setOrientation(new Quaterniond());
             //interactable.getTransform().rotate(Vector3f.YP.rotationDegrees(rot));
             //interactable.getTransform().rotate(Vector3f.ZP.rotationDegrees(rot));
 
@@ -334,7 +337,7 @@ public class InteractableManager {
             //Clinker.LOGGER.info(cast.get());
 
             Options options = mc.options;
-            if (interactable.run(new InteractionInfo(interactable.uuid,
+            if (interactable.run(cast.get(), new InteractionInfo(interactable.uuid,
                     event.getKeyMapping() == options.keyPickItem ? InteractionInfo.Interaction.PICK :
                     event.getKeyMapping() == options.keyAttack ? InteractionInfo.Interaction.HIT :
                             InteractionInfo.Interaction.INTERACT, iContext), player)) {

@@ -10,6 +10,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public abstract class Interactable {
@@ -17,6 +19,8 @@ public abstract class Interactable {
     public Transform previousTransform;
     protected boolean shouldBeRemoved;
     public final UUID uuid;
+    public List<Ray> incomingRays = new ArrayList<>();
+    public record Ray(Vec3 start, Vec3 end, Vec3 hit){}
 
     public Interactable(OBBCollisionShape shape) {
         this.shape = shape;
@@ -71,6 +75,17 @@ public abstract class Interactable {
     public abstract boolean onTouch(Entity touchingEntity);
 
     public boolean run(InteractionInfo info, @Nullable Entity entity) {
+        switch (info.interaction()) {
+            case INTERACT: return this.onInteract(info.context(), entity);
+            case HIT: return this.onHit(info.context(), entity);
+            case PICK: return this.onPick(info.context(), entity);
+            case TOUCH: return this.onTouch(entity);
+        }
+        return false;
+    }
+
+    public boolean run(Vec3 hit, InteractionInfo info, @Nullable Entity entity) {
+        incomingRays.add(new Ray(info.context().from(), info.context().to(), hit));
         switch (info.interaction()) {
             case INTERACT: return this.onInteract(info.context(), entity);
             case HIT: return this.onHit(info.context(), entity);

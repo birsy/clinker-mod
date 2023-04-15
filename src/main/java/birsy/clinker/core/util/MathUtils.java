@@ -42,6 +42,13 @@ public class MathUtils {
         return new Vec3(Mth.lerp(delta, start.x(), end.x()), Mth.lerp(delta, start.y(), end.y()), Mth.lerp(delta, start.z(), end.z()));
     }
 
+    public static Vec3 min(Vec3 a, Vec3 b) {
+        return new Vec3(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.min(a.z, b.z));
+    }
+    public static Vec3 max(Vec3 a, Vec3 b) {
+        return new Vec3(Math.max(a.x, b.x), Math.max(a.y, b.y), Math.max(a.z, b.z));
+    }
+
     public static Vec3 rotateVectorY(Vec3 vector, float rotation) {
         /*Vec3 nV = vector.normalize();
         double currentAngle = Mth.atan2(nV.z, nV.x);
