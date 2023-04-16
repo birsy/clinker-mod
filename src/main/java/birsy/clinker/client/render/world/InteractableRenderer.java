@@ -38,6 +38,9 @@ public class InteractableRenderer {
     }
 
     public static void render(PoseStack poseStack, VertexConsumer pBuffer, Frustum camera, float pPartialTicks) {
+        for (InteractableManager.Ray2 ray : InteractableManager.clientInteractableManager.rays) {
+            //DebugRenderUtil.renderLine(poseStack, pBuffer, ray.start().x(), ray.start().y(), ray.start().z(), ray.end().x(), ray.end().y(), ray.end().z(), 1, 1, 0, 0.5F);
+        }
         if (!Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes()) return;
         for (Interactable interactable : InteractableManager.clientInteractableManager.interactableMap.values()) {
             if (camera.isVisible(interactable.shape.getBounds().inflate(0.5))) {
@@ -53,29 +56,17 @@ public class InteractableRenderer {
         Vec3 position = transform.getPosition();
         Quaternion orientation = transform.getOrientation().toMojangQuaternion();
 
-        for (Interactable.Ray ray : interactable.incomingRays) {
-            DebugRenderUtil.renderLine(poseStack, pBuffer, ray.start().x(), ray.start().y(), ray.start().z(), ray.end().x(), ray.end().y(), ray.end().z(), 1, 1, 0, 0.5F);
-            DebugRenderUtil.renderSphere(poseStack, pBuffer, 4, 0.025F, ray.hit().x, ray.hit().y, ray.hit().z, 1, 0, 0, 1.0F);
-        }
-
 
         poseStack.pushPose();
         poseStack.translate(position.x(), position.y(), position.z());
         poseStack.mulPose(orientation);
-        float r = 0.2F;
-        float g = 0.5F;
-        float b = 0.8F;
+        float r = 0.3F;
+        float g = 0.28F;
+        float b = 0.44F;
         float a = 1;
 
-        for (Interactable.Ray ray : interactable.incomingRays) {
-            Vec3 fromT = interactable.getTransform().toLocalSpace(ray.start());
-            Vec3 toT = interactable.getTransform().toLocalSpace(ray.end());
-            //DebugRenderUtil.renderLine(poseStack, pBuffer, fromT.x(), fromT.y(), fromT.z(), toT.x(), toT.y(), toT.z(), 0, 1, 0, 0.1F);
-            Vec3 hitT = interactable.getTransform().toLocalSpace(ray.hit());
-            //DebugRenderUtil.renderSphere(poseStack, pBuffer, 4, 0.025F, hitT.x, hitT.y, hitT.z, 0, 1, 0, 0.5F);
-        }
         LevelRenderer.renderLineBox(poseStack, pBuffer, aabb, r, g, b, a);
-
         poseStack.popPose();
+        LevelRenderer.renderLineBox(poseStack, pBuffer, interactable.shape.getBounds(), 0.63F, 0.60F, 0.34F, 0.5F);
     }
 }

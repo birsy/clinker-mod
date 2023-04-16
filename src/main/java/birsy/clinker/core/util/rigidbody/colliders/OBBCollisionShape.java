@@ -106,7 +106,11 @@ public class OBBCollisionShape implements ICollisionShape {
 
         double length = toT.subtract(fromT).length();
         Vec3 direction = toT.subtract(fromT).normalize();
-        // god knows why i have to scale it.
+        AABB aabb = new AABB(this.size.scale(-1), this.size);
+        Optional<Vec3> vec = aabb.clip(fromT, toT);
+        if (vec.isPresent()) return Optional.of(this.transform.toWorldSpace(vec.get()));
+        return Optional.empty();
+        /*// god knows why i have to scale it.
         double distance = intersectBox(this.size.scale(-1), this.size, from, direction);
 
         if (Double.isInfinite(distance)) return Optional.empty();
@@ -114,7 +118,7 @@ public class OBBCollisionShape implements ICollisionShape {
         Vec3 position = direction.scale(distance).add(fromT);
         position = this.transform.toWorldSpace(position);
 
-        return Optional.of(position);
+        return Optional.of(position);*/
     }
 
     public Optional<Vec3> raycast(Vec3 from, Vec3 to, double inflate) {
@@ -123,15 +127,17 @@ public class OBBCollisionShape implements ICollisionShape {
 
         double length = toT.subtract(fromT).length();
         Vec3 direction = toT.subtract(fromT).normalize();
-        // god knows why i have to scale it.
-        double distance = intersectBox(this.size.add(inflate, inflate, inflate).scale(-1), this.size.add(inflate, inflate, inflate), from, direction);
+        AABB aabb = new AABB(this.size.scale(-1), this.size).inflate(inflate);
+        Optional<Vec3> vec = aabb.clip(fromT, toT);
+        if (vec.isPresent()) return Optional.of(this.transform.toWorldSpace(vec.get()));
+        return Optional.empty();
 
-        if (Double.isInfinite(distance)) return Optional.empty();
+        /*if (Double.isInfinite(distance)) return Optional.empty();
         if (distance > length) return Optional.empty();
         Vec3 position = direction.scale(distance).add(fromT);
         position = this.transform.toWorldSpace(position);
 
-        return Optional.of(position);
+        return Optional.of(position);*/
     }
 
 

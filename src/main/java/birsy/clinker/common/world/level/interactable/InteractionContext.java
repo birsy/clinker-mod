@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
  * @param from the start position of the ray
  * @param to the end position of the ray
  */
-public record InteractionContext(Vec3 from, Vec3 to, InteractionHand hand) {
+public record InteractionContext(Vec3 from, Vec3 to, @Nullable InteractionHand hand) {
     public CompoundTag serialize() {
         return this.serialize(null);
     }

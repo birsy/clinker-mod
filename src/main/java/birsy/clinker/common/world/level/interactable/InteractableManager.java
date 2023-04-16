@@ -5,9 +5,11 @@ import birsy.clinker.common.networking.packet.ClientboundInteractableAddPacket;
 import birsy.clinker.common.networking.packet.ClientboundInteractableRemovePacket;
 import birsy.clinker.common.networking.packet.ClientboundInteractableSyncPacket;
 import birsy.clinker.core.Clinker;
+import birsy.clinker.core.util.AxisAngle;
 import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.core.util.Quaterniond;
 import birsy.clinker.core.util.rigidbody.colliders.OBBCollisionShape;
+import birsy.clinker.core.util.rigidbody.gjkepa.GJKEPA;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
@@ -16,6 +18,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.ChunkPos;
@@ -88,6 +91,9 @@ public class InteractableManager {
     public Map<ChunkPos, List<Interactable>> chunkMap;
     private Level level;
     private int ticks;
+
+    public List<Ray2> rays = new ArrayList<>();
+    public record Ray2(Vec3 start, Vec3 end){}
     public InteractableManager(Level level) {
         this.interactableMap = new HashMap<>();
         this.chunkMap = new HashMap<>();
@@ -112,6 +118,7 @@ public class InteractableManager {
         for (Interactable interactable : iValues) {
             //if (interactable.previousTransform != interactable.getTransform()) interactable.incomingRays.clear();
             interactable.tick();
+            //interactable.incomingRays.clear();
             BlockPos pBlockPos = MathUtils.blockPosFromVec3(interactable.previousTransform.getPosition());
             BlockPos blockPos = MathUtils.blockPosFromVec3(interactable.getTransform().getPosition());
             LevelChunk currentChunk = level.getChunkAt(pBlockPos);
@@ -126,6 +133,7 @@ public class InteractableManager {
                 if (!level.isClientSide()) {
                     ClinkerPacketHandler.sendToClientsInChunk((nextChunk), new ClientboundInteractableRemovePacket(interactable.uuid));
                 }
+                break;
             }
 
             // if any interactables have moved beyond their current chunk, update the chunkmap to reflect that.
@@ -133,33 +141,21 @@ public class InteractableManager {
                 removeInteractableFromChunk(currentChunk.getPos(), interactable);
                 addInteractablesToChunk(nextChunk.getPos(), interactable);
             }
+
+            List<Entity> entitiesInRange = this.level.getEntities(null, interactable.shape.getBounds());
+            for (Entity entity : entitiesInRange) {
+                    AABB entityAABB = entity.getBoundingBox();
+                    Vec3 center = entityAABB.getCenter();
+                    OBBCollisionShape entityBB = new OBBCollisionShape(entityAABB.maxX - center.x(), entityAABB.maxY - center.y(), entityAABB.maxZ - center.z());
+                    entityBB.transform.setPosition(center);
+
+                    GJKEPA.Manifold m = GJKEPA.collisionTest(interactable.shape, entityBB, 5);
+                    if (m != null) {
+                        interactable.run(new InteractionInfo(interactable.uuid, InteractionInfo.Interaction.TOUCH, new InteractionContext(m.contactPointA(), m.contactPointB(), null)), entity);
+                    }
+                }
         }
 
-
-
-        if (this.ticks++ % 120 == 0) {
-            if (!level.isClientSide()) {
-                StringBuilder builder = new StringBuilder();
-                builder.append("Serverside stuff for world ");
-                builder.append(this.level.dimension().location());
-                builder.append(" : [");
-                for (Interactable value : this.interactableMap.values()) {
-                    builder.append(value.getTransform().getPosition());
-                    builder.append(", \n");
-                }
-                builder.append("]");
-                Clinker.LOGGER.info(builder.toString());
-            } else {
-                StringBuilder builder = new StringBuilder();
-                builder.append("Clientside stuff: [");
-                for (Interactable value : this.interactableMap.values()) {
-                    builder.append(value.getTransform().getPosition());
-                    builder.append(", \n");
-                }
-                builder.append("]");
-                Clinker.LOGGER.info(builder.toString());
-            }
-        }
         if (!level.isClientSide()) {
             serverTick();
         }
@@ -176,58 +172,12 @@ public class InteractableManager {
 
     private void serverTick() {
         // if an interactable has been moved, send that information to the client.
-        int id = 0;
         for (Interactable interactable : interactableMap.values()) {
             if (interactable.getTransform() != interactable.previousTransform) {
                 BlockPos blockPos = MathUtils.blockPosFromVec3(interactable.getTransform().getPosition());
                 LevelChunk chunk = level.getChunkAt(blockPos);
                 ClinkerPacketHandler.sendToClientsInChunk((chunk), new ClientboundInteractableSyncPacket(interactable));
             }
-
-            float rot = 45.0F;
-            interactable.getTransform().setOrientation(new Quaterniond());
-            //interactable.getTransform().rotate(Vector3f.YP.rotationDegrees(rot));
-            //interactable.getTransform().rotate(Vector3f.ZP.rotationDegrees(rot));
-
-            double s = 0.01;
-            //interactable.setPosition(interactable.getTransform().getPosition().add(0, Mth.sin(id++ + ticks * 0.01F) * s, 0));
-        }
-
-        // test shit to see if it works
-        if (this.ticks == 200) {
-            if (this.level.players().isEmpty()) return;
-            Vec3 pos = this.level.players().get(0).position();
-            OBBCollisionShape shape = new OBBCollisionShape(0.5, 2.0, 0.5);
-            shape.transform.setPosition(Vec3.ZERO);
-            //shape.transform.setOrientation(Vector3f.XP.rotationDegrees(level.random.nextFloat() * 360));
-            //shape.transform.rotate(Vector3f.YP.rotationDegrees(level.random.nextFloat() * 360));
-            //shape.transform.rotate(Vector3f.ZP.rotationDegrees(level.random.nextFloat() * 360));
-
-            addServerInteractable(new Interactable(shape) {
-                @Override
-                public boolean onInteract(InteractionContext interactionContext, @Nullable Entity entity) {
-                    Clinker.LOGGER.info("fart");
-                    return true;
-                }
-
-                @Override
-                public boolean onHit(InteractionContext interactionContext, @Nullable Entity entity) {
-                    Clinker.LOGGER.info("poo");
-                    return true;
-                }
-
-                @Override
-                public boolean onPick(InteractionContext interactionContext, @Nullable Entity entity) {
-                    Clinker.LOGGER.info("shit");
-                    return true;
-                }
-
-                @Override
-                public boolean onTouch(Entity touchingEntity) {
-                    Clinker.LOGGER.info("ass");
-                    return true;
-                }
-            }, (ServerLevel) this.level);
         }
     }
 
@@ -242,7 +192,6 @@ public class InteractableManager {
     }
 
     public void removeInteractableFromChunk(ChunkPos pos, Interactable interactable) {
-        Clinker.LOGGER.info("removing interactable!");
         if (!chunkMap.containsKey(pos)) return;
         chunkMap.get(pos).remove(interactable);
     }
@@ -287,7 +236,7 @@ public class InteractableManager {
 
         Vec3 direction = player.getLookAngle();
         Vec3 fromPos = player.getEyePosition(mc.getPartialTick());
-        Vec3 toPos = direction.scale(reach);
+        Vec3 toPos = direction.scale(reach).add(fromPos);
 
         ClipContext cContext = new ClipContext(fromPos, toPos, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player);
         BlockHitResult bResult = level.clip(cContext);
@@ -309,9 +258,7 @@ public class InteractableManager {
 
         // get all the interactables in the chunks your reach ray may intersect.
         List<Interactable> interactablesInChunks = new ArrayList<>();
-        //Clinker.LOGGER.info(fromPos);
         for (ChunkPos chunkPos : chunksToCheck) {
-            //Clinker.LOGGER.info(chunkPos.toString());
             interactablesInChunks.addAll(InteractableManager.clientInteractableManager.getInteractablesInChunk(chunkPos));
         }
 
@@ -323,25 +270,23 @@ public class InteractableManager {
         InteractionContext iContext = new InteractionContext(fromPos, toPos, event.getHand());
         for (Interactable interactable : interactablesInChunks) {
             // if the interactable has been marked for removal, ignore it.
-            if (interactable.shouldBeRemoved) { Clinker.LOGGER.info("a"); continue; }
+            if (interactable.shouldBeRemoved) continue;
 
             double distance = interactable.getTransform().getPosition().distanceTo(fromPos);
-            /*if (distance > reach) { Clinker.LOGGER.info("b"); return; }
+            if (distance > reach) return;
             // if there's a block in front of the interactable, don't check it. the rest are further away so don't check those either.
-            if (bResult != null) if (distance < bResult.getLocation().distanceTo(fromPos)) { Clinker.LOGGER.info("c"); return; }
+            if (bResult != null) if (distance > bResult.getLocation().distanceTo(fromPos)) return;
             // if there's an entity in front of the interactable, don't check it. the rest are further away so don't check those either.
-            if (eResult != null) if (distance < eResult.getLocation().distanceTo(fromPos)) { Clinker.LOGGER.info("d"); return; }*/
+            if (eResult != null) if (distance > eResult.getLocation().distanceTo(fromPos)) return;
 
             Optional<Vec3> cast = interactable.shape.raycast(fromPos, toPos);
-            if (cast.isEmpty()) { Clinker.LOGGER.info("e"); continue; }
-            //Clinker.LOGGER.info(cast.get());
+            if (cast.isEmpty()) continue;
 
             Options options = mc.options;
-            if (interactable.run(cast.get(), new InteractionInfo(interactable.uuid,
+            if (interactable.run(new InteractionInfo(interactable.uuid,
                     event.getKeyMapping() == options.keyPickItem ? InteractionInfo.Interaction.PICK :
                     event.getKeyMapping() == options.keyAttack ? InteractionInfo.Interaction.HIT :
                             InteractionInfo.Interaction.INTERACT, iContext), player)) {
-                Clinker.LOGGER.info("interaction successful: " + cast.get());
                 event.setCanceled(true);
                 event.setSwingHand(true);
                 return;
