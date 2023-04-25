@@ -1,25 +1,26 @@
 package birsy.clinker.common.world.entity.salamander;
 
 import birsy.clinker.common.networking.ClinkerPacketHandler;
+import birsy.clinker.common.networking.packet.ClientboundPushPacket;
 import birsy.clinker.common.networking.packet.ClientboundSalamanderSyncPacket;
-import birsy.clinker.common.world.level.interactable.Interactable;
-import birsy.clinker.common.world.level.interactable.InteractableManager;
-import birsy.clinker.common.world.level.interactable.InteractableParent;
-import birsy.clinker.common.world.level.interactable.InteractionContext;
+import birsy.clinker.common.world.level.interactable.*;
+import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.Quaterniond;
 import birsy.clinker.core.util.rigidbody.colliders.OBBCollisionShape;
-import com.mojang.math.Matrix3f;
-import com.mojang.math.Quaternion;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -35,8 +36,9 @@ import java.util.List;
 //  legs~!
 //  reimplement ai
 //  graphics...
-
 public class NewSalamanderEntity extends LivingEntity implements InteractableParent {
+    private static final Vec3 gravity = new Vec3(0, -8, 0);
+
     public SalamanderJoint headJoint;
     public SalamanderSegment headSegment;
 
@@ -51,29 +53,32 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
         this.joints = new ArrayList<>();
         this.segments = new ArrayList<>();
 
-        SalamanderJoint previousJoint = new SalamanderJoint(this, 0.5);
-        this.headJoint = previousJoint;
-        previousJoint.isHead = true;
-
         this.noPhysics = true;
         this.setNoGravity(true);
 
+        SalamanderJoint previousJoint = new SalamanderJoint(this, 0.5);
+        this.headJoint = previousJoint;
+        previousJoint.isHead = true;
+        addInteractableToJoint(previousJoint);
         for (int i = 1; i < 10; i++) {
             SalamanderJoint joint = new SalamanderJoint(this, 0.5);
             joint.position = previousJoint.position.add(0, 0, 1.0);
             joint.pPosition = joint.position.add(0, 0, 0);
             joint.physicsPrevPosition = joint.position.add(0, 0, 0);
             SalamanderSegment segment = new SalamanderSegment(this, previousJoint, joint, 1.0);
-            if (i >= 1) this.headSegment = segment;
+            if (i <= 1) this.headSegment = segment;
             previousJoint = joint;
+            addInteractableToJoint(joint);
+        }
+    }
 
-            if (!pLevel.isClientSide()) {
-                SalamanderBodyInteractable interactable = new SalamanderBodyInteractable(this, segment, new OBBCollisionShape(0.5, 0.5, 0.5));
-                interactable.setPosition(segment.getCenter(1.0F));
+    public void addInteractableToJoint(SalamanderJoint joint) {
+        if (!this.level.isClientSide()) {
+            SalamanderBodyInteractable interactable = new SalamanderBodyInteractable(this, joint, new OBBCollisionShape(0.5, 0.5, 0.5));
+            interactable.setPosition(joint.position);
 
-                InteractableManager.addServerInteractable(interactable, (ServerLevel) pLevel);
-                this.childInteractables.add(interactable);
-            }
+            InteractableManager.addServerInteractable(interactable, (ServerLevel) this.level);
+            this.addChild(interactable);
         }
     }
 
@@ -85,9 +90,11 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
     public void tick() {
         this.baseTick();
 
-        Vec3 gravity = new Vec3(0, -9.81, 0);
+        Vec3 gravity = new Vec3(0, -8, 0);
         for (SalamanderJoint joint : this.joints) {
             joint.accelerate(gravity);
+            applyBouyancyAndDragForce(joint);
+
             joint.beginTick(1.0f / 20.0f);
         }
 
@@ -98,17 +105,7 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
             for (SalamanderJoint joint1 : this.joints) {
                 joint1.applyCollisionConstraints();
                 for (SalamanderJoint joint2 : this.joints) {
-                    if (joint1 == joint2) break;
-                    double minimumDistance = joint1.radius + joint2.radius;
-                    double distanceSqr = joint1.physicsNextPosition.distanceToSqr(joint2.physicsNextPosition);
-                    if (distanceSqr < minimumDistance * minimumDistance) {
-                        double correctionDistance = minimumDistance - Mth.sqrt((float) distanceSqr);
-                        //point of collision will always be directly in the middle, in the case of spheres.
-                        Vec3 collisionVector = joint1.physicsNextPosition.subtract(joint2.physicsNextPosition).normalize().scale(correctionDistance * 0.5);
-
-                        joint1.physicsNextPosition = joint1.physicsNextPosition.add(collisionVector);
-                        joint2.physicsNextPosition = joint2.physicsNextPosition.subtract(collisionVector);
-                    }
+                    collideJoints(joint1, joint2);
                 }
             }
         }
@@ -120,14 +117,60 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
         if (!this.level.isClientSide()) {
             for (Interactable interactable : this.childInteractables) {
                 if (interactable instanceof SalamanderBodyInteractable bodyInteractable) {
-                    bodyInteractable.setPosition(bodyInteractable.segmentParent.getCenter(1.0).add(0, 0.5, 0));
-                    bodyInteractable.setRotation(bodyInteractable.segmentParent.getOrientation(1.0).toMojangQuaternion());
+                    bodyInteractable.setPosition(bodyInteractable.jointParent.getSmoothedPosition(1.0).add(0, 0.5, 0));
+                    bodyInteractable.setRotation(bodyInteractable.jointParent.getOrientation(1.0).toMojangQuaternion());
                 }
             }
             ClinkerPacketHandler.sendToClientsInChunk((LevelChunk) this.level.getChunk(this.blockPosition()), new ClientboundSalamanderSyncPacket(this));
         }
-        this.setPosRaw(this.headJoint.position.x(), this.headJoint.position.y(), this.headJoint.position.z());
+
+        this.setControllerPosition(this.headJoint.position);
+    }
+
+    private void setControllerPosition(Vec3 position) {
+        this.setPosRaw(position.x(), position.y(), position.z());
         this.setBoundingBox(this.makeBoundingBox());
+    }
+
+    private void applyBouyancyAndDragForce(SalamanderJoint joint) {
+        double mass = 0.9;
+        double inverseMass = 1.0 / mass;
+        double airDensity = 0.1;
+        // calculates the bouyant force in a really jank way
+        // takes into account partial submersion... kinda
+        Vec3 downPos = joint.position.subtract(0, joint.radius, 0);
+        BlockPos jointPosDown = new BlockPos(joint.position);
+        BlockPos jointPosUp = new BlockPos(joint.position.add(0, joint.radius, 0));
+
+        double volumeInDown = downPos.y - Math.ceil(downPos.y);
+        FluidState stateDown = this.level.getFluidState(jointPosDown);
+        double densityDown = stateDown.isEmpty() ? airDensity : stateDown.getFluidType().getDensity() * 0.001D;
+
+        double volumeInUp = 1 - volumeInDown;
+        FluidState stateUp = this.level.getFluidState(jointPosUp);
+        double densityUp = stateUp.isEmpty() ? airDensity : stateUp.getFluidType().getDensity() * 0.001D;
+
+        double averageDensity = (densityDown * volumeInDown + densityUp * volumeInUp);
+        joint.accelerate(gravity.scale(-1 * averageDensity).scale(inverseMass));
+
+        Vec3 velocity = joint.position.subtract(joint.physicsPrevPosition);
+        double dragCoefficient = 0.05;
+        Vec3 drag = velocity.scale(Math.exp(-averageDensity * dragCoefficient));
+        joint.physicsPrevPosition = joint.position.subtract(drag);
+    }
+
+    private void collideJoints(SalamanderJoint joint1, SalamanderJoint joint2) {
+        if (joint1 == joint2) return;
+        double minimumDistance = joint1.radius + joint2.radius;
+        double distanceSqr = joint1.physicsNextPosition.distanceToSqr(joint2.physicsNextPosition);
+        if (distanceSqr < minimumDistance * minimumDistance) {
+            double correctionDistance = minimumDistance - Math.sqrt(distanceSqr);
+            //point of collision will always be directly in the middle, in the case of spheres.
+            Vec3 collisionVector = joint1.physicsNextPosition.subtract(joint2.physicsNextPosition).normalize().scale(correctionDistance * 0.5);
+
+            joint1.physicsNextPosition = joint1.physicsNextPosition.add(collisionVector);
+            joint2.physicsNextPosition = joint2.physicsNextPosition.subtract(collisionVector);
+        }
     }
 
     @Override
@@ -219,21 +262,28 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
         public Vec3 pPosition;
         public Vec3 position;
         public Vec3 physicsNextPosition;
+        public double roll;
+
+        private Vec3 pushes;
         private Vec3 acceleration;
         public final double radius;
-        final List<SalamanderSegment> attachments;
+        final List<SalamanderSegment> frontAttachments;
+        final List<SalamanderSegment> backAttachments;
         final NewSalamanderEntity entity;
         public boolean isHead;
 
         public SalamanderJoint(NewSalamanderEntity entity, double radius) {
             this.radius = radius;
-            this.attachments = new ArrayList<>();
+            this.frontAttachments = new ArrayList<>();
+            this.backAttachments = new ArrayList<>();
+            this.pushes = Vec3.ZERO;
             this.entity = entity;
             this.pPosition = Vec3.ZERO;
             this.position = Vec3.ZERO;
             this.physicsPrevPosition = Vec3.ZERO;
             this.physicsNextPosition = Vec3.ZERO;
             this.acceleration = Vec3.ZERO;
+            this.roll = 0.0;
             entity.joints.add(this);
         }
 
@@ -241,9 +291,28 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
             return pPosition.lerp(position, partialTick);
         }
 
+        public Vec3 getSmoothedPosition(double partialTick) {
+            if (frontAttachments.isEmpty() || backAttachments.isEmpty()) return this.pPosition.lerp(this.position, partialTick);
+
+            Vec3 center = Vec3.ZERO;
+            for (SalamanderSegment frontAttachment : frontAttachments) {
+                center = center.add(frontAttachment.getCenter(partialTick));
+            }
+            for (SalamanderSegment backAttachment : backAttachments) {
+                center = center.add(backAttachment.getCenter(partialTick));
+            }
+            center = center.scale(1.0D / (double)(backAttachments.size() + frontAttachments.size()));
+
+            return center;
+        }
+
         protected void beginTick(float deltaTime) {
             this.pPosition = this.position;
             Vec3 velocity = this.position.subtract(this.physicsPrevPosition);
+
+            velocity = velocity.add(pushes);
+            this.pushes = Vec3.ZERO;
+
             this.physicsPrevPosition = this.position;
             this.physicsNextPosition = this.position.add(velocity).add(this.acceleration.scale(deltaTime * deltaTime));
 
@@ -256,7 +325,6 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
         }
 
         protected void applyCollisionConstraints() {
-            Vec3 pNPos = this.physicsNextPosition.scale(1.0);
             this.physicsNextPosition = this.position.add(constrainVelocity(this.physicsNextPosition.subtract(position)));
         }
 
@@ -273,6 +341,32 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
         protected void accelerate(Vec3 amount) {
             this.acceleration = this.acceleration.add(amount);
         }
+
+        protected void push(Vec3 amount) {
+            pushes = pushes.add(amount);
+        }
+
+        public Quaterniond getOrientation(double partialTick) {
+            Quaterniond roll = new Quaterniond(new Vec3(0, 0, 1), this.roll);
+
+            Vec3 frontCenter = Vec3.ZERO;
+            if (frontAttachments.isEmpty()) { frontCenter = this.getPosition(partialTick); } else {
+                for (SalamanderSegment frontAttachment : frontAttachments) {
+                    frontCenter = frontCenter.add(frontAttachment.getCenter(partialTick));
+                }
+                frontCenter = frontCenter.scale(1.0D / (double) frontAttachments.size());
+            }
+
+            Vec3 backCenter = Vec3.ZERO;
+            if (backAttachments.isEmpty()) { backCenter = this.getPosition(partialTick); } else {
+                for (SalamanderSegment backAttachment : backAttachments) {
+                    backCenter = backCenter.add(backAttachment.getCenter(partialTick));
+                }
+                backCenter = backCenter.scale(1.0D / (double)backAttachments.size());
+            }
+
+            return Quaterniond.lookAt(frontCenter, backCenter, new Vec3(0, 0, 1)).normalize().mul(roll);
+        }
     }
 
     public class SalamanderSegment {
@@ -283,17 +377,17 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
 
         public SalamanderSegment(NewSalamanderEntity entity, SalamanderJoint joint1, SalamanderJoint joint2, double length) {
             this.joint1 = joint1;
-            this.joint1.attachments.add(this);
+            this.joint1.backAttachments.add(this);
             this.joint2 = joint2;
-            this.joint2.attachments.add(this);
+            this.joint2.frontAttachments.add(this);
             this.length = length;
             this.entity = entity;
             entity.segments.add(this);
         }
 
         public void split() {
-            this.joint1.attachments.remove(this);
-            this.joint2.attachments.remove(this);
+            this.joint1.backAttachments.remove(this);
+            this.joint2.frontAttachments.remove(this);
             this.entity.segments.remove(this);
         }
 
@@ -305,7 +399,6 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
             return joint1.getPosition(partialTick).add(joint2.getPosition(partialTick)).scale(0.5);
         }
 
-        // extracts rotation from angle between heading vector and up vector.
         public Quaterniond getOrientation(double partialTick) {
             return Quaterniond.lookAt(joint1.getPosition(partialTick), joint2.getPosition(partialTick), new Vec3(0, 0, 1)).normalize();
         }
@@ -322,14 +415,14 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
         }
     }
 
-    public class SalamanderBodyInteractable extends Interactable {
+    public class SalamanderBodyInteractable extends CollidableInteractable {
         final NewSalamanderEntity entityParent;
-        final SalamanderSegment segmentParent;
+        final SalamanderJoint jointParent;
 
-        public SalamanderBodyInteractable(NewSalamanderEntity entityParent, SalamanderSegment segmentParent, OBBCollisionShape shape) {
-            super(shape);
+        public SalamanderBodyInteractable(NewSalamanderEntity entityParent, SalamanderJoint jointParent, OBBCollisionShape shape) {
+            super(shape, false, 1.0);
             this.entityParent = entityParent;
-            this.segmentParent = segmentParent;
+            this.jointParent = jointParent;
         }
 
         @Override
@@ -350,8 +443,24 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
         }
 
         @Override
-        public boolean onTouch(Entity touchingEntity) {
-            return false;
+        public boolean onTouch(InteractionContext context, Entity touchingEntity) {
+            if (touchingEntity == this.entityParent) return false;
+
+            float salamanderMass = 5.0F;
+            float entityMass = touchingEntity.getBbHeight() * touchingEntity.getBbWidth() * touchingEntity.getBbWidth();
+            float totalMass = entityMass + salamanderMass;
+
+            double collisionDepth = context.from().distanceTo(context.to());
+            Vec3 collisionDirection = context.from().subtract(context.to()).normalize();
+
+            Vec3 entityMovement = collisionDirection.scale(collisionDepth * (salamanderMass / totalMass));
+            Vec3 segmentMovement = collisionDirection.scale(-collisionDepth * (entityMass / totalMass));
+
+            touchingEntity.push(entityMovement.x, entityMovement.y, entityMovement.z);
+            if (touchingEntity instanceof ServerPlayer player) ClinkerPacketHandler.sendToClient(player, new ClientboundPushPacket(entityMovement));
+
+            this.jointParent.push(segmentMovement);
+            return true;
         }
     }
 }

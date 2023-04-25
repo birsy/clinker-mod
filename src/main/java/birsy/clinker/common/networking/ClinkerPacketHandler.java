@@ -37,6 +37,7 @@ public class ClinkerPacketHandler {
         NETWORK.registerMessage(createId(), ClientboundInteractableSyncPacket.class, ClientboundInteractableSyncPacket::toBytes, ClientboundInteractableSyncPacket::new, ClientboundInteractableSyncPacket::handle);
         NETWORK.registerMessage(createId(), ServerboundInteractableInteractionPacket.class, ServerboundInteractableInteractionPacket::toBytes, ServerboundInteractableInteractionPacket::new, ServerboundInteractableInteractionPacket::handle);
         NETWORK.registerMessage(createId(), ClientboundSalamanderSyncPacket.class, ClientboundSalamanderSyncPacket::toBytes, ClientboundSalamanderSyncPacket::new, ClientboundSalamanderSyncPacket::handle);
+        NETWORK.registerMessage(createId(), ClientboundPushPacket.class, ClientboundPushPacket::toBytes, ClientboundPushPacket::new, ClientboundPushPacket::handle);
 
 
         Clinker.LOGGER.info("REGISTERED PACKETS!!!");

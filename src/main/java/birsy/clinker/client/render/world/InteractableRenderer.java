@@ -67,6 +67,6 @@ public class InteractableRenderer {
 
         LevelRenderer.renderLineBox(poseStack, pBuffer, aabb, r, g, b, a);
         poseStack.popPose();
-        LevelRenderer.renderLineBox(poseStack, pBuffer, interactable.shape.getBounds(), 0.63F, 0.60F, 0.34F, 0.5F);
+        //LevelRenderer.renderLineBox(poseStack, pBuffer, interactable.shape.getBounds(), 0.63F, 0.60F, 0.34F, 0.5F);
     }
 }

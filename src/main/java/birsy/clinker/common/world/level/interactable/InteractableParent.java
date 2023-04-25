@@ -26,5 +26,8 @@ public interface InteractableParent {
         this.clearChildren();
     }
 
-
+    default void addChild(Interactable interactable) {
+        interactable.parented = true;
+        this.getChildInteractables().add(interactable);
+    }
 }

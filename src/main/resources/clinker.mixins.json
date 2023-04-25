@@ -11,6 +11,7 @@
   "mixins": [
     "common.ServerLevelMixin",
     "common.ClientLevelMixin",
-    "common.ChunkMapMixin"
+    "common.ChunkMapMixin",
+    "common.EntityMixin"
   ]
 }

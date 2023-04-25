@@ -144,16 +144,16 @@ public class InteractableManager {
 
             List<Entity> entitiesInRange = this.level.getEntities(null, interactable.shape.getBounds());
             for (Entity entity : entitiesInRange) {
-                    AABB entityAABB = entity.getBoundingBox();
-                    Vec3 center = entityAABB.getCenter();
-                    OBBCollisionShape entityBB = new OBBCollisionShape(entityAABB.maxX - center.x(), entityAABB.maxY - center.y(), entityAABB.maxZ - center.z());
-                    entityBB.transform.setPosition(center);
+                AABB entityAABB = entity.getBoundingBox();
+                Vec3 center = entityAABB.getCenter();
+                OBBCollisionShape entityBB = new OBBCollisionShape(entityAABB.maxX - center.x(), entityAABB.maxY - center.y(), entityAABB.maxZ - center.z());
+                entityBB.transform.setPosition(center);
 
-                    GJKEPA.Manifold m = GJKEPA.collisionTest(interactable.shape, entityBB, 5);
-                    if (m != null) {
-                        interactable.run(new InteractionInfo(interactable.uuid, InteractionInfo.Interaction.TOUCH, new InteractionContext(m.contactPointA(), m.contactPointB(), null)), entity);
-                    }
+                GJKEPA.Manifold m = GJKEPA.collisionTest(interactable.shape, entityBB, 5);
+                if (m != null) {
+                    interactable.run(new InteractionInfo(interactable.uuid, InteractionInfo.Interaction.TOUCH, new InteractionContext(m.contactPointA(), m.contactPointB(), null)), entity);
                 }
+            }
         }
 
         if (!level.isClientSide()) {

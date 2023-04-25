@@ -44,7 +44,7 @@ public class NewSalamanderRenderer extends EntityRenderer<NewSalamanderEntity> {
         for (NewSalamanderEntity.SalamanderJoint joint : pEntity.joints) {
             float brightness = 1 - (amount / (float)pEntity.joints.size());
             Vec3 jPos = joint.getPosition(pPartialTick);
-            DebugRenderUtil.renderSphere(pPoseStack, pBuffer.getBuffer(RenderType.LINES), 32, (float)joint.radius, jPos.x, jPos.y, jPos.z, joint.isHead ? 1.0F : 0.2F, 0.2F, 0.8F * brightness, 1.0F);
+            DebugRenderUtil.renderSphere(pPoseStack, pBuffer.getBuffer(RenderType.LINES), 32, (float)joint.radius, jPos.x, jPos.y, jPos.z, joint.isHead ? 1.0F : 0.2F, 0.2F, 0.8F * brightness, 0.2F);
             amount ++;
         }
 

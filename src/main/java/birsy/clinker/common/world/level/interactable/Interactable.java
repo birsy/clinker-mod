@@ -1,5 +1,6 @@
 package birsy.clinker.common.world.level.interactable;
 
+import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.Quaterniond;
 import birsy.clinker.core.util.rigidbody.Transform;
 import birsy.clinker.core.util.rigidbody.colliders.OBBCollisionShape;
@@ -15,6 +16,7 @@ public abstract class Interactable {
     public final OBBCollisionShape shape;
     public Transform previousTransform;
     protected boolean shouldBeRemoved;
+    public boolean parented;
     public final UUID uuid;
 
     public Interactable(OBBCollisionShape shape) {
@@ -29,6 +31,11 @@ public abstract class Interactable {
         this.uuid = id;
         this.shouldBeRemoved = false;
         this.previousTransform = this.getTransform().copy();
+    }
+
+    public Interactable() {
+        this.shape = null;
+        this.uuid = null;
     }
 
     protected void tick() {
@@ -67,14 +74,14 @@ public abstract class Interactable {
      * @param touchingEntity The entity that is colliding with the interactable.
      * @return Whether the interaction is successful.
      */
-    public abstract boolean onTouch(Entity touchingEntity);
+    public abstract boolean onTouch(InteractionContext interactionContext, Entity touchingEntity);
 
     public boolean run(InteractionInfo info, @Nullable Entity entity) {
         switch (info.interaction()) {
             case INTERACT: return this.onInteract(info.context(), entity);
             case HIT: return this.onHit(info.context(), entity);
             case PICK: return this.onPick(info.context(), entity);
-            case TOUCH: return this.onTouch(entity);
+            case TOUCH: return this.onTouch(info.context(), entity);
         }
         return false;
     }
@@ -155,13 +162,28 @@ public abstract class Interactable {
 
     public CompoundTag serialize(@Nullable CompoundTag tag) {
         if (tag == null) tag = new CompoundTag();
+        tag.putString("name", this.getClass().getName());
         tag.putUUID("uuid", this.uuid);
         this.shape.serialize(tag);
 
         return tag;
     }
 
-    public static ClientDummyInteractable deserialize(CompoundTag tag) {
-        return new ClientDummyInteractable((OBBCollisionShape) new OBBCollisionShape(0, 0, 0).deserialize(tag), tag.getUUID("uuid"));
+//    public <I extends Interactable> I reconstructOnClient(CompoundTag tag) {
+//        return (I) new ClientDummyInteractable((OBBCollisionShape) (new OBBCollisionShape(0, 0, 0).deserialize(tag)), tag.getUUID("uuid"));
+//    }
+
+    @Nullable
+    public static <I extends Interactable> I deserialize(CompoundTag tag) {
+//        try {
+//            Class clazz =  Class.forName(tag.getString("name"));
+//            Object dummy = clazz.getConstructor(OBBCollisionShape.class, UUID.class).newInstance();
+//            return (I) clazz.getMethod("reconstructOnClient", CompoundTag.class).invoke(dummy, tag);
+//        } catch (Exception e) {
+//            Clinker.LOGGER.warn("Deserialization of Interactable " + tag.getUUID("uuid") + " failed!");
+//            Clinker.LOGGER.warn(e);
+//        }
+
+        return null;
     }
 }

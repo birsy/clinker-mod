@@ -35,7 +35,8 @@ public class ClientDummyInteractable extends Interactable {
     }
 
     //this never runs
-    public boolean onTouch(Entity touchingEntity) {
+    @Override
+    public boolean onTouch(InteractionContext interactionContext, Entity touchingEntity) {
         return false;
     }
 }
