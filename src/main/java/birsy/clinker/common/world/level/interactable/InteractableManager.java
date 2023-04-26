@@ -62,7 +62,7 @@ public class InteractableManager {
         BlockPos blockPos = new BlockPos(position.x(), position.y(), position.z());
 
         LevelChunk chunk = level.getChunkAt(blockPos);
-        ClinkerPacketHandler.sendToClientsInChunk((chunk), new ClientboundInteractableAddPacket(new ClientDummyInteractable(interactable.shape, interactable.uuid)));
+        ClinkerPacketHandler.sendToClientsInChunk((chunk), new ClientboundInteractableAddPacket(interactable));
         ClinkerPacketHandler.sendToClientsInChunk((chunk), new ClientboundInteractableSyncPacket(interactable));
 
         try {

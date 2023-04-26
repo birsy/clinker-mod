@@ -10,6 +10,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.Constructor;
+import java.util.StringJoiner;
 import java.util.UUID;
 
 public abstract class Interactable {
@@ -163,26 +165,29 @@ public abstract class Interactable {
     public CompoundTag serialize(@Nullable CompoundTag tag) {
         if (tag == null) tag = new CompoundTag();
         tag.putString("name", this.getClass().getName());
+        Clinker.LOGGER.info("serializing - serverside!");
+        Clinker.LOGGER.info(this.getClass().getName());
         tag.putUUID("uuid", this.uuid);
         this.shape.serialize(tag);
 
         return tag;
     }
 
-//    public <I extends Interactable> I reconstructOnClient(CompoundTag tag) {
-//        return (I) new ClientDummyInteractable((OBBCollisionShape) (new OBBCollisionShape(0, 0, 0).deserialize(tag)), tag.getUUID("uuid"));
-//    }
+    public <I extends Interactable> I reconstructOnClient(CompoundTag tag) {
+        return (I) new ClientDummyInteractable((OBBCollisionShape) (new OBBCollisionShape(0, 0, 0).deserialize(tag)), tag.getUUID("uuid"));
+    }
 
     @Nullable
     public static <I extends Interactable> I deserialize(CompoundTag tag) {
-//        try {
-//            Class clazz =  Class.forName(tag.getString("name"));
-//            Object dummy = clazz.getConstructor(OBBCollisionShape.class, UUID.class).newInstance();
-//            return (I) clazz.getMethod("reconstructOnClient", CompoundTag.class).invoke(dummy, tag);
-//        } catch (Exception e) {
-//            Clinker.LOGGER.warn("Deserialization of Interactable " + tag.getUUID("uuid") + " failed!");
-//            Clinker.LOGGER.warn(e);
-//        }
+        // deranged reflection bullshit !!!
+        try {
+            Class clazz =  Class.forName(tag.getString("name"));
+            Object dummy = clazz.getConstructor().newInstance();
+            return (I) clazz.getMethod("reconstructOnClient", CompoundTag.class).invoke(dummy, tag);
+        } catch (Exception e) {
+            Clinker.LOGGER.warn("Deserialization of Interactable " + tag.getUUID("uuid") + " failed!");
+            Clinker.LOGGER.warn(e);
+        }
 
         return null;
     }

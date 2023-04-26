@@ -16,6 +16,10 @@ public class ClientDummyInteractable extends Interactable {
         super(shape, id);
     }
 
+    public ClientDummyInteractable() {
+        super();
+    }
+
     @Override
     public boolean onInteract(InteractionContext interactionContext, @Nullable Entity entity) {
         ClinkerPacketHandler.NETWORK.sendToServer(new ServerboundInteractableInteractionPacket(new InteractionInfo(this.uuid, InteractionInfo.Interaction.INTERACT, interactionContext)));
