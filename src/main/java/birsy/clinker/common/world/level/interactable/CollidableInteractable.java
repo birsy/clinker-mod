@@ -1,5 +1,7 @@
 package birsy.clinker.common.world.level.interactable;
 
+import birsy.clinker.common.networking.ClinkerPacketHandler;
+import birsy.clinker.common.networking.packet.ServerboundInteractableInteractionPacket;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.rigidbody.colliders.OBBCollisionShape;
 import birsy.clinker.core.util.rigidbody.gjkepa.GJKEPA;
@@ -37,22 +39,25 @@ public class CollidableInteractable extends Interactable {
     }
 
     @Override
-    public boolean onInteract(InteractionContext interactionContext, @Nullable Entity entity) {
-        return false;
+    public boolean onInteract(InteractionContext interactionContext, @javax.annotation.Nullable Entity entity, boolean clientSide) {
+        if (clientSide) ClinkerPacketHandler.NETWORK.sendToServer(new ServerboundInteractableInteractionPacket(new InteractionInfo(this.uuid, InteractionInfo.Interaction.INTERACT, interactionContext)));
+        return true;
     }
 
     @Override
-    public boolean onHit(InteractionContext interactionContext, @Nullable Entity entity) {
-        return false;
+    public boolean onHit(InteractionContext interactionContext, @javax.annotation.Nullable Entity entity, boolean clientSide) {
+        if (clientSide) ClinkerPacketHandler.NETWORK.sendToServer(new ServerboundInteractableInteractionPacket(new InteractionInfo(this.uuid, InteractionInfo.Interaction.HIT, interactionContext)));
+        return true;
     }
 
     @Override
-    public boolean onPick(InteractionContext interactionContext, @Nullable Entity entity) {
-        return false;
+    public boolean onPick(InteractionContext interactionContext, @javax.annotation.Nullable Entity entity, boolean clientSide) {
+        if (clientSide) ClinkerPacketHandler.NETWORK.sendToServer(new ServerboundInteractableInteractionPacket(new InteractionInfo(this.uuid, InteractionInfo.Interaction.PICK, interactionContext)));
+        return true;
     }
 
     @Override
-    public boolean onTouch(InteractionContext context, Entity touchingEntity) {
+    public boolean onTouch(InteractionContext context, Entity touchingEntity, boolean clientSide) {
 //        if (!this.reacts) {
 //            Vec3 collisionVector = context.from().subtract(context.to());
 //            touchingEntity.push(collisionVector.x, collisionVector.y, collisionVector.z);
@@ -74,17 +79,13 @@ public class CollidableInteractable extends Interactable {
 
     public static Vec3 collideWithEntities(Vec3 velocityVector, Entity entity) {
         InteractableManager manager = entity.getLevel().isClientSide ? InteractableManager.clientInteractableManager : InteractableManager.serverInteractableManagers.get(entity.getLevel());
-        Collection<Interactable> interactables = manager.interactableMap.values();
-        // this wasnt working so i yeeted it
-        // todo: actually get the interactables in your particular chunk(s) instead of just looping through all of them.
-        //  + issue with walking along borders? get ryan to help...
-        //interactables.addAll(manager.getInteractablesInChunk(new ChunkPos((int) Math.floor(entity.getX() / 16.0D), (int) Math.floor(entity.getZ() / 16.0D))));
-        //interactables.addAll(manager.getInteractablesInChunk(new ChunkPos((int) Math.ceil(entity.getX() / 16.0D),  (int) Math.floor(entity.getZ() / 16.0D))));
-        //interactables.addAll(manager.getInteractablesInChunk(new ChunkPos((int) Math.floor(entity.getX() / 16.0D), (int) Math.ceil(entity.getZ() / 16.0D))));
-        //interactables.addAll(manager.getInteractablesInChunk(new ChunkPos((int) Math.ceil(entity.getX() / 16.0D), ( int) Math.ceil(entity.getZ() / 16.0D))));
+        Collection<Interactable> interactables = manager.storage.getInteractablesInBounds(entity.getBoundingBox());
 
+        // todo: issue with walking along borders? get ryan to help...
+        
         boolean changed = false;
         for (Interactable interactable : interactables) {
+            if (!interactable.parent.isEmpty()) if (interactable.parent.get() == entity) continue;
             if (interactable instanceof CollidableInteractable cI) {
                 AABB entityAABB = entity.getBoundingBox().move(velocityVector);
                 Vec3 center = entityAABB.getCenter();
@@ -93,7 +94,22 @@ public class CollidableInteractable extends Interactable {
 
                 GJKEPA.Manifold m = GJKEPA.collisionTest(cI.shape, entityBB, 16);
                 if (m != null) {
-                    velocityVector = velocityVector.add(m.normal().scale(m.depth()));
+                    if (!cI.reacts) {
+                        velocityVector = velocityVector.add(m.normal().scale(m.depth()));
+                    } else {
+                        double interactableMass = 8.0;
+                        double entityMass = entity.getBbHeight() * entity.getBbWidth() * entity.getBbWidth();
+                        double totalMass = entityMass + interactableMass;
+
+                        double collisionDepth = m.depth();
+                        Vec3 collisionDirection = m.normal();
+
+                        Vec3 entityMovement = collisionDirection.scale(collisionDepth * (interactableMass / totalMass));
+                        Vec3 thisMovement = collisionDirection.scale(-collisionDepth * (entityMass / totalMass));
+
+                        velocityVector = velocityVector.add(entityMovement);
+                        cI.push(thisMovement);
+                    }
                     changed = true;
                 }
             }

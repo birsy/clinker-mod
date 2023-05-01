@@ -27,7 +27,7 @@ public interface InteractableParent {
     }
 
     default void addChild(Interactable interactable) {
-        interactable.parented = true;
+        interactable.setParent(this);
         this.getChildInteractables().add(interactable);
     }
 }

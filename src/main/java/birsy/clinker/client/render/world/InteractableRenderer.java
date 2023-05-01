@@ -15,6 +15,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
@@ -38,11 +41,19 @@ public class InteractableRenderer {
     }
 
     public static void render(PoseStack poseStack, VertexConsumer pBuffer, Frustum camera, float pPartialTicks) {
-        for (InteractableManager.Ray2 ray : InteractableManager.clientInteractableManager.rays) {
-            //DebugRenderUtil.renderLine(poseStack, pBuffer, ray.start().x(), ray.start().y(), ray.start().z(), ray.end().x(), ray.end().y(), ray.end().z(), 1, 1, 0, 0.5F);
-        }
         if (!Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes()) return;
-        for (Interactable interactable : InteractableManager.clientInteractableManager.interactableMap.values()) {
+        Level clientLevel = Minecraft.getInstance().level;
+        for (ChunkPos chunkPos : InteractableManager.clientInteractableManager.chunksIntersectedWithRay) {
+            int x = chunkPos.x;
+            int z = chunkPos.z;
+            LevelChunk chunk = clientLevel.getChunk(x, z);
+            int yMin = chunk.getMinBuildHeight();
+            int yMax = chunk.getMaxBuildHeight();
+            for (int y = yMin; y < yMax; y+=16) {
+                DebugRenderUtil.renderBox(poseStack, pBuffer, x * 16, y, z * 16, (x + 1) * 16, y + 16, (z + 1) * 16, 0.0F, 1.0F, 0.0F,1.0F);
+            }
+        }
+        for (Interactable interactable : InteractableManager.clientInteractableManager.storage.getAllInteractables()) {
             if (camera.isVisible(interactable.shape.getBounds().inflate(0.5))) {
                 renderInteractable(poseStack, pBuffer, interactable, pPartialTicks);
             }

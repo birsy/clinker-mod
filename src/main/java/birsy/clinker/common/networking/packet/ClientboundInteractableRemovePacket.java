@@ -27,7 +27,7 @@ public class ClientboundInteractableRemovePacket extends ClientboundPacket {
     @Override
     public void run(NetworkEvent.Context context) {
         InteractableManager clientManager = InteractableManager.clientInteractableManager;
-        clientManager.interactableMap.get(this.interactableID).markForRemoval();
+        clientManager.storage.getInteractable(interactableID).markForRemoval();
         Clinker.LOGGER.info("removed interactable " + this.interactableID.toString());
     }
 }

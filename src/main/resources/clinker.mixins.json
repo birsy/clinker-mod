@@ -6,7 +6,8 @@
   "injectors": { "defaultRequire": 1 },
   "refmap": "mixins.clinker.refmap.json",
   "client": [
-    "client.LevelRendererMixin"
+    "client.LevelRendererMixin",
+    "client.LiquidBlockRendererMixin"
   ],
   "mixins": [
     "common.ServerLevelMixin",

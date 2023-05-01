@@ -1,5 +1,6 @@
 package birsy.clinker.core.util;
 
+import birsy.clinker.core.Clinker;
 import com.ibm.icu.impl.Pair;
 import com.mojang.math.Matrix3f;
 import com.mojang.math.Quaternion;

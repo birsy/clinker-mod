@@ -5,6 +5,7 @@ import birsy.clinker.common.networking.packet.ClientboundSalamanderSyncPacket;
 import birsy.clinker.common.world.level.interactable.Interactable;
 import birsy.clinker.common.world.level.interactable.InteractableManager;
 import birsy.clinker.common.world.level.interactable.InteractableParent;
+import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.Quaterniond;
 import birsy.clinker.core.util.rigidbody.colliders.OBBCollisionShape;
 import net.minecraft.core.BlockPos;
@@ -36,6 +37,7 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
 
     public SalamanderJoint headJoint;
     public SalamanderSegment headSegment;
+    protected SalamanderJoint lastHitJoint;
 
     public List<SalamanderJoint> joints;
     public List<SalamanderSegment> segments;
@@ -73,7 +75,6 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
             interactable.setPosition(joint.position);
 
             InteractableManager.addServerInteractable(interactable, (ServerLevel) this.level);
-            this.addChild(interactable);
         }
     }
 
@@ -148,7 +149,7 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
         double averageDensity = (densityDown * volumeInDown + densityUp * volumeInUp);
         joint.accelerate(gravity.scale(-1 * averageDensity).scale(inverseMass));
 
-        Vec3 velocity = joint.position.subtract(joint.physicsPrevPosition);
+        Vec3 velocity = joint.getDeltaMovement();
         double dragCoefficient = 0.05;
         Vec3 drag = velocity.scale(Math.exp(-averageDensity * dragCoefficient));
         joint.physicsPrevPosition = joint.position.subtract(drag);
@@ -207,6 +208,24 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
     }
 
     @Override
+    public void knockback(double pStrength, double pX, double pZ) {
+        if (lastHitJoint == null) return;
+        net.minecraftforge.event.entity.living.LivingKnockBackEvent event = net.minecraftforge.common.ForgeHooks.onLivingKnockBack(this, (float) pStrength, pX, pZ);
+        if(event.isCanceled()) return;
+        pStrength = event.getStrength();
+        pX = event.getRatioX();
+        pZ = event.getRatioZ();
+        pStrength *= 1.0D - this.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE);
+
+        if (!(pStrength <= 0.0D)) {
+            this.hasImpulse = true;
+            Vec3 velocity = lastHitJoint.getDeltaMovement();
+            Vec3 knockBack = (new Vec3(pX, 0.0D, pZ)).normalize().scale(pStrength);
+            lastHitJoint.push(velocity.x / 2.0D - knockBack.x, this.onGround ? Math.min(0.4D, velocity.y / 2.0D + pStrength) : velocity.y, velocity.z / 2.0D - knockBack.z);
+        }
+    }
+
+    @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
     }
@@ -249,6 +268,7 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
     @Override
     public void remove(RemovalReason pReason) {
         super.remove(pReason);
+        Clinker.LOGGER.info("removed salamander");
         this.remove();
     }
 
@@ -303,7 +323,7 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
 
         protected void beginTick(float deltaTime) {
             this.pPosition = this.position;
-            Vec3 velocity = this.position.subtract(this.physicsPrevPosition);
+            Vec3 velocity = this.getDeltaMovement();
 
             velocity = velocity.add(pushes);
             this.pushes = Vec3.ZERO;
@@ -339,6 +359,14 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
 
         protected void push(Vec3 amount) {
             pushes = pushes.add(amount);
+        }
+
+        protected void push(double x, double y, double z) {
+            pushes = pushes.add(x, y, z);
+        }
+
+        protected Vec3 getDeltaMovement() {
+            return this.position.subtract(this.physicsPrevPosition);
         }
 
         public Quaterniond getOrientation(double partialTick) {

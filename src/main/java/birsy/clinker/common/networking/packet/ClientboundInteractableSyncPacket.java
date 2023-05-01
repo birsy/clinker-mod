@@ -38,10 +38,11 @@ public class ClientboundInteractableSyncPacket extends ClientboundPacket {
     @Override
     public void run(NetworkEvent.Context context) {
         InteractableManager clientManager = InteractableManager.clientInteractableManager;
-        if (!clientManager.interactableMap.containsKey(this.interactableID)) {
+        Interactable interactable = clientManager.storage.getInteractable(interactableID);
+        if (interactable == null) {
             Clinker.LOGGER.warn("No interactable with UUID " + this.interactableID + " found on client!");
             return;
         }
-        clientManager.interactableMap.get(this.interactableID).setTransform(this.interactableTransform);
+        interactable.setTransform(this.interactableTransform);
     }
 }

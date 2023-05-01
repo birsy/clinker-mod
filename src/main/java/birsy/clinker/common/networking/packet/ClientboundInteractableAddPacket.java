@@ -14,6 +14,7 @@ public class ClientboundInteractableAddPacket extends ClientboundPacket {
 
     public ClientboundInteractableAddPacket(FriendlyByteBuf buffer) {
         this.interactable = Interactable.deserialize(buffer.readNbt());
+        this.interactable.initialized = false;
     }
 
     @Override

@@ -21,26 +21,26 @@ public class ClientDummyInteractable extends Interactable {
     }
 
     @Override
-    public boolean onInteract(InteractionContext interactionContext, @Nullable Entity entity) {
-        ClinkerPacketHandler.NETWORK.sendToServer(new ServerboundInteractableInteractionPacket(new InteractionInfo(this.uuid, InteractionInfo.Interaction.INTERACT, interactionContext)));
+    public boolean onInteract(InteractionContext interactionContext, @Nullable Entity entity, boolean clientSide) {
+        if (clientSide) ClinkerPacketHandler.NETWORK.sendToServer(new ServerboundInteractableInteractionPacket(new InteractionInfo(this.uuid, InteractionInfo.Interaction.INTERACT, interactionContext)));
         return true;
     }
 
     @Override
-    public boolean onHit(InteractionContext interactionContext, @Nullable Entity entity) {
-        ClinkerPacketHandler.NETWORK.sendToServer(new ServerboundInteractableInteractionPacket(new InteractionInfo(this.uuid, InteractionInfo.Interaction.HIT, interactionContext)));
+    public boolean onHit(InteractionContext interactionContext, @Nullable Entity entity, boolean clientSide) {
+        if (clientSide) ClinkerPacketHandler.NETWORK.sendToServer(new ServerboundInteractableInteractionPacket(new InteractionInfo(this.uuid, InteractionInfo.Interaction.HIT, interactionContext)));
         return true;
     }
 
     @Override
-    public boolean onPick(InteractionContext interactionContext, @Nullable Entity entity) {
-        ClinkerPacketHandler.NETWORK.sendToServer(new ServerboundInteractableInteractionPacket(new InteractionInfo(this.uuid, InteractionInfo.Interaction.PICK, interactionContext)));
+    public boolean onPick(InteractionContext interactionContext, @Nullable Entity entity, boolean clientSide) {
+        if (clientSide) ClinkerPacketHandler.NETWORK.sendToServer(new ServerboundInteractableInteractionPacket(new InteractionInfo(this.uuid, InteractionInfo.Interaction.PICK, interactionContext)));
         return true;
     }
 
     //this never runs
     @Override
-    public boolean onTouch(InteractionContext interactionContext, Entity touchingEntity) {
+    public boolean onTouch(InteractionContext interactionContext, Entity touchingEntity, boolean clientSide) {
         return false;
     }
 }

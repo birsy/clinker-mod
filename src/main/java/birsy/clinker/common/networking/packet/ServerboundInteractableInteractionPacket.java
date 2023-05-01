@@ -29,15 +29,15 @@ public class ServerboundInteractableInteractionPacket extends ServerboundPacket 
     public void run(NetworkEvent.Context context) {
         Entity sender = context.getSender();
         InteractableManager manager = InteractableManager.serverInteractableManagers.get(sender.getLevel());
+        Interactable interactable = manager.storage.getInteractable(interactionInfo.interactionUUID());
 
         // uh oh! interactable does not exist.
-        if (!manager.interactableMap.containsKey(interactionInfo.interactionUUID())) {
+        if (interactable == null) {
             Clinker.LOGGER.warn("Unknown interaction UUID " + interactionInfo.interactionUUID().toString() + " sent from client " + sender.getStringUUID() + "!");
             return;
         }
 
-        Interactable interactable = manager.interactableMap.get(interactionInfo.interactionUUID());
-        if (isValidInteraction(this.interactionInfo, interactable, sender)) interactable.run(this.interactionInfo, sender);
+        if (isValidInteraction(this.interactionInfo, interactable, sender)) interactable.run(this.interactionInfo, sender, false);
     }
 
     private static boolean isValidInteraction(InteractionInfo interactionInfo, Interactable interactable, Entity sender) {

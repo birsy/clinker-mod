@@ -1,16 +1,20 @@
 package birsy.clinker.common.world.level.interactable;
 
 import birsy.clinker.core.Clinker;
+import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.core.util.Quaterniond;
 import birsy.clinker.core.util.rigidbody.Transform;
 import birsy.clinker.core.util.rigidbody.colliders.OBBCollisionShape;
 import com.mojang.math.Quaternion;
+import net.minecraft.core.SectionPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
+import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.UUID;
 
@@ -18,7 +22,8 @@ public abstract class Interactable {
     public final OBBCollisionShape shape;
     public Transform previousTransform;
     protected boolean shouldBeRemoved;
-    public boolean parented;
+    public boolean initialized = true;
+    public Optional<InteractableParent> parent = Optional.empty();
     public final UUID uuid;
 
     public Interactable(OBBCollisionShape shape) {
@@ -49,41 +54,46 @@ public abstract class Interactable {
      *
      * @param interactionContext The interaction context regarding the player's interaction info.
      * @param entity The entity preforming the interaction.
+     * @param clientSide Whether the interaction is being run on the client.
      * @return Whether the interaction is successful. If true, the player's default interaction (placing on the block behind the interactable, etc) will be cancelled.
      */
-    public abstract boolean onInteract(InteractionContext interactionContext, @Nullable Entity entity);
+    public abstract boolean onInteract(InteractionContext interactionContext, @Nullable Entity entity, boolean clientSide);
 
     /**
      * Run when an interactable is right-clicked.
+     *
      * @param interactionContext The interaction context regarding the player's interaction info.
      * @param entity The entity preforming the interaction.
+     * @param clientSide Whether the interaction is being run on the client.
      * @return Whether the interaction is successful. If true, the player's default interaction (breaking the block behind the interactable, etc) will be cancelled.
      */
-    public abstract boolean onHit(InteractionContext interactionContext, @Nullable Entity entity);
+    public abstract boolean onHit(InteractionContext interactionContext, @Nullable Entity entity, boolean clientSide);
 
     /**
      * Run when the pick-block key is used on an interactable.
      *
      * @param interactionContext The interaction context regarding the player's interaction info.
      * @param entity The entity preforming the interaction.
+     * @param clientSide Whether the interaction is being run on the client.
      * @return Whether the interaction is successful. If true, the player's default interaction (picking the block behind the interactable, etc) will be cancelled.
      */
-    public abstract boolean onPick(InteractionContext interactionContext, @Nullable Entity entity);
+    public abstract boolean onPick(InteractionContext interactionContext, @Nullable Entity entity, boolean clientSide);
 
     /**
      * Run when an entity's hitbox collides with the interactable.
      *
      * @param touchingEntity The entity that is colliding with the interactable.
+     * @param clientSide Whether the interaction is being run on the client.
      * @return Whether the interaction is successful.
      */
-    public abstract boolean onTouch(InteractionContext interactionContext, Entity touchingEntity);
+    public abstract boolean onTouch(InteractionContext interactionContext, Entity touchingEntity, boolean clientSide);
 
-    public boolean run(InteractionInfo info, @Nullable Entity entity) {
+    public boolean run(InteractionInfo info, @Nullable Entity entity, boolean clientSide) {
         switch (info.interaction()) {
-            case INTERACT: return this.onInteract(info.context(), entity);
-            case HIT: return this.onHit(info.context(), entity);
-            case PICK: return this.onPick(info.context(), entity);
-            case TOUCH: return this.onTouch(info.context(), entity);
+            case INTERACT: return this.onInteract(info.context(), entity, clientSide);
+            case HIT: return this.onHit(info.context(), entity, clientSide);
+            case PICK: return this.onPick(info.context(), entity, clientSide);
+            case TOUCH: return this.onTouch(info.context(), entity, clientSide);
         }
         return false;
     }
@@ -104,6 +114,24 @@ public abstract class Interactable {
      */
     public void setTransform(Transform transform) {
         this.shape.setTransform(transform);
+    }
+
+    /**
+     * Gets the position of the interactable.
+     *
+     * @return the position of the interactable
+     */
+    public Vec3 getPosition() {
+        return this.getTransform().getPosition();
+    }
+
+    /**
+     * Gets the section position of the interactable.
+     *
+     * @return the section position of the interactable
+     */
+    public SectionPos getSectionPosition() {
+        return SectionPos.of(this.getTransform().getPosition());
     }
 
     /**
@@ -156,6 +184,10 @@ public abstract class Interactable {
      */
     public void markForRemoval() {
         this.shouldBeRemoved = true;
+    }
+
+    public void setParent(InteractableParent parent) {
+        this.parent = Optional.of(parent);
     }
 
     public CompoundTag serialize() {

@@ -25,11 +25,6 @@ public class ChunkMapMixin {
     public void playerLoadedChunk(ServerPlayer pPlayer, MutableObject<ClientboundLevelChunkWithLightPacket> pPacketCache, LevelChunk pChunk, CallbackInfo ci) {
         if (InteractableManager.serverInteractableManagers.get(pPlayer.level) == null) {
             Clinker.LOGGER.warn("Uh oh! ServerLevel " + pPlayer.level.dimension().location() + " unregistered!");
-            Clinker.LOGGER.info("ServerLevel -> InteractableManager Map Info:");
-            for (Map.Entry<ServerLevel, InteractableManager> entry : InteractableManager.serverInteractableManagers.entrySet()) {
-                Clinker.LOGGER.info(entry.getKey().dimension().location().toString() + " : " + entry.getValue().interactableMap.size() + " interactables.");
-            }
-
         } else {
             InteractableManager.serverInteractableManagers.get(pPlayer.level).loadChunkToPlayer(pChunk.getPos(), pPlayer);
         }
