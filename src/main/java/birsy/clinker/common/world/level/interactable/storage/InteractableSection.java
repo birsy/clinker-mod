@@ -5,6 +5,7 @@ import net.minecraft.core.SectionPos;
 import net.minecraft.world.level.entity.Visibility;
 import net.minecraft.world.phys.AABB;
 
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -35,6 +36,14 @@ public class InteractableSection {
 
     public void remove(Interactable interactable) {
         this.lookup.remove(interactable);
+    }
+
+    public void remove(UUID id) {
+        this.lookup.remove(id);
+    }
+
+    public Interactable get(UUID id) {
+        return this.lookup.getInteractable(id);
     }
 
     public void clear() {

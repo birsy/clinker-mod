@@ -54,6 +54,7 @@ public class InteractableRenderer {
             }
         }
         for (Interactable interactable : InteractableManager.clientInteractableManager.storage.getAllInteractables()) {
+            //Clinker.LOGGER.info(interactable.uuid);
             if (camera.isVisible(interactable.shape.getBounds().inflate(0.5))) {
                 renderInteractable(poseStack, pBuffer, interactable, pPartialTicks);
             }

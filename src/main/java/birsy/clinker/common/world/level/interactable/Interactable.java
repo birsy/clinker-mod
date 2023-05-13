@@ -190,6 +190,10 @@ public abstract class Interactable {
         this.parent = Optional.of(parent);
     }
 
+    public boolean isParented() {
+        return !this.parent.isEmpty();
+    }
+
     public CompoundTag serialize() {
         return this.serialize(null);
     }

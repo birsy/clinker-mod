@@ -36,6 +36,10 @@ public class InteractableLookup {
         this.byUuid.remove(interactable.uuid);
     }
 
+    public void remove(UUID id) {
+        this.byUuid.remove(id);
+    }
+
     public void clear() {
         this.byUuid.clear();
     }

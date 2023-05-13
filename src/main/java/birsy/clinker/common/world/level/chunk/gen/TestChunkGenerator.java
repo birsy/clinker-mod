@@ -29,6 +29,7 @@ import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.*;
 import net.minecraft.world.level.levelgen.blending.Blender;
 import net.minecraft.world.level.levelgen.structure.StructureSet;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 import java.util.Optional;
@@ -136,7 +137,10 @@ public class TestChunkGenerator extends ChunkGenerator {
         return terrain > 0 ? settings.defaultBlock() : (noise > 0 ? ClinkerBlocks.ASH.get().defaultBlockState() : Blocks.AIR.defaultBlockState());
     }
 
-
+    private Vec3 terraceTransformInputPosition(Vec3 in, double terraceHeight, double terraceWidth) {
+        VoronoiGenerator.VoronoiInfo voronoiInfo = this.voronoi.get3(in.x / terraceWidth, in.y / terraceHeight, in.z / terraceWidth);
+        return new Vec3(in.x, voronoiInfo.cellPos().y * terraceHeight, in.z());
+    }
 
     public int getBaseHeight(int x, int y, Heightmap.Types heightmap, LevelHeightAccessor level, RandomState random) {
         return 224;

@@ -103,8 +103,8 @@ public class InteractableManager {
         for(Interactable interactable : storage.getAllInteractables()) {
             interactable.tick();
             if (interactable.shouldBeRemoved) {
+                Clinker.LOGGER.info("attempting removal of " + interactable.uuid);
                 storage.removeInteractable(interactable);
-                Clinker.LOGGER.info("removed!");
             } else {
                 storage.updateInteractableLocation(interactable);
                 List<Entity> entitiesInRange = this.level.getEntities(null, interactable.shape.getBounds());

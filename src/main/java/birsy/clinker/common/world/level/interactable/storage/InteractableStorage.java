@@ -173,6 +173,17 @@ public class InteractableStorage {
         }
     }
 
+    public void removeInteractable(UUID id) {
+        this.interactables.remove(id);
+        if(!this.sectionIdByInteractable.containsKey(id)) return;
+        long sectionID = this.sectionIdByInteractable.get(id);
+        if (this.sectionIds.contains(sectionID)) {
+            this.sections.get(sectionID).remove(id);
+            this.sectionIdByInteractable.remove(id);
+            removeSectionIfEmpty(sectionID);
+        }
+    }
+
     private void addInteractableToSection(Interactable interactable, long sectionID) {
         if (!this.sectionIds.contains(sectionID)) createSection(sectionID);
         this.sections.get(sectionID).add(interactable);
