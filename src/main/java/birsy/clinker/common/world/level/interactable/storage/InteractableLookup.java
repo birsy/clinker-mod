@@ -37,7 +37,8 @@ public class InteractableLookup {
     }
 
     public void remove(UUID id) {
-        this.byUuid.remove(id);
+        Interactable thing = this.byUuid.remove(id);
+        Clinker.LOGGER.info(this.byUuid.size());
     }
 
     public void clear() {

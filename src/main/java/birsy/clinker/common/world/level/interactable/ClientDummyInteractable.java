@@ -12,8 +12,8 @@ import java.util.UUID;
  * Dummy interactable, used to take inputs from the client for processing on the server.
  */
 public class ClientDummyInteractable extends Interactable {
-    public ClientDummyInteractable(OBBCollisionShape shape, UUID id) {
-        super(shape, id);
+    public ClientDummyInteractable(OBBCollisionShape shape, UUID id, boolean hasOutline) {
+        super(shape, id, hasOutline);
     }
 
     public ClientDummyInteractable() {

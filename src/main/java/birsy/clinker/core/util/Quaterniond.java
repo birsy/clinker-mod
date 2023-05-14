@@ -2100,8 +2100,8 @@ public class Quaterniond implements Externalizable, Cloneable {
         return true;
     }
 
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+    public Quaterniond clone() {
+        return new Quaterniond(this.x, this.y, this.z, this.w);
     }
 
     public Quaternion toMojangQuaternion() {

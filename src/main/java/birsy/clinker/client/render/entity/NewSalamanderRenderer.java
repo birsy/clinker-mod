@@ -3,6 +3,7 @@ package birsy.clinker.client.render.entity;
 import birsy.clinker.client.render.ClinkerRenderTypes;
 import birsy.clinker.client.render.DebugRenderUtil;
 import birsy.clinker.client.render.entity.model.MudScarabModel;
+import birsy.clinker.client.render.entity.model.SalamanderBodyModel;
 import birsy.clinker.common.world.entity.MudScarabEntity;
 import birsy.clinker.common.world.entity.salamander.AbstractSalamanderPartEntity;
 import birsy.clinker.common.world.entity.salamander.NewSalamanderEntity;
@@ -28,7 +29,6 @@ import net.minecraft.world.phys.Vec3;
 
 public class NewSalamanderRenderer extends EntityRenderer<NewSalamanderEntity> {
     private static final ResourceLocation SALAMANDER_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/entity/salamander/salamander_body/salamander_body.png");
-    private static final ResourceLocation CIRCLE_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/debug/circle.png");
 
     public NewSalamanderRenderer(EntityRendererProvider.Context pContext) {
         super(pContext);
@@ -40,6 +40,7 @@ public class NewSalamanderRenderer extends EntityRenderer<NewSalamanderEntity> {
         pPoseStack.pushPose();
         Vec3 pos = pEntity.getPosition(pPartialTick);
         pPoseStack.translate(-pos.x, -pos.y + 0.5, -pos.z);
+
         int amount = 0;
         for (NewSalamanderEntity.SalamanderJoint joint : pEntity.joints) {
             float brightness = 1 - (amount / (float)pEntity.joints.size());
@@ -55,6 +56,7 @@ public class NewSalamanderRenderer extends EntityRenderer<NewSalamanderEntity> {
             DebugRenderUtil.renderLine(pPoseStack, pBuffer.getBuffer(RenderType.LINES), pos1.x(), pos1.y(), pos1.z(), pos2.x(), pos2.y(), pos2.z(), 1, color1 ? 1 : 0, segment.isHead() ? 1 : 0, 1);
             color1 = !color1;
         }
+
         pPoseStack.popPose();
     }
     

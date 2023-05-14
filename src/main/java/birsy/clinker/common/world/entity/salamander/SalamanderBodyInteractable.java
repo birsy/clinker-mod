@@ -17,7 +17,7 @@ public class SalamanderBodyInteractable extends CollidableInteractable {
     final NewSalamanderEntity.SalamanderJoint jointParent;
 
     public SalamanderBodyInteractable(NewSalamanderEntity entityParent, NewSalamanderEntity.SalamanderJoint jointParent, OBBCollisionShape shape) {
-        super(shape, true, 5.0);
+        super(shape, true, 5.0, false);
         entityParent.addChild(this);
         this.entityParent = entityParent;
         this.jointParent = jointParent;
@@ -36,7 +36,6 @@ public class SalamanderBodyInteractable extends CollidableInteractable {
 
     @Override
     public boolean onHit(InteractionContext interactionContext, @Nullable Entity entity, boolean clientSide) {
-        Clinker.LOGGER.info("huh?");
         if (entity instanceof Player player) {
             Vec3 hitVector = interactionContext.to().subtract(interactionContext.from()).normalize();
             this.entityParent.lastHitJoint = this.jointParent;
@@ -56,22 +55,6 @@ public class SalamanderBodyInteractable extends CollidableInteractable {
 
     @Override
     public boolean onTouch(InteractionContext context, Entity touchingEntity, boolean clientSide) {
-//        if (touchingEntity == this.entityParent) return false;
-//
-//        float salamanderMass = 5.0F;
-//        float entityMass = touchingEntity.getBbHeight() * touchingEntity.getBbWidth() * touchingEntity.getBbWidth();
-//        float totalMass = entityMass + salamanderMass;
-//
-//        double collisionDepth = context.from().distanceTo(context.to());
-//        Vec3 collisionDirection = context.from().subtract(context.to()).normalize();
-//
-//        Vec3 entityMovement = collisionDirection.scale(collisionDepth * (salamanderMass / totalMass));
-//        Vec3 segmentMovement = collisionDirection.scale(-collisionDepth * (entityMass / totalMass));
-//
-//        touchingEntity.push(entityMovement.x, entityMovement.y, entityMovement.z);
-//        if (touchingEntity instanceof ServerPlayer player) ClinkerPacketHandler.sendToClient(player, new ClientboundPushPacket(entityMovement));
-//
-//        this.jointParent.push(segmentMovement);
         return true;
     }
 

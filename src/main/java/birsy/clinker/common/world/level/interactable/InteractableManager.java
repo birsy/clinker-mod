@@ -13,6 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.SectionPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -21,10 +22,14 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraft.world.phys.*;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.InputEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -36,7 +41,8 @@ public class InteractableManager {
     public static Map<ServerLevel, InteractableManager> serverInteractableManagers = new HashMap<>();
     @OnlyIn(Dist.CLIENT)
     public static InteractableManager clientInteractableManager;
-
+    @OnlyIn(Dist.CLIENT)
+    public static Optional<Interactable> seenInteractable = Optional.empty();
 
     /**
      * Adds a serverside interactable.
@@ -104,7 +110,11 @@ public class InteractableManager {
             interactable.tick();
             if (interactable.shouldBeRemoved) {
                 Clinker.LOGGER.info("attempting removal of " + interactable.uuid);
-                storage.removeInteractable(interactable);
+                storage.removeInteractable(interactable.uuid);
+                if (!level.isClientSide) {
+                    LevelChunk chunk = level.getChunk(interactable.getSectionPosition().chunk().x, interactable.getSectionPosition().chunk().z);
+                    ClinkerPacketHandler.sendToClientsInChunk(chunk, new ClientboundInteractableRemovePacket(interactable.uuid));
+                }
             } else {
                 storage.updateInteractableLocation(interactable);
                 List<Entity> entitiesInRange = this.level.getEntities(null, interactable.shape.getBounds());
@@ -161,8 +171,13 @@ public class InteractableManager {
     }
 
     @SubscribeEvent
-    public static void onInteract(InputEvent.InteractionKeyMappingTriggered event) {
+    public static void clientTick(TickEvent.ClientTickEvent event) {
         Minecraft mc = Minecraft.getInstance();
+
+        if (mc.player == null) return;
+        if (mc.level == null) return;
+        if (clientInteractableManager == null) return;
+
         LocalPlayer player = mc.player;
         double reach = player.getReachDistance();
         Level level = InteractableManager.clientInteractableManager.level;
@@ -179,7 +194,6 @@ public class InteractableManager {
 
         List<Interactable> interactablesInChunks = InteractableManager.clientInteractableManager.storage.getInteractablesInBounds(new AABB(fromPos, toPos));
 
-        InteractionContext iContext = new InteractionContext(fromPos, toPos, event.getHand());
         Interactable closestInteractable = null;
         double closestDistance = Float.POSITIVE_INFINITY;
         for (Interactable interactable : interactablesInChunks) {
@@ -194,13 +208,26 @@ public class InteractableManager {
             if (distance > entityDistance) continue;
             if (distance < closestDistance) {
                 closestInteractable = interactable;
-                closestDistance = distance;
             }
         }
 
-        Options options = mc.options;
-        if (closestInteractable != null) {
-            if (closestInteractable.run(new InteractionInfo(closestInteractable.uuid,
+        seenInteractable = Optional.ofNullable(closestInteractable);
+    }
+
+    @SubscribeEvent
+    public static void onInteract(InputEvent.InteractionKeyMappingTriggered event) {
+        if (seenInteractable.isPresent()) {
+            Interactable interactable = seenInteractable.get();
+            Minecraft mc = Minecraft.getInstance();
+
+            LocalPlayer player = mc.player;
+            Vec3 fromPos = player.getEyePosition(mc.getPartialTick());
+            Vec3 direction = player.getLookAngle();
+            Vec3 toPos = direction.scale(player.getReachDistance()).add(fromPos);
+            InteractionContext iContext = new InteractionContext(fromPos, toPos, event.getHand());
+
+            Options options = mc.options;
+            if (interactable.run(new InteractionInfo(interactable.uuid,
                     event.getKeyMapping() == options.keyPickItem ? InteractionInfo.Interaction.PICK :
                             event.getKeyMapping() == options.keyAttack ? InteractionInfo.Interaction.HIT :
                                     InteractionInfo.Interaction.INTERACT, iContext), player, true)) {

@@ -1,6 +1,7 @@
 package birsy.clinker.common.world.level.interactable.storage;
 
 import birsy.clinker.common.world.level.interactable.Interactable;
+import birsy.clinker.core.Clinker;
 import it.unimi.dsi.fastutil.longs.*;
 import net.minecraft.core.SectionPos;
 import net.minecraft.world.level.ChunkPos;
@@ -10,10 +11,10 @@ import java.util.*;
 import java.util.function.Consumer;
 
 public class InteractableStorage {
-    private final InteractableLookup interactables;
-    private final Map<UUID, Long> sectionIdByInteractable = new HashMap();
-    private final Long2ObjectMap<InteractableSection> sections;
-    private final LongSortedSet sectionIds = new LongAVLTreeSet();
+    public final InteractableLookup interactables;
+    public final Map<UUID, Long> sectionIdByInteractable = new HashMap();
+    public final Long2ObjectMap<InteractableSection> sections;
+    public final LongSortedSet sectionIds = new LongAVLTreeSet();
 
     public InteractableStorage() {
         this.interactables = new InteractableLookup();
@@ -21,28 +22,22 @@ public class InteractableStorage {
     }
 
     public List<Interactable> getInteractablesInBounds(AABB pBoundingBox) {
-        int j = SectionPos.posToSectionCoord(pBoundingBox.minX - 2.0D);
-        int k = SectionPos.posToSectionCoord(pBoundingBox.minY - 4.0D);
-        int l = SectionPos.posToSectionCoord(pBoundingBox.minZ - 2.0D);
-        int i1 = SectionPos.posToSectionCoord(pBoundingBox.maxX + 2.0D);
-        int j1 = SectionPos.posToSectionCoord(pBoundingBox.maxY + 0.0D);
-        int k1 = SectionPos.posToSectionCoord(pBoundingBox.maxZ + 2.0D);
+        int minX = SectionPos.posToSectionCoord(pBoundingBox.minX - 16.0D);
+        int minY = SectionPos.posToSectionCoord(pBoundingBox.minY - 16.0D);
+        int minZ = SectionPos.posToSectionCoord(pBoundingBox.minZ - 16.0D);
+        int maxX = SectionPos.posToSectionCoord(pBoundingBox.maxX + 16.0D);
+        int maxY = SectionPos.posToSectionCoord(pBoundingBox.maxY + 16.0D);
+        int maxZ = SectionPos.posToSectionCoord(pBoundingBox.maxZ + 16.0D);
 
         List<Interactable> list = new ArrayList<>();
 
-        for(int l1 = j; l1 <= i1; ++l1) {
-            long i2 = SectionPos.asLong(l1, 0, 0);
-            long j2 = SectionPos.asLong(l1, -1, -1);
-            LongIterator longiterator = this.sectionIds.subSet(i2, j2 + 1L).iterator();
-
-            while(longiterator.hasNext()) {
-                long k2 = longiterator.nextLong();
-                int l2 = SectionPos.y(k2);
-                int i3 = SectionPos.z(k2);
-                if (l2 >= k && l2 <= j1 && i3 >= l && i3 <= k1) {
-                    InteractableSection section = this.sections.get(k2);
-                    if (section != null && !section.isEmpty()) {
-                        list.addAll(section.getInteractables().toList());
+        for(int x = minX; x <= maxX; x++) {
+            for(int y = minY; y <= maxY; y++) {
+                for(int z = minZ; z <= maxZ; z++) {
+                    long sectionId = SectionPos.asLong(x, y, z);
+                    if (sectionIds.contains(sectionId)) {
+                        InteractableSection section = this.sections.get(sectionId);
+                        list.addAll(section.getInteractables().filter(interactable -> pBoundingBox.intersects(interactable.shape.getBounds())).toList());
                     }
                 }
             }
@@ -51,35 +46,8 @@ public class InteractableStorage {
         return list;
     }
 
-    public void forEachAccessibleNonEmptySection(AABB pBoundingBox, Consumer<InteractableSection> pConsumer) {
-        int j = SectionPos.posToSectionCoord(pBoundingBox.minX - 2.0D);
-        int k = SectionPos.posToSectionCoord(pBoundingBox.minY - 4.0D);
-        int l = SectionPos.posToSectionCoord(pBoundingBox.minZ - 2.0D);
-        int i1 = SectionPos.posToSectionCoord(pBoundingBox.maxX + 2.0D);
-        int j1 = SectionPos.posToSectionCoord(pBoundingBox.maxY + 0.0D);
-        int k1 = SectionPos.posToSectionCoord(pBoundingBox.maxZ + 2.0D);
-
-        for(int l1 = j; l1 <= i1; ++l1) {
-            long i2 = SectionPos.asLong(l1, 0, 0);
-            long j2 = SectionPos.asLong(l1, -1, -1);
-            LongIterator longiterator = this.sectionIds.subSet(i2, j2 + 1L).iterator();
-
-            while(longiterator.hasNext()) {
-                long k2 = longiterator.nextLong();
-                int l2 = SectionPos.y(k2);
-                int i3 = SectionPos.z(k2);
-                if (l2 >= k && l2 <= j1 && i3 >= l && i3 <= k1) {
-                    InteractableSection section = this.sections.get(k2);
-                    if (section != null && !section.isEmpty()) {
-                        pConsumer.accept(section);
-                    }
-                }
-            }
-        }
-    }
-
     public void forInteractablesInBounds(AABB pBounds, Consumer<Interactable> pConsumer) {
-        this.forEachAccessibleNonEmptySection(pBounds, (section) -> section.forInteractablesInBounds(pBounds, pConsumer));
+        this.getInteractablesInBounds(pBounds).forEach(pConsumer);
     }
 
     public Iterable<Interactable> getAllInteractables() {
@@ -187,7 +155,11 @@ public class InteractableStorage {
     private void addInteractableToSection(Interactable interactable, long sectionID) {
         if (!this.sectionIds.contains(sectionID)) createSection(sectionID);
         this.sections.get(sectionID).add(interactable);
-        this.sectionIdByInteractable.replace(interactable.uuid, sectionID);
+        if (sectionIdByInteractable.containsKey(interactable.uuid)) {
+            this.sectionIdByInteractable.replace(interactable.uuid, sectionID);
+        } else {
+            this.sectionIdByInteractable.put(interactable.uuid, sectionID);
+        }
     }
 
     private void removeInteractableFromCurrentSection(Interactable interactable) {
@@ -200,12 +172,13 @@ public class InteractableStorage {
     }
 
     public void updateInteractableLocation(Interactable interactable) {
-        if(!this.sectionIdByInteractable.containsKey(interactable.uuid)) return;
-        long sectionId = this.sectionIdByInteractable.get(interactable.uuid);
+        boolean hasInteractableID = this.sectionIdByInteractable.containsKey(interactable.uuid);
         long newSectionId = interactable.getSectionPosition().asLong();
+        long sectionId = hasInteractableID ? this.sectionIdByInteractable.get(interactable.uuid) : 0;
 
-        if (sectionId == newSectionId) return;
-        removeInteractableFromCurrentSection(interactable);
-        addInteractableToSection(interactable, sectionId);
+        if (sectionId != newSectionId || !hasInteractableID) {
+            removeInteractableFromCurrentSection(interactable);
+            addInteractableToSection(interactable, newSectionId);
+        }
     }
 }

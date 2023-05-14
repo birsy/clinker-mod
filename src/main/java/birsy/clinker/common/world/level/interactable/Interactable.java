@@ -25,19 +25,22 @@ public abstract class Interactable {
     public boolean initialized = true;
     public Optional<InteractableParent> parent = Optional.empty();
     public final UUID uuid;
+    public boolean hasOutline;
 
-    public Interactable(OBBCollisionShape shape) {
+    public Interactable(OBBCollisionShape shape, boolean hasOutline) {
         this.shape = shape;
         this.uuid = UUID.randomUUID();
         this.shouldBeRemoved = false;
         this.previousTransform = this.getTransform().copy();
+        this.hasOutline = hasOutline;
     }
 
-    public Interactable(OBBCollisionShape shape, UUID id) {
+    public Interactable(OBBCollisionShape shape, UUID id, boolean hasOutline) {
         this.shape = shape;
         this.uuid = id;
         this.shouldBeRemoved = false;
         this.previousTransform = this.getTransform().copy();
+        this.hasOutline = hasOutline;
     }
 
     public Interactable() {
@@ -201,16 +204,15 @@ public abstract class Interactable {
     public CompoundTag serialize(@Nullable CompoundTag tag) {
         if (tag == null) tag = new CompoundTag();
         tag.putString("name", this.getClass().getName());
-        Clinker.LOGGER.info("serializing - serverside!");
-        Clinker.LOGGER.info(this.getClass().getName());
         tag.putUUID("uuid", this.uuid);
+        tag.putBoolean("outline", this.hasOutline);
         this.shape.serialize(tag);
 
         return tag;
     }
 
     public <I extends Interactable> I reconstructOnClient(CompoundTag tag) {
-        return (I) new ClientDummyInteractable((OBBCollisionShape) (new OBBCollisionShape(0, 0, 0).deserialize(tag)), tag.getUUID("uuid"));
+        return (I) new ClientDummyInteractable((OBBCollisionShape) (new OBBCollisionShape(0, 0, 0).deserialize(tag)), tag.getUUID("uuid"), tag.getBoolean("outline"));
     }
 
     @Nullable

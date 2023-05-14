@@ -45,8 +45,7 @@ public class ServerboundInteractableInteractionPacket extends ServerboundPacket 
             // sanity check to ensure that the player can actually interact with the interactable.
             // given a 1.5 block buffer to hopefully resolve any network chicanery.
             // disregard any touch interactions, as those are handled entirely serverside.
-            Vec3 to = interactionInfo.context().to().subtract(player.getEyePosition()).normalize().scale(player.getReachDistance()).add(player.getEyePosition());
-            return interactable.shape.raycast(player.getEyePosition(), to, 1.5).isPresent() && interactionInfo.interaction() != InteractionInfo.Interaction.TOUCH;
+            return (interactable.getPosition().distanceTo(player.getEyePosition()) - interactable.shape.getRadius() - 1.5) < player.getReachDistance();
         } else {
             return true;
         }

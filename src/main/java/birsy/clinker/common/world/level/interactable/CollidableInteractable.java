@@ -22,14 +22,14 @@ public class CollidableInteractable extends Interactable {
     private double mass;
     private boolean reacts;
 
-    public CollidableInteractable(OBBCollisionShape shape, boolean reacts, double mass) {
-        super(shape);
+    public CollidableInteractable(OBBCollisionShape shape, boolean reacts, double mass, boolean outline) {
+        super(shape, outline);
         this.mass = mass;
         this.reacts = reacts;
     }
 
-    public CollidableInteractable(OBBCollisionShape shape, boolean reacts, double mass, UUID uuid) {
-        super(shape, uuid);
+    public CollidableInteractable(OBBCollisionShape shape, boolean reacts, double mass, UUID uuid, boolean outline) {
+        super(shape, uuid, outline);
         this.mass = mass;
         this.reacts = reacts;
     }
@@ -79,38 +79,44 @@ public class CollidableInteractable extends Interactable {
 
     public static Vec3 collideWithEntities(Vec3 velocityVector, Entity entity) {
         InteractableManager manager = entity.getLevel().isClientSide ? InteractableManager.clientInteractableManager : InteractableManager.serverInteractableManagers.get(entity.getLevel());
-        Collection<Interactable> interactables = manager.storage.getInteractablesInBounds(entity.getBoundingBox());
+        Collection<Interactable> interactables = manager.storage.getInteractablesInBounds(entity.getBoundingBox().inflate(1.0));
+        interactables = interactables.stream().filter(interactable -> {
+            boolean isEntityParent = false;
+            if (!interactable.parent.isEmpty()) if (interactable.parent.get() == entity) isEntityParent = true;
+            return !interactable.shouldBeRemoved && !isEntityParent && (interactable instanceof CollidableInteractable);
+        }).toList();
 
         // todo: issue with walking along borders? get ryan to help...
         
         boolean changed = false;
-        for (Interactable interactable : interactables) {
-            if (!interactable.parent.isEmpty()) if (interactable.parent.get() == entity) continue;
-            if (interactable instanceof CollidableInteractable cI) {
-                AABB entityAABB = entity.getBoundingBox().move(velocityVector);
-                Vec3 center = entityAABB.getCenter();
-                OBBCollisionShape entityBB = new OBBCollisionShape(entityAABB.maxX - center.x(), entityAABB.maxY - center.y(), entityAABB.maxZ - center.z());
-                entityBB.transform.setPosition(center);
+        for (int iteration = 0; iteration < 16; iteration++) {
+            for (Interactable interactable : interactables) {
+                if (interactable instanceof CollidableInteractable cI) {
+                    AABB entityAABB = entity.getBoundingBox().move(velocityVector);
+                    Vec3 center = entityAABB.getCenter();
+                    OBBCollisionShape entityBB = new OBBCollisionShape(entityAABB.maxX - center.x(), entityAABB.maxY - center.y(), entityAABB.maxZ - center.z());
+                    entityBB.transform.setPosition(center);
 
-                GJKEPA.Manifold m = GJKEPA.collisionTest(cI.shape, entityBB, 16);
-                if (m != null) {
-                    if (!cI.reacts) {
-                        velocityVector = velocityVector.add(m.normal().scale(m.depth()));
-                    } else {
-                        double interactableMass = 8.0;
-                        double entityMass = entity.getBbHeight() * entity.getBbWidth() * entity.getBbWidth();
-                        double totalMass = entityMass + interactableMass;
+                    GJKEPA.Manifold m = GJKEPA.collisionTest(cI.shape, entityBB, 256);
+                    if (m != null) {
+                        if (!cI.reacts) {
+                            velocityVector = velocityVector.add(m.normal().scale(m.depth()));
+                        } else {
+                            double interactableMass = 8.0;
+                            double entityMass = entity.getBbHeight() * entity.getBbWidth() * entity.getBbWidth();
+                            double totalMass = entityMass + interactableMass;
 
-                        double collisionDepth = m.depth();
-                        Vec3 collisionDirection = m.normal();
+                            double collisionDepth = m.depth();
+                            Vec3 collisionDirection = m.normal();
 
-                        Vec3 entityMovement = collisionDirection.scale(collisionDepth * (interactableMass / totalMass));
-                        Vec3 thisMovement = collisionDirection.scale(-collisionDepth * (entityMass / totalMass));
+                            Vec3 entityMovement = collisionDirection.scale(collisionDepth * (interactableMass / totalMass));
+                            Vec3 thisMovement = collisionDirection.scale(-collisionDepth * (entityMass / totalMass));
 
-                        velocityVector = velocityVector.add(entityMovement);
-                        cI.push(thisMovement);
+                            velocityVector = velocityVector.add(entityMovement);
+                            cI.push(thisMovement);
+                        }
+                        changed = true;
                     }
-                    changed = true;
                 }
             }
         }
@@ -128,6 +134,7 @@ public class CollidableInteractable extends Interactable {
         tag.putUUID("uuid", this.uuid);
         tag.putDouble("mass", this.mass);
         tag.putBoolean("reacts", this.reacts);
+        tag.putBoolean("outline", this.hasOutline);
         tag.putString("name", this.getClass().getName());
         this.shape.serialize(tag);
 
@@ -136,6 +143,6 @@ public class CollidableInteractable extends Interactable {
 
     @Override
     public <I extends Interactable> I reconstructOnClient(CompoundTag tag) {
-        return (I) new CollidableInteractable((OBBCollisionShape) new OBBCollisionShape(0, 0, 0).deserialize(tag), tag.getBoolean("reacts"), tag.getDouble("mass"), tag.getUUID("uuid"));
+        return (I) new CollidableInteractable((OBBCollisionShape) new OBBCollisionShape(0, 0, 0).deserialize(tag), tag.getBoolean("reacts"), tag.getDouble("mass"), tag.getUUID("uuid"), tag.getBoolean("outline"));
     }
 }
