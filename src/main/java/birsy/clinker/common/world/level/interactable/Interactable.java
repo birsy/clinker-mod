@@ -1,5 +1,6 @@
 package birsy.clinker.common.world.level.interactable;
 
+import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.core.util.Quaterniond;
@@ -19,9 +20,10 @@ import java.util.StringJoiner;
 import java.util.UUID;
 
 public abstract class Interactable {
-    public final OBBCollisionShape shape;
+    public OBBCollisionShape shape;
     public Transform previousTransform;
     protected boolean shouldBeRemoved;
+    protected boolean shouldUpdateShape;
     public boolean initialized = true;
     public Optional<InteractableParent> parent = Optional.empty();
     public final UUID uuid;
@@ -187,6 +189,13 @@ public abstract class Interactable {
      */
     public void markForRemoval() {
         this.shouldBeRemoved = true;
+    }
+
+    /**
+     * Replicates changes to the interactable's shape across the server-client boundary.
+     */
+    public void updateShape() {
+        shouldUpdateShape = true;
     }
 
     public void setParent(InteractableParent parent) {

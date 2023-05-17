@@ -34,16 +34,7 @@ public class InteractableRenderer {
     public static void onRenderHighlight(RenderHighlightEvent.Block event) {
         if (InteractableManager.seenInteractable.isPresent()) {
             if (!InteractableManager.seenInteractable.get().hasOutline) return;
-
-            event.setCanceled(true);
-
-            event.getPoseStack().pushPose();
-
-            Vec3 camPos = event.getCamera().getPosition();
-            event.getPoseStack().translate(-camPos.x(), -camPos.y(), -camPos.z());
-            renderInteractable(event.getPoseStack(), event.getMultiBufferSource().getBuffer(RenderType.lines()), InteractableManager.seenInteractable.get(), event.getPartialTick(), 0.0F, 0.0F, 0.0F, 0.4F);
-
-            event.getPoseStack().popPose();
+            event.setCanceled(InteractableManager.seenInteractable.get().hasOutline);
         }
     }
 
@@ -54,6 +45,12 @@ public class InteractableRenderer {
             Vec3 camPos = event.getCamera().getPosition();
             event.getPoseStack().translate(-camPos.x(), -camPos.y(), -camPos.z());
             render(event.getPoseStack(), event.getLevelRenderer().renderBuffers.bufferSource().getBuffer(RenderType.lines()), event.getFrustum(), event.getPartialTick());
+
+            if (InteractableManager.seenInteractable.isPresent()) {
+                if (!InteractableManager.seenInteractable.get().hasOutline) return;
+                renderInteractable(event.getPoseStack(), event.getLevelRenderer().renderBuffers.bufferSource().getBuffer(RenderType.lines()), InteractableManager.seenInteractable.get(), event.getPartialTick(), 0.0F, 0.0F, 0.0F, 0.4F);
+            }
+
             event.getPoseStack().popPose();
         }
     }

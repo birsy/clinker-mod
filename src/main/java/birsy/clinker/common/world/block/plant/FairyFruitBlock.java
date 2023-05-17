@@ -2,57 +2,110 @@ package birsy.clinker.common.world.block.plant;
 
 import birsy.clinker.common.world.block.blockentity.FairyFruitBlockEntity;
 import birsy.clinker.core.registry.ClinkerBlockEntities;
-import birsy.clinker.core.registry.ClinkerBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import org.jetbrains.annotations.Nullable;
 
-public class FairyFruitBlock extends AttachedGrowingPlantHeadBlock implements EntityBlock {
-    static VoxelShape SHAPE = box(3.0D, 8.0D, 3.0D, 13.0D, 16.0D, 13.0D);
+import javax.annotation.Nullable;
 
-    public FairyFruitBlock(Properties pProperties) {
-        super(pProperties, Direction.DOWN, SHAPE, false, 0.1D);
+public class FairyFruitBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
+    private static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+    protected static final VoxelShape SHAPE = Block.box(2.0D, 10.0D, 2.0D, 14.0D, 16.0D, 14.0D);
+
+    public FairyFruitBlock(BlockBehaviour.Properties properties) {
+        super(properties);
+        this.registerDefaultState(this.stateDefinition.any().setValue(WATERLOGGED, false));
     }
 
-    protected int getBlocksToGrowWhenBonemealed(RandomSource pRandom) {
-        return 1;
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> p_153358_) {
+        p_153358_.add(WATERLOGGED);
     }
 
-    protected boolean canGrowInto(BlockState pState) {
-        return pState.isAir();
-    }
-
-    protected Block getBodyBlock() {
-        return ClinkerBlocks.FAIRY_FRUIT_VINE.get();
+    public FluidState getFluidState(BlockState blockState) {
+        return blockState.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(blockState);
     }
 
     @Nullable
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        BlockState blockstate = super.getStateForPlacement(context);
+        if (blockstate != null) {
+            FluidState fluidstate = context.getLevel().getFluidState(context.getClickedPos());
+            return blockstate.setValue(WATERLOGGED, fluidstate.getType() == Fluids.WATER);
+        } else {
+            return null;
+        }
+    }
+
+    public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+        BlockPos blockpos = pos.above();
+        BlockState blockstate = level.getBlockState(blockpos);
+        return blockstate.isFaceSturdy(level, blockpos, Direction.DOWN);
+    }
+
+    public VoxelShape getShape(BlockState p_153342_, BlockGetter p_153343_, BlockPos p_153344_, CollisionContext p_153345_) {
+        return SHAPE;
+    }
+
+    /**
+     * Update the provided state given the provided neighbor direction and neighbor state, returning a new state.
+     * For example, fences make their connections to the passed in state if possible, and wet concrete powder immediately
+     * returns its solidified counterpart.
+     * Note that this method should ideally consider only the specific direction passed in.
+     */
+    public BlockState updateShape(BlockState p_153351_, Direction p_153352_, BlockState p_153353_, LevelAccessor p_153354_, BlockPos p_153355_, BlockPos p_153356_) {
+        if (p_153352_ == Direction.UP && !this.canSurvive(p_153351_, p_153354_, p_153355_)) {
+            return Blocks.AIR.defaultBlockState();
+        } else {
+            if (p_153351_.getValue(WATERLOGGED)) {
+                p_153354_.scheduleTick(p_153355_, Fluids.WATER, Fluids.WATER.getTickDelay(p_153354_));
+            }
+
+            return super.updateShape(p_153351_, p_153352_, p_153353_, p_153354_, p_153355_, p_153356_);
+        }
+    }
+
+    @Override
+    public void onBlockStateChange(LevelReader level, BlockPos pos, BlockState oldState, BlockState newState) {
+        super.onBlockStateChange(level, pos, oldState, newState);
+        if (oldState.getBlock() != newState.getBlock()) {
+            if (level.getBlockEntity(pos) instanceof FairyFruitBlockEntity entity) {
+                entity.remove();
+            }
+        }
+    }
+
+    @Nullable
+    @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
         return new FairyFruitBlockEntity(pPos, pState);
     }
 
     @Nullable
+    @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> pBlockEntityType) {
-        return pLevel.isClientSide ? createTickerHelper(pBlockEntityType, ClinkerBlockEntities.FAIRY_FRUIT.get(), FairyFruitBlockEntity::tick) : null;
+        return createTickerHelper(pBlockEntityType, ClinkerBlockEntities.FAIRY_FRUIT.get(), FairyFruitBlockEntity::tick);
     }
 
-    @Nullable
-    protected static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> createTickerHelper(BlockEntityType<A> pServerType, BlockEntityType<E> pClientType, BlockEntityTicker<? super E> pTicker) {
-        return pClientType == pServerType ? (BlockEntityTicker<A>)pTicker : null;
+    public RenderShape getRenderShape(BlockState pState) {
+        return RenderShape.MODEL;
     }
 
-    public boolean triggerEvent(BlockState pState, Level pLevel, BlockPos pPos, int pId, int pParam) {
-        super.triggerEvent(pState, pLevel, pPos, pId, pParam);
-        BlockEntity blockentity = pLevel.getBlockEntity(pPos);
-        return blockentity == null ? false : blockentity.triggerEvent(pId, pParam);
-    }
 }

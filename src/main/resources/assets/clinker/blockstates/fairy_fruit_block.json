@@ -1,10 +1,5 @@
 {
-  "variants": {
-    "attached=false": [
-      {"model": "minecraft:block/air"}
-    ],
-    "attached=true": {
-      "model": "clinker:block/fairy_fruit_base"
+    "variants": {
+      "": {"model": "clinker:block/fairy_fruit_base"}
     }
-  }
 }

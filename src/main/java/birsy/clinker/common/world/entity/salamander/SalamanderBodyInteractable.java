@@ -17,7 +17,7 @@ public class SalamanderBodyInteractable extends CollidableInteractable {
     final NewSalamanderEntity.SalamanderJoint jointParent;
 
     public SalamanderBodyInteractable(NewSalamanderEntity entityParent, NewSalamanderEntity.SalamanderJoint jointParent, OBBCollisionShape shape) {
-        super(shape, true, 5.0, false);
+        super(shape, true, 5.0, 1.0, false);
         entityParent.addChild(this);
         this.entityParent = entityParent;
         this.jointParent = jointParent;

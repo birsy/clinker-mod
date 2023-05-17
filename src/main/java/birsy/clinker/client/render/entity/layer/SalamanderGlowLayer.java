@@ -20,9 +20,9 @@ public class SalamanderGlowLayer<T extends AbstractSalamanderPartEntity, M exten
 
     public SalamanderGlowLayer(RenderLayerParent<T, M> parent, ResourceLocation glow, ResourceLocation charredGlow, ResourceLocation fire) {
         super(parent);
-        this.GLOW = ClinkerRenderTypes.entityTranslucentUnlit(glow);
-        this.CHARRED_GLOW = ClinkerRenderTypes.entityTranslucentUnlit(charredGlow);
-        this.FIRE = ClinkerRenderTypes.entityTranslucentUnlit(fire);
+        this.GLOW = ClinkerRenderTypes.entityUnlitTranslucent(glow);
+        this.CHARRED_GLOW = ClinkerRenderTypes.entityUnlitTranslucent(charredGlow);
+        this.FIRE = ClinkerRenderTypes.entityUnlitTranslucent(fire);
     }
 
     @Override

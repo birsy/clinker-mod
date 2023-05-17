@@ -3,7 +3,8 @@ package birsy.clinker.common.world.level.interactable;
 import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.ClientboundInteractableAddPacket;
 import birsy.clinker.common.networking.packet.ClientboundInteractableRemovePacket;
-import birsy.clinker.common.networking.packet.ClientboundInteractableSyncPacket;
+import birsy.clinker.common.networking.packet.ClientboundInteractableShapeSyncPacket;
+import birsy.clinker.common.networking.packet.ClientboundInteractableTranslationSyncPacket;
 import birsy.clinker.common.world.level.interactable.storage.InteractableStorage;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
@@ -13,7 +14,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.SectionPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -55,7 +55,8 @@ public class InteractableManager {
         BlockPos blockPos = new BlockPos(position.x(), position.y(), position.z());
 
         LevelChunk chunk = level.getChunkAt(blockPos);
-        ClinkerPacketHandler.sendToClientsInChunk((chunk), new ClientboundInteractableAddPacket(interactable));
+        //ClinkerPacketHandler.sendToClientsInChunk((chunk), new ClientboundInteractableAddPacket(interactable));
+        ClinkerPacketHandler.sendToAllClients(new ClientboundInteractableAddPacket(interactable));
 
         try {
             serverInteractableManagers.get(level).addInteractable(interactable);
@@ -92,12 +93,7 @@ public class InteractableManager {
     }
 
     private void addInteractable(Interactable interactable) {
-        BlockPos blockPos = MathUtils.blockPosFromVec3(interactable.getTransform().getPosition());
-        if (level.isLoaded(blockPos)) {
-            this.storage.addInteractable(interactable);
-        } else {
-            Clinker.LOGGER.warn("Attempting to add interactable to unloaded chunk!");
-        }
+        this.storage.addInteractable(interactable);
     }
 
     public void tick() {
@@ -129,6 +125,12 @@ public class InteractableManager {
                         interactable.run(new InteractionInfo(interactable.uuid, InteractionInfo.Interaction.TOUCH, new InteractionContext(m.contactPointA(), m.contactPointB(), null)), entity, this.level.isClientSide());
                     }
                 }
+
+                LevelChunk chunk = level.getChunk(interactable.getSectionPosition().chunk().x, interactable.getSectionPosition().chunk().z);
+                if (interactable.shouldUpdateShape) {
+                    ClinkerPacketHandler.sendToClientsInChunk(chunk, new ClientboundInteractableShapeSyncPacket(interactable));
+                    interactable.shouldUpdateShape = false;
+                }
             }
         }
     }
@@ -139,7 +141,7 @@ public class InteractableManager {
             if (interactable.getTransform() != interactable.previousTransform) {
                 BlockPos blockPos = MathUtils.blockPosFromVec3(interactable.getTransform().getPosition());
                 LevelChunk chunk = level.getChunkAt(blockPos);
-                ClinkerPacketHandler.sendToClientsInChunk((chunk), new ClientboundInteractableSyncPacket(interactable));
+                ClinkerPacketHandler.sendToClientsInChunk((chunk), new ClientboundInteractableTranslationSyncPacket(interactable));
             }
         }
     }
@@ -163,11 +165,7 @@ public class InteractableManager {
 
     @SubscribeEvent
     public static void onLevelLoad(LevelEvent.Load event) {
-        if (clientInteractableManager == null) {
-            clientInteractableManager = new InteractableManager((Level) event.getLevel());
-        } else {
-            clientInteractableManager.level = (Level) event.getLevel();
-        }
+        clientInteractableManager = new InteractableManager((Level) event.getLevel());
     }
 
     @SubscribeEvent
@@ -208,6 +206,7 @@ public class InteractableManager {
             if (distance > entityDistance) continue;
             if (distance < closestDistance) {
                 closestInteractable = interactable;
+                closestDistance = distance;
             }
         }
 

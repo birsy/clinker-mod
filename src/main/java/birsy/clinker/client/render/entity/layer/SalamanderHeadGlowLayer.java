@@ -15,8 +15,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
 public class SalamanderHeadGlowLayer<T extends SalamanderHeadEntity, M extends SalamanderHeadModel<T>> extends RenderLayer<T, M> {
-    private static final RenderType GLOW = ClinkerRenderTypes.entityTranslucentUnlit(new ResourceLocation(Clinker.MOD_ID, "textures/entity/salamander/salamander_head/salamander_head_glow.png"));
-    private static final RenderType FIRE = ClinkerRenderTypes.entityTranslucentUnlit(new ResourceLocation(Clinker.MOD_ID, "textures/entity/salamander/salamander_head/salamander_head_fire_glow.png"));
+    private static final RenderType GLOW = ClinkerRenderTypes.entityUnlitTranslucent(new ResourceLocation(Clinker.MOD_ID, "textures/entity/salamander/salamander_head/salamander_head_glow.png"));
+    private static final RenderType FIRE = ClinkerRenderTypes.entityUnlitTranslucent(new ResourceLocation(Clinker.MOD_ID, "textures/entity/salamander/salamander_head/salamander_head_fire_glow.png"));
 
     public SalamanderHeadGlowLayer(RenderLayerParent<T, M> parent) {
         super(parent);

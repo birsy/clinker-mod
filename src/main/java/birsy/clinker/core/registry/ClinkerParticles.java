@@ -28,6 +28,7 @@ public class ClinkerParticles
 	public static final RegistryObject<SimpleParticleType> SNOOZE = createParticle("snooze");
 	public static final RegistryObject<SimpleParticleType> ASH_CLOUD = createParticle("ash_cloud");
 	public static final RegistryObject<SimpleParticleType> MOTH = createParticle("moth");
+	public static final RegistryObject<SimpleParticleType> FAIRY_FLY = createParticle("fairy_fly");
 
 	public static RegistryObject<SimpleParticleType> createParticle(String name) {
 		RegistryObject<SimpleParticleType> particle = PARTICLES.register(name, () -> new SimpleParticleType(false));
@@ -41,5 +42,7 @@ public class ClinkerParticles
 		event.register(SNOOZE.get(), SnoozeParticle.Provider::new);
 		event.register(ASH_CLOUD.get(), AshCloudParticle.Provider::new);
 		event.register(MOTH.get(), MothParticle.Provider::new);
+		event.register(FAIRY_FLY.get(), FairyFlyParticle.Provider::new);
+
 	}
 }

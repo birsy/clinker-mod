@@ -237,7 +237,6 @@ public class ClinkerBlocks
 	public static final RegistryObject<Block> TWIZZLING_VINE_PLANT = createBlock("twizzling_vine_plant", () -> new TwizzlingVinePlantBlock(BlockBehaviour.Properties.of(Material.REPLACEABLE_PLANT).noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS).offsetType(BlockBehaviour.OffsetType.XZ)), null);
 
 	public static final RegistryObject<Block> FAIRY_FRUIT_BLOCK = createBlock("fairy_fruit_block", () -> new FairyFruitBlock(BlockBehaviour.Properties.of(Material.REPLACEABLE_PLANT).noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS).lightLevel((state) -> 10)), null);
-	public static final RegistryObject<Block> FAIRY_FRUIT_VINE = createBlock("fairy_fruit_vine", () -> new FairyFruitVineBlock(BlockBehaviour.Properties.of(Material.REPLACEABLE_PLANT).noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS)), null);
 
 	//Special
 

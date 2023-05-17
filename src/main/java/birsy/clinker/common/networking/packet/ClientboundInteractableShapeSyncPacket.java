@@ -4,27 +4,28 @@ import birsy.clinker.common.world.level.interactable.Interactable;
 import birsy.clinker.common.world.level.interactable.InteractableManager;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.rigidbody.Transform;
+import birsy.clinker.core.util.rigidbody.colliders.OBBCollisionShape;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.UUID;
 
-public class ClientboundInteractableSyncPacket extends ClientboundPacket {
+public class ClientboundInteractableShapeSyncPacket extends ClientboundPacket {
     private UUID interactableID;
-    private Transform interactableTransform;
+    private OBBCollisionShape shape;
 
-    public ClientboundInteractableSyncPacket(Interactable interactable) {
+    public ClientboundInteractableShapeSyncPacket(Interactable interactable) {
         this.interactableID = interactable.uuid;
-        this.interactableTransform = interactable.getTransform();
+        this.shape = interactable.shape;
     }
 
-    public ClientboundInteractableSyncPacket(FriendlyByteBuf buffer) {
+    public ClientboundInteractableShapeSyncPacket(FriendlyByteBuf buffer) {
         long[] bits = buffer.readLongArray();
         this.interactableID = new UUID(bits[0], bits[1]);
 
         CompoundTag tag = buffer.readNbt();
-        this.interactableTransform = Transform.fromNBT(tag);
+        this.shape = (OBBCollisionShape) new OBBCollisionShape(0, 0, 0).deserialize(tag);
     }
 
     @Override
@@ -32,7 +33,7 @@ public class ClientboundInteractableSyncPacket extends ClientboundPacket {
         long[] bits = {interactableID.getMostSignificantBits(), interactableID.getLeastSignificantBits()};
         buffer.writeLongArray(bits);
 
-        buffer.writeNbt(interactableTransform.serialize());
+        buffer.writeNbt(shape.serialize());
     }
 
     @Override
@@ -43,6 +44,6 @@ public class ClientboundInteractableSyncPacket extends ClientboundPacket {
             Clinker.LOGGER.warn("No interactable with UUID " + this.interactableID + " found on client!");
             return;
         }
-        interactable.setTransform(this.interactableTransform);
+        interactable.shape = this.shape;
     }
 }

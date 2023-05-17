@@ -5,7 +5,6 @@ import birsy.clinker.core.Clinker;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
@@ -34,36 +33,18 @@ public class ClinkerPacketHandler {
     public static void registerPackets() {
         NETWORK.registerMessage(createId(), ClientboundInteractableAddPacket.class, ClientboundInteractableAddPacket::toBytes, ClientboundInteractableAddPacket::new, ClientboundInteractableAddPacket::handle);
         NETWORK.registerMessage(createId(), ClientboundInteractableRemovePacket.class, ClientboundInteractableRemovePacket::toBytes, ClientboundInteractableRemovePacket::new, ClientboundInteractableRemovePacket::handle);
-        NETWORK.registerMessage(createId(), ClientboundInteractableSyncPacket.class, ClientboundInteractableSyncPacket::toBytes, ClientboundInteractableSyncPacket::new, ClientboundInteractableSyncPacket::handle);
+        NETWORK.registerMessage(createId(), ClientboundInteractableTranslationSyncPacket.class, ClientboundInteractableTranslationSyncPacket::toBytes, ClientboundInteractableTranslationSyncPacket::new, ClientboundInteractableTranslationSyncPacket::handle);        NETWORK.registerMessage(createId(), ClientboundInteractableTranslationSyncPacket.class, ClientboundInteractableTranslationSyncPacket::toBytes, ClientboundInteractableTranslationSyncPacket::new, ClientboundInteractableTranslationSyncPacket::handle);
+        NETWORK.registerMessage(createId(), ClientboundInteractableShapeSyncPacket.class, ClientboundInteractableShapeSyncPacket::toBytes, ClientboundInteractableShapeSyncPacket::new, ClientboundInteractableShapeSyncPacket::handle);
         NETWORK.registerMessage(createId(), ServerboundInteractableInteractionPacket.class, ServerboundInteractableInteractionPacket::toBytes, ServerboundInteractableInteractionPacket::new, ServerboundInteractableInteractionPacket::handle);
+
         NETWORK.registerMessage(createId(), ClientboundSalamanderSyncPacket.class, ClientboundSalamanderSyncPacket::toBytes, ClientboundSalamanderSyncPacket::new, ClientboundSalamanderSyncPacket::handle);
         NETWORK.registerMessage(createId(), ClientboundPushPacket.class, ClientboundPushPacket::toBytes, ClientboundPushPacket::new, ClientboundPushPacket::handle);
 
+        NETWORK.registerMessage(createId(), ClientboundFairyFruitSyncPacket.class, ClientboundFairyFruitSyncPacket::toBytes, ClientboundFairyFruitSyncPacket::new, ClientboundFairyFruitSyncPacket::handle);
+        NETWORK.registerMessage(createId(), ClientboundFairyFruitGrowPacket.class, ClientboundFairyFruitGrowPacket::toBytes, buffer -> new ClientboundFairyFruitGrowPacket(buffer), ClientboundFairyFruitGrowPacket::handle);
+        NETWORK.registerMessage(createId(), ClientboundFairyFruitBreakPacket.class, ClientboundFairyFruitBreakPacket::toBytes, ClientboundFairyFruitBreakPacket::new, ClientboundFairyFruitBreakPacket::handle);
 
         Clinker.LOGGER.info("REGISTERED PACKETS!!!");
-        /*NETWORK.messageBuilder(ClientboundInteractableAddPacket.class, createId(), NetworkDirection.PLAY_TO_CLIENT)
-                .decoder(ClientboundInteractableAddPacket::new)
-                .encoder(ClientboundInteractableAddPacket::toBytes)
-                .consumerMainThread(ClientboundInteractableAddPacket::handle)
-                .add();
-
-        NETWORK.messageBuilder(ClientboundInteractableRemovePacket.class, createId(), NetworkDirection.PLAY_TO_CLIENT)
-                .decoder(ClientboundInteractableRemovePacket::new)
-                .encoder(ClientboundInteractableRemovePacket::toBytes)
-                .consumerMainThread(ClientboundInteractableRemovePacket::handle)
-                .add();
-
-        NETWORK.messageBuilder(ClientboundInteractableSyncPacket.class, createId(), NetworkDirection.PLAY_TO_CLIENT)
-                .decoder(ClientboundInteractableSyncPacket::new)
-                .encoder(ClientboundInteractableSyncPacket::toBytes)
-                .consumerMainThread(ClientboundInteractableSyncPacket::handle)
-                .add();
-
-        NETWORK.messageBuilder(ServerboundInteractableInteractionPacket.class, createId(), NetworkDirection.PLAY_TO_SERVER)
-                .decoder(ServerboundInteractableInteractionPacket::new)
-                .encoder(ServerboundInteractableInteractionPacket::toBytes)
-                .consumerMainThread(ServerboundInteractableInteractionPacket::handle)
-                .add();*/
     }
 
     public static <M> void sendToServer(M packet) {

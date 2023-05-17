@@ -2,35 +2,33 @@ package birsy.clinker.common.world.level.interactable;
 
 import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.ServerboundInteractableInteractionPacket;
-import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.rigidbody.colliders.OBBCollisionShape;
 import birsy.clinker.core.util.rigidbody.gjkepa.GJKEPA;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.UUID;
 
 public class CollidableInteractable extends Interactable {
-    private double mass;
-    private boolean reacts;
+    protected double mass;
+    protected double reactionStrength;
+    protected boolean reacts;
 
-    public CollidableInteractable(OBBCollisionShape shape, boolean reacts, double mass, boolean outline) {
+    public CollidableInteractable(OBBCollisionShape shape, boolean reacts, double mass, double reactionStrength, boolean outline) {
         super(shape, outline);
         this.mass = mass;
+        this.reactionStrength = reactionStrength;
         this.reacts = reacts;
     }
 
-    public CollidableInteractable(OBBCollisionShape shape, boolean reacts, double mass, UUID uuid, boolean outline) {
+    public CollidableInteractable(OBBCollisionShape shape, boolean reacts, double mass, double reactionStrength, UUID uuid, boolean outline) {
         super(shape, uuid, outline);
         this.mass = mass;
+        this.reactionStrength = reactionStrength;
         this.reacts = reacts;
     }
 
@@ -102,15 +100,15 @@ public class CollidableInteractable extends Interactable {
                         if (!cI.reacts) {
                             velocityVector = velocityVector.add(m.normal().scale(m.depth()));
                         } else {
-                            double interactableMass = 8.0;
+                            double interactableMass = cI.mass;
                             double entityMass = entity.getBbHeight() * entity.getBbWidth() * entity.getBbWidth();
                             double totalMass = entityMass + interactableMass;
 
                             double collisionDepth = m.depth();
                             Vec3 collisionDirection = m.normal();
 
-                            Vec3 entityMovement = collisionDirection.scale(collisionDepth * (interactableMass / totalMass));
-                            Vec3 thisMovement = collisionDirection.scale(-collisionDepth * (entityMass / totalMass));
+                            Vec3 entityMovement = collisionDirection.scale(collisionDepth * (interactableMass / totalMass)).scale(cI.reactionStrength);
+                            Vec3 thisMovement = collisionDirection.scale(-collisionDepth * (entityMass / totalMass)).scale(cI.reactionStrength);
 
                             velocityVector = velocityVector.add(entityMovement);
                             cI.push(thisMovement);
@@ -134,6 +132,7 @@ public class CollidableInteractable extends Interactable {
         tag.putUUID("uuid", this.uuid);
         tag.putDouble("mass", this.mass);
         tag.putBoolean("reacts", this.reacts);
+        tag.putDouble("reactionStrength", this.reactionStrength);
         tag.putBoolean("outline", this.hasOutline);
         tag.putString("name", this.getClass().getName());
         this.shape.serialize(tag);
@@ -143,6 +142,6 @@ public class CollidableInteractable extends Interactable {
 
     @Override
     public <I extends Interactable> I reconstructOnClient(CompoundTag tag) {
-        return (I) new CollidableInteractable((OBBCollisionShape) new OBBCollisionShape(0, 0, 0).deserialize(tag), tag.getBoolean("reacts"), tag.getDouble("mass"), tag.getUUID("uuid"), tag.getBoolean("outline"));
+        return (I) new CollidableInteractable((OBBCollisionShape) new OBBCollisionShape(0, 0, 0).deserialize(tag), tag.getBoolean("reacts"), tag.getDouble("mass"), tag.getDouble("reactionStrength"), tag.getUUID("uuid"), tag.getBoolean("outline"));
     }
 }
