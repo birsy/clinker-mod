@@ -20,10 +20,10 @@ public class OBBCollisionShape implements ICollisionShape {
         this.size = new Vec3(sizeX, sizeY, sizeZ);
         this.transform = new Transform();
 
-        calculateVertices();
+        recalculateVertices();
     }
 
-    private void calculateVertices() {
+    public void recalculateVertices() {
         this.vertices = new Vec3[8];
         this.vertices[0] = new Vec3(-size.x, -size.y, -size.z);
         this.vertices[1] = new Vec3( size.x, -size.y, -size.z);
@@ -180,7 +180,7 @@ public class OBBCollisionShape implements ICollisionShape {
 
         CompoundTag sizeTag = tag.getCompound("size");
         this.size = new Vec3(sizeTag.getDouble("x"), sizeTag.getDouble("y"), sizeTag.getDouble("z"));
-        this.calculateVertices();
+        this.recalculateVertices();
         return this;
     }
 }

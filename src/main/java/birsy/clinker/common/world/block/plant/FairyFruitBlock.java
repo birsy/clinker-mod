@@ -1,10 +1,12 @@
 package birsy.clinker.common.world.block.plant;
 
-import birsy.clinker.common.world.block.blockentity.FairyFruitBlockEntity;
+import birsy.clinker.common.world.block.blockentity.fairyfruit.FairyFruitBlockEntity;
+import birsy.clinker.common.world.block.blockentity.fairyfruit.FairyFruitSegment;
 import birsy.clinker.core.registry.ClinkerBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -26,7 +28,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
 
-public class FairyFruitBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
+public class FairyFruitBlock extends BaseEntityBlock implements SimpleWaterloggedBlock, BonemealableBlock {
     private static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     protected static final VoxelShape SHAPE = Block.box(2.0D, 10.0D, 2.0D, 14.0D, 16.0D, 14.0D);
 
@@ -60,6 +62,19 @@ public class FairyFruitBlock extends BaseEntityBlock implements SimpleWaterlogge
         return blockstate.isFaceSturdy(level, blockpos, Direction.DOWN);
     }
 
+    public boolean isValidBonemealTarget(BlockGetter pLevel, BlockPos pPos, BlockState pState, boolean pIsClient) {
+        return pLevel.getBlockEntity(pPos) instanceof FairyFruitBlockEntity;
+    }
+
+    public boolean isBonemealSuccess(Level pLevel, RandomSource pRandom, BlockPos pPos, BlockState pState) {
+        if (pLevel.getBlockEntity(pPos) instanceof FairyFruitBlockEntity entity) return entity.canGrow;
+        return false;
+    }
+
+    public void performBonemeal(ServerLevel pLevel, RandomSource pRandom, BlockPos pPos, BlockState pState) {
+        if (pLevel.getBlockEntity(pPos) instanceof FairyFruitBlockEntity entity) entity.useBoneMeal();
+    }
+
     public VoxelShape getShape(BlockState p_153342_, BlockGetter p_153343_, BlockPos p_153344_, CollisionContext p_153345_) {
         return SHAPE;
     }
@@ -83,13 +98,14 @@ public class FairyFruitBlock extends BaseEntityBlock implements SimpleWaterlogge
     }
 
     @Override
-    public void onBlockStateChange(LevelReader level, BlockPos pos, BlockState oldState, BlockState newState) {
-        super.onBlockStateChange(level, pos, oldState, newState);
-        if (oldState.getBlock() != newState.getBlock()) {
-            if (level.getBlockEntity(pos) instanceof FairyFruitBlockEntity entity) {
-                entity.remove();
+    public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
+        if (pLevel.getBlockEntity(pPos) instanceof FairyFruitBlockEntity entity) {
+            for (FairyFruitSegment segment : entity.segments) {
+                segment.addDestroyEffects();
             }
+            entity.remove();
         }
+        super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
     }
 
     @Nullable

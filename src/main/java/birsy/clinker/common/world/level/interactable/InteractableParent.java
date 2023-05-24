@@ -12,7 +12,9 @@ public interface InteractableParent {
     /**
      * Clears interactables that this object has created.
      */
-    void clearChildren();
+    default void clearChildren() {
+        this.getChildInteractables().clear();
+    }
 
     /**
      * Called when the object is destroyed. Marks all child interactables to be cleared next tick.

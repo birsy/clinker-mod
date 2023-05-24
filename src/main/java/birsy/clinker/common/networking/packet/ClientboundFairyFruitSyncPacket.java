@@ -1,6 +1,6 @@
 package birsy.clinker.common.networking.packet;
 
-import birsy.clinker.common.world.block.blockentity.FairyFruitBlockEntity;
+import birsy.clinker.common.world.block.blockentity.fairyfruit.FairyFruitBlockEntity;
 import birsy.clinker.core.Clinker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;

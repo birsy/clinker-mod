@@ -1,8 +1,6 @@
 package birsy.clinker.common.world.level.interactable;
 
-import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.core.Clinker;
-import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.core.util.Quaterniond;
 import birsy.clinker.core.util.rigidbody.Transform;
 import birsy.clinker.core.util.rigidbody.colliders.OBBCollisionShape;
@@ -10,13 +8,10 @@ import com.mojang.math.Quaternion;
 import net.minecraft.core.SectionPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.Constructor;
 import java.util.Optional;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 public abstract class Interactable {
@@ -50,7 +45,7 @@ public abstract class Interactable {
         this.uuid = null;
     }
 
-    protected void tick() {
+    protected void tick(boolean clientside) {
         this.previousTransform = this.getTransform().copy();
     }
 
@@ -230,10 +225,12 @@ public abstract class Interactable {
         try {
             Class clazz =  Class.forName(tag.getString("name"));
             Object dummy = clazz.getConstructor().newInstance();
+            Clinker.LOGGER.info(clazz);
+            Clinker.LOGGER.info(clazz.getMethod("reconstructOnClient", CompoundTag.class));
             return (I) clazz.getMethod("reconstructOnClient", CompoundTag.class).invoke(dummy, tag);
         } catch (Exception e) {
             Clinker.LOGGER.warn("Deserialization of Interactable " + tag.getUUID("uuid") + " failed!");
-            Clinker.LOGGER.warn(e);
+            Clinker.LOGGER.warn(e.getMessage());
         }
 
         return null;

@@ -2,8 +2,11 @@ package birsy.clinker.client.render.world.blockentity;
 
 import birsy.clinker.client.render.ClinkerRenderTypes;
 import birsy.clinker.client.render.entity.model.base.BasicModelPart;
-import birsy.clinker.common.world.block.blockentity.FairyFruitBlockEntity;
+import birsy.clinker.common.world.block.blockentity.fairyfruit.FairyFruitBlockEntity;
+import birsy.clinker.common.world.block.blockentity.fairyfruit.FairyFruitJoint;
+import birsy.clinker.common.world.block.blockentity.fairyfruit.FairyFruitSegment;
 import birsy.clinker.core.Clinker;
+import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.core.util.Quaterniond;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -22,6 +25,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.LightLayer;
+import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.function.Function;
@@ -38,7 +42,6 @@ public class FairyFruitRenderer<T extends FairyFruitBlockEntity> implements Bloc
         this.fruitModel = new FairyFruitModel(ClinkerRenderTypes::entityUnlitTranslucent);
         this.fruitModel.leaf1.visible = false;
         this.fruitModel.leaf2.visible = false;
-        this.fruitModel.bud.visible = false;
     }
 
     @Override
@@ -50,70 +53,78 @@ public class FairyFruitRenderer<T extends FairyFruitBlockEntity> implements Bloc
     public void render(T pBlockEntity, float pPartialTick, PoseStack pPoseStack, MultiBufferSource pBufferSource, int pPackedLight, int pPackedOverlay) {
         if (pBlockEntity.segments.isEmpty()) return;
         Vec3 parentPosition = new Vec3(pBlockEntity.getBlockPos().getX(), pBlockEntity.getBlockPos().getY(), pBlockEntity.getBlockPos().getZ());
+        Vec3 forward = FairyFruitBlockEntity.ORIENTATION_FORWARD;
         float totalLength = pBlockEntity.getBlockPos().hashCode() % Mth.PI;
         VertexConsumer consumer = pBufferSource.getBuffer(RenderType.entityCutout(TEXTURE));
         pPoseStack.pushPose();
 
+        int fruitLight = 15;
+
         for (int i = 0; i < pBlockEntity.segments.size(); i++) {
-            FairyFruitBlockEntity.FairyFruitSegment segment = pBlockEntity.segments.get(i);
-            Vec3 pos1 = segment.topJoint.getPosition(pPartialTick).subtract(parentPosition);
-            Vec3 pos2 = segment.bottomJoint.getPosition(pPartialTick).subtract(parentPosition);
-            //DebugRenderUtil.renderLine(pPoseStack, pBufferSource.getBuffer(RenderType.LINES), pos1.x(), pos1.y(), pos1.z(), pos2.x(), pos2.y(), pos2.z(), 1, 0, 1, 1);
+            FairyFruitSegment segment = pBlockEntity.segments.get(i);
+            if (segment.shouldBeRemoved) break;
+            Vec3 topPos = segment.getTopJoint().getClientPosition(pPartialTick).subtract(parentPosition);
+            Vec3 bottomPos = segment.getBottomJoint().getClientPosition(pPartialTick).subtract(parentPosition);
+            //DebugRenderUtil.renderLine(pPoseStack, pBufferSource.getBuffer(RenderType.LINES), topPos.x(), topPos.y(), topPos.z(), bottomPos.x(), bottomPos.y(), bottomPos.z(), 1, 0, 1, 1);
 
             if (segment.isTip()) {
-                consumer = pBufferSource.getBuffer(ClinkerRenderTypes.entityUnlitTranslucent(TEXTURE));
+                FairyFruitJoint.FruitStage stage = segment.getBottomJoint().getFruitStage();
+                consumer = pBufferSource.getBuffer(ClinkerRenderTypes.entityUnlitTranslucent(new ResourceLocation("")));
 
                 pPoseStack.pushPose();
 
-                Vec3 fruitPos = pos1;
+                Vec3 fruitPos = topPos;
 
                 pPoseStack.translate(fruitPos.x(), fruitPos.y(), fruitPos.z());
 
                 pPoseStack.pushPose();
-                pPoseStack.mulPose(i > 1 ? pBlockEntity.segments.get(i - 1).getOrientation(pPartialTick).toMojangQuaternion() : segment.topJoint.getOrientation(pPartialTick).toMojangQuaternion());
+                pPoseStack.mulPose(i > 1 ? pBlockEntity.segments.get(i - 1).getOrientation(pPartialTick, forward).toMojangQuaternion() : segment.getTopJoint().getOrientation(pPartialTick).toMojangQuaternion());
                 pPoseStack.scale(-1.0F, -1.0F, 1.0F);
 
                 BlockPos bPos = pBlockEntity.getBlockPos().offset(fruitPos.x() + 0.5, fruitPos.y(), fruitPos.z() + 0.5);
-                int light = LightTexture.pack(15, pBlockEntity.getLevel().getBrightness(LightLayer.SKY,bPos));
+                int light = stage == FairyFruitJoint.FruitStage.FRUIT ? LightTexture.pack(fruitLight, pBlockEntity.getLevel().getBrightness(LightLayer.SKY,bPos)) :
+                        LightTexture.pack(pBlockEntity.getLevel().getBrightness(LightLayer.BLOCK, bPos), pBlockEntity.getLevel().getBrightness(LightLayer.SKY,bPos));
+
                 leavesModel.bud.visible = false;
+                this.leavesModel.leaf1.visible = false;
+                this.leavesModel.leaf2.visible = false;
+                this.leavesModel.root1.visible = true;
+                this.leavesModel.root2.visible = true;
                 leavesModel.renderToBuffer(pPoseStack, consumer, light, pPackedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
                 pPoseStack.popPose();
 
                 pPoseStack.pushPose();
-                pPoseStack.mulPose(segment.topJoint.getOrientation(pPartialTick).toMojangQuaternion());
-                pPoseStack.mulPose(Vector3f.YN.rotation((float) segment.bottomJoint.roll));
+                pPoseStack.mulPose(segment.getTopJoint().getOrientation(pPartialTick).toMojangQuaternion());
                 pPoseStack.scale(-1.0F, -1.0F, 1.0F);
 
+                this.fruitModel.setVisibility(stage);
                 fruitModel.renderToBuffer(pPoseStack, consumer, light, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
                 pPoseStack.popPose();
 
                 pPoseStack.popPose();
             } else {
                 boolean lowGlow = false;
-                Quaterniond topOrientation = segment.topJoint.getOrientation(pPartialTick);
-                Quaterniond bottomOrientation = segment.bottomJoint.getOrientation(pPartialTick);
+                Quaterniond topOrientation = segment.getTopJoint().getOrientation(pPartialTick);
+                Quaterniond bottomOrientation = segment.getBottomJoint().getOrientation(pPartialTick);
                 if (i + 1 < pBlockEntity.segments.size()) {
-                    FairyFruitBlockEntity.FairyFruitSegment nextSegment = pBlockEntity.segments.get(i + 1);
-                    lowGlow = nextSegment.isTip();
+                    FairyFruitSegment nextSegment = pBlockEntity.segments.get(i + 1);
+                    lowGlow = nextSegment.isTip() && nextSegment.getBottomJoint().getFruitStage() == FairyFruitJoint.FruitStage.FRUIT;
                 }
-                drawVineBetweenPoints(pBlockEntity, pos1, topOrientation.toMojangQuaternion(),
-                        pos2, bottomOrientation.toMojangQuaternion(),
-                        totalLength, totalLength += segment.length, consumer, pPoseStack, pPackedLight, pPackedOverlay, lowGlow);
+                drawVineBetweenPoints(pBlockEntity, topPos, topOrientation.toMojangQuaternion(),
+                        bottomPos, bottomOrientation.toMojangQuaternion(),
+                        totalLength, totalLength += segment.getLength(pPartialTick), consumer, pPoseStack, pPackedLight, pPackedOverlay, lowGlow, fruitLight);
             }
         }
 
-        for (FairyFruitBlockEntity.FairyFruitSegment segment : pBlockEntity.segments) {
-
-        }
         pPoseStack.popPose();
 
         /*for (FairyFruitBlockEntity.FairyFruitJoint joint : pBlockEntity.joints) {
-            Vec3 jPos = joint.getPosition(pPartialTick).subtract(parentPosition);
+            Vec3 jPos = joint.getClientPosition(pPartialTick).subtract(parentPosition);
             DebugRenderUtil.renderSphere(pPoseStack, pBufferSource.getBuffer(RenderType.LINES), 32, (float)joint.radius, jPos.x, jPos.y, jPos.z, 0.2F, 0.2F, 0.8F, 0.6F);
         }*/
     }
 
-    private void drawVineBetweenPoints(T entity, Vec3 point1, Quaternion point1Rotation, Vec3 point2, Quaternion point2Rotation, float uvOffset0, float uvOffset1, VertexConsumer buffer, PoseStack stack, int packedLight, int packedOverlay, boolean lowGlow) {
+    private void drawVineBetweenPoints(T entity, Vec3 point1, Quaternion point1Rotation, Vec3 point2, Quaternion point2Rotation, float uvOffset0, float uvOffset1, VertexConsumer buffer, PoseStack stack, int packedLight, int packedOverlay, boolean lowGlow, int fruitLight) {
         Matrix4f matrix = stack.last().pose();
         float thickness = ((8.0F / 16.0F) * 0.5F) / Mth.sqrt(2);
 
@@ -123,10 +134,8 @@ public class FairyFruitRenderer<T extends FairyFruitBlockEntity> implements Bloc
         int light2 = packedLight;
         if (entity.hasLevel()) {
             light1 = LightTexture.pack(entity.getLevel().getBrightness(LightLayer.BLOCK, samplePos1), entity.getLevel().getBrightness(LightLayer.SKY, samplePos1));
-            light2 = LightTexture.pack(lowGlow ? 15 : entity.getLevel().getBrightness(LightLayer.BLOCK, samplePos2), entity.getLevel().getBrightness(LightLayer.SKY, samplePos2));
+            light2 = LightTexture.pack(lowGlow ? fruitLight : entity.getLevel().getBrightness(LightLayer.BLOCK, samplePos2), entity.getLevel().getBrightness(LightLayer.SKY, samplePos2));
         }
-        
-        float n = Mth.sqrt(2);
 
         Vector3f normal = new Vector3f(0, 1, 0);
 
@@ -211,12 +220,25 @@ public class FairyFruitRenderer<T extends FairyFruitBlockEntity> implements Bloc
     public static class FairyFruitModel extends Model {
         public final BasicModelPart fruit;
         public final BasicModelPart bud;
+        public final BasicModelPart root1;
+        public final BasicModelPart root2;
+
         public final BasicModelPart leaf1;
         public final BasicModelPart leaf2;
+
         public FairyFruitModel(Function<ResourceLocation, RenderType> pRenderType) {
             super(pRenderType);
             this.fruit = new BasicModelPart(BasicModelPart.toCubeList(CubeListBuilder.create().texOffs(8, 0).addBox(-3.0F, 0.0F, -3.0F, 6.0F, 7.0F, 6.0F), 32, 32));
+
             this.bud = new BasicModelPart(BasicModelPart.toCubeList(CubeListBuilder.create().texOffs(8, 22).addBox(-2.0F, 0.0F, -2.0F, 4.0F, 5.0F, 4.0F), 32, 32));
+
+            this.root1 = new BasicModelPart(BasicModelPart.toCubeList(CubeListBuilder.create().texOffs(26, 24).addBox(-5.0F, -8.0F, 0.0F, 4.0F, 5.0F, 0.0F), 32, 32));
+            //this.root1.yRot = 0.7854F;
+            //this.root1.yRotInit = 0.7854F;
+            this.root2 = new BasicModelPart(BasicModelPart.toCubeList(CubeListBuilder.create().texOffs(26, 24).addBox(-5.0F, -8.0F, 0.0F, 4.0F, 5.0F, 0.0F), 32, 32));
+            //this.root2.yRot = -0.7854F;
+            //this.root2.yRotInit = -0.7854F;
+
             this.leaf1 = new BasicModelPart(BasicModelPart.toCubeList(CubeListBuilder.create().texOffs(8, 13).addBox(-5.0F, -8.0F, 0.0F, 10.0F, 9.0F, 0.0F), 32, 32));
             this.leaf2 = new BasicModelPart(BasicModelPart.toCubeList(CubeListBuilder.create().texOffs(8, 3).addBox(0.0F, -8.0F, -5.0F, 0.0F, 9.0F, 10.0F), 32, 32));
         }
@@ -227,6 +249,26 @@ public class FairyFruitRenderer<T extends FairyFruitBlockEntity> implements Bloc
             this.bud.render(pPoseStack, pBuffer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
             this.leaf1.render(pPoseStack, pBuffer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
             this.leaf2.render(pPoseStack, pBuffer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
+        }
+
+        public void setVisibility(FairyFruitJoint.FruitStage stage) {
+            this.fruit.visible = false;
+            this.bud.visible   = false;
+            this.root1.visible = false;
+            this.root2.visible = false;
+
+            switch (stage) {
+                case ROOT:
+                    this.root1.visible = true;
+                    this.root2.visible = true;
+                    break;
+                case BUD:
+                    this.bud.visible = true;
+                    break;
+                case FRUIT:
+                    this.fruit.visible = true;
+                    break;
+            }
         }
     }
 }

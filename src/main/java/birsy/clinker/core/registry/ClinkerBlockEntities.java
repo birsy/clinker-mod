@@ -5,7 +5,7 @@ import birsy.clinker.client.render.world.blockentity.FairyFruitRenderer;
 import birsy.clinker.client.render.world.blockentity.FermentationBarrelRenderer;
 import birsy.clinker.client.render.world.blockentity.SarcophagusInnardsRenderer;
 import birsy.clinker.common.world.block.blockentity.CounterBlockEntity;
-import birsy.clinker.common.world.block.blockentity.FairyFruitBlockEntity;
+import birsy.clinker.common.world.block.blockentity.fairyfruit.FairyFruitBlockEntity;
 import birsy.clinker.common.world.block.blockentity.FermentationBarrelBlockEntity;
 import birsy.clinker.common.world.block.blockentity.SarcophagusBlockEntity;
 import birsy.clinker.core.Clinker;

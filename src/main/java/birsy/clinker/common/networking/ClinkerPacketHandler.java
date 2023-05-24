@@ -43,6 +43,8 @@ public class ClinkerPacketHandler {
         NETWORK.registerMessage(createId(), ClientboundFairyFruitSyncPacket.class, ClientboundFairyFruitSyncPacket::toBytes, ClientboundFairyFruitSyncPacket::new, ClientboundFairyFruitSyncPacket::handle);
         NETWORK.registerMessage(createId(), ClientboundFairyFruitGrowPacket.class, ClientboundFairyFruitGrowPacket::toBytes, buffer -> new ClientboundFairyFruitGrowPacket(buffer), ClientboundFairyFruitGrowPacket::handle);
         NETWORK.registerMessage(createId(), ClientboundFairyFruitBreakPacket.class, ClientboundFairyFruitBreakPacket::toBytes, ClientboundFairyFruitBreakPacket::new, ClientboundFairyFruitBreakPacket::handle);
+        NETWORK.registerMessage(createId(), ClientboundFairyFruitRemovalPacket.class, ClientboundFairyFruitRemovalPacket::toBytes, ClientboundFairyFruitRemovalPacket::new, ClientboundFairyFruitRemovalPacket::handle);
+
 
         Clinker.LOGGER.info("REGISTERED PACKETS!!!");
     }

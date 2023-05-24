@@ -74,7 +74,6 @@ public class InteractableManager {
     public static void addClientsideInteractable(Interactable interactable) {
         try {
             clientInteractableManager.addInteractable(interactable);
-            Clinker.LOGGER.info("added clientside interactable!");
         } catch (NullPointerException e) {
             Clinker.LOGGER.warn("clientInteractableManager not yet initialized!");
         }
@@ -82,7 +81,7 @@ public class InteractableManager {
 
 
     public final InteractableStorage storage;
-    private Level level;
+    public Level level;
     private int ticks;
 
     public List<ChunkPos> chunksIntersectedWithRay = new ArrayList<>();
@@ -103,9 +102,8 @@ public class InteractableManager {
         }
 
         for(Interactable interactable : storage.getAllInteractables()) {
-            interactable.tick();
+            interactable.tick(level.isClientSide);
             if (interactable.shouldBeRemoved) {
-                Clinker.LOGGER.info("attempting removal of " + interactable.uuid);
                 storage.removeInteractable(interactable.uuid);
                 if (!level.isClientSide) {
                     LevelChunk chunk = level.getChunk(interactable.getSectionPosition().chunk().x, interactable.getSectionPosition().chunk().z);
@@ -125,12 +123,6 @@ public class InteractableManager {
                         interactable.run(new InteractionInfo(interactable.uuid, InteractionInfo.Interaction.TOUCH, new InteractionContext(m.contactPointA(), m.contactPointB(), null)), entity, this.level.isClientSide());
                     }
                 }
-
-                LevelChunk chunk = level.getChunk(interactable.getSectionPosition().chunk().x, interactable.getSectionPosition().chunk().z);
-                if (interactable.shouldUpdateShape) {
-                    ClinkerPacketHandler.sendToClientsInChunk(chunk, new ClientboundInteractableShapeSyncPacket(interactable));
-                    interactable.shouldUpdateShape = false;
-                }
             }
         }
     }
@@ -138,10 +130,15 @@ public class InteractableManager {
     private void serverTick() {
         // if an interactable has been moved, send that information to the client.
         for (Interactable interactable : storage.getAllInteractables()) {
+            BlockPos blockPos = MathUtils.blockPosFromVec3(interactable.getTransform().getPosition());
+            LevelChunk chunk = level.getChunkAt(blockPos);
+
             if (interactable.getTransform() != interactable.previousTransform) {
-                BlockPos blockPos = MathUtils.blockPosFromVec3(interactable.getTransform().getPosition());
-                LevelChunk chunk = level.getChunkAt(blockPos);
                 ClinkerPacketHandler.sendToClientsInChunk((chunk), new ClientboundInteractableTranslationSyncPacket(interactable));
+            }
+            if (interactable.shouldUpdateShape) {
+                ClinkerPacketHandler.sendToClientsInChunk(chunk, new ClientboundInteractableShapeSyncPacket(interactable));
+                interactable.shouldUpdateShape = false;
             }
         }
     }

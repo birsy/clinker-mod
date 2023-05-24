@@ -44,7 +44,6 @@ public class Clinker
         ClinkerBlocks.BLOCK_ITEMS.register(modEventBus);
         ClinkerWorld.CHUNK_GENERATORS.register(modEventBus);
         ClinkerBlockEntities.BLOCK_ENTITY_TYPES.register(modEventBus);
-        Clinker.LOGGER.info("block entities setup!");
         ClinkerEntities.ENTITY_TYPES.register(modEventBus);
         ClinkerFeatures.FEATURES.register(modEventBus);
         //ClinkerElements.ELEMENTS.register(modEventBus);
