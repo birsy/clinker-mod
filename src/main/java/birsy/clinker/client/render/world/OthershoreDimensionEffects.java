@@ -343,11 +343,6 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
             float dist = Mth.sqrt((x1 - x2) * (x1 - x2) + (z1 - z2) * (z1 - z2));
             float uvRatio = dist / ringHeight;
 
-            /*int uOffset = (int) (cameraDistance * 512);
-            float segU1 = (float)(segment + uOffset) % resolution;
-            float segU2 = segU1 + 1.0F;
-            float u1 = uvOffset + (segU1 * uvRatio);
-            float u2 = uvOffset + (segU2 * uvRatio); //nothing changes new years day!*/
             u1 = (segment * uvRatio);
             u2 = ((segment + 1) * uvRatio);
             bufferBuilder.vertex(matrix, x1, - ringOffset, z1).color(bottomR, bottomG, bottomB, bottomA).uv(u1, 0.0F - uvSquish).endVertex();

@@ -1,0 +1,49 @@
+{
+	"parent": "minecraft:block/block",
+	"textures": {
+		"stove_chimney": "clinker:block/stove_chimney_double",
+		"particle": "clinker:block/stove_chimney_particle"
+	},
+	"elements": [
+		{
+			"from": [1, 0, 1],
+			"to": [16, 16, 4],
+			"faces": {
+				"north": {"uv": [2.25, 0.75, 4.125, 4.75], "texture": "#stove_chimney"},
+				"south": {"uv": [4.5, 0.75, 6.375, 4.75], "texture": "#stove_chimney"},
+				"west": {"uv": [4.125, 0.75, 4.5, 4.75], "texture": "#stove_chimney"},
+				"up": {"uv": [4.125, 0.75, 2.25, 0], "texture": "#stove_chimney", "cullface": "up"},
+				"down": {"uv": [7.875, 0, 6, 0.75], "texture": "#stove_chimney", "cullface": "down"}
+			}
+		},
+		{
+			"from": [1, 0, 12],
+			"to": [16, 16, 15],
+			"faces": {
+				"north": {"uv": [2.25, 5.5, 4.125, 9.5], "texture": "#stove_chimney"},
+				"south": {"uv": [4.5, 5.5, 6.375, 9.5], "texture": "#stove_chimney"},
+				"west": {"uv": [4.125, 5.5, 4.5, 9.5], "texture": "#stove_chimney"},
+				"up": {"uv": [4.125, 5.5, 2.25, 4.75], "texture": "#stove_chimney", "cullface": "up"},
+				"down": {"uv": [7.875, 4.75, 6, 5.5], "texture": "#stove_chimney", "cullface": "down"}
+			}
+		},
+		{
+			"from": [1, 0, 4],
+			"to": [5, 16, 12],
+			"faces": {
+				"east": {"uv": [8.25, 8, 9.25, 12], "texture": "#stove_chimney"},
+				"west": {"uv": [9.75, 8, 10.75, 12], "texture": "#stove_chimney"},
+				"up": {"uv": [9.75, 8, 9.25, 6], "texture": "#stove_chimney", "cullface": "up"},
+				"down": {"uv": [10.25, 6, 9.75, 8], "texture": "#stove_chimney", "cullface": "down"}
+			}
+		}
+	],
+	"groups": [
+		{
+			"name": "chimney right",
+			"origin": [8, 8, 8],
+			"color": 0,
+			"children": [0, 1, 2]
+		}
+	]
+}

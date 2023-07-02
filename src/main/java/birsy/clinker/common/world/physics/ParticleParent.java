@@ -40,8 +40,6 @@ public interface ParticleParent<P extends CollidingParticle, C extends Constrain
     }
 
     default void updatePhysics(Vec3 gravity, float deltaTime, int constraintIterations) {
-
-
         for (P particle : this.getParticles()) {
             particle.tick();
             particle.accelerate(gravity);

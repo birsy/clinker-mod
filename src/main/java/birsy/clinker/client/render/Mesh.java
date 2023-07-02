@@ -1,4 +1,4 @@
-package birsy.clinker.client.render.entity.model.base;
+package birsy.clinker.client.render;
 
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -11,12 +11,18 @@ import net.minecraft.core.Direction;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
 public class Mesh {
-    public List<Face> faces;
-    public List<Vertex> vertices;
+    public final List<Face> faces;
+    public final List<Vertex> vertices;
+
+    public Mesh() {
+        this.faces = new ArrayList<>();
+        this.vertices = new ArrayList<>();
+    }
 
     public void render(PoseStack.Pose pPose, VertexConsumer pVertexConsumer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha) {
         Matrix4f matrix4f = pPose.pose();

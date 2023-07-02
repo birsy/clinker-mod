@@ -1,0 +1,49 @@
+{
+    "variants": {
+        "facing=east,type=single": {
+            "model": "clinker:block/stove_chimney",
+            "y": 90
+        },
+        "facing=north,type=single": {
+            "model": "clinker:block/stove_chimney"
+        },
+        "facing=south,type=single": {
+            "model": "clinker:block/stove_chimney",
+            "y": 180
+        },
+        "facing=west,type=single": {
+            "model": "clinker:block/stove_chimney",
+            "y": 270
+        },
+        "facing=east,type=left": {
+            "model": "clinker:block/stove_chimney_left",
+            "y": 90
+        },
+        "facing=north,type=left": {
+            "model": "clinker:block/stove_chimney_left"
+        },
+        "facing=south,type=left": {
+            "model": "clinker:block/stove_chimney_left",
+            "y": 180
+        },
+        "facing=west,type=left": {
+            "model": "clinker:block/stove_chimney_left",
+            "y": 270
+        },
+        "facing=east,type=right": {
+            "model": "clinker:block/stove_chimney_right",
+            "y": 90
+        },
+        "facing=north,type=right": {
+            "model": "clinker:block/stove_chimney_right"
+        },
+        "facing=south,type=right": {
+            "model": "clinker:block/stove_chimney_right",
+            "y": 180
+        },
+        "facing=west,type=right": {
+            "model": "clinker:block/stove_chimney_right",
+            "y": 270
+        }
+    }
+}

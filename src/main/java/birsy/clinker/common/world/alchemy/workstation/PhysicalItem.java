@@ -1,6 +1,6 @@
 package birsy.clinker.common.world.alchemy.workstation;
 
-import birsy.clinker.core.util.AxisAngle;
+import birsy.clinker.core.util.AxisAngled;
 import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.core.util.Quaterniond;
 import birsy.clinker.core.util.rigidbody.ITickableBody;
@@ -24,7 +24,7 @@ public class PhysicalItem extends VerletRigidBody implements ItemLike, ITickable
         this.workstation = workstation;
         this.itemStack = itemStack;
 
-        this.transform.orientation = new Quaterniond(new AxisAngle(workstation.level.random.nextGaussian(), workstation.level.random.nextGaussian(), workstation.level.random.nextGaussian(), workstation.level.random.nextFloat() * 2.0F * Math.PI));
+        this.transform.orientation = new Quaterniond(new AxisAngled(workstation.level.random.nextGaussian(), workstation.level.random.nextGaussian(), workstation.level.random.nextGaussian(), workstation.level.random.nextFloat() * 2.0F * Math.PI));
         this.pTransform.orientation = new Quaterniond(this.transform.orientation);
         this.lastTickTransform.orientation = new Quaterniond(this.transform.orientation);
     }

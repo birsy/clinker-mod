@@ -38,6 +38,9 @@ public class ClinkerBlocks
 	public static final RegistryObject<Block> BLANK_SARCOPHAGUS = createBlock("blank_sarcophagus", () -> new SarcophagusBlock(getBrimstoneProperties().noOcclusion()), Clinker.CLINKER_BLOCKS);
 	public static final RegistryObject<Block> COUNTER = createBlock("counter", () -> new CounterBlock(BlockBehaviour.Properties.of(Material.WOOD, MaterialColor.COLOR_LIGHT_GRAY).strength(1.0f, 2.0f).sound(SoundType.WOOD)), Clinker.CLINKER_BLOCKS);
 
+	public static final RegistryObject<Block> STOVE = createBlock("stove", () -> new StoveBlock(BlockBehaviour.Properties.copy(Blocks.BRICKS).sound(SoundType.NETHER_BRICKS)), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> STOVE_CHIMNEY = createBlock("stove_chimney", () -> new StoveChimneyBlock(BlockBehaviour.Properties.copy(Blocks.BRICKS).sound(SoundType.NETHER_BRICKS).noOcclusion()), null);
+
 	//Material Blocks
 	public static final RegistryObject<Block> LEAD_BLOCK = createBlock("lead_block", () -> new Block(BlockBehaviour.Properties.of(Material.METAL, MaterialColor.COLOR_LIGHT_GRAY).strength(5.0f, 6.0f).sound(SoundType.NETHERITE_BLOCK)), Clinker.CLINKER_BLOCKS);
 	public static final RegistryObject<Block> RAW_LEAD_BLOCK = createBlock("raw_lead_block", () -> new Block(BlockBehaviour.Properties.of(Material.STONE, MaterialColor.COLOR_LIGHT_GRAY).strength(2.5f, 3.0f).sound(SoundType.ANCIENT_DEBRIS)), Clinker.CLINKER_BLOCKS);
@@ -45,19 +48,10 @@ public class ClinkerBlocks
 	//Soils
 	public static final RegistryObject<Block> ASH = createBlock("ash", () -> new AshBlock(Block.Properties.of(Material.SNOW, MaterialColor.COLOR_GRAY).strength(0.5F).sound(SoundType.SNOW)), Clinker.CLINKER_BLOCKS);
 	public static final RegistryObject<Block> ASH_LAYER = createBlock("ash_layers", AshLayerBlock::new, Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> ROOTED_ASH = createBlock("rooted_ash", () -> new RootedAshBlock(ASH.get()), Clinker.CLINKER_BLOCKS);
-	
-	public static final RegistryObject<Block> PACKED_ASH = createBlock("packed_ash", () -> new Block(Block.Properties.of(Material.CLAY, MaterialColor.COLOR_GRAY).strength(0.5F).sound(SoundType.GRAVEL)), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> ROCKY_PACKED_ASH = createBlock("rocky_packed_ash", () -> new Block(Block.Properties.of(Material.CLAY, MaterialColor.COLOR_GRAY).strength(0.5F).sound(SoundType.GRAVEL)), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> ROOTED_PACKED_ASH = createBlock("rooted_packed_ash", () -> new RootedAshBlock(PACKED_ASH.get()), Clinker.CLINKER_BLOCKS);
 
 	public static final RegistryObject<Block> ASHEN_REGOLITH = createBlock("ashen_regolith", () -> new MudBlock(Block.Properties.of(Material.DIRT, MaterialColor.COLOR_GRAY).strength(0.5F).sound(SoundType.NYLIUM)), Clinker.CLINKER_BLOCKS);
 
 	public static final RegistryObject<Block> MUD = createBlock("mud", () -> new SulfricMudBlock(Block.Properties.of(Material.DIRT, MaterialColor.TERRACOTTA_BROWN).strength(0.5F).sound(SoundType.WET_GRASS)), Clinker.CLINKER_BLOCKS);
-
-	public static final RegistryObject<Block> WHITE_MOLD = createBlock("white_mold", () -> new Block(Block.Properties.of(Material.MOSS, MaterialColor.COLOR_GRAY).strength(0.5F).sound(SoundType.MOSS)), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> WHITE_MOLD_ROOTS = createBlock("white_mold_roots", () -> new Block(Block.Properties.of(Material.MOSS, MaterialColor.COLOR_GRAY).strength(0.5F).sound(SoundType.MOSS)), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> BLACK_MOLD = createBlock("black_mold", () -> new Block(Block.Properties.of(Material.MOSS, MaterialColor.COLOR_BLACK).strength(0.5F).sound(SoundType.MOSS)), Clinker.CLINKER_BLOCKS);
 
 	//Brimstone
 	public static BlockBehaviour.Properties getBrimstoneProperties() {
@@ -186,7 +180,6 @@ public class ClinkerBlocks
 
 	
 	//Unsmeltable Ores
-	public static final RegistryObject<Block> SULFUR_ORE = createBlock("sulfur_ore", () -> new OreClinkerBlock(3.0F, 75.0F, 2, 2, SoundType.DRIPSTONE_BLOCK), Clinker.CLINKER_BLOCKS);
 	public static final RegistryObject<Block> OVERWORLD_LEAD_ORE = createBlock("overworld_lead_ore", () -> new OreClinkerBlock(3.0F, 6.0F, 2, 1, SoundType.STONE), Clinker.CLINKER_BLOCKS);
 	public static final RegistryObject<Block> NETHER_LEAD_ORE = createBlock("nether_lead_ore", () -> new OreClinkerBlock(3.0F, 3.0F, 2, 2, SoundType.NETHER_ORE), Clinker.CLINKER_BLOCKS);
 	
@@ -228,13 +221,8 @@ public class ClinkerBlocks
 	public static final RegistryObject<Block> SHORT_MUD_REEDS = createBlock("short_mud_reeds", () -> new MudReedsBlock(BlockBehaviour.Properties.of(Material.REPLACEABLE_PLANT).noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS)), Clinker.CLINKER_BLOCKS);
 	public static final RegistryObject<Block> MUD_REEDS = createBlock("mud_reeds", () -> new MudReedsBlock(BlockBehaviour.Properties.of(Material.REPLACEABLE_PLANT).noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS)), Clinker.CLINKER_BLOCKS);
 
-	public static final RegistryObject<Block> BUGSTALK = createBlock("bugstalk", () -> new BugstalkBlock(BlockBehaviour.Properties.of(Material.PLANT, MaterialColor.TERRACOTTA_BROWN).randomTicks().noOcclusion().sound(SoundType.HANGING_ROOTS)), Clinker.CLINKER_BLOCKS);
-
 	public static final RegistryObject<Block> CAVE_FIG_STEM = createBlock("cave_fig_stem", () -> new HugeMushroomBlock(BlockBehaviour.Properties.of(Material.WOOD, MaterialColor.COLOR_GRAY).sound(SoundType.CALCITE)), Clinker.CLINKER_BLOCKS);
 	public static final RegistryObject<Block> CAVE_FIG_ROOTS = createBlock("cave_fig_roots", () -> new CaveFigRootsBlock(BlockBehaviour.Properties.of(Material.WOOD, MaterialColor.COLOR_GRAY).noOcclusion().sound(SoundType.CALCITE)), Clinker.CLINKER_BLOCKS);
-
-	public static final RegistryObject<Block> TWIZZLING_VINE = createBlock("twizzling_vine", () -> new TwizzlingVineBlock(BlockBehaviour.Properties.of(Material.REPLACEABLE_PLANT).noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS).offsetType(BlockBehaviour.OffsetType.XZ)), null);
-	public static final RegistryObject<Block> TWIZZLING_VINE_PLANT = createBlock("twizzling_vine_plant", () -> new TwizzlingVinePlantBlock(BlockBehaviour.Properties.of(Material.REPLACEABLE_PLANT).noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS).offsetType(BlockBehaviour.OffsetType.XZ)), null);
 
 	public static final RegistryObject<Block> FAIRY_FRUIT_BLOCK = createBlock("fairy_fruit_block", () -> new FairyFruitBlock(BlockBehaviour.Properties.of(Material.REPLACEABLE_PLANT).noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS).lightLevel((state) -> 10)), null);
 

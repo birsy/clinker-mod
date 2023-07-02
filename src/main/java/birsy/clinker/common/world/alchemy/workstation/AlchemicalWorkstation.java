@@ -16,25 +16,29 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.util.INBTSerializable;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class AlchemicalWorkstation extends VerletPhysicsEnvironment implements INBTSerializable<CompoundTag> {
     public Level level;
     private List<PhysicalItem> items;
     public Set<BlockPos> containedBlocks;
     public boolean filledCollisions;
+    public final UUID id;
+
     public AlchemicalWorkstation(Level level, BlockPos initialPos) {
         this(level);
         filledCollisions = false;
     }
     public AlchemicalWorkstation(Level level) {
-        super();
+        this(UUID.randomUUID());
         this.level = level;
         this.containedBlocks = new HashSet<>();
         this.items = new ArrayList<>();
+    }
+
+    public AlchemicalWorkstation(UUID id) {
+        super();
+        this.id = id;
     }
 
     public void fillCollisions(Level level, BlockPos initialPos) {

@@ -1,8 +1,9 @@
 package birsy.clinker.common.world.block;
 
-import birsy.clinker.client.render.gui.AlchemicalWorkstationScreen;
+import birsy.clinker.client.gui.AlchemicalWorkstationScreen;
 import birsy.clinker.common.world.block.blockentity.CounterBlockEntity;
 import birsy.clinker.core.registry.ClinkerBlockEntities;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -43,11 +44,7 @@ public class CounterBlock extends BaseEntityBlock {
 	public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
 		if (pLevel.isClientSide) {
 			AlchemicalWorkstationScreen screen = new AlchemicalWorkstationScreen(((CounterBlockEntity) pLevel.getBlockEntity(pPos)).workstation);
-			screen.targetedBlock = pPos;
-			screen.currentCamPos = pPlayer.getEyePosition();
-			screen.targetCamPos = new Vec3(pPos.getX(), pPos.getY() + 1.0, pPos.getZ());
-			AlchemicalWorkstationScreen.CURRENT_SCREEN = screen;
-			AlchemicalWorkstationScreen.ACTIVE = true;
+			Minecraft.getInstance().setScreen(screen);
 		}
 		return super.use(pState, pLevel, pPos, pPlayer, pHand, pHit);
 	}

@@ -9,6 +9,7 @@ public class LinkConstraint<C extends CollidingParticle> extends Constraint {
     public final C joint2;
     protected double pLength;
     protected double length;
+    protected double stiffness;
 
     public LinkConstraint(ParticleParent parent, C joint1, C joint2, double length) {
         super(parent);
@@ -34,9 +35,14 @@ public class LinkConstraint<C extends CollidingParticle> extends Constraint {
         return joint1.getPosition(partialTick).add(joint2.getPosition(partialTick)).scale(0.5);
     }
 
+    public Vec3 getDirection(double partialTick) {
+        return joint1.getPosition(partialTick).subtract(joint2.getPosition(partialTick)).normalize();
+    }
+
     public double getLength(double partialTick) {
         return Mth.lerp(partialTick, pLength, length);
     }
+
     public Quaterniond getOrientation(double partialTick, Vec3 forward) {
         return Quaterniond.lookAt(joint1.getPosition(partialTick), joint2.getPosition(partialTick), forward).normalize();
     }

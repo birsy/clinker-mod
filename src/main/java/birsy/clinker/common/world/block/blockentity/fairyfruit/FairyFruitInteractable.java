@@ -75,7 +75,7 @@ public class FairyFruitInteractable extends CollidableInteractable {
     @Override
     public boolean onHit(InteractionContext interactionContext, @Nullable Entity entity, boolean clientSide) {
         if (clientSide) ClinkerPacketHandler.NETWORK.sendToServer(new ServerboundInteractableInteractionPacket(new InteractionInfo(this.uuid, InteractionInfo.Interaction.HIT, interactionContext)));
-        if (this.parent == null || this.segmentParent == null) return;
+        if (this.parent == null || this.segmentParent == null) return super.onHit(interactionContext, entity, clientSide);
         if (entity instanceof Player player) {
             if (player.getAbilities().mayBuild &&
                     player.getItemInHand(interactionContext.hand()).getItem().canAttackBlock(this.parent.getBlockState(), this.parent.getLevel(), MathUtils.blockPosFromVec3(this.getPosition()), player)) {

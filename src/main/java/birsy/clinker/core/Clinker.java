@@ -82,8 +82,6 @@ public class Clinker
         ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.MUD_REEDS.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.TALL_MUD_REEDS.get(), RenderType.cutout());
 
-        ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.BUGSTALK.get(), RenderType.cutout());
-
         fontManager = new ClinkerFontManager(Minecraft.getInstance());
         GUIRenderer.alchemyBundleGUIRenderer = new AlchemyBundleGUIRenderer(Minecraft.getInstance());
     }

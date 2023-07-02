@@ -16,12 +16,6 @@ public class AshBuildupFeature extends Feature<NoneFeatureConfiguration> {
         super(config);
     }
 
-    /**
-     * Places the given feature at the given location.
-     * During world generation, features are provided with a 3x3 region of chunks, centered on the chunk being generated,
-     * that they can safely generate into.
-     * @param featureContext A context object with a reference to the level and the position the feature is being placed at
-     */
     public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> featureContext) {
         WorldGenLevel level = featureContext.level();
         BlockPos origin = featureContext.origin();

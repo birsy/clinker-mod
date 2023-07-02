@@ -1,5 +1,6 @@
-package birsy.clinker.client.render.entity.model.base;
+package birsy.clinker.client.animation;
 
+import birsy.clinker.client.render.Mesh;
 import birsy.clinker.core.util.Quaterniond;
 import com.mojang.math.Quaternion;
 import net.minecraftforge.api.distmarker.Dist;
@@ -11,28 +12,29 @@ import java.util.List;
 import java.util.Map;
 
 @OnlyIn(Dist.CLIENT)
-public class AnimatedModel {
+public class AnimationModelBase {
     private final BaseBone root;
     public Map<String, BaseBone> bones;
 
-    public AnimatedModel(BaseBone root) {
+    public AnimationModelBase(BaseBone root) {
         this.root = root;
         this.bones = new HashMap<>();
         this.bones.put(this.root.identifier, this.root);
     }
 
-    public AnimatedModelSkeleton createSkeleton() {
-        AnimatedModelBone modelBone = root.toBone();
-        AnimatedModelSkeleton skeleton = new AnimatedModelSkeleton(modelBone, this);
+    public AnimationSkeleton createSkeleton(AnimatedSkeletonParent parent) {
+        AnimationSkeleton skeleton = new AnimationSkeleton(parent, this);
+        AnimationBone modelBone = root.toBone(skeleton);
+        skeleton.setRoot(modelBone);
         addChildrenToSkeleton(root, modelBone, skeleton);
         return skeleton;
     }
 
-    private void addChildrenToSkeleton(BaseBone bone, AnimatedModelBone parent, AnimatedModelSkeleton skeleton) {
+    private void addChildrenToSkeleton(BaseBone bone, AnimationBone parent, AnimationSkeleton skeleton) {
         if (bone.children == null) return;
 
         for (BaseBone child : bone.children) {
-            AnimatedModelBone aBone = child.toBone();
+            AnimationBone aBone = child.toBone(skeleton);
             parent.addChild(aBone);
             skeleton.addBone(aBone);
 
@@ -41,14 +43,14 @@ public class AnimatedModel {
     }
 
     public static class AnimatedModelBuilder {
-        private final AnimatedModel model;
+        private final AnimationModelBase model;
 
-        private AnimatedModelBuilder(AnimatedModel model) {
+        private AnimatedModelBuilder(AnimationModelBase model) {
             this.model = model;
         }
 
         public static AnimatedModelBuilder begin(BaseBone baseRoot) {
-            AnimatedModelBuilder builder = new AnimatedModelBuilder(new AnimatedModel(baseRoot));
+            AnimatedModelBuilder builder = new AnimatedModelBuilder(new AnimationModelBase(baseRoot));
 
             return builder;
         }
@@ -58,7 +60,7 @@ public class AnimatedModel {
             return bone;
         }
 
-        public AnimatedModel build() {
+        public AnimationModelBase build() {
             return model;
         }
     }
@@ -120,8 +122,8 @@ public class AnimatedModel {
             return this;
         }
 
-        public AnimatedModelBone toBone() {
-            AnimatedModelBone bone = this.dynamicMesh ? new AnimatedMeshedModelBone(this.identifier, this.mesh) : new AnimatedModelBone(this.identifier);
+        public AnimationBone toBone(AnimationSkeleton skeleton) {
+            AnimationBone bone = this.dynamicMesh ? new DynamicallyMeshedAnimationBone(this.identifier, skeleton, this.mesh) : new AnimationBone(this.identifier, skeleton);
             bone.x = this.x; bone.y = this.y; bone.z = this.z;
             bone.prevX = this.x; bone.prevY = this.y; bone.prevZ = this.z;
             bone.scaleX = this.scaleX; bone.scaleY = this.scaleY; bone.scaleZ = this.scaleZ;
