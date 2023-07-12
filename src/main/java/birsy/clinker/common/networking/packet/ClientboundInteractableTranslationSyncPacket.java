@@ -3,7 +3,7 @@ package birsy.clinker.common.networking.packet;
 import birsy.clinker.common.world.level.interactable.Interactable;
 import birsy.clinker.common.world.level.interactable.InteractableManager;
 import birsy.clinker.core.Clinker;
-import birsy.clinker.core.util.rigidbody.Transform;
+import birsy.clinker.common.world.physics.rigidbody.Transform;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;

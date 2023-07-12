@@ -18,8 +18,8 @@ public class ClinkerSounds
 	}
 
 	//Block Sounds
-	public static final RegistryObject<SoundEvent> BLOCK_HEATER_LOOP = SOUNDS.register("block.heater.loop",
-			() -> new SoundEvent(new ResourceLocation(Clinker.MOD_ID, "block.heater.loop")));
+	public static final RegistryObject<SoundEvent> BLOCK_STOVE_LOOP = SOUNDS.register("block.stove.loop",
+			() -> new SoundEvent(new ResourceLocation(Clinker.MOD_ID, "block.stove.loop")));
 
 	//Entity Sounds
 	public static final RegistryObject<SoundEvent> ENTITY_GNOME_AMBIENT = SOUNDS.register("entity.gnome.ambient",

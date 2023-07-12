@@ -7,7 +7,7 @@ import birsy.clinker.common.world.level.interactable.InteractableManager;
 import birsy.clinker.common.world.level.interactable.InteractableParent;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.Quaterniond;
-import birsy.clinker.core.util.rigidbody.colliders.OBBCollisionShape;
+import birsy.clinker.common.world.physics.rigidbody.colliders.OBBCollisionShape;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;

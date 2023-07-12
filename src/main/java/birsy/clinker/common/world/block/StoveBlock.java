@@ -1,13 +1,14 @@
 package birsy.clinker.common.world.block;
 
 import birsy.clinker.core.registry.ClinkerBlocks;
-import birsy.clinker.core.util.ShapeUtil;
 import net.minecraft.Util;
-import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.ChestType;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -24,6 +25,8 @@ public class StoveBlock extends AbstractStoveBlock {
         shape = Shapes.join(shape, Shapes.box(0.6875, 0.625, 0.25, 1, 1, 0.75), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0, 0.625, 0.25, 0.3125, 1, 0.75), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0, 0.1875, 0, 0.1875, 0.625, 1), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0, 0, -0.125, 1, 0.1875, 0), BooleanOp.OR);
+
         return shape;
     });
     private static VoxelShape DOUBLE_STOVE_SHAPE = Util.make(() -> {
@@ -34,6 +37,8 @@ public class StoveBlock extends AbstractStoveBlock {
         shape = Shapes.join(shape, Shapes.box(0, 0.625, 0, 1, 1, 0.25), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0, 0.625, 0.75, 1, 1, 1), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0.6875, 0.625, 0.25, 1, 1, 0.75), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0, 0, -0.125, 1, 0.1875, 0), BooleanOp.OR);
+
         return shape;
     });
 
@@ -53,8 +58,12 @@ public class StoveBlock extends AbstractStoveBlock {
 
 
     @Override
-    AbstractStoveBlock getType() {
-        return (AbstractStoveBlock) ClinkerBlocks.STOVE.get();
+    boolean isValidType(BlockState state) {
+        return state.is(ClinkerBlocks.STOVE_DUMMY.get()) || state.is(ClinkerBlocks.STOVE.get());
+    }
+
+    public ItemStack getCloneItemStack(BlockGetter pLevel, BlockPos pPos, BlockState pState) {
+        return new ItemStack(ClinkerBlocks.STOVE.get());
     }
 
     @Override
@@ -74,5 +83,9 @@ public class StoveBlock extends AbstractStoveBlock {
 
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
         super.createBlockStateDefinition(pBuilder);
+    }
+
+    public RenderShape getRenderShape(BlockState pState) {
+        return RenderShape.MODEL;
     }
 }

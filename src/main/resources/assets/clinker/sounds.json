@@ -1,9 +1,8 @@
 {
-	"block.heater.loop": {
+	"block.stove.loop": {
 		"category": "block",
 		"sounds": [
-			{"name": "clinker:block/heater/heater1", "stream": true},
-			{"name": "clinker:block/heater/heater2", "stream": true}
+			{"name": "clinker:block/stove/stove1", "stream": true}
 		]
 	},
 	"entity.gnome.ambient": {

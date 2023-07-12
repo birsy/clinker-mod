@@ -1,5 +1,6 @@
 package birsy.clinker.common.world.block;
 
+import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.ShapeUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -105,7 +106,7 @@ public abstract class AbstractStoveBlock extends AbstractDoubleBlock {
         return this.defaultBlockState().setValue(FACING, facing).setValue(TYPE, chestType).setValue(LIT, lit);
     }
 
-    private ChestType getConnections(LevelAccessor level, BlockPos initialPos, Direction facing) {
+    protected ChestType getConnections(LevelAccessor level, BlockPos initialPos, Direction facing) {
         Direction[] checkDirections = new Direction[]{facing.getClockWise(), facing.getCounterClockWise()};
 
         for (int i = 0; i < checkDirections.length; i++) {
@@ -113,7 +114,7 @@ public abstract class AbstractStoveBlock extends AbstractDoubleBlock {
             BlockPos pos = initialPos.relative(direction);
 
             BlockState state = level.getBlockState(pos);
-            if (state.is(this.getType())) {
+            if (this.isValidType(state)) {
                 if (state.getValue(FACING) == facing && state.getValue(TYPE) == ChestType.SINGLE) {
                     return ChestType.BY_ID[i + 1];
                 }
@@ -127,7 +128,10 @@ public abstract class AbstractStoveBlock extends AbstractDoubleBlock {
     public BlockState updateShape(BlockState pState, Direction pDirection, BlockState pNeighborState, LevelAccessor pLevel, BlockPos pCurrentPos, BlockPos pNeighborPos) {
         if (pState.getValue(TYPE) != ChestType.SINGLE) {
             if (pDirection == getConnectedDirection(pState)) {
-                if (!pNeighborState.is(getType())) return Blocks.AIR.defaultBlockState();
+                if (!isValidType(pNeighborState)) {
+                    Clinker.LOGGER.info("invalid types:" + pState + " : " + pNeighborState);
+                    return Blocks.AIR.defaultBlockState();
+                }
                 if (pNeighborState.getValue(FACING) != pState.getValue(FACING)) return Blocks.AIR.defaultBlockState();
                 if (pNeighborState.getValue(TYPE) != pState.getValue(TYPE).getOpposite()) return super.updateShape(pState, pDirection, pNeighborState, pLevel, pCurrentPos, pNeighborPos).setValue(TYPE, ChestType.SINGLE);
 
@@ -138,7 +142,7 @@ public abstract class AbstractStoveBlock extends AbstractDoubleBlock {
         return super.updateShape(pState, pDirection, pNeighborState, pLevel, pCurrentPos, pNeighborPos);
     }
 
-    abstract AbstractStoveBlock getType();
+    abstract boolean isValidType(BlockState state);
 
     public static Direction getConnectedDirection(BlockState pState) {
         return getConnectedDirection(pState.getValue(FACING), pState.getValue(TYPE));

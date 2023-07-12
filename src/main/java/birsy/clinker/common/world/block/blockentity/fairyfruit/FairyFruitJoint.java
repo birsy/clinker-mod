@@ -1,6 +1,6 @@
 package birsy.clinker.common.world.block.blockentity.fairyfruit;
 
-import birsy.clinker.common.world.physics.CollidingParticle;
+import birsy.clinker.common.world.physics.particle.CollidingParticle;
 import birsy.clinker.core.util.Quaterniond;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.phys.Vec3;

@@ -47,13 +47,13 @@ public class StoveChimneyBlock extends AbstractStoveBlock {
     }
 
     @Override
-    AbstractStoveBlock getType() {
-        return (AbstractStoveBlock) ClinkerBlocks.STOVE_CHIMNEY.get();
+    boolean isValidType(BlockState state) {
+        return state.is(ClinkerBlocks.STOVE_CHIMNEY.get());
     }
 
     @Override
     public boolean isValidAttachmentBlock(BlockState state, DoubleBlockHalf half) {
-        return state.is(ClinkerBlocks.STOVE.get()) && (state.hasProperty(FACING) && state.getValue(FACING) == state.getValue(FACING));
+        return (state.is(ClinkerBlocks.STOVE.get()) || state.is(ClinkerBlocks.STOVE_DUMMY.get())) && (state.hasProperty(FACING) && state.getValue(FACING) == state.getValue(FACING));
     }
 
     @Override

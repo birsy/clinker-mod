@@ -1,6 +1,6 @@
 package birsy.clinker.common.world.block.blockentity.fairyfruit;
 
-import birsy.clinker.common.world.physics.LinkConstraint;
+import birsy.clinker.common.world.physics.particle.LinkConstraint;
 import birsy.clinker.core.util.MathUtils;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;

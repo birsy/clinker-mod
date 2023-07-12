@@ -8,8 +8,8 @@ import birsy.clinker.common.networking.packet.ClientboundInteractableTranslation
 import birsy.clinker.common.world.level.interactable.storage.InteractableStorage;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
-import birsy.clinker.core.util.rigidbody.colliders.OBBCollisionShape;
-import birsy.clinker.core.util.rigidbody.gjkepa.GJKEPA;
+import birsy.clinker.common.world.physics.rigidbody.colliders.OBBCollisionShape;
+import birsy.clinker.common.world.physics.rigidbody.gjkepa.GJKEPA;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.client.player.LocalPlayer;

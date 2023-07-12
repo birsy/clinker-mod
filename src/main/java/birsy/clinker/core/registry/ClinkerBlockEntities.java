@@ -1,10 +1,8 @@
 package birsy.clinker.core.registry;
 
-import birsy.clinker.client.render.world.blockentity.CounterRenderer;
-import birsy.clinker.client.render.world.blockentity.FairyFruitRenderer;
-import birsy.clinker.client.render.world.blockentity.FermentationBarrelRenderer;
-import birsy.clinker.client.render.world.blockentity.SarcophagusInnardsRenderer;
+import birsy.clinker.client.render.world.blockentity.*;
 import birsy.clinker.common.world.block.blockentity.CounterBlockEntity;
+import birsy.clinker.common.world.block.blockentity.StoveBlockEntity;
 import birsy.clinker.common.world.block.blockentity.fairyfruit.FairyFruitBlockEntity;
 import birsy.clinker.common.world.block.blockentity.FermentationBarrelBlockEntity;
 import birsy.clinker.common.world.block.blockentity.SarcophagusBlockEntity;
@@ -32,6 +30,9 @@ public class ClinkerBlockEntities {
     public static final RegistryObject<BlockEntityType<CounterBlockEntity>> COUNTER = BLOCK_ENTITY_TYPES.register("counter",
             () -> BlockEntityType.Builder.of(CounterBlockEntity::new, ClinkerBlocks.COUNTER.get()).build(null));
 
+    public static final RegistryObject<BlockEntityType<StoveBlockEntity>> STOVE = BLOCK_ENTITY_TYPES.register("stove",
+            () -> BlockEntityType.Builder.of(StoveBlockEntity::new, ClinkerBlocks.STOVE.get()).build(null));
+
     public static final RegistryObject<BlockEntityType<FairyFruitBlockEntity>> FAIRY_FRUIT = BLOCK_ENTITY_TYPES.register("fairy_fruit",
             () -> BlockEntityType.Builder.of(FairyFruitBlockEntity::new, ClinkerBlocks.FAIRY_FRUIT_BLOCK.get()).build(null));
 
@@ -39,11 +40,18 @@ public class ClinkerBlockEntities {
         BlockEntityRenderers.register(ClinkerBlockEntities.FERMENTATION_BARREL.get(), FermentationBarrelRenderer::new);
         BlockEntityRenderers.register(ClinkerBlockEntities.SARCOPHAGUS_INNARDS.get(), SarcophagusInnardsRenderer::new);
         BlockEntityRenderers.register(ClinkerBlockEntities.COUNTER.get(), CounterRenderer::new);
+        BlockEntityRenderers.register(ClinkerBlockEntities.STOVE.get(), StoveRenderer::new);
         BlockEntityRenderers.register(ClinkerBlockEntities.FAIRY_FRUIT.get(), FairyFruitRenderer::new);
     }
 
     @SubscribeEvent
     public static void registerLayerDefinition(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(FermentationBarrelRenderer.LAYER_LOCATION, FermentationBarrelRenderer::createBodyLayer);
+
+        event.registerLayerDefinition(StoveRenderer.StoveModel.LAYER_LOCATION, StoveRenderer.StoveModel::createBodyLayer);
+        event.registerLayerDefinition(StoveRenderer.StoveChimneyModel.LAYER_LOCATION, StoveRenderer.StoveChimneyModel::createBodyLayer);
+        event.registerLayerDefinition(StoveRenderer.DoubleStoveModel.LAYER_LOCATION, StoveRenderer.DoubleStoveModel::createBodyLayer);
+        event.registerLayerDefinition(StoveRenderer.DoubleStoveChimneyModel.LAYER_LOCATION, StoveRenderer.DoubleStoveChimneyModel::createBodyLayer);
+
     }
 }

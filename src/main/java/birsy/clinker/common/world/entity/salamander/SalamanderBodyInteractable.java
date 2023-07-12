@@ -2,14 +2,10 @@ package birsy.clinker.common.world.entity.salamander;
 
 import birsy.clinker.common.world.level.interactable.CollidableInteractable;
 import birsy.clinker.common.world.level.interactable.InteractionContext;
-import birsy.clinker.core.Clinker;
-import birsy.clinker.core.util.rigidbody.colliders.OBBCollisionShape;
+import birsy.clinker.common.world.physics.rigidbody.colliders.OBBCollisionShape;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import org.jetbrains.annotations.Nullable;
 
 public class SalamanderBodyInteractable extends CollidableInteractable {

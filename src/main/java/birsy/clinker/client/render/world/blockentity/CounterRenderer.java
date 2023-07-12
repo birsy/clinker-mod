@@ -2,8 +2,7 @@ package birsy.clinker.client.render.world.blockentity;
 
 import birsy.clinker.common.world.alchemy.workstation.PhysicalItem;
 import birsy.clinker.common.world.block.blockentity.CounterBlockEntity;
-import birsy.clinker.core.util.Quaterniond;
-import birsy.clinker.core.util.rigidbody.Transform;
+import birsy.clinker.common.world.physics.rigidbody.Transform;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Matrix3f;

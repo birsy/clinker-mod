@@ -2,8 +2,8 @@ package birsy.clinker.common.world.level.interactable;
 
 import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.ServerboundInteractableInteractionPacket;
-import birsy.clinker.core.util.rigidbody.colliders.OBBCollisionShape;
-import birsy.clinker.core.util.rigidbody.gjkepa.GJKEPA;
+import birsy.clinker.common.world.physics.rigidbody.colliders.OBBCollisionShape;
+import birsy.clinker.common.world.physics.rigidbody.gjkepa.GJKEPA;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
@@ -58,7 +58,7 @@ public class CollidableInteractable extends Interactable {
     public boolean onTouch(InteractionContext context, Entity touchingEntity, boolean clientSide) {
 //        if (!this.reacts) {
 //            Vec3 collisionVector = context.from().subtract(context.to());
-//            touchingEntity.push(collisionVector.x, collisionVector.y, collisionVector.z);
+//            touchingEntity.shove(collisionVector.x, collisionVector.y, collisionVector.z);
 //            return true;
 //        }
 //        double entityMass = touchingEntity.getBbHeight() * touchingEntity.getBbWidth() * touchingEntity.getBbWidth();
@@ -70,8 +70,8 @@ public class CollidableInteractable extends Interactable {
 //        Vec3 entityMovement = collisionDirection.scale(collisionDepth * (this.mass / totalMass));
 //        Vec3 thisMovement = collisionDirection.scale(-collisionDepth * (entityMass / totalMass));
 //
-//        touchingEntity.push(entityMovement.x, entityMovement.y, entityMovement.z);
-//        this.push(thisMovement);
+//        touchingEntity.shove(entityMovement.x, entityMovement.y, entityMovement.z);
+//        this.shove(thisMovement);
         return true;
     }
 

@@ -41,7 +41,6 @@ public class ClinkerItems
 	public static final RegistryObject<Item> RUBY = ITEMS.register("ruby", () -> new Item(new Item.Properties().tab(Clinker.CLINKER_MISC)));
 	public static final RegistryObject<Item> CENTIPEDE_SHELL = ITEMS.register("centipede_shell", () -> new Item(new Item.Properties().tab(Clinker.CLINKER_MISC)));
 	public static final RegistryObject<Item> SALT = ITEMS.register("salt", () -> new Item(new Item.Properties().tab(Clinker.CLINKER_MISC)));
-	public static final RegistryObject<Item> TWIZZLING_VINE_ITEM = ITEMS.register("twizzling_vine_item", () -> new ItemNameBlockItem(ClinkerBlocks.TWIZZLING_VINE.get(), new Item.Properties().tab(Clinker.CLINKER_MISC)));
 	public static final RegistryObject<Item> FAIRY_FRUIT = ITEMS.register("fairy_fruit", () -> new ItemNameBlockItem(ClinkerBlocks.FAIRY_FRUIT_BLOCK.get(), new Item.Properties().tab(Clinker.CLINKER_MISC)));
 
 	//Buckets

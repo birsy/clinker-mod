@@ -1,14 +1,8 @@
 package birsy.clinker.client.animation;
 
 import birsy.clinker.core.util.Quaternionf;
-import birsy.clinker.core.util.VectorUtils;
-import com.mojang.math.Matrix3f;
-import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
-import org.apache.commons.lang3.tuple.Triple;
-import org.apache.commons.math3.linear.MatrixUtils;
-import org.apache.commons.math3.linear.RealMatrix;
-import org.apache.commons.math3.linear.SingularValueDecomposition;
+import net.minecraft.util.Mth;
 
 public class OrientationSolver {
     // Given a set of points n long, and a set of transformed points n long find the rotation that,
@@ -45,14 +39,13 @@ public class OrientationSolver {
                 Vector3f point = quaternion.transform(points[i].copy());
                 point.normalize();
                 Vector3f target = targets[i];
-                target.normalize();
 
                 // work out the axis of rotation
-                Vector3f axis = target.copy();
-                axis.sub(point);
+                Vector3f error = target.copy();
+                error.sub(point);
 
-                // if every point is within the threshold, the system is solved, and we can return the rotation.
-                if (axis.x() * axis.x() + axis.y() * axis.y() + axis.z() * axis.z() < threshold * threshold) {
+                // if every point is within the threshold, the system is solved, and we can return the rotation
+                if (error.x()*error.x() + error.y()*error.y() + error.z()*error.z() < threshold * threshold) {
                     solvedPoints++;
                     if (solvedPoints == initialPoints.length) {
                         return quaternion;
@@ -62,10 +55,17 @@ public class OrientationSolver {
                 }
 
                 // wish i could include mspaint diagrams in comments but im sure this works
+                Vector3f axis = target.copy();
                 axis.cross(point);
                 axis.normalize();
 
+                // work out the angle between the two points
+                float angle = point.dot(target) / Mth.sqrt((point.x()*point.x() + point.y()*point.y() + point.z()*point.z()) * (target.x()*target.x() + target.y()*target.y() + target.z()*target.z()));
+                angle = (float) Math.acos(angle);
 
+                // rotate
+                Quaternionf rotation = new Quaternionf(axis, angle);
+                quaternion.mul(rotation);
             }
         }
 

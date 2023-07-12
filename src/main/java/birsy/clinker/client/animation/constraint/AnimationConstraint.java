@@ -1,20 +1,20 @@
 package birsy.clinker.client.animation.constraint;
 
-import birsy.clinker.client.animation.AnimationBone;
-import birsy.clinker.client.animation.AnimationSkeleton;
+import birsy.clinker.client.animation.ModelBone;
+import birsy.clinker.client.animation.ModelSkeleton;
 import birsy.clinker.core.Clinker;
 
 import javax.annotation.Nullable;
 
 public abstract class AnimationConstraint {
     public final String identifier;
-    public final AnimationBone bone;
-    public final AnimationSkeleton skeleton;
+    public final ModelBone bone;
+    public final ModelSkeleton skeleton;
 
     private ConstraintOrder constraintOrder;
     private final boolean dynamicConstraintOrder;
 
-    protected AnimationConstraint(String identifier, AnimationBone bone, AnimationSkeleton skeleton, @Nullable ConstraintOrder constraintOrder) {
+    protected AnimationConstraint(String identifier, ModelBone bone, ModelSkeleton skeleton, @Nullable ConstraintOrder constraintOrder) {
         this.identifier = identifier;
 
         this.bone = bone;

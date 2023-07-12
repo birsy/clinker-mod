@@ -2,8 +2,8 @@ package birsy.clinker.common.world.level.interactable;
 
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.Quaterniond;
-import birsy.clinker.core.util.rigidbody.Transform;
-import birsy.clinker.core.util.rigidbody.colliders.OBBCollisionShape;
+import birsy.clinker.common.world.physics.rigidbody.Transform;
+import birsy.clinker.common.world.physics.rigidbody.colliders.OBBCollisionShape;
 import com.mojang.math.Quaternion;
 import net.minecraft.core.SectionPos;
 import net.minecraft.nbt.CompoundTag;

@@ -4,15 +4,13 @@ import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.ClientboundFairyFruitBreakPacket;
 import birsy.clinker.common.networking.packet.ServerboundInteractableInteractionPacket;
 import birsy.clinker.common.world.level.interactable.*;
-import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
-import birsy.clinker.core.util.rigidbody.colliders.OBBCollisionShape;
+import birsy.clinker.common.world.physics.rigidbody.colliders.OBBCollisionShape;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 

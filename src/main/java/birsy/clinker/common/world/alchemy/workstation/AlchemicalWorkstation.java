@@ -1,10 +1,9 @@
 package birsy.clinker.common.world.alchemy.workstation;
 
-import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.core.util.Quaterniond;
-import birsy.clinker.core.util.rigidbody.ColliderBody;
-import birsy.clinker.core.util.rigidbody.VerletPhysicsEnvironment;
-import birsy.clinker.core.util.rigidbody.colliders.MeshCollisionShape;
+import birsy.clinker.common.world.physics.rigidbody.ColliderBody;
+import birsy.clinker.common.world.physics.rigidbody.VerletPhysicsEnvironment;
+import birsy.clinker.common.world.physics.rigidbody.colliders.MeshCollisionShape;
 import com.mojang.math.Vector3f;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;

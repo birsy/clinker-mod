@@ -22,7 +22,7 @@ import java.util.function.Function;
 public class MathUtils {
     private static final double[] ASIN = Util.make(new double[65536], (array) -> {
         for(int i = 0; i < array.length; ++i) {
-            array[i] = Math.sin((double)i * Math.PI * 2.0D / (double)array.length);
+            array[i] = Math.asin((double)i * Math.PI * 2.0D / (double)array.length);
         }
     });
 
