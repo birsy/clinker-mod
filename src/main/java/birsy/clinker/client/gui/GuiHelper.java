@@ -1,15 +1,18 @@
-package birsy.clinker.client.render.gui;
+package birsy.clinker.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.Lighting;
+import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
 import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportedException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -17,16 +20,62 @@ import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
+import java.util.*;
 
 @OnlyIn(Dist.CLIENT)
-public class GUIHelperFunctions {
+public class GuiHelper {
+    //Given all leaf nodes, finds the hovered element with the most parents.
+    public static GuiElement findHoveredElement(Collection<GuiElement> leafNodes, float mouseX, float mouseY, float partialTick) {
+        Set<GuiElement> parents = new HashSet<>();
+        if (leafNodes == null) return null;
+        for (GuiElement element : leafNodes) {
+            if (element == null) continue;
+
+            if (mouseX > element.getScreenX(partialTick) && mouseX < element.getScreenX(partialTick) + element.width &&
+                mouseY > element.getScreenY(partialTick) && mouseY < element.getScreenY(partialTick) + element.height &&
+                element.interactable){
+                return element;
+            }
+            parents.add(element.parent);
+        }
+
+        if (parents.isEmpty()) return null;
+        return findHoveredElement(parents, mouseX, mouseY, partialTick);
+    }
+
+    public static List<GuiElement> generateLeafNodes(GuiElement root) {
+        List<GuiElement> list = new ArrayList<>();
+        return generateLeafNodes(root, list);
+    }
+
+    public static List<GuiElement> generateLeafNodes(GuiElement parent, List<GuiElement> list) {
+        if (parent.children.isEmpty()) {
+            list.add(parent);
+        } else {
+            for (Object child : parent.children) {
+                generateLeafNodes((GuiElement) child, list);
+            }
+        }
+
+        return list;
+    }
+
+    public static Vec2 toGuiSpace(Screen guiScreen, float x, float y) {
+        Window mainWindow = guiScreen.getMinecraft().getWindow();
+        float gX = x * mainWindow.getGuiScaledWidth() / mainWindow.getScreenWidth();
+        float gY = y * mainWindow.getGuiScaledHeight() / mainWindow.getScreenHeight();
+        return new Vec2(gX, gY);
+    }
+
     public static void tryRenderGuiItem(ItemRenderer renderer, ItemStack pStack, float rotation, float pX, float pY, float alpha) {
         if (!pStack.isEmpty()) {
             BakedModel bakedmodel = renderer.getModel(pStack, null, Minecraft.getInstance().player, 0);
@@ -137,5 +186,42 @@ public class GUIHelperFunctions {
         pRenderer.vertex(pX + pWidth, pY + pHeight, 0.0D).color(pRed, pGreen, pBlue, pAlpha).endVertex();
         pRenderer.vertex(pX + pWidth, pY + 0, 0.0D).color(pRed, pGreen, pBlue, pAlpha).endVertex();
         BufferUploader.drawWithShader(pRenderer.end());
+    }
+
+    public static int blitOffset = 0;
+
+    public static void blit(PoseStack pPoseStack, float pX, float pY, float pBlitOffset, float pWidth, float pHeight, TextureAtlasSprite pSprite) {
+        innerBlit(pPoseStack.last().pose(), pX, pX + pWidth, pY, pY + pHeight, pBlitOffset, pSprite.getU0(), pSprite.getU1(), pSprite.getV0(), pSprite.getV1());
+    }
+
+    public void blit(PoseStack pPoseStack, float pX, float pY, float pUOffset, float pVOffset, float pUWidth, float pVHeight) {
+        blit(pPoseStack, pX, pY, 0, pUOffset, pVOffset, pUWidth, pVHeight, 256, 256);
+    }
+
+    public static void blit(PoseStack pPoseStack, float pX, float pY, float pBlitOffset, float pUOffset, float pVOffset, float pUWidth, float pVHeight, int pTextureHeight, int pTextureWidth) {
+        innerBlit(pPoseStack, pX, pX + pUWidth, pY, pY + pVHeight, pBlitOffset, pUWidth, pVHeight, pUOffset, pVOffset, pTextureHeight, pTextureWidth);
+    }
+
+    public static void blit(PoseStack pPoseStack, float pX, float pY, float pWidth, float pHeight, float pUOffset, float pVOffset, float pUWidth, float pVHeight, int pTextureWidth, int pTextureHeight) {
+        innerBlit(pPoseStack, pX, pX + pWidth, pY, pY + pHeight, blitOffset, pUWidth, pVHeight, pUOffset, pVOffset, pTextureWidth, pTextureHeight);
+    }
+
+    public static void blit(PoseStack pPoseStack, float pX, float pY, float pUOffset, float pVOffset, float pWidth, float pHeight, int pTextureWidth, int pTextureHeight) {
+        blit(pPoseStack, pX, pY, pWidth, pHeight, pUOffset, pVOffset, pWidth, pHeight, pTextureWidth, pTextureHeight);
+    }
+
+    private static void innerBlit(PoseStack pPoseStack, float pX1, float pX2, float pY1, float pY2, float pBlitOffset, float pUWidth, float pVHeight, float pUOffset, float pVOffset, int pTextureWidth, int pTextureHeight) {
+        innerBlit(pPoseStack.last().pose(), pX1, pX2, pY1, pY2, pBlitOffset, (pUOffset + 0.0F) / (float)pTextureWidth, (pUOffset + pUWidth) / (float)pTextureWidth, (pVOffset + 0.0F) / (float)pTextureHeight, (pVOffset + pVHeight) / (float)pTextureHeight);
+    }
+
+    private static void innerBlit(Matrix4f pMatrix, float pX1, float pX2, float pY1, float pY2, float pBlitOffset, float pMinU, float pMaxU, float pMinV, float pMaxV) {
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
+        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        bufferbuilder.vertex(pMatrix, pX1, pY2, pBlitOffset).uv(pMinU, pMaxV).endVertex();
+        bufferbuilder.vertex(pMatrix, pX2, pY2, pBlitOffset).uv(pMaxU, pMaxV).endVertex();
+        bufferbuilder.vertex(pMatrix, pX2, pY1, pBlitOffset).uv(pMaxU, pMinV).endVertex();
+        bufferbuilder.vertex(pMatrix, pX1, pY1, pBlitOffset).uv(pMinU, pMinV).endVertex();
+        BufferUploader.drawWithShader(bufferbuilder.end());
     }
 }

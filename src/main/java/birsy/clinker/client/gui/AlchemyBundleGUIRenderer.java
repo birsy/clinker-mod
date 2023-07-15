@@ -1,8 +1,7 @@
-package birsy.clinker.client.render.gui;
+package birsy.clinker.client.gui;
 
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerItems;
-import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
@@ -211,9 +210,9 @@ public class AlchemyBundleGUIRenderer extends GuiComponent {
             float x = Mth.lerp(partialTick, previousPosition.x, currentPosition.x) + (Mth.sin(z + ticks * 0.05F) * floatProgress * 0.5F);
             float y = Mth.lerp(partialTick, previousPosition.y, currentPosition.y) + (Mth.cos(z + ticks * 0.07F) * floatProgress * 0.5F);
             float rot = ticks + partialTick + z;
-            GUIHelperFunctions.tryRenderGuiItem(renderer, stack, rot, x, y, 0.5F);
+            GuiHelper.tryRenderGuiItem(renderer, stack, rot, x, y, 0.5F);
             RenderSystem.setShader(GameRenderer::getPositionColorShader);
-            GUIHelperFunctions.renderGuiItemDecorations(renderer, Minecraft.getInstance().fontFilterFishy, stack, x, y, 0.5F, null);
+            GuiHelper.renderGuiItemDecorations(renderer, Minecraft.getInstance().fontFilterFishy, stack, x, y, 0.5F, null);
         }
     }
 }

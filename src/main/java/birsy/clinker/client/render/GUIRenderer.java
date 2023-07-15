@@ -1,6 +1,6 @@
 package birsy.clinker.client.render;
 
-import birsy.clinker.client.render.gui.AlchemyBundleGUIRenderer;
+import birsy.clinker.client.gui.AlchemyBundleGUIRenderer;
 import birsy.clinker.core.Clinker;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGuiEvent;

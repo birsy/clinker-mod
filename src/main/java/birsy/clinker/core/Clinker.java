@@ -1,7 +1,7 @@
 package birsy.clinker.core;
 
 import birsy.clinker.client.render.GUIRenderer;
-import birsy.clinker.client.render.gui.AlchemyBundleGUIRenderer;
+import birsy.clinker.client.gui.AlchemyBundleGUIRenderer;
 import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.world.level.chunk.gen.OthershoreChunkGenerator;
 import birsy.clinker.common.world.level.chunk.gen.TestChunkGenerator;

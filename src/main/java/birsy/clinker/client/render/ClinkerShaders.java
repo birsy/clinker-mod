@@ -17,8 +17,12 @@ import java.util.Objects;
 public class ClinkerShaders {
     @Nullable
     private static ShaderInstance skyCloudShader;
+    @Nullable
     private static ShaderInstance rendertypeEntityCutoutUnlitShader;
+    @Nullable
     private static ShaderInstance rendertypeEntityCutoutNoCullUnlitShader;
+    @Nullable
+    private static ShaderInstance positionColorTextureUnclampedShader;
 
     public static ShaderInstance getSkyCloudShader() {
         return Objects.requireNonNull(skyCloudShader, "Attempted to call getSkyCloudShader before shaders have finished loading.");
@@ -29,11 +33,16 @@ public class ClinkerShaders {
     public static ShaderInstance getEntityCutoutNoCullUnlitShader() {
         return Objects.requireNonNull(rendertypeEntityCutoutNoCullUnlitShader, "Attempted to call getEntityCutoutNoCullUnlitShader before shaders have finished loading.");
     }
+    public static ShaderInstance getPositionColorTextureUnclampedShader() {
+        return Objects.requireNonNull(positionColorTextureUnclampedShader, "Attempted to call getPositionColorTextureUnclampedShader before shaders have finished loading.");
+    }
+
     @SubscribeEvent
     public static void registerShaders(RegisterShadersEvent event) throws IOException {
         Clinker.LOGGER.info("registering shaders!");
         event.registerShader(new ShaderInstance(event.getResourceManager(), new ResourceLocation(Clinker.MOD_ID,"sky_cloud"), DefaultVertexFormat.POSITION_COLOR_TEX), (shader) -> skyCloudShader = shader);
-        event.registerShader(new ShaderInstance(event.getResourceManager(), new ResourceLocation(Clinker.MOD_ID,"rendertype_entity_unlit_cutout"), DefaultVertexFormat.POSITION_COLOR_TEX), (shader) -> rendertypeEntityCutoutUnlitShader = shader);
-        event.registerShader(new ShaderInstance(event.getResourceManager(), new ResourceLocation(Clinker.MOD_ID,"rendertype_entity_unlit_cutout_nocull"), DefaultVertexFormat.POSITION_COLOR_TEX), (shader) -> rendertypeEntityCutoutNoCullUnlitShader = shader);
+        event.registerShader(new ShaderInstance(event.getResourceManager(), new ResourceLocation(Clinker.MOD_ID,"rendertype_entity_unlit_cutout"), DefaultVertexFormat.NEW_ENTITY), (shader) -> rendertypeEntityCutoutUnlitShader = shader);
+        event.registerShader(new ShaderInstance(event.getResourceManager(), new ResourceLocation(Clinker.MOD_ID,"rendertype_entity_unlit_cutout_nocull"), DefaultVertexFormat.NEW_ENTITY), (shader) -> rendertypeEntityCutoutNoCullUnlitShader = shader);
+        event.registerShader(new ShaderInstance(event.getResourceManager(), new ResourceLocation(Clinker.MOD_ID,"position_color_tex_unclamped"), DefaultVertexFormat.POSITION_COLOR_TEX), (shader) -> positionColorTextureUnclampedShader = shader);
     }
 }

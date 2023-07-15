@@ -29,15 +29,21 @@ displayName="clinker" #mandatory
 # A file name (in the root of the mod JAR) containing a logo for display
 logoFile="logo.png" #optional
 # A text field displayed in the mod UI
-credits="Thanks to all those who provided inspiration to the mod, and kept me going through everything." #optional
+credits="In Memory of BEEFTONGUE."
 
-authors="A mod by CAPPIN. Music by SQUIRE. Additional artwork provided by RON. Additional music provided by PHIL_HE." #optional
+authors="A mod by CAPPIN. Music by SQUIRE. Additional code provided by RYANHCODE. Additional artwork provided by DAKRAS, KEYBOUNCE, ARATHIAN, FLOOFHIPS, and RON"
 
 description='''"Of the Claims of our Art, its Students, and its Method:
 
 All men who devote their lives to the study of any art, or to any kind of occupation, have before their eyes, as the aim of their efforts, perfection in the thing which they pursue.
 
-But only few attain to the goal of their wishes: there are many architects, but few masters of the art of architecture; many students of medicine, but few men like Hippocrates or Galen; many mathematicians, but few proficients like Archimedes; many poets, but few worthy to rank with Homer.
+But only few attain to the goal of their wishes: there are many architects, but few masters of the art of architecture;
+
+Many students of medicine, but few men like Hippocrates or Galen;
+
+Many mathematicians, but few proficients like Archimedes;
+
+Many poets, but few worthy to rank with Homer.
 
 Yet, even men who have nothing more than a respectable knowledge of their calling, are capable of being useful to society.
 
@@ -59,6 +65,7 @@ life and health.
 
 
 Hence, it is the most popular of all pursuits."'''
+
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
 [[dependencies.clinker]] #optional
     # the modid of the dependency

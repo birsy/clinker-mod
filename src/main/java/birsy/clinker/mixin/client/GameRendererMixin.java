@@ -27,16 +27,7 @@ public abstract class GameRendererMixin {
     @Inject(method = "bobView(Lcom/mojang/blaze3d/vertex/PoseStack;F)V", at = @At("TAIL"))
     private void bobView(PoseStack pMatrixStack, float pPartialTicks, CallbackInfo info) {
         if (this.minecraft.getCameraEntity() instanceof Player) {
-            Player player = (Player)this.minecraft.getCameraEntity();
-            float stepSize = player.walkDist - player.walkDistO;
-            float walkDistance = -(player.walkDist + stepSize * pPartialTicks);
-            float bob = Mth.lerp(pPartialTicks, player.oBob, player.bob);
 
-            Vector3f offset = new Vector3f(Mth.sin(walkDistance * Mth.PI) * bob * 0.5F, -Math.abs(Mth.cos(walkDistance * Mth.PI) * bob), 0.0F);
-            offset.transform(this.mainCamera.rotation());
-            this.mainCamera.setPosition(this.mainCamera.getPosition().add(offset.x(), offset.y(), offset.z()));
-            this.mainCamera.rotation.mul(Vector3f.ZP.rotationDegrees(Mth.sin(walkDistance * Mth.PI) * bob * 3.0F));
-            this.mainCamera.rotation.mul(Vector3f.XP.rotationDegrees(Math.abs(Mth.cos(walkDistance * Mth.PI - 0.2F) * bob) * 5.0F));
         }
     }
 }
