@@ -10,6 +10,7 @@ import com.mojang.math.Vector3f;
 import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportedException;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
@@ -131,6 +132,8 @@ public class GuiHelper {
         RenderSystem.applyModelViewMatrix();
     }
 
+
+
     @OnlyIn(Dist.CLIENT)
     public static void renderGuiItemDecorations(ItemRenderer renderer, Font font, ItemStack pStack, float pXPosition, float pYPosition, float alpha, @Nullable String pText) {
         if (!pStack.isEmpty()) {
@@ -176,6 +179,61 @@ public class GuiHelper {
 
             net.minecraftforge.client.ItemDecoratorHandler.of(pStack).render(font, pStack, (int) pXPosition, (int) pYPosition, renderer.blitOffset);
         }
+    }
+
+    public static void tryRenderGuiItem(ItemRenderer renderer, ItemStack pStack, PoseStack stack, float alpha) {
+        if (!pStack.isEmpty()) {
+            BakedModel bakedmodel = renderer.getModel(pStack, null, Minecraft.getInstance().player, 0);
+            renderer.blitOffset = bakedmodel.isGui3d() ? renderer.blitOffset + 50.0F : renderer.blitOffset + 50.0F;
+
+            try {
+                renderGuiItem(renderer, pStack, stack, bakedmodel, alpha);
+            } catch (Throwable throwable) {
+                CrashReport crashreport = CrashReport.forThrowable(throwable, "Rendering item");
+                CrashReportCategory crashreportcategory = crashreport.addCategory("Item being rendered");
+                crashreportcategory.setDetail("Item Type", () -> String.valueOf(pStack.getItem()));
+                crashreportcategory.setDetail("Registry Name", () -> String.valueOf(net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(pStack.getItem())));
+                crashreportcategory.setDetail("Item Damage", () -> String.valueOf(pStack.getDamageValue()));
+                crashreportcategory.setDetail("Item NBT", () -> String.valueOf(pStack.getTag()));
+                crashreportcategory.setDetail("Item Foil", () -> String.valueOf(pStack.hasFoil()));
+                throw new ReportedException(crashreport);
+            }
+
+            renderer.blitOffset = bakedmodel.isGui3d() ? renderer.blitOffset - 50.0F : renderer.blitOffset - 50.0F;
+        }
+    }
+
+    protected static void renderGuiItem(ItemRenderer renderer, ItemStack pStack, PoseStack stack, BakedModel pBakedModel, float alpha) {
+        Minecraft mc = Minecraft.getInstance();
+        mc.textureManager.getTexture(TextureAtlas.LOCATION_BLOCKS).setFilter(false, false);
+        RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
+        RenderSystem.enableBlend();
+        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
+
+        stack.pushPose();
+
+        stack.scale(1.0F, -1.0F, 1.0F);
+        stack.scale(16.0F, 16.0F, 16.0F);
+
+
+        MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
+
+
+        boolean flag = !pBakedModel.usesBlockLight();
+        if (flag) {
+            final Vector3f DIFFUSE_LIGHT_0 = Util.make(new Vector3f(-0.8F, -1F, 0), Vector3f::normalize);
+            final Vector3f DIFFUSE_LIGHT_1 = Util.make(new Vector3f(0, 0, -1F), Vector3f::normalize);
+
+            RenderSystem.setupGui3DDiffuseLighting(DIFFUSE_LIGHT_0, DIFFUSE_LIGHT_1);
+        }
+
+        renderer.render(pStack, ItemTransforms.TransformType.GUI, false, stack, bufferSource, 15728880, OverlayTexture.NO_OVERLAY, pBakedModel);
+        bufferSource.endBatch();
+
+        RenderSystem.enableDepthTest();
+        stack.popPose();
+        RenderSystem.applyModelViewMatrix();
     }
 
     public static void fillRect(BufferBuilder pRenderer, float pX, float pY, float pWidth, float pHeight, float pRed, float pGreen, float pBlue, float pAlpha) {

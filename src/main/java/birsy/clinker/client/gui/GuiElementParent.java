@@ -26,8 +26,7 @@ public abstract class GuiElementParent extends Screen {
         }
     }
 
-    @Override
-    public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+    protected void updateHoverState(int pMouseX, int pMouseY, float pPartialTick) {
         GuiElement newHoveredElement = GuiHelper.findHoveredElement(leafNodes, pMouseX, pMouseY, pPartialTick);
         if (newHoveredElement != hoveredElement) {
             if (this.hoveredElement != null) hoveredElement.hovered = false;
@@ -38,8 +37,12 @@ public abstract class GuiElementParent extends Screen {
                 hoveredElement.hovered = true;
                 hoveredElement.onHover(pMouseX, pMouseY);
             }
-
         }
+    }
+
+    @Override
+    public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+        updateHoverState(pMouseX, pMouseY, pPartialTick);
 
         for (GuiElement root : this.roots) {
             root.render(pPoseStack, pMouseX, pMouseY, pPartialTick);

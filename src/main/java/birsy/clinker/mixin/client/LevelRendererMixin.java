@@ -1,5 +1,6 @@
 package birsy.clinker.mixin.client;
 
+import birsy.clinker.client.ClinkerCursor;
 import birsy.clinker.client.gui.AlchemicalWorkstationScreen;
 import birsy.clinker.client.render.world.InteractableRenderer;
 import birsy.clinker.client.render.world.VolumetricRenderer;
@@ -34,6 +35,7 @@ public abstract class LevelRendererMixin {
     @Inject(method = "onResourceManagerReload(Lnet/minecraft/server/packs/resources/ResourceManager;)V", at = @At("TAIL"))
     private void onResourceManagerLoad(ResourceManager pResourceManager, CallbackInfo ci) throws IOException {
         VolumetricRenderer.init();
+        ClinkerCursor.init();
     }
 
     @Inject(method = "resize(II)V", at = @At("TAIL"))

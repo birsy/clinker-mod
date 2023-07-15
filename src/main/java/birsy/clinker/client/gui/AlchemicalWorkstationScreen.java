@@ -1,5 +1,6 @@
 package birsy.clinker.client.gui;
 
+import birsy.clinker.client.ClinkerCursor;
 import birsy.clinker.client.render.ClinkerShaders;
 import birsy.clinker.common.world.alchemy.workstation.AlchemicalWorkstation;
 import birsy.clinker.core.Clinker;
@@ -7,6 +8,7 @@ import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
+import com.mojang.math.Vector3f;
 import net.minecraft.client.Camera;
 import net.minecraft.client.GameNarrator;
 import net.minecraft.client.Minecraft;
@@ -21,6 +23,8 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.common.Mod;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWImage;
 
 @OnlyIn(Dist.CLIENT)
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = Clinker.MOD_ID)
@@ -39,9 +43,11 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
     private InventoryElement inventoryElement;
     
     private static final ResourceLocation TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/gui/workstation.png");
-    private static int RES_X = 128;
-    private static int RES_Y = 256;
-    
+    private static final int RES_X = 128;
+    private static final int RES_Y = 256;
+
+    private ClinkerCursor.CursorState cursorState;
+
     public AlchemicalWorkstationScreen(AlchemicalWorkstation workstation) {
         super(GameNarrator.NO_TITLE);
         this.workstation = workstation;
@@ -54,6 +60,7 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
         this.targetCamPos = pos;
 
         this.screenTransition = 0;
+        GLFW.glfwSetInputMode(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_HIDDEN);
     }
 
     @Override
@@ -120,6 +127,12 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
         this.isClosing = true;
     }
 
+    @Override
+    public void onClose() {
+        GLFW.glfwSetInputMode(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
+        super.onClose();
+    }
+
     public void tick() {
         super.tick();
         this.pCurrentCamPos = this.currentCamPos.add(0, 0, 0);
@@ -134,12 +147,58 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
     }
 
     @Override
+    protected void updateHoverState(int pMouseX, int pMouseY, float pPartialTick) {
+        GuiElement newHoveredElement = GuiHelper.findHoveredElement(leafNodes, pMouseX, pMouseY, pPartialTick);
+        if (newHoveredElement != hoveredElement) {
+            if (this.hoveredElement != null) hoveredElement.hovered = false;
+
+            hoveredElement = newHoveredElement;
+
+            if (hoveredElement != null) {
+                hoveredElement.hovered = true;
+                hoveredElement.onHover(pMouseX, pMouseY);
+            }
+        }
+    }
+
+    @Override
+    public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
+        this.cursorState = ClinkerCursor.CursorState.GRAB;
+        return super.mouseClicked(pMouseX, pMouseY, pButton);
+    }
+
+    @Override
+    public boolean mouseReleased(double pMouseX, double pMouseY, int pButton) {
+        this.cursorState = ClinkerCursor.CursorState.IDLE;
+        return super.mouseReleased(pMouseX, pMouseY, pButton);
+    }
+
+    @Override
     public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
         Vec2 middle = GuiHelper.toGuiSpace(this, this.minecraft.getWindow().getWidth() * 0.5F, this.minecraft.getWindow().getHeight() * 0.5F);
         inventoryElement.y = middle.y - (inventoryElement.height * 0.5F);
         inventoryElement.pY = inventoryElement.y;
         inventoryElement.setScreenTransition(this.getScreenTransition(pPartialTick));
+
         super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
+
+        //todo: do this the proper GLFW way
+        Vec2 mousePos = GuiHelper.toGuiSpace(this, (float) Minecraft.getInstance().mouseHandler.xpos(), (float) Minecraft.getInstance().mouseHandler.ypos());
+        if (cursorState != ClinkerCursor.CursorState.GRAB) {
+            if (hoveredElement != null) {
+                cursorState = ClinkerCursor.CursorState.HOVER;
+            } else {
+                cursorState = ClinkerCursor.CursorState.IDLE;
+            }
+        }
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderTexture(0, TEXTURE);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.disableDepthTest();
+
+        GuiHelper.blit(pPoseStack, mousePos.x, mousePos.y - 3, cursorState.ordinal() * 16, 0, 16, 16, RES_X, RES_Y);
     }
 
     public void setCameraView(Camera camera, float partialTick) {
@@ -165,7 +224,7 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
         protected InventoryElement(float x, float y) {
             super(x, y, 105, 197, true);
             this.uOffset = 0;
-            this.vOffset = 16;
+            this.vOffset = 17;
             this.setTexture(TEXTURE, 128, 256);
         }
 
@@ -221,7 +280,7 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
         }
 
         public void setScreenTransition(float screenTransition) {
-            this.screenTrans = screenTransition;
+            this.screenTrans = 1 - screenTransition;
         }
     }
 
@@ -338,7 +397,8 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
             RenderSystem.enableBlend();
             BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
 
-            float velocityOffset = Mth.clamp(-parentVelocity * MathUtils.awfulRandom(this.id * Mth.PI * 256) * 1, -4, 4);
+            float awfulRandom = MathUtils.awfulRandom(this.id * Mth.PI * 256);
+            float velocityOffset = Mth.clamp(-getParentVelocity(pPartialTick) * awfulRandom, -4, 4);
 
             //draw shadow
             if (!this.getItem().isEmpty()) {
@@ -381,7 +441,18 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
             float rotation = Mth.cos((this.clientTicks + pPartialTick) * 0.01F + this.id * 20) * 15;
             float rotSign = this.id % 2 == 0 ? -1 : 1;
             rotation += rotSign * Mth.sin((this.hoverTicks + pPartialTick) * 0.05F) * 45 * this.getWiggle(pPartialTick);
-            GuiHelper.tryRenderGuiItem(Minecraft.getInstance().getItemRenderer(), stack, rotation, this.getScreenX(pPartialTick) + velocityOffset, this.getScreenY(pPartialTick) - 3 * this.getWiggle(pPartialTick), 1.0F);
+            //GuiHelper.tryRenderGuiItem(Minecraft.getInstance().getItemRenderer(), stack, rotation, this.getScreenX(pPartialTick) + velocityOffset, this.getScreenY(pPartialTick) - 3 * this.getWiggle(pPartialTick), 1.0F);
+            pPoseStack.pushPose();
+            pPoseStack.translate(velocityOffset, -3 * this.getWiggle(pPartialTick), 0);
+            pPoseStack.translate(0, 0, 100.0F + Minecraft.getInstance().getItemRenderer().blitOffset);
+            pPoseStack.translate(8.0D, 8.0D, 8.0D);
+            pPoseStack.mulPose(Vector3f.YP.rotationDegrees(rotation));
+            pPoseStack.translate(0.0D, 4.0D, 0.0D);
+            pPoseStack.mulPose(Vector3f.ZP.rotation(Mth.clamp(-getParentVelocity(pPartialTick) * Mth.lerp(0.5F, awfulRandom, 1), -4, 4) * 0.05F));
+            pPoseStack.translate(0.0D, -4.0D, 0.0D);
+
+            GuiHelper.tryRenderGuiItem(Minecraft.getInstance().getItemRenderer(), stack, pPoseStack, 1.0F);
+            pPoseStack.popPose();
         }
 
         public ItemStack getItem() {
