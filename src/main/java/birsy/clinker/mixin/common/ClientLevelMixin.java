@@ -1,5 +1,7 @@
 package birsy.clinker.mixin.common;
 
+import birsy.clinker.common.world.alchemy.workstation.Workstation;
+import birsy.clinker.common.world.alchemy.workstation.WorkstationManager;
 import birsy.clinker.common.world.level.interactable.InteractableManager;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -20,7 +22,9 @@ public class ClientLevelMixin {
 
     @Inject(method = "tick(Ljava/util/function/BooleanSupplier;)V", at = @At("TAIL"))
     public void tick(BooleanSupplier pHasTimeLeft, CallbackInfo ci) {
-        InteractableManager manager = InteractableManager.clientInteractableManager;
-        manager.tick();
+        InteractableManager iManager = InteractableManager.clientInteractableManager;
+        iManager.tick();
+        WorkstationManager wManager = WorkstationManager.clientWorkstationManager;
+        wManager.tick();
     }
 }

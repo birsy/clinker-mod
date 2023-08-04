@@ -1,6 +1,9 @@
 package birsy.clinker.client.render.world.blockentity;
 
+import birsy.clinker.client.render.DebugRenderUtil;
 import birsy.clinker.common.world.alchemy.workstation.PhysicalItem;
+import birsy.clinker.common.world.alchemy.workstation.Workstation;
+import birsy.clinker.common.world.alchemy.workstation.camera.CameraPath;
 import birsy.clinker.common.world.block.blockentity.CounterBlockEntity;
 import birsy.clinker.common.world.physics.rigidbody.Transform;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -9,6 +12,7 @@ import com.mojang.math.Matrix3f;
 import com.mojang.math.Matrix4f;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -24,27 +28,34 @@ public class CounterRenderer<T extends CounterBlockEntity> implements BlockEntit
 
     @Override
     public void render(T pBlockEntity, float pPartialTick, PoseStack pPoseStack, MultiBufferSource pBufferSource, int pPackedLight, int pPackedOverlay) {
-        int items = 0;
-        for (PhysicalItem item : pBlockEntity.workstation.getItems()) {
-            pPoseStack.pushPose();
-            float scale = 0.5F;
-            Transform transform = item.getTransform(pPartialTick);
-            Vec3 position = transform.getPosition().subtract(pBlockEntity.getBlockPos().getX(), pBlockEntity.getBlockPos().getY(), pBlockEntity.getBlockPos().getZ());
-            pPoseStack.translate(position.x, position.y, position.z);
-            pPoseStack.scale(scale, scale, scale);
-            pPoseStack.mulPose(transform.getOrientation().toMojangQuaternion());
-            //pPoseStack.mulPose(Vector3f.YP.rotationDegrees(items * 3312.53829F));
+        Workstation station = pBlockEntity.workstation;
+        Vec3 blockPos = new Vec3(pBlockEntity.getBlockPos().getX(), pBlockEntity.getBlockPos().getY(), pBlockEntity.getBlockPos().getZ());
+//        if (station != null) {
+//
+//        }
 
-            int lightColor = 15728880;
-            if (pBlockEntity.getLevel() != null) {
-                lightColor = LevelRenderer.getLightColor(pBlockEntity.getLevel(), new BlockPos(item.getCenterOfMass().x(), item.getCenterOfMass().y(), item.getCenterOfMass().z()));
-            }
 
-            itemRenderer.renderStatic(item.asItemStack(), ItemTransforms.TransformType.FIXED, lightColor, pPackedOverlay, pPoseStack, pBufferSource, items + ItemTransforms.TransformType.FIXED.ordinal());
-
-            pPoseStack.popPose();
-            items++;
-        }
+//        int items = 0;
+//        for (PhysicalItem item : pBlockEntity.workstation.getItems()) {
+//            pPoseStack.pushPose();
+//            float scale = 0.5F;
+//            Transform transform = item.getTransform(pPartialTick);
+//            Vec3 position = transform.getPosition().subtract(pBlockEntity.getBlockPos().getX(), pBlockEntity.getBlockPos().getY(), pBlockEntity.getBlockPos().getZ());
+//            pPoseStack.translate(position.x, position.y, position.z);
+//            pPoseStack.scale(scale, scale, scale);
+//            pPoseStack.mulPose(transform.getOrientation().toMojangQuaternion());
+//            //pPoseStack.mulPose(Vector3f.YP.rotationDegrees(items * 3312.53829F));
+//
+//            int lightColor = 15728880;
+//            if (pBlockEntity.getLevel() != null) {
+//                lightColor = LevelRenderer.getLightColor(pBlockEntity.getLevel(), new BlockPos(item.getCenterOfMass().x(), item.getCenterOfMass().y(), item.getCenterOfMass().z()));
+//            }
+//
+//            itemRenderer.renderStatic(item.asItemStack(), ItemTransforms.TransformType.FIXED, lightColor, pPackedOverlay, pPoseStack, pBufferSource, items + ItemTransforms.TransformType.FIXED.ordinal());
+//
+//            pPoseStack.popPose();
+//            items++;
+//        }
 
        /*for (IBody body : pBlockEntity.workstation.bodies) {
             if (body instanceof ICollidable cBody) {

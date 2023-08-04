@@ -11,6 +11,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 
 public class DebugRenderUtil {
+    public static void renderCube(PoseStack pPoseStack, VertexConsumer pConsumer, float pRed, float pGreen, float pBlue, float pAlpha) {
+        renderBox(pPoseStack, pConsumer, 0, 0, 0, 1, 1, 1, pRed, pGreen, pBlue, pAlpha);
+    }
+
     public static void renderBox(PoseStack pPoseStack, VertexConsumer pConsumer, double pMinX, double pMinY, double pMinZ, double pMaxX, double pMaxY, double pMaxZ, float pRed, float pGreen, float pBlue, float pAlpha) {
         Matrix4f matrix4f = pPoseStack.last().pose();
         Matrix3f matrix3f = pPoseStack.last().normal();

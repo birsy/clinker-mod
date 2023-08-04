@@ -1,13 +1,9 @@
 package birsy.clinker.mixin.common;
 
-import birsy.clinker.common.networking.ClinkerPacketHandler;
-import birsy.clinker.common.networking.packet.ClientboundInteractableAddPacket;
-import birsy.clinker.common.world.level.interactable.Interactable;
 import birsy.clinker.common.world.level.interactable.InteractableManager;
 import birsy.clinker.core.Clinker;
 import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
 import net.minecraft.server.level.ChunkMap;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.chunk.LevelChunk;
 import org.apache.commons.lang3.mutable.MutableObject;
@@ -15,9 +11,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.List;
-import java.util.Map;
 
 @Mixin(ChunkMap.class)
 public class ChunkMapMixin {

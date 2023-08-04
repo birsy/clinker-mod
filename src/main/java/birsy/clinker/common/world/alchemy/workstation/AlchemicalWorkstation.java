@@ -17,6 +17,7 @@ import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.*;
 
+@Deprecated
 public class AlchemicalWorkstation extends VerletPhysicsEnvironment implements INBTSerializable<CompoundTag> {
     public Level level;
     private List<PhysicalItem> items;

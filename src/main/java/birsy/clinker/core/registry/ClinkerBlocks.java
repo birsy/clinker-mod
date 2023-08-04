@@ -35,9 +35,9 @@ public class ClinkerBlocks
 	// Blocks
 	//Alchemy
 	public static final RegistryObject<Block> FERMENTATION_BARREL = createBlock("fermentation_barrel", FermentationBarrelBlock::new, Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> BLANK_SARCOPHAGUS = createBlock("blank_sarcophagus", () -> new SarcophagusBlock(getBrimstoneProperties().noOcclusion()), Clinker.CLINKER_BLOCKS);
 	public static final RegistryObject<Block> COUNTER = createBlock("counter", () -> new CounterBlock(BlockBehaviour.Properties.of(Material.WOOD, MaterialColor.COLOR_LIGHT_GRAY).strength(1.0f, 2.0f).sound(SoundType.WOOD)), Clinker.CLINKER_BLOCKS);
 
+	public static final RegistryObject<Block> BLANK_SARCOPHAGUS = createBlock("blank_sarcophagus", () -> new SarcophagusBlock(getBrimstoneProperties().noOcclusion()), Clinker.CLINKER_BLOCKS);
 	public static final RegistryObject<Block> STOVE = createBlock("stove", () -> new StoveControllerBlock(BlockBehaviour.Properties.copy(Blocks.BRICKS).sound(SoundType.NETHER_BRICKS)), Clinker.CLINKER_BLOCKS);
 	public static final RegistryObject<Block> STOVE_DUMMY = createBlock("stove_dummy", () -> new StoveBlock(BlockBehaviour.Properties.copy(Blocks.BRICKS).sound(SoundType.NETHER_BRICKS)), null);
 	public static final RegistryObject<Block> STOVE_CHIMNEY = createBlock("stove_chimney", () -> new StoveChimneyBlock(BlockBehaviour.Properties.copy(Blocks.BRICKS).sound(SoundType.NETHER_BRICKS).noOcclusion()), null);

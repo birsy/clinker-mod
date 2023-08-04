@@ -22,7 +22,7 @@ configurations {
     implementation.extendsFrom(shadow)
 }
 
-version = "1.19.2-0.0.5.7"
+version = "1.19.2-0.0.6.2"
 group = 'birsy.clinker'
 archivesBaseName = 'clinker'
 

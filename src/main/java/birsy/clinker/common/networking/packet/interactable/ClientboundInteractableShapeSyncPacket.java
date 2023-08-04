@@ -1,30 +1,31 @@
-package birsy.clinker.common.networking.packet;
+package birsy.clinker.common.networking.packet.interactable;
 
+import birsy.clinker.common.networking.packet.ClientboundPacket;
 import birsy.clinker.common.world.level.interactable.Interactable;
 import birsy.clinker.common.world.level.interactable.InteractableManager;
 import birsy.clinker.core.Clinker;
-import birsy.clinker.common.world.physics.rigidbody.Transform;
+import birsy.clinker.common.world.physics.rigidbody.colliders.OBBCollisionShape;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.UUID;
 
-public class ClientboundInteractableTranslationSyncPacket extends ClientboundPacket {
+public class ClientboundInteractableShapeSyncPacket extends ClientboundPacket {
     private UUID interactableID;
-    private Transform interactableTransform;
+    private OBBCollisionShape shape;
 
-    public ClientboundInteractableTranslationSyncPacket(Interactable interactable) {
+    public ClientboundInteractableShapeSyncPacket(Interactable interactable) {
         this.interactableID = interactable.uuid;
-        this.interactableTransform = interactable.getTransform();
+        this.shape = interactable.shape;
     }
 
-    public ClientboundInteractableTranslationSyncPacket(FriendlyByteBuf buffer) {
+    public ClientboundInteractableShapeSyncPacket(FriendlyByteBuf buffer) {
         long[] bits = buffer.readLongArray();
         this.interactableID = new UUID(bits[0], bits[1]);
 
         CompoundTag tag = buffer.readNbt();
-        this.interactableTransform = Transform.fromNBT(tag);
+        this.shape = (OBBCollisionShape) new OBBCollisionShape(0, 0, 0).deserialize(tag);
     }
 
     @Override
@@ -32,7 +33,7 @@ public class ClientboundInteractableTranslationSyncPacket extends ClientboundPac
         long[] bits = {interactableID.getMostSignificantBits(), interactableID.getLeastSignificantBits()};
         buffer.writeLongArray(bits);
 
-        buffer.writeNbt(interactableTransform.serialize());
+        buffer.writeNbt(shape.serialize());
     }
 
     @Override
@@ -43,6 +44,6 @@ public class ClientboundInteractableTranslationSyncPacket extends ClientboundPac
             Clinker.LOGGER.warn("No interactable with UUID " + this.interactableID + " found on client!");
             return;
         }
-        interactable.setTransform(this.interactableTransform);
+        interactable.shape = this.shape;
     }
 }

@@ -1,7 +1,7 @@
 package birsy.clinker.common.world.level.interactable;
 
 import birsy.clinker.common.networking.ClinkerPacketHandler;
-import birsy.clinker.common.networking.packet.ServerboundInteractableInteractionPacket;
+import birsy.clinker.common.networking.packet.interactable.ServerboundInteractableInteractionPacket;
 import birsy.clinker.common.world.physics.rigidbody.colliders.OBBCollisionShape;
 import net.minecraft.world.entity.Entity;
 

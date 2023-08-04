@@ -221,12 +221,26 @@ public class GuiHelper {
 
 
         boolean flag = !pBakedModel.usesBlockLight();
-        if (flag) {
-            final Vector3f DIFFUSE_LIGHT_0 = Util.make(new Vector3f(-0.8F, -1F, 0), Vector3f::normalize);
-            final Vector3f DIFFUSE_LIGHT_1 = Util.make(new Vector3f(0, 0, -1F), Vector3f::normalize);
+        Vector3f DIFFUSE_LIGHT_0 = Util.make(new Vector3f(0.2F, 1.0F, -0.7F), Vector3f::normalize);
+        Vector3f DIFFUSE_LIGHT_1 = Util.make(new Vector3f(1.0F, 1.0F, 1.0F), (vec) -> {
+            vec.transform(stack.last().normal());
+            vec.normalize();
+        });
+        //DIFFUSE_LIGHT_1.transform(stack.last().normal());
 
-            RenderSystem.setupGui3DDiffuseLighting(DIFFUSE_LIGHT_0, DIFFUSE_LIGHT_1);
+        //RenderSystem.setupGui3DDiffuseLighting(DIFFUSE_LIGHT_1, DIFFUSE_LIGHT_1);
+        //RenderSystem.setupGuiFlatDiffuseLighting(DIFFUSE_LIGHT_1, DIFFUSE_LIGHT_1);
+
+        if (pBakedModel.isGui3d()) {
+            Vector3f DL_0 = new Vector3f(0.2F, -1.0F, -0.7F);
+            DL_0.normalize();
+            Vector3f DL_1 = new Vector3f(-0.2F, -1.0F, 0.7F);
+            DL_1.normalize();
+            RenderSystem.setupGui3DDiffuseLighting(DL_1, DL_0);
+        } else {
+            Lighting.setupForFlatItems();
         }
+
 
         renderer.render(pStack, ItemTransforms.TransformType.GUI, false, stack, bufferSource, 15728880, OverlayTexture.NO_OVERLAY, pBakedModel);
         bufferSource.endBatch();

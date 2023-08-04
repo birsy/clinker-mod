@@ -46,14 +46,14 @@ public abstract class LevelRendererMixin {
     @Inject(method = "setupRender(Lnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/culling/Frustum;ZZ)V", at = @At("HEAD"))
     private void setupRender(Camera pCamera, Frustum pFrustrum, boolean pHasCapturedFrustrum, boolean pIsSpectator, CallbackInfo ci) {
         if (Minecraft.getInstance().screen instanceof AlchemicalWorkstationScreen screen) {
-            screen.setCameraView(pCamera, Minecraft.getInstance().getPartialTick());
+            screen.setCameraView(pCamera, null, Minecraft.getInstance().getPartialTick());
         }
     }
 
     @Inject(method = "renderLevel(Lcom/mojang/blaze3d/vertex/PoseStack;FJZLnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/GameRenderer;Lnet/minecraft/client/renderer/LightTexture;Lcom/mojang/math/Matrix4f;)V", at = @At("HEAD"))
     private void render(PoseStack pPoseStack, float pPartialTick, long pFinishNanoTime, boolean pRenderBlockOutline, Camera pCamera, GameRenderer pGameRenderer, LightTexture pLightTexture, Matrix4f pProjectionMatrix, CallbackInfo ci) {
         if (Minecraft.getInstance().screen instanceof AlchemicalWorkstationScreen screen) {
-            screen.setCameraView(pCamera, Minecraft.getInstance().getPartialTick());
+            screen.setCameraView(pCamera, pPoseStack, Minecraft.getInstance().getPartialTick());
         }
     }
 }

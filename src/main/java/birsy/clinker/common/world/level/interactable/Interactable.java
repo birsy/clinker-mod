@@ -219,6 +219,10 @@ public abstract class Interactable {
         return (I) new ClientDummyInteractable((OBBCollisionShape) (new OBBCollisionShape(0, 0, 0).deserialize(tag)), tag.getUUID("uuid"), tag.getBoolean("outline"));
     }
 
+    /*
+     * TODO: i was a fucking idiot, this could just be done with a constructor.
+     *  do that.
+     */
     @Nullable
     public static <I extends Interactable> I deserialize(CompoundTag tag) {
         // deranged reflection bullshit !!!

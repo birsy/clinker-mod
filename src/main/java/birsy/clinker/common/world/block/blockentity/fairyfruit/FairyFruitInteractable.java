@@ -2,7 +2,7 @@ package birsy.clinker.common.world.block.blockentity.fairyfruit;
 
 import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.ClientboundFairyFruitBreakPacket;
-import birsy.clinker.common.networking.packet.ServerboundInteractableInteractionPacket;
+import birsy.clinker.common.networking.packet.interactable.ServerboundInteractableInteractionPacket;
 import birsy.clinker.common.world.level.interactable.*;
 import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.common.world.physics.rigidbody.colliders.OBBCollisionShape;

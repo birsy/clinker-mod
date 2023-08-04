@@ -2,6 +2,7 @@ package birsy.clinker.core.util;
 
 import birsy.clinker.core.Clinker;
 import com.ibm.icu.impl.Pair;
+import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.math.Matrix3f;
 import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
@@ -20,6 +21,18 @@ import java.util.function.Function;
 /* cappin's math utils
  * hope you find this useful :) */
 public class MathUtils {
+    public static Vec3 convertColorToVec3(int rgbaColor) {
+        int red = NativeImage.getR(rgbaColor);
+        int green = NativeImage.getG(rgbaColor);
+        int blue = NativeImage.getB(rgbaColor);
+
+        double normalizedRed = red / 255.0;
+        double normalizedGreen = green / 255.0;
+        double normalizedBlue = blue / 255.0;
+
+        return new Vec3(normalizedRed, normalizedGreen, normalizedBlue);
+    }
+
     private static final double[] ASIN = Util.make(new double[65536], (array) -> {
         for(int i = 0; i < array.length; ++i) {
             array[i] = Math.asin((double)i * Math.PI * 2.0D / (double)array.length);
@@ -33,6 +46,14 @@ public class MathUtils {
 
     public static BlockPos blockPosFromVec3(Vec3 vector) {
         return new BlockPos(vector.x(), vector.y(), vector.z());
+    }
+
+    // Like modulo, but works with negative numbers
+    // from: https://stackoverflow.com/questions/4412179/best-way-to-make-javas-modulus-behave-like-it-should-with-negative-numbers/4412200#4412200
+    public static int wrap(int x, int n) {
+        int remainder = (x % n); // may be negative if x is negative
+        //if remainder is negative, adds n, otherwise adds 0
+        return ((remainder >> 31) & n) + remainder;
     }
 
     public static Vec3 vec3Lerp(float delta, Vec3 start, Vec3 end) {

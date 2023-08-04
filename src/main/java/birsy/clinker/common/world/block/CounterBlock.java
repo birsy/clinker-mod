@@ -43,8 +43,10 @@ public class CounterBlock extends BaseEntityBlock {
 	@Override
 	public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
 		if (pLevel.isClientSide) {
-			AlchemicalWorkstationScreen screen = new AlchemicalWorkstationScreen(((CounterBlockEntity) pLevel.getBlockEntity(pPos)).workstation);
-			Minecraft.getInstance().setScreen(screen);
+			if (((CounterBlockEntity) pLevel.getBlockEntity(pPos)).workstation != null) {
+				AlchemicalWorkstationScreen screen = new AlchemicalWorkstationScreen(((CounterBlockEntity) pLevel.getBlockEntity(pPos)).workstation);
+				Minecraft.getInstance().setScreen(screen);
+			}
 		}
 		return super.use(pState, pLevel, pPos, pPlayer, pHand, pHit);
 	}

@@ -1,6 +1,7 @@
 
 package birsy.clinker.mixin.common;
 
+import birsy.clinker.common.world.alchemy.workstation.WorkstationManager;
 import birsy.clinker.common.world.level.interactable.InteractableManager;
 import birsy.clinker.core.Clinker;
 import net.minecraft.resources.ResourceKey;
@@ -25,8 +26,11 @@ public abstract class ServerLevelMixin {
     @Inject(method = "<init>(Lnet/minecraft/server/MinecraftServer;Ljava/util/concurrent/Executor;Lnet/minecraft/world/level/storage/LevelStorageSource$LevelStorageAccess;Lnet/minecraft/world/level/storage/ServerLevelData;Lnet/minecraft/resources/ResourceKey;Lnet/minecraft/world/level/dimension/LevelStem;Lnet/minecraft/server/level/progress/ChunkProgressListener;ZJLjava/util/List;Z)V", at = @At("TAIL"))
     public void init(MinecraftServer pServer, Executor pDispatcher, LevelStorageSource.LevelStorageAccess pLevelStorageAccess, ServerLevelData pServerLevelData, ResourceKey pDimensionKey, LevelStem pLevelStem, ChunkProgressListener pProgressListener, boolean pIsDebug, long pSeed, List pCustomSpawners, boolean pTickTime, CallbackInfo ci) {
         ServerLevel me = (ServerLevel)(Object)this;
-        Clinker.LOGGER.info(me);
         InteractableManager.serverInteractableManagers.put(me, new InteractableManager(me));
+
+        WorkstationManager manager = new WorkstationManager(me);
+        WorkstationManager.managerByLevel.put(me, manager);
+        WorkstationManager.managerByDimension.put(me.dimension(), manager);
     }
 
     @Inject(method = "unload(Lnet/minecraft/world/level/chunk/LevelChunk;)V", at = @At("TAIL"))
@@ -37,8 +41,10 @@ public abstract class ServerLevelMixin {
 
     @Inject(method = "tick(Ljava/util/function/BooleanSupplier;)V", at = @At("TAIL"))
     public void tick(BooleanSupplier pHasTimeLeft, CallbackInfo ci) {
-        InteractableManager manager = InteractableManager.serverInteractableManagers.get(((ServerLevel)(Object)this));
-        manager.tick();
+        InteractableManager iManager = InteractableManager.serverInteractableManagers.get(((ServerLevel)(Object)this));
+        iManager.tick();
+        WorkstationManager wManager = WorkstationManager.managerByLevel.get(((ServerLevel)(Object)this));
+        wManager.tick();
     }
 }
 

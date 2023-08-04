@@ -1,10 +1,10 @@
 package birsy.clinker.common.world.level.interactable;
 
 import birsy.clinker.common.networking.ClinkerPacketHandler;
-import birsy.clinker.common.networking.packet.ClientboundInteractableAddPacket;
-import birsy.clinker.common.networking.packet.ClientboundInteractableRemovePacket;
-import birsy.clinker.common.networking.packet.ClientboundInteractableShapeSyncPacket;
-import birsy.clinker.common.networking.packet.ClientboundInteractableTranslationSyncPacket;
+import birsy.clinker.common.networking.packet.interactable.ClientboundInteractableAddPacket;
+import birsy.clinker.common.networking.packet.interactable.ClientboundInteractableRemovePacket;
+import birsy.clinker.common.networking.packet.interactable.ClientboundInteractableShapeSyncPacket;
+import birsy.clinker.common.networking.packet.interactable.ClientboundInteractableTranslationSyncPacket;
 import birsy.clinker.common.world.level.interactable.storage.InteractableStorage;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
@@ -84,7 +84,6 @@ public class InteractableManager {
     public Level level;
     private int ticks;
 
-    public List<ChunkPos> chunksIntersectedWithRay = new ArrayList<>();
     public InteractableManager(Level level) {
         this.storage = new InteractableStorage();
         this.level = level;

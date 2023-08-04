@@ -1,6 +1,11 @@
 package birsy.clinker.common.networking;
 
 import birsy.clinker.common.networking.packet.*;
+import birsy.clinker.common.networking.packet.interactable.*;
+import birsy.clinker.common.networking.packet.workstation.ClientboundWorkstationChangeBlockPacket;
+import birsy.clinker.common.networking.packet.workstation.ClientboundWorkstationLoadPacket;
+import birsy.clinker.common.networking.packet.workstation.ClientboundWorkstationMergePacket;
+import birsy.clinker.common.networking.packet.workstation.ServerboundWorkstationLoadRequestPacket;
 import birsy.clinker.core.Clinker;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -45,6 +50,10 @@ public class ClinkerPacketHandler {
         NETWORK.registerMessage(createId(), ClientboundFairyFruitBreakPacket.class, ClientboundFairyFruitBreakPacket::toBytes, ClientboundFairyFruitBreakPacket::new, ClientboundFairyFruitBreakPacket::handle);
         NETWORK.registerMessage(createId(), ClientboundFairyFruitRemovalPacket.class, ClientboundFairyFruitRemovalPacket::toBytes, ClientboundFairyFruitRemovalPacket::new, ClientboundFairyFruitRemovalPacket::handle);
 
+        NETWORK.registerMessage(createId(), ClientboundWorkstationChangeBlockPacket.class, ClientboundWorkstationChangeBlockPacket::toBytes, ClientboundWorkstationChangeBlockPacket::new, ClientboundWorkstationChangeBlockPacket::handle);
+        NETWORK.registerMessage(createId(), ClientboundWorkstationLoadPacket.class, ClientboundWorkstationLoadPacket::toBytes, ClientboundWorkstationLoadPacket::new, ClientboundWorkstationLoadPacket::handle);
+        NETWORK.registerMessage(createId(), ClientboundWorkstationMergePacket.class, ClientboundWorkstationMergePacket::toBytes, ClientboundWorkstationMergePacket::new, ClientboundWorkstationMergePacket::handle);
+        NETWORK.registerMessage(createId(), ServerboundWorkstationLoadRequestPacket.class, ServerboundWorkstationLoadRequestPacket::toBytes, ServerboundWorkstationLoadRequestPacket::new, ServerboundWorkstationLoadRequestPacket::handle);
 
         Clinker.LOGGER.info("REGISTERED PACKETS!!!");
     }

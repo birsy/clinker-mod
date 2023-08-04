@@ -11,12 +11,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class GuiElement<P extends GuiElement> {
+public abstract class GuiElement<P extends GuiElement, S extends GuiElementParent> {
     private static int NEW_ID;
 
     protected final int id;
     @Nullable
     public final P parent;
+    public final S screen;
     public final List<GuiElement> children;
     public int blitOffset;
     public float x, y, pX, pY, width, height;
@@ -33,11 +34,12 @@ public abstract class GuiElement<P extends GuiElement> {
 
     protected int clientTicks = 0;
 
-    protected GuiElement(float x, float y, float width, float height, boolean interactable) {
-        this(null, x, y, width, height, interactable);
+    protected GuiElement(S screen, float x, float y, float width, float height, boolean interactable) {
+        this(screen, null, x, y, width, height, interactable);
     }
 
-    protected GuiElement(@Nullable P parent, float x, float y, float width, float height, boolean interactable) {
+    protected GuiElement(S screen, @Nullable P parent, float x, float y, float width, float height, boolean interactable) {
+        this.screen = screen;
         id = NEW_ID++;
 
         this.parent = parent;
