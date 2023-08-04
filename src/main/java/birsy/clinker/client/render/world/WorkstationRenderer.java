@@ -3,10 +3,12 @@ package birsy.clinker.client.render.world;
 import birsy.clinker.client.render.DebugRenderUtil;
 import birsy.clinker.common.world.alchemy.workstation.Workstation;
 import birsy.clinker.common.world.alchemy.workstation.WorkstationManager;
+import birsy.clinker.common.world.alchemy.workstation.WorkstationPhysicsObject;
 import birsy.clinker.common.world.alchemy.workstation.camera.CameraPath;
 import birsy.clinker.common.world.level.interactable.Interactable;
 import birsy.clinker.common.world.level.interactable.InteractableManager;
 import birsy.clinker.common.world.physics.rigidbody.Transform;
+import birsy.clinker.common.world.physics.rigidbody.colliders.OBBCollisionShape;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -80,6 +82,19 @@ public class WorkstationRenderer {
             DebugRenderUtil.renderSphere(pPoseStack, pBufferSource.getBuffer(RenderType.LINES), 16, 0.2F, 0, 0, 0, 1, 0, 0, 1);
             float length = 0.5F;
             DebugRenderUtil.renderLine(pPoseStack, pBufferSource.getBuffer(RenderType.LINES), 0, 0, 0, node.direction.x * length, node.direction.y * length, node.direction.z * length, 0, 1, 0, 1);
+            pPoseStack.popPose();
+        }
+
+        for (WorkstationPhysicsObject object : station.objects) {
+            pPoseStack.pushPose();
+            Vec3 translation = object.getPosition(pPartialTicks);
+            pPoseStack.translate(translation.x, translation.y, translation.z);
+            pPoseStack.mulPose(object.getRotation(pPartialTicks).toMojangQuaternion());
+
+            if (object.shape instanceof OBBCollisionShape shape) {
+                DebugRenderUtil.renderBox(pPoseStack, pBufferSource.getBuffer(RenderType.LINES), -shape.size.x(), -shape.size.y(), -shape.size.z(), shape.size.x(), shape.size.y(), shape.size.z(), 1, 0.5F, 1, 1);
+            }
+
             pPoseStack.popPose();
         }
 

@@ -74,10 +74,7 @@ public class CameraPath {
             pathPos.move(pathDirection);
 
             BlockPos floorPos = pathPos.relative(direction).below();
-            if (!workstation.level.getBlockState(floorPos).isFaceSturdy(workstation.level, floorPos, Direction.UP, SupportType.RIGID)) {
-                // we're over a block that can't be walked on. the path ends here.
-                return;
-            } else if (this.workstation.containedBlocks.containsBlock(pathPos)) {
+            if (this.workstation.containedBlocks.containsBlock(pathPos)) {
                 //we've hit an inside corner
                 //move the pathPos back
                 pathPos.move(pathDirection.getOpposite());

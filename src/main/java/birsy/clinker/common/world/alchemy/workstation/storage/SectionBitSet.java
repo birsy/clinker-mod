@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.alchemy.workstation;
+package birsy.clinker.common.world.alchemy.workstation.storage;
 
 import birsy.clinker.core.util.MathUtils;
 import net.minecraft.core.BlockPos;

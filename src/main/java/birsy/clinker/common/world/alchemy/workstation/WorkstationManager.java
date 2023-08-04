@@ -33,6 +33,7 @@ public class WorkstationManager {
     @OnlyIn(Dist.CLIENT)
     public static WorkstationManager clientWorkstationManager;
 
+    //TODO: diagonals
     public static final Vec3i[] DIRECTIONAL_OFFSETS = Util.make(() -> {
         Vec3i[] o = new Vec3i[7];
         o[0] = Vec3i.ZERO;

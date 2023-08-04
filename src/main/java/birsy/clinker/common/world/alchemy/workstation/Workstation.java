@@ -3,6 +3,8 @@ package birsy.clinker.common.world.alchemy.workstation;
 import birsy.clinker.client.gui.AlchemicalWorkstationScreen;
 import birsy.clinker.common.world.alchemy.workstation.camera.CameraPath;
 import birsy.clinker.common.world.alchemy.workstation.camera.WorkstationCamera;
+import birsy.clinker.common.world.alchemy.workstation.storage.SectionBitSet;
+import birsy.clinker.common.world.alchemy.workstation.storage.WorkstationBlocks;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -12,6 +14,8 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class Workstation {
@@ -20,6 +24,8 @@ public class Workstation {
     public final Level level;
     public boolean isValidPath = false;
     public final CameraPath path;
+
+    public List<WorkstationPhysicsObject> objects;
 
     @OnlyIn(Dist.CLIENT)
     public final WorkstationCamera camera;
@@ -34,11 +40,16 @@ public class Workstation {
         this.path = new CameraPath(this);
         this.camera = new WorkstationCamera(this);
         this.containedBlocks = new WorkstationBlocks();
+        this.objects = new ArrayList<>();
     }
 
     public void tick() {
         if (!this.isValidPath) {
             this.regeneratePath();
+        }
+
+        for (WorkstationPhysicsObject object : this.objects) {
+            object.tick();
         }
     }
 

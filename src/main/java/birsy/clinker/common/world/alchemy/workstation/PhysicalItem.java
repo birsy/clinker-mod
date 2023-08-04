@@ -11,6 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.phys.Vec3;
 
+@Deprecated
 public class PhysicalItem extends VerletRigidBody implements ItemLike, ITickableBody {
     private final AlchemicalWorkstation workstation;
     private final ItemStack itemStack;

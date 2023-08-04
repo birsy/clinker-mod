@@ -53,7 +53,7 @@ public abstract class LevelRendererMixin {
     @Inject(method = "renderLevel(Lcom/mojang/blaze3d/vertex/PoseStack;FJZLnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/GameRenderer;Lnet/minecraft/client/renderer/LightTexture;Lcom/mojang/math/Matrix4f;)V", at = @At("HEAD"))
     private void render(PoseStack pPoseStack, float pPartialTick, long pFinishNanoTime, boolean pRenderBlockOutline, Camera pCamera, GameRenderer pGameRenderer, LightTexture pLightTexture, Matrix4f pProjectionMatrix, CallbackInfo ci) {
         if (Minecraft.getInstance().screen instanceof AlchemicalWorkstationScreen screen) {
-            screen.setCameraView(pCamera, pPoseStack, Minecraft.getInstance().getPartialTick());
+            //screen.setCameraView(pCamera, pPoseStack, Minecraft.getInstance().getPartialTick());
         }
     }
 }

@@ -3,6 +3,8 @@ package birsy.clinker.client.gui;
 import birsy.clinker.client.ClinkerCursor;
 import birsy.clinker.client.render.ClinkerShaders;
 import birsy.clinker.common.world.alchemy.workstation.Workstation;
+import birsy.clinker.common.world.alchemy.workstation.WorkstationPhysicsObject;
+import birsy.clinker.common.world.physics.rigidbody.colliders.OBBCollisionShape;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.core.util.Quaterniond;
@@ -582,6 +584,7 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
         public void onRelease(float mouseX, float mouseY, int pButton) {
             super.onRelease(mouseX, mouseY, pButton);
             float partialTick = Minecraft.getInstance().getPartialTick();
+            // TODO : code for handling bundles, stacks of objects. increase range of selecting other slots slightly to make it Feel Better(tm)
             if (this.screen.hoveredElement instanceof ItemSlotElement element) {
                 ItemStack swapStack = element.inventory.getItem(element.index).copy();
                 element.inventory.setItem(element.index, this.inventory.getItem(index).copy());
@@ -595,6 +598,12 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
                 element.itemY = (mouseY - element.screen.itemOffsetY) - element.getScreenY(partialTick);
                 this.itemX = element.getScreenX(partialTick) - this.getScreenX(partialTick);
                 this.itemY = element.getScreenY(partialTick) - this.getScreenY(partialTick);
+
+            } else if (this.screen.hoveredElement == null) {
+                this.inventory.setItem(this.index, ItemStack.EMPTY);
+                WorkstationPhysicsObject object = new WorkstationPhysicsObject(this.screen.workstation.camera.position.add(this.screen.workstation.camera.direction.scale(1.2)).add(0, -0.25, 0),
+                        new OBBCollisionShape(3.0F / 16.0F, 3.0F / 16.0F, 3.0F / 16.0F));
+                this.screen.workstation.objects.add(object);
             } else {
                 this.itemX = (mouseX - this.screen.itemOffsetX) - this.getScreenX(partialTick);
                 this.itemY = (mouseY - this.screen.itemOffsetY) - this.getScreenY(partialTick);
@@ -627,8 +636,8 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
                 pPoseStack.popPose();
             }
 
-            this.itemX = Mth.lerp(0.05F, this.itemX, 0);
-            this.itemY = Mth.lerp(0.05F, this.itemY, 0);
+            this.itemX = Mth.lerp(0.08F, this.itemX, 0);
+            this.itemY = Mth.lerp(0.08F, this.itemY, 0);
         }
 
         protected void renderShadow(BufferBuilder bufferbuilder, Matrix4f pMatrix, float pPartialTick) {
