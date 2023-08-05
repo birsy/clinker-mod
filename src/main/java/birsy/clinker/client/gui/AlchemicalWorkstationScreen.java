@@ -584,6 +584,11 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
         public void onRelease(float mouseX, float mouseY, int pButton) {
             super.onRelease(mouseX, mouseY, pButton);
             float partialTick = Minecraft.getInstance().getPartialTick();
+
+            //parent isnt marked as interactable, so an extra check is needed to make sure you don't dump stuff
+            boolean isHoveringParent = (mouseX > parent.getScreenX(partialTick) && mouseX < parent.getScreenX(partialTick) + parent.width &&
+                                        mouseY > parent.getScreenY(partialTick) && mouseY < parent.getScreenY(partialTick) + parent.height);
+
             // TODO : code for handling bundles, stacks of objects. increase range of selecting other slots slightly to make it Feel Better(tm)
             if (this.screen.hoveredElement instanceof ItemSlotElement element) {
                 ItemStack swapStack = element.inventory.getItem(element.index).copy();
@@ -599,7 +604,7 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
                 this.itemX = element.getScreenX(partialTick) - this.getScreenX(partialTick);
                 this.itemY = element.getScreenY(partialTick) - this.getScreenY(partialTick);
 
-            } else if (this.screen.hoveredElement == null) {
+            } else if (this.screen.hoveredElement == null && !isHoveringParent) {
                 this.inventory.setItem(this.index, ItemStack.EMPTY);
                 WorkstationPhysicsObject object = new WorkstationPhysicsObject(this.screen.workstation.camera.position.add(this.screen.workstation.camera.direction.scale(1.2)).add(0, -0.25, 0),
                         new OBBCollisionShape(3.0F / 16.0F, 3.0F / 16.0F, 3.0F / 16.0F));
