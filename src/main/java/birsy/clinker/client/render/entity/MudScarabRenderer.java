@@ -1,11 +1,15 @@
 package birsy.clinker.client.render.entity;
 
+import birsy.clinker.client.animation.SimulatedSkeleton;
+import birsy.clinker.client.render.DebugRenderUtil;
 import birsy.clinker.client.render.entity.model.MudScarabModel;
 import birsy.clinker.common.world.entity.MudScarabEntity;
 import birsy.clinker.core.Clinker;
+import birsy.clinker.core.util.MutableVec3;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
@@ -24,18 +28,23 @@ public class MudScarabRenderer extends ClinkerEntityRenderer<MudScarabEntity, Mu
 
     @Override
     protected void setupRotations(MudScarabEntity pEntity, PoseStack pMatrixStack, float pAgeInTicks, float pRotationYaw, float pPartialTicks) {
-        Vec3 normal = pEntity.getNormal(pPartialTicks).lerp(new Vec3(0, 1, 0), 0.25F);
-        float height = pEntity.getHeight(pPartialTicks);
-        height += (1.0 - normal.dot(new Vec3(0, 1, 0)));
-        pMatrixStack.translate(0, height - pEntity.getPosition(pPartialTicks).y(), 0);
-        pMatrixStack.mulPose(Vector3f.ZP.rotation((float) -Math.atan2(normal.x(), normal.y())));
-        pMatrixStack.mulPose(Vector3f.XP.rotation((float) Math.atan2(normal.z(), normal.y())));
+//        Vec3 normal = pEntity.getNormal(pPartialTicks).lerp(new Vec3(0, 1, 0), 0.25F);
+//        float height = pEntity.getHeight(pPartialTicks);
+//        height += (1.0 - normal.dot(new Vec3(0, 1, 0)));
+//        pMatrixStack.translate(0, height - pEntity.getPosition(pPartialTicks).y(), 0);
+//        pMatrixStack.mulPose(Vector3f.ZP.rotation((float) -Math.atan2(normal.x(), normal.y())));
+//        pMatrixStack.mulPose(Vector3f.XP.rotation((float) Math.atan2(normal.z(), normal.y())));
         super.setupRotations(pEntity, pMatrixStack, pAgeInTicks, pRotationYaw, pPartialTicks);
     }
 
     @Override
     public void render(MudScarabEntity pEntity, float pEntityYaw, float pPartialTicks, PoseStack pMatrixStack, MultiBufferSource pBuffer, int pPackedLight) {
         super.render(pEntity, pEntityYaw, pPartialTicks, pMatrixStack, pBuffer, pPackedLight);
+        for (SimulatedSkeleton.Bone bone : pEntity.skeleton.bones) {
+            MutableVec3 a = bone.a.position(pPartialTicks);
+            MutableVec3 b = bone.b.position(pPartialTicks);
+            DebugRenderUtil.renderLine(pMatrixStack, pBuffer.getBuffer(RenderType.LINES), a.x(), a.y(), a.z(), b.x(), b.y(), b.z(), 1, 0.2F, 0.8F, 1);
+        }
     }
 
     /**

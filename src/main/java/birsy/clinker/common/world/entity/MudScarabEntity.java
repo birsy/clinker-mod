@@ -1,5 +1,6 @@
 package birsy.clinker.common.world.entity;
 
+import birsy.clinker.client.animation.SimulatedSkeleton;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -28,6 +29,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.*;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.List;
 
@@ -36,6 +39,8 @@ public class MudScarabEntity extends AbstractBugEntity {
     private float height = 0;
     private Vec3 pNormal = new Vec3(0, 1, 0);
     private Vec3 normal = new Vec3(0, 1, 0);
+    @OnlyIn(Dist.CLIENT)
+    public SimulatedSkeleton skeleton;
 
     public MudScarabEntity(EntityType<? extends MudScarabEntity> entityType, Level world) {
         super(entityType, world);
@@ -43,7 +48,18 @@ public class MudScarabEntity extends AbstractBugEntity {
         this.moveControl = new SmoothSwimmingMoveControl(this, 6, 5, 4.0F, 1.0F, false);
         this.height =  (float) this.position().y;
         this.pHeight = (float) this.position().y;
+
+        this.skeleton = new SimulatedSkeleton();
+        SimulatedSkeleton.Joint previousJoint = new SimulatedSkeleton.Joint(0, 5, 0);
+        this.skeleton.joints.add(previousJoint);
+        for (int i = 1; i < 8; i++) {
+            SimulatedSkeleton.Joint joint = new SimulatedSkeleton.Joint(0, 5 - i, 0);
+            this.skeleton.joints.add(joint);
+            this.skeleton.bones.add(new SimulatedSkeleton.Bone(previousJoint, joint, 1));
+            previousJoint = joint;
+        }
     }
+
 
     protected void registerGoals() {
         this.goalSelector.addGoal(1, new TemptGoal(this, 1.0D, Ingredient.of(Items.WHEAT), false));
@@ -55,43 +71,6 @@ public class MudScarabEntity extends AbstractBugEntity {
         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
     }
 
-    public class MudScarabLookAtPlayerGoal extends LookAtPlayerGoal {
-        public MudScarabLookAtPlayerGoal(MudScarabEntity pMob, Class<? extends LivingEntity> pLookAtType, float pLookDistance) {
-            super(pMob, pLookAtType, pLookDistance);
-        }
-
-        public MudScarabLookAtPlayerGoal(MudScarabEntity pMob, Class<? extends LivingEntity> pLookAtType, float pLookDistance, float pProbability) {
-            super(pMob, pLookAtType, pLookDistance, pProbability);
-        }
-
-        public MudScarabLookAtPlayerGoal(MudScarabEntity pMob, Class<? extends LivingEntity> pLookAtType, float pLookDistance, float pProbability, boolean pOnlyHorizontal) {
-            super(pMob, pLookAtType, pLookDistance, pProbability, pOnlyHorizontal);
-        }
-
-        @Override
-        public boolean canUse() {
-            if (this.lookAt != null) {
-                AABB ridingBox = ((MudScarabEntity)(this.mob)).getRidingBox();
-
-                if (ridingBox.contains(this.lookAt.getPosition(1.0F)) && (!(lookAt instanceof MudScarabEntity) && !lookAt.noPhysics && lookAt.isOnGround() && !lookAt.isPassenger())) {
-                    return false;
-                }
-            }
-            return super.canUse();
-        }
-
-        @Override
-        public boolean canContinueToUse() {
-            if (this.lookAt != null) {
-                AABB ridingBox = ((MudScarabEntity)(this.mob)).getRidingBox();
-
-                if (ridingBox.contains(this.lookAt.getPosition(1.0F)) && (!(lookAt instanceof MudScarabEntity) && !lookAt.noPhysics && lookAt.isOnGround() && !lookAt.isPassenger())) {
-                    return false;
-                }
-            }
-            return super.canContinueToUse();
-        }
-    }
 
     public static AttributeSupplier.Builder createAttributes() {
         return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 100.0D).add(Attributes.MOVEMENT_SPEED, 0.25D).add(Attributes.ATTACK_DAMAGE, 2.0D);
@@ -101,6 +80,11 @@ public class MudScarabEntity extends AbstractBugEntity {
     public boolean onClimbable() {
         BlockHitResult raycast = this.level.clip(new ClipContext(this.position(), this.position().add(0, this.getBbHeight() * -0.5, 0), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
         return raycast.getType() == HitResult.Type.BLOCK;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public void animateTick() {
+        this.skeleton.simulate(this.getPosition(1), this.getPosition(0), 16);
     }
 
     public void tick() {
@@ -120,6 +104,7 @@ public class MudScarabEntity extends AbstractBugEntity {
 
         if (this.getLevel().isClientSide()) this.calculateNormalAndHeight(0.2F);
         super.tick();
+        this.animateTick();
     }
 
     public AABB getRidingBox() {
@@ -231,72 +216,42 @@ public class MudScarabEntity extends AbstractBugEntity {
         this.playSound(SoundEvents.SPIDER_STEP, 0.15F, 0.5F);
     }
 
-    // unused :P
-    public void moveRiders(Entity entity, Vec3 pPos) {
-        if (!entity.noPhysics) {
-            Vec3 vec3 = collideNoEntityCollision(entity, pPos);
-            double d0 = vec3.lengthSqr();
-            if (d0 > 1.0E-7D) {
-                if (entity.fallDistance != 0.0F && d0 >= 1.0D) {
-                    BlockHitResult blockhitresult = entity.level.clip(new ClipContext(entity.position(), entity.position().add(vec3), ClipContext.Block.FALLDAMAGE_RESETTING, ClipContext.Fluid.WATER, entity));
-                    if (blockhitresult.getType() != HitResult.Type.MISS) {
-                        entity.resetFallDistance();
-                    }
-                }
-
-                entity.setPos(entity.getX() + vec3.x, entity.getY() + vec3.y, entity.getZ() + vec3.z);
-            }
-
-
-            boolean flag2 = !Mth.equal(pPos.x, vec3.x);
-            boolean flag = !Mth.equal(pPos.z, vec3.z);
-            entity.horizontalCollision = flag2 || flag;
-            entity.verticalCollision = pPos.y != vec3.y;
-            entity.verticalCollisionBelow = entity.verticalCollision && pPos.y < 0.0D;
-
-            entity.setOnGround(entity.verticalCollision && pPos.y < 0.0D);
-            BlockPos blockpos = entity.getOnPosLegacy();
-            BlockState blockstate = entity.level.getBlockState(blockpos);
-            //entity.checkFallDamage(vec3.y, entity.isOnGround(), blockstate, blockpos);
-            if (!entity.isRemoved()) {
-                if (entity.horizontalCollision) {
-                    Vec3 vec31 = entity.getDeltaMovement();
-                    entity.setDeltaMovement(flag2 ? 0.0D : vec31.x, vec31.y, flag ? 0.0D : vec31.z);
-                }
-
-                Block block = blockstate.getBlock();
-                if (pPos.y != vec3.y) {
-                    block.updateEntityAfterFallOn(entity.level, entity);
-                }
-
-                double d1 = vec3.x;
-                double d2 = vec3.y;
-                double d3 = vec3.z;
-                entity.flyDist = (float) ((double) entity.flyDist + vec3.length() * 0.6D);
-                boolean flag1 = blockstate.is(BlockTags.CLIMBABLE) || blockstate.is(Blocks.POWDER_SNOW);
-                if (!flag1) {
-                    d2 = 0.0D;
-                }
-                entity.moveDist += (float)Math.sqrt(d1 * d1 + d2 * d2 + d3 * d3) * 0.6F;
-
-
-                entity.setDeltaMovement(entity.getDeltaMovement());
-            }
-
+    public class MudScarabLookAtPlayerGoal extends LookAtPlayerGoal {
+        public MudScarabLookAtPlayerGoal(MudScarabEntity pMob, Class<? extends LivingEntity> pLookAtType, float pLookDistance) {
+            super(pMob, pLookAtType, pLookDistance);
         }
-    }
-    private Vec3 collideNoEntityCollision(Entity entity, Vec3 pVec) {
-        AABB aabb = entity.getBoundingBox();
-        List<VoxelShape> list = entity.level.getEntityCollisions(entity, aabb.expandTowards(pVec));
-        Vec3 collidedVector = pVec.lengthSqr() == 0.0D ? pVec : collideBoundingBox(entity, pVec, aabb, entity.level, list);
-        collidedVector = new Vec3(pVec.x(), collidedVector.y(), pVec.z());
-        boolean collidedX = pVec.x != collidedVector.x;
-        boolean collidedVertically = pVec.y != collidedVector.y;
-        boolean collidedZ = pVec.z != collidedVector.z;
-        boolean isGrounded = entity.isOnGround() || collidedVertically && pVec.y < 0.0D;
-        float stepHeight = getStepHeight();
 
-        return collidedVector;
+        public MudScarabLookAtPlayerGoal(MudScarabEntity pMob, Class<? extends LivingEntity> pLookAtType, float pLookDistance, float pProbability) {
+            super(pMob, pLookAtType, pLookDistance, pProbability);
+        }
+
+        public MudScarabLookAtPlayerGoal(MudScarabEntity pMob, Class<? extends LivingEntity> pLookAtType, float pLookDistance, float pProbability, boolean pOnlyHorizontal) {
+            super(pMob, pLookAtType, pLookDistance, pProbability, pOnlyHorizontal);
+        }
+
+        @Override
+        public boolean canUse() {
+            if (this.lookAt != null) {
+                AABB ridingBox = ((MudScarabEntity)(this.mob)).getRidingBox();
+
+                if (ridingBox.contains(this.lookAt.getPosition(1.0F)) && (!(lookAt instanceof MudScarabEntity) && !lookAt.noPhysics && lookAt.isOnGround() && !lookAt.isPassenger())) {
+                    return false;
+                }
+            }
+            return super.canUse();
+        }
+
+        @Override
+        public boolean canContinueToUse() {
+            if (this.lookAt != null) {
+                AABB ridingBox = ((MudScarabEntity)(this.mob)).getRidingBox();
+
+                if (ridingBox.contains(this.lookAt.getPosition(1.0F)) && (!(lookAt instanceof MudScarabEntity) && !lookAt.noPhysics && lookAt.isOnGround() && !lookAt.isPassenger())) {
+                    return false;
+                }
+            }
+            return super.canContinueToUse();
+        }
     }
 
     // Easy solution for body rotation - don't!
