@@ -290,6 +290,6 @@ public class MudScarabModel<T extends MudScarabEntity> extends EntityModel<T> {
 
 	@Override
 	public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-		//rootJoint.render(poseStack, buffer, packedLight, packedOverlay);
+		rootJoint.render(poseStack, buffer, packedLight, packedOverlay);
 	}
 }

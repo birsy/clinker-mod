@@ -1,10 +1,8 @@
 package birsy.clinker.common.world.entity;
 
-import birsy.clinker.client.animation.SimulatedSkeleton;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
@@ -24,23 +22,18 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.*;
-import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-
-import java.util.List;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 
 public class MudScarabEntity extends AbstractBugEntity {
     private float pHeight = 0;
     private float height = 0;
     private Vec3 pNormal = new Vec3(0, 1, 0);
     private Vec3 normal = new Vec3(0, 1, 0);
-    @OnlyIn(Dist.CLIENT)
-    public SimulatedSkeleton skeleton;
+
 
     public MudScarabEntity(EntityType<? extends MudScarabEntity> entityType, Level world) {
         super(entityType, world);
@@ -48,16 +41,6 @@ public class MudScarabEntity extends AbstractBugEntity {
         this.moveControl = new SmoothSwimmingMoveControl(this, 6, 5, 4.0F, 1.0F, false);
         this.height =  (float) this.position().y;
         this.pHeight = (float) this.position().y;
-
-        this.skeleton = new SimulatedSkeleton();
-        SimulatedSkeleton.Joint previousJoint = new SimulatedSkeleton.Joint(0, 5, 0);
-        this.skeleton.joints.add(previousJoint);
-        for (int i = 1; i < 8; i++) {
-            SimulatedSkeleton.Joint joint = new SimulatedSkeleton.Joint(0, 5 - i, 0);
-            this.skeleton.joints.add(joint);
-            this.skeleton.bones.add(new SimulatedSkeleton.Bone(previousJoint, joint, 1));
-            previousJoint = joint;
-        }
     }
 
 
@@ -82,11 +65,6 @@ public class MudScarabEntity extends AbstractBugEntity {
         return raycast.getType() == HitResult.Type.BLOCK;
     }
 
-    @OnlyIn(Dist.CLIENT)
-    public void animateTick() {
-        this.skeleton.simulate(this.getPosition(1), this.getPosition(0), 16);
-    }
-
     public void tick() {
         // this is utterly fucked but until i get my hands on landlord it's the best i can be bothered to do
         AABB movementBox = this.getRidingBox();
@@ -104,7 +82,6 @@ public class MudScarabEntity extends AbstractBugEntity {
 
         if (this.getLevel().isClientSide()) this.calculateNormalAndHeight(0.2F);
         super.tick();
-        this.animateTick();
     }
 
     public AABB getRidingBox() {

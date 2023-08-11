@@ -4,6 +4,7 @@ import birsy.clinker.core.Clinker;
 import com.ibm.icu.impl.Pair;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.math.Matrix3f;
+import com.mojang.math.Matrix4f;
 import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
 import net.minecraft.Util;
@@ -15,6 +16,7 @@ import net.minecraft.world.phys.Vec3;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Random;
 import java.util.function.Function;
 
@@ -56,6 +58,12 @@ public class MathUtils {
         return ((remainder >> 31) & n) + remainder;
     }
 
+    public static <T extends Object> void addAll(Collection<T> collection, T... objects) {
+        for (T object : objects) {
+            collection.add(object);
+        }
+    }
+
     public static Vec3 vec3Lerp(float delta, Vec3 start, Vec3 end) {
         return new Vec3(Mth.lerp(delta, start.x(), end.x()), Mth.lerp(delta, start.y(), end.y()), Mth.lerp(delta, start.z(), end.z()));
     }
@@ -80,6 +88,13 @@ public class MathUtils {
 
         return new Vec3(x, vector.y, z);*/
         return new Vec3(vector.x * Math.cos(rotation) - vector.z * Math.sin(rotation), vector.y, vector.z * Math.cos(rotation) + vector.x * Math.sin(rotation));
+    }
+
+    public static Matrix4f matrixFromVectors(Vector3f pX, Vector3f pY, Vector3f pZ) {
+        return new Matrix4f(new float[]{pX.x(), pY.x(), pZ.x(), 0,
+                                        pX.y(), pY.y(), pZ.y(), 0,
+                                        pX.z(), pY.z(), pZ.z(), 0,
+                                        0,      0,      0,      1});
     }
 
 

@@ -1,9 +1,13 @@
 package birsy.clinker.core.util;
 
+import com.mojang.math.Matrix4f;
 import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
+import net.minecraft.core.Position;
 import net.minecraft.util.Mth;
 import org.apache.commons.math3.linear.RealMatrix;
+import org.joml.Math;
+import org.joml.Matrix4x3dc;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -92,6 +96,14 @@ public class Quaternionf implements Externalizable, Cloneable {
     }
 
     public Quaternionf(Vector3f axis, float angle) {
+        float s = Mth.sin(angle * 0.5F);
+        x = axis.x() * s;
+        y = axis.y() * s;
+        z = axis.z() * s;
+        w = Mth.cos(angle * 0.5F);
+    }
+
+    public Quaternionf(MutableVec3 axis, float angle) {
         float s = Mth.sin(angle * 0.5F);
         x = axis.x() * s;
         y = axis.y() * s;
@@ -323,7 +335,12 @@ public class Quaternionf implements Externalizable, Cloneable {
         return setAngleAxis(angle, axis.x(), axis.y(), axis.z());
     }
 
-    private void setFromUnnormalized(float m00, float m01, float m02, float m10, float m11, float m12, float m20, float m21, float m22) {
+    public Quaternionf setFromUnnormalized(Matrix4f mat) {
+        setFromUnnormalized(mat.m00, mat.m01, mat.m02, mat.m10, mat.m11, mat.m12, mat.m20, mat.m21, mat.m22);
+        return this;
+    }
+
+    public void setFromUnnormalized(float m00, float m01, float m02, float m10, float m11, float m12, float m20, float m21, float m22) {
         float nm00 = m00, nm01 = m01, nm02 = m02;
         float nm10 = m10, nm11 = m11, nm12 = m12;
         float nm20 = m20, nm21 = m21, nm22 = m22;
@@ -336,7 +353,7 @@ public class Quaternionf implements Externalizable, Cloneable {
         setFromNormalized(nm00, nm01, nm02, nm10, nm11, nm12, nm20, nm21, nm22);
     }
 
-    private void setFromNormalized(float m00, float m01, float m02, float m10, float m11, float m12, float m20, float m21, float m22) {
+    public Quaternionf setFromNormalized(float m00, float m01, float m02, float m10, float m11, float m12, float m20, float m21, float m22) {
         float t;
         float tr = m00 + m11 + m22;
         if (tr >= 0.0F) {
@@ -369,7 +386,10 @@ public class Quaternionf implements Externalizable, Cloneable {
                 y = (m21 + m12) * t;
                 w = (m01 - m10) * t;
             }
+
         }
+        return this;
+
     }
     
     /**
@@ -577,6 +597,16 @@ public class Quaternionf implements Externalizable, Cloneable {
     
     public Vector3f transform(Vector3f vec) {
         return transform(vec.x(), vec.y(), vec.z());
+    }
+
+    public MutableVec3 transform(MutableVec3 vec) {
+        float x = vec.num[0], y = vec.num[1], z = vec.num[2];
+        float xx = this.x * this.x, yy = this.y * this.y, zz = this.z * this.z, ww = this.w * this.w;
+        float xy = this.x * this.y, xz = this.x * this.z, yz = this.y * this.z, xw = this.x * this.w;
+        float zw = this.z * this.w, yw = this.y * this.w, k = 1 / (xx + yy + zz + ww);
+        return vec.set(Math.fma((xx - yy - zz + ww) * k, x, Math.fma(2 * (xy - zw) * k, y, (2 * (xz + yw) * k) * z)),
+                Math.fma(2 * (xy + zw) * k, x, Math.fma((yy - xx - zz + ww) * k, y, (2 * (yz - xw) * k) * z)),
+                Math.fma(2 * (xz - yw) * k, x, Math.fma(2 * (yz + xw) * k, y, ((zz - xx - yy + ww) * k) * z)));
     }
 
     public Vector3f transformInverse(Vector3f vec) {
@@ -2139,6 +2169,15 @@ public class Quaternionf implements Externalizable, Cloneable {
         double qz = (matrixData[1][0] - matrixData[0][1]) / (4 * qw);
 
         return new Quaternionf((float) qw, (float) qx, (float) qy, (float) qz);
+    }
+
+    public Quaternionf set(Matrix4f m1) {
+        w = Mth.sqrt(1.0F + m1.m00 + m1.m11 + m1.m22) / 2.0F;
+        float w4 = (4.0F * w);
+        x = (m1.m21 - m1.m12) / w4 ;
+        y = (m1.m02 - m1.m20) / w4 ;
+        z = (m1.m10 - m1.m01) / w4 ;
+        return this;
     }
 }
 

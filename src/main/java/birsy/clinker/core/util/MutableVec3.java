@@ -1,9 +1,10 @@
 package birsy.clinker.core.util;
 
+import com.mojang.math.Vector3f;
 import net.minecraft.core.Position;
 import net.minecraft.util.Mth;
 
-public class MutableVec3 implements Position, Cloneable {
+public class MutableVec3 implements Cloneable {
     public float[] num;
 
     public MutableVec3() {
@@ -86,6 +87,23 @@ public class MutableVec3 implements Position, Cloneable {
         return this.div(w, w, w);
     }
 
+    public MutableVec3 cross(MutableVec3 vec) {
+        float x1 = num[0];
+        float y1 = num[1];
+        float z1 = num[2];
+        float x2 = vec.num[0];
+        float y2 = vec.num[1];
+        float z2 = vec.num[2];
+        num[0] = y1 * z2 - z1 * y2;
+        num[1] = z1 * x2 - x1 * z2;
+        num[2] = x1 * y2 - y1 * x2;
+        return this;
+    }
+
+    public float dot(MutableVec3 vec) {
+        return this.x() * vec.x()+ this.y() * vec.y() + this.z() * vec.z();
+    }
+
     public float distanceSq(Position vec) {
         return this.distanceSq((float) vec.x(), (float) vec.y(), (float) vec.z());
     }
@@ -105,7 +123,7 @@ public class MutableVec3 implements Position, Cloneable {
         return this.distance(vec.num[0], vec.num[1], vec.num[2]);
     }
     public float distance(float x, float y, float z) {
-        return Mth.sqrt(this.distance(x, y, z));
+        return Mth.sqrt(this.distanceSq(x, y, z));
     }
     public float lengthSq() {
         return num[0] * num[0] + num[1] * num[1] + num[2] * num[2];
@@ -117,17 +135,27 @@ public class MutableVec3 implements Position, Cloneable {
         return div(this.length());
     }
 
-    public double x() {
+    public float x() {
         return num[0];
     }
-    public double y() {
+    public float y() {
         return num[1];
     }
-    public double z() {
-        return num[3];
+    public float z() {
+        return num[2];
     }
 
     public MutableVec3 clone() {
         return new MutableVec3(num[0], num[1], num[2]);
+    }
+
+    public MutableVec3 rotateY(float r) {
+        float x0 = num[0];
+        float z0 = num[2];
+        float x1 = x0 * Mth.cos(r) - z0 * Mth.sin(r);
+        float z1 = x0 * Mth.sin(r) + z0 * Mth.cos(r);
+        num[0] = x1;
+        num[2] = z1;
+        return this;
     }
 }
