@@ -4,13 +4,14 @@ import birsy.clinker.client.model.base.constraint.Constraint;
 import birsy.clinker.client.model.base.mesh.ModelMesh;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.world.entity.LivingEntity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class InterpolatedSkeleton {
+public abstract class InterpolatedSkeleton<P extends InterpolatedSkeletonParent> {
     public List<InterpolatedBone> roots;
     public List<Constraint> constraints;
     public Map<String, InterpolatedBone> parts;
@@ -29,13 +30,22 @@ public abstract class InterpolatedSkeleton {
         }
     }
 
-    protected void tick(AnimationProperties properties) {
+    public void tick(AnimationProperties properties) {
         this.updatePreviousPosition();
         this.animate(properties);
-        this.applyConstraints(32);
+        this.applyConstraints(8);
     }
 
-    protected abstract void animate(AnimationProperties properties);
+    public void addAnimationProperties(AnimationProperties properties, P parent) {
+        if (parent instanceof LivingEntity entity) {
+            properties.addProperty("limbSwing", entity.animationPosition);
+            properties.addProperty("limbSwingAmount", entity.animationSpeed);
+            properties.addProperty("ageInTicks", entity.tickCount);
+            properties.addProperty("netHeadYaw", entity.yHeadRot - entity.yBodyRot);
+            properties.addProperty("headPitch", entity.getViewXRot(1.0F));
+        }
+    }
+    public abstract void animate(AnimationProperties properties);
 
     protected void applyConstraints(int iterations) {
         for (Constraint constraint : constraints) {
@@ -73,12 +83,12 @@ public abstract class InterpolatedSkeleton {
         }
     }
 
-    public void addModelPart(InterpolatedBone part, ModelMesh mesh) {
+    public void addBone(InterpolatedBone part, ModelMesh mesh) {
         this.parts.put(part.identifier, part);
         this.meshes.put(part.identifier, mesh);
     }
 
-    protected void buildRoots() {
+    public void buildRoots() {
         for (InterpolatedBone part : this.parts.values()) {
             if (part.parent == null) {
                 roots.add(part);

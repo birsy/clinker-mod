@@ -8,6 +8,7 @@
   "client": [
     "client.LevelRendererMixin",
     "client.GameRendererMixin",
+    "client.ClientLevelMixin",
     "client.GuiMixin"
   ],
   "mixins": [

@@ -128,20 +128,24 @@ public class InverseKinematicsConstraint implements Constraint {
     // fuck me
     private void updateBoneTransforms() {
         stack.pushPose();
+
         bones.get(0).getModelSpaceTransformMatrix(stack, 1);
+
         Quaternionf modelSpaceOrientation = new Quaternionf();
         Quaternionf inverseModelSpaceRotation = new Quaternionf();
         Vector3f modelSpaceLocation;
+
         for (int i = 0; i < points.size() - 1; i++) {
             Vector3f pY = points.get(i).copy();
             pY.sub(points.get(i + 1));
             Vector3f pZ = polePlane.poleDirection.copy();
             Vector3f pX = pY.copy();
             pX.cross(pZ);
-            pZ = pY.copy();
-            pZ.cross(pX);
 
-            modelSpaceOrientation.setFromNormalized(pX.x(), pY.x(), pZ.x(), pX.y(), pY.y(), pZ.y(), pX.z(), pY.z(), pZ.z());
+            modelSpaceOrientation.set(0, 0, 0, 1);
+            modelSpaceOrientation.rotateTo(Vector3f.YP, pY);
+            Vector3f initialXP = modelSpaceOrientation.transform(Vector3f.XP.copy());
+            modelSpaceOrientation.rotateTo(initialXP, pX);
             modelSpaceLocation = points.get(i);
 
             InterpolatedBone bone = bones.get(i);
@@ -152,6 +156,7 @@ public class InverseKinematicsConstraint implements Constraint {
             modelSpaceOrientation.mul(inverseModelSpaceRotation);
             VectorUtils.mul(inverseModelSpaceMatrix, modelSpaceLocation);
         }
+
         stack.popPose();
     }
 

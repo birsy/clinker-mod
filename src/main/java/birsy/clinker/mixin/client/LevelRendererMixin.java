@@ -2,30 +2,34 @@ package birsy.clinker.mixin.client;
 
 import birsy.clinker.client.ClinkerCursor;
 import birsy.clinker.client.gui.AlchemicalWorkstationScreen;
-import birsy.clinker.client.render.world.InteractableRenderer;
+import birsy.clinker.client.model.base.AnimationProperties;
 import birsy.clinker.client.render.world.VolumetricRenderer;
-import birsy.clinker.core.Clinker;
+import birsy.clinker.client.model.base.InterpolatedSkeletonParent;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Matrix4f;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.world.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 
 @Mixin(LevelRenderer.class)
 public abstract class LevelRendererMixin {
     @Shadow public abstract void initOutline();
+
+    @Shadow @Nullable private ClientLevel level;
 
     @Inject(method = "close()V", at = @At("TAIL"))
     private void close(CallbackInfo info) {
@@ -54,6 +58,19 @@ public abstract class LevelRendererMixin {
     private void render(PoseStack pPoseStack, float pPartialTick, long pFinishNanoTime, boolean pRenderBlockOutline, Camera pCamera, GameRenderer pGameRenderer, LightTexture pLightTexture, Matrix4f pProjectionMatrix, CallbackInfo ci) {
         if (Minecraft.getInstance().screen instanceof AlchemicalWorkstationScreen screen) {
             //screen.setCameraView(pCamera, pPoseStack, Minecraft.getInstance().getPartialTick());
+        }
+    }
+
+    @Inject(method = "tick()V", at = @At("HEAD"))
+    private void tick(CallbackInfo ci) {
+        for (Entity entity : this.level.entitiesForRendering()) {
+            if (entity instanceof InterpolatedSkeletonParent animator) {
+                if (animator.getSkeleton() != null) {
+                    AnimationProperties properties = new AnimationProperties();
+                    animator.getSkeleton().addAnimationProperties(properties, animator);
+                    animator.getSkeleton().tick(properties);
+                }
+            }
         }
     }
 }

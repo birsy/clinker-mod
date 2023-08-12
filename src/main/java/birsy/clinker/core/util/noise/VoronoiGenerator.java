@@ -149,6 +149,12 @@ public class VoronoiGenerator {
         return hash;
     }
 
+    /* distance = distance from the sample point to random point
+     * distance1 = distance from the sample point to 2nd closest point. useful for like cracks i've heard? i haven't tested this tho good luck
+     * hash = the hash of the cell, represented as a random value between -1 and 1. (or 0 and 1? been a while since i've checked.)
+     * cellPos = position of the random point
+     * localPos = position of the sample point, relative to the random point
+     */
     public record VoronoiInfo(double distance, double distance1, double hash, Vec3 cellPos, Vec3 localPos) {}
 
     public enum DistanceType implements iDistanceType {
