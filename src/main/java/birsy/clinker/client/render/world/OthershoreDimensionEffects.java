@@ -15,6 +15,8 @@ import net.minecraft.client.GraphicsStatus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.resources.ResourceLocation;
@@ -28,6 +30,9 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL11C;
+import org.lwjgl.opengl.GL45;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -38,6 +43,7 @@ import java.util.Random;
 public class OthershoreDimensionEffects extends DimensionSpecialEffects {
     private final Minecraft mc = Minecraft.getInstance();
     private static final ResourceLocation STAR_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/environment/star.png");
+    private static final ResourceLocation NOISE_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/environment/noise.png");
 
     private float[][] starInfo = null;
     public OthershoreDimensionEffects() {
@@ -272,15 +278,20 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
 
         ArrayList<float[]> stars = new ArrayList<>(Arrays.stream(getOrCreateStarInfo()).toList());
 
+        GlStateManager._texParameter(GL45.GL_TEXTURE_2D, GL45.GL_TEXTURE_MIN_FILTER, GL45.GL_LINEAR);
+        GlStateManager._texParameter(GL45.GL_TEXTURE_2D, GL45.GL_TEXTURE_MAG_FILTER, GL45.GL_LINEAR);
         for (int ring = ringNum; ring >= 0; ring--) {
             poseStack.pushPose();
             float ringDist = (float)ring / (float)ringNum;
             ringDist *= ringDist;
 
             float rRadius = Mth.lerp(ringDist, minRadius, maxRadius);
+            float smoothRingDist = MathUtils.ease(ringDist, MathUtils.EasingType.easeOutCirc);//ringDist * ringDist * (3.0F - 2.0F * ringDist);
+           // smoothRingDist = smoothRingDist * smoothRingDist * (3.0F - 2.0F * smoothRingDist);
+
             Vector3f ringColor = new Vector3f(trueFogColor.x(), trueFogColor.y(), trueFogColor.z());
-            ringColor.lerp(fogColor, ringDist * 0.7F);
-            ringColor.lerp(new Vector3f((float) skyColor.x(), (float) skyColor.y(), (float) skyColor.z()), ringDist);
+            ringColor.lerp(fogColor, smoothRingDist * 0.7F);
+            ringColor.lerp(new Vector3f((float) skyColor.x(), (float) skyColor.y(), (float) skyColor.z()), smoothRingDist);
             ringColor.lerp(trueFogColor, (1 - aboveCloudAlphaOffset) * 0.8F);
 
             RenderSystem.setShaderGameTime(ticks, partialTick);
@@ -294,9 +305,13 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
                 }
             }
             poseStack.popPose();
+            RenderSystem.setShaderTexture(0, NOISE_TEXTURE);
             renderCloudRing(poseStack, bufferbuilder, ringResolution, rRadius, ringHeight, 20.0F, 0.0F, ringDist, ringColor.x(), ringColor.y(), ringColor.z(), alpha * 0.8F, ringColor.x(), ringColor.y(), ringColor.z(), 1.0F);
             poseStack.popPose();
         }
+        GlStateManager._texParameter(GL45.GL_TEXTURE_2D, GL45.GL_TEXTURE_MIN_FILTER, GL45.GL_NEAREST);
+        GlStateManager._texParameter(GL45.GL_TEXTURE_2D, GL45.GL_TEXTURE_MAG_FILTER, GL45.GL_NEAREST);
+
         poseStack.popPose();
 
         RenderSystem.depthMask(true);
@@ -321,8 +336,12 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
     private void renderCloudRing(PoseStack poseStack, BufferBuilder bufferBuilder, int resolution, float radius, float ringHeight, float ringOffset, float uvOffset, float cameraDistance, float topR, float topG, float topB, float topA, float bottomR, float bottomG, float bottomB, float bottomA) {
         RenderSystem.depthMask(true);
         RenderSystem.setShader(ClinkerShaders::getSkyCloudShader);
-        RenderSystem.disableTexture();
+        TextureManager texturemanager = Minecraft.getInstance().getTextureManager();
+        AbstractTexture abstracttexture = texturemanager.getTexture(NOISE_TEXTURE);
+        abstracttexture.setFilter(true, false);
+        RenderSystem.setShaderTexture(0, NOISE_TEXTURE);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
         Matrix4f matrix = poseStack.last().pose();
         float uvSquish = cameraDistance * cameraDistance * 3.0F;
@@ -331,6 +350,7 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
 
         float u1 = 0;
         float u2 = 0; //nothing changes new year's day!
+        float uvRatio = 0;
         for(int segment = 0; segment < resolution; ++segment) {
             float angle1 = (float)segment * ((float)Math.PI * 2F) / ((float)resolution);
             float x1 = Mth.sin(angle1) * radius;
@@ -341,16 +361,18 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
             float z2 = Mth.cos(angle2) * radius;
 
             float dist = Mth.sqrt((x1 - x2) * (x1 - x2) + (z1 - z2) * (z1 - z2));
-            float uvRatio = dist / ringHeight;
+            uvRatio += dist;
 
-            u1 = (segment * uvRatio);
-            u2 = ((segment + 1) * uvRatio);
+            u1 = (float)segment / (float)resolution;
+            u2 = (float)(segment + 1) / (float)resolution;
+
             bufferBuilder.vertex(matrix, x1, - ringOffset, z1).color(bottomR, bottomG, bottomB, bottomA).uv(u1, 0.0F - uvSquish).endVertex();
             bufferBuilder.vertex(matrix, x1, ringHeight - ringOffset,  z1).color(topR, topG, topB, topA).uv(u1, 1.0F + uvSquish).endVertex();
             bufferBuilder.vertex(matrix, x2, ringHeight - ringOffset,  z2).color(topR, topG, topB, topA).uv(u2, 1.0F + uvSquish).endVertex();
             bufferBuilder.vertex(matrix, x2, - ringOffset, z2).color(bottomR, bottomG, bottomB, bottomA).uv(u2, 0.0F - uvSquish).endVertex();
         }
-        RenderSystem.setShaderFogStart(u2);
+        uvRatio /= ringHeight;
+        RenderSystem.setShaderFogStart(uvRatio);
         BufferUploader.drawWithShader(bufferBuilder.end());
     }
 

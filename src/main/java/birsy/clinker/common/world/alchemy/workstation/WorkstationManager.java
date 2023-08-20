@@ -31,7 +31,7 @@ public class WorkstationManager {
     public static final Map<ServerLevel, WorkstationManager> managerByLevel = new HashMap<>();
     public static final Map<ResourceKey<Level>, WorkstationManager> managerByDimension = new HashMap<>();
     @OnlyIn(Dist.CLIENT)
-    public static WorkstationManager clientWorkstationManager;
+    public static WorkstationManager clientWorkstationManager = new WorkstationManager();
 
     //TODO: diagonals
     public static final Vec3i[] DIRECTIONAL_OFFSETS = Util.make(() -> {
@@ -44,12 +44,17 @@ public class WorkstationManager {
         return o;
     });
 
-    public final Level level;
+    public Level level;
     private final boolean isClientSide;
     public final Map<UUID, Workstation> workstationStorage;
     public WorkstationManager(Level level) {
         this.level = level;
         this.isClientSide= this.level.isClientSide();
+        this.workstationStorage = new HashMap<>();
+    }
+
+    public WorkstationManager() {
+        this.isClientSide= true;
         this.workstationStorage = new HashMap<>();
     }
 
@@ -160,13 +165,21 @@ public class WorkstationManager {
         if (!this.isClientSide) ClinkerPacketHandler.sendToClientsInChunk(this.level.getChunkAt(pos), new ClientboundWorkstationChangeBlockPacket(pos, false, id));
     }
 
-    @SubscribeEvent
-    public static void onLevelUnload(LevelEvent.Unload event) {
-        clientWorkstationManager = null;
+    private void clear() {
+        workstationStorage.clear();
     }
 
     @SubscribeEvent
+    public static void onLevelUnload(LevelEvent.Unload event) {
+        if (clientWorkstationManager == null) return;
+        clientWorkstationManager.clear();
+    }
+
+
+
+    @SubscribeEvent
     public static void onLevelLoad(LevelEvent.Load event) {
-        clientWorkstationManager = new WorkstationManager((Level) event.getLevel());
+        if (clientWorkstationManager == null) clientWorkstationManager = new WorkstationManager((Level) event.getLevel());
+        clientWorkstationManager.level = (Level) event.getLevel();
     }
 }

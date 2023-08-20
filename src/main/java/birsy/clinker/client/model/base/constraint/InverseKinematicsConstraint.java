@@ -14,11 +14,11 @@ import java.util.List;
 
 public class InverseKinematicsConstraint implements Constraint {
     List<InterpolatedBone> bones;
-    List<Vector3f> points;
+    public List<Vector3f> points;
     List<Float> segmentLengths;
     Vector3f endPlacement;
-    Vector3f target;
-    Vector3f poleTarget;
+    public Vector3f target;
+    public Vector3f poleTarget;
     private PoseStack stack;
     private PolePlane polePlane;
 
@@ -26,17 +26,20 @@ public class InverseKinematicsConstraint implements Constraint {
 
     public InverseKinematicsConstraint(InterpolatedBone chainEnd, int depth, float endX, float endY, float endZ, float minimumAcceptableDistance) {
         this.minimumAcceptableDistance = minimumAcceptableDistance;
-        this.bones = new ArrayList<>();
-        this.points = new ArrayList<>();
-        this.segmentLengths = new ArrayList<>();
+        this.bones = new ArrayList<>(depth + 1);
+        this.points = new ArrayList<>(depth + 1);
+        this.segmentLengths = new ArrayList<>(depth + 1);
         this.endPlacement = new Vector3f(endX, endY, endZ);
         this.target = new Vector3f();
         this.poleTarget = new Vector3f();
         this.stack = new PoseStack();
         this.polePlane = new PolePlane(new Vector3f(), new Vector3f(1, 0, 0), new Vector3f(0, 0, 1));
-
         InterpolatedBone currentBone = chainEnd;
-        bones.add(depth, currentBone);
+        for (int i = 0; i < depth + 1; i++) {
+            bones.add(i, chainEnd);
+        }
+
+        bones.set(depth, currentBone);
         depth--;
         while (depth > 0) {
             if (currentBone.parent == null) throw new IllegalArgumentException("Inverse Kinematics Constraint depth exceeds maximum!");
@@ -62,16 +65,22 @@ public class InverseKinematicsConstraint implements Constraint {
 
     @Override
     public void apply() {
+        this.updatePoleTarget();
         this.updatePointLocations();
         // thanks sebastian lague
-        Vector3f origin = points.get(0);
+        Vector3f origin = Vector3f.ZERO.copy();
+
+        Vector3f planeNormal = this.target.copy();
+        planeNormal.cross(this.poleTarget);
+        planeNormal.normalize();
 
         // do it twice to do a full reverse pass
-        for (int iteration = 0; iteration < 2; iteration ++) {
+        for (int iteration = 0; iteration < 16; iteration ++) {
             boolean startingFromTarget = iteration % 2 == 0;
             // reverse arrays to alternate between forward and backward passes
             Collections.reverse(points);
             Collections.reverse(segmentLengths);
+
 
             Vector3f currentTarget = (startingFromTarget) ? target : origin;
             points.get(0).set(currentTarget.x(), currentTarget.y(), currentTarget.z());
@@ -86,24 +95,42 @@ public class InverseKinematicsConstraint implements Constraint {
                 points.get(i).set(points.get(i-1).x() + dir.x(), points.get(i-1).y() + dir.y(), points.get(i-1).z() + dir.z());
 
                 //project onto pole plane
-                VectorUtils.projectOntoPlane(points.get(i), this.polePlane.normal, this.polePlane.location);
+                Vector3f v = points.get(i).copy();
+                v.sub(this.poleTarget);
+
+                float dist = v.dot(planeNormal);
+                points.get(i).set(points.get(i).x() - dist * planeNormal.x(), points.get(i).y() - dist * planeNormal.y(), points.get(i).z() - dist * planeNormal.z());
             }
         }
 
-        this.updateBoneTransforms();
+        //this.updateBoneTransforms();
     }
 
     private List<Vector3f> updatePointLocations() {
-        stack.pushPose();
-        bones.get(0).getModelSpaceTransformMatrix(stack, 1);
-        for (int i = 0; i < bones.size(); i++) {
-            InterpolatedBone bone = bones.get(i);
-            if (i != 0) bone.transform(stack, 1);
-            VectorUtils.mul(stack.last().pose(), points.get(i));
-            if (i == bones.size() - 1) VectorUtils.mul(stack.last().pose(), points.get(i + 1));
-        }
+        this.points.clear();
+        this.segmentLengths.clear();
+        int boneCount = 5;
+        this.points.add(new Vector3f(0, 0 * -16, 0));
+        this.segmentLengths.add(16.0F);
+        this.points.add(new Vector3f(16, 1 * -16, 0));
+        this.segmentLengths.add(16.0F);
+        this.points.add(new Vector3f(24, 2 * -16, 0));
+        this.segmentLengths.add(16.0F);
+        this.points.add(new Vector3f(16, 3 * -16, 0));
+        this.segmentLengths.add(16.0F);
+        this.points.add(new Vector3f(0, 4 * -16, 0));
 
-        stack.popPose();
+
+//        stack.pushPose();
+//        bones.get(0).getModelSpaceTransformMatrix(stack, 1);
+//        for (int i = 0; i < bones.size(); i++) {
+//            InterpolatedBone bone = bones.get(i);
+//            if (i != 0) bone.transform(stack, 1);
+//            VectorUtils.mul(stack.last().pose(), points.get(i));
+//            if (i == bones.size() - 1) VectorUtils.mul(stack.last().pose(), points.get(i + 1));
+//        }
+//
+//        stack.popPose();
         return points;
     }
 

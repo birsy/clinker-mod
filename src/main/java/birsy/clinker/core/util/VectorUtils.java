@@ -4,7 +4,6 @@ import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Math;
 
 public class VectorUtils {
     public static float[] toArray(Vector3f vec) {

@@ -25,17 +25,17 @@ public class MudScarabRenderer extends InterpolatedEntityRenderer<MudScarabEntit
 
     @Override
     public void render(MudScarabEntity pEntity, float pEntityYaw, float pPartialTicks, PoseStack pMatrixStack, MultiBufferSource pBuffer, int pPackedLight) {
-        Vec3 normal = pEntity.getNormal(pPartialTicks).lerp(new Vec3(0, 1, 0), 0.25F);
-        float height = pEntity.getHeight(pPartialTicks);
-        height += (1.0 - normal.dot(new Vec3(0, 1, 0)));
-        pMatrixStack.translate(0, height - pEntity.getPosition(pPartialTicks).y(), 0);
-        pMatrixStack.mulPose(Vector3f.ZP.rotation((float) -Math.atan2(normal.x(), normal.y())));
-        pMatrixStack.mulPose(Vector3f.XP.rotation((float) Math.atan2(normal.z(), normal.y())));
+//        Vec3 normal = pEntity.getNormal(pPartialTicks).lerp(new Vec3(0, 1, 0), 0.25F);
+//        float height = pEntity.getHeight(pPartialTicks);
+//        height += (1.0 - normal.dot(new Vec3(0, 1, 0)));
+//        pMatrixStack.translate(0, height - pEntity.getPosition(pPartialTicks).y(), 0);
+//        pMatrixStack.mulPose(Vector3f.ZP.rotation((float) -Math.atan2(normal.x(), normal.y())));
+//        pMatrixStack.mulPose(Vector3f.XP.rotation((float) Math.atan2(normal.z(), normal.y())));
         super.render(pEntity, pEntityYaw, pPartialTicks, pMatrixStack, pBuffer, pPackedLight);
     }
 
     public RenderType getRenderType(MudScarabEntity entity) {
-        return RenderType.entityCutout(this.getTextureLocation(entity));
+        return RenderType.entityCutoutNoCull(this.getTextureLocation(entity));
     }
 
     /**

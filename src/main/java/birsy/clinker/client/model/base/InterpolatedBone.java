@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
+import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,8 +33,8 @@ public class InterpolatedBone {
         this.identifier = identifier;
 
         this.rotation = new Quaternionf();
-        this.pRotation = this.rotation.clone();
-        this.currentRotation = this.rotation.clone();
+        this.pRotation = new Quaternionf();
+        this.currentRotation = new Quaternionf();
         this.initialRotation = new Quaternionf();
 
         this.xSize = 1.0F;
@@ -42,6 +43,9 @@ public class InterpolatedBone {
         this.pXSize = 1.0F;
         this.pYSize = 1.0F;
         this.pZSize = 1.0F;
+        this.initialXSize = 1.0F;
+        this.initialYSize = 1.0F;
+        this.initialZSize = 1.0F;
 
         this.children = new ArrayList<>();
     }
@@ -50,26 +54,26 @@ public class InterpolatedBone {
         this.initialX = x;
         this.initialY = y;
         this.initialZ = z;
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.pX = x;
-        this.pY = y;
-        this.pZ = z;
-        this.initialRotation.set(rotation);
-        this.rotation.set(rotation);
-        this.pRotation.set(rotation);
-        this.currentRotation.set(rotation);
-    }
-
-    protected void reset() {
         this.x = this.initialX;
         this.y = this.initialY;
         this.z = this.initialZ;
-        this.rotation.set(initialRotation);
-        this.xSize = initialXSize;
-        this.ySize = initialYSize;
-        this.zSize = initialZSize;
+        this.pX = this.initialX;
+        this.pY = this.initialY;
+        this.pZ = this.initialZ;
+        this.initialRotation.set(rotation);
+        this.rotation.set(this.initialRotation);
+        this.pRotation.set(this.initialRotation);
+        this.currentRotation.set(this.initialRotation);
+    }
+
+    public void reset() {
+        this.x = this.initialX;
+        this.y = this.initialY;
+        this.z = this.initialZ;
+        this.rotation.set(this.initialRotation);
+        this.xSize = this.initialXSize;
+        this.ySize = this.initialYSize;
+        this.zSize = this.initialZSize;
     }
 
     protected void tick() {
@@ -85,7 +89,9 @@ public class InterpolatedBone {
     public void transform(PoseStack pPoseStack, float partialTick) {
         pPoseStack.translate(Mth.lerp(partialTick, pX, x), Mth.lerp(partialTick, pY, y), Mth.lerp(partialTick, pZ, z));
         pPoseStack.scale(Mth.lerp(partialTick, pXSize, xSize), Mth.lerp(partialTick, pYSize, ySize), Mth.lerp(partialTick, pZSize, zSize));
-        pPoseStack.mulPose(pRotation.slerp(rotation, partialTick, currentRotation).toMojangQuaternion());
+        this.currentRotation = pRotation.slerp(rotation, partialTick, currentRotation);
+        this.currentRotation.normalize();
+        pPoseStack.mulPose(this.currentRotation.toMojangQuaternion());
     }
 
     public void render(Map<String, ModelMesh> meshes, float partialTick, PoseStack pPoseStack, VertexConsumer pVertexConsumer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha) {
@@ -125,5 +131,13 @@ public class InterpolatedBone {
         this.transform(pPoseStack, partialTick);
 
         return pPoseStack.last().pose();
+    }
+
+    public void rotate(float angle, Direction.Axis axis) {
+        switch (axis) {
+            case X -> this.rotation.rotateX(angle);
+            case Y -> this.rotation.rotateY(angle);
+            case Z -> this.rotation.rotateZ(angle);
+        }
     }
 }

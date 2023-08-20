@@ -3,6 +3,10 @@ package birsy.clinker.client.render.entity.base;
 import birsy.clinker.client.model.base.InterpolatedSkeleton;
 import birsy.clinker.client.model.base.InterpolatedSkeletonParent;
 import birsy.clinker.client.model.base.ModelFactory;
+import birsy.clinker.client.model.base.constraint.InverseKinematicsConstraint;
+import birsy.clinker.client.render.DebugRenderUtil;
+import birsy.clinker.core.Clinker;
+import birsy.clinker.core.util.Quaternionf;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -42,7 +46,8 @@ public abstract class InterpolatedEntityRenderer<T extends LivingEntity & Interp
 
     public void render(T pEntity, float pEntityYaw, float pPartialTicks, PoseStack pMatrixStack, MultiBufferSource pBuffer, int pPackedLight) {
         pMatrixStack.pushPose();
-
+        float scale = 1.0F / 16.0F;
+        pMatrixStack.scale(scale, scale, scale);
         this.setupRotations(pEntity, pMatrixStack, pEntity.tickCount + pPartialTicks, pPartialTicks);
 
         Minecraft minecraft = Minecraft.getInstance();
@@ -51,15 +56,73 @@ public abstract class InterpolatedEntityRenderer<T extends LivingEntity & Interp
         boolean glowing = minecraft.shouldEntityAppearGlowing(pEntity);
         RenderType rendertype = this.getRenderType(pEntity, invisible, isSpectatorTransparent, glowing);
         if (rendertype != null) {
-            VertexConsumer vertexconsumer = pBuffer.getBuffer(rendertype);
+            VertexConsumer vertexconsumer = pBuffer.getBuffer(this.getRenderType(pEntity));
             int packedOverlay = LivingEntityRenderer.getOverlayCoords(pEntity, 0);
 
-            pEntity.getSkeleton().render(pPartialTicks, pMatrixStack, vertexconsumer, pPackedLight, packedOverlay, 1.0F, 1.0F, 1.0F, isSpectatorTransparent ? 0.15F : 1.0F);
+            if (pEntity.getSkeleton() != null) pEntity.getSkeleton().render(pPartialTicks, pMatrixStack, vertexconsumer, pPackedLight, packedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
         }
 
         if (!pEntity.isSpectator()) {
             for(EntityRenderLayer<T, M> layer : this.layers) {
                 layer.render(pMatrixStack, pBuffer, pPackedLight, pEntity, pPartialTicks);
+            }
+        }
+
+        if (pEntity.getSkeleton() != null) {
+            VertexConsumer vertexconsumer = pBuffer.getBuffer(RenderType.LINES);
+            for (Object constraint : pEntity.getSkeleton().constraints) {
+                if (constraint instanceof InverseKinematicsConstraint ik) {
+                    Vector3f x = ik.points.get(ik.points.size() - 1).copy();
+                    x.cross(ik.poleTarget);
+                    x.normalize();
+                    x.mul(-1);
+
+
+                    Vector3f point;
+                    Vector3f pPoint;
+
+                    for (int i = 0; i < ik.points.size(); i++) {
+                        point = ik.points.get(i);
+                        DebugRenderUtil.renderSphere(pMatrixStack, vertexconsumer, 16, 1.5F, point.x(), point.y(), point.z(), 1.0F, 1.0F, 1.0F, 0.1F);
+
+                        if (i - 1 >= 0) {
+                            pPoint = ik.points.get(i - 1);
+                            DebugRenderUtil.renderLine(pMatrixStack, vertexconsumer, point.x(), point.y(), point.z(), pPoint.x(), pPoint.y(), pPoint.z(), 1.0F, 1.0F, 1.0F, 0.1F);
+
+                            Vector3f average = new Vector3f();
+                            average.add(point);
+                            average.add(pPoint);
+                            average.mul(0.5F);
+
+                            Vector3f y = ik.points.get(i - 1).copy();
+                            y.sub(ik.points.get(i).copy());
+                            y.normalize();
+
+                            Vector3f z = x.copy();
+                            z.cross(y);
+                            z.normalize();
+
+                            Quaternionf rot = new Quaternionf().setFromNormalized(x.x(), x.y(), x.z(), y.x(), y.y(), y.z(), z.x(), z.y(), z.z());
+
+                            pMatrixStack.pushPose();
+                            pMatrixStack.translate(average.x(), average.y(), average.z());
+                            y.mul(16);
+                            DebugRenderUtil.renderLine(pMatrixStack, vertexconsumer, 0, 0, 0, y.x(), y.y(), y.z(), 1.0F, 1.0F, 0.0F, 0.2F, 0.0F, 0.0F, 0.0F, 0.0F);
+
+
+                            pMatrixStack.mulPose(rot.toMojangQuaternion());
+                            DebugRenderUtil.renderLine(pMatrixStack, vertexconsumer, 0, 0, 0, 10, 0, 0, 1.0F, 0.0F, 0.0F, 0.2F, 1.0F, 0.0F, 0.0F, 0.0F);
+                            DebugRenderUtil.renderLine(pMatrixStack, vertexconsumer, 0, 0, 0, 0, 10, 0, 0.0F, 1.0F, 0.0F, 0.2F, 0.0F, 1.0F, 0.0F, 0.0F);
+                            DebugRenderUtil.renderLine(pMatrixStack, vertexconsumer, 0, 0, 0, 0, 0, 10, 0.0F, 0.0F, 1.0F, 0.2F, 0.0F, 0.0F, 1.0F, 0.0F);
+                            pMatrixStack.popPose();
+                        }
+                    }
+
+                    point = ik.target;
+                    DebugRenderUtil.renderSphere(pMatrixStack, vertexconsumer, 16, 2.0F, point.x(), point.y(), point.z(), 1.0F, 0.0F, 0.0F, 1.0F);
+                    point = ik.poleTarget;
+                    DebugRenderUtil.renderSphere(pMatrixStack, vertexconsumer, 16, 2.0F, point.x(), point.y(), point.z(), 0.0F, 1.0F, 0.0F, 1.0F);
+                }
             }
         }
 

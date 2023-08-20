@@ -27,7 +27,7 @@ public class CounterBlockEntity extends BlockEntity {
     public void onLoad() {
         super.onLoad();
         if (this.level.isClientSide()) {
-            this.workstation = WorkstationManager.clientWorkstationManager.getWorkstationAtBlock(this.getBlockPos());
+            if (WorkstationManager.clientWorkstationManager != null) this.workstation = WorkstationManager.clientWorkstationManager.getWorkstationAtBlock(this.getBlockPos());
         } else {
             this.workstation = WorkstationManager.managerByLevel.get(this.level).getWorkstationAtBlock(this.getBlockPos());
         }

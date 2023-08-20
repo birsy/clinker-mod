@@ -6,8 +6,6 @@ import com.mojang.math.Vector3f;
 import net.minecraft.core.Position;
 import net.minecraft.util.Mth;
 import org.apache.commons.math3.linear.RealMatrix;
-import org.joml.Math;
-import org.joml.Matrix4x3dc;
 
 import java.io.Externalizable;
 import java.io.IOException;

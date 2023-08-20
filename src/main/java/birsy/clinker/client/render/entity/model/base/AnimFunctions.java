@@ -1,5 +1,6 @@
 package birsy.clinker.client.render.entity.model.base;
 
+import birsy.clinker.client.model.base.InterpolatedBone;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -8,6 +9,7 @@ import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
 import com.mojang.math.Vector4f;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -25,6 +27,15 @@ public class AnimFunctions {
      * @param limbSwingSpeed    the speed the legs move
      */
     public static void bob(DynamicModelPart box, float speed, float degree, boolean bounce, float limbSwingAmount, float limbSwingSpeed) {
+        float bob = (float) (Math.sin(limbSwingAmount * speed) * limbSwingSpeed * degree - limbSwingSpeed * degree);
+        if (bounce) {
+            bob = (float) -Math.abs(Math.sin(limbSwingAmount * (speed * 0.5F)) * limbSwingSpeed * degree);
+        }
+
+        box.y += bob;
+    }
+
+    public static void bob(InterpolatedBone box, float speed, float degree, boolean bounce, float limbSwingAmount, float limbSwingSpeed) {
         float bob = (float) (Math.sin(limbSwingAmount * speed) * limbSwingSpeed * degree - limbSwingSpeed * degree);
         if (bounce) {
             bob = (float) -Math.abs(Math.sin(limbSwingAmount * (speed * 0.5F)) * limbSwingSpeed * degree);
@@ -54,6 +65,11 @@ public class AnimFunctions {
     public static void look(DynamicModelPart box, float netHeadYaw, float headPitch, float yawDivisor, float pitchDivisor) {
         box.yRot += (netHeadYaw * ((float)Math.PI / 180F))/yawDivisor;
         box.xRot += (headPitch * ((float)Math.PI / 180F))/pitchDivisor;
+    }
+
+    public static void look(InterpolatedBone box, float netHeadYaw, float headPitch, float yawDivisor, float pitchDivisor) {
+        box.rotate( (netHeadYaw * (Mth.PI / 180F)) / yawDivisor, Direction.Axis.Y);
+        box.rotate( (headPitch * (Mth.PI / 180F)) / pitchDivisor, Direction.Axis.X);
     }
 
 
@@ -91,6 +107,24 @@ public class AnimFunctions {
         }
         return rotation;
     }
+
+    public static float swing(InterpolatedBone bone, float speed, float degree, boolean invert, float offset, float weight, float swing, float limbSwingAmount, Direction.Axis axis) {
+        float rotation = calculateRotation(speed, degree, invert, offset, weight, swing, limbSwingAmount);
+        bone.rotate(rotation, axis);
+        return rotation;
+    }
+
+    public static float clampedSwing(InterpolatedBone bone, float speed, float degree, boolean invert, float offset, float weight, float swing, float limbSwingAmount, boolean clampNegative, Direction.Axis axis) {
+        float rotation = calculateRotationClamped(speed, degree, invert, offset, weight, swing, limbSwingAmount, clampNegative);
+        bone.rotate(rotation, axis);
+        return rotation;
+    }
+
+    public static void swingLimbs(InterpolatedBone left, InterpolatedBone right, float speed, float degree, float offset, float weight, float swing, float limbSwingAmount) {
+        swing(left, speed, degree, true, offset, weight, swing, limbSwingAmount, Direction.Axis.X);
+        swing(right, speed, degree, false, offset, weight, swing, limbSwingAmount, Direction.Axis.X);
+    }
+
 
     public static float clampedSwing(DynamicModelPart box, float speed, float degree, boolean invert, float offset, float weight, float swing, float limbSwingAmount, boolean clampNegative, AnimFunctions.Axis axis) {
         float rotation = calculateRotationClamped(speed, degree, invert, offset, weight, swing, limbSwingAmount, clampNegative);
@@ -423,6 +457,5 @@ public class AnimFunctions {
         Vector4f vec = new Vector4f(0, 0, 0, 1);
         vec.transform(matrix4f);
         return new Vec3(vec.x(), vec.y(), vec.z());
-
     }
 }
