@@ -4,14 +4,12 @@ import birsy.clinker.client.ClinkerCursor;
 import birsy.clinker.client.render.ClinkerShaders;
 import birsy.clinker.common.world.alchemy.workstation.Workstation;
 import birsy.clinker.common.world.alchemy.workstation.WorkstationPhysicsObject;
-import birsy.clinker.common.world.physics.rigidbody.colliders.OBBCollisionShape;
 import birsy.clinker.core.Clinker;
+import birsy.clinker.core.util.JomlConversions;
 import birsy.clinker.core.util.MathUtils;
-import birsy.clinker.core.util.Quaterniond;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
 import net.minecraft.client.GameNarrator;
 import net.minecraft.client.Minecraft;
@@ -30,7 +28,10 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.joml.*;
 import org.lwjgl.glfw.GLFW;
+
+import java.lang.Math;
 
 @OnlyIn(Dist.CLIENT)
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = Clinker.MOD_ID)
@@ -196,12 +197,11 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
         this.screenTransition = Mth.clamp(screenTransition + ((isClosing ? -1 : 1) * 0.05F), 0, 1);
 
         this.pCurrentCamPos = this.currentCamPos.scale(1);
-        this.pCamRotation = this.camRotation.clone();
-
+        this.pCamRotation = new Quaterniond(this.camRotation);
 
         if (!this.isClosing) {
             this.targetCamPos = this.workstation.camera.position;
-            this.targetCamRotation = new Quaterniond().lookAlong(workstation.camera.direction.scale(-1), new Vec3(0, 1, 0));
+            this.targetCamRotation = new Quaterniond().lookAlong(JomlConversions.toJOML(workstation.camera.direction.scale(-1)), JomlConversions.toJOML(new Vec3(0, 1, 0)));
         }
 
         this.currentCamPos = this.currentCamPos.lerp(this.targetCamPos, 0.15);
@@ -312,11 +312,11 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
     public void setCameraView(Camera camera, PoseStack matrixStack, float partialTick) {
         Vec3 pos = getCamPos(partialTick);
         camera.setPosition(camera.getPosition().lerp(pos, getScreenTransition(partialTick)));
-        Quaterniond quaterniond = new Quaterniond().slerp(this.pCamRotation.clone().slerp(this.camRotation, partialTick), getScreenTransition(partialTick));
+        Quaterniond quaterniond = new Quaterniond().slerp(this.pCamRotation.slerp(this.camRotation, partialTick, new Quaterniond()), getScreenTransition(partialTick));
         camera.rotation.set((float) quaterniond.x(), (float) quaterniond.y(), (float) quaterniond.z(), (float) quaterniond.w());
         if (matrixStack != null) {
-            matrixStack.mulPose(Vector3f.XP.rotationDegrees(Mth.lerp(getScreenTransition(partialTick), 0, -25)));
-            matrixStack.mulPose(quaterniond.toMojangQuaternion());
+            matrixStack.mulPose(new Quaternionf(new AxisAngle4f(Mth.lerp(getScreenTransition(partialTick), 0, -25), new Vector3f(1, 0, 0))));
+            matrixStack.mulPose(new Quaternionf(quaterniond));
         }
     }
 
@@ -366,8 +366,8 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
 
         private void updateLightColor(boolean updateCurrent) {
             Entity entity = Minecraft.getInstance().cameraEntity;
-            int blockLight = Math.max(entity.level.getBrightness(LightLayer.BLOCK, entity.blockPosition()), 11);
-            int skyLight = entity.level.getBrightness(LightLayer.SKY, entity.blockPosition());
+            int blockLight = Math.max(entity.level().getBrightness(LightLayer.BLOCK, entity.blockPosition()), 11);
+            int skyLight = entity.level().getBrightness(LightLayer.SKY, entity.blockPosition());
 
             int decimalColor = Minecraft.getInstance().gameRenderer.lightTexture().lightPixels.getPixelRGBA(blockLight, skyLight);
             Vec3 color = MathUtils.convertColorToVec3(decimalColor);
@@ -708,11 +708,11 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
             rotation += Mth.sin((this.hoverTicks + pPartialTick) * 0.05F) * 45 * this.getWiggle(pPartialTick);
             pPoseStack.pushPose();
             pPoseStack.translate(velocityOffset, -3 * this.getWiggle(pPartialTick), 0);
-            pPoseStack.translate(0, 0, 100.0F + Minecraft.getInstance().getItemRenderer().blitOffset);
+            pPoseStack.translate(0, 0, 100.0F + 100);
             pPoseStack.translate(8.0D, 8.0D, 8.0D);
-            pPoseStack.mulPose(Vector3f.YP.rotationDegrees(rotation));
+            pPoseStack.mulPose(Axis.YP.rotationDegrees(rotation));
             pPoseStack.translate(0.0D, 4.0D, 0.0D);
-            pPoseStack.mulPose(Vector3f.ZP.rotation(Mth.clamp(-getParentVelocity(pPartialTick) * Mth.lerp(0.5F, awfulRandom, 1), -4, 4) * 0.05F));
+            pPoseStack.mulPose(Axis.ZP.rotation(Mth.clamp(-getParentVelocity(pPartialTick) * Mth.lerp(0.5F, awfulRandom, 1), -4, 4) * 0.05F));
             pPoseStack.translate(0.0D, -4.0D, 0.0D);
 
             GuiHelper.tryRenderGuiItem(Minecraft.getInstance().getItemRenderer(), stack, pPoseStack, 1.0F);

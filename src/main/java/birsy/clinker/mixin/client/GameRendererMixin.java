@@ -3,7 +3,6 @@ package birsy.clinker.mixin.client;
 import birsy.clinker.client.gui.AlchemicalWorkstationScreen;
 import birsy.clinker.client.render.world.VolumetricRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;

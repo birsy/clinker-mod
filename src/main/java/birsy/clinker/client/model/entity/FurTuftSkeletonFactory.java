@@ -1,10 +1,12 @@
+package birsy.clinker.client.model.entity;
+
 import birsy.clinker.client.model.base.InterpolatedSkeleton;
 import birsy.clinker.client.model.base.InterpolatedBone;
 import birsy.clinker.client.model.base.SkeletonFactory;
 import birsy.clinker.client.model.base.mesh.ModelMesh;
 import birsy.clinker.client.model.base.mesh.StaticMesh;
 import birsy.clinker.client.model.base.AnimationProperties;
-import birsy.clinker.core.util.Quaternionf;
+import org.joml.Quaternionf;
 
 public class FurTuftSkeletonFactory implements SkeletonFactory {
 	private final ModelMesh[] hairMeshes = new ModelMesh[7];

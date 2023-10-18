@@ -10,16 +10,17 @@ import birsy.clinker.client.model.base.mesh.StaticMesh;
 import birsy.clinker.client.model.base.AnimationProperties;
 import birsy.clinker.common.world.entity.salamander.NewSalamanderEntity;
 import birsy.clinker.core.Clinker;
+import birsy.clinker.core.util.JomlConversions;
 import birsy.clinker.core.util.MathUtils;
-import birsy.clinker.core.util.Quaterniond;
-import birsy.clinker.core.util.Quaternionf;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Quaternionf;
+import org.joml.Quaterniond;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -682,10 +683,10 @@ public class SalamanderSkeletonFactory implements SkeletonFactory {
 					footPos = footPos.add(footNormal.scale(2));
 					ikConstraint.target.set((float) footPos.x(), (float) footPos.y(), (float) footPos.z());
 					Vec3 poleTargetOffset = new Vec3(0, 0, 80);
-					poleTargetOffset = ((NewSalamanderEntity)properties.getProperty("entity")).segments.get(index).getOrientation(1.0F).transform(poleTargetOffset);
+					poleTargetOffset = JomlConversions.toMojang(((NewSalamanderEntity)properties.getProperty("entity")).segments.get(index).getOrientation(1.0F).transform(JomlConversions.toJOML(poleTargetOffset)));
 
-					Vector3f middle = point.copy();
-					middle.add(new Vector3f(footPos));
+					Vector3f middle = new Vector3f(point);
+					middle.add(new Vector3f((float) footPos.x(), (float) footPos.y(), (float) footPos.z()));
 					middle.mul(0.5F);
 
 					ikConstraint.poleTarget.set(middle.x() + (float)poleTargetOffset.x(), middle.y() + (float)poleTargetOffset.y(), middle.z() + (float)poleTargetOffset.z());
@@ -865,9 +866,11 @@ public class SalamanderSkeletonFactory implements SkeletonFactory {
 						NewSalamanderEntity.SalamanderSegment seg = entity.segments.get(body.index);
 						Quaterniond segRot = seg.getOrientation(1.0F);
 						Quaternionf rot = new Quaternionf((float) segRot.x(), (float) segRot.y(), (float) segRot.z(), (float) segRot.w());
-						Vector3f up = rot.transform(Vector3f.YP.copy());
-						body.salamanderLeftFoot.setGlobalSpaceRotation(rot.clone().rotateTo(up, new Vector3f(seg.leftLeg.getFootNormal())));
-						body.salamanderRightFoot.setGlobalSpaceRotation(rot.clone().rotateTo(up, new Vector3f(seg.rightLeg.getFootNormal())));
+						Vector3f up = rot.transform(new Vector3f(0, 1, 0));
+						Vec3 leftFootNormal = seg.leftLeg.getFootNormal();
+						Vec3 rightFootNormal = seg.rightLeg.getFootNormal();
+						body.salamanderLeftFoot.setGlobalSpaceRotation(new Quaternionf(rot).rotateTo(up, new Vector3f((float) leftFootNormal.x, (float) leftFootNormal.y, (float) leftFootNormal.z)));
+						body.salamanderRightFoot.setGlobalSpaceRotation(new Quaternionf(rot).rotateTo(up, new Vector3f((float) rightFootNormal.x, (float) rightFootNormal.y, (float) rightFootNormal.z)));
 					}
 				}
 			}

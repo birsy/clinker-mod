@@ -1,6 +1,7 @@
 package birsy.clinker.common.world.block.blockentity.fairyfruit;
 
 import birsy.clinker.common.world.physics.particle.LinkConstraint;
+import birsy.clinker.core.util.JomlConversions;
 import birsy.clinker.core.util.MathUtils;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
@@ -57,7 +58,7 @@ public class FairyFruitSegment extends LinkConstraint<FairyFruitJoint> {
                 for (double y = -boundY; y < boundY; y += particleDensity) {
                     for (double z = -boundZ; z < boundZ; z += particleDensity) {
                         Vec3 particlePos = new Vec3(x, y, z);
-                        particlePos = this.getOrientation(1.0, FairyFruitBlockEntity.ORIENTATION_FORWARD).transform(particlePos);
+                        particlePos = JomlConversions.toMojang(this.getOrientation(1.0, FairyFruitBlockEntity.ORIENTATION_FORWARD).transform(JomlConversions.toJOML(particlePos)));
                         particlePos = particlePos.add(segmentPosition);
 
                         parent.getLevel().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, parent.getBlockState()).setPos(parent.getBlockPos()),

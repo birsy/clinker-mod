@@ -1,11 +1,13 @@
 package birsy.clinker.common.world.physics.particle;
 
-import birsy.clinker.core.util.Quaterniond;
+import birsy.clinker.core.util.JomlConversions;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.joml.Quaterniond;
+import org.joml.Vector3d;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,7 +122,7 @@ public class CollidingParticle {
         }
         directionVector = directionVector.scale(1.0D / (double)linkConstraints.size());
 
-        return Quaterniond.lookAt(Vec3.ZERO, directionVector, forward);
+        return new Quaterniond().lookAlong(JomlConversions.toJOML(directionVector), new Vector3d(0, 1, 0));
     }
 
     public void addConstraint(Constraint constraint) {

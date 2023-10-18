@@ -2,13 +2,13 @@ package birsy.clinker.common.world.alchemy.workstation.camera;
 
 import birsy.clinker.common.world.alchemy.workstation.Workstation;
 import birsy.clinker.core.Clinker;
-import birsy.clinker.core.util.Quaterniond;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.SupportType;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Quaterniond;
 
 import java.util.*;
 

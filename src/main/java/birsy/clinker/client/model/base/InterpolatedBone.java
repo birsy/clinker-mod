@@ -1,14 +1,14 @@
 package birsy.clinker.client.model.base;
 
 import birsy.clinker.client.model.base.mesh.ModelMesh;
-import birsy.clinker.core.util.Quaternionf;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
+
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -111,7 +111,7 @@ public class InterpolatedBone {
         pPoseStack.translate(Mth.lerp(partialTick, pX, x), Mth.lerp(partialTick, pY, y), Mth.lerp(partialTick, pZ, z));
         this.currentRotation = pRotation.slerp(rotation, partialTick, currentRotation);
         this.currentRotation.normalize();
-        pPoseStack.mulPose(this.currentRotation.toMojangQuaternion());
+        pPoseStack.mulPose(this.currentRotation);
         pPoseStack.scale(Mth.lerp(partialTick, pXSize, xSize), Mth.lerp(partialTick, pYSize, ySize), Mth.lerp(partialTick, pZSize, zSize));
     }
 

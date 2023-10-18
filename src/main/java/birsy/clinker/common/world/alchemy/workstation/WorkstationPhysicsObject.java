@@ -1,11 +1,13 @@
 package birsy.clinker.common.world.alchemy.workstation;
 
+import birsy.clinker.core.util.JomlConversions;
 import birsy.clinker.core.util.MathUtils;
-import birsy.clinker.core.util.Quaterniond;
-import com.mojang.math.Matrix3f;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix3d;
+import org.joml.Quaterniond;
+import org.joml.Vector3d;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,15 +23,14 @@ public class WorkstationPhysicsObject {
     public double mass;
     protected double inverseMass;
     //todo: figure out how to calculate this from collision shape
-    protected Matrix3f inverseInertiaTensor;
+    protected Matrix3d inverseInertiaTensor;
     public SphereBoxCollider collider;
 
     public WorkstationPhysicsObject(Vec3 position, float mass, double sizeX, double sizeY, double sizeZ) {
         this.mass = mass;
         this.inverseMass = 1.0 / mass;
 
-        this.inverseInertiaTensor = new Matrix3f();
-        this.inverseInertiaTensor.setIdentity();
+        this.inverseInertiaTensor = new Matrix3d();
 
         this.position = position;
         this.pPosition = position;
@@ -62,19 +63,15 @@ public class WorkstationPhysicsObject {
         this.collider.updateTransform(this.position, this.rotation);
     }
 
-    public void push(Vec3 pos, Vec3 nudge) {
-        Vec3 currentPos = this.position;
-        Quaterniond orientation = this.rotation;
+    public void push(Vector3d pos, Vector3d nudge) {
+        Vector3d currentPos = JomlConversions.toJOML(this.position);
 
-        nudge = orientation.transformInverse(nudge);
+        nudge = this.rotation.transformInverse(nudge);
+        pos = this.rotation.transformInverse(pos.sub(currentPos));
 
-        pos = pos.subtract(currentPos);
-        pos = orientation.transformInverse(pos);
+        Vector3d angularNudge = this.inverseInertiaTensor.transform(pos.cross(nudge, new Vector3d()));
 
-        //Vector3d angularNudge = this.inverseInertiaTensor.transform(pos.cross(nudge, new Vector3d()));
-        Vec3 angularNudge = pos.cross(nudge);
-
-        double normalMass = -pos.cross(angularNudge).dot(nudge) / nudge.dot(nudge) + this.inverseMass;
+        double normalMass = -pos.cross(angularNudge, new Vector3d()).dot(nudge) / nudge.dot(nudge) + this.inverseMass;
 
         if (nudge.dot(nudge) < Double.MIN_NORMAL) {
             return;
@@ -82,19 +79,18 @@ public class WorkstationPhysicsObject {
 
         double scalar = 1 / normalMass;
 
-        nudge = orientation.transform(nudge);
-        angularNudge = orientation.transform(angularNudge);
+        nudge = this.rotation.transform(nudge);
+        angularNudge = this.rotation.transform(angularNudge);
 
-        nudge = nudge.scale(scalar * this.inverseMass);
-        currentPos = currentPos.add(nudge);
+        currentPos.add(nudge.mul(scalar * this.inverseMass));
 
         // update actual pose
-        this.position = currentPos;
+        this.position = JomlConversions.toMojang(currentPos);
 
         // rotational push
         this.pushRotate(angularNudge, scalar);
     }
-    private void pushRotate(Vec3 angularNudge, double scalar) {
+    private void pushRotate(Vector3d angularNudge, double scalar) {
         Quaterniond q = new Quaterniond(
                 angularNudge.x * scalar,
                 angularNudge.y * scalar,
@@ -159,7 +155,7 @@ public class WorkstationPhysicsObject {
 
         public void updateTransform(Vec3 position, Quaterniond orientation) {
             for (SphereCollider sphere : this.spheres) {
-                sphere.position = orientation.transform(sphere.initialPosition).add(position);
+                sphere.position = JomlConversions.toMojang(orientation.transform(JomlConversions.toJOML(sphere.initialPosition))).add(position);
             }
 
             updateBoundingBox();

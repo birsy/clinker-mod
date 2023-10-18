@@ -7,13 +7,11 @@ import birsy.clinker.client.render.DebugRenderUtil;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
-import com.mojang.math.Vector4f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Quaternionf;
 
 import java.util.*;
 
@@ -54,8 +52,8 @@ public abstract class InterpolatedSkeleton<P extends InterpolatedSkeletonParent>
     public void addAnimationProperties(AnimationProperties properties, P parent) {
         if (parent instanceof LivingEntity entity) {
             properties.addProperty("entity", entity);
-            properties.addProperty("limbSwing", entity.animationPosition);
-            properties.addProperty("limbSwingAmount", entity.animationSpeed);
+            properties.addProperty("limbSwing", entity.walkAnimation.position());
+            properties.addProperty("limbSwingAmount", entity.walkAnimation.speed());
             properties.addProperty("ageInTicks", entity.tickCount);
             properties.addProperty("bodyYaw", 180 - entity.yBodyRot);
             properties.addProperty("netHeadYaw", -(entity.yHeadRot - entity.yBodyRot));

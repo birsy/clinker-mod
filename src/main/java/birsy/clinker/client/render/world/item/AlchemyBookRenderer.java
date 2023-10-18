@@ -7,7 +7,7 @@ import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.PartPose;
@@ -45,11 +45,11 @@ public class AlchemyBookRenderer {
             PoseStack stack = event.getPoseStack();
             float scale = 0.225F;
             stack.pushPose();
-            stack.mulPose(Vector3f.YP.rotationDegrees(-Mth.lerp(event.getPartialTick(), event.getEntity().yBodyRotO, event.getEntity().yBodyRot)));
-            //stack.mulPose(Vector3f.YP.rotationDegrees(180));
+            stack.mulPose(Axis.YP.rotationDegrees(-Mth.lerp(event.getPartialTick(), event.getEntity().yBodyRotO, event.getEntity().yBodyRot)));
+            //stack.mulPose(Axis.YP.rotationDegrees(180));
             float bob = Mth.lerp(event.getPartialTick(), event.getEntity().oBob, event.getEntity().bob) * Mth.sin(Mth.lerp(event.getPartialTick(), event.getEntity().walkDistO, event.getEntity().walkDist) * 5);
             stack.translate(0, 0.9 + (bob * 0.5), 0.5);
-            stack.mulPose(Vector3f.XP.rotationDegrees(-110));
+            stack.mulPose(Axis.XP.rotationDegrees(-110));
             stack.scale(scale, scale, scale);
             AlchemyBookModel model = new AlchemyBookModel();
             model.bookSpine.yRot = -(float)(Math.PI / 2);
@@ -78,20 +78,20 @@ public class AlchemyBookRenderer {
             position = position.multiply(0, 1, 0).add(0, 0, 1).normalize().scale(distance);
 
             stack.pushPose();
-            stack.mulPose(Vector3f.YP.rotationDegrees(yVRot));
-            stack.mulPose(Vector3f.YP.rotationDegrees(Mth.lerp(0.9F, -yRot, -yVRot)));
+            stack.mulPose(Axis.YP.rotationDegrees(yVRot));
+            stack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(0.9F, -yRot, -yVRot)));
 
-            stack.mulPose(Vector3f.YP.rotationDegrees(180.0F));
-            stack.mulPose(Vector3f.ZP.rotationDegrees(180.0F));
+            stack.mulPose(Axis.YP.rotationDegrees(180.0F));
+            stack.mulPose(Axis.ZP.rotationDegrees(180.0F));
             stack.scale(scale, scale, scale);
             stack.translate(0, 1.8 * event.getEquipProgress(), 0);
 
             stack.translate(Mth.lerp(lookAtFactor, position.x(), 0), Mth.lerp(lookAtFactor, position.y() + 2, 0), Mth.lerp(lookAtFactor, position.z(), distance));
 
-            stack.mulPose(Vector3f.YP.rotationDegrees(180));
-            stack.mulPose(Vector3f.XP.rotationDegrees(90));
+            stack.mulPose(Axis.YP.rotationDegrees(180));
+            stack.mulPose(Axis.XP.rotationDegrees(90));
 
-            stack.mulPose(Vector3f.XP.rotationDegrees(Mth.lerp(lookAtFactor, -xRot, -90)));
+            stack.mulPose(Axis.XP.rotationDegrees(Mth.lerp(lookAtFactor, -xRot, -90)));
             stack.scale(0.45F, 0.45F, 0.45F);
 
             //Renders the player's hands.
@@ -112,7 +112,7 @@ public class AlchemyBookRenderer {
 
                 stack.popPose();
             }
-            stack.mulPose(Vector3f.XP.rotationDegrees(40 * (MathUtils.ease(event.getEquipProgress(), MathUtils.EasingType.easeInOutBack))));
+            stack.mulPose(Axis.XP.rotationDegrees(40 * (MathUtils.ease(event.getEquipProgress(), MathUtils.EasingType.easeInOutBack))));
 
             bookModel.bookSpine.yRot = -(float)(Math.PI / 2);
             bookModel.bookSpine.x = 24.5F;
@@ -131,10 +131,10 @@ public class AlchemyBookRenderer {
         float scale = 5.2F;
         stack.scale(scale, scale, scale);
         stack.translate(0.0, 1.1, 0.4F);
-        //stack.mulPose(Vector3f.YP.rotationDegrees(180.0F));
-        stack.mulPose(Vector3f.XP.rotationDegrees(45.0F));
-        stack.mulPose(Vector3f.XP.rotationDegrees(180.0F));
-        stack.mulPose(Vector3f.ZP.rotationDegrees(sideSign * -30.0F));
+        //stack.mulPose(Axis.YP.rotationDegrees(180.0F));
+        stack.mulPose(Axis.XP.rotationDegrees(45.0F));
+        stack.mulPose(Axis.XP.rotationDegrees(180.0F));
+        stack.mulPose(Axis.ZP.rotationDegrees(sideSign * -30.0F));
         stack.translate(sideSign * -0.3F, 0, 0);
 
         if (side == HumanoidArm.RIGHT) {

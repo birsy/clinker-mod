@@ -4,8 +4,8 @@ import birsy.clinker.client.model.base.InterpolatedSkeleton;
 import birsy.clinker.client.model.base.InterpolatedBone;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
 import net.minecraft.core.Direction;
+import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
 

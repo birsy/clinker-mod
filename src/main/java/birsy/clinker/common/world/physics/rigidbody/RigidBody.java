@@ -1,11 +1,13 @@
 package birsy.clinker.common.world.physics.rigidbody;
 
 import birsy.clinker.common.world.physics.rigidbody.colliders.ICollisionShape;
-import birsy.clinker.core.util.Quaterniond;
+import birsy.clinker.core.util.AxisAngled;
+import birsy.clinker.core.util.JomlConversions;
 import birsy.clinker.core.util.VectorUtils;
-import com.mojang.math.Matrix3f;
-import com.mojang.math.Vector3f;
 import net.minecraft.world.phys.Vec3;
+import org.joml.AxisAngle4d;
+import org.joml.Matrix3d;
+import org.joml.Quaterniond;
 
 public class RigidBody {
     public Vec3 position;
@@ -19,7 +21,7 @@ public class RigidBody {
     public double mass;
     protected double inverseMass;
     //todo: figure out how to calculate this from collision shape
-    protected Matrix3f inverseInertiaTensor;
+    protected Matrix3d inverseInertiaTensor;
     private Transform colliderTransform;
     public ICollisionShape collider;
 
@@ -27,8 +29,7 @@ public class RigidBody {
         this.mass = mass;
         this.inverseMass = 1.0 / mass;
 
-        this.inverseInertiaTensor = new Matrix3f();
-        this.inverseInertiaTensor.setIdentity();
+        this.inverseInertiaTensor = new Matrix3d();
 
         this.position = new Vec3(0, 0, 0);
         this.pPosition = new Vec3(0, 0, 0);
@@ -68,8 +69,8 @@ public class RigidBody {
 
         Vec3 towardsPoint = this.position.subtract(point);
         Vec3 torqueVector = towardsPoint.cross(force);
-        torqueVector = VectorUtils.transform(torqueVector, inverseInertiaTensor);
-        torque = torque.mul(new Quaterniond(torqueVector.normalize(), torqueVector.length()));
+        torqueVector = JomlConversions.toMojang(inverseInertiaTensor.transform(JomlConversions.toJOML(torqueVector)));
+        torque = torque.mul(new Quaterniond(new AxisAngle4d(torqueVector.length(), JomlConversions.toJOML(torqueVector).normalize())));
     }
 
     private Quaterniond clientRotation = new Quaterniond();

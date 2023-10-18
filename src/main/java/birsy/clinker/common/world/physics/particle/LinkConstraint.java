@@ -1,8 +1,10 @@
 package birsy.clinker.common.world.physics.particle;
 
-import birsy.clinker.core.util.Quaterniond;
+import birsy.clinker.core.util.JomlConversions;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Quaterniond;
+import org.joml.Vector3d;
 
 public class LinkConstraint<C extends CollidingParticle> extends Constraint {
     public final C joint1;
@@ -44,7 +46,7 @@ public class LinkConstraint<C extends CollidingParticle> extends Constraint {
     }
 
     public Quaterniond getOrientation(double partialTick, Vec3 forward) {
-        return Quaterniond.lookAt(joint1.getPosition(partialTick), joint2.getPosition(partialTick), forward).normalize();
+        return new Quaterniond().lookAlong(JomlConversions.toJOML(joint1.getPosition(partialTick).subtract(joint2.getPosition(partialTick))), new Vector3d(0, 1, 0)).normalize();
     }
 
     public Vec3 getVector(double partialTick) {

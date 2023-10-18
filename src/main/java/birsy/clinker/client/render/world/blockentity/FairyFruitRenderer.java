@@ -7,12 +7,8 @@ import birsy.clinker.common.world.block.blockentity.fairyfruit.FairyFruitJoint;
 import birsy.clinker.common.world.block.blockentity.fairyfruit.FairyFruitSegment;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
-import birsy.clinker.core.util.Quaterniond;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.renderer.LightTexture;
@@ -27,6 +23,10 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4f;
+import org.joml.Quaterniond;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.util.function.Function;
 
@@ -78,10 +78,10 @@ public class FairyFruitRenderer<T extends FairyFruitBlockEntity> implements Bloc
                 pPoseStack.translate(fruitPos.x(), fruitPos.y(), fruitPos.z());
 
                 pPoseStack.pushPose();
-                pPoseStack.mulPose(i > 1 ? pBlockEntity.segments.get(i - 1).getOrientation(pPartialTick, forward).toMojangQuaternion() : segment.getTopJoint().getOrientation(pPartialTick).toMojangQuaternion());
+                pPoseStack.mulPose(new Quaternionf(i > 1 ? pBlockEntity.segments.get(i - 1).getOrientation(pPartialTick, forward) : segment.getTopJoint().getOrientation(pPartialTick)));
                 pPoseStack.scale(-1.0F, -1.0F, 1.0F);
 
-                BlockPos bPos = pBlockEntity.getBlockPos().offset(fruitPos.x() + 0.5, fruitPos.y(), fruitPos.z() + 0.5);
+                BlockPos bPos = pBlockEntity.getBlockPos().offset((int) (fruitPos.x() + 0.5), (int) fruitPos.y(), (int) (fruitPos.z() + 0.5));
                 int light = stage == FairyFruitJoint.FruitStage.FRUIT ? LightTexture.pack(fruitLight, pBlockEntity.getLevel().getBrightness(LightLayer.SKY,bPos)) :
                         LightTexture.pack(pBlockEntity.getLevel().getBrightness(LightLayer.BLOCK, bPos), pBlockEntity.getLevel().getBrightness(LightLayer.SKY,bPos));
 
@@ -94,7 +94,7 @@ public class FairyFruitRenderer<T extends FairyFruitBlockEntity> implements Bloc
                 pPoseStack.popPose();
 
                 pPoseStack.pushPose();
-                pPoseStack.mulPose(segment.getTopJoint().getOrientation(pPartialTick).toMojangQuaternion());
+                pPoseStack.mulPose(new Quaternionf(segment.getTopJoint().getOrientation(pPartialTick)));
                 pPoseStack.scale(-1.0F, -1.0F, 1.0F);
 
                 this.fruitModel.setVisibility(stage);
@@ -110,8 +110,8 @@ public class FairyFruitRenderer<T extends FairyFruitBlockEntity> implements Bloc
                     FairyFruitSegment nextSegment = pBlockEntity.segments.get(i + 1);
                     lowGlow = nextSegment.isTip() && nextSegment.getBottomJoint().getFruitStage() == FairyFruitJoint.FruitStage.FRUIT;
                 }
-                drawVineBetweenPoints(pBlockEntity, topPos, topOrientation.toMojangQuaternion(),
-                        bottomPos, bottomOrientation.toMojangQuaternion(),
+                drawVineBetweenPoints(pBlockEntity, topPos, new Quaternionf(topOrientation),
+                        bottomPos, new Quaternionf(bottomOrientation),
                         totalLength, totalLength += segment.getLength(pPartialTick), consumer, pPoseStack, pPackedLight, pPackedOverlay, lowGlow, fruitLight);
             }
         }
@@ -124,12 +124,12 @@ public class FairyFruitRenderer<T extends FairyFruitBlockEntity> implements Bloc
         }*/
     }
 
-    private void drawVineBetweenPoints(T entity, Vec3 point1, Quaternion point1Rotation, Vec3 point2, Quaternion point2Rotation, float uvOffset0, float uvOffset1, VertexConsumer buffer, PoseStack stack, int packedLight, int packedOverlay, boolean lowGlow, int fruitLight) {
+    private void drawVineBetweenPoints(T entity, Vec3 point1, Quaternionf point1Rotation, Vec3 point2, Quaternionf point2Rotation, float uvOffset0, float uvOffset1, VertexConsumer buffer, PoseStack stack, int packedLight, int packedOverlay, boolean lowGlow, int fruitLight) {
         Matrix4f matrix = stack.last().pose();
         float thickness = ((8.0F / 16.0F) * 0.5F) / Mth.sqrt(2);
 
-        BlockPos samplePos1 = entity.getBlockPos().offset(point1.x(), point1.y(), point1.z());
-        BlockPos samplePos2 = entity.getBlockPos().offset(point2.x(), point2.y(), point2.z());
+        BlockPos samplePos1 = entity.getBlockPos().offset((int) point1.x(), (int) point1.y(), (int) point1.z());
+        BlockPos samplePos2 = entity.getBlockPos().offset((int) point2.x(), (int) point2.y(), (int) point2.z());
         int light1 = packedLight;
         int light2 = packedLight;
         if (entity.hasLevel()) {
@@ -159,7 +159,7 @@ public class FairyFruitRenderer<T extends FairyFruitBlockEntity> implements Bloc
         renderFace(false, point1, normal, point1Rotation, point2, normal, point2Rotation, thickness, uvOffset0, uvOffset1, light1, light2, buffer, matrix);
     }
 
-    public void renderFace(boolean orientation, Vec3 point1, Vector3f normal1, Quaternion point1Rotation, Vec3 point2, Vector3f normal2, Quaternion point2Rotation, float thickness, float uvOffset0, float uvOffset1, int light1, int light2, VertexConsumer buffer, Matrix4f matrix) {
+    public void renderFace(boolean orientation, Vec3 point1, Vector3f normal1, Quaternionf point1Rotation, Vec3 point2, Vector3f normal2, Quaternionf point2Rotation, float thickness, float uvOffset0, float uvOffset1, int light1, int light2, VertexConsumer buffer, Matrix4f matrix) {
         int packedOverlay = OverlayTexture.NO_OVERLAY;
         int dir = orientation ? -1 : 1;
 
@@ -211,9 +211,9 @@ public class FairyFruitRenderer<T extends FairyFruitBlockEntity> implements Bloc
 
     }
 
-    public static VertexConsumer vertex(VertexConsumer buffer, Matrix4f matrix, Vec3 base, float x, float y, float z, Quaternion rotation) {
+    public static VertexConsumer vertex(VertexConsumer buffer, Matrix4f matrix, Vec3 base, float x, float y, float z, Quaternionf rotation) {
         Vector3f pos = new Vector3f(x, y, z);
-        pos.transform(rotation);
+        pos = rotation.transform(pos);
         return buffer.vertex(matrix, pos.x() + (float)base.x(), pos.y() + (float)base.y(), pos.z() + (float)base.z());
     }
 

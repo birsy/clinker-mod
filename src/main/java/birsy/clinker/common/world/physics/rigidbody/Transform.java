@@ -1,8 +1,9 @@
 package birsy.clinker.common.world.physics.rigidbody;
 
-import birsy.clinker.core.util.Quaterniond;
+import birsy.clinker.core.util.JomlConversions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Quaterniond;
 
 public class Transform {
     public Vec3 position;
@@ -73,11 +74,11 @@ public class Transform {
     }
 
     public Vec3 rotate(Vec3 vec) {
-        return this.orientation.transform(vec);
+        return JomlConversions.toMojang(this.orientation.transform(JomlConversions.toJOML(vec)));
     }
 
     public Vec3 rotateInverse(Vec3 vec) {
-        return this.orientation.transformInverse(vec);
+        return JomlConversions.toMojang(this.orientation.transformInverse(JomlConversions.toJOML(vec)));
     }
 
     public Transform lerp(Transform t, double alpha) {

@@ -1,11 +1,11 @@
 package birsy.clinker.common.world.block.blockentity.fairyfruit;
 
 import birsy.clinker.common.world.physics.particle.CollidingParticle;
-import birsy.clinker.core.util.Quaterniond;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.joml.Quaterniond;
 
 public class FairyFruitJoint extends CollidingParticle {
     public final int index;

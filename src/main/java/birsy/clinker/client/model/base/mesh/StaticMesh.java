@@ -2,15 +2,14 @@ package birsy.clinker.client.model.base.mesh;
 
 import birsy.clinker.client.model.base.InterpolatedBone;
 import birsy.clinker.core.util.MathUtils;
-import birsy.clinker.core.util.Quaternionf;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix3f;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
-import com.mojang.math.Vector4f;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.core.Direction;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -137,9 +136,9 @@ public class StaticMesh extends ModelMesh {
                 Vertex vertex = face.vertices[i];
                 UV uv = face.uvs[i];
                 position.set(vertex.x(), vertex.y(), vertex.z(), 1.0F);
-                position.transform(matrix4f);
+                matrix4f.transform(position);
                 normal.set(face.normal.x(), face.normal.y(), face.normal.z());
-                normal.transform(matrix3f);
+                matrix3f.transform(normal);
                 pVertexConsumer.vertex(position.x(), position.y(), position.z(), pRed, pGreen, pBlue, pAlpha, uv.u(), uv.v(), pPackedOverlay, pPackedLight, normal.x(), normal.y(), normal.z());
             }
         }

@@ -1,9 +1,9 @@
 package birsy.clinker.common.world.alchemy.workstation.camera;
 
 import birsy.clinker.common.world.alchemy.workstation.Workstation;
-import birsy.clinker.core.util.Quaterniond;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Quaterniond;
 
 public class WorkstationCamera {
     final Workstation workstation;

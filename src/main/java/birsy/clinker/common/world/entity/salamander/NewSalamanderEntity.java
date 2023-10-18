@@ -7,15 +7,14 @@ import birsy.clinker.common.networking.packet.ClientboundSalamanderSyncPacket;
 import birsy.clinker.common.world.level.interactable.Interactable;
 import birsy.clinker.common.world.level.interactable.InteractableManager;
 import birsy.clinker.common.world.level.interactable.InteractableParent;
-import birsy.clinker.core.Clinker;
-import birsy.clinker.core.util.MathUtils;
-import birsy.clinker.core.util.Quaterniond;
 import birsy.clinker.common.world.physics.rigidbody.colliders.OBBCollisionShape;
-import com.mojang.math.Vector3f;
+import birsy.clinker.core.Clinker;
+import birsy.clinker.core.util.JomlConversions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
@@ -32,6 +31,10 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.joml.AxisAngle4d;
+import org.joml.Quaterniond;
+import org.joml.Vector3d;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,9 +42,7 @@ import java.util.List;
 
 // todo:
 //  slipperiness
-//  legs~!
 //  reimplement ai
-//  graphics...
 public class NewSalamanderEntity extends LivingEntity implements InteractableParent, InterpolatedSkeletonParent {
     private static final Vec3 gravity = new Vec3(0, -8, 0);
 
@@ -101,11 +102,11 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
     }
 
     public void addInteractableToJoint(SalamanderJoint joint) {
-        if (!this.level.isClientSide()) {
+        if (!this.level().isClientSide()) {
             SalamanderBodyInteractable interactable = new SalamanderBodyInteractable(this, joint, new OBBCollisionShape(0.5 * joint.radius, 0.5 * joint.radius, 0.5));
             interactable.setPosition(joint.position);
 
-            InteractableManager.addServerInteractable(interactable, (ServerLevel) this.level);
+            InteractableManager.addServerInteractable(interactable, (ServerLevel) this.level());
         }
     }
 
@@ -141,19 +142,19 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
             joint.finalizeTick();
         }
 
-        if (!this.level.isClientSide()) {
+        if (!this.level().isClientSide()) {
             for (Interactable interactable : this.childInteractables) {
                 if (interactable instanceof SalamanderBodyInteractable bodyInteractable) {
                     bodyInteractable.setPosition(bodyInteractable.jointParent.getSmoothedPosition(1.0));
-                    bodyInteractable.setRotation(bodyInteractable.jointParent.getOrientation(1.0).toMojangQuaternion());
+                    bodyInteractable.setRotation(bodyInteractable.jointParent.getOrientation(1.0));
                 }
             }
-            ClinkerPacketHandler.sendToClientsInChunk((LevelChunk) this.level.getChunk(this.blockPosition()), new ClientboundSalamanderSyncPacket(this));
+            ClinkerPacketHandler.sendToClientsInChunk((LevelChunk) this.level().getChunk(this.blockPosition()), new ClientboundSalamanderSyncPacket(this));
         }
 
         this.setControllerPosition(this.headJoint.position);
 
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             Entity cameraEntity = Minecraft.getInstance().cameraEntity;
             Vec3 pos = cameraEntity.position().lerp(cameraEntity.getEyePosition(), 0.5F);
             Vec3 offset = cameraEntity.getViewVector(1.0F).normalize().scale(0.5);
@@ -181,15 +182,15 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
         // calculates the bouyant force in a really jank way
         // takes into account partial submersion... kinda
         Vec3 downPos = joint.position.subtract(0, joint.radius, 0);
-        BlockPos jointPosDown = new BlockPos(joint.position);
-        BlockPos jointPosUp = new BlockPos(joint.position.add(0, joint.radius, 0));
+        BlockPos jointPosDown = BlockPos.containing(joint.position);
+        BlockPos jointPosUp = BlockPos.containing(joint.position.add(0, joint.radius, 0));
 
         double volumeInDown = downPos.y - Math.ceil(downPos.y);
-        FluidState stateDown = this.level.getFluidState(jointPosDown);
+        FluidState stateDown = this.level().getFluidState(jointPosDown);
         double densityDown = stateDown.isEmpty() ? airDensity : stateDown.getFluidType().getDensity() * 0.001D;
 
         double volumeInUp = 1 - volumeInDown;
-        FluidState stateUp = this.level.getFluidState(jointPosUp);
+        FluidState stateUp = this.level().getFluidState(jointPosUp);
         double densityUp = stateUp.isEmpty() ? airDensity : stateUp.getFluidType().getDensity() * 0.001D;
 
         double averageDensity = (densityDown * volumeInDown + densityUp * volumeInUp);
@@ -267,7 +268,7 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
             this.hasImpulse = true;
             Vec3 velocity = lastHitJoint.getDeltaMovement();
             Vec3 knockBack = (new Vec3(pX, 0.0D, pZ)).normalize().scale(pStrength);
-            lastHitJoint.push(velocity.x / 2.0D - knockBack.x, this.onGround ? Math.min(0.4D, velocity.y / 2.0D + pStrength) : velocity.y, velocity.z / 2.0D - knockBack.z);
+            lastHitJoint.push(velocity.x / 2.0D - knockBack.x, this.onGround() ? Math.min(0.4D, velocity.y / 2.0D + pStrength) : velocity.y, velocity.z / 2.0D - knockBack.z);
         }
     }
 
@@ -405,7 +406,7 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
     }
 
     @Override
-    public Packet<?> getAddEntityPacket() {
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
         return new ClientboundAddEntityPacket(this);
     }
 
@@ -514,7 +515,7 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
 
         // ripped from entity code. not entirely sure how it works!
         private Vec3 constrainVelocity(Vec3 velocity) {
-            Level level = entity.level;
+            Level level = entity.level();
             AABB aabb = new AABB(this.position.add(radius, radius, radius), this.position.subtract(radius, radius, radius));
 
             List<VoxelShape> list = level.getEntityCollisions(entity, aabb.expandTowards(velocity));
@@ -539,7 +540,7 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
         }
 
         public Quaterniond getOrientation(double partialTick) {
-            Quaterniond roll = new Quaterniond(new Vec3(0, 0, 1), this.roll);
+            Quaterniond roll = new Quaterniond(new AxisAngle4d(0, 0, 1, this.roll));
 
             Vec3 frontCenter = Vec3.ZERO;
             if (frontAttachments.isEmpty()) { frontCenter = this.getPosition(partialTick); } else {
@@ -557,7 +558,8 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
                 backCenter = backCenter.scale(1.0D / (double)backAttachments.size());
             }
 
-            return Quaterniond.lookAt(frontCenter, backCenter, new Vec3(0, 0, 1)).normalize().mul(roll);
+            Vec3 direction = frontCenter.subtract(backCenter);
+            return new Quaterniond().lookAlong(new Vector3d(direction.x, direction.y, direction.z), new Vector3d(0, 1, 0)).normalize().mul(roll);
         }
     }
 
@@ -681,17 +683,17 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
                 float strideLength = legLength;
                 if (speed < 0.01F) strideLength *= 0.7F;
 
-                this.hipPos = orientation.transform(baseHipPos).add(pos);
-                this.targetPos = orientation.transform(baseTargetPos).add(pos).add(new Vec3(Math.min(horizontalMovement.x() * stepTimeTicks, strideLength * 0.9), 0, Math.min(horizontalMovement.z() * stepTimeTicks, strideLength * 0.9)));
+                this.hipPos = JomlConversions.toMojang(orientation.transform(JomlConversions.toJOML(baseHipPos))).add(pos);
+                this.targetPos = JomlConversions.toMojang(orientation.transform(JomlConversions.toJOML(baseTargetPos))).add(pos).add(new Vec3(Math.min(horizontalMovement.x() * stepTimeTicks, strideLength * 0.9), 0, Math.min(horizontalMovement.z() * stepTimeTicks, strideLength * 0.9)));
 
                 boolean isSolidGround = true;
                 Vec3 direction = this.footPos.subtract(this.hipPos);
-                BlockHitResult ray = parent.entity.level.clip(new ClipContext(this.hipPos, this.footPos.add(direction.scale(0.05)), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, parent.entity));
+                BlockHitResult ray = parent.entity.level().clip(new ClipContext(this.hipPos, this.footPos.add(direction.scale(0.05)), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, parent.entity));
                 isSolidGround = ray.getType() != HitResult.Type.MISS;
 
                 //check for new foot placement!
                 if ((footPos.distanceTo(hipPos) > strideLength && !this.moving && !this.oppositeLeg.moving) || this.isMidAir || (!isSolidGround && !this.moving)) {
-                    BlockHitResult raycast = parent.entity.level.clip(new ClipContext(hipPos, targetPos, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, parent.entity));
+                    BlockHitResult raycast = parent.entity.level().clip(new ClipContext(hipPos, targetPos, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, parent.entity));
                     this.attached = false;
 
                     if (raycast.getType() != HitResult.Type.MISS) {

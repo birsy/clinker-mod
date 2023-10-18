@@ -7,9 +7,9 @@ import birsy.clinker.client.model.base.constraint.InverseKinematicsConstraint;
 import birsy.clinker.client.model.base.mesh.ModelMesh;
 import birsy.clinker.client.model.base.mesh.StaticMesh;
 import birsy.clinker.client.model.base.AnimationProperties;
-import birsy.clinker.core.util.Quaternionf;
-import com.mojang.math.Vector3f;
 import net.minecraft.util.Mth;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.util.Collections;
 
@@ -419,8 +419,8 @@ public class FrogNoMoreSkeletonFactory implements SkeletonFactory {
 		InverseKinematicsConstraint rightArmIK = new InverseKinematicsConstraint(LowerRightArmBone, 2, 0, -10, 0, 0.05F);
 		InverseKinematicsConstraint[] constraints = {leftArmIK, leftLegIK, rightArmIK, rightLegIK};
 		for (InverseKinematicsConstraint constraint : constraints) {
-			constraint.target = constraint.points.get(0).copy();
-			constraint.target.setY(0);
+			constraint.target = new Vector3f(constraint.points.get(0));
+			constraint.target.y = 0;
 		}
 		model.IKConstraints = constraints;
 		model.LeftLegIK = leftLegIK;
@@ -495,7 +495,7 @@ public class FrogNoMoreSkeletonFactory implements SkeletonFactory {
 				boolean isLeft = ikConstraint == LeftArmIK || ikConstraint == LeftLegIK;
 
 				Vector3f point = ikConstraint.points.get(0);
-				ikConstraint.target = point.copy();
+				ikConstraint.target = new Vector3f(point);
 				ikConstraint.target.add(isLeft ? -8 : 8, 0, 0);
 				ikConstraint.poleTarget.set(ikConstraint.target.x(), ikConstraint.target.y(), ikConstraint.target.z());
 				ikConstraint.poleTarget.add(0, 3, 12);
@@ -504,14 +504,14 @@ public class FrogNoMoreSkeletonFactory implements SkeletonFactory {
 			float stepSpeed = age * 0.2F;
 			float stepHeight = 4;
 			float strideLength = -8;
-			LeftLegIK.target.setY(((Mth.sin(stepSpeed) + 1) * 0.5F) * stepHeight + 2);
-			LeftLegIK.target.setZ(LeftLegIK.target.z() + Mth.cos(stepSpeed * 1.0F) * -strideLength);
-			LeftArmIK.target.setY(((Mth.cos(stepSpeed) + 1) * 0.5F) * stepHeight + 2);
-			LeftArmIK.target.setZ(LeftArmIK.target.z() + Mth.sin(stepSpeed * 1.0F) * strideLength);
-			RightLegIK.target.setY(((Mth.cos(stepSpeed) + 1) * 0.5F) * stepHeight + 2);
-			RightLegIK.target.setZ(RightLegIK.target.z() + Mth.sin(stepSpeed * 1.0F) * strideLength);
-			RightArmIK.target.setY(((Mth.sin(stepSpeed) + 1) * 0.5F) * stepHeight + 2);
-			RightArmIK.target.setZ(RightArmIK.target.z() + Mth.cos(stepSpeed * 1.0F) * -strideLength);
+			LeftLegIK.target.y = (((Mth.sin(stepSpeed) + 1) * 0.5F) * stepHeight + 2);
+			LeftLegIK.target.z = (LeftLegIK.target.z() + Mth.cos(stepSpeed * 1.0F) * -strideLength);
+			LeftArmIK.target.y = (((Mth.cos(stepSpeed) + 1) * 0.5F) * stepHeight + 2);
+			LeftArmIK.target.z = (LeftArmIK.target.z() + Mth.sin(stepSpeed * 1.0F) * strideLength);
+			RightLegIK.target.y = (((Mth.cos(stepSpeed) + 1) * 0.5F) * stepHeight + 2);
+			RightLegIK.target.z = (RightLegIK.target.z() + Mth.sin(stepSpeed * 1.0F) * strideLength);
+			RightArmIK.target.y = (((Mth.sin(stepSpeed) + 1) * 0.5F) * stepHeight + 2);
+			RightArmIK.target.z = (RightArmIK.target.z() + Mth.cos(stepSpeed * 1.0F) * -strideLength);
 
 			float aY = 0;
 			float aZ = 0;

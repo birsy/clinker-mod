@@ -8,8 +8,8 @@ import birsy.clinker.client.model.base.mesh.ModelMesh;
 import birsy.clinker.client.model.base.mesh.StaticMesh;
 import birsy.clinker.client.model.base.AnimationProperties;
 import birsy.clinker.client.render.entity.model.base.AnimFunctions;
-import birsy.clinker.core.util.Quaternionf;
 import net.minecraft.core.Direction;
+import org.joml.Quaternionf;
 
 import java.util.Collections;
 

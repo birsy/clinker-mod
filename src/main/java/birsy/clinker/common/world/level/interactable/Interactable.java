@@ -1,14 +1,13 @@
 package birsy.clinker.common.world.level.interactable;
 
 import birsy.clinker.core.Clinker;
-import birsy.clinker.core.util.Quaterniond;
 import birsy.clinker.common.world.physics.rigidbody.Transform;
 import birsy.clinker.common.world.physics.rigidbody.colliders.OBBCollisionShape;
-import com.mojang.math.Quaternion;
 import net.minecraft.core.SectionPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Quaterniond;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -157,26 +156,8 @@ public abstract class Interactable {
      *
      * @param rotation the new rotation.
      */
-    public void setRotation(Quaternion rotation) {
-        this.getTransform().setOrientation(new Quaterniond(rotation));
-    }
-
-    /**
-     * Sets the rotation of the interactable.
-     *
-     * @param rotation the new rotation.
-     */
     public void setRotation(Quaterniond rotation) {
         this.getTransform().setOrientation(rotation);
-    }
-
-    /**
-     * Rotates the interactable according to the quaternion.
-     *
-     * @param rotation the rotation to apply.
-     */
-    public void rotate(Quaternion rotation) {
-        this.getTransform().rotate(new Quaterniond(rotation));
     }
 
     /**

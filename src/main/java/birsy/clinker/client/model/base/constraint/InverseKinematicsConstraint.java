@@ -5,15 +5,15 @@ import birsy.clinker.client.model.base.InterpolatedSkeleton;
 import birsy.clinker.client.model.base.InterpolatedSkeletonParent;
 import birsy.clinker.client.render.DebugRenderUtil;
 import birsy.clinker.core.Clinker;
-import birsy.clinker.core.util.Quaternionf;
 import birsy.clinker.core.util.VectorUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
-import com.mojang.math.Vector4f;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.util.Mth;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -53,7 +53,7 @@ public class InverseKinematicsConstraint implements Constraint {
             points.add(new Vector3f());
         }
         for (int i = 0; i < points.size() - 1; i++) {
-            segmentLengths.add(VectorUtils.distance(points.get(i + 1), points.get(i)));
+            segmentLengths.add(points.get(i + 1).distance(points.get(i)));
         }
         this.updatePointLocations();
 
@@ -69,11 +69,11 @@ public class InverseKinematicsConstraint implements Constraint {
         this.updateJointDirections();
 
         // thanks sebastian lague
-        Vector3f origin = this.points.get(0).copy();
+        Vector3f origin = new Vector3f(this.points.get(0));
 
-        Vector3f planeNormal = this.target.copy();
+        Vector3f planeNormal = new Vector3f(this.target);
         planeNormal.sub(origin);
-        Vector3f pn2 = this.poleTarget.copy();
+        Vector3f pn2 = new Vector3f(this.poleTarget);
         pn2.sub(origin);
         planeNormal.cross(pn2);
         planeNormal.normalize();
@@ -101,7 +101,7 @@ public class InverseKinematicsConstraint implements Constraint {
             Vector3f point = points.get(i);
             Vector3f previousPoint = points.get(i - 1);
 
-            Vector3f dir = point.copy();
+            Vector3f dir = new Vector3f(point);
             dir.sub(previousPoint);
             dir.normalize();
             dir.mul(this.segmentLengths.get(i - 1));
@@ -113,7 +113,7 @@ public class InverseKinematicsConstraint implements Constraint {
     // used to align to pole target
     private void projectPointsOntoPlane(Vector3f planeNormal) {
         for (int i = 0; i < points.size(); i++) {
-            Vector3f v = points.get(i).copy();
+            Vector3f v = new Vector3f(points.get(i));
             v.sub(this.poleTarget);
             float dist = v.dot(planeNormal);
             points.get(i).set(points.get(i).x() - dist * planeNormal.x(), points.get(i).y() - dist * planeNormal.y(), points.get(i).z() - dist * planeNormal.z());
@@ -139,9 +139,9 @@ public class InverseKinematicsConstraint implements Constraint {
 
     // defines the joint's "direction," relative to its neighboring bones. uses this to flip incorrect directions in the previous function.
     private boolean[] updateJointDirections() {
-        Vector3f polePoint = this.points.get(0).copy();
+        Vector3f polePoint = new Vector3f(this.points.get(0));
         polePoint.lerp(this.points.get(this.points.size() - 1), 0.5F);
-        Vector3f poleDirection = Vector3f.ZERO.copy();
+        Vector3f poleDirection = new Vector3f(0, 0, 0);
         switch (this.forwardDirection) {
             case NEGATIVE_X -> poleDirection.add( 0, 8, 0);
             case POSITIVE_X -> poleDirection.add( 0,-8, 0);
@@ -177,9 +177,9 @@ public class InverseKinematicsConstraint implements Constraint {
     private boolean calculateJointDirection(Vector3f point, Vector3f prevPoint, Vector3f nextPoint, Vector3f polePoint) {
         Vector3f projectedPoint = VectorUtils.projectPointOntoLine(point, prevPoint, nextPoint);
         Vector3f projectedPole = VectorUtils.projectPointOntoLine(polePoint, prevPoint, nextPoint);
-        Vector3f pointDirection = projectedPoint.copy();
+        Vector3f pointDirection = new Vector3f(projectedPoint);
         pointDirection.sub(point);
-        Vector3f poleDirection = projectedPole.copy();
+        Vector3f poleDirection = new Vector3f(projectedPole);
         poleDirection.sub(polePoint);
 
         float dot = pointDirection.dot(poleDirection);
@@ -195,7 +195,7 @@ public class InverseKinematicsConstraint implements Constraint {
             bone.getModelSpaceTransformMatrix(stack, 1);
 
             Vector4f point4 = new Vector4f(0, 0, 0, 1);
-            point4.transform(stack.last().pose());
+            stack.last().pose().transform(point4);
             points.get(i).set(point4.x(), point4.y(), point4.z());
             stack.popPose();
         }
@@ -204,13 +204,13 @@ public class InverseKinematicsConstraint implements Constraint {
         InterpolatedBone bone = bones.get(bones.size() - 1);
         bone.getModelSpaceTransformMatrix(stack, 1);
         Vector4f point4 = new Vector4f(endPlacement.x(), endPlacement.y(), endPlacement.z(), 1);
-        point4.transform(stack.last().pose());
+        stack.last().pose().transform(point4);
         points.get(points.size() - 1).set(point4.x(), point4.y(), point4.z());
 
         stack.popPose();
 
         for (int i = 0; i < this.segmentLengths.size(); i++) {
-            this.segmentLengths.set(i, VectorUtils.distance(points.get(i), points.get(i + 1)));
+            this.segmentLengths.set(i, points.get(i).distance(points.get(i + 1)));
         }
 
         return points;
@@ -218,7 +218,7 @@ public class InverseKinematicsConstraint implements Constraint {
 
     // updates bone transforms based off IK point locations
     private void updateBoneTransforms() {
-        Vector3f perpendicular = points.get(points.size() - 1).copy();
+        Vector3f perpendicular = new Vector3f(points.get(points.size() - 1));
         perpendicular.cross(poleTarget);
         perpendicular.normalize();
         perpendicular.mul(-1);
@@ -232,7 +232,7 @@ public class InverseKinematicsConstraint implements Constraint {
             point = points.get(i);
             nextPoint = this.points.get(i + 1);
 
-            Vector3f forward = nextPoint.copy();
+            Vector3f forward = new Vector3f(nextPoint);
             forward.sub(point);
             forward.normalize();
 
@@ -246,7 +246,7 @@ public class InverseKinematicsConstraint implements Constraint {
     // todo: actually use this
     public boolean isSatisfied() {
         // terminate if close enough to target
-        float dstToTarget = VectorUtils.distance(points.get(points.size() - 1), target);
+        float dstToTarget = points.get(points.size() - 1).distance(target);
         if (dstToTarget <= minimumAcceptableDistance) {
             return true;
         }
@@ -262,7 +262,7 @@ public class InverseKinematicsConstraint implements Constraint {
     public void renderDebugInfo(InterpolatedSkeleton skeleton, InterpolatedSkeletonParent parent, float pPartialTicks, PoseStack poseStack, MultiBufferSource pBuffer) {
         VertexConsumer vertexconsumer = pBuffer.getBuffer(RenderType.LINES);
 
-        Vector3f x = this.points.get(this.points.size() - 1).copy();
+        Vector3f x = new Vector3f(this.points.get(this.points.size() - 1));
         x.cross(this.poleTarget);
         x.normalize();
         x.mul(-1);
@@ -290,7 +290,7 @@ public class InverseKinematicsConstraint implements Constraint {
     }
 
     public enum InverseKinematicDirection {
-        POSITIVE_X(Vector3f.XP), POSITIVE_Y(Vector3f.YP), POSITIVE_Z(Vector3f.ZP), NEGATIVE_X(Vector3f.XN), NEGATIVE_Y(Vector3f.YN), NEGATIVE_Z(Vector3f.ZN);
+        POSITIVE_X(new Vector3f(1, 0, 0)), POSITIVE_Y(new Vector3f(0, 1, 0)), POSITIVE_Z(new Vector3f(0, 0, 1)), NEGATIVE_X(new Vector3f(-1, 0, 0)), NEGATIVE_Y(new Vector3f(0, -1, 0)), NEGATIVE_Z(new Vector3f(0, 0, -1));
 
         Vector3f direction;
         InverseKinematicDirection(Vector3f direction) {
