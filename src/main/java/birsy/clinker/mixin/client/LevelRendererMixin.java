@@ -3,6 +3,7 @@ package birsy.clinker.mixin.client;
 import birsy.clinker.client.ClinkerCursor;
 import birsy.clinker.client.gui.AlchemicalWorkstationScreen;
 import birsy.clinker.client.model.base.AnimationProperties;
+import birsy.clinker.client.render.entity.base.InterpolatedEntityRenderer;
 import birsy.clinker.client.render.world.VolumetricRenderer;
 import birsy.clinker.client.model.base.InterpolatedSkeletonParent;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -24,9 +25,25 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Mixin(LevelRenderer.class)
 public abstract class LevelRendererMixin {
+    @Inject(method = "tick()V", at = @At("HEAD"))
+    private void tick(CallbackInfo ci) {
+        List<InterpolatedSkeletonParent> list = new ArrayList<>();
+        for (Entity entity : this.level.entitiesForRendering()) {
+            if (entity instanceof InterpolatedSkeletonParent animator) {
+                if (animator.getSkeleton() != null) {
+                    list.add(animator);
+                }
+            }
+        }
+
+        InterpolatedEntityRenderer.tick(list);
+    }
+
     @Shadow public abstract void initOutline();
 
     @Shadow @Nullable private ClientLevel level;
@@ -61,16 +78,5 @@ public abstract class LevelRendererMixin {
         }
     }
 
-    @Inject(method = "tick()V", at = @At("HEAD"))
-    private void tick(CallbackInfo ci) {
-        for (Entity entity : this.level.entitiesForRendering()) {
-            if (entity instanceof InterpolatedSkeletonParent animator) {
-                if (animator.getSkeleton() != null) {
-                    AnimationProperties properties = new AnimationProperties();
-                    animator.getSkeleton().addAnimationProperties(properties, animator);
-                    animator.getSkeleton().tick(properties);
-                }
-            }
-        }
-    }
+
 }

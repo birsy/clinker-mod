@@ -3,9 +3,7 @@ package birsy.clinker.core.util;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
-import net.minecraft.core.Position;
 import net.minecraft.util.Mth;
-import org.apache.commons.math3.linear.RealMatrix;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -2158,16 +2156,6 @@ public class Quaternionf implements Externalizable, Cloneable {
         return new Quaternionf(forward, rotAngle);
     }
 
-    public static Quaternionf matrixToQuaternion(RealMatrix matrix) {
-        double[][] matrixData = matrix.getData();
-
-        double qw = Math.sqrt(1 + matrixData[0][0] + matrixData[1][1] + matrixData[2][2]) / 2;
-        double qx = (matrixData[2][1] - matrixData[1][2]) / (4 * qw);
-        double qy = (matrixData[0][2] - matrixData[2][0]) / (4 * qw);
-        double qz = (matrixData[1][0] - matrixData[0][1]) / (4 * qw);
-
-        return new Quaternionf((float) qw, (float) qx, (float) qy, (float) qz);
-    }
 
     public Quaternionf set(Matrix4f m1) {
         w = Mth.sqrt(1.0F + m1.m00 + m1.m11 + m1.m22) / 2.0F;

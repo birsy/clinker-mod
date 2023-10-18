@@ -25,7 +25,7 @@ public class Workstation {
     public boolean isValidPath = false;
     public final CameraPath path;
 
-    public List<WorkstationPhysicsObject> objects;
+    public WorkstationEnvironment environment;
 
     @OnlyIn(Dist.CLIENT)
     public final WorkstationCamera camera;
@@ -40,7 +40,7 @@ public class Workstation {
         this.path = new CameraPath(this);
         this.camera = new WorkstationCamera(this);
         this.containedBlocks = new WorkstationBlocks();
-        this.objects = new ArrayList<>();
+        this.environment = new WorkstationEnvironment(this);
     }
 
     public void tick() {
@@ -48,9 +48,7 @@ public class Workstation {
             this.regeneratePath();
         }
 
-        for (WorkstationPhysicsObject object : this.objects) {
-            object.tick();
-        }
+        this.environment.tick();
     }
 
     @OnlyIn(Dist.CLIENT)

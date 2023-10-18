@@ -9,7 +9,8 @@
     "client.LevelRendererMixin",
     "client.GameRendererMixin",
     "client.ClientLevelMixin",
-    "client.GuiMixin"
+    "client.GuiMixin",
+    "client.MinecraftMixin"
   ],
   "mixins": [
     "common.ServerLevelMixin",

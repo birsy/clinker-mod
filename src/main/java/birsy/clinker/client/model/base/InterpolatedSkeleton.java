@@ -15,16 +15,15 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class InterpolatedSkeleton<P extends InterpolatedSkeletonParent> {
     public List<InterpolatedBone> roots;
     public List<Constraint> constraints;
     public Map<String, InterpolatedBone> parts;
     public Map<String, ModelMesh> meshes;
+
+    private int ticksExisted = 0;
 
     public InterpolatedSkeleton() {
         this.roots = new ArrayList<>();
@@ -35,23 +34,18 @@ public abstract class InterpolatedSkeleton<P extends InterpolatedSkeletonParent>
 
     protected void updatePreviousPosition() {
         for (InterpolatedBone part : this.parts.values()) {
-            part.tick();
+            part.updatePreviousPosition();
         }
     }
 
     public void tick(AnimationProperties properties) {
+        ticksExisted++;
         this.updatePreviousPosition();
+        for (InterpolatedBone part : this.parts.values()) {
+            part.tick(1.0F / 20.0F);
+        }
         this.animate(properties);
         for (Constraint constraint : this.constraints) {
-            if (constraint instanceof InverseKinematicsConstraint ik) {
-                LivingEntity entity = (LivingEntity) properties.getProperty("entity");
-                Vec3 pos = entity.position();
-                Vec3 targetPos = Minecraft.getInstance().cameraEntity.position();
-
-                Vec3 tPos = targetPos.subtract(pos).scale( 16);
-                ik.target.set((float) tPos.x(), (float) tPos.y(), (float) tPos.z());
-                ik.poleTarget.set(32, ik.poleTarget.y(),Mth.sin(properties.getNumProperty("ageInTicks") * 0.15F) * 16);
-            }
             constraint.apply();
         }
         //this.applyConstraints(8);
@@ -98,31 +92,11 @@ public abstract class InterpolatedSkeleton<P extends InterpolatedSkeletonParent>
     public void render(float partialTick, PoseStack pPoseStack, VertexConsumer pVertexConsumer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha) {
         for (Map.Entry<String, ModelMesh> stringMeshEntry : this.meshes.entrySet()) {
             ModelMesh mesh = stringMeshEntry.getValue();
-            if (!mesh.isStatic) mesh.update(this.parts.getOrDefault(stringMeshEntry.getKey(), null), this, partialTick);
+            if (!mesh.isStatic) mesh.update(this.parts.getOrDefault(stringMeshEntry.getKey(), null), this, ticksExisted, partialTick);
         }
 
-//        for (InterpolatedBone bone : this.parts.values()) {
-//            PoseStack stack = new PoseStack();
-//
-//            stack.pushPose();
-//            Matrix4f matrix = bone.getModelSpaceTransformMatrix(stack, partialTick).copy();
-//            stack.popPose();
-//            Vector4f vec = new Vector4f(0, 0, 0, 1);
-//            vec.transform(matrix);
-//            DebugRenderUtil.renderSphere(pPoseStack, pVertexConsumer, 16, 2.0F, vec.x(), vec.y(), vec.z(), 1.0F, 1.0F, 1.0F, 1.0F);
-//
-//            for (InterpolatedBone child : bone.children) {
-//                stack.pushPose();
-//                Matrix4f matrix2 = child.getModelSpaceTransformMatrix(stack, partialTick).copy();
-//                stack.popPose();
-//                Vector4f vec2 = new Vector4f(0, 0, 0, 1);
-//                vec2.transform(matrix2);
-//                DebugRenderUtil.renderLine(pPoseStack, pVertexConsumer, vec.x(), vec.y(), vec.z(), vec2.x(), vec2.y(), vec2.z(), 0.0F, 1.0F, 0.0F, 1.0F);
-//            }
-//        }
-
         for (InterpolatedBone part : this.roots) {
-            part.render(this.meshes, partialTick, pPoseStack, pVertexConsumer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
+            part.render(this.meshes, partialTick, pPoseStack, pVertexConsumer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha, true);
         }
     }
 
@@ -135,7 +109,16 @@ public abstract class InterpolatedSkeleton<P extends InterpolatedSkeletonParent>
         for (InterpolatedBone part : this.parts.values()) {
             if (part.parent == null) {
                 roots.add(part);
+            } else {
+                InterpolatedBone parentBone = part.parent;
+                while (parentBone != null) {
+                    part.parentChain.add(parentBone);
+                    parentBone = parentBone.parent;
+                }
+                Collections.reverse(part.parentChain);
             }
+
+
         }
     }
 }

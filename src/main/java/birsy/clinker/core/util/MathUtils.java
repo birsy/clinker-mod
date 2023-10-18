@@ -12,6 +12,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import java.lang.reflect.Array;
@@ -23,6 +24,71 @@ import java.util.function.Function;
 /* cappin's math utils
  * hope you find this useful :) */
 public class MathUtils {
+
+    public static double min(double... nums) {
+        double min = nums[0];
+        for (double num : nums) {
+            min = Math.min(num, min);
+        }
+        return min;
+    }
+
+    public static Vec3 closestPointOnAABB(Vec3 point, AABB aabb) {
+        if (aabb.contains(point)) {
+            //find which face it is closest to
+            double closestXDist = findClosestDistance(point.x, aabb.minX, aabb.maxX);
+            double closestYDist = findClosestDistance(point.y, aabb.minY, aabb.maxY);
+            double closestZDist = findClosestDistance(point.z, aabb.minZ, aabb.maxZ);
+
+            double absClosestXDist = Math.abs(closestXDist);
+            double absClosestYDist = Math.abs(closestYDist);
+            double absClosestZDist = Math.abs(closestZDist);
+
+            double min = min(absClosestXDist, absClosestYDist, absClosestZDist);
+
+            //move it to that face.
+            if (min == absClosestXDist) {
+                return new Vec3(point.x - closestXDist, point.y, point.z);
+            } else if (min == absClosestYDist) {
+                return new Vec3(point.x, point.y - closestYDist, point.z);
+            } else if (min == absClosestZDist) {
+                return new Vec3(point.x, point.y, point.z - closestZDist);
+            }
+        } else {
+            return new Vec3(Mth.clamp(point.x(), aabb.minX, aabb.maxX), Mth.clamp(point.y(), aabb.minY, aabb.maxY), Mth.clamp(point.z(), aabb.minZ, aabb.maxZ));
+        }
+
+        return point;
+    }
+
+    private static double findClosest(double x, double... numbers) {
+        double smallestDistance = Double.MAX_VALUE;
+        double returnNumber = numbers[0];
+
+        for (double number : numbers) {
+            double distance = Math.abs(x - number);
+            if (distance < smallestDistance) {
+                smallestDistance = distance;
+                returnNumber  = number;
+            }
+        }
+
+        return returnNumber;
+    }
+
+    private static double findClosestDistance(double x, double... numbers) {
+        double smallestDistance = Double.MAX_VALUE;
+
+        for (double number : numbers) {
+            double distance = x - number;
+            if (Math.abs(distance) < Math.abs(smallestDistance)) {
+                smallestDistance = distance;
+            }
+        }
+
+        return smallestDistance;
+    }
+
     public static Vec3 convertColorToVec3(int rgbaColor) {
         int red = NativeImage.getR(rgbaColor);
         int green = NativeImage.getG(rgbaColor);

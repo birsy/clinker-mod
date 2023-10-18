@@ -2,6 +2,7 @@ package birsy.clinker.client.model.base.mesh;
 
 import birsy.clinker.client.model.base.InterpolatedBone;
 import birsy.clinker.core.util.MathUtils;
+import birsy.clinker.core.util.Quaternionf;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Matrix3f;
@@ -27,11 +28,11 @@ public class StaticMesh extends ModelMesh {
         faces = new ArrayList<>();
     }
 
-    public StaticMesh addCube(float xSize, float ySize, float zSize, float xOffset, float yOffset, float zOffset, float xInflate, float yInflate, float zInflate, float uOffset, float vOffset) {
+    public Face[] addCube(float xSize, float ySize, float zSize, float xOffset, float yOffset, float zOffset, float xInflate, float yInflate, float zInflate, float uOffset, float vOffset) {
         return this.addCube(xSize, ySize, zSize, xOffset, yOffset, zOffset, xInflate, yInflate, zInflate, uOffset, vOffset, false);
     }
 
-    public StaticMesh addCube(float xSize, float ySize, float zSize, float xOffset, float yOffset, float zOffset, float xInflate, float yInflate, float zInflate, float uOffset, float vOffset, boolean mirrored) {
+    public Face[] addCube(float xSize, float ySize, float zSize, float xOffset, float yOffset, float zOffset, float xInflate, float yInflate, float zInflate, float uOffset, float vOffset, boolean mirrored) {
         float minX = xOffset;
         float minY = yOffset;
         float minZ = zOffset;
@@ -69,16 +70,60 @@ public class StaticMesh extends ModelMesh {
         float v1 = vOffset + zSize;
         float v2 = vOffset + zSize + ySize;
 
-        Collections.addAll(faces,
-        new Face(xoz, ooz, ooo, xoo, u3, v0, u2, v1, textureWidth, textureHeight, mirrored, Direction.UP),
-        new Face(xyo, oyo, oyz, xyz, u2, v1, u1, v0, textureWidth, textureHeight, mirrored, Direction.DOWN),
-        new Face(ooo, ooz, oyz, oyo, u4, v2, u2, v1, textureWidth, textureHeight, mirrored, Direction.EAST),
-        new Face(xoz, xoo, xyo, xyz, u1, v2, u0, v1, textureWidth, textureHeight, mirrored, Direction.WEST),
-        new Face(ooz, xoz, xyz, oyz, u5, v2, u4, v1, textureWidth, textureHeight, mirrored, Direction.NORTH),
-        new Face(xoo, ooo, oyo, xyo, u2, v2, u1, v1, textureWidth, textureHeight, mirrored, Direction.SOUTH));
+        Face[] cubeFaces = {new Face(xoz, ooz, ooo, xoo, u3, v0, u2, v1, textureWidth, textureHeight, mirrored, Direction.UP),
+                new Face(xyo, oyo, oyz, xyz, u2, v1, u1, v0, textureWidth, textureHeight, mirrored, Direction.DOWN),
+                new Face(ooo, ooz, oyz, oyo, u4, v2, u2, v1, textureWidth, textureHeight, mirrored, Direction.EAST),
+                new Face(xoz, xoo, xyo, xyz, u1, v2, u0, v1, textureWidth, textureHeight, mirrored, Direction.WEST),
+                new Face(ooz, xoz, xyz, oyz, u5, v2, u4, v1, textureWidth, textureHeight, mirrored, Direction.NORTH),
+                new Face(xoo, ooo, oyo, xyo, u2, v2, u1, v1, textureWidth, textureHeight, mirrored, Direction.SOUTH)};
 
-        return this;
+        Collections.addAll(faces, cubeFaces);
+
+        return cubeFaces;
     }
+
+    public Face addTri(float x1, float y1, float z1, float u1, float v1, float x2, float y2, float z2, float u2, float v2, float x3, float y3, float z3, float u3, float v3, float normalX, float normalY, float normalZ) {
+        Face face = new Face(new Vertex[]{new Vertex(x1, y1, z1), new Vertex(x2, y2, z2), new Vertex(x2, y2, z2)}, new UV[]{new UV(u1, v1), new UV(u2, v2), new UV(u3, v3)}, new Vector3f(normalX, normalY, normalZ));
+        faces.add(face);
+        return face;
+    }
+
+    public Face addFace(float normalX, float normalY, float normalZ, FaceVertex... vertices) {
+        Vertex[] vertArray = new Vertex[vertices.length];
+        UV[] uvArray = new UV[vertices.length];
+        for (int i = 0; i < vertices.length; i++) {
+            FaceVertex vertex = vertices[i];
+            vertArray[i] = new Vertex(vertex.x(), vertex.y(), vertex.z());
+            uvArray[i] = new UV(vertex.u() / (float)this.textureWidth, vertex.v() / (float)this.textureHeight);
+        }
+        Face face = new Face(vertArray, uvArray, new Vector3f(normalX, normalY, normalZ));
+        faces.add(face);
+        return face;
+    }
+
+//    public static void rotate(Face[] faces, Quaternionf quaternion) {
+//        for (Face face : faces) {
+//            for (int i = 0; i < face.vertices.length; i++) {
+//                Vertex initialVertex = face.vertices[i];
+//                Vector3f newVertex = quaternion.transform(initialVertex.x(), initialVertex.y(), initialVertex.z());
+//                face.vertices[i] = new Vertex(newVertex.x(), newVertex.y(), newVertex.z());
+//            }
+//            quaternion.transform(face.normal);
+//        }
+//    }
+//
+//    public static void rotate(float originX, float originY, float originZ, Face[] faces, Quaternionf quaternion) {
+//        for (Face face : faces) {
+//            for (int i = 0; i < face.vertices.length; i++) {
+//                Vertex initialVertex = face.vertices[i];
+//                Vector3f newVertex = quaternion.transform(initialVertex.x() + originX, initialVertex.y() + originY, initialVertex.z() + originZ);
+//                face.vertices[i] = new Vertex(newVertex.x() - originX, newVertex.y() - originY, newVertex.z() - originZ);
+//            }
+//            quaternion.transform(face.normal);
+//        }
+//    }
+
+    public record FaceVertex(float x, float y, float z, float u, float v) {}
 
     @Override
     public void render(InterpolatedBone part, PoseStack pPoseStack, VertexConsumer pVertexConsumer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha) {

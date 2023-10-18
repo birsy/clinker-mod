@@ -1,7 +1,7 @@
 package birsy.clinker.client.render.entity;
 
 import birsy.clinker.client.render.entity.layer.BlinkLayer;
-import birsy.clinker.client.render.entity.layer.SalamanderGlowLayer;
+import birsy.clinker.client.render.entity.layer.OldSalamanderGlowLayer;
 import birsy.clinker.client.render.entity.model.SalamanderHeadModel;
 import birsy.clinker.common.world.entity.salamander.SalamanderHeadEntity;
 
@@ -22,7 +22,7 @@ public class SalamanderHeadRenderer extends SalamanderRenderer<SalamanderHeadEnt
         super(context, new SalamanderHeadModel<>(context.bakeLayer(SalamanderHeadModel.LAYER_LOCATION)));
         this.bodyRenderer = new SalamanderBodyRenderer(context);
         this.addLayer(new BlinkLayer<>(this, SALAMANDER_HEAD_BLINK_TEXTURE, 10.0F, 0.1F));
-        this.addLayer(new SalamanderGlowLayer<>(this, GLOW, GLOW, FIRE));
+        this.addLayer(new OldSalamanderGlowLayer<>(this, GLOW, GLOW, FIRE));
     }
 
 

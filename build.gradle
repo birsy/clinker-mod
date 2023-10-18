@@ -1,7 +1,7 @@
 buildscript {
     repositories {
         maven { url = 'https://maven.minecraftforge.net' }
-        maven { url 'https://jitpack.io' }
+        maven { url = 'https://jitpack.io' }
         mavenCentral()
     }
     dependencies {
@@ -22,7 +22,7 @@ configurations {
     implementation.extendsFrom(shadow)
 }
 
-version = "1.19.2-0.0.6.3"
+version = "1.19.2-0.0.6.4"
 group = 'birsy.clinker'
 archivesBaseName = 'clinker'
 
@@ -91,21 +91,10 @@ repositories {
 
 }
 
-project.ext.jomlVersion = "1.10.5"
-shadowJar{
-    configurations = [project.configurations.shadow]
-    relocate 'org.joml', 'clinker.joml'
-    mergeServiceFiles()
-}
-
 dependencies {
     minecraft 'net.minecraftforge:forge:1.19.2-43.1.3'
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-    shadow("org.joml:joml:1.10.5")
-    implementation 'org.apache.commons:commons-math3:3.6.1'
-    implementation (jarJar("org.joml:joml:1.10.5"){
-        jarJar.ranged(it, "[1.10.5,)")
-    })
+    implementation 'org.joml:joml:1.10.5'
 }
 
 

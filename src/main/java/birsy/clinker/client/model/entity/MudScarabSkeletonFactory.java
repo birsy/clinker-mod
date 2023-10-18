@@ -1,9 +1,8 @@
 package birsy.clinker.client.model.entity;
 
-import birsy.clinker.client.model.base.constraint.Constraint;
 import birsy.clinker.client.model.base.InterpolatedSkeleton;
 import birsy.clinker.client.model.base.InterpolatedBone;
-import birsy.clinker.client.model.base.ModelFactory;
+import birsy.clinker.client.model.base.SkeletonFactory;
 import birsy.clinker.client.model.base.constraint.InverseKinematicsConstraint;
 import birsy.clinker.client.model.base.mesh.ModelMesh;
 import birsy.clinker.client.model.base.mesh.StaticMesh;
@@ -14,10 +13,10 @@ import net.minecraft.core.Direction;
 
 import java.util.Collections;
 
-public class MudScarabModelFactory implements ModelFactory {
+public class MudScarabSkeletonFactory implements SkeletonFactory {
 	private final ModelMesh[] meshes = new ModelMesh[25];
 	
-	public MudScarabModelFactory() {
+	public MudScarabSkeletonFactory() {
 		int texWidth = 128;
 		int texHeight = 128;
 		StaticMesh mesh0 = new StaticMesh(texWidth, texHeight);
@@ -340,6 +339,12 @@ public class MudScarabModelFactory implements ModelFactory {
 		frontRightIK.poleTarget.set(22F, -10, 0);
 
 		Collections.addAll(model.constraints, backLeftIK, middleLeftIK, frontLeftIK, backRightIK, middleRightIK, frontRightIK);
+
+//		InverseKinematicsConstraint leftLegIK = new InverseKinematicsConstraint(LowerLeftLegBone, 2, 0, -10, 0, 0.05F);
+//		InverseKinematicsConstraint leftArmIK = new InverseKinematicsConstraint(LowerLeftArmBone, 2, 0, -10, 0, 0.05F);
+//		InverseKinematicsConstraint rightLegIK = new InverseKinematicsConstraint(LowerRightLegBone, 2, 0, -10, 0, 0.05F);
+//		InverseKinematicsConstraint rightArmIK = new InverseKinematicsConstraint(LowerRightArmBone, 2, 0, -10, 0, 0.05F);
+//		Collections.addAll(model.constraints, leftLegIK, leftArmIK, rightLegIK, rightArmIK);
 
 		return model;
 	}

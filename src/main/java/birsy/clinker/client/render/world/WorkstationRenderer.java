@@ -8,12 +8,15 @@ import birsy.clinker.common.world.alchemy.workstation.camera.CameraPath;
 import birsy.clinker.common.world.level.interactable.Interactable;
 import birsy.clinker.common.world.level.interactable.InteractableManager;
 import birsy.clinker.common.world.physics.rigidbody.Transform;
+import birsy.clinker.common.world.physics.rigidbody.colliders.ICollisionShape;
 import birsy.clinker.common.world.physics.rigidbody.colliders.OBBCollisionShape;
 import birsy.clinker.core.Clinker;
+import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -70,7 +73,7 @@ public class WorkstationRenderer {
             pPoseStack.pushPose();
             Vec3 translation = new Vec3(containedBlock.getX(), containedBlock.getY(), containedBlock.getZ());
             pPoseStack.translate(translation.x, translation.y, translation.z);
-            DebugRenderUtil.renderCube(pPoseStack, pBufferSource.getBuffer(RenderType.LINES), 1.0F, 1.0F, 1.0F, 1F);
+            DebugRenderUtil.renderCube(pPoseStack, pBufferSource.getBuffer(RenderType.LINES), 1.0F, 1.0F, 1.0F, 0.2F);
             pPoseStack.popPose();
         }
 
@@ -85,17 +88,23 @@ public class WorkstationRenderer {
             pPoseStack.popPose();
         }
 
-        for (WorkstationPhysicsObject object : station.objects) {
-            pPoseStack.pushPose();
-            Vec3 translation = object.getPosition(pPartialTicks);
-            pPoseStack.translate(translation.x, translation.y, translation.z);
-            pPoseStack.mulPose(object.getRotation(pPartialTicks).toMojangQuaternion());
+        for (WorkstationPhysicsObject object : station.environment.objects) {
+            WorkstationPhysicsObject.SphereBoxCollider collider = object.collider;
+            for (WorkstationPhysicsObject.SphereCollider sphere : collider.spheres) {
+                pPoseStack.pushPose();
+                Vec3 translation = sphere.position;
+                pPoseStack.translate(translation.x, translation.y, translation.z);
 
-            if (object.shape instanceof OBBCollisionShape shape) {
-                DebugRenderUtil.renderBox(pPoseStack, pBufferSource.getBuffer(RenderType.LINES), -shape.size.x(), -shape.size.y(), -shape.size.z(), shape.size.x(), shape.size.y(), shape.size.z(), 1, 0.5F, 1, 1);
+                DebugRenderUtil.renderSphere(pPoseStack, pBufferSource.getBuffer(RenderType.LINES), 16, (float)sphere.radius, 0, 0, 0, 1, 0, 0, 1);
+                pPoseStack.popPose();
             }
+            DebugRenderUtil.renderBox(pPoseStack, pBufferSource.getBuffer(RenderType.LINES), collider.boundingBox, 1.0F, 1.0F, 1.0F, 0.2F);
+        }
 
-            pPoseStack.popPose();
+        for(List<AABB> shapes : station.environment.blockShapeCache.values()) {
+            for (AABB box : shapes) {
+                DebugRenderUtil.renderBox(pPoseStack, pBufferSource.getBuffer(RenderType.LINES), box, 1, 0.5F, 1, 1);
+            }
         }
 
         for (CameraPath.CameraPathLine line : station.path.cameraPathLines) {
@@ -103,5 +112,22 @@ public class WorkstationRenderer {
             Vec3 pos2 = line.node2().position.add(0, line.node1().offset, 0);
             DebugRenderUtil.renderLine(pPoseStack, pBufferSource.getBuffer(RenderType.LINES), pos1.x(), pos1.y(), pos1.z(), pos2.x(), pos2.y(), pos2.z(), 0, 0, 1, 1, 0, 0, 0, 1);
         }
+
+//        AABB aabb = new AABB(((BlockPos) station.containedBlocks.blocks.toArray()[0]).above());
+//        Vec3 playerPos = Minecraft.getInstance().cameraEntity.getPosition(pPartialTicks);
+//        Vec3 closestPoint = MathUtils.closestPointOnAABB(playerPos, aabb);
+//        double distance = playerPos.distanceTo(closestPoint);
+//
+//        DebugRenderUtil.renderBox(pPoseStack, pBufferSource.getBuffer(RenderType.LINES), aabb, 1.0F, 1.0F, 1.0F, 1.0F);
+//
+//        pPoseStack.pushPose();
+//        pPoseStack.translate(playerPos.x, playerPos.y, playerPos.z);
+//        DebugRenderUtil.renderSphere(pPoseStack, pBufferSource.getBuffer(RenderType.LINES), 32, (float)distance, 0, 0, 0, 1, 0, 0, 1);
+//        pPoseStack.popPose();
+//
+//        pPoseStack.pushPose();
+//        pPoseStack.translate(closestPoint.x, closestPoint.y, closestPoint.z);
+//        DebugRenderUtil.renderSphere(pPoseStack, pBufferSource.getBuffer(RenderType.LINES), 32, 2.0F / 16.0F, 0, 0, 0, 1, 0, 0, 1);
+//        pPoseStack.popPose();
     }
 }

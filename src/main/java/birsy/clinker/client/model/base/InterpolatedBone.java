@@ -15,19 +15,24 @@ import java.util.List;
 import java.util.Map;
 
 public class InterpolatedBone {
-    public float initialX, initialY, initialZ;
     public float x, y, z, pX, pY, pZ;
-    private Quaternionf initialRotation;
     public Quaternionf rotation, pRotation;
-    private Quaternionf currentRotation;
-    public float initialXSize, initialYSize, initialZSize;
+    protected Quaternionf currentRotation;
     public float xSize, ySize, zSize, pXSize, pYSize, pZSize;
+
+    public float initialX, initialY, initialZ;
+    public Quaternionf initialRotation;
+    public float initialXSize, initialYSize, initialZSize;
 
     @Nullable
     public InterpolatedBone parent;
     public List<InterpolatedBone> children;
 
     public final String identifier;
+    public boolean shouldRender = true;
+
+    // list of all parents, starting from the root and going down
+    public List<InterpolatedBone> parentChain;
 
     public InterpolatedBone(String identifier) {
         this.identifier = identifier;
@@ -48,6 +53,7 @@ public class InterpolatedBone {
         this.initialZSize = 1.0F;
 
         this.children = new ArrayList<>();
+        this.parentChain = new ArrayList<>();
     }
 
     public void setInitialTransform(float x, float y, float z, Quaternionf rotation) {
@@ -76,7 +82,7 @@ public class InterpolatedBone {
         this.zSize = this.initialZSize;
     }
 
-    protected void tick() {
+    protected void updatePreviousPosition() {
         this.pX = this.x;
         this.pY = this.y;
         this.pZ = this.z;
@@ -86,15 +92,31 @@ public class InterpolatedBone {
         this.pZSize = this.zSize;
     }
 
+    public void setGlobalSpaceRotation(Quaternionf globalSpaceRotation) {
+        Quaternionf parentRotation = new Quaternionf();
+
+        //add together the rotations of all parents.
+        for (InterpolatedBone bone : this.parentChain) {
+            parentRotation.mul(bone.rotation);
+        }
+
+        //subtract that from the global space rotation
+
+        parentRotation.difference(globalSpaceRotation, this.rotation);
+    }
+
+    protected void tick(float deltaTime) {}
+
     public void transform(PoseStack pPoseStack, float partialTick) {
         pPoseStack.translate(Mth.lerp(partialTick, pX, x), Mth.lerp(partialTick, pY, y), Mth.lerp(partialTick, pZ, z));
-        pPoseStack.scale(Mth.lerp(partialTick, pXSize, xSize), Mth.lerp(partialTick, pYSize, ySize), Mth.lerp(partialTick, pZSize, zSize));
         this.currentRotation = pRotation.slerp(rotation, partialTick, currentRotation);
         this.currentRotation.normalize();
         pPoseStack.mulPose(this.currentRotation.toMojangQuaternion());
+        pPoseStack.scale(Mth.lerp(partialTick, pXSize, xSize), Mth.lerp(partialTick, pYSize, ySize), Mth.lerp(partialTick, pZSize, zSize));
     }
 
-    public void render(Map<String, ModelMesh> meshes, float partialTick, PoseStack pPoseStack, VertexConsumer pVertexConsumer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha) {
+    public void render(Map<String, ModelMesh> meshes, float partialTick, PoseStack pPoseStack, VertexConsumer pVertexConsumer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha, boolean drawChildren) {
+        if (!shouldRender) return;
         ModelMesh mesh = meshes.getOrDefault(this.identifier, ModelMesh.EMPTY);
 
         pPoseStack.pushPose();
@@ -102,9 +124,12 @@ public class InterpolatedBone {
         this.transform(pPoseStack, partialTick);
         mesh.render(this, pPoseStack, pVertexConsumer,pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
 
-        for (InterpolatedBone child : this.children) {
-            child.render(meshes, partialTick, pPoseStack, pVertexConsumer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
+        if (drawChildren) {
+            for (InterpolatedBone child : this.children) {
+                child.render(meshes, partialTick, pPoseStack, pVertexConsumer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha, true);
+            }
         }
+
 
         pPoseStack.popPose();
     }

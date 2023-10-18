@@ -19,7 +19,7 @@ public class ClientLevelMixin {
     @Inject(method = "addEntity(ILnet/minecraft/world/entity/Entity;)V", at = @At("TAIL"))
     private void addEntity(int pEntityId, Entity pEntityToSpawn, CallbackInfo ci) {
         if (this.minecraft.getEntityRenderDispatcher().getRenderer(pEntityToSpawn) instanceof InterpolatedEntityRenderer renderer) {
-            renderer.createModel((LivingEntity) pEntityToSpawn);
+            renderer.createSkeleton((LivingEntity) pEntityToSpawn);
         }
     }
 }

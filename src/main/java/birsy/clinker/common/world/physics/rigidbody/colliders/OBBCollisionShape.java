@@ -21,6 +21,14 @@ public class OBBCollisionShape implements ICollisionShape {
         recalculateVertices();
     }
 
+    public OBBCollisionShape(double pMinX, double pMinY, double pMinZ, double pMaxX, double pMaxY, double pMaxZ) {
+        this.size = new Vec3((pMaxX - pMinX) * 0.5, (pMaxY - pMinY) * 0.5, (pMaxZ - pMinZ) * 0.5);
+        this.transform = new Transform();
+        this.transform.setPosition(pMinX + this.size.x, pMinY + this.size.y, pMinZ + this.size.z);
+
+        recalculateVertices();
+    }
+
     public void recalculateVertices() {
         this.vertices = new Vec3[8];
         this.vertices[0] = new Vec3(-size.x, -size.y, -size.z);

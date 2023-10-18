@@ -9,6 +9,7 @@ import com.mojang.math.Vector3f;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.AABB;
 
 public class DebugRenderUtil {
     public static void renderCube(PoseStack pPoseStack, VertexConsumer pConsumer, float pRed, float pGreen, float pBlue, float pAlpha) {
@@ -50,6 +51,10 @@ public class DebugRenderUtil {
         pConsumer.vertex(matrix4f, aX, aY, aZ).color(pRed, pGreen, pBlue, pAlpha).normal(matrix3f, 0.0F, 0.0F, 1.0F) .endVertex();
     }
 
+    public static void renderBox(PoseStack pPoseStack, VertexConsumer pConsumer, AABB box, float pRed, float pGreen, float pBlue, float pAlpha) {
+        renderBox(pPoseStack, pConsumer, box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ, pRed, pGreen, pBlue, pAlpha);
+    }
+
     public static void renderSphere(PoseStack pPoseStack, VertexConsumer pConsumer, int resolution, float radius, double x, double y, double z, float pRed, float pGreen, float pBlue, float pAlpha) {
         pPoseStack.pushPose();
         pPoseStack.translate(x, y, z);
@@ -62,6 +67,7 @@ public class DebugRenderUtil {
             }
             Matrix4f matrix4f = pPoseStack.last().pose();
             Matrix3f matrix3f = pPoseStack.last().normal();
+            pPoseStack.popPose();
             for (int segment = 0; segment < resolution; segment++) {
                 float angle1 = (segment / (float)resolution) * Mth.TWO_PI;
                 float angle2 = ((segment + 1) / (float)resolution) * Mth.TWO_PI;
@@ -76,7 +82,6 @@ public class DebugRenderUtil {
 
                 renderLine(matrix4f, matrix3f, pConsumer, s1, c1, 0, s2, c2, 0, pRed, pGreen, pBlue, pAlpha);
             }
-            pPoseStack.popPose();
         }
 
         pPoseStack.popPose();

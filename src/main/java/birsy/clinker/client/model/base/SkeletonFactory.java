@@ -1,5 +1,5 @@
 package birsy.clinker.client.model.base;
 
-public interface ModelFactory {
+public interface SkeletonFactory {
     InterpolatedSkeleton create();
 }

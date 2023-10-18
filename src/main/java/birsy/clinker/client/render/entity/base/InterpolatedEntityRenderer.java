@@ -1,12 +1,11 @@
 package birsy.clinker.client.render.entity.base;
 
+import birsy.clinker.client.model.base.AnimationProperties;
 import birsy.clinker.client.model.base.InterpolatedSkeleton;
 import birsy.clinker.client.model.base.InterpolatedSkeletonParent;
-import birsy.clinker.client.model.base.ModelFactory;
-import birsy.clinker.client.model.base.constraint.InverseKinematicsConstraint;
-import birsy.clinker.client.render.DebugRenderUtil;
+import birsy.clinker.client.model.base.SkeletonFactory;
+import birsy.clinker.client.model.base.constraint.Constraint;
 import birsy.clinker.core.Clinker;
-import birsy.clinker.core.util.Quaternionf;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -22,21 +21,24 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public abstract class InterpolatedEntityRenderer<T extends LivingEntity & InterpolatedSkeletonParent, M extends InterpolatedSkeleton> extends EntityRenderer<T> {
-    protected final ModelFactory modelFactory;
+    protected final SkeletonFactory modelFactory;
     List<EntityRenderLayer<T, M>> layers = Lists.newArrayList();
 
-    protected InterpolatedEntityRenderer(EntityRendererProvider.Context pContext, ModelFactory modelFactory, float shadowRadius) {
+    protected InterpolatedEntityRenderer(EntityRendererProvider.Context pContext, SkeletonFactory modelFactory, float shadowRadius) {
         super(pContext);
         this.modelFactory = modelFactory;
         this.shadowRadius = shadowRadius;
     }
 
-    public void setupModelFactory() {}
+    public void setupModelFactory(T parent) {}
 
-    public final void createModel(T parent) {
-        this.setupModelFactory();
+    public final void createSkeleton(T parent) {
+        this.setupModelFactory(parent);
         parent.setSkeleton(this.modelFactory.create());
     }
 
@@ -44,11 +46,11 @@ public abstract class InterpolatedEntityRenderer<T extends LivingEntity & Interp
         return this.layers.add(layer);
     }
 
-    public void render(T pEntity, float pEntityYaw, float pPartialTicks, PoseStack pMatrixStack, MultiBufferSource pBuffer, int pPackedLight) {
-        pMatrixStack.pushPose();
+    public void render(T pEntity, float pEntityYaw, float pPartialTicks, PoseStack poseStack, MultiBufferSource pBuffer, int pPackedLight) {
+        poseStack.pushPose();
         float scale = 1.0F / 16.0F;
-        pMatrixStack.scale(scale, scale, scale);
-        this.setupRotations(pEntity, pMatrixStack, pEntity.tickCount + pPartialTicks, pPartialTicks);
+        poseStack.scale(scale, scale, scale);
+        this.setupRotations(pEntity, poseStack, pEntity.tickCount + pPartialTicks, pPartialTicks);
 
         Minecraft minecraft = Minecraft.getInstance();
         boolean invisible = pEntity.isInvisible();
@@ -56,78 +58,32 @@ public abstract class InterpolatedEntityRenderer<T extends LivingEntity & Interp
         boolean glowing = minecraft.shouldEntityAppearGlowing(pEntity);
         RenderType rendertype = this.getRenderType(pEntity, invisible, isSpectatorTransparent, glowing);
         if (rendertype != null) {
-            VertexConsumer vertexconsumer = pBuffer.getBuffer(this.getRenderType(pEntity));
-            int packedOverlay = LivingEntityRenderer.getOverlayCoords(pEntity, 0);
-
-            if (pEntity.getSkeleton() != null) pEntity.getSkeleton().render(pPartialTicks, pMatrixStack, vertexconsumer, pPackedLight, packedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
+            renderModel(pEntity, pPartialTicks, poseStack, pBuffer, pPackedLight);
         }
 
         if (!pEntity.isSpectator()) {
             for(EntityRenderLayer<T, M> layer : this.layers) {
-                layer.render(pMatrixStack, pBuffer, pPackedLight, pEntity, pPartialTicks);
+                if (pEntity.getSkeleton() != null) layer.render(poseStack, pBuffer, pPackedLight, pEntity, (M) pEntity.getSkeleton(), pPartialTicks);
             }
         }
 
         if (pEntity.getSkeleton() != null) {
-            VertexConsumer vertexconsumer = pBuffer.getBuffer(RenderType.LINES);
-            for (Object constraint : pEntity.getSkeleton().constraints) {
-                if (constraint instanceof InverseKinematicsConstraint ik) {
-                    Vector3f x = ik.points.get(ik.points.size() - 1).copy();
-                    x.cross(ik.poleTarget);
-                    x.normalize();
-                    x.mul(-1);
-
-
-                    Vector3f point;
-                    Vector3f pPoint;
-
-                    for (int i = 0; i < ik.points.size(); i++) {
-                        point = ik.points.get(i);
-                        DebugRenderUtil.renderSphere(pMatrixStack, vertexconsumer, 16, 1.5F, point.x(), point.y(), point.z(), 1.0F, 1.0F, 1.0F, 0.1F);
-
-                        if (i - 1 >= 0) {
-                            pPoint = ik.points.get(i - 1);
-                            DebugRenderUtil.renderLine(pMatrixStack, vertexconsumer, point.x(), point.y(), point.z(), pPoint.x(), pPoint.y(), pPoint.z(), 1.0F, 1.0F, 1.0F, 0.1F);
-
-                            Vector3f average = new Vector3f();
-                            average.add(point);
-                            average.add(pPoint);
-                            average.mul(0.5F);
-
-                            Vector3f y = ik.points.get(i - 1).copy();
-                            y.sub(ik.points.get(i).copy());
-                            y.normalize();
-
-                            Vector3f z = x.copy();
-                            z.cross(y);
-                            z.normalize();
-
-                            Quaternionf rot = new Quaternionf().setFromNormalized(x.x(), x.y(), x.z(), y.x(), y.y(), y.z(), z.x(), z.y(), z.z());
-
-                            pMatrixStack.pushPose();
-                            pMatrixStack.translate(average.x(), average.y(), average.z());
-                            y.mul(16);
-                            DebugRenderUtil.renderLine(pMatrixStack, vertexconsumer, 0, 0, 0, y.x(), y.y(), y.z(), 1.0F, 1.0F, 0.0F, 0.2F, 0.0F, 0.0F, 0.0F, 0.0F);
-
-
-                            pMatrixStack.mulPose(rot.toMojangQuaternion());
-                            DebugRenderUtil.renderLine(pMatrixStack, vertexconsumer, 0, 0, 0, 10, 0, 0, 1.0F, 0.0F, 0.0F, 0.2F, 1.0F, 0.0F, 0.0F, 0.0F);
-                            DebugRenderUtil.renderLine(pMatrixStack, vertexconsumer, 0, 0, 0, 0, 10, 0, 0.0F, 1.0F, 0.0F, 0.2F, 0.0F, 1.0F, 0.0F, 0.0F);
-                            DebugRenderUtil.renderLine(pMatrixStack, vertexconsumer, 0, 0, 0, 0, 0, 10, 0.0F, 0.0F, 1.0F, 0.2F, 0.0F, 0.0F, 1.0F, 0.0F);
-                            pMatrixStack.popPose();
-                        }
-                    }
-
-                    point = ik.target;
-                    DebugRenderUtil.renderSphere(pMatrixStack, vertexconsumer, 16, 2.0F, point.x(), point.y(), point.z(), 1.0F, 0.0F, 0.0F, 1.0F);
-                    point = ik.poleTarget;
-                    DebugRenderUtil.renderSphere(pMatrixStack, vertexconsumer, 16, 2.0F, point.x(), point.y(), point.z(), 0.0F, 1.0F, 0.0F, 1.0F);
+            for (Object obj : pEntity.getSkeleton().constraints) {
+                if (obj instanceof Constraint constraint) {
+                    constraint.renderDebugInfo(pEntity.getSkeleton(), pEntity, pPartialTicks, poseStack, pBuffer);
                 }
             }
         }
 
-        pMatrixStack.popPose();
-        super.render(pEntity, pEntityYaw, pPartialTicks, pMatrixStack, pBuffer, pPackedLight);
+        poseStack.popPose();
+        super.render(pEntity, pEntityYaw, pPartialTicks, poseStack, pBuffer, pPackedLight);
+    }
+
+    public void renderModel(T pEntity, float pPartialTicks, PoseStack poseStack, MultiBufferSource pBuffer, int pPackedLight) {
+        VertexConsumer vertexconsumer = pBuffer.getBuffer(this.getRenderType(pEntity));
+        int packedOverlay = LivingEntityRenderer.getOverlayCoords(pEntity, 0);
+
+        if (pEntity.getSkeleton() != null) pEntity.getSkeleton().render(pPartialTicks, poseStack, vertexconsumer, pPackedLight, packedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
     }
 
     public abstract RenderType getRenderType(T entity);
@@ -161,10 +117,40 @@ public abstract class InterpolatedEntityRenderer<T extends LivingEntity & Interp
         if (pEntityLiving.isFullyFrozen()) {
             pMatrixStack.mulPose(Vector3f.YP.rotationDegrees(Mth.cos(pEntityLiving.tickCount * 3.25F) * Mth.PI * 0.4F));
         }
+
+        //pMatrixStack.mulPose(Vector3f.YP.rotationDegrees(180));
     }
 
     protected float getFlipDegrees(T entity) {
         return 90.0F;
     }
 
+    public static <M extends InterpolatedSkeleton, T extends LivingEntity & InterpolatedSkeletonParent> void tick(List<InterpolatedSkeletonParent> entitiesToRender) {
+        for (InterpolatedSkeletonParent interpolatedSkeletonParent : entitiesToRender) {
+            AnimationProperties properties = new AnimationProperties();
+            interpolatedSkeletonParent.getSkeleton().addAnimationProperties(properties, interpolatedSkeletonParent);
+            interpolatedSkeletonParent.getSkeleton().tick(properties);
+        }
+//        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+//        for (InterpolatedSkeletonParent interpolatedSkeletonParent : entitiesToRender) {
+//            executor.submit(new UpdateEntityTask(interpolatedSkeletonParent));
+//        }
+//
+//        //maximum time of 1 tick
+//        try {
+//            executor.awaitTermination(50, TimeUnit.MILLISECONDS);
+//        } catch (InterruptedException e) {
+//            Clinker.LOGGER.warn("! Abandoned animation task early !");
+//            Clinker.LOGGER.warn(e.getLocalizedMessage());
+//        }
+    }
+
+    private record UpdateEntityTask(InterpolatedSkeletonParent animator) implements Runnable {
+        @Override
+        public void run() {
+            AnimationProperties properties = new AnimationProperties();
+            animator.getSkeleton().addAnimationProperties(properties, animator);
+            animator.getSkeleton().tick(properties);
+        }
+    }
 }

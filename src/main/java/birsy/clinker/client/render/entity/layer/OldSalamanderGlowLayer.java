@@ -13,12 +13,12 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
-public class SalamanderGlowLayer<T extends AbstractSalamanderPartEntity, M extends AbstractSalamanderModel<T>> extends RenderLayer<T, M> {
+public class OldSalamanderGlowLayer<T extends AbstractSalamanderPartEntity, M extends AbstractSalamanderModel<T>> extends RenderLayer<T, M> {
     private final RenderType GLOW;// = RenderType.entityTranslucent(new ResourceLocation(Clinker.MOD_ID, "textures/entity/salamander/salamander_body/salamander_body_glow.png"));
     private final RenderType CHARRED_GLOW;// = RenderType.entityTranslucent(new ResourceLocation(Clinker.MOD_ID, "textures/entity/salamander/salamander_body/charred_salamander_body_glow.png"));
     private final RenderType FIRE;// = RenderType.entityTranslucent(new ResourceLocation(Clinker.MOD_ID, "textures/entity/salamander/salamander_body/salamander_body_fire_glow.png"));
 
-    public SalamanderGlowLayer(RenderLayerParent<T, M> parent, ResourceLocation glow, ResourceLocation charredGlow, ResourceLocation fire) {
+    public OldSalamanderGlowLayer(RenderLayerParent<T, M> parent, ResourceLocation glow, ResourceLocation charredGlow, ResourceLocation fire) {
         super(parent);
         this.GLOW = ClinkerRenderTypes.entityUnlitTranslucent(glow);
         this.CHARRED_GLOW = ClinkerRenderTypes.entityUnlitTranslucent(charredGlow);

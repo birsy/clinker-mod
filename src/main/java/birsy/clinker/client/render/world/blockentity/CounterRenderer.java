@@ -1,23 +1,15 @@
 package birsy.clinker.client.render.world.blockentity;
 
-import birsy.clinker.client.render.DebugRenderUtil;
-import birsy.clinker.common.world.alchemy.workstation.PhysicalItem;
 import birsy.clinker.common.world.alchemy.workstation.Workstation;
-import birsy.clinker.common.world.alchemy.workstation.camera.CameraPath;
 import birsy.clinker.common.world.block.blockentity.CounterBlockEntity;
-import birsy.clinker.common.world.physics.rigidbody.Transform;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Matrix3f;
 import com.mojang.math.Matrix4f;
-import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 
 public class CounterRenderer<T extends CounterBlockEntity> implements BlockEntityRenderer<T> {

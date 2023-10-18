@@ -93,7 +93,7 @@ public class WorkstationBlocks implements Iterable<BlockPos> {
             for (long sectionID : this.bitsetBySection.keySet()) {
                 center.add(SectionPos.x(sectionID), SectionPos.y(sectionID), SectionPos.z(sectionID));
             }
-            center.scale(1 / this.bitsetBySection.size());
+            if (this.bitsetBySection.size() > 0) center.scale(1 / this.bitsetBySection.size());
             this.isCenterCalculated = true;
 
             this.center = new Vec3i(center.x() * 16, center.y() * 16, center.z() * 16);

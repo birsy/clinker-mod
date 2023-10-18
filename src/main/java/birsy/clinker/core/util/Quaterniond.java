@@ -2,7 +2,6 @@ package birsy.clinker.core.util;
 
 import com.mojang.math.Quaternion;
 import net.minecraft.world.phys.Vec3;
-import org.apache.commons.math3.linear.RealMatrix;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -2127,15 +2126,5 @@ public class Quaterniond implements Externalizable, Cloneable {
         return new Quaterniond(rotAxis, rotAngle);
     }
 
-    public static Quaterniond matrixToQuaternion(RealMatrix matrix) {
-        double[][] matrixData = matrix.getData();
-
-        double qw = Math.sqrt(1 + matrixData[0][0] + matrixData[1][1] + matrixData[2][2]) / 2;
-        double qx = (matrixData[2][1] - matrixData[1][2]) / (4 * qw);
-        double qy = (matrixData[0][2] - matrixData[2][0]) / (4 * qw);
-        double qz = (matrixData[1][0] - matrixData[0][1]) / (4 * qw);
-
-        return new Quaterniond(qw, qx, qy, qz);
-    }
 }
 

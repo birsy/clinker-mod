@@ -1,89 +1,83 @@
 package birsy.clinker.common.world.physics.rigidbody;
 
-import birsy.clinker.core.util.Quaterniond;
 import birsy.clinker.common.world.physics.rigidbody.colliders.ICollisionShape;
+import birsy.clinker.core.util.Quaterniond;
+import birsy.clinker.core.util.VectorUtils;
 import com.mojang.math.Matrix3f;
+import com.mojang.math.Vector3f;
 import net.minecraft.world.phys.Vec3;
 
-public class RigidBody implements ICollidable, IBody, IPhysicsBody, ITickableBody {
-    public Transform lastTickTransform;
-    public Transform transform;
-    public Vec3 velocity;
-    public Vec3 angularVelocity;
+public class RigidBody {
+    public Vec3 position;
+    protected Vec3 pPosition;
+    public Quaterniond rotation;
+    protected Quaterniond pRotation;
+    protected Vec3 acceleration;
+    protected Quaterniond torque;
 
-    private float inverseMass;
-    public float mass;
-    public Matrix3f inverseInertiaTensor;
 
-    public ICollisionShape collisionShape;
-    private Vec3 localCenterOfMass;
+    public double mass;
+    protected double inverseMass;
+    //todo: figure out how to calculate this from collision shape
+    protected Matrix3f inverseInertiaTensor;
+    private Transform colliderTransform;
+    public ICollisionShape collider;
 
-    public RigidBody(Vec3 initialPosition, Vec3 initialVelocity, Quaterniond initialOrientation, Vec3 initialAngularVelocity, float mass, Matrix3f inertiaTensor, ICollisionShape collisionShape) {
-        this.transform = new Transform(initialPosition, initialOrientation);
-        this.lastTickTransform = this.transform.copy();
-        this.velocity = initialVelocity;
-        this.angularVelocity = initialAngularVelocity;
-        this.inverseMass = 1.0f / mass;
+    public RigidBody(float mass, ICollisionShape shape) {
         this.mass = mass;
-        inertiaTensor.invert();
-        this.inverseInertiaTensor = inertiaTensor;
-        this.collisionShape = collisionShape;
-        this.collisionShape.setTransform(this.transform);
-        this.localCenterOfMass = collisionShape.getCenter();
+        this.inverseMass = 1.0 / mass;
+
+        this.inverseInertiaTensor = new Matrix3f();
+        this.inverseInertiaTensor.setIdentity();
+
+        this.position = new Vec3(0, 0, 0);
+        this.pPosition = new Vec3(0, 0, 0);
+        this.rotation = new Quaterniond();
+        this.pRotation = new Quaterniond();
+        this.acceleration = new Vec3(0, 0, 0);
+        this.torque = new Quaterniond();
+
+        this.colliderTransform = new Transform(this.position, this.rotation);
+        this.collider = shape;
     }
 
-    // Apply a force to the rigidbody at a given point in world space
-    public void applyImpulse(Vec3 force, Vec3 point) {
-        velocity = velocity.add(force.scale(inverseMass));
+    public void integrate() {
+        //update position
+        Vec3 velocity = this.position.subtract(this.pPosition);
+        velocity = velocity.add(acceleration);
 
-        Vec3 r = point.subtract(this.getCenterOfMass());
-        Vec3 torque = r.cross(force);
-        this.angularVelocity = this.angularVelocity.add(torque);
+        this.pPosition = this.position;
+        this.position = this.position.add(velocity);
+        this.acceleration = Vec3.ZERO;
+
+        //update rotation
+        Quaterniond rotationalVelocity = this.pRotation.difference(this.rotation);
+        rotationalVelocity = rotationalVelocity.mul(torque);
+
+        this.pRotation.set(this.rotation);
+        this.rotation.mul(rotationalVelocity);
+        this.torque.set(0, 0, 0, 1);
+
+        this.colliderTransform.setPosition(this.position);
+        this.colliderTransform.setOrientation(this.rotation);
+        this.collider.setTransform(colliderTransform);
     }
 
-    @Override
-    public void accelerate(Vec3 force, Vec3 point) {
-        applyImpulse(force.scale(mass), point);
+    public void push(Vec3 force, Vec3 point) {
+        this.acceleration = this.acceleration.add(force);
+
+        Vec3 towardsPoint = this.position.subtract(point);
+        Vec3 torqueVector = towardsPoint.cross(force);
+        torqueVector = VectorUtils.transform(torqueVector, inverseInertiaTensor);
+        torque = torque.mul(new Quaterniond(torqueVector.normalize(), torqueVector.length()));
     }
 
-    @Override
-    public Vec3 getCenterOfMass() {
-        return this.transform.position;
+    private Quaterniond clientRotation = new Quaterniond();
+    public Quaterniond getRotation(float partialTicks) {
+        return pRotation.slerp(rotation, partialTicks, clientRotation);
     }
 
-    @Override
-    public float mass() {
-        return mass;
-    }
-
-    // Integrate the rigidbody's motion over a given time step
-    public void integrate(float dt) {
-        this.transform.addPosition(velocity.scale(dt));
-        this.transform.addOrientation(angularVelocity.scale(dt));
-        this.collisionShape.setTransform(this.transform);
-    }
-
-    public ICollisionShape getCollisionShape() {
-        return this.collisionShape;
-    }
-
-    @Override
-    public Transform getTransform() {
-        return this.transform;
-    }
-
-    public Transform getTransform(float partialTicks) {
-        return this.lastTickTransform.lerp(this.transform, partialTicks);
-    }
-
-    @Override
-    public void setTransform(Transform transform) {
-        this.transform = transform;
-    }
-
-
-    @Override
-    public void tick(float deltaTime) {
-        this.lastTickTransform = this.transform.copy();
+    public Vec3 getPosition(float partialTicks) {
+        return this.pPosition.lerp(this.pPosition, partialTicks);
     }
 }

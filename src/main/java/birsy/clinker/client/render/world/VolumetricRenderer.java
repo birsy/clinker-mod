@@ -24,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.concurrent.Executors;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = Clinker.MOD_ID)
 public class VolumetricRenderer {
@@ -134,7 +135,6 @@ public class VolumetricRenderer {
 
             ChunkLightTexture chunkLight = new ChunkLightTexture(minecraft.gameRenderer, minecraft);
             chunkLight.updateChunkLightTexture().run();
-
             //volumetricBuffer = postchain.getTempTarget("volumetric");
 
             for(PostPass pass : postchain.passes) {

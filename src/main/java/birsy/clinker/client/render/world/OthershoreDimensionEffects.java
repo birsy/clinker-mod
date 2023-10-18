@@ -5,6 +5,7 @@ import birsy.clinker.client.render.world.blockentity.SarcophagusInnardsRenderer;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
@@ -16,10 +17,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.minecraft.client.renderer.texture.SimpleTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackType;
 import net.minecraft.util.CubicSampler;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -30,20 +33,27 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.resource.PathPackResources;
+import net.minecraftforge.resource.ResourcePackLoader;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL45;
 
 import java.awt.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
+
 
 @OnlyIn(Dist.CLIENT)
 public class OthershoreDimensionEffects extends DimensionSpecialEffects {
     private final Minecraft mc = Minecraft.getInstance();
     private static final ResourceLocation STAR_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/environment/star.png");
     private static final ResourceLocation NOISE_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/environment/noise.png");
+    public static final ResourceLocation LIGHTMAP = new ResourceLocation(Clinker.MOD_ID, "textures/environment/lightmap.png");
+    public static NativeImage lightmapImage = new NativeImage(16, 16, false);
 
     private float[][] starInfo = null;
     public OthershoreDimensionEffects() {
@@ -61,49 +71,8 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
 
     @Override
     public boolean renderClouds(ClientLevel level, int ticks, float partialTick, PoseStack pPoseStack, double camX, double camY, double camZ, Matrix4f projectionMatrix) {
-        /*pPoseStack.pushPose();
-        Matrix4f matrix = pPoseStack.last().pose();
-        VertexConsumer consumer = pBufferSource.getBuffer(RenderType.entitySolid(new ResourceLocation(Clinker.MOD_ID, "textures/block/sarcophagus/sarcophagus_innards.png")));
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-
-        float gutLevel = pBlockEntity.getNeighboringLevels(Direction.values().length, pPartialTick) / 3.0F;
-        float[] surroundingGutLevels = new float[Direction.values().length];
-        for (int i = 0; i < Direction.values().length; i++) {
-            surroundingGutLevels[i] = pBlockEntity.getNeighboringLevels(i, pPartialTick) / 3.0F;
-        }
-        float min = gutLevel / 2;
-        float max = 1 - min;
-
-        OthershoreDimensionEffects.Vertex upNorthEast = new OthershoreDimensionEffects.Vertex(new Vector4f(max, max, max, 1), white);
-        OthershoreDimensionEffects.Vertex upNorthWest = new OthershoreDimensionEffects.Vertex(new Vector4f(min, max, max, 1), white);
-        OthershoreDimensionEffects.Vertex upSouthWest = new OthershoreDimensionEffects.Vertex(new Vector4f(min, max, min, 1), white);
-        OthershoreDimensionEffects.Vertex upSouthEast = new OthershoreDimensionEffects.Vertex(new Vector4f(max, max, min, 1), white);
-        OthershoreDimensionEffects.Vertex downNorthEast = new OthershoreDimensionEffects.Vertex(new Vector4f(max, min, max, 1), white);
-        OthershoreDimensionEffects.Vertex downNorthWest = new OthershoreDimensionEffects.Vertex(new Vector4f(min, min, max, 1), white);
-        OthershoreDimensionEffects.Vertex downSouthWest = new OthershoreDimensionEffects.Vertex(new Vector4f(min, min, min, 1), white);
-        OthershoreDimensionEffects.Vertex downSouthEast = new OthershoreDimensionEffects.Vertex(new Vector4f(max, min, min, 1), white);
-
-        OthershoreDimensionEffects.Vertex[] eastFace = new OthershoreDimensionEffects.Vertex[]{upSouthEast, upNorthEast, downNorthEast, downSouthEast};
-        OthershoreDimensionEffects.Vertex[] westFace = new OthershoreDimensionEffects.Vertex[]{downSouthWest, downNorthWest, upNorthWest, upSouthWest};
-        OthershoreDimensionEffects.Vertex[] upFace = new OthershoreDimensionEffects.Vertex[]{upSouthWest, upNorthWest, upNorthEast, upSouthEast};
-        OthershoreDimensionEffects.Vertex[] downFace = new OthershoreDimensionEffects.Vertex[]{downNorthWest, downSouthWest, downSouthEast, downNorthEast};
-        OthershoreDimensionEffects.Vertex[] northFace = new OthershoreDimensionEffects.Vertex[]{downNorthWest, downNorthEast, upNorthEast, upNorthWest};
-        OthershoreDimensionEffects.Vertex[] southFace = new OthershoreDimensionEffects.Vertex[]{upSouthWest, upSouthEast, downSouthEast, downSouthWest};
-
-        OthershoreDimensionEffects.Vertex[][] faces = new OthershoreDimensionEffects.Vertex[][]{downFace, upFace, northFace, southFace, eastFace, westFace};
-
-
-        for (int i = 0; i < faces.length; i++) {
-            OthershoreDimensionEffects.Vertex[] face = faces[i];
-            Direction direction = Direction.from3DDataValue(i);
-            renderFace(matrix, consumer, face, direction.getAxis(), new Vector4f(direction.getNormal().getX(), direction.getNormal().getY(), direction.getNormal().getZ(), 0), pPackedLight, pPackedOverlay);
-        }
-
-        pPoseStack.popPose();*/
-        return true;//super.renderClouds(level, ticks, partialTick, poseStack, camX, camY, camZ, projectionMatrix);
+        return true;
     }
-
-    private record Vertex(Vector4f position, Vector3f color, Vector3f normal) {}
 
 
     @Override
@@ -278,8 +247,6 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
 
         ArrayList<float[]> stars = new ArrayList<>(Arrays.stream(getOrCreateStarInfo()).toList());
 
-        GlStateManager._texParameter(GL45.GL_TEXTURE_2D, GL45.GL_TEXTURE_MIN_FILTER, GL45.GL_LINEAR);
-        GlStateManager._texParameter(GL45.GL_TEXTURE_2D, GL45.GL_TEXTURE_MAG_FILTER, GL45.GL_LINEAR);
         for (int ring = ringNum; ring >= 0; ring--) {
             poseStack.pushPose();
             float ringDist = (float)ring / (float)ringNum;
@@ -309,8 +276,7 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
             renderCloudRing(poseStack, bufferbuilder, ringResolution, rRadius, ringHeight, 20.0F, 0.0F, ringDist, ringColor.x(), ringColor.y(), ringColor.z(), alpha * 0.8F, ringColor.x(), ringColor.y(), ringColor.z(), 1.0F);
             poseStack.popPose();
         }
-        GlStateManager._texParameter(GL45.GL_TEXTURE_2D, GL45.GL_TEXTURE_MIN_FILTER, GL45.GL_NEAREST);
-        GlStateManager._texParameter(GL45.GL_TEXTURE_2D, GL45.GL_TEXTURE_MAG_FILTER, GL45.GL_NEAREST);
+
 
         poseStack.popPose();
 
@@ -341,7 +307,6 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
         abstracttexture.setFilter(true, false);
         RenderSystem.setShaderTexture(0, NOISE_TEXTURE);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
         Matrix4f matrix = poseStack.last().pose();
         float uvSquish = cameraDistance * cameraDistance * 3.0F;

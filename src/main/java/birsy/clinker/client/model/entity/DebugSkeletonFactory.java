@@ -2,16 +2,16 @@ package birsy.clinker.client.model.entity;
 
 import birsy.clinker.client.model.base.InterpolatedSkeleton;
 import birsy.clinker.client.model.base.InterpolatedBone;
-import birsy.clinker.client.model.base.ModelFactory;
+import birsy.clinker.client.model.base.SkeletonFactory;
 import birsy.clinker.client.model.base.mesh.ModelMesh;
 import birsy.clinker.client.model.base.mesh.StaticMesh;
 import birsy.clinker.client.model.base.AnimationProperties;
 import birsy.clinker.core.util.Quaternionf;
 
-public class DebugModelFactory implements ModelFactory {
+public class DebugSkeletonFactory implements SkeletonFactory {
 	private final ModelMesh[] meshes = new ModelMesh[3];
 	
-	public DebugModelFactory() {
+	public DebugSkeletonFactory() {
 		int texWidth = 64;
 		int texHeight = 128;
 		StaticMesh mesh0 = new StaticMesh(texWidth, texHeight);

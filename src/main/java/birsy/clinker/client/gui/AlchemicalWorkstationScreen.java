@@ -606,9 +606,9 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
 
             } else if (this.screen.hoveredElement == null && !isHoveringParent) {
                 this.inventory.setItem(this.index, ItemStack.EMPTY);
-                WorkstationPhysicsObject object = new WorkstationPhysicsObject(this.screen.workstation.camera.position.add(this.screen.workstation.camera.direction.scale(1.2)).add(0, -0.25, 0),
-                        new OBBCollisionShape(3.0F / 16.0F, 3.0F / 16.0F, 3.0F / 16.0F));
-                this.screen.workstation.objects.add(object);
+                WorkstationPhysicsObject object = new WorkstationPhysicsObject(this.screen.workstation.camera.position.add(this.screen.workstation.camera.direction.scale(1.2)).add(0, 0.2, 0), 1.0F,
+                        3.0F / 16.0F, 3.0F / 16.0F, 3.0F / 16.0F);
+                this.screen.workstation.environment.addObject(object);
             } else {
                 this.itemX = (mouseX - this.screen.itemOffsetX) - this.getScreenX(partialTick);
                 this.itemY = (mouseY - this.screen.itemOffsetY) - this.getScreenY(partialTick);
