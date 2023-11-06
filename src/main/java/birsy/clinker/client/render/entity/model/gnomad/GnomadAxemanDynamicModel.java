@@ -205,12 +205,12 @@ public class GnomadAxemanDynamicModel<T extends GnomadAxemanEntity> extends Enti
 		float walkSpeed = 1.1F * globalSpeed;
 
 		//IDLE
-		AnimFunctions.swing(this.rootJoint, 0.025F * globalSpeed, 0.05f * globalDegree, false, 0.0F, 0.0F, ageInTicks, 0.5F, AnimFunctions.Axis.X);
+		AnimFunctions.swing(this.rootJoint, 0.025F * globalSpeed, 0.05f * globalDegree, false, 0.0F, 0.0F, ageInTicks, 0.5F, AnimFunctions.RotAxis.X);
 
-		AnimFunctions.swing(this.gnomadRightArm, 0.125F * globalSpeed, 0.03f * globalDegree, false, 0.5F, 0.07F, ageInTicks, 0.5F, AnimFunctions.Axis.Z);
-		AnimFunctions.swing(this.gnomadLeftArm, 0.125F * globalSpeed, 0.03f * globalDegree, false, 1.5F, -0.07F, ageInTicks, 0.5F, AnimFunctions.Axis.Z);
-		AnimFunctions.swing(this.gnomadRightArm, 0.12F * globalSpeed, 0.03f * globalDegree, false, 0.5F, 0.0F, ageInTicks, 0.5F, AnimFunctions.Axis.X);
-		AnimFunctions.swing(this.gnomadLeftArm, 0.12F * globalSpeed, 0.03f * globalDegree, false, 1.5F, 0.0F, ageInTicks, 0.5F, AnimFunctions.Axis.X);
+		AnimFunctions.swing(this.gnomadRightArm, 0.125F * globalSpeed, 0.03f * globalDegree, false, 0.5F, 0.07F, ageInTicks, 0.5F, AnimFunctions.RotAxis.Z);
+		AnimFunctions.swing(this.gnomadLeftArm, 0.125F * globalSpeed, 0.03f * globalDegree, false, 1.5F, -0.07F, ageInTicks, 0.5F, AnimFunctions.RotAxis.Z);
+		AnimFunctions.swing(this.gnomadRightArm, 0.12F * globalSpeed, 0.03f * globalDegree, false, 0.5F, 0.0F, ageInTicks, 0.5F, AnimFunctions.RotAxis.X);
+		AnimFunctions.swing(this.gnomadLeftArm, 0.12F * globalSpeed, 0.03f * globalDegree, false, 1.5F, 0.0F, ageInTicks, 0.5F, AnimFunctions.RotAxis.X);
 
 		AnimFunctions.bob(this.gnomadRightArm, 0.125F * globalSpeed, 0.2f * globalDegree, false, ageInTicks, 0.5F);
 		AnimFunctions.bob(this.gnomadLeftArm, 0.125F * globalSpeed, 0.2f * globalDegree, false, ageInTicks, 0.5F);
@@ -218,11 +218,11 @@ public class GnomadAxemanDynamicModel<T extends GnomadAxemanEntity> extends Enti
 		AnimFunctions.bob(this.gnomadNeck, 0.125F * globalSpeed, 0.2f * globalHeight, false, ageInTicks, 0.5F);
 		AnimFunctions.bob(this.gnomadBody, 0.15F * (0.125F * globalSpeed), 0.2f * globalHeight, true, ageInTicks, 0.5F);
 
-		AnimFunctions.swing(this.gnomadHat, 0.125F * walkSpeed, 0.05F * globalDegree, false, 1F, 0, ageInTicks, 0.5F, AnimFunctions.Axis.X);
-		AnimFunctions.swing(this.gnomadHat, 0.125F * walkSpeed, 0.05F * globalDegree, false, 1F, 0, ageInTicks, 0.5F, AnimFunctions.Axis.Z);
+		AnimFunctions.swing(this.gnomadHat, 0.125F * walkSpeed, 0.05F * globalDegree, false, 1F, 0, ageInTicks, 0.5F, AnimFunctions.RotAxis.X);
+		AnimFunctions.swing(this.gnomadHat, 0.125F * walkSpeed, 0.05F * globalDegree, false, 1F, 0, ageInTicks, 0.5F, AnimFunctions.RotAxis.Z);
 
-		AnimFunctions.swing(this.gnomadGoldSack, 0.025F * walkSpeed, 0.02F * globalDegree, false, 0.0F, 0, ageInTicks, 0.5F, AnimFunctions.Axis.X);
-		AnimFunctions.swing(this.gnomadGoldSack, 0.025F * walkSpeed, 0.02F * globalDegree, false, 0.0F, 0, ageInTicks, 0.5F, AnimFunctions.Axis.Z);
+		AnimFunctions.swing(this.gnomadGoldSack, 0.025F * walkSpeed, 0.02F * globalDegree, false, 0.0F, 0, ageInTicks, 0.5F, AnimFunctions.RotAxis.X);
+		AnimFunctions.swing(this.gnomadGoldSack, 0.025F * walkSpeed, 0.02F * globalDegree, false, 0.0F, 0, ageInTicks, 0.5F, AnimFunctions.RotAxis.Z);
 
 		float easedHeadShakeIntensity = this.headShakingIntensity * this.headShakingIntensity;
 		float headShakeSpeed = 0.7F * globalSpeed;
@@ -295,11 +295,11 @@ public class GnomadAxemanDynamicModel<T extends GnomadAxemanEntity> extends Enti
 		AnimFunctions.swingLimbs(this.gnomadLeftLeg, this.gnomadRightLeg, walkSpeed, 0.6f * globalDegree, 0.0F, 0.0F, f, f1);
 		AnimFunctions.swingLimbs(this.gnomadRightArm, this.gnomadLeftArm, walkSpeed, 0.6f * globalDegree, 0.0F, 0.0F, f, f1);
 
-		AnimFunctions.swing(this.gnomadRightArm, walkSpeed, 0.06f * globalDegree, false, 0.0F, 0.2F, f, f1, AnimFunctions.Axis.Z);
-		AnimFunctions.swing(this.gnomadLeftArm, walkSpeed, 0.06f * globalDegree, false, 0.0F, -0.2F, f, f1, AnimFunctions.Axis.Z);
+		AnimFunctions.swing(this.gnomadRightArm, walkSpeed, 0.06f * globalDegree, false, 0.0F, 0.2F, f, f1, AnimFunctions.RotAxis.Z);
+		AnimFunctions.swing(this.gnomadLeftArm, walkSpeed, 0.06f * globalDegree, false, 0.0F, -0.2F, f, f1, AnimFunctions.RotAxis.Z);
 
-		AnimFunctions.swing(this.rootJoint, walkSpeed, 0.06f * globalDegree, false, 0.0F, 0.2F, f, f1, AnimFunctions.Axis.X);
-		AnimFunctions.swing(this.rootJoint, 0.5F * walkSpeed, 0.1f * globalDegree, false, 0.0F, 0.0F, f, f1, AnimFunctions.Axis.Y);
+		AnimFunctions.swing(this.rootJoint, walkSpeed, 0.06f * globalDegree, false, 0.0F, 0.2F, f, f1, AnimFunctions.RotAxis.X);
+		AnimFunctions.swing(this.rootJoint, 0.5F * walkSpeed, 0.1f * globalDegree, false, 0.0F, 0.0F, f, f1, AnimFunctions.RotAxis.Y);
 
 		AnimFunctions.bob(this.rootJoint, 2.0F * walkSpeed, 2 * globalHeight, true, f, f1);
 		AnimFunctions.bob(this.gnomadHead, 2.0F * walkSpeed, 0.5F * globalHeight, true, f, f1);

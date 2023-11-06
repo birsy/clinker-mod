@@ -95,9 +95,9 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
         }
 
         if (pLevel.isClientSide) {
-            clientJoint1 = new SalamanderJoint(this, SEGMENT_WIDTHS[0] * 0.5F, 2);
-            clientJoint2 = new SalamanderJoint(this, SEGMENT_WIDTHS[0] * 0.5F, 3);
-            clientSegment = new SalamanderSegment(this, clientJoint1, clientJoint2, 1.0, true);
+//            clientJoint1 = new SalamanderJoint(this, SEGMENT_WIDTHS[0] * 0.5F, 2);
+//            clientJoint2 = new SalamanderJoint(this, SEGMENT_WIDTHS[0] * 0.5F, 3);
+//            clientSegment = new SalamanderSegment(this, clientJoint1, clientJoint2, 1.0, true);
         }
     }
 
@@ -154,13 +154,13 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
 
         this.setControllerPosition(this.headJoint.position);
 
-        if (this.level().isClientSide) {
-            Entity cameraEntity = Minecraft.getInstance().cameraEntity;
-            Vec3 pos = cameraEntity.position().lerp(cameraEntity.getEyePosition(), 0.5F);
-            Vec3 offset = cameraEntity.getViewVector(1.0F).normalize().scale(0.5);
-            clientJoint1.position = pos.add(offset);
-            clientJoint2.position = pos.subtract(offset);
-        }
+//        if (this.level().isClientSide) {
+//            Entity cameraEntity = Minecraft.getInstance().cameraEntity;
+//            Vec3 pos = cameraEntity.position().lerp(cameraEntity.getEyePosition(), 0.5F);
+//            Vec3 offset = cameraEntity.getViewVector(1.0F).normalize().scale(0.5);
+//            clientJoint1.position = pos.add(offset);
+//            clientJoint2.position = pos.subtract(offset);
+//        }
 
         for (SalamanderSegment segment : this.segments) {
             segment.updateLegs();

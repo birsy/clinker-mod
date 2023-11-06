@@ -12,7 +12,10 @@ import net.minecraft.SharedConstants;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.util.Mth;
@@ -26,6 +29,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.chunk.ChunkGeneratorStructureState;
 import net.minecraft.world.level.levelgen.*;
 import net.minecraft.world.level.levelgen.blending.Blender;
 import net.minecraft.world.level.levelgen.structure.StructureSet;
@@ -37,10 +41,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 public class TestChunkGenerator extends ChunkGenerator {
-    public static final Codec<TestChunkGenerator> CODEC = RecordCodecBuilder.create((codec) -> commonCodec(codec).and(codec.group(
-            BiomeSource.CODEC.fieldOf("biome_source").forGetter((generator) -> generator.biomeSource),
-            NoiseGeneratorSettings.CODEC.fieldOf("settings").forGetter((generator) -> generator.settingsHolder)))
-            .apply(codec, codec.stable(TestChunkGenerator::new)));
+    public static final Codec<TestChunkGenerator> CODEC = RecordCodecBuilder.create((codec) ->
+            codec.group(BiomeSource.CODEC.fieldOf("biome_source").forGetter((generator) -> generator.biomeSource),
+                            NoiseGeneratorSettings.CODEC.fieldOf("settings").forGetter((generator) -> generator.settingsHolder))
+                    .apply(codec, codec.stable(TestChunkGenerator::new)));
 
     protected final Holder<NoiseGeneratorSettings> settingsHolder;
     protected final NoiseGeneratorSettings settings;
@@ -58,16 +62,21 @@ public class TestChunkGenerator extends ChunkGenerator {
         return new CachedFastNoise(n);
     });
     private VoronoiGenerator voronoi;
+    private static long seed;
 
-    public TestChunkGenerator(Registry<StructureSet> pStructureSets, BiomeSource pBiomeSource, Holder<NoiseGeneratorSettings> settings) {
-        super(pStructureSets, Optional.empty(), pBiomeSource);
+    public TestChunkGenerator(BiomeSource pBiomeSource, Holder<NoiseGeneratorSettings> settings) {
+        super(pBiomeSource);
         this.settingsHolder = settings;
         this.settings = this.settingsHolder.get();
         this.globalFluidPicker = (a, b, c) -> new Aquifer.FluidStatus(this.settings.seaLevel(), this.settings.defaultFluid());
 
         this.voronoi = new VoronoiGenerator(0);
     }
-
+    @Override
+    public ChunkGeneratorStructureState createState(HolderLookup<StructureSet> pStructureSetLookup, RandomState pRandomState, long pSeed) {
+        seed = pSeed;
+        return super.createState(pStructureSetLookup, pRandomState, pSeed);
+    }
     private void setNoiseSeed(int seed) {
         if (seed != this.noise.getNoise().GetSeed()) {
             this.noise.getNoise().SetSeed(seed);
@@ -83,14 +92,14 @@ public class TestChunkGenerator extends ChunkGenerator {
 
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         Heightmap[] heightmaps = {chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.OCEAN_FLOOR_WG), chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.WORLD_SURFACE_WG)};
-        this.setNoiseSeed((int) random.legacyLevelSeed());
+        this.setNoiseSeed((int) seed);
         this.voronoi.setOffsetAmount(1.3F);
 
         for(int x = 0; x < 16; ++x) {
             for(int z = 0; z < 16; ++z) {
                 for(int y = chunk.getMaxBuildHeight(); y > chunk.getMinBuildHeight(); y--) {
                     pos.set(x, y, z);
-                    BlockState state = getBlockStateAtPos(x + chunk.getPos().getMinBlockX(), y, z + chunk.getPos().getMinBlockZ(), random.legacyLevelSeed());
+                    BlockState state = getBlockStateAtPos(x + chunk.getPos().getMinBlockX(), y, z + chunk.getPos().getMinBlockZ(), seed);
                     chunk.setBlockState(pos, state, false);
 
                     for (Heightmap heightmap : heightmaps) {
@@ -149,7 +158,7 @@ public class TestChunkGenerator extends ChunkGenerator {
         BlockState[] states = new BlockState[chunk.getHeight()];
         int iY = 0;
         for (int y = chunk.getMinBuildHeight(); y < chunk.getMaxBuildHeight(); y++) {
-            states[iY] = getBlockStateAtPos(x, y, z, random.legacyLevelSeed());
+            states[iY] = getBlockStateAtPos(x, y, z, seed);
             iY++;
         }
 
@@ -164,7 +173,7 @@ public class TestChunkGenerator extends ChunkGenerator {
     public void buildSurface(WorldGenRegion genRegion, StructureManager structureManager, RandomState randomState, ChunkAccess chunk) {
         if (!SharedConstants.debugVoidTerrain(chunk.getPos())) {
             WorldGenerationContext worldgenerationcontext = new WorldGenerationContext(this, genRegion);
-            this.buildSurface(chunk, worldgenerationcontext, randomState, structureManager, genRegion.getBiomeManager(), genRegion.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY), Blender.of(genRegion));
+            this.buildSurface(chunk, worldgenerationcontext, randomState, structureManager, genRegion.getBiomeManager(), genRegion.registryAccess().registryOrThrow(Registries.BIOME), Blender.of(genRegion));
         }
     }
     public void buildSurface(ChunkAccess chunk, WorldGenerationContext context, RandomState randomState, StructureManager structure, BiomeManager biomeManager, Registry<Biome> biomes, Blender noiseBlender) {
@@ -189,6 +198,6 @@ public class TestChunkGenerator extends ChunkGenerator {
     }
 
     public static void register() {
-        Registry.register(Registry.CHUNK_GENERATOR, new ResourceLocation(Clinker.MOD_ID, "test_chunk_generator"), CODEC);
+        Registry.register(BuiltInRegistries.CHUNK_GENERATOR, new ResourceLocation(Clinker.MOD_ID, "test_chunk_generator"), CODEC);
     }
 }

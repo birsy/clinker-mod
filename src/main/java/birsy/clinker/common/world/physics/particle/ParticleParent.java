@@ -75,8 +75,8 @@ public interface ParticleParent<P extends CollidingParticle, C extends Constrain
         // calculates the bouyant force in a really jank way
         // takes into account partial submersion... kinda
         Vec3 downPos = particle.position.subtract(0, particle.radius, 0);
-        BlockPos jointPosDown = new BlockPos(particle.position);
-        BlockPos jointPosUp = new BlockPos(particle.position.add(0, particle.radius, 0));
+        BlockPos jointPosDown = BlockPos.containing(particle.position);
+        BlockPos jointPosUp = BlockPos.containing(particle.position.add(0, particle.radius, 0));
 
         double volumeInDown = downPos.y - Math.ceil(downPos.y);
         FluidState stateDown = level.getFluidState(jointPosDown);

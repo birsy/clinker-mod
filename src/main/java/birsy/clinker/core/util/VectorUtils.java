@@ -1,7 +1,9 @@
 package birsy.clinker.core.util;
 
 import net.minecraft.world.phys.Vec3;
+import org.joml.Math;
 import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.joml.Vector3f;
 
 public class VectorUtils {
@@ -41,5 +43,13 @@ public class VectorUtils {
         // Create a vector representing the projection point
         Vector3f projection = lineDirection.mul(projectionLength, new Vector3f()).add(lineStart);
         return projection;
+    }
+
+    public static Vec3 reflect(Vec3 normal, Vec3 vec) {
+        double x = normal.x();
+        double y = normal.y();
+        double z = normal.z();
+        double dot = Math.fma(vec.x, x, Math.fma(vec.y, y, vec.z * z));
+        return new Vec3(vec.x - (dot + dot) * x, vec.y - (dot + dot) * y, vec.z - (dot + dot) * z);
     }
 }

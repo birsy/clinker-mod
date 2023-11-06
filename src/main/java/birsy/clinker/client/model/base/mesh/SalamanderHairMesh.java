@@ -5,13 +5,13 @@ import birsy.clinker.client.model.base.InterpolatedSkeleton;
 import birsy.clinker.client.model.entity.SalamanderSkeletonFactory;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix3f;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
-import com.mojang.math.Vector4f;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 // TODO: add support for arbitrary meshes;
 public class SalamanderHairMesh extends ModelMesh {
@@ -103,30 +103,30 @@ public class SalamanderHairMesh extends ModelMesh {
 
         if (part instanceof SalamanderSkeletonFactory.SalamanderFurBone bone) {
             pPoseStack.pushPose();
-            pPoseStack.mulPose(bone.rot.toMojangQuaternion());
-            matrix4f = pPoseStack.last().pose().copy();
+            pPoseStack.mulPose(bone.rot);
+            matrix4f = new Matrix4f(pPoseStack.last().pose());
             Matrix3f correctNormalMatrix = pPoseStack.last().normal();
             correctNormals.set(renderFace.normal.x(), renderFace.normal.y(), renderFace.normal.z());
-            correctNormals.transform(correctNormalMatrix);
+            correctNormalMatrix.transform(correctNormals);
             pPoseStack.popPose();
 
             brightness = bone.brightness;
         } else {
-            matrix4f = pPoseStack.last().pose().copy();
+            matrix4f = new Matrix4f(pPoseStack.last().pose());
         }
 
         for (int i = 0; i < renderFace.vertices.length; i++) {
             Vector3f vertex = renderFace.vertices[i];
             UV uv = renderFace.uvs[i];
             position.set(vertex.x(), vertex.y(), vertex.z(), 1.0F);
-            position.transform(matrix4f);
+            matrix4f.transform(position);
 
             if (part instanceof SalamanderSkeletonFactory.SalamanderFurBone bone) {
                 normal.set(bone.normal.x(), bone.normal.y(), bone.normal.z());
             } else {
                 normal.set(renderFace.normal.x(), renderFace.normal.y(), renderFace.normal.z());
             }
-            normal.transform(matrix3f);
+            matrix3f.transform(normal);
             if (part instanceof SalamanderSkeletonFactory.SalamanderFurBone bone) {
                 //normal.lerp(correctNormals, 0.1F);
                 //normal.normalize();

@@ -1,25 +1,23 @@
 package birsy.clinker.client.render.particle;
 
-import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.Util;
 import net.minecraft.client.Camera;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.*;
-import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.particle.Particle;
+import net.minecraft.client.particle.ParticleProvider;
+import net.minecraft.client.particle.ParticleRenderType;
+import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,13 +63,13 @@ public class FairyFlyParticle extends Particle {
 
     public void render(VertexConsumer pBuffer, Camera pRenderInfo, float pPartialTicks) {
 
-        Quaternion quaternion;
+        Quaternionf quaternion;
         if (this.roll == 0.0F) {
             quaternion = pRenderInfo.rotation();
         } else {
-            quaternion = new Quaternion(pRenderInfo.rotation());
+            quaternion = new Quaternionf(pRenderInfo.rotation());
             float f3 = Mth.lerp(pPartialTicks, this.oRoll, this.roll);
-            quaternion.mul(Vector3f.ZP.rotation(f3));
+            quaternion.mul(Axis.ZP.rotation(f3));
         }
 
         Vector3f[] verticies1 = new Vector3f[]{new Vector3f(-1.0F, -1.0F, 0.0F), new Vector3f(-1.0F, 1.0F, 0.0F), new Vector3f(1.0F, 1.0F, 0.0F), new Vector3f(1.0F, -1.0F, 0.0F)};
@@ -84,7 +82,7 @@ public class FairyFlyParticle extends Particle {
 
         for(int i = 0; i < 4; ++i) {
             Vector3f vertex = verticies1[i];
-            vertex.transform(quaternion);
+            quaternion.transform(vertex);
             vertex.mul(quadSize);
             vertex.add(x1, y1, z1);
         }
@@ -111,7 +109,7 @@ public class FairyFlyParticle extends Particle {
 
         for(int i = 0; i < 4; ++i) {
             Vector3f vertex = verticies2[i];
-            vertex.transform(quaternion);
+            quaternion.transform(vertex);
             vertex.mul(quadSize);
             vertex.add(x2, y2, z2);
         }

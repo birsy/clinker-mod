@@ -1,17 +1,12 @@
 package birsy.clinker.client.render.world.blockentity;
 
-import birsy.clinker.common.world.block.FermentationBarrelBlock;
-import birsy.clinker.common.world.block.blockentity.FermentationBarrelBlockEntity;
 import birsy.clinker.common.world.block.blockentity.StoveBlockEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
-import net.minecraft.client.model.BookModel;
+import com.mojang.math.Axis;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
@@ -24,8 +19,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.state.properties.ChestType;
-
-import java.util.function.Function;
 
 public class StoveRenderer<T extends StoveBlockEntity> implements BlockEntityRenderer<T> {
     public static final ResourceLocation STOVE = new ResourceLocation(Clinker.MOD_ID, "textures/block/stove.png");
@@ -58,7 +51,7 @@ public class StoveRenderer<T extends StoveBlockEntity> implements BlockEntityRen
     public void render(T pBlockEntity, float pPartialTick, PoseStack pPoseStack, MultiBufferSource pBufferSource, int pPackedLight, int pPackedOverlay) {
         pPoseStack.pushPose();
 
-        pPoseStack.mulPose(Vector3f.ZP.rotation(Mth.PI));
+        pPoseStack.mulPose(Axis.ZP.rotation(Mth.PI));
         pPoseStack.translate(0, -1.5, 0);
         pPoseStack.translate(-0.5, 0.0, 0.5);
 
@@ -74,7 +67,7 @@ public class StoveRenderer<T extends StoveBlockEntity> implements BlockEntityRen
         int light = flames ? LightTexture.pack(16, 16) : pPackedLight;
         pPoseStack.pushPose();
 
-        pPoseStack.mulPose(Vector3f.YP.rotationDegrees(90 * (direction.get2DDataValue() + 2)));
+        pPoseStack.mulPose(Axis.YP.rotationDegrees(90 * (direction.get2DDataValue() + 2)));
         VertexConsumer vertexconsumer;
         if (type == ChestType.SINGLE) {
             this.chimney.chimney.visible = !onlyLip;

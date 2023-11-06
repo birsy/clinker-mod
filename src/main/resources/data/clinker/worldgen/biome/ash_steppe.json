@@ -1,6 +1,7 @@
 {
-  "scale": 0.05,
-  "depth": 2.0,
+  "temperature": 0.8,
+  "downfall": 0.4,
+  "has_precipitation": false,
   "effects": {
     "mood_sound": {
       "sound": "minecraft:ambient.basalt_deltas.mood",
@@ -30,36 +31,8 @@
     "water_color": 6578522,
     "water_fog_color": 723467
   },
-  "surface_builder": "clinker:ash_steppe",
-  "carvers": {
-    "air": []
-  },
-  "features": [
-    [],
-    [],
-    [],
-    [],
-    [],
-    [],
-    [],
-    [],
-    [],
-    []
-  ],
-  "starts": [],
-  "spawners": {
-    "monster": [],
-    "creature": [],
-    "ambient": [],
-    "underground_water_creature": [],
-    "water_creature": [],
-    "water_ambient": [],
-    "misc": []
-  },
+  "spawners": {},
   "spawn_costs": {},
-  "player_spawn_friendly": true,
-  "precipitation": "rain",
-  "temperature": 0.8,
-  "downfall": 0.4,
-  "category": "none"
+  "carvers": {},
+  "features": []
 }

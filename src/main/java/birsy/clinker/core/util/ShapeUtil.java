@@ -7,6 +7,9 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.joml.AxisAngle4d;
+import org.joml.Quaterniond;
+import org.joml.Vector3d;
 
 import java.util.HashMap;
 
@@ -24,9 +27,9 @@ public class ShapeUtil {
 
         double rotation = turns * Mth.HALF_PI;
         shape.forAllBoxes((x1, y1, z1, x2, y2, z2) -> {
-            Quaterniond quaternion = new Quaterniond(AXIS_TO_VECTOR.get(axis), rotation);
-            Vec3 c1 = quaternion.transform(new Vec3(x1, y1, z1).subtract(0.5, 0.5, 0.5));
-            Vec3 c2 = quaternion.transform(new Vec3(x2, y2, z2).subtract(0.5, 0.5, 0.5));
+            Quaterniond quaternion = new Quaterniond(new AxisAngle4d(rotation, JomlConversions.toJOML(AXIS_TO_VECTOR.get(axis))));
+            Vec3 c1 = JomlConversions.toMojang(quaternion.transform(new Vector3d(x1, y1, z1).sub(0.5, 0.5, 0.5)));
+            Vec3 c2 = JomlConversions.toMojang(quaternion.transform(new Vector3d(x2, y2, z2).sub(0.5, 0.5, 0.5)));
             c1 = c1.add(0.5, 0.5, 0.5);
             c2 = c2.add(0.5, 0.5, 0.5);
 

@@ -2,8 +2,9 @@ package birsy.clinker.core.registry;
 
 import birsy.clinker.client.render.particle.*;
 import birsy.clinker.core.Clinker;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.ParticleEngine;
+import com.mojang.serialization.Codec;
+import net.minecraft.core.particles.DustColorTransitionOptions;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
@@ -23,26 +24,36 @@ public class ClinkerParticles
 		PARTICLES.register(FMLJavaModLoadingContext.get().getModEventBus());
 	}
 
-	public static final RegistryObject<SimpleParticleType> LIGHTNING = createParticle("lightning");
-	public static final RegistryObject<SimpleParticleType> RED_LIGHTNING = createParticle("red_lightning");
-	public static final RegistryObject<SimpleParticleType> SNOOZE = createParticle("snooze");
-	public static final RegistryObject<SimpleParticleType> ASH_CLOUD = createParticle("ash_cloud");
-	public static final RegistryObject<SimpleParticleType> MOTH = createParticle("moth");
-	public static final RegistryObject<SimpleParticleType> FAIRY_FLY = createParticle("fairy_fly");
+	public static final RegistryObject<SimpleParticleType> LIGHTNING = createSimpleParticle("lightning");
+	public static final RegistryObject<SimpleParticleType> RED_LIGHTNING = createSimpleParticle("red_lightning");
+	public static final RegistryObject<SimpleParticleType> SNOOZE = createSimpleParticle("snooze");
+	public static final RegistryObject<SimpleParticleType> MOTH = createSimpleParticle("moth");
 
-	public static RegistryObject<SimpleParticleType> createParticle(String name) {
+	public static final RegistryObject<ParticleType<DustColorTransitionOptions>> ORDNANCE_TRAIL = createParticle("ordnance_trail", DustColorTransitionOptions.DESERIALIZER, DustColorTransitionOptions.CODEC);
+	public static final RegistryObject<ParticleType<DustColorTransitionOptions>> ORDNANCE_EXPLOSION = createParticle("ordnance_explosion", DustColorTransitionOptions.DESERIALIZER, DustColorTransitionOptions.CODEC);
+
+	public static RegistryObject<SimpleParticleType> createSimpleParticle(String name) {
 		RegistryObject<SimpleParticleType> particle = PARTICLES.register(name, () -> new SimpleParticleType(false));
+		return particle;
+	}
+
+	public static <I extends ParticleOptions> RegistryObject<ParticleType<I>> createParticle(String name, ParticleOptions.Deserializer<I> pDeserializer, Codec<I> codec) {
+		RegistryObject<ParticleType<I>> particle = PARTICLES.register(name, () -> new ParticleType<I>(false, pDeserializer) {
+			@Override
+			public Codec<I> codec() {
+				return codec;
+			}
+		});
 		return particle;
 	}
 
 	@SubscribeEvent
 	public static void registerParticleFactories(RegisterParticleProvidersEvent event) {
-		event.register(LIGHTNING.get(), LightningParticle.Provider::new);
-		event.register(RED_LIGHTNING.get(), LightningParticle.Provider::new);
-		event.register(SNOOZE.get(), SnoozeParticle.Provider::new);
-		event.register(ASH_CLOUD.get(), AshCloudParticle.Provider::new);
-		event.register(MOTH.get(), MothParticle.Provider::new);
-		event.register(FAIRY_FLY.get(), FairyFlyParticle.Provider::new);
-
+		event.registerSpriteSet(LIGHTNING.get(), LightningParticle.Provider::new);
+		event.registerSpriteSet(RED_LIGHTNING.get(), LightningParticle.Provider::new);
+		event.registerSpriteSet(SNOOZE.get(), SnoozeParticle.Provider::new);
+		event.registerSpriteSet(MOTH.get(), MothParticle.Provider::new);
+		event.registerSpriteSet(ORDNANCE_TRAIL.get(), OrdnanceTrailParticle.Provider::new);
+		event.registerSpriteSet(ORDNANCE_EXPLOSION.get(), OrdnanceExplosionParticle.Provider::new);
 	}
 }

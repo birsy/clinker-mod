@@ -58,7 +58,7 @@ public class SulfricMudBlock extends Block implements SimpleWaterloggedBlock {
         if (pState.getValue(SQUISHED) && !isSaturated(pLevel, pPos)) {
             float ySubtract = pState.getValue(WATERLOGGED) ? 0.8125F : 0.0F;
 
-            if (pLevel.getEntities((Entity) null, new AABB(pPos.above().getX(), pPos.above().getY() - ySubtract, pPos.above().getZ(), pPos.above().getX() + 1, pPos.above().getY() + 0.25 - ySubtract, pPos.above().getZ() + 1), (entity) -> entity.isOnGround()).isEmpty()) {
+            if (pLevel.getEntities((Entity) null, new AABB(pPos.above().getX(), pPos.above().getY() - ySubtract, pPos.above().getZ(), pPos.above().getX() + 1, pPos.above().getY() + 0.25 - ySubtract, pPos.above().getZ() + 1), (entity) -> entity.onGround()).isEmpty()) {
                 if (!(pLevel.getBlockState(pPos.above()).getBlock() instanceof BushBlock)) {
                     pLevel.setBlock(pPos, pState.setValue(SQUISHED, false), 2);
                 }

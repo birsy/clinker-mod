@@ -10,11 +10,15 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.util.ITeleporter;
 
@@ -63,7 +67,7 @@ public class SalamanderBodyEntity extends AbstractSalamanderPartEntity {
         super.tick();
 
         if ((head == null || head.isDeadOrDying()) && !this.isNoAi()) {
-            this.hurt(DamageSource.STARVE, Float.MAX_VALUE);
+            this.hurt(this.damageSources().starve(), Float.MAX_VALUE);
         }
     }
 
@@ -79,12 +83,12 @@ public class SalamanderBodyEntity extends AbstractSalamanderPartEntity {
     @Override
     public boolean isSteppingCarefully() {
         if (ahead != null) {
-            if (!ahead.isOnGround() && this.hasLegs() && this.isOnGround()) {
+            if (!ahead.onGround() && this.hasLegs() && this.onGround()) {
                 return true;
             }
         }
         if (behind != null) {
-            if (!ahead.isOnGround() && this.hasLegs() && this.isOnGround()) {
+            if (!ahead.onGround() && this.hasLegs() && this.onGround()) {
                 return true;
             }
         }
@@ -94,11 +98,11 @@ public class SalamanderBodyEntity extends AbstractSalamanderPartEntity {
 
     @Override
     public void checkDespawn() {
-        if (this.level.getDifficulty() == Difficulty.PEACEFUL && this.shouldDespawnInPeaceful()) {
+        if (this.level().getDifficulty() == Difficulty.PEACEFUL && this.shouldDespawnInPeaceful()) {
             this.despawn();
         } else if (!this.isPersistenceRequired() && !this.requiresCustomPersistence()) {
-            Entity entity = this.level.getNearestPlayer(this, -1.0D);
-            net.minecraftforge.eventbus.api.Event.Result result = net.minecraftforge.event.ForgeEventFactory.canEntityDespawn(this);
+            Entity entity = this.level().getNearestPlayer(this, -1.0D);
+            net.minecraftforge.eventbus.api.Event.Result result = net.minecraftforge.event.ForgeEventFactory.canEntityDespawn(this, (ServerLevelAccessor) this.level());
             if (result == net.minecraftforge.eventbus.api.Event.Result.DENY) {
                 noActionTime = 0;
                 entity = null;
@@ -136,7 +140,7 @@ public class SalamanderBodyEntity extends AbstractSalamanderPartEntity {
 
     public SalamanderHeadEntity turnToHead() {
         //creates a head to replace this entity
-        SalamanderHeadEntity newHead = ClinkerEntities.SALAMANDER_HEAD.get().create(this.level);
+        SalamanderHeadEntity newHead = ClinkerEntities.SALAMANDER_HEAD.get().create(this.level());
 
         //transfers all nbt data from this entity to the head
         //probably a more efficient way to do this but idkkkk

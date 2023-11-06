@@ -203,26 +203,26 @@ public class MudScarabModel<T extends MudScarabEntity> extends EntityModel<T> {
 		 * IDLE ANIMATIONS
 		 */
 		AnimFunctions.look(scarabHead, netHeadYaw, headPitch, 1.0F, 1.0F);
-		AnimFunctions.swing(scarabHead, 0.075f * globalSpeed, 0.02f * globalDegree, false, 1.0F, 0.0F, ageInTicks, 0.5F, AnimFunctions.Axis.X);
-		AnimFunctions.swing(scarabHead, 0.04f * globalSpeed, 0.02f * globalDegree, false, 3.0F, 0.0F, ageInTicks, 0.5F, AnimFunctions.Axis.Y);
-		AnimFunctions.swing(scarabHead, 0.05f * globalSpeed, 0.02f * globalDegree, true, 12.0F, 0.0F, ageInTicks, 0.5F, AnimFunctions.Axis.Z);
+		AnimFunctions.swing(scarabHead, 0.075f * globalSpeed, 0.02f * globalDegree, false, 1.0F, 0.0F, ageInTicks, 0.5F, AnimFunctions.RotAxis.X);
+		AnimFunctions.swing(scarabHead, 0.04f * globalSpeed, 0.02f * globalDegree, false, 3.0F, 0.0F, ageInTicks, 0.5F, AnimFunctions.RotAxis.Y);
+		AnimFunctions.swing(scarabHead, 0.05f * globalSpeed, 0.02f * globalDegree, true, 12.0F, 0.0F, ageInTicks, 0.5F, AnimFunctions.RotAxis.Z);
 
-		AnimFunctions.swing(scarabLeftAntennae, 0.075f * globalSpeed, 0.2f * globalDegree, false, 1.0F, 0.0F, ageInTicks, 0.5F, AnimFunctions.Axis.X);
-		AnimFunctions.swing(scarabRightAntennae, 0.08f * globalSpeed, 0.2f * globalDegree,false, 2.0F, 0.0F, ageInTicks, 0.5F, AnimFunctions.Axis.X);
-		AnimFunctions.swing(scarabLeftAntennae, 0.04f * globalSpeed, 0.2f * globalDegree, false, 3.0F, 0.0F, ageInTicks, 0.5F, AnimFunctions.Axis.Y);
-		AnimFunctions.swing(scarabRightAntennae, 0.055f * globalSpeed, 0.2f * globalDegree, true, 5.0F, 0.0F, ageInTicks, 0.5F, AnimFunctions.Axis.Y);
-		AnimFunctions.swing(scarabLeftAntennae, 0.045f * globalSpeed, 0.2f * globalDegree, false, 7.0F, 0.0F, ageInTicks, 0.5F, AnimFunctions.Axis.Z);
-		AnimFunctions.swing(scarabRightAntennae, 0.05f * globalSpeed, 0.2f * globalDegree, true, 12.0F, 0.0F, ageInTicks, 0.5F, AnimFunctions.Axis.Z);
+		AnimFunctions.swing(scarabLeftAntennae, 0.075f * globalSpeed, 0.2f * globalDegree, false, 1.0F, 0.0F, ageInTicks, 0.5F, AnimFunctions.RotAxis.X);
+		AnimFunctions.swing(scarabRightAntennae, 0.08f * globalSpeed, 0.2f * globalDegree,false, 2.0F, 0.0F, ageInTicks, 0.5F, AnimFunctions.RotAxis.X);
+		AnimFunctions.swing(scarabLeftAntennae, 0.04f * globalSpeed, 0.2f * globalDegree, false, 3.0F, 0.0F, ageInTicks, 0.5F, AnimFunctions.RotAxis.Y);
+		AnimFunctions.swing(scarabRightAntennae, 0.055f * globalSpeed, 0.2f * globalDegree, true, 5.0F, 0.0F, ageInTicks, 0.5F, AnimFunctions.RotAxis.Y);
+		AnimFunctions.swing(scarabLeftAntennae, 0.045f * globalSpeed, 0.2f * globalDegree, false, 7.0F, 0.0F, ageInTicks, 0.5F, AnimFunctions.RotAxis.Z);
+		AnimFunctions.swing(scarabRightAntennae, 0.05f * globalSpeed, 0.2f * globalDegree, true, 12.0F, 0.0F, ageInTicks, 0.5F, AnimFunctions.RotAxis.Z);
 
-		AnimFunctions.swing(scarabLeftJaw, 0.04f * globalSpeed, 0.2f * globalDegree, false, 123.0F, 0.0F, ageInTicks, 0.5F, AnimFunctions.Axis.Y);
-		AnimFunctions.swing(scarabRightJaw, 0.055f * globalSpeed, 0.2f * globalDegree, true, 32.0F, 0.0F, ageInTicks, 0.5F, AnimFunctions.Axis.Y);
+		AnimFunctions.swing(scarabLeftJaw, 0.04f * globalSpeed, 0.2f * globalDegree, false, 123.0F, 0.0F, ageInTicks, 0.5F, AnimFunctions.RotAxis.Y);
+		AnimFunctions.swing(scarabRightJaw, 0.055f * globalSpeed, 0.2f * globalDegree, true, 32.0F, 0.0F, ageInTicks, 0.5F, AnimFunctions.RotAxis.Y);
 
-		AnimFunctions.swing(scarabBody, 0.075f * globalSpeed, 0.02f * globalDegree, false, 5.0F, 0.0F, ageInTicks, 0.5F, AnimFunctions.Axis.X);
-		AnimFunctions.swing(scarabBody, 0.04f * globalSpeed, 0.02f * globalDegree, true, 1.0F, 0.0F, ageInTicks, 0.5F, AnimFunctions.Axis.Y);
-		AnimFunctions.swing(scarabBody, 0.05f * globalSpeed, 0.02f * globalDegree, false, 13.0F, 0.0F, ageInTicks, 0.5F, AnimFunctions.Axis.Z);
+		AnimFunctions.swing(scarabBody, 0.075f * globalSpeed, 0.02f * globalDegree, false, 5.0F, 0.0F, ageInTicks, 0.5F, AnimFunctions.RotAxis.X);
+		AnimFunctions.swing(scarabBody, 0.04f * globalSpeed, 0.02f * globalDegree, true, 1.0F, 0.0F, ageInTicks, 0.5F, AnimFunctions.RotAxis.Y);
+		AnimFunctions.swing(scarabBody, 0.05f * globalSpeed, 0.02f * globalDegree, false, 13.0F, 0.0F, ageInTicks, 0.5F, AnimFunctions.RotAxis.Z);
 
 		AnimFunctions.bob(shellJoint, 0.08f * globalSpeed, 0.3f * globalHeight, false, ageInTicks, 0.5F);
-		AnimFunctions.swing(shellJoint, 0.04f * globalSpeed, 0.06f * globalDegree, false, 5.0F, 0.0F, ageInTicks, 0.5F, AnimFunctions.Axis.Z);
+		AnimFunctions.swing(shellJoint, 0.04f * globalSpeed, 0.06f * globalDegree, false, 5.0F, 0.0F, ageInTicks, 0.5F, AnimFunctions.RotAxis.Z);
 
 
 		/**
@@ -233,44 +233,44 @@ public class MudScarabModel<T extends MudScarabEntity> extends EntityModel<T> {
 		this.bodyJoint.y = this.bodyJoint.y + (1.5F * f1);
 		this.bodyJoint.xRot = this.bodyJoint.xRot - (0.07F * f1);
 
-		AnimFunctions.swing(rootJoint, walkSpeed, 0.02f * globalDegree, false, 0.0F, 0.0F, f, f1, AnimFunctions.Axis.Z);
+		AnimFunctions.swing(rootJoint, walkSpeed, 0.02f * globalDegree, false, 0.0F, 0.0F, f, f1, AnimFunctions.RotAxis.Z);
 		AnimFunctions.bob(rootJoint, 2 * walkSpeed, 0.7f * globalHeight, true, f, f1);
 
-		AnimFunctions.swing(shellJoint, walkSpeed, 0.01f * globalDegree, false, 0.0F, 0.0F, f, f1, AnimFunctions.Axis.Z);
+		AnimFunctions.swing(shellJoint, walkSpeed, 0.01f * globalDegree, false, 0.0F, 0.0F, f, f1, AnimFunctions.RotAxis.Z);
 		AnimFunctions.bob(shellJoint, 2 * walkSpeed, 0.3f * globalHeight, false, f, f1);
 
 		final float shellOffset = 2.0F;
-		AnimFunctions.swing(frontShell, walkSpeed, 0.06f * globalDegree, false, -1 * shellOffset, 0.0F, f, f1, AnimFunctions.Axis.Z);
-		AnimFunctions.swing(middleShell, walkSpeed, 0.03f * globalDegree, false, 0.0F, 0.0F, f, f1, AnimFunctions.Axis.Z);
-		AnimFunctions.swing(backShell, walkSpeed, 0.06f * globalDegree, false, shellOffset, 0.0F, f, f1, AnimFunctions.Axis.Z);
+		AnimFunctions.swing(frontShell, walkSpeed, 0.06f * globalDegree, false, -1 * shellOffset, 0.0F, f, f1, AnimFunctions.RotAxis.Z);
+		AnimFunctions.swing(middleShell, walkSpeed, 0.03f * globalDegree, false, 0.0F, 0.0F, f, f1, AnimFunctions.RotAxis.Z);
+		AnimFunctions.swing(backShell, walkSpeed, 0.06f * globalDegree, false, shellOffset, 0.0F, f, f1, AnimFunctions.RotAxis.Z);
 
-		AnimFunctions.swing(scarabHead, walkSpeed, 0.06f * globalDegree, false, -1 * shellOffset, 0.0F, f, f1, AnimFunctions.Axis.Z);
-
-
-		AnimFunctions.swing(scarabFrontRightUpperLeg, walkSpeed, 0.6f * globalDegree, false, 0.0F, 1.0F, f, f1, AnimFunctions.Axis.Y);
-		AnimFunctions.clampedSwing(scarabFrontRightUpperLeg, walkSpeed, 0.5f * globalDegree, false, (float) Math.PI, 0.0F, f, f1, false, AnimFunctions.Axis.X);
-		AnimFunctions.clampedSwing(scarabFrontRightLowerLeg, walkSpeed, 0.2f * globalDegree, false, (float) Math.PI + 0.7F, -0.3F, f, f1, false, AnimFunctions.Axis.X);
-
-		AnimFunctions.swing(scarabMiddleRightUpperLeg, walkSpeed, 0.6f * globalDegree, true, 0.0F, 0.0F, f, f1, AnimFunctions.Axis.Y);
-		AnimFunctions.clampedSwing(scarabMiddleRightUpperLeg, walkSpeed, 0.5f * globalDegree, false, 0.0F, 0.0F, f, f1, false, AnimFunctions.Axis.X);
-		AnimFunctions.clampedSwing(scarabMiddleRightLowerLeg, walkSpeed, 0.1f * globalDegree, false, 0.0F, 0.0F, f, f1, false, AnimFunctions.Axis.X);
-
-		AnimFunctions.swing(scarabBackRightUpperLeg, walkSpeed, 0.6f * globalDegree, false, 0.0F, -1.0F, f, f1, AnimFunctions.Axis.Y);
-		AnimFunctions.clampedSwing(scarabBackRightUpperLeg, walkSpeed, 0.5f * globalDegree, false, (float) Math.PI - 0.2F, 0.0F, f, f1, false, AnimFunctions.Axis.X);
-		AnimFunctions.clampedSwing(scarabBackRightLowerLeg, walkSpeed, 0.2f * globalDegree, false, (float) Math.PI - 0.2F, 0.0F, f, f1, false, AnimFunctions.Axis.X);
+		AnimFunctions.swing(scarabHead, walkSpeed, 0.06f * globalDegree, false, -1 * shellOffset, 0.0F, f, f1, AnimFunctions.RotAxis.Z);
 
 
-		AnimFunctions.swing(scarabFrontLeftUpperLeg, walkSpeed, 0.6f * globalDegree, false, 0.0F, -1.0F, f, f1, AnimFunctions.Axis.Y);
-		AnimFunctions.clampedSwing(scarabFrontLeftUpperLeg, walkSpeed, 0.5f * globalDegree, false, 0.0F, 0.0F, f, f1, false, AnimFunctions.Axis.X);
-		AnimFunctions.clampedSwing(scarabFrontLeftLowerLeg, walkSpeed, 0.2f * globalDegree, false, -0.7F, -0.3F, f, f1, false, AnimFunctions.Axis.X);
+		AnimFunctions.swing(scarabFrontRightUpperLeg, walkSpeed, 0.6f * globalDegree, false, 0.0F, 1.0F, f, f1, AnimFunctions.RotAxis.Y);
+		AnimFunctions.clampedSwing(scarabFrontRightUpperLeg, walkSpeed, 0.5f * globalDegree, false, (float) Math.PI, 0.0F, f, f1, false, AnimFunctions.RotAxis.X);
+		AnimFunctions.clampedSwing(scarabFrontRightLowerLeg, walkSpeed, 0.2f * globalDegree, false, (float) Math.PI + 0.7F, -0.3F, f, f1, false, AnimFunctions.RotAxis.X);
 
-		AnimFunctions.swing(scarabMiddleLeftUpperLeg, walkSpeed, 0.6f * globalDegree, true, 0.0F, 0.0F, f, f1, AnimFunctions.Axis.Y);
-		AnimFunctions.clampedSwing(scarabMiddleLeftUpperLeg, walkSpeed, 0.5f * globalDegree, false, (float) Math.PI, 0.0F, f, f1, false, AnimFunctions.Axis.X);
-		AnimFunctions.clampedSwing(scarabMiddleLeftLowerLeg, walkSpeed, 0.1f * globalDegree, false, (float) Math.PI, 0.0F, f, f1, false, AnimFunctions.Axis.X);
+		AnimFunctions.swing(scarabMiddleRightUpperLeg, walkSpeed, 0.6f * globalDegree, true, 0.0F, 0.0F, f, f1, AnimFunctions.RotAxis.Y);
+		AnimFunctions.clampedSwing(scarabMiddleRightUpperLeg, walkSpeed, 0.5f * globalDegree, false, 0.0F, 0.0F, f, f1, false, AnimFunctions.RotAxis.X);
+		AnimFunctions.clampedSwing(scarabMiddleRightLowerLeg, walkSpeed, 0.1f * globalDegree, false, 0.0F, 0.0F, f, f1, false, AnimFunctions.RotAxis.X);
 
-		AnimFunctions.swing(scarabBackLeftUpperLeg, walkSpeed, 0.6f * globalDegree, false, 0.0F, 1.0F, f, f1, AnimFunctions.Axis.Y);
-		AnimFunctions.clampedSwing(scarabBackLeftUpperLeg, walkSpeed, 0.5f * globalDegree, false, 0.2F, 0.0F, f, f1, false, AnimFunctions.Axis.X);
-		AnimFunctions.clampedSwing(scarabBackLeftLowerLeg, walkSpeed, 0.2f * globalDegree, false, 0.2F, 0.0F, f, f1, false, AnimFunctions.Axis.X);
+		AnimFunctions.swing(scarabBackRightUpperLeg, walkSpeed, 0.6f * globalDegree, false, 0.0F, -1.0F, f, f1, AnimFunctions.RotAxis.Y);
+		AnimFunctions.clampedSwing(scarabBackRightUpperLeg, walkSpeed, 0.5f * globalDegree, false, (float) Math.PI - 0.2F, 0.0F, f, f1, false, AnimFunctions.RotAxis.X);
+		AnimFunctions.clampedSwing(scarabBackRightLowerLeg, walkSpeed, 0.2f * globalDegree, false, (float) Math.PI - 0.2F, 0.0F, f, f1, false, AnimFunctions.RotAxis.X);
+
+
+		AnimFunctions.swing(scarabFrontLeftUpperLeg, walkSpeed, 0.6f * globalDegree, false, 0.0F, -1.0F, f, f1, AnimFunctions.RotAxis.Y);
+		AnimFunctions.clampedSwing(scarabFrontLeftUpperLeg, walkSpeed, 0.5f * globalDegree, false, 0.0F, 0.0F, f, f1, false, AnimFunctions.RotAxis.X);
+		AnimFunctions.clampedSwing(scarabFrontLeftLowerLeg, walkSpeed, 0.2f * globalDegree, false, -0.7F, -0.3F, f, f1, false, AnimFunctions.RotAxis.X);
+
+		AnimFunctions.swing(scarabMiddleLeftUpperLeg, walkSpeed, 0.6f * globalDegree, true, 0.0F, 0.0F, f, f1, AnimFunctions.RotAxis.Y);
+		AnimFunctions.clampedSwing(scarabMiddleLeftUpperLeg, walkSpeed, 0.5f * globalDegree, false, (float) Math.PI, 0.0F, f, f1, false, AnimFunctions.RotAxis.X);
+		AnimFunctions.clampedSwing(scarabMiddleLeftLowerLeg, walkSpeed, 0.1f * globalDegree, false, (float) Math.PI, 0.0F, f, f1, false, AnimFunctions.RotAxis.X);
+
+		AnimFunctions.swing(scarabBackLeftUpperLeg, walkSpeed, 0.6f * globalDegree, false, 0.0F, 1.0F, f, f1, AnimFunctions.RotAxis.Y);
+		AnimFunctions.clampedSwing(scarabBackLeftUpperLeg, walkSpeed, 0.5f * globalDegree, false, 0.2F, 0.0F, f, f1, false, AnimFunctions.RotAxis.X);
+		AnimFunctions.clampedSwing(scarabBackLeftLowerLeg, walkSpeed, 0.2f * globalDegree, false, 0.2F, 0.0F, f, f1, false, AnimFunctions.RotAxis.X);
 	}
 
 	@Override

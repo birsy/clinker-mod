@@ -264,6 +264,7 @@ public class SalamanderSkeletonFactory implements SkeletonFactory {
 	public InterpolatedSkeleton create() {
 		int segments = entity.segments.size();
 		SalamanderSkeleton skeleton = new SalamanderSkeleton();
+		random.setSeed(entity.getUUID().getMostSignificantBits());
 
 		for (int i = 0; i < entity.segments.size(); i++) {
 			NewSalamanderEntity.SalamanderSegment segment = entity.segments.get(i);

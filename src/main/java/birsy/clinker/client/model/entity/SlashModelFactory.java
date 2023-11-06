@@ -7,6 +7,7 @@ import birsy.clinker.client.model.base.mesh.ModelMesh;
 import birsy.clinker.client.model.base.mesh.StaticMesh;
 import birsy.clinker.client.model.base.AnimationProperties;
 import net.minecraft.util.Mth;
+import org.joml.Quaternionf;
 
 public class SlashModelFactory implements SkeletonFactory {
 	private final ModelMesh[] meshes = new ModelMesh[1];

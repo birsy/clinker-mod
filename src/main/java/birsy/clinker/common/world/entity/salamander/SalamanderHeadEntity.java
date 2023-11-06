@@ -75,10 +75,10 @@ public class SalamanderHeadEntity extends AbstractSalamanderPartEntity {
         int length = behindSegmentsTag.size();
         this.behindSegments = new ArrayList<>();
         for (int i = 0; i < length; i++) {
-            SalamanderBodyEntity segment = ClinkerEntities.SALAMANDER_BODY.get().create(this.level);
+            SalamanderBodyEntity segment = ClinkerEntities.SALAMANDER_BODY.get().create(this.level());
             segment.load(behindSegmentsTag.getCompound("Segment " + i));
             segment.head = this;
-            this.level.addFreshEntity(segment);
+            this.level().addFreshEntity(segment);
 
             getSegmentFromIndex(i - 1).behind = segment;
             segment.ahead = getSegmentFromIndex(i - 1);
@@ -109,11 +109,11 @@ public class SalamanderHeadEntity extends AbstractSalamanderPartEntity {
 
 
     public void split(int segmentIndex) {
-        if (!this.level.isClientSide()) {
+        if (!this.level().isClientSide()) {
             SalamanderBodyEntity frontSegment = (SalamanderBodyEntity) this.getSegmentFromIndex(segmentIndex + 1);
             if (frontSegment != null) {
                 SalamanderHeadEntity newHead = frontSegment.turnToHead();
-                this.level.addFreshEntity(newHead);
+                this.level().addFreshEntity(newHead);
 
                 newHead.behindSegments = this.behindSegments.subList(segmentIndex + 2, this.behindSegments.size());
                 int newIndex = 0;
@@ -180,7 +180,7 @@ public class SalamanderHeadEntity extends AbstractSalamanderPartEntity {
         int tailLength = 1 + pLevel.getRandom().nextInt(2);
         boolean hasLegs = true;
         for (int i = 0; i < salamanderLength; i++) {
-            SalamanderBodyEntity segment = ClinkerEntities.SALAMANDER_BODY.get().create(this.level);
+            SalamanderBodyEntity segment = ClinkerEntities.SALAMANDER_BODY.get().create(this.level());
 
             segment.head = this;
 
@@ -208,11 +208,7 @@ public class SalamanderHeadEntity extends AbstractSalamanderPartEntity {
     }
 
     public boolean hurtFromBody(SalamanderBodyEntity part, int segmentID, DamageSource pSource, float pAmount) {
-        if (!pSource.isFall()) {
-            return super.hurt(DamageSource.STARVE, pAmount);
-        } else {
-            return false;
-        }
+        return false;
     }
 
     @Override

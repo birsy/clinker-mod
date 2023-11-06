@@ -3,17 +3,17 @@ package birsy.clinker.core.util;
 import birsy.clinker.core.Clinker;
 import com.ibm.icu.impl.Pair;
 import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.math.Matrix3f;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
@@ -31,6 +31,25 @@ public class MathUtils {
             min = Math.min(num, min);
         }
         return min;
+    }
+
+    // thanks sebastian lague
+    public static Vec3[] generateSpherePoints(int points) {
+        Vec3[] directions = new Vec3[points];
+        double goldenRatio = (1 + Math.sqrt(5)) / 2;
+        double angleIncrement = Math.PI * 2 * goldenRatio;
+
+        for (int i = 0; i < points; i++) {
+            double t = (float) i / points;
+            double inclination = Math.acos(1 - 2 * t);
+            double azimuth = angleIncrement * i;
+
+            double x = Math.sin(inclination) * Math.cos(azimuth);
+            double y = Math.sin(inclination) * Math.sin(azimuth);
+            double z = Math.cos(inclination);
+            directions[i] = new Vec3(x, y, z);
+        }
+        return directions;
     }
 
     public static Vec3 closestPointOnAABB(Vec3 point, AABB aabb) {
@@ -90,9 +109,9 @@ public class MathUtils {
     }
 
     public static Vec3 convertColorToVec3(int rgbaColor) {
-        int red = NativeImage.getR(rgbaColor);
-        int green = NativeImage.getG(rgbaColor);
-        int blue = NativeImage.getB(rgbaColor);
+        int red = FastColor.ABGR32.red(rgbaColor);
+        int green = FastColor.ABGR32.green(rgbaColor);
+        int blue = FastColor.ABGR32.blue(rgbaColor);
 
         double normalizedRed = red / 255.0;
         double normalizedGreen = green / 255.0;
@@ -113,7 +132,7 @@ public class MathUtils {
     public static double arccos(double pValue) { return (float) ((arcsin(pValue) * -1) + (Math.PI / 2));}
 
     public static BlockPos blockPosFromVec3(Vec3 vector) {
-        return new BlockPos(vector.x(), vector.y(), vector.z());
+        return BlockPos.containing(vector.x(), vector.y(), vector.z());
     }
 
     // Like modulo, but works with negative numbers
@@ -157,10 +176,10 @@ public class MathUtils {
     }
 
     public static Matrix4f matrixFromVectors(Vector3f pX, Vector3f pY, Vector3f pZ) {
-        return new Matrix4f(new float[]{pX.x(), pY.x(), pZ.x(), 0,
+        return new Matrix4f(pX.x(), pY.x(), pZ.x(), 0,
                                         pX.y(), pY.y(), pZ.y(), 0,
                                         pX.z(), pY.z(), pZ.z(), 0,
-                                        0,      0,      0,      1});
+                                        0,      0,      0,      1);
     }
 
 
@@ -178,20 +197,6 @@ public class MathUtils {
         return m;
     }
 
-    public static Vec3 transformInverse(Vec3 vec, Quaternion q) {
-        return transformInverse(vec.x, vec.y, vec.z, q);
-    }
-
-    public static Vec3 transformInverse(double x, double y, double z, Quaternion q) {
-        double n = 1.0 / Math.fma(q.i(), q.i(), Math.fma(q.j(), q.j(), Math.fma(q.k(), q.k(), q.r() * q.r())));
-        double qx = q.i() * n, qy = q.j() * n, qz = q.k() * n, qw = q.r() * n;
-        double xx = qx * qx, yy = qy * qy, zz = qz * qz, ww = qw * qw;
-        double xy = qx * qy, xz = qx * qz, yz = qy * qz, xw = qx * qw;
-        double zw = qz * qw, yw = qy * qw, k = 1 / (xx + yy + zz + ww);
-        return new Vec3(Math.fma((xx - yy - zz + ww) * k, x, Math.fma(2 * (xy + zw) * k, y, (2 * (xz - yw) * k) * z)),
-                Math.fma(2 * (xy - zw) * k, x, Math.fma((yy - xx - zz + ww) * k, y, (2 * (yz + xw) * k) * z)),
-                Math.fma(2 * (xz + yw) * k, x, Math.fma(2 * (yz - xw) * k, y, ((zz - xx - yy + ww) * k) * z)));
-    }
 
     public static Vec3 multiply(Vec3 v, Matrix3f m) {
         double x = v.x()*m.m00 + v.y()*m.m01 + v.z()*m.m02;

@@ -1,5 +1,6 @@
 package birsy.clinker.common.world.entity.gnomad;
 
+import birsy.clinker.common.world.entity.MudScarabEntity;
 import birsy.clinker.common.world.entity.gnomad.GnomadAi.GnomadAxemanAi;
 import birsy.clinker.core.registry.ClinkerItems;
 import birsy.clinker.core.util.MathUtils;
@@ -25,11 +26,18 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.SmoothSwimmingMoveControl;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
+import net.minecraft.world.entity.ai.goal.TemptGoal;
+import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.sensing.Sensor;
 import net.minecraft.world.entity.ai.sensing.SensorType;
 import net.minecraft.world.entity.npc.InventoryCarrier;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 
@@ -103,6 +111,13 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity implements Inventor
         this.inventory.setItem(5, Items.SPLASH_POTION.getDefaultInstance());
         this.inventory.setItem(6, ClinkerItems.GNOMEAT_JERKY.get().getDefaultInstance());
         this.inventory.setItem(7, Items.COOKED_BEEF.getDefaultInstance());
+    }
+
+    protected void registerGoals() {
+        this.goalSelector.addGoal(3, new WaterAvoidingRandomStrollGoal(this, 0.2D, 0.001F));
+        this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));
+        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this)).setAlertOthers());
+        //this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
     }
 
     public void defineSynchedData() {
@@ -185,9 +200,9 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity implements Inventor
         return (Brain<GnomadAxemanEntity>)super.getBrain();
     }
     protected void customServerAiStep() {
-        this.level.getProfiler().push("gnomadBrain");
-        this.getBrain().tick((ServerLevel)this.level, this);
-        this.level.getProfiler().pop();
+        this.level().getProfiler().push("gnomadBrain");
+        this.getBrain().tick((ServerLevel)this.level(), this);
+        this.level().getProfiler().pop();
         GnomadAxemanAi.updateActivity(this);
         super.customServerAiStep();
     }

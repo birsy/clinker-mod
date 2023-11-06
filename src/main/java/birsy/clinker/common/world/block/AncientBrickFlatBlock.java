@@ -6,13 +6,11 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DirectionalBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.level.material.MapColor;
 
 public class AncientBrickFlatBlock extends DirectionalBlock {
 	public AncientBrickFlatBlock() {
-		super(Block.Properties
-				.of(Material.STONE, MaterialColor.SAND)
+		super(Block.Properties.of().mapColor(MapColor.SAND)
 				.requiresCorrectToolForDrops()
 				.strength(25.0F, 1200.0F));
 		this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.UP));

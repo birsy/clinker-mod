@@ -39,7 +39,7 @@ public class MudReedsBlock extends BushBlock implements BonemealableBlock, net.m
         return pState.is(ClinkerBlocks.SHORT_MUD_REEDS.get()) ? SHAPE_SHORT : SHAPE_TALL;
     }
 
-    public boolean isValidBonemealTarget(BlockGetter pLevel, BlockPos pPos, BlockState pState, boolean pIsClient) {
+    public boolean isValidBonemealTarget(LevelReader pLevel, BlockPos pPos, BlockState pState, boolean pIsClient) {
         return true;
     }
 

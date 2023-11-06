@@ -2,6 +2,7 @@ package birsy.clinker.client.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec2;
@@ -41,13 +42,13 @@ public abstract class GuiElementParent extends Screen {
     }
 
     @Override
-    public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+    public void render(GuiGraphics graphics, int pMouseX, int pMouseY, float pPartialTick) {
         updateHoverState(pMouseX, pMouseY, pPartialTick);
 
         for (GuiElement root : this.roots) {
-            root.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
+            root.render(graphics.pose(), pMouseX, pMouseY, pPartialTick);
         }
-        super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
+        super.render(graphics, pMouseX, pMouseY, pPartialTick);
     }
 
     @Override

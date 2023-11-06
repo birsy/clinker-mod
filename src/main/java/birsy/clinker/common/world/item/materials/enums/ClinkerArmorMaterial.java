@@ -3,6 +3,7 @@ package birsy.clinker.common.world.item.materials.enums;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -42,14 +43,13 @@ public enum ClinkerArmorMaterial implements ArmorMaterial
 	}
 
 	@Override
-	public int getDurabilityForSlot(EquipmentSlot slotIn) {
-		return MAX_DAMAGE_ARRAY[slotIn.getIndex()] * this.maxDamamgeFactor;
+	public int getDurabilityForType(ArmorItem.Type pType) {
+		return MAX_DAMAGE_ARRAY[pType.ordinal()] * this.maxDamamgeFactor;
 	}
 
 	@Override
-	public int getDefenseForSlot(EquipmentSlot slotIn) {
-		return this.damageReductionAmountArray[slotIn.getIndex()];
-	}
+	public int getDefenseForType(ArmorItem.Type pType) {
+		return this.damageReductionAmountArray[pType.ordinal()];	}
 
 	@Override
 	public int getEnchantmentValue() {

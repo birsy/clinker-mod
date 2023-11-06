@@ -1,9 +1,7 @@
 package birsy.clinker.common.world.physics.rigidbody;
 
 import birsy.clinker.common.world.physics.rigidbody.colliders.ICollisionShape;
-import birsy.clinker.core.util.AxisAngled;
 import birsy.clinker.core.util.JomlConversions;
-import birsy.clinker.core.util.VectorUtils;
 import net.minecraft.world.phys.Vec3;
 import org.joml.AxisAngle4d;
 import org.joml.Matrix3d;

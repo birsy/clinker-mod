@@ -12,7 +12,10 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.SharedConstants;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.util.Mth;
@@ -26,6 +29,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.chunk.ChunkGeneratorStructureState;
 import net.minecraft.world.level.levelgen.*;
 import net.minecraft.world.level.levelgen.blending.Blender;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
@@ -40,10 +44,10 @@ import java.util.concurrent.Executor;
 
 //TODO: convert density function to NoiseChunk so can do beardifier shit to it. or don't, maybe? more importantly, i'd like to use surface rules because otherwise that shit will be a pain.
 public class OthershoreChunkGenerator extends ChunkGenerator {
-    public static final Codec<OthershoreChunkGenerator> CODEC = RecordCodecBuilder.create((codec) -> commonCodec(codec).and(codec.group(
-            BiomeSource.CODEC.fieldOf("biome_source").forGetter((generator) -> generator.biomeSource),
-            NoiseGeneratorSettings.CODEC.fieldOf("settings").forGetter((generator) -> generator.settingsHolder)))
-            .apply(codec, codec.stable(OthershoreChunkGenerator::new)));
+    public static final Codec<OthershoreChunkGenerator> CODEC = RecordCodecBuilder.create((codec) ->
+            codec.group(BiomeSource.CODEC.fieldOf("biome_source").forGetter((generator) -> generator.biomeSource),
+                            NoiseGeneratorSettings.CODEC.fieldOf("settings").forGetter((generator) -> generator.settingsHolder))
+                    .apply(codec, codec.stable(OthershoreChunkGenerator::new)));
 
     protected final Holder<NoiseGeneratorSettings> settingsHolder;
     protected final NoiseGeneratorSettings settings;
@@ -52,6 +56,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
     private final Aquifer.FluidPicker globalFluidPicker;
     static int horizontalSamplePoints = (int) (16 * 0.45F);
     static int verticalSamplePoints = (int) (384 * 0.3F);
+    private static long seed;
 
     double[][][] terrainShapeSamplePoints;
     Vec3[][][] terrainDerivativeSamplePoints;
@@ -60,8 +65,8 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
     double[][][] caveShapeSamplePoints;
     Vec3[][][] caveDerivativeSamplePoints;
 
-    public OthershoreChunkGenerator(Registry<StructureSet> pStructureSets, BiomeSource pBiomeSource, Holder<NoiseGeneratorSettings> settings) {
-        super(pStructureSets, Optional.empty(), pBiomeSource);
+    public OthershoreChunkGenerator(BiomeSource pBiomeSource, Holder<NoiseGeneratorSettings> settings) {
+        super(pBiomeSource);
         this.settingsHolder = settings;
         this.settings = this.settingsHolder.get();
         this.sampler = new OthershoreNoiseSampler(0);
@@ -71,6 +76,12 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         this.duneSamplePoints = null;
     }
 
+    @Override
+    public ChunkGeneratorStructureState createState(HolderLookup<StructureSet> pStructureSetLookup, RandomState pRandomState, long pSeed) {
+        seed = pSeed;
+        return super.createState(pStructureSetLookup, pRandomState, pSeed);
+    }
+    
     protected Codec<? extends ChunkGenerator> codec() {
         return CODEC;
     }
@@ -78,7 +89,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
     public void buildSurface(WorldGenRegion genRegion, StructureManager structureManager, RandomState randomState, ChunkAccess chunk) {
         if (!SharedConstants.debugVoidTerrain(chunk.getPos())) {
             WorldGenerationContext worldgenerationcontext = new WorldGenerationContext(this, genRegion);
-            this.buildSurface(chunk, worldgenerationcontext, randomState, structureManager, genRegion.getBiomeManager(), genRegion.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY), Blender.of(genRegion));
+            this.buildSurface(chunk, worldgenerationcontext, randomState, structureManager, genRegion.getBiomeManager(), genRegion.registryAccess().registryOrThrow(Registries.BIOME), Blender.of(genRegion));
         }
     }
 
@@ -108,14 +119,14 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         Heightmap[] heightmaps = {chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.OCEAN_FLOOR_WG), chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.WORLD_SURFACE_WG)};
 
         this.beardifier = Beardifier.forStructuresInChunk(structureManager, chunk.getPos());
-        this.terrainShapeSamplePoints = fillSampleArray(chunk, (x, y, z, seed) -> sampleTerrainShapeNoise(x, y, z, seed), random.legacyLevelSeed());
+        this.terrainShapeSamplePoints = fillSampleArray(chunk, (x, y, z, seed) -> sampleTerrainShapeNoise(x, y, z, seed), seed);
         this.terrainDerivativeSamplePoints = fillDerivativeArray(this.terrainShapeSamplePoints, 16.0 / horizontalSamplePoints, 384 / verticalSamplePoints);
 
         for(int x = 0; x < 16; ++x) {
             for(int z = 0; z < 16; ++z) {
                 for(int y = chunk.getMaxBuildHeight(); y > chunk.getMinBuildHeight(); y--) {
                     pos.set(x, y, z);
-                    BlockState state = getBlockStateAtPos(x + chunk.getPos().getMinBlockX(), y, z + chunk.getPos().getMinBlockZ(), random.legacyLevelSeed());
+                    BlockState state = getBlockStateAtPos(x + chunk.getPos().getMinBlockX(), y, z + chunk.getPos().getMinBlockZ(), seed);
 
                     chunk.setBlockState(pos, state, false);
                     for (int i = 0; i < heightmaps.length; i++) {
@@ -401,6 +412,6 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
     }
 
     public static void register() {
-        Registry.register(Registry.CHUNK_GENERATOR, new ResourceLocation(Clinker.MOD_ID, "othershore_generator"), CODEC);
+        Registry.register(BuiltInRegistries.CHUNK_GENERATOR, new ResourceLocation(Clinker.MOD_ID, "othershore_generator"), CODEC);
     }
 }

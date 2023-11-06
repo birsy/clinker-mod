@@ -1,6 +1,8 @@
 package birsy.clinker.client.model.base;
 
 import birsy.clinker.client.model.base.mesh.ModelMesh;
+import birsy.clinker.client.render.DebugRenderUtil;
+import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 

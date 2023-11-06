@@ -106,7 +106,7 @@ public abstract class AbstractGnomadEntity extends Monster implements IVelocityT
         private int ticksExisted = 0;
 
         public GnomadSquad(long squadFactionID, E squadLeader) {
-            this(squadFactionID, squadLeader.level);
+            this(squadFactionID, squadLeader.level());
             squadLeader.isSquadLeader = true;
             this.squadMembers.add(squadLeader);
             this.squadLeader = squadLeader;

@@ -4,8 +4,7 @@ import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.core.util.noise.FastNoiseLite;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
@@ -25,6 +24,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.joml.Matrix4f;
 
 @OnlyIn(Dist.CLIENT)
 public class MothParticle extends Particle {
@@ -138,9 +138,9 @@ public class MothParticle extends Particle {
     }
 
     protected int getLightColor(float pPartialTick) {
-        BlockPos blockpos = new BlockPos(x, y, z);
+        BlockPos blockpos = BlockPos.containing(x, y, z);
         if (!this.flying) {
-            blockpos = blockpos.offset(this.attachmentDirection.getNormal().getX() * 0.5, this.attachmentDirection.getNormal().getY() * 0.5, this.attachmentDirection.getNormal().getZ() * 0.5);
+            blockpos = blockpos.offset((int) (this.attachmentDirection.getNormal().getX() * 0.5), (int) (this.attachmentDirection.getNormal().getY() * 0.5), (int) (this.attachmentDirection.getNormal().getZ() * 0.5));
         }
 
         return this.level.hasChunkAt(blockpos) ? LevelRenderer.getLightColor(this.level, blockpos) : 0;
@@ -158,8 +158,8 @@ public class MothParticle extends Particle {
         float flap = this.getFlap(pPartialTicks) * 2.0F;
 
         if (this.flying) {
-            posestack.mulPose(Vector3f.YP.rotation((float) Mth.atan2(heading.x(), heading.z()) + Mth.PI));
-            posestack.mulPose(Vector3f.XP.rotation((float) heading.y() * 2));
+            posestack.mulPose(Axis.YP.rotation((float) Mth.atan2(heading.x(), heading.z()) + Mth.PI));
+            posestack.mulPose(Axis.XP.rotation((float) heading.y() * 2));
         } else {
             posestack.mulPose(this.attachmentDirection.getRotation());
             flap *= flap;
@@ -167,7 +167,7 @@ public class MothParticle extends Particle {
             flap = -flap;
             float tilt = ((seed * 2.0f) - 1.0f) * 0.2F;
             if (this.attachmentDirection == Direction.UP || this.attachmentDirection == Direction.DOWN) tilt = seed * 2 * Mth.PI;
-            posestack.mulPose(Vector3f.YP.rotation(tilt));
+            posestack.mulPose(Axis.YP.rotation(tilt));
         }
         float totalLife = (this.age + pPartialTicks) / this.lifetime;
         float scale = Mth.clamp(MathUtils.mapRange(0.95F, 1.0F, 1, 0, totalLife), 0, 1);
@@ -179,12 +179,12 @@ public class MothParticle extends Particle {
         float halfU = (sprite.getU0() + sprite.getU1()) * 0.5F;
 
         posestack.pushPose();
-        posestack.mulPose(Vector3f.ZP.rotation(-flap));
+        posestack.mulPose(Axis.ZP.rotation(-flap));
         matrix = posestack.last().pose();
         drawDoubleSidedQuad(pBuffer, matrix, mothRadius, mothRadius, 0, -mothRadius, sprite.getU0(), sprite.getV0(), halfU, sprite.getV1(), packedLight);
         posestack.popPose();
         posestack.pushPose();
-        posestack.mulPose(Vector3f.ZP.rotation(flap));
+        posestack.mulPose(Axis.ZP.rotation(flap));
         matrix = posestack.last().pose();
         drawDoubleSidedQuad(pBuffer, matrix,0, mothRadius, -mothRadius, -mothRadius, halfU, sprite.getV0(), sprite.getU1(), sprite.getV1(), packedLight);
         posestack.popPose();

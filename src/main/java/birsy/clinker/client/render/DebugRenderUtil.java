@@ -2,14 +2,15 @@ package birsy.clinker.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix3f;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 public class DebugRenderUtil {
     public static void renderCube(PoseStack pPoseStack, VertexConsumer pConsumer, float pRed, float pGreen, float pBlue, float pAlpha) {
@@ -62,8 +63,8 @@ public class DebugRenderUtil {
         for (int i = 0; i < 3; i++) {
             pPoseStack.pushPose();
             switch (i) {
-                case 1: pPoseStack.mulPose(Vector3f.YP.rotationDegrees(90)); break;
-                case 2: pPoseStack.mulPose(Vector3f.XP.rotationDegrees(90)); break;
+                case 1: pPoseStack.mulPose(Axis.YP.rotationDegrees(90)); break;
+                case 2: pPoseStack.mulPose(Axis.XP.rotationDegrees(90)); break;
             }
             Matrix4f matrix4f = pPoseStack.last().pose();
             Matrix3f matrix3f = pPoseStack.last().normal();
@@ -91,7 +92,7 @@ public class DebugRenderUtil {
         Minecraft mc = Minecraft.getInstance();
         Camera pRenderInfo = mc.gameRenderer.getMainCamera();
 
-        Quaternion rotation = pRenderInfo.rotation();
+        Quaternionf rotation = pRenderInfo.rotation();
         pPoseStack.pushPose();
         pPoseStack.translate(x, y, z);
         pPoseStack.mulPose(rotation);

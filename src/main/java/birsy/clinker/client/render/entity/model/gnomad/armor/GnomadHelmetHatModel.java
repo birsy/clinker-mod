@@ -25,8 +25,8 @@ public class GnomadHelmetHatModel<T extends GnomadAxemanDynamicModel, E extends 
         this.gnomadHat.resetPose();
         model.gnomadHead.getGlobalTransForm(pPoseStack);
         float ageInTicks = (entity.tickCount + partialTick) * 0.1F;
-        AnimFunctions.swing(this.gnomadHat, 1.6F, 0.0625F, false, 1F, 0, ageInTicks, 0.5F, AnimFunctions.Axis.X);
-        AnimFunctions.swing(this.gnomadHat, 1.6F, 0.0625F, false, 1F, 0, ageInTicks, 0.5F, AnimFunctions.Axis.Z);
+        AnimFunctions.swing(this.gnomadHat, 1.6F, 0.0625F, false, 1F, 0, ageInTicks, 0.5F, AnimFunctions.RotAxis.X);
+        AnimFunctions.swing(this.gnomadHat, 1.6F, 0.0625F, false, 1F, 0, ageInTicks, 0.5F, AnimFunctions.RotAxis.Z);
         this.gnomadHat.render(pPoseStack, pBuffer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
     }
 }

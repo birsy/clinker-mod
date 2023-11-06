@@ -64,7 +64,7 @@ public class Hex
     {
         final double x = hexToBlockX(q, size);
         final double z = hexToBlockZ(q, r, size);
-        return new BlockPos(Math.round(x), 0, Math.round(z));
+        return new BlockPos((int) Math.round(x), 0, (int) Math.round(z));
     }
 
     /**

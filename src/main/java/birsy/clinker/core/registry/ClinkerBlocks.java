@@ -10,14 +10,15 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.level.block.state.properties.BlockSetType;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 import javax.annotation.Nullable;
+import java.util.HashMap;
 import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
@@ -25,7 +26,7 @@ public class ClinkerBlocks
 {
 	public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, Clinker.MOD_ID);
 	public static final DeferredRegister<Item> BLOCK_ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Clinker.MOD_ID);
-	
+
 	public static void init()
 	{
 		BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
@@ -34,206 +35,204 @@ public class ClinkerBlocks
 	
 	// Blocks
 	//Alchemy
-	public static final RegistryObject<Block> FERMENTATION_BARREL = createBlock("fermentation_barrel", FermentationBarrelBlock::new, Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> COUNTER = createBlock("counter", () -> new CounterBlock(BlockBehaviour.Properties.of(Material.WOOD, MaterialColor.COLOR_LIGHT_GRAY).strength(1.0f, 2.0f).sound(SoundType.WOOD)), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> FERMENTATION_BARREL = createBlock("fermentation_barrel", FermentationBarrelBlock::new);
+	public static final RegistryObject<Block> COUNTER = createBlock("counter", () -> new CounterBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GRAY).strength(1.0f, 2.0f).sound(SoundType.WOOD)));
 
-	public static final RegistryObject<Block> BLANK_SARCOPHAGUS = createBlock("blank_sarcophagus", () -> new SarcophagusBlock(getBrimstoneProperties().noOcclusion()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> STOVE = createBlock("stove", () -> new StoveControllerBlock(BlockBehaviour.Properties.copy(Blocks.BRICKS).sound(SoundType.NETHER_BRICKS)), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> STOVE_DUMMY = createBlock("stove_dummy", () -> new StoveBlock(BlockBehaviour.Properties.copy(Blocks.BRICKS).sound(SoundType.NETHER_BRICKS)), null);
-	public static final RegistryObject<Block> STOVE_CHIMNEY = createBlock("stove_chimney", () -> new StoveChimneyBlock(BlockBehaviour.Properties.copy(Blocks.BRICKS).sound(SoundType.NETHER_BRICKS).noOcclusion()), null);
+	public static final RegistryObject<Block> BLANK_SARCOPHAGUS = createBlock("blank_sarcophagus", () -> new SarcophagusBlock(getBrimstoneProperties().noOcclusion()));
+	public static final RegistryObject<Block> STOVE = createBlock("stove", () -> new StoveControllerBlock(BlockBehaviour.Properties.copy(Blocks.BRICKS).sound(SoundType.NETHER_BRICKS)));
+	public static final RegistryObject<Block> STOVE_DUMMY = createBlock("stove_dummy", () -> new StoveBlock(BlockBehaviour.Properties.copy(Blocks.BRICKS).sound(SoundType.NETHER_BRICKS)));
+	public static final RegistryObject<Block> STOVE_CHIMNEY = createBlock("stove_chimney", () -> new StoveChimneyBlock(BlockBehaviour.Properties.copy(Blocks.BRICKS).sound(SoundType.NETHER_BRICKS).noOcclusion()));
 
 	//Material Blocks
-	public static final RegistryObject<Block> LEAD_BLOCK = createBlock("lead_block", () -> new Block(BlockBehaviour.Properties.of(Material.METAL, MaterialColor.COLOR_LIGHT_GRAY).strength(5.0f, 6.0f).sound(SoundType.NETHERITE_BLOCK)), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> RAW_LEAD_BLOCK = createBlock("raw_lead_block", () -> new Block(BlockBehaviour.Properties.of(Material.STONE, MaterialColor.COLOR_LIGHT_GRAY).strength(2.5f, 3.0f).sound(SoundType.ANCIENT_DEBRIS)), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> LEAD_BLOCK = createBlock("lead_block", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GRAY).strength(5.0f, 6.0f).sound(SoundType.NETHERITE_BLOCK)));
+	public static final RegistryObject<Block> RAW_LEAD_BLOCK = createBlock("raw_lead_block", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GRAY).strength(2.5f, 3.0f).sound(SoundType.ANCIENT_DEBRIS)));
 	
 	//Soils
-	public static final RegistryObject<Block> ASH = createBlock("ash", () -> new AshBlock(Block.Properties.of(Material.SNOW, MaterialColor.COLOR_GRAY).strength(0.5F).sound(SoundType.SNOW)), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> ASH_LAYER = createBlock("ash_layers", AshLayerBlock::new, Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> ASH = createBlock("ash", () -> new AshBlock(Block.Properties.of().mapColor(MapColor.COLOR_GRAY).strength(0.5F).sound(SoundType.SNOW)));
+	public static final RegistryObject<Block> ASH_LAYER = createBlock("ash_layers", AshLayerBlock::new);
 
-	public static final RegistryObject<Block> ASHEN_REGOLITH = createBlock("ashen_regolith", () -> new MudBlock(Block.Properties.of(Material.DIRT, MaterialColor.COLOR_GRAY).strength(0.5F).sound(SoundType.NYLIUM)), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> ASHEN_REGOLITH = createBlock("ashen_regolith", () -> new MudBlock(Block.Properties.of().mapColor(MapColor.COLOR_GRAY).strength(0.5F).sound(SoundType.NYLIUM)));
 
-	public static final RegistryObject<Block> MUD = createBlock("mud", () -> new SulfricMudBlock(Block.Properties.of(Material.DIRT, MaterialColor.TERRACOTTA_BROWN).strength(0.5F).sound(SoundType.WET_GRASS)), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> MUD = createBlock("mud", () -> new SulfricMudBlock(Block.Properties.of().mapColor(MapColor.TERRACOTTA_BROWN).strength(0.5F).sound(SoundType.WET_GRASS)));
 
 	//Brimstone
 	public static BlockBehaviour.Properties getBrimstoneProperties() {
-		return BlockBehaviour.Properties.of(Material.STONE, MaterialColor.TERRACOTTA_BROWN)
+		return BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BROWN)
 				  .strength(2.75F, 75.0F)
 				  .sound(SoundType.DRIPSTONE_BLOCK);
 	}
 	
-	public static final RegistryObject<Block> BRIMSTONE = createBlock("brimstone", () -> new Block(getBrimstoneProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> BRIMSTONE_SLAB = createBlock("brimstone_slab", () -> new SlabBlock(getBrimstoneProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> BRIMSTONE_STAIRS = createBlock("brimstone_stairs", () -> new StairBlock(() -> BRIMSTONE.get().defaultBlockState(), getBrimstoneProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> BRIMSTONE_WALL = createBlock("brimstone_wall", () -> new WallBlock(getBrimstoneProperties()), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> BRIMSTONE = createBlock("brimstone", () -> new Block(getBrimstoneProperties()));
+	public static final RegistryObject<Block> BRIMSTONE_SLAB = createBlock("brimstone_slab", () -> new SlabBlock(getBrimstoneProperties()));
+	public static final RegistryObject<Block> BRIMSTONE_STAIRS = createBlock("brimstone_stairs", () -> new StairBlock(() -> BRIMSTONE.get().defaultBlockState(), getBrimstoneProperties()));
+	public static final RegistryObject<Block> BRIMSTONE_WALL = createBlock("brimstone_wall", () -> new WallBlock(getBrimstoneProperties()));
 	
-	public static final RegistryObject<Block> BRIMSTONE_PILLAR = createBlock("brimstone_pillar", () -> new RotatedPillarBlock(getBrimstoneProperties()), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> BRIMSTONE_PILLAR = createBlock("brimstone_pillar", () -> new RotatedPillarBlock(getBrimstoneProperties()));
 	
-	public static final RegistryObject<Block> COBBLED_BRIMSTONE = createBlock("cobbled_brimstone", () -> new Block(getBrimstoneProperties().sound(SoundType.GILDED_BLACKSTONE)), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> COBBLED_BRIMSTONE_SLAB = createBlock("cobbled_brimstone_slab", () -> new SlabBlock(getBrimstoneProperties().sound(SoundType.GILDED_BLACKSTONE)), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> COBBLED_BRIMSTONE_STAIRS = createBlock("cobbled_brimstone_stairs", () -> new StairBlock(() -> COBBLED_BRIMSTONE.get().defaultBlockState(), getBrimstoneProperties().sound(SoundType.GILDED_BLACKSTONE)), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> COBBLED_BRIMSTONE_WALL = createBlock("cobbled_brimstone_wall", () -> new WallBlock(getBrimstoneProperties().sound(SoundType.GILDED_BLACKSTONE)), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> COBBLED_BRIMSTONE = createBlock("cobbled_brimstone", () -> new Block(getBrimstoneProperties().sound(SoundType.GILDED_BLACKSTONE)));
+	public static final RegistryObject<Block> COBBLED_BRIMSTONE_SLAB = createBlock("cobbled_brimstone_slab", () -> new SlabBlock(getBrimstoneProperties().sound(SoundType.GILDED_BLACKSTONE)));
+	public static final RegistryObject<Block> COBBLED_BRIMSTONE_STAIRS = createBlock("cobbled_brimstone_stairs", () -> new StairBlock(() -> COBBLED_BRIMSTONE.get().defaultBlockState(), getBrimstoneProperties().sound(SoundType.GILDED_BLACKSTONE)));
+	public static final RegistryObject<Block> COBBLED_BRIMSTONE_WALL = createBlock("cobbled_brimstone_wall", () -> new WallBlock(getBrimstoneProperties().sound(SoundType.GILDED_BLACKSTONE)));
 	
-	public static final RegistryObject<Block> POLISHED_BRIMSTONE = createBlock("polished_brimstone", () -> new Block(getBrimstoneProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> POLISHED_BRIMSTONE_SLAB = createBlock("polished_brimstone_slab", () -> new SlabBlock(getBrimstoneProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> POLISHED_BRIMSTONE_STAIRS = createBlock("polished_brimstone_stairs", () -> new StairBlock(() -> POLISHED_BRIMSTONE.get().defaultBlockState(), getBrimstoneProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> POLISHED_BRIMSTONE_WALL = createBlock("polished_brimstone_wall", () -> new WallBlock(getBrimstoneProperties()), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> POLISHED_BRIMSTONE = createBlock("polished_brimstone", () -> new Block(getBrimstoneProperties()));
+	public static final RegistryObject<Block> POLISHED_BRIMSTONE_SLAB = createBlock("polished_brimstone_slab", () -> new SlabBlock(getBrimstoneProperties()));
+	public static final RegistryObject<Block> POLISHED_BRIMSTONE_STAIRS = createBlock("polished_brimstone_stairs", () -> new StairBlock(() -> POLISHED_BRIMSTONE.get().defaultBlockState(), getBrimstoneProperties()));
+	public static final RegistryObject<Block> POLISHED_BRIMSTONE_WALL = createBlock("polished_brimstone_wall", () -> new WallBlock(getBrimstoneProperties()));
 	
-	public static final RegistryObject<Block> BRIMSTONE_BRICKS = createBlock("brimstone_bricks", () -> new Block(getBrimstoneProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> BRIMSTONE_BRICKS_SLAB = createBlock("brimstone_bricks_slab", () -> new SlabBlock(getBrimstoneProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> BRIMSTONE_BRICKS_STAIRS = createBlock("brimstone_bricks_stairs", () -> new StairBlock(() -> BRIMSTONE_BRICKS.get().defaultBlockState(), getBrimstoneProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> BRIMSTONE_BRICKS_WALL = createBlock("brimstone_bricks_wall", () -> new WallBlock(getBrimstoneProperties()), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> BRIMSTONE_BRICKS = createBlock("brimstone_bricks", () -> new Block(getBrimstoneProperties()));
+	public static final RegistryObject<Block> BRIMSTONE_BRICKS_SLAB = createBlock("brimstone_bricks_slab", () -> new SlabBlock(getBrimstoneProperties()));
+	public static final RegistryObject<Block> BRIMSTONE_BRICKS_STAIRS = createBlock("brimstone_bricks_stairs", () -> new StairBlock(() -> BRIMSTONE_BRICKS.get().defaultBlockState(), getBrimstoneProperties()));
+	public static final RegistryObject<Block> BRIMSTONE_BRICKS_WALL = createBlock("brimstone_bricks_wall", () -> new WallBlock(getBrimstoneProperties()));
 
-	public static final RegistryObject<Block> SMOOTH_BRIMSTONE = createBlock("smooth_brimstone", () -> new Block(getBrimstoneProperties()), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> SMOOTH_BRIMSTONE = createBlock("smooth_brimstone", () -> new Block(getBrimstoneProperties()));
 
 
 	//Calamine
 	public static BlockBehaviour.Properties getCalamineProperties() {
-		return BlockBehaviour.Properties.of(Material.STONE, MaterialColor.TERRACOTTA_LIGHT_BLUE)
+		return BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_LIGHT_BLUE)
 				.strength(1.5F, 3.0F)
 				.sound(SoundType.CALCITE);
 	}
 
-	public static final RegistryObject<Block> CALAMINE = createBlock("calamine", () -> new Block(getCalamineProperties()), Clinker.CLINKER_BLOCKS);
-	//public static final RegistryObject<Block> CALAMINE_SLAB = createBlock("calamine_slab", () -> new SlabBlock(getCalamineProperties()), Clinker.CLINKER_BLOCKS);
-	//public static final RegistryObject<Block> CALAMINE_STAIRS = createBlock("calamine_stairs", () -> new StairBlock(() -> CALAMINE.get().defaultBlockState(), getCalamineProperties()), Clinker.CLINKER_BLOCKS);
-	//public static final RegistryObject<Block> CALAMINE_WALL = createBlock("calamine_wall", () -> new WallBlock(getCalamineProperties()), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> CALAMINE = createBlock("calamine", () -> new Block(getCalamineProperties()));
+	//public static final RegistryObject<Block> CALAMINE_SLAB = createBlock("calamine_slab", () -> new SlabBlock(getCalamineProperties()));
+	//public static final RegistryObject<Block> CALAMINE_STAIRS = createBlock("calamine_stairs", () -> new StairBlock(() -> CALAMINE.get().defaultBlockState(), getCalamineProperties()));
+	//public static final RegistryObject<Block> CALAMINE_WALL = createBlock("calamine_wall", () -> new WallBlock(getCalamineProperties()));
 
-	public static final RegistryObject<Block> POLISHED_CALAMINE = createBlock("polished_calamine", () -> new Block(getCalamineProperties()), Clinker.CLINKER_BLOCKS);
-	//public static final RegistryObject<Block> POLISHED_CALAMINE_SLAB = createBlock("polished_calamine_slab", () -> new SlabBlock(getCalamineProperties()), Clinker.CLINKER_BLOCKS);
-	//public static final RegistryObject<Block> POLISHED_CALAMINE_STAIRS = createBlock("polished_calamine_stairs", () -> new StairBlock(() -> POLISHED_CALAMINE.get().defaultBlockState(), getCalamineProperties()), Clinker.CLINKER_BLOCKS);
-	//public static final RegistryObject<Block> POLISHED_CALAMINE_WALL = createBlock("polished_calamine_wall", () -> new WallBlock(getCalamineProperties()), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> POLISHED_CALAMINE = createBlock("polished_calamine", () -> new Block(getCalamineProperties()));
+	//public static final RegistryObject<Block> POLISHED_CALAMINE_SLAB = createBlock("polished_calamine_slab", () -> new SlabBlock(getCalamineProperties()));
+	//public static final RegistryObject<Block> POLISHED_CALAMINE_STAIRS = createBlock("polished_calamine_stairs", () -> new StairBlock(() -> POLISHED_CALAMINE.get().defaultBlockState(), getCalamineProperties()));
+	//public static final RegistryObject<Block> POLISHED_CALAMINE_WALL = createBlock("polished_calamine_wall", () -> new WallBlock(getCalamineProperties()));
 
-	public static final RegistryObject<Block> CALAMINE_BRICKS = createBlock("calamine_bricks", () -> new Block(getCalamineProperties()), Clinker.CLINKER_BLOCKS);
-	//public static final RegistryObject<Block> CALAMINE_BRICKS_SLAB = createBlock("calamine_bricks_slab", () -> new SlabBlock(getCalamineProperties()), Clinker.CLINKER_BLOCKS);
-	//public static final RegistryObject<Block> CALAMINE_BRICKS_STAIRS = createBlock("calamine_bricks_stairs", () -> new StairBlock(() -> CALAMINE_BRICKS.get().defaultBlockState(), getCalamineProperties()), Clinker.CLINKER_BLOCKS);
-	//public static final RegistryObject<Block> CALAMINE_BRICKS_WALL = createBlock("calamine_bricks_wall", () -> new WallBlock(getCalamineProperties()), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> CALAMINE_BRICKS = createBlock("calamine_bricks", () -> new Block(getCalamineProperties()));
+	//public static final RegistryObject<Block> CALAMINE_BRICKS_SLAB = createBlock("calamine_bricks_slab", () -> new SlabBlock(getCalamineProperties()));
+	//public static final RegistryObject<Block> CALAMINE_BRICKS_STAIRS = createBlock("calamine_bricks_stairs", () -> new StairBlock(() -> CALAMINE_BRICKS.get().defaultBlockState(), getCalamineProperties()));
+	//public static final RegistryObject<Block> CALAMINE_BRICKS_WALL = createBlock("calamine_bricks_wall", () -> new WallBlock(getCalamineProperties()));
 
 	//Capstone
 	public static BlockBehaviour.Properties getCapstoneProperties() {
-		return BlockBehaviour.Properties.of(Material.STONE, MaterialColor.TERRACOTTA_LIGHT_GRAY)
+		return BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_LIGHT_GRAY)
 				.strength(1.5F, 3.0F)
 				.sound(SoundType.NETHER_BRICKS);
 	}
 
-	public static final RegistryObject<Block> CAPSTONE = createBlock("capstone", () -> new Block(getCapstoneProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> CAPSTONE_SLAB = createBlock("capstone_slab", () -> new SlabBlock(getCapstoneProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> CAPSTONE_STAIRS = createBlock("capstone_stairs", () -> new StairBlock(() -> CAPSTONE.get().defaultBlockState(), getCapstoneProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> CAPSTONE_WALL = createBlock("capstone_wall", () -> new WallBlock(getCapstoneProperties()), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> CAPSTONE = createBlock("capstone", () -> new Block(getCapstoneProperties()));
+	public static final RegistryObject<Block> CAPSTONE_SLAB = createBlock("capstone_slab", () -> new SlabBlock(getCapstoneProperties()));
+	public static final RegistryObject<Block> CAPSTONE_STAIRS = createBlock("capstone_stairs", () -> new StairBlock(() -> CAPSTONE.get().defaultBlockState(), getCapstoneProperties()));
+	public static final RegistryObject<Block> CAPSTONE_WALL = createBlock("capstone_wall", () -> new WallBlock(getCapstoneProperties()));
 
-	public static final RegistryObject<Block> POLISHED_CAPSTONE = createBlock("polished_capstone", () -> new Block(getCapstoneProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> POLISHED_CAPSTONE_SLAB = createBlock("polished_capstone_slab", () -> new SlabBlock(getCapstoneProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> POLISHED_CAPSTONE_STAIRS = createBlock("polished_capstone_stairs", () -> new StairBlock(() -> POLISHED_CAPSTONE.get().defaultBlockState(), getCapstoneProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> POLISHED_CAPSTONE_WALL = createBlock("polished_capstone_wall", () -> new WallBlock(getCapstoneProperties()), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> POLISHED_CAPSTONE = createBlock("polished_capstone", () -> new Block(getCapstoneProperties()));
+	public static final RegistryObject<Block> POLISHED_CAPSTONE_SLAB = createBlock("polished_capstone_slab", () -> new SlabBlock(getCapstoneProperties()));
+	public static final RegistryObject<Block> POLISHED_CAPSTONE_STAIRS = createBlock("polished_capstone_stairs", () -> new StairBlock(() -> POLISHED_CAPSTONE.get().defaultBlockState(), getCapstoneProperties()));
+	public static final RegistryObject<Block> POLISHED_CAPSTONE_WALL = createBlock("polished_capstone_wall", () -> new WallBlock(getCapstoneProperties()));
 
-	public static final RegistryObject<Block> CAPSTONE_BRICKS = createBlock("capstone_bricks", () -> new Block(getCapstoneProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> CAPSTONE_BRICKS_SLAB = createBlock("capstone_bricks_slab", () -> new SlabBlock(getCapstoneProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> CAPSTONE_BRICKS_STAIRS = createBlock("capstone_bricks_stairs", () -> new StairBlock(() -> CAPSTONE_BRICKS.get().defaultBlockState(), getCapstoneProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> CAPSTONE_BRICKS_WALL = createBlock("capstone_bricks_wall", () -> new WallBlock(getCapstoneProperties()), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> CAPSTONE_BRICKS = createBlock("capstone_bricks", () -> new Block(getCapstoneProperties()));
+	public static final RegistryObject<Block> CAPSTONE_BRICKS_SLAB = createBlock("capstone_bricks_slab", () -> new SlabBlock(getCapstoneProperties()));
+	public static final RegistryObject<Block> CAPSTONE_BRICKS_STAIRS = createBlock("capstone_bricks_stairs", () -> new StairBlock(() -> CAPSTONE_BRICKS.get().defaultBlockState(), getCapstoneProperties()));
+	public static final RegistryObject<Block> CAPSTONE_BRICKS_WALL = createBlock("capstone_bricks_wall", () -> new WallBlock(getCapstoneProperties()));
 
 	//Sulfur
-	public static final RegistryObject<Block> SULFUR_CRYSTAL_BLOCK = createBlock("sulfur_crystal_block", () -> new Block(BlockBehaviour.Properties.of(Material.STONE, MaterialColor.GOLD)
+	public static final RegistryObject<Block> SULFUR_CRYSTAL_BLOCK = createBlock("sulfur_crystal_block", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.GOLD)
 			.strength(1.5F, 6.0F)
-			.sound(SoundType.AMETHYST_CLUSTER)), Clinker.CLINKER_BLOCKS);
+			.sound(SoundType.AMETHYST_CLUSTER)));
 
-	public static final RegistryObject<Block> SULFUR_ROCK_BLOCK = createBlock("sulfur_rock_block", () -> new Block(BlockBehaviour.Properties.of(Material.STONE, MaterialColor.GOLD)
+	public static final RegistryObject<Block> SULFUR_ROCK_BLOCK = createBlock("sulfur_rock_block", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.GOLD)
 			.strength(1.5F, 6.0F)
-			.sound(SoundType.GILDED_BLACKSTONE)), Clinker.CLINKER_BLOCKS);
+			.sound(SoundType.GILDED_BLACKSTONE)));
 
 	//Shale
 	public static BlockBehaviour.Properties getShaleProperties() {
-		return BlockBehaviour.Properties.of(Material.STONE, MaterialColor.TERRACOTTA_GRAY)
+		return BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_GRAY)
 				  .strength(2.75F, 10.0F)
 				  .sound(SoundType.ANCIENT_DEBRIS);
 	}
 	
-	public static final RegistryObject<Block> SHALE = createBlock("shale", () -> new RotatedPillarBlock(getShaleProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> SHALE_PILLAR = createBlock("shale_pillar", () -> new RotatedPillarBlock(getShaleProperties()), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> SHALE = createBlock("shale", () -> new RotatedPillarBlock(getShaleProperties()));
+	public static final RegistryObject<Block> SHALE_PILLAR = createBlock("shale_pillar", () -> new RotatedPillarBlock(getShaleProperties()));
 
-	public static final RegistryObject<Block> SMOOTH_SHALE = createBlock("smooth_shale", () -> new Block(getShaleProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> SMOOTH_SHALE_SLAB = createBlock("smooth_shale_slab", () -> new SlabBlock(getShaleProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> SMOOTH_SHALE_STAIRS = createBlock("smooth_shale_stairs", () -> new StairBlock(() -> SMOOTH_SHALE.get().defaultBlockState(), getShaleProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> SMOOTH_SHALE_WALL = createBlock("smooth_shale_wall", () -> new WallBlock(getShaleProperties()), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> SMOOTH_SHALE = createBlock("smooth_shale", () -> new Block(getShaleProperties()));
+	public static final RegistryObject<Block> SMOOTH_SHALE_SLAB = createBlock("smooth_shale_slab", () -> new SlabBlock(getShaleProperties()));
+	public static final RegistryObject<Block> SMOOTH_SHALE_STAIRS = createBlock("smooth_shale_stairs", () -> new StairBlock(() -> SMOOTH_SHALE.get().defaultBlockState(), getShaleProperties()));
+	public static final RegistryObject<Block> SMOOTH_SHALE_WALL = createBlock("smooth_shale_wall", () -> new WallBlock(getShaleProperties()));
 	
-	public static final RegistryObject<Block> POLISHED_SHALE = createBlock("polished_shale", () -> new Block(getShaleProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> POLISHED_SHALE_SLAB = createBlock("polished_shale_slab", () -> new SlabBlock(getShaleProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> POLISHED_SHALE_STAIRS = createBlock("polished_shale_stairs", () -> new StairBlock(() -> SMOOTH_SHALE.get().defaultBlockState(), getShaleProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> POLISHED_SHALE_WALL = createBlock("polished_shale_wall", () -> new WallBlock(getShaleProperties()), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> POLISHED_SHALE = createBlock("polished_shale", () -> new Block(getShaleProperties()));
+	public static final RegistryObject<Block> POLISHED_SHALE_SLAB = createBlock("polished_shale_slab", () -> new SlabBlock(getShaleProperties()));
+	public static final RegistryObject<Block> POLISHED_SHALE_STAIRS = createBlock("polished_shale_stairs", () -> new StairBlock(() -> SMOOTH_SHALE.get().defaultBlockState(), getShaleProperties()));
+	public static final RegistryObject<Block> POLISHED_SHALE_WALL = createBlock("polished_shale_wall", () -> new WallBlock(getShaleProperties()));
 	
-	public static final RegistryObject<Block> SHALE_BRICKS = createBlock("shale_bricks", () -> new Block(getShaleProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> SHALE_BRICKS_SLAB = createBlock("shale_bricks_slab", () -> new SlabBlock(getShaleProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> SHALE_BRICKS_STAIRS = createBlock("shale_bricks_stairs", () -> new StairBlock(() -> SMOOTH_SHALE.get().defaultBlockState(), getShaleProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> SHALE_BRICKS_WALL = createBlock("shale_bricks_wall", () -> new WallBlock(getShaleProperties()), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> SHALE_BRICKS = createBlock("shale_bricks", () -> new Block(getShaleProperties()));
+	public static final RegistryObject<Block> SHALE_BRICKS_SLAB = createBlock("shale_bricks_slab", () -> new SlabBlock(getShaleProperties()));
+	public static final RegistryObject<Block> SHALE_BRICKS_STAIRS = createBlock("shale_bricks_stairs", () -> new StairBlock(() -> SMOOTH_SHALE.get().defaultBlockState(), getShaleProperties()));
+	public static final RegistryObject<Block> SHALE_BRICKS_WALL = createBlock("shale_bricks_wall", () -> new WallBlock(getShaleProperties()));
 	
-	public static final RegistryObject<Block> SMALL_SHALE_BRICKS = createBlock("small_shale_bricks", () -> new Block(getShaleProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> SMALL_SHALE_BRICKS_SLAB = createBlock("small_shale_bricks_slab", () -> new SlabBlock(getShaleProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> SMALL_SHALE_BRICKS_STAIRS = createBlock("small_shale_bricks_stairs", () -> new StairBlock(() -> SMOOTH_SHALE.get().defaultBlockState(), getShaleProperties()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> SMALL_SHALE_BRICKS_FENCE = createBlock("small_shale_bricks_fence", () -> new FenceBlock(getShaleProperties()), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> SMALL_SHALE_BRICKS = createBlock("small_shale_bricks", () -> new Block(getShaleProperties()));
+	public static final RegistryObject<Block> SMALL_SHALE_BRICKS_SLAB = createBlock("small_shale_bricks_slab", () -> new SlabBlock(getShaleProperties()));
+	public static final RegistryObject<Block> SMALL_SHALE_BRICKS_STAIRS = createBlock("small_shale_bricks_stairs", () -> new StairBlock(() -> SMOOTH_SHALE.get().defaultBlockState(), getShaleProperties()));
+	public static final RegistryObject<Block> SMALL_SHALE_BRICKS_FENCE = createBlock("small_shale_bricks_fence", () -> new FenceBlock(getShaleProperties()));
 	
 	
 	//Ancient Bricks
-	public static final RegistryObject<Block> ANCIENT_BRICKS = createBlock("ancient_bricks", () -> new Block(BlockBehaviour.Properties.of(Material.STONE, MaterialColor.SAND).requiresCorrectToolForDrops().strength(25.0F, 1200.0F)), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> ANCIENT_BRICK_SLAB = createBlock("ancient_brick_slab", () -> new SlabBlock(BlockBehaviour.Properties.copy(ANCIENT_BRICKS.get())), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> ANCIENT_BRICK_STAIRS = createBlock("ancient_brick_stairs", () -> new StairBlock(() -> ClinkerBlocks.ANCIENT_BRICKS.get().defaultBlockState(), BlockBehaviour.Properties.copy(ANCIENT_BRICKS.get())), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> ANCIENT_SMOOTH_BRICK = createBlock("ancient_smooth_brick", () -> new Block(BlockBehaviour.Properties.copy(ANCIENT_BRICKS.get())), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> ANCIENT_STONE = createBlock("ancient_stone", () -> new Block(BlockBehaviour.Properties.copy(ANCIENT_BRICKS.get())), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> ANCIENT_BRICK_FLAT = createBlock("ancient_brick_flat", AncientBrickFlatBlock::new, Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> ANCIENT_RUNE = createBlock("ancient_rune", AncientBrickRunesBlock::new, Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> ANCIENT_BRICKS = createBlock("ancient_bricks", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.SAND).requiresCorrectToolForDrops().strength(25.0F, 1200.0F)));
+	public static final RegistryObject<Block> ANCIENT_BRICK_SLAB = createBlock("ancient_brick_slab", () -> new SlabBlock(BlockBehaviour.Properties.copy(ANCIENT_BRICKS.get())));
+	public static final RegistryObject<Block> ANCIENT_BRICK_STAIRS = createBlock("ancient_brick_stairs", () -> new StairBlock(() -> ClinkerBlocks.ANCIENT_BRICKS.get().defaultBlockState(), BlockBehaviour.Properties.copy(ANCIENT_BRICKS.get())));
+	public static final RegistryObject<Block> ANCIENT_SMOOTH_BRICK = createBlock("ancient_smooth_brick", () -> new Block(BlockBehaviour.Properties.copy(ANCIENT_BRICKS.get())));
+	public static final RegistryObject<Block> ANCIENT_STONE = createBlock("ancient_stone", () -> new Block(BlockBehaviour.Properties.copy(ANCIENT_BRICKS.get())));
+	public static final RegistryObject<Block> ANCIENT_BRICK_FLAT = createBlock("ancient_brick_flat", AncientBrickFlatBlock::new);
+	public static final RegistryObject<Block> ANCIENT_RUNE = createBlock("ancient_rune", AncientBrickRunesBlock::new);
 
 	
 	//Unsmeltable Ores
-	public static final RegistryObject<Block> OVERWORLD_LEAD_ORE = createBlock("overworld_lead_ore", () -> new OreClinkerBlock(3.0F, 6.0F, 2, 1, SoundType.STONE), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> NETHER_LEAD_ORE = createBlock("nether_lead_ore", () -> new OreClinkerBlock(3.0F, 3.0F, 2, 2, SoundType.NETHER_ORE), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> OVERWORLD_LEAD_ORE = createBlock("overworld_lead_ore", () -> new OreClinkerBlock(3.0F, 6.0F, 2, 1, SoundType.STONE));
+	public static final RegistryObject<Block> NETHER_LEAD_ORE = createBlock("nether_lead_ore", () -> new OreClinkerBlock(3.0F, 3.0F, 2, 2, SoundType.NETHER_ORE));
 	
 	
 	//Metal Ores
-	public static final RegistryObject<Block> LEAD_ORE = createBlock("lead_ore", () -> new Block(getBrimstoneProperties()), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> LEAD_ORE = createBlock("lead_ore", () -> new Block(getBrimstoneProperties()));
 	
 	
 	//Wood Types
-	public static BlockBehaviour.Properties getOthershoreWoodProperties(MaterialColor colorIn) {
-		return BlockBehaviour.Properties.of(Material.WOOD, colorIn)
+	public static BlockBehaviour.Properties getOthershoreWoodProperties(MapColor colorIn) {
+		return BlockBehaviour.Properties.of().mapColor(colorIn)
 				.strength(2.0F, 3.0F)
 				.sound(SoundType.WOOD);
 	}
 	
-	public static final RegistryObject<Block> LOCUST_LOG = createBlock("locust_log", () -> new RotatedPillarBlock(BlockBehaviour.Properties.of(Material.WOOD, (state) -> state.getValue(RotatedPillarBlock.AXIS) == Direction.Axis.Y ? MaterialColor.TERRACOTTA_GREEN : MaterialColor.STONE).strength(2.0F).sound(SoundType.STEM)), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> TRIMMED_LOCUST_LOG = createBlock("trimmed_locust_log", () -> new RotatedPillarBlock(BlockBehaviour.Properties.of(Material.WOOD, (state) -> state.getValue(RotatedPillarBlock.AXIS) == Direction.Axis.Y ? MaterialColor.TERRACOTTA_GREEN : MaterialColor.STONE).strength(2.0F).sound(SoundType.STEM)), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> LOCUST_LOG = createBlock("locust_log", () -> new RotatedPillarBlock(BlockBehaviour.Properties.of().mapColor((state) -> state.getValue(RotatedPillarBlock.AXIS) == Direction.Axis.Y ? MapColor.TERRACOTTA_GREEN : MapColor.STONE).strength(2.0F).sound(SoundType.STEM)));
+	public static final RegistryObject<Block> TRIMMED_LOCUST_LOG = createBlock("trimmed_locust_log", () -> new RotatedPillarBlock(BlockBehaviour.Properties.of().mapColor((state) -> state.getValue(RotatedPillarBlock.AXIS) == Direction.Axis.Y ? MapColor.TERRACOTTA_GREEN : MapColor.STONE).strength(2.0F).sound(SoundType.STEM)));
 	public static final RegistryObject<Block> STRIPPED_LOCUST_LOG = createBlock("stripped_locust_log", 
-			() -> new RotatedPillarBlock(BlockBehaviour.Properties.of(Material.WOOD, (state) -> state.getValue(RotatedPillarBlock.AXIS) == Direction.Axis.Y ? MaterialColor.TERRACOTTA_GREEN : MaterialColor.STONE).strength(2.0F).sound(SoundType.WOOD)), Clinker.CLINKER_BLOCKS);
+			() -> new RotatedPillarBlock(BlockBehaviour.Properties.of().mapColor((state) -> state.getValue(RotatedPillarBlock.AXIS) == Direction.Axis.Y ? MapColor.TERRACOTTA_GREEN : MapColor.STONE).strength(2.0F).sound(SoundType.WOOD)));
 	public static final RegistryObject<Block> LOCUST_LEAVES = createBlock("locust_leaves", 
-			() -> new LocustFlowersBlock(BlockBehaviour.Properties.of(Material.LEAVES, MaterialColor.TERRACOTTA_ORANGE).strength(0.2F).randomTicks().sound(SoundType.AZALEA_LEAVES).noOcclusion()), Clinker.CLINKER_BLOCKS);
+			() -> new LocustFlowersBlock(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_ORANGE).strength(0.2F).randomTicks().sound(SoundType.AZALEA_LEAVES).noOcclusion()));
 
-	public static final RegistryObject<Block> LOCUST_PLANKS = createBlock("locust_planks", () -> new Block(getOthershoreWoodProperties(MaterialColor.TERRACOTTA_GREEN)), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> LOCUST_STAIRS = createBlock("locust_stairs", () -> new StairBlock(() -> ClinkerBlocks.LOCUST_PLANKS.get().defaultBlockState(), getOthershoreWoodProperties(MaterialColor.TERRACOTTA_GREEN)), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> LOCUST_SLAB = createBlock("locust_slab", () -> new SlabBlock(getOthershoreWoodProperties(MaterialColor.TERRACOTTA_GREEN)), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> LOCUST_PLANKS = createBlock("locust_planks", () -> new Block(getOthershoreWoodProperties(MapColor.TERRACOTTA_GREEN)));
+	public static final RegistryObject<Block> LOCUST_STAIRS = createBlock("locust_stairs", () -> new StairBlock(() -> ClinkerBlocks.LOCUST_PLANKS.get().defaultBlockState(), getOthershoreWoodProperties(MapColor.TERRACOTTA_GREEN)));
+	public static final RegistryObject<Block> LOCUST_SLAB = createBlock("locust_slab", () -> new SlabBlock(getOthershoreWoodProperties(MapColor.TERRACOTTA_GREEN)));
 	
-	public static final RegistryObject<Block> LOCUST_FENCE = createBlock("locust_fence", () -> new FenceBlock(getOthershoreWoodProperties(MaterialColor.TERRACOTTA_GREEN)), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> LOCUST_FENCE_GATE = createBlock("locust_fence_gate", () -> new FenceGateBlock(getOthershoreWoodProperties(MaterialColor.TERRACOTTA_GREEN)), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> LOCUST_DOOR = createBlock("locust_door", () -> new DoorBlock(BlockBehaviour.Properties.of(Material.WOOD, MaterialColor.WOOD).strength(2.0F, 3.0F).sound(SoundType.WOOD).noOcclusion()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> LOCUST_TRAPDOOR = createBlock("locust_trapdoor", () -> new TrapDoorBlock(getOthershoreWoodProperties(MaterialColor.TERRACOTTA_GREEN)), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> LOCUST_BUTTON = createBlock("locust_button", () -> new WoodButtonBlock(getOthershoreWoodProperties(MaterialColor.TERRACOTTA_GREEN)), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> LOCUST_PRESSURE_PLATE = createBlock("locust_pressure_plate", () -> new PressurePlateBlock(PressurePlateBlock.Sensitivity.MOBS, getOthershoreWoodProperties(MaterialColor.TERRACOTTA_GREEN)), Clinker.CLINKER_BLOCKS);
+	//public static final RegistryObject<Block> LOCUST_FENCE = createBlock("locust_fence", () -> new FenceBlock(getOthershoreWoodProperties(MapColor.TERRACOTTA_GREEN)));
+	//public static final RegistryObject<Block> LOCUST_FENCE_GATE = createBlock("locust_fence_gate", () -> new FenceGateBlock(getOthershoreWoodProperties(MapColor.TERRACOTTA_GREEN)));
+	//public static final RegistryObject<Block> LOCUST_DOOR = createBlock("locust_door", () -> new DoorBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(2.0F, 3.0F).sound(SoundType.WOOD).noOcclusion(), BlockSetType.CRIMSON));
+	//public static final RegistryObject<Block> LOCUST_TRAPDOOR = createBlock("locust_trapdoor", () -> new TrapDoorBlock(getOthershoreWoodProperties(MapColor.TERRACOTTA_GREEN)));
+	//public static final RegistryObject<Block> LOCUST_BUTTON = createBlock("locust_button", () -> new ButtonBlock(getOthershoreWoodProperties(MapColor.TERRACOTTA_GREEN)));
+	//public static final RegistryObject<Block> LOCUST_PRESSURE_PLATE = createBlock("locust_pressure_plate", () -> new PressurePlateBlock(PressurePlateBlock.Sensitivity.MOBS, getOthershoreWoodProperties(MapColor.TERRACOTTA_GREEN)));
 
-	public static final RegistryObject<Block> SWAMP_ASPEN_LOG = createBlock("swamp_aspen_log", () -> new SwampAspenLogBlock(BlockBehaviour.Properties.of(Material.WOOD, (state) -> state.getValue(RotatedPillarBlock.AXIS) == Direction.Axis.Y ? MaterialColor.WOOD : MaterialColor.COLOR_LIGHT_GRAY).strength(2.0F).sound(SoundType.STEM).noOcclusion()), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> STRIPPED_SWAMP_ASPEN_LOG = createBlock("stripped_swamp_aspen_log", () -> new SwampAspenLogBlock(BlockBehaviour.Properties.of(Material.WOOD, MaterialColor.WOOD).strength(2.0F).sound(SoundType.STEM).noOcclusion()), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> SWAMP_ASPEN_LOG = createBlock("swamp_aspen_log", () -> new SwampAspenLogBlock(BlockBehaviour.Properties.of().mapColor((state) -> state.getValue(RotatedPillarBlock.AXIS) == Direction.Axis.Y ? MapColor.WOOD : MapColor.COLOR_LIGHT_GRAY).strength(2.0F).sound(SoundType.STEM).noOcclusion()));
+	public static final RegistryObject<Block> STRIPPED_SWAMP_ASPEN_LOG = createBlock("stripped_swamp_aspen_log", () -> new SwampAspenLogBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(2.0F).sound(SoundType.STEM).noOcclusion()));
 
 	//Plants
-	public static final RegistryObject<Block> TALL_MUD_REEDS = createBlock("tall_mud_reeds", () -> new DoubleMudReedsBlock(BlockBehaviour.Properties.of(Material.REPLACEABLE_PLANT).noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS)), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> SHORT_MUD_REEDS = createBlock("short_mud_reeds", () -> new MudReedsBlock(BlockBehaviour.Properties.of(Material.REPLACEABLE_PLANT).noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS)), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> MUD_REEDS = createBlock("mud_reeds", () -> new MudReedsBlock(BlockBehaviour.Properties.of(Material.REPLACEABLE_PLANT).noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS)), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> TALL_MUD_REEDS = createBlock("tall_mud_reeds", () -> new DoubleMudReedsBlock(BlockBehaviour.Properties.of().noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS)));
+	public static final RegistryObject<Block> SHORT_MUD_REEDS = createBlock("short_mud_reeds", () -> new MudReedsBlock(BlockBehaviour.Properties.of().noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS)));
+	public static final RegistryObject<Block> MUD_REEDS = createBlock("mud_reeds", () -> new MudReedsBlock(BlockBehaviour.Properties.of().noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS)));
 
-	public static final RegistryObject<Block> CAVE_FIG_STEM = createBlock("cave_fig_stem", () -> new HugeMushroomBlock(BlockBehaviour.Properties.of(Material.WOOD, MaterialColor.COLOR_GRAY).sound(SoundType.CALCITE)), Clinker.CLINKER_BLOCKS);
-	public static final RegistryObject<Block> CAVE_FIG_ROOTS = createBlock("cave_fig_roots", () -> new CaveFigRootsBlock(BlockBehaviour.Properties.of(Material.WOOD, MaterialColor.COLOR_GRAY).noOcclusion().sound(SoundType.CALCITE)), Clinker.CLINKER_BLOCKS);
+	public static final RegistryObject<Block> CAVE_FIG_STEM = createBlock("cave_fig_stem", () -> new HugeMushroomBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY).sound(SoundType.CALCITE)));
+	public static final RegistryObject<Block> CAVE_FIG_ROOTS = createBlock("cave_fig_roots", () -> new CaveFigRootsBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY).noOcclusion().sound(SoundType.CALCITE)));
 
-	public static final RegistryObject<Block> FAIRY_FRUIT_BLOCK = createBlock("fairy_fruit_block", () -> new FairyFruitBlock(BlockBehaviour.Properties.of(Material.REPLACEABLE_PLANT).noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS).lightLevel((state) -> 10)), null);
+	public static final RegistryObject<Block> FAIRY_FRUIT_BLOCK = createBlock("fairy_fruit_block", () -> new FairyFruitBlock(BlockBehaviour.Properties.of().noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS).lightLevel((state) -> 10)));
 
 	//Special
 
-	public static RegistryObject<Block> createBlock(String name, final Supplier<? extends Block> supplier, @Nullable CreativeModeTab group) {
+	public static RegistryObject<Block> createBlock(String name, final Supplier<? extends Block> supplier) {
 		RegistryObject<Block> block = BLOCKS.register(name, supplier);
-		if (group != null) {
-			BLOCK_ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties().tab(group)));
-		}
+		BLOCK_ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties()));
 		return block;
 	}
 }

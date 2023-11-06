@@ -3,9 +3,6 @@ package birsy.clinker.client.render.world.blockentity;
 import birsy.clinker.common.world.block.blockentity.SarcophagusBlockEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
-import com.mojang.math.Vector4f;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
@@ -15,6 +12,9 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 public class SarcophagusInnardsRenderer<T extends SarcophagusBlockEntity> implements BlockEntityRenderer<T> {
     public static final ResourceLocation TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/block/sarcophagus/sarcophagus_innards.png");
@@ -143,7 +143,7 @@ public class SarcophagusInnardsRenderer<T extends SarcophagusBlockEntity> implem
             Vertex vertex = verticies[i];
 
             Vector4f pos = new Vector4f(vertex.position().x(), vertex.position().y(), vertex.position().z(), 1.0F);
-            pos.transform(matrix);
+            matrix.transform(pos);
            // normal.transform(matrix);
 
             Vector3f color = vertex.color();

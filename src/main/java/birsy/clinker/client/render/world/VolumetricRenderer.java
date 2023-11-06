@@ -6,8 +6,7 @@ import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
@@ -21,6 +20,8 @@ import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -81,15 +82,16 @@ public class VolumetricRenderer {
                 float f2 = Mth.lerp(partialTick, player.oBob, player.bob);
                 cameraPos = cameraPos.add(Mth.sin(f1 * (float)Math.PI) * f2 * 0.5F, (double)(-Math.abs(Mth.cos(f1 * (float)Math.PI) * f2)), 0.0D);
 
-                Quaternion bobXRotation = Vector3f.XP.rotationDegrees(Math.abs(Mth.cos(f1 * (float)Math.PI - 0.2F) * f2) *- 5.0F);
-                Quaternion bobZRotation = Vector3f.ZP.rotationDegrees(Mth.sin(f1 * (float)Math.PI) * f2 * -3.0F);
+                Quaternionf bobXRotation = Axis.XP.rotationDegrees(Math.abs(Mth.cos(f1 * (float)Math.PI - 0.2F) * f2) *- 5.0F);
+                Quaternionf bobZRotation = Axis.ZP.rotationDegrees(Mth.sin(f1 * (float)Math.PI) * f2 * -3.0F);
 
-                cameraLook.transform(bobXRotation);
-                cameraLook.transform(bobZRotation);
-                cameraUp.transform(bobXRotation);
-                cameraUp.transform(bobZRotation);
-                cameraLeft.transform(bobXRotation);
-                cameraLeft.transform(bobZRotation);
+
+                bobXRotation.transform(cameraLook);
+                bobZRotation.transform(cameraLook);
+                bobXRotation.transform(cameraUp);
+                bobZRotation.transform(cameraUp);
+                bobXRotation.transform(cameraUp);
+                bobZRotation.transform(cameraUp);
             }
 
             float clipStart = 0.05F;

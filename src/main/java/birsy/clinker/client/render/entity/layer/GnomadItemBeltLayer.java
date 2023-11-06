@@ -4,13 +4,14 @@ import birsy.clinker.client.render.entity.model.gnomad.GnomadAxemanDynamicModel;
 import birsy.clinker.client.render.entity.model.base.AnimFunctions;
 import birsy.clinker.common.world.entity.gnomad.GnomadAxemanEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.Util;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
 public class GnomadItemBeltLayer<T extends GnomadAxemanEntity, M extends GnomadAxemanDynamicModel<T>> extends RenderLayer<T, M> {
@@ -41,10 +42,10 @@ public class GnomadItemBeltLayer<T extends GnomadAxemanEntity, M extends GnomadA
             int sign = -((i * 2) - 1);
             pMatrixStack.pushPose();
             pMatrixStack.translate(sign * (5.0F / 16.0F), 3.0F / 16.0F + getSwing(pLimbSwing, pLimbSwingAmount, 0.2F), 0.0F);
-            pMatrixStack.mulPose(Vector3f.YN.rotationDegrees(90.0F));
-            pMatrixStack.mulPose(Vector3f.ZN.rotationDegrees(90.0F));
+            pMatrixStack.mulPose(Axis.YN.rotationDegrees(90.0F));
+            pMatrixStack.mulPose(Axis.ZN.rotationDegrees(90.0F));
             pMatrixStack.scale(sheathedItemScale, sheathedItemScale, sheathedItemScale);
-            itemInHandRenderer.renderItem(pLivingEntity, sheathedItem, ItemTransforms.TransformType.FIXED, false, pMatrixStack, pBuffer, pPackedLight);
+            itemInHandRenderer.renderItem(pLivingEntity, sheathedItem, ItemDisplayContext.FIXED, false, pMatrixStack, pBuffer, pPackedLight);
             pMatrixStack.popPose();
         }
 
@@ -56,10 +57,10 @@ public class GnomadItemBeltLayer<T extends GnomadAxemanEntity, M extends GnomadA
             pMatrixStack.pushPose();
             pMatrixStack.translate(((3.0F / 16.0F) * (i - 2)) + (1.25F / 16.0F), 1.0F / 16.0F + (getSwing(pLimbSwing, pLimbSwingAmount, 0.1F + (i * 0.5F)) * 0.5F), -4.5F / 16.0F);
             pMatrixStack.scale(potionScale, potionScale, potionScale);
-            pMatrixStack.mulPose(Vector3f.ZN.rotationDegrees(180.0F));
-            pMatrixStack.mulPose(Vector3f.XN.rotationDegrees(-10.0F));
-            pMatrixStack.mulPose(Vector3f.YN.rotationDegrees(-30.0F));
-            itemInHandRenderer.renderItem(pLivingEntity, potion, ItemTransforms.TransformType.FIXED, false, pMatrixStack, pBuffer, pPackedLight);
+            pMatrixStack.mulPose(Axis.ZN.rotationDegrees(180.0F));
+            pMatrixStack.mulPose(Axis.XN.rotationDegrees(-10.0F));
+            pMatrixStack.mulPose(Axis.YN.rotationDegrees(-30.0F));
+            itemInHandRenderer.renderItem(pLivingEntity, potion, ItemDisplayContext.FIXED, false, pMatrixStack, pBuffer, pPackedLight);
             pMatrixStack.popPose();
         }
 

@@ -123,7 +123,7 @@ public abstract class AbstractSalamanderPartEntity extends Monster {
         super.baseTick();
         this.pXBodyRot = this.entityData.get(X_BODY_ROT_ID);
         this.pYBodyRot = this.entityData.get(Y_BODY_ROT_ID);
-        if (!this.isOnGround() && !this.onClimbable()) {
+        if (!this.onGround() && !this.onClimbable()) {
             airTime++;
         } else {
             airTime = 0;
@@ -134,7 +134,7 @@ public abstract class AbstractSalamanderPartEntity extends Monster {
     public void tick() {
         super.tick();
 
-        if (!this.level.isClientSide()) {
+        if (!this.level().isClientSide()) {
             Vec3 dir1 = Vec3.ZERO;
             float count = 0.0F;
             if (ahead != null) {
@@ -192,7 +192,7 @@ public abstract class AbstractSalamanderPartEntity extends Monster {
 
 
     public void face(Vec3 position) {
-        if (!this.level.isClientSide()) {
+        if (!this.level().isClientSide()) {
             double xDirection = position.x() - this.getX();
             double yDirection = position.y() - this.getY();
             double zDirection = position.z() - this.getZ();

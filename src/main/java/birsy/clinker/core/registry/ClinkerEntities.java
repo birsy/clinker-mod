@@ -4,6 +4,7 @@ import birsy.clinker.client.render.entity.*;
 import birsy.clinker.client.render.entity.model.*;
 import birsy.clinker.common.world.entity.LumberingAspenEntity;
 import birsy.clinker.common.world.entity.MudScarabEntity;
+import birsy.clinker.common.world.entity.OrdnanceEntity;
 import birsy.clinker.common.world.entity.salamander.NewSalamanderEntity;
 import birsy.clinker.common.world.entity.salamander.SalamanderBodyEntity;
 import birsy.clinker.common.world.entity.salamander.SalamanderHeadEntity;
@@ -61,6 +62,11 @@ public class ClinkerEntities {
                     .sized(1.0f, 1.0f)
                     .build(new ResourceLocation(Clinker.MOD_ID, "lumbering_aspen").toString()));
 
+    public static final RegistryObject<EntityType<OrdnanceEntity>> ORDNANCE = ENTITY_TYPES.register("ordnance", () ->
+            EntityType.Builder.of(OrdnanceEntity::new, MobCategory.MISC)
+                    .sized(0.5F, 0.5F)
+                    .build(new ResourceLocation(Clinker.MOD_ID, "ordnance").toString()));
+
     @SubscribeEvent
     public static void registerEntityAttribute(EntityAttributeCreationEvent event) {
         event.put(MUD_SCARAB.get(), MudScarabEntity.createAttributes().build());
@@ -83,6 +89,8 @@ public class ClinkerEntities {
         event.registerEntityRenderer(ClinkerEntities.SEA_HAG.get(), SeaHagRenderer::new);
         event.registerEntityRenderer(ClinkerEntities.GNOMAD_AXEMAN.get(), GnomadAxemanRenderer::new);
         event.registerEntityRenderer(ClinkerEntities.LUMBERING_ASPEN.get(), LumberingAspenRenderer::new);
+
+        event.registerEntityRenderer(ClinkerEntities.ORDNANCE.get(), OrdnanceRenderer::new);
     }
 
     @SubscribeEvent

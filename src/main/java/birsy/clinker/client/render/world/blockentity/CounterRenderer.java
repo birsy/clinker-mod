@@ -4,8 +4,6 @@ import birsy.clinker.common.world.alchemy.workstation.Workstation;
 import birsy.clinker.common.world.block.blockentity.CounterBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix3f;
-import com.mojang.math.Matrix4f;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -67,21 +65,5 @@ public class CounterRenderer<T extends CounterBlockEntity> implements BlockEntit
                 //LevelRenderer.renderLineBox(pPoseStack, pBufferSource.getBuffer(RenderType.LINES), box, 1.0F, 1.0F, 1.0F, 0.1F);
             }
         }*/
-    }
-
-    public static void renderLine(PoseStack pPoseStack, VertexConsumer pConsumer, Vec3 min, Vec3 max, float pRed, float pGreen, float pBlue, float pAlpha) {
-        Matrix4f matrix4f = pPoseStack.last().pose();
-        Matrix3f matrix3f = pPoseStack.last().normal();
-        float minX = (float)min.x;
-        float minY = (float)min.y;
-        float minZ = (float)min.z;
-        float maxX = (float)max.x;
-        float maxY = (float)max.y;
-        float maxZ = (float)max.z;
-
-        pConsumer.vertex(matrix4f, minX, minY, minZ).color(pRed, pGreen, pBlue, pAlpha).normal(matrix3f, 1.0F, 0.0F, 0.0F).endVertex();
-        pConsumer.vertex(matrix4f, maxX, maxY, maxZ).color(pRed, pGreen, pBlue, pAlpha).normal(matrix3f, 1.0F, 0.0F, 0.0F).endVertex();
-        pConsumer.vertex(matrix4f, minX, minY, minZ).color(pRed, pGreen, pBlue, pAlpha).normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
-        pConsumer.vertex(matrix4f, maxX, maxY, maxZ).color(pRed, pGreen, pBlue, pAlpha).normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
     }
 }

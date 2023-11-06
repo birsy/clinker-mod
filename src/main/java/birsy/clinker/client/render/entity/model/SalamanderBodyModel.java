@@ -248,20 +248,20 @@ public class SalamanderBodyModel<T extends AbstractSalamanderPartEntity> extends
 		AnimFunctions.look(this.salamanderBodyRoot, rotationY, rotationX, 1.0F, 1.0F);
 
 		AnimFunctions.bob(this.salamanderBodyRoot, globalSpeed * 0.1F, 0.5F * globalHeight, false, offsetAge, 0.5F);
-		AnimFunctions.swing(this.salamanderLeftUpperLeg, globalSpeed * 0.1F, 0.05f * globalDegree, true, 1.0F, 0.25F, offsetAge, 0.5F, AnimFunctions.Axis.X);
-		AnimFunctions.swing(this.salamanderLeftLowerLeg, globalSpeed * 0.1F, 0.05f * globalDegree, false, 1.0F, 0.25F, offsetAge, 0.5F, AnimFunctions.Axis.X);
-		AnimFunctions.swing(this.salamanderRightUpperLeg, globalSpeed * 0.1F, 0.05f * globalDegree, true, 1.0F, 0.25F, offsetAge, 0.5F, AnimFunctions.Axis.X);
-		AnimFunctions.swing(this.salamanderRightLowerLeg, globalSpeed * 0.1F, 0.05f * globalDegree, false, 1.0F, 0.25F, offsetAge, 0.5F, AnimFunctions.Axis.X);
+		AnimFunctions.swing(this.salamanderLeftUpperLeg, globalSpeed * 0.1F, 0.05f * globalDegree, true, 1.0F, 0.25F, offsetAge, 0.5F, AnimFunctions.RotAxis.X);
+		AnimFunctions.swing(this.salamanderLeftLowerLeg, globalSpeed * 0.1F, 0.05f * globalDegree, false, 1.0F, 0.25F, offsetAge, 0.5F, AnimFunctions.RotAxis.X);
+		AnimFunctions.swing(this.salamanderRightUpperLeg, globalSpeed * 0.1F, 0.05f * globalDegree, true, 1.0F, 0.25F, offsetAge, 0.5F, AnimFunctions.RotAxis.X);
+		AnimFunctions.swing(this.salamanderRightLowerLeg, globalSpeed * 0.1F, 0.05f * globalDegree, false, 1.0F, 0.25F, offsetAge, 0.5F, AnimFunctions.RotAxis.X);
 
-		AnimFunctions.swing(this.salamanderFurRight, globalSpeed * 0.1F, 0.05f * globalDegree, true, 1.0F, 0.0F, offsetAge, 0.5F, AnimFunctions.Axis.X);
-		AnimFunctions.swing(this.salamanderFurLeft, globalSpeed * 0.1F, 0.05f * globalDegree, true, 1.0F, 0.0F, offsetAge, 0.5F, AnimFunctions.Axis.X);
+		AnimFunctions.swing(this.salamanderFurRight, globalSpeed * 0.1F, 0.05f * globalDegree, true, 1.0F, 0.0F, offsetAge, 0.5F, AnimFunctions.RotAxis.X);
+		AnimFunctions.swing(this.salamanderFurLeft, globalSpeed * 0.1F, 0.05f * globalDegree, true, 1.0F, 0.0F, offsetAge, 0.5F, AnimFunctions.RotAxis.X);
 
 		if (this.salamanderFurTop.visible) {
 			for (int i = 0; i < salamanderFurLeftTufts.length; i++) {
 				CappinModelPart leftTuft = salamanderFurLeftTufts[i];
 				CappinModelPart rightTuft = salamanderFurRightTufts[i];
-				AnimFunctions.swing(leftTuft, globalSpeed * 0.1F + (i * 0.01F), 0.05f * globalDegree, true, 1.0F + (i * 0.5F), 0.25F, offsetAge + (i * 0.5F), 0.5F, AnimFunctions.Axis.X);
-				AnimFunctions.swing(rightTuft, globalSpeed * 0.1F + (i * 0.01F), 0.05f * globalDegree, true, 1.0F + (i * 0.5F), 0.25F, offsetAge + (i * 0.5F), 0.5F, AnimFunctions.Axis.X);
+				AnimFunctions.swing(leftTuft, globalSpeed * 0.1F + (i * 0.01F), 0.05f * globalDegree, true, 1.0F + (i * 0.5F), 0.25F, offsetAge + (i * 0.5F), 0.5F, AnimFunctions.RotAxis.X);
+				AnimFunctions.swing(rightTuft, globalSpeed * 0.1F + (i * 0.01F), 0.05f * globalDegree, true, 1.0F + (i * 0.5F), 0.25F, offsetAge + (i * 0.5F), 0.5F, AnimFunctions.RotAxis.X);
 			}
 		}
 
@@ -271,15 +271,15 @@ public class SalamanderBodyModel<T extends AbstractSalamanderPartEntity> extends
 			bit.setScale(0.9F, 0.9F, 0.9F);
 
 			AnimFunctions.cancelRotation(bit, true, false, true);
-			AnimFunctions.swing(bit, globalSpeed * 0.1F + (i * 0.01F), 0.05f * globalDegree, true, 1.0F + (i * 0.5F), 0.25F, offsetAge + (i * 0.5F), 0.5F, AnimFunctions.Axis.X);
+			AnimFunctions.swing(bit, globalSpeed * 0.1F + (i * 0.01F), 0.05f * globalDegree, true, 1.0F + (i * 0.5F), 0.25F, offsetAge + (i * 0.5F), 0.5F, AnimFunctions.RotAxis.X);
 		}
 
-		AnimFunctions.swing(this.salamanderBoneFront, globalSpeed * 0.05F, 0.05f * globalDegree, false, 1.0F, 0.25F, offsetAge, 0.5F, AnimFunctions.Axis.X);
-		AnimFunctions.swing(this.salamanderBoneFront, globalSpeed * 0.08F, 0.05f * globalDegree, false, 1.0F, 0.0F, offsetAge, 0.5F, AnimFunctions.Axis.Y);
-		AnimFunctions.swing(this.salamanderBoneFront, globalSpeed * 0.06F, 0.05f * globalDegree, false, 1.0F, 0.0F, offsetAge, 0.5F, AnimFunctions.Axis.Z);
-		AnimFunctions.swing(this.salamanderBoneBack, globalSpeed * 0.05F, 0.05f * globalDegree, false, 1.0F, 0.25F, offsetAge, 0.5F, AnimFunctions.Axis.X);
-		AnimFunctions.swing(this.salamanderBoneBack, globalSpeed * 0.08F, 0.05f * globalDegree, false, 1.0F, 0.0F, offsetAge, 0.5F, AnimFunctions.Axis.Y);
-		AnimFunctions.swing(this.salamanderBoneBack, globalSpeed * 0.06F, 0.05f * globalDegree, false, 1.0F, 0.0F, offsetAge, 0.5F, AnimFunctions.Axis.Z);
+		AnimFunctions.swing(this.salamanderBoneFront, globalSpeed * 0.05F, 0.05f * globalDegree, false, 1.0F, 0.25F, offsetAge, 0.5F, AnimFunctions.RotAxis.X);
+		AnimFunctions.swing(this.salamanderBoneFront, globalSpeed * 0.08F, 0.05f * globalDegree, false, 1.0F, 0.0F, offsetAge, 0.5F, AnimFunctions.RotAxis.Y);
+		AnimFunctions.swing(this.salamanderBoneFront, globalSpeed * 0.06F, 0.05f * globalDegree, false, 1.0F, 0.0F, offsetAge, 0.5F, AnimFunctions.RotAxis.Z);
+		AnimFunctions.swing(this.salamanderBoneBack, globalSpeed * 0.05F, 0.05f * globalDegree, false, 1.0F, 0.25F, offsetAge, 0.5F, AnimFunctions.RotAxis.X);
+		AnimFunctions.swing(this.salamanderBoneBack, globalSpeed * 0.08F, 0.05f * globalDegree, false, 1.0F, 0.0F, offsetAge, 0.5F, AnimFunctions.RotAxis.Y);
+		AnimFunctions.swing(this.salamanderBoneBack, globalSpeed * 0.06F, 0.05f * globalDegree, false, 1.0F, 0.0F, offsetAge, 0.5F, AnimFunctions.RotAxis.Z);
 
 		float walkFactor = MathUtils.invert(Mth.clamp(limbSwingAmount, 0.0F, 1.0F));
 		this.salamanderRightUpperLeg.xRot += 1.0;
@@ -296,27 +296,27 @@ public class SalamanderBodyModel<T extends AbstractSalamanderPartEntity> extends
 		//walkin
 		float walkSpeed = 0.8F * globalSpeed;
 		AnimFunctions.bob(this.salamanderBodyRoot, 2.0F * walkSpeed, 0.5F * globalHeight, false, 1.0F, f, f1);
-		AnimFunctions.swing(this.salamanderBodyRoot, walkSpeed, 0.05f * globalDegree, false, 0.0F, 0.0F, f, f1, AnimFunctions.Axis.Z);
+		AnimFunctions.swing(this.salamanderBodyRoot, walkSpeed, 0.05f * globalDegree, false, 0.0F, 0.0F, f, f1, AnimFunctions.RotAxis.Z);
 
 		this.salamanderBodyRoot.y -= 2 * f1;
 		this.salamanderLegsRoot.y -= 4 * f1;
-		AnimFunctions.swing(this.salamanderLeftUpperLeg, walkSpeed, 1.3f * globalDegree, false, 0.0F, 1.0F, f, f1, AnimFunctions.Axis.X);
-		AnimFunctions.swing(this.salamanderLeftUpperLeg, walkSpeed, 0.1f * globalDegree, false, 0.0F, -0.5F, f, f1, AnimFunctions.Axis.Y);
-		AnimFunctions.swing(this.salamanderLeftLowerLeg, walkSpeed, 0.8f * globalDegree, false, 1.5F, -0.5F, f, f1, AnimFunctions.Axis.X);
-		AnimFunctions.swing(this.salamanderLeftLowerLeg, walkSpeed, 0.3f * globalDegree, false, 1.5F, -0.5F, f, f1, AnimFunctions.Axis.Z);
+		AnimFunctions.swing(this.salamanderLeftUpperLeg, walkSpeed, 1.3f * globalDegree, false, 0.0F, 1.0F, f, f1, AnimFunctions.RotAxis.X);
+		AnimFunctions.swing(this.salamanderLeftUpperLeg, walkSpeed, 0.1f * globalDegree, false, 0.0F, -0.5F, f, f1, AnimFunctions.RotAxis.Y);
+		AnimFunctions.swing(this.salamanderLeftLowerLeg, walkSpeed, 0.8f * globalDegree, false, 1.5F, -0.5F, f, f1, AnimFunctions.RotAxis.X);
+		AnimFunctions.swing(this.salamanderLeftLowerLeg, walkSpeed, 0.3f * globalDegree, false, 1.5F, -0.5F, f, f1, AnimFunctions.RotAxis.Z);
 		AnimFunctions.cancelRotation(this.salamanderLeftFoot, true, true, false, 2);
-		AnimFunctions.swing(this.salamanderLeftFoot, walkSpeed, 0.2f * globalDegree, false, 1.5F, 0.0F, f, f1, AnimFunctions.Axis.X);
-		AnimFunctions.swing(this.salamanderLeftRightClaw, walkSpeed, 0.1f * globalDegree, false, 1.5F, -0.5F, f, f1, AnimFunctions.Axis.X);
-		AnimFunctions.swing(this.salamanderLeftLeftClaw, walkSpeed, 0.1f * globalDegree, false, 1.5F, -0.5F, f, f1, AnimFunctions.Axis.X);
+		AnimFunctions.swing(this.salamanderLeftFoot, walkSpeed, 0.2f * globalDegree, false, 1.5F, 0.0F, f, f1, AnimFunctions.RotAxis.X);
+		AnimFunctions.swing(this.salamanderLeftRightClaw, walkSpeed, 0.1f * globalDegree, false, 1.5F, -0.5F, f, f1, AnimFunctions.RotAxis.X);
+		AnimFunctions.swing(this.salamanderLeftLeftClaw, walkSpeed, 0.1f * globalDegree, false, 1.5F, -0.5F, f, f1, AnimFunctions.RotAxis.X);
 
-		AnimFunctions.swing(this.salamanderRightUpperLeg, walkSpeed, 1.3f * globalDegree, true, 0.0F, -1.0F, f, f1, AnimFunctions.Axis.X);
-		AnimFunctions.swing(this.salamanderRightUpperLeg, walkSpeed, 0.1f * globalDegree, true, 0.0F, -0.5F, f, f1, AnimFunctions.Axis.Y);
-		AnimFunctions.swing(this.salamanderRightLowerLeg, walkSpeed, 0.8f * globalDegree, true, 1.5F, 0.5F, f, f1, AnimFunctions.Axis.X);
-		AnimFunctions.swing(this.salamanderRightLowerLeg, walkSpeed, 0.3f * globalDegree, true, -1.5F, -0.5F, f, f1, AnimFunctions.Axis.Z);
+		AnimFunctions.swing(this.salamanderRightUpperLeg, walkSpeed, 1.3f * globalDegree, true, 0.0F, -1.0F, f, f1, AnimFunctions.RotAxis.X);
+		AnimFunctions.swing(this.salamanderRightUpperLeg, walkSpeed, 0.1f * globalDegree, true, 0.0F, -0.5F, f, f1, AnimFunctions.RotAxis.Y);
+		AnimFunctions.swing(this.salamanderRightLowerLeg, walkSpeed, 0.8f * globalDegree, true, 1.5F, 0.5F, f, f1, AnimFunctions.RotAxis.X);
+		AnimFunctions.swing(this.salamanderRightLowerLeg, walkSpeed, 0.3f * globalDegree, true, -1.5F, -0.5F, f, f1, AnimFunctions.RotAxis.Z);
 		AnimFunctions.cancelRotation(this.salamanderRightFoot, true, true, false, 2);
-		AnimFunctions.swing(this.salamanderRightFoot, walkSpeed, 0.2f * globalDegree, true, 1.5F, 0.0F, f, f1, AnimFunctions.Axis.X);
-		AnimFunctions.swing(this.salamanderRightLeftClaw, walkSpeed, 0.1f * globalDegree, true, 1.5F, 0.5F, f, f1, AnimFunctions.Axis.X);
-		AnimFunctions.swing(this.salamanderRightRightClaw, walkSpeed, 0.1f * globalDegree, true, 1.5F, 0.5F, f, f1, AnimFunctions.Axis.X);
+		AnimFunctions.swing(this.salamanderRightFoot, walkSpeed, 0.2f * globalDegree, true, 1.5F, 0.0F, f, f1, AnimFunctions.RotAxis.X);
+		AnimFunctions.swing(this.salamanderRightLeftClaw, walkSpeed, 0.1f * globalDegree, true, 1.5F, 0.5F, f, f1, AnimFunctions.RotAxis.X);
+		AnimFunctions.swing(this.salamanderRightRightClaw, walkSpeed, 0.1f * globalDegree, true, 1.5F, 0.5F, f, f1, AnimFunctions.RotAxis.X);
 
 		/*float tailLength = 4;
 		boolean isTail = false;

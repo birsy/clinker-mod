@@ -9,7 +9,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.SharedConstants;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -23,6 +25,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.chunk.ChunkGeneratorStructureState;
 import net.minecraft.world.level.levelgen.*;
 import net.minecraft.world.level.levelgen.blending.Blender;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
@@ -37,14 +40,15 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 public class CaveChunkGenerator extends ChunkGenerator {
-    public static final Codec<CaveChunkGenerator> CODEC = RecordCodecBuilder.create((codec) -> commonCodec(codec).and(codec.group(
-                    BiomeSource.CODEC.fieldOf("biome_source").forGetter((generator) -> generator.biomeSource),
-                    NoiseGeneratorSettings.CODEC.fieldOf("settings").forGetter((generator) -> generator.settingsHolder)))
+    public static final Codec<CaveChunkGenerator> CODEC = RecordCodecBuilder.create((codec) ->
+            codec.group(BiomeSource.CODEC.fieldOf("biome_source").forGetter((generator) -> generator.biomeSource),
+                 NoiseGeneratorSettings.CODEC.fieldOf("settings").forGetter((generator) -> generator.settingsHolder))
             .apply(codec, codec.stable(CaveChunkGenerator::new)));
 
     protected final Holder<NoiseGeneratorSettings> settingsHolder;
     protected final NoiseGeneratorSettings settings;
     private OthershoreNoiseSampler sampler;
+    private static long seed;
 
     private Beardifier beardifier;
     private final Aquifer.FluidPicker globalFluidPicker;
@@ -54,13 +58,12 @@ public class CaveChunkGenerator extends ChunkGenerator {
     double[][][] caveShapeSamplePoints;
     Vec3[][][] caveDerivativeSamplePoints;
 
-    public CaveChunkGenerator(Registry<StructureSet> pStructureSets, BiomeSource pBiomeSource, Holder<NoiseGeneratorSettings> settings) {
-        super(pStructureSets, Optional.empty(), pBiomeSource);
+    public CaveChunkGenerator(BiomeSource pBiomeSource, Holder<NoiseGeneratorSettings> settings) {
+        super(pBiomeSource);
         this.settingsHolder = settings;
         this.settings = this.settingsHolder.get();
         this.sampler = new OthershoreNoiseSampler(0);
         this.globalFluidPicker = (a, b, c) -> new Aquifer.FluidStatus(this.settings.seaLevel(), this.settings.defaultFluid());
-
     }
 
     protected Codec<? extends ChunkGenerator> codec() {
@@ -68,15 +71,20 @@ public class CaveChunkGenerator extends ChunkGenerator {
     }
 
     @Override
-    public CompletableFuture<ChunkAccess> createBiomes(Registry<Biome> pBiomeRegistry, Executor pExecutor, RandomState pRandom, Blender pBlender, StructureManager pStructureManager, ChunkAccess pChunk) {
-        return super.createBiomes(pBiomeRegistry, pExecutor, pRandom, pBlender, pStructureManager, pChunk); // creates biomes
-        // THEN afterwards, generates world zones and all their relevant info
+    public ChunkGeneratorStructureState createState(HolderLookup<StructureSet> pStructureSetLookup, RandomState pRandomState, long pSeed) {
+        seed = pSeed;
+        return super.createState(pStructureSetLookup, pRandomState, pSeed);
+    }
+
+    @Override
+    public CompletableFuture<ChunkAccess> createBiomes(Executor pExecutor, RandomState pRandomState, Blender pBlender, StructureManager pStructureManager, ChunkAccess pChunk) {
+        return super.createBiomes(pExecutor, pRandomState, pBlender, pStructureManager, pChunk);
     }
 
     public void buildSurface(WorldGenRegion genRegion, StructureManager structureManager, RandomState randomState, ChunkAccess chunk) {
         if (!SharedConstants.debugVoidTerrain(chunk.getPos())) {
             WorldGenerationContext worldgenerationcontext = new WorldGenerationContext(this, genRegion);
-            this.buildSurface(chunk, worldgenerationcontext, randomState, structureManager, genRegion.getBiomeManager(), genRegion.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY), Blender.of(genRegion));
+            this.buildSurface(chunk, worldgenerationcontext, randomState, structureManager, genRegion.getBiomeManager(), genRegion.registryAccess().registryOrThrow(Registries.BIOME), Blender.of(genRegion));
         }
     }
 
@@ -104,8 +112,7 @@ public class CaveChunkGenerator extends ChunkGenerator {
         Heightmap[] heightmaps = {chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.OCEAN_FLOOR_WG), chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.WORLD_SURFACE_WG)};
 
         this.beardifier = Beardifier.forStructuresInChunk(structureManager, chunk.getPos());
-        fillNoiseSampleArrays(chunk, random.legacyLevelSeed());
-
+        fillNoiseSampleArrays(chunk, seed);
         for(int x = 0; x < 16; ++x) {
             for(int z = 0; z < 16; ++z) {
                 for(int y = chunk.getMaxBuildHeight(); y > chunk.getMinBuildHeight(); y--) {
@@ -113,7 +120,7 @@ public class CaveChunkGenerator extends ChunkGenerator {
                     boolean waterfall = awfulRandom < (1.0 / 8.0);
 
                     pos.set(x, y, z);
-                    BlockState state = getBlockStateAtPos(x + chunk.getPos().getMinBlockX(), y, z + chunk.getPos().getMinBlockZ(), random.legacyLevelSeed());
+                    BlockState state = getBlockStateAtPos(x + chunk.getPos().getMinBlockX(), y, z + chunk.getPos().getMinBlockZ(), seed);
 
                     chunk.setBlockState(pos, state, false);
                     if (waterfall && state == settings.defaultFluid()) {

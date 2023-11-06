@@ -49,6 +49,26 @@
 		{"name": "clinker:entity/gnome/chat3", "stream": true}
 		]
 	},
+	"entity.ordnance.bounce": {
+		"category": "entity",
+		"subtitle": "subtitles.entity.ordnance.bounce",
+		"sounds": [
+			{"name": "clinker:entity/ordnance/ordnance_bounce", "stream": true}
+		]
+	},
+	"entity.ordnance.explode": {
+		"category": "entity",
+		"subtitle": "subtitles.entity.ordnance.explode",
+		"sounds": [
+			{"name": "clinker:entity/ordnance/ordnance_explode", "stream": false}
+		]
+	},
+	"entity.ordnance.sparkle": {
+		"category": "entity",
+		"sounds": [
+			{"name": "clinker:entity/ordnance/ordnance_sparkle", "stream": true}
+		]
+	},
 	"ambient.ash_plains.additions": {
 		"category": "ambient",
 		"sounds": [

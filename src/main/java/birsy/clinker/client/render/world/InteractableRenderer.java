@@ -7,9 +7,7 @@ import birsy.clinker.core.Clinker;
 import birsy.clinker.common.world.physics.rigidbody.Transform;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Quaternion;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -19,6 +17,8 @@ import net.minecraftforge.client.event.RenderHighlightEvent;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.joml.Quaterniond;
+import org.joml.Quaternionf;
 
 @OnlyIn(Dist.CLIENT)
 @Mod.EventBusSubscriber(modid = Clinker.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
@@ -67,12 +67,12 @@ public class InteractableRenderer {
         AABB aabb = new AABB(interactable.shape.size.scale(-1.0), interactable.shape.size);
         Transform transform = interactable.previousTransform.lerp(interactable.getTransform(), pPartialTicks);
         Vec3 position = transform.getPosition();
-        Quaternion orientation = transform.getOrientation().toMojangQuaternion();
+        Quaterniond orientation = transform.getOrientation();
 
         poseStack.pushPose();
 
         poseStack.translate(position.x(), position.y(), position.z());
-        poseStack.mulPose(orientation);
+        poseStack.mulPose(new Quaternionf(orientation));
         DebugRenderUtil.renderBox(poseStack, pBuffer, aabb, r, g, b, a);
 
         poseStack.popPose();

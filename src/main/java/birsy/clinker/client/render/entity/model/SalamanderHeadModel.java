@@ -121,13 +121,13 @@ public class SalamanderHeadModel<T extends SalamanderHeadEntity> extends Abstrac
 		float globalDegree = 1.0F;
 
 		AnimFunctions.bob(this.salamanderHeadRoot, globalSpeed * 0.1F, 0.5F * globalHeight, false, offsetAge, 0.5F);
-		AnimFunctions.swing(this.salamanderJaw, globalSpeed * 0.05F, 0.05f * globalDegree, false, 1.0F, 0.1F, offsetAge, 0.5F, AnimFunctions.Axis.X);
-		AnimFunctions.swing(this.salamanderJaw, globalSpeed * 0.08F, 0.01f * globalDegree, false, 1.0F, 0.0F, offsetAge, 0.5F, AnimFunctions.Axis.Y);
-		AnimFunctions.swing(this.salamanderJaw, globalSpeed * 0.06F, 0.01f * globalDegree, false, 1.0F, 0.0F, offsetAge, 0.5F, AnimFunctions.Axis.Z);
+		AnimFunctions.swing(this.salamanderJaw, globalSpeed * 0.05F, 0.05f * globalDegree, false, 1.0F, 0.1F, offsetAge, 0.5F, AnimFunctions.RotAxis.X);
+		AnimFunctions.swing(this.salamanderJaw, globalSpeed * 0.08F, 0.01f * globalDegree, false, 1.0F, 0.0F, offsetAge, 0.5F, AnimFunctions.RotAxis.Y);
+		AnimFunctions.swing(this.salamanderJaw, globalSpeed * 0.06F, 0.01f * globalDegree, false, 1.0F, 0.0F, offsetAge, 0.5F, AnimFunctions.RotAxis.Z);
 
-		AnimFunctions.swing(salamanderRightFrill, globalSpeed * 0.1F, 0.05f * globalDegree, true, 1.0F, -0.25F, offsetAge, 0.5F, AnimFunctions.Axis.Y);
-		AnimFunctions.swing(salamanderLeftFrill, globalSpeed * 0.11F, 0.05f * globalDegree, true, 0.9F, -0.25F, offsetAge, 0.5F, AnimFunctions.Axis.Y);
-		AnimFunctions.swing(salamanderTopFrill, globalSpeed * 0.09F, 0.05f * globalDegree, true, 1.1F, -0.25F, offsetAge, 0.5F, AnimFunctions.Axis.X);
+		AnimFunctions.swing(salamanderRightFrill, globalSpeed * 0.1F, 0.05f * globalDegree, true, 1.0F, -0.25F, offsetAge, 0.5F, AnimFunctions.RotAxis.Y);
+		AnimFunctions.swing(salamanderLeftFrill, globalSpeed * 0.11F, 0.05f * globalDegree, true, 0.9F, -0.25F, offsetAge, 0.5F, AnimFunctions.RotAxis.Y);
+		AnimFunctions.swing(salamanderTopFrill, globalSpeed * 0.09F, 0.05f * globalDegree, true, 1.1F, -0.25F, offsetAge, 0.5F, AnimFunctions.RotAxis.X);
 
 		this.salamanderHead.xRot += 0.3 * Mth.clamp(f1, 0.0F, 0.5F);
 

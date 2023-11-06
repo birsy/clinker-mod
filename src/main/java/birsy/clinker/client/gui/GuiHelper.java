@@ -5,14 +5,15 @@ import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportedException;
 import net.minecraft.Util;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
@@ -24,10 +25,14 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.joml.Matrix4f;
+import org.joml.Quaterniond;
+import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -80,8 +85,6 @@ public class GuiHelper {
     public static void tryRenderGuiItem(ItemRenderer renderer, ItemStack pStack, float rotation, float pX, float pY, float alpha) {
         if (!pStack.isEmpty()) {
             BakedModel bakedmodel = renderer.getModel(pStack, null, Minecraft.getInstance().player, 0);
-            renderer.blitOffset = bakedmodel.isGui3d() ? renderer.blitOffset + 50.0F : renderer.blitOffset + 50.0F;
-
             try {
                 renderGuiItem(renderer, pStack, rotation, pX, pY, bakedmodel, alpha);
             } catch (Throwable throwable) {
@@ -94,8 +97,6 @@ public class GuiHelper {
                 crashreportcategory.setDetail("Item Foil", () -> String.valueOf(pStack.hasFoil()));
                 throw new ReportedException(crashreport);
             }
-
-            renderer.blitOffset = bakedmodel.isGui3d() ? renderer.blitOffset - 50.0F : renderer.blitOffset - 50.0F;
         }
     }
 
@@ -108,9 +109,9 @@ public class GuiHelper {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
         PoseStack posestack = RenderSystem.getModelViewStack();
         posestack.pushPose();
-        posestack.translate(pX, pY, 100.0F + mc.getItemRenderer().blitOffset);
+        posestack.translate(pX, pY, 150.0F);
         posestack.translate(8.0D, 8.0D, 0.0D);
-        posestack.mulPose(Vector3f.YP.rotationDegrees(rotation));
+        posestack.mulPose(Axis.YP.rotationDegrees(rotation));
         posestack.scale(1.0F, -1.0F, 1.0F);
         posestack.scale(16.0F, 16.0F, 16.0F);
         RenderSystem.applyModelViewMatrix();
@@ -121,7 +122,7 @@ public class GuiHelper {
             Lighting.setupForFlatItems();
         }
 
-        renderer.render(pStack, ItemTransforms.TransformType.GUI, false, posestack1, multibuffersource$buffersource, 15728880, OverlayTexture.NO_OVERLAY, pBakedModel);
+        renderer.render(pStack, ItemDisplayContext.GUI, false, posestack1, multibuffersource$buffersource, 15728880, OverlayTexture.NO_OVERLAY, pBakedModel);
         multibuffersource$buffersource.endBatch();
         RenderSystem.enableDepthTest();
         if (flag) {
@@ -135,22 +136,21 @@ public class GuiHelper {
 
 
     @OnlyIn(Dist.CLIENT)
-    public static void renderGuiItemDecorations(ItemRenderer renderer, Font font, ItemStack pStack, float pXPosition, float pYPosition, float alpha, @Nullable String pText) {
+    public static void renderGuiItemDecorations(GuiGraphics graphics, Font font, ItemStack pStack, float pXPosition, float pYPosition, float alpha, @Nullable String pText) {
         if (!pStack.isEmpty()) {
             PoseStack posestack = new PoseStack();
             if (pStack.getCount() != 1 || pText != null) {
                 String s = pText == null ? String.valueOf(pStack.getCount()) : pText;
                 float scale = 0.7F;
                 posestack.scale(scale, scale, 1.0F);
-                posestack.translate(0.0D, 0.0D, renderer.blitOffset + 200.0F);
+                posestack.translate(0.0D, 0.0D, 200.0F);
                 MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-                font.drawInBatch(s, (pXPosition + 19 - 2) / scale - font.width(s), (pYPosition + 6 + 3) / scale, 16777215 + ((int)(alpha * 255) << 24), true, posestack.last().pose(), bufferSource, true, 0, 15728880);
+                font.drawInBatch(s, (pXPosition + 19 - 2) / scale - font.width(s), (pYPosition + 6 + 3) / scale, 16777215 + ((int)(alpha * 255) << 24), true, posestack.last().pose(), bufferSource, Font.DisplayMode.NORMAL, 0, 15728880);
                 bufferSource.endBatch();
             }
 
             if (pStack.isBarVisible()) {
                 RenderSystem.disableDepthTest();
-                RenderSystem.disableTexture();
                 RenderSystem.disableBlend();
                 Tesselator tesselator = Tesselator.getInstance();
                 BufferBuilder bufferbuilder = tesselator.getBuilder();
@@ -159,7 +159,6 @@ public class GuiHelper {
                 fillRect(bufferbuilder, pXPosition + 2, pYPosition + 13, 13, 2, 0, 0, 0, 255);
                 fillRect(bufferbuilder, pXPosition + 2, pYPosition + 13, i, 1, j >> 16 & 255, j >> 8 & 255, j & 255, 255);
                 RenderSystem.enableBlend();
-                RenderSystem.enableTexture();
                 RenderSystem.enableDepthTest();
             }
 
@@ -167,25 +166,21 @@ public class GuiHelper {
             float f = localplayer == null ? 0.0F : localplayer.getCooldowns().getCooldownPercent(pStack.getItem(), Minecraft.getInstance().getFrameTime());
             if (f > 0.0F) {
                 RenderSystem.disableDepthTest();
-                RenderSystem.disableTexture();
                 RenderSystem.enableBlend();
                 RenderSystem.defaultBlendFunc();
                 Tesselator tesselator1 = Tesselator.getInstance();
                 BufferBuilder bufferbuilder1 = tesselator1.getBuilder();
                 fillRect(bufferbuilder1, pXPosition, pYPosition + Mth.floor(16.0F * (1.0F - f)), 16, Mth.ceil(16.0F * f), 255, 255, 255, 127);
-                RenderSystem.enableTexture();
                 RenderSystem.enableDepthTest();
             }
 
-            net.minecraftforge.client.ItemDecoratorHandler.of(pStack).render(font, pStack, (int) pXPosition, (int) pYPosition, renderer.blitOffset);
+            net.minecraftforge.client.ItemDecoratorHandler.of(pStack).render(graphics, font, pStack, (int) pXPosition, (int) pYPosition);
         }
     }
 
     public static void tryRenderGuiItem(ItemRenderer renderer, ItemStack pStack, PoseStack stack, float alpha) {
         if (!pStack.isEmpty()) {
             BakedModel bakedmodel = renderer.getModel(pStack, null, Minecraft.getInstance().player, 0);
-            renderer.blitOffset = bakedmodel.isGui3d() ? renderer.blitOffset + 50.0F : renderer.blitOffset + 50.0F;
-
             try {
                 renderGuiItem(renderer, pStack, stack, bakedmodel, alpha);
             } catch (Throwable throwable) {
@@ -199,7 +194,6 @@ public class GuiHelper {
                 throw new ReportedException(crashreport);
             }
 
-            renderer.blitOffset = bakedmodel.isGui3d() ? renderer.blitOffset - 50.0F : renderer.blitOffset - 50.0F;
         }
     }
 
@@ -223,7 +217,7 @@ public class GuiHelper {
         boolean flag = !pBakedModel.usesBlockLight();
         Vector3f DIFFUSE_LIGHT_0 = Util.make(new Vector3f(0.2F, 1.0F, -0.7F), Vector3f::normalize);
         Vector3f DIFFUSE_LIGHT_1 = Util.make(new Vector3f(1.0F, 1.0F, 1.0F), (vec) -> {
-            vec.transform(stack.last().normal());
+            stack.last().normal().transform(vec);
             vec.normalize();
         });
         //DIFFUSE_LIGHT_1.transform(stack.last().normal());
@@ -242,7 +236,7 @@ public class GuiHelper {
         }
 
 
-        renderer.render(pStack, ItemTransforms.TransformType.GUI, false, stack, bufferSource, 15728880, OverlayTexture.NO_OVERLAY, pBakedModel);
+        renderer.render(pStack, ItemDisplayContext.GUI, false, stack, bufferSource, 15728880, OverlayTexture.NO_OVERLAY, pBakedModel);
         bufferSource.endBatch();
 
         RenderSystem.enableDepthTest();
@@ -295,5 +289,12 @@ public class GuiHelper {
         bufferbuilder.vertex(pMatrix, pX2, pY1, pBlitOffset).uv(pMaxU, pMinV).endVertex();
         bufferbuilder.vertex(pMatrix, pX1, pY1, pBlitOffset).uv(pMinU, pMinV).endVertex();
         BufferUploader.drawWithShader(bufferbuilder.end());
+    }
+
+    public static void setCameraRotation(Camera camera, Quaterniond rotation) {
+        camera.rotation.set(rotation);
+        camera.forwards.set(0.0F, 0.0F, 1.0F).rotate(camera.rotation);
+        camera.up.set(0.0F, 1.0F, 0.0F).rotate(camera.rotation);
+        camera.left.set(1.0F, 0.0F, 0.0F).rotate(camera.rotation);
     }
 }

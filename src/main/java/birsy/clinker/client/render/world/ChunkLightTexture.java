@@ -66,11 +66,6 @@ public class ChunkLightTexture implements AutoCloseable {
                 }
             }
             this.lightTexture.upload();
-            try {
-                this.lightTexture.getPixels().writeToFile("D:\\Modded Minecraft\\Development\\GitHub\\clinker-mod\\src\\test\\resources\\file.png");
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
             Clinker.LOGGER.info("finished updating lightmap");
         }, null);
 

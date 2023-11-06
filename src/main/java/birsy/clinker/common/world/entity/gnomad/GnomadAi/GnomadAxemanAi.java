@@ -64,32 +64,32 @@ public class GnomadAxemanAi {
     }
     
     private static void initCoreActivity(Brain<GnomadAxemanEntity> brain) {
-        brain.addActivity(Activity.CORE, 0, ImmutableList.of(
-                new LookAtTargetSink(45, 90),
-                new MoveToTargetSink(),
-                new InteractWithDoor(),
-                new StopBeingAngryIfTargetDead<>()));
+//        brain.addActivity(Activity.CORE, 0, ImmutableList.of(
+//                new LookAtTargetSink(45, 90),
+//                new MoveToTargetSink(),
+//                new InteractWithDoor(),
+//                new StopBeingAngryIfTargetDead()));
     }
 
     private static void initIdleActivity(Brain<GnomadAxemanEntity> brain) {
-        brain.addActivity(Activity.IDLE, 10, ImmutableList.of(
-                new SetEntityLookTarget(PiglinAi::isPlayerHoldingLovedItem, 14.0F),
-                createIdleLookBehaviors(),
-                createIdleMovementBehaviors(),
-                new SetLookAndInteract(EntityType.PLAYER, 4)));
+//        brain.addActivity(Activity.IDLE, 10, ImmutableList.of(
+//                new SetEntityLookTarget(PiglinAi::isPlayerHoldingLovedItem, 14.0F),
+//                createIdleLookBehaviors(),
+//                createIdleMovementBehaviors(),
+//                new SetLookAndInteract(EntityType.PLAYER, 4)));
     }
 
     private static RunOne<GnomadAxemanEntity> createIdleLookBehaviors() {
         return new RunOne<>(ImmutableList.of(
-                Pair.of(new SetEntityLookTarget(EntityType.PLAYER, 8.0F), 1),
-                Pair.of(new SetEntityLookTarget(ClinkerEntities.GNOMAD_AXEMAN.get(), 8.0F), 1),
-                Pair.of(new SetEntityLookTarget(8.0F), 1),
+                Pair.of(SetEntityLookTarget.create(EntityType.PLAYER, 8.0F), 1),
+                Pair.of(SetEntityLookTarget.create(ClinkerEntities.GNOMAD_AXEMAN.get(), 8.0F), 1),
+                Pair.of(SetEntityLookTarget.create(8.0F), 1),
                 Pair.of(new DoNothing(30, 60), 1)));
     }
 
     private static RunOne<GnomadAxemanEntity> createIdleMovementBehaviors() {
         return new RunOne<>(ImmutableList.of(
-                Pair.of(new RandomStroll(0.6F), 2),
+                Pair.of(RandomStroll.stroll(0.6F), 2),
                 Pair.of(new DoNothing(30, 60), 1)));
     }
 }

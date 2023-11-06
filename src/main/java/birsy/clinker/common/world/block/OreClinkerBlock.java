@@ -8,7 +8,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DropExperienceBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
 
 import java.util.Random;
 
@@ -18,7 +17,7 @@ public class OreClinkerBlock extends DropExperienceBlock
 	int expMax;
 	
 	public OreClinkerBlock(float hardness, float resistance, int expMin, int expMax, SoundType sound) {
-		super((Block.Properties.of(Material.STONE)
+		super((Block.Properties.of()
 			  .strength(hardness, resistance)
 			  .sound(sound)));
 		this.expMin = expMin;

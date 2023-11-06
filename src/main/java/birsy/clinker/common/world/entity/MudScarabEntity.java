@@ -66,15 +66,15 @@ public class MudScarabEntity extends AbstractBugEntity implements InterpolatedSk
 
     @Override
     public boolean onClimbable() {
-        BlockHitResult raycast = this.level.clip(new ClipContext(this.position(), this.position().add(0, this.getBbHeight() * -0.5, 0), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
+        BlockHitResult raycast = this.level().clip(new ClipContext(this.position(), this.position().add(0, this.getBbHeight() * -0.5, 0), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
         return raycast.getType() == HitResult.Type.BLOCK;
     }
 
     public void tick() {
         // this is utterly fucked but until i get my hands on landlord it's the best i can be bothered to do
         AABB movementBox = this.getRidingBox();
-        for(Entity entity : this.level.getEntities(this, movementBox, EntitySelector.NO_SPECTATORS.and((entity) -> !entity.isPassengerOfSameVehicle(this)))) {
-            if (!(entity instanceof MudScarabEntity) && !entity.noPhysics && entity.isOnGround() && !entity.isPassenger()) {
+        for(Entity entity : this.level().getEntities(this, movementBox, EntitySelector.NO_SPECTATORS.and((entity) -> !entity.isPassengerOfSameVehicle(this)))) {
+            if (!(entity instanceof MudScarabEntity) && !entity.noPhysics && entity.onGround() && !entity.isPassenger()) {
                 float scale = 0.83F;
                 entity.setDeltaMovement(entity.getDeltaMovement().add(this.getDeltaMovement().multiply(scale, 1.0F, scale)));
 
@@ -85,7 +85,7 @@ public class MudScarabEntity extends AbstractBugEntity implements InterpolatedSk
             }
         }
 
-        if (this.getLevel().isClientSide()) this.calculateNormalAndHeight(0.2F);
+        if (this.level().isClientSide()) this.calculateNormalAndHeight(0.2F);
         super.tick();
     }
 
@@ -103,7 +103,7 @@ public class MudScarabEntity extends AbstractBugEntity implements InterpolatedSk
 
         for (int i = 0; i < corners.length; i++) {
             Vec3 pos = corners[i];
-            BlockHitResult raycast = this.level.clip(new ClipContext(pos, pos.add(0, -this.getBbHeight() - 1.0, 0).add(this.getLookAngle()), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
+            BlockHitResult raycast = this.level().clip(new ClipContext(pos, pos.add(0, -this.getBbHeight() - 1.0, 0).add(this.getLookAngle()), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
             if (raycast.getType() == HitResult.Type.MISS) {
                 castPoses[i] = pos;
             } else {
@@ -226,7 +226,7 @@ public class MudScarabEntity extends AbstractBugEntity implements InterpolatedSk
             if (this.lookAt != null) {
                 AABB ridingBox = ((MudScarabEntity)(this.mob)).getRidingBox();
 
-                if (ridingBox.contains(this.lookAt.getPosition(1.0F)) && (!(lookAt instanceof MudScarabEntity) && !lookAt.noPhysics && lookAt.isOnGround() && !lookAt.isPassenger())) {
+                if (ridingBox.contains(this.lookAt.getPosition(1.0F)) && (!(lookAt instanceof MudScarabEntity) && !lookAt.noPhysics && lookAt.onGround() && !lookAt.isPassenger())) {
                     return false;
                 }
             }
@@ -238,7 +238,7 @@ public class MudScarabEntity extends AbstractBugEntity implements InterpolatedSk
             if (this.lookAt != null) {
                 AABB ridingBox = ((MudScarabEntity)(this.mob)).getRidingBox();
 
-                if (ridingBox.contains(this.lookAt.getPosition(1.0F)) && (!(lookAt instanceof MudScarabEntity) && !lookAt.noPhysics && lookAt.isOnGround() && !lookAt.isPassenger())) {
+                if (ridingBox.contains(this.lookAt.getPosition(1.0F)) && (!(lookAt instanceof MudScarabEntity) && !lookAt.noPhysics && lookAt.onGround() && !lookAt.isPassenger())) {
                     return false;
                 }
             }

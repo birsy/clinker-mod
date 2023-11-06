@@ -8,6 +8,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.GameEventListener;
 import net.minecraft.world.level.gameevent.PositionSource;
+import net.minecraft.world.phys.Vec3;
 
 //TODO: make fulminate listen to lightning
 public class FulminateBlockEntity extends BlockEntity {
@@ -41,9 +42,9 @@ public class FulminateBlockEntity extends BlockEntity {
         }
 
         @Override
-        public boolean handleGameEvent(ServerLevel pLevel, GameEvent.Message pEvent) {
-            if (pEvent.gameEvent() == GameEvent.LIGHTNING_STRIKE) {
-                BlockEntity fuliminate = pLevel.getBlockEntity(new BlockPos(this.listenerSource.getPosition(pLevel).get()));
+        public boolean handleGameEvent(ServerLevel pLevel, GameEvent pGameEvent, GameEvent.Context pContext, Vec3 pPos) {
+            if (pGameEvent == GameEvent.LIGHTNING_STRIKE) {
+                BlockEntity fuliminate = pLevel.getBlockEntity(BlockPos.containing(this.listenerSource.getPosition(pLevel).get()));
                 if (fuliminate instanceof FulminateBlockEntity) {
                     ((FulminateBlockEntity) fuliminate).activate();
                     return true;

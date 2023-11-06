@@ -2,7 +2,7 @@ package birsy.clinker.client.render.entity.model.base;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
@@ -54,15 +54,15 @@ public class CappinModelPart extends ModelPart {
         pPoseStack.translate(this.x / 16.0F, this.y / 16.0F, this.z / 16.0F);
 
         if (this.zRot != 0.0F) {
-            pPoseStack.mulPose(Vector3f.ZP.rotation(this.zRot));
+            pPoseStack.mulPose(Axis.ZP.rotation(this.zRot));
         }
 
         if (this.yRot != 0.0F) {
-            pPoseStack.mulPose(Vector3f.YP.rotation(this.yRot));
+            pPoseStack.mulPose(Axis.YP.rotation(this.yRot));
         }
 
         if (this.xRot != 0.0F) {
-            pPoseStack.mulPose(Vector3f.XP.rotation(this.xRot));
+            pPoseStack.mulPose(Axis.XP.rotation(this.xRot));
         }
 
         pPoseStack.scale(xScale, yScale, zScale);

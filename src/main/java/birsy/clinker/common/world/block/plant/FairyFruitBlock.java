@@ -62,7 +62,7 @@ public class FairyFruitBlock extends BaseEntityBlock implements SimpleWaterlogge
         return blockstate.isFaceSturdy(level, blockpos, Direction.DOWN);
     }
 
-    public boolean isValidBonemealTarget(BlockGetter pLevel, BlockPos pPos, BlockState pState, boolean pIsClient) {
+    public boolean isValidBonemealTarget(LevelReader pLevel, BlockPos pPos, BlockState pState, boolean pIsClient) {
         return pLevel.getBlockEntity(pPos) instanceof FairyFruitBlockEntity;
     }
 

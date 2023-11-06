@@ -55,6 +55,9 @@ public class ClinkerPacketHandler {
         NETWORK.registerMessage(createId(), ClientboundWorkstationMergePacket.class, ClientboundWorkstationMergePacket::toBytes, ClientboundWorkstationMergePacket::new, ClientboundWorkstationMergePacket::handle);
         NETWORK.registerMessage(createId(), ServerboundWorkstationLoadRequestPacket.class, ServerboundWorkstationLoadRequestPacket::toBytes, ServerboundWorkstationLoadRequestPacket::new, ServerboundWorkstationLoadRequestPacket::handle);
 
+        NETWORK.registerMessage(createId(), ClientboundOrdnanceExplosionPacket.class, ClientboundOrdnanceExplosionPacket::toBytes, ClientboundOrdnanceExplosionPacket::new, ClientboundOrdnanceExplosionPacket::handle);
+
+
         Clinker.LOGGER.info("REGISTERED PACKETS!!!");
     }
 

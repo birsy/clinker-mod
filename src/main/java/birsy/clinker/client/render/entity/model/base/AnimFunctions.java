@@ -1,19 +1,18 @@
 package birsy.clinker.client.render.entity.model.base;
 
 import birsy.clinker.client.model.base.InterpolatedBone;
-import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
-import com.mojang.math.Vector4f;
+import com.mojang.math.Axis;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector4f;
 
 public class AnimFunctions {
     /**
@@ -86,7 +85,7 @@ public class AnimFunctions {
      * @param limbSwingAmount  the swing amount
      * @param axis             the axis to rotate on
      */
-    public static float swing(DynamicModelPart box, float speed, float degree, boolean invert, float offset, float weight, float swing, float limbSwingAmount, AnimFunctions.Axis axis) {
+    public static float swing(DynamicModelPart box, float speed, float degree, boolean invert, float offset, float weight, float swing, float limbSwingAmount, RotAxis axis) {
         float rotation = calculateRotation(speed, degree, invert, offset, weight, swing, limbSwingAmount);
         if (box != null) {
             switch (axis) {
@@ -126,7 +125,7 @@ public class AnimFunctions {
     }
 
 
-    public static float clampedSwing(DynamicModelPart box, float speed, float degree, boolean invert, float offset, float weight, float swing, float limbSwingAmount, boolean clampNegative, AnimFunctions.Axis axis) {
+    public static float clampedSwing(DynamicModelPart box, float speed, float degree, boolean invert, float offset, float weight, float swing, float limbSwingAmount, boolean clampNegative, RotAxis axis) {
         float rotation = calculateRotationClamped(speed, degree, invert, offset, weight, swing, limbSwingAmount, clampNegative);
         //;
         if (box != null) {
@@ -151,8 +150,8 @@ public class AnimFunctions {
 
     public static void swingLimbs(DynamicModelPart left, DynamicModelPart right, float speed, float degree, float offset, float weight, float swing, float limbSwingAmount)
     {
-        swing(left, speed, degree, true, offset, weight, swing, limbSwingAmount, AnimFunctions.Axis.X);
-        swing(right, speed, degree, false, offset, weight, swing, limbSwingAmount, AnimFunctions.Axis.X);
+        swing(left, speed, degree, true, offset, weight, swing, limbSwingAmount, RotAxis.X);
+        swing(right, speed, degree, false, offset, weight, swing, limbSwingAmount, RotAxis.X);
     }
 
     public static void setScale(DynamicModelPart part, float scale) {
@@ -244,7 +243,7 @@ public class AnimFunctions {
      * @param limbSwingAmount  the swing amount
      * @param axis             the axis to rotate on
      */
-    public static float swing(ModelPart box, float speed, float degree, boolean invert, float offset, float weight, float swing, float limbSwingAmount, AnimFunctions.Axis axis) {
+    public static float swing(ModelPart box, float speed, float degree, boolean invert, float offset, float weight, float swing, float limbSwingAmount, RotAxis axis) {
         float rotation = calculateRotation(speed, degree, invert, offset, weight, swing, limbSwingAmount);
         if (box != null) {
             switch (axis) {
@@ -266,7 +265,7 @@ public class AnimFunctions {
         return rotation;
     }
 
-    public static float clampedSwing(ModelPart box, float speed, float degree, boolean invert, float offset, float weight, float swing, float limbSwingAmount, boolean clampNegative, AnimFunctions.Axis axis) {
+    public static float clampedSwing(ModelPart box, float speed, float degree, boolean invert, float offset, float weight, float swing, float limbSwingAmount, boolean clampNegative, RotAxis axis) {
         float rotation = calculateRotationClamped(speed, degree, invert, offset, weight, swing, limbSwingAmount, clampNegative);
         //;
         if (box != null) {
@@ -291,8 +290,8 @@ public class AnimFunctions {
 
     public static void swingLimbs(ModelPart left, ModelPart right, float speed, float degree, float offset, float weight, float swing, float limbSwingAmount)
     {
-        swing(left, speed, degree, true, offset, weight, swing, limbSwingAmount, AnimFunctions.Axis.X);
-        swing(right, speed, degree, false, offset, weight, swing, limbSwingAmount, AnimFunctions.Axis.X);
+        swing(left, speed, degree, true, offset, weight, swing, limbSwingAmount, RotAxis.X);
+        swing(right, speed, degree, false, offset, weight, swing, limbSwingAmount, RotAxis.X);
     }
 
     private static float calculateRotation(float speed, float degree, boolean invert, float offset, float weight, float f, float f1) {
@@ -307,7 +306,7 @@ public class AnimFunctions {
         return invert ? -rotation : rotation;
     }
 
-    public enum Axis {
+    public enum RotAxis {
         X,
         Y,
         Z
@@ -375,15 +374,15 @@ public class AnimFunctions {
         matrixStack.translate(part.x / 16.0F, part.y / 16.0F, part.z / 16.0F);
 
         if (part.zRot != 0.0F) {
-            matrixStack.mulPose(Vector3f.ZP.rotation(part.zRot));
+            matrixStack.mulPose(Axis.ZP.rotation(part.zRot));
         }
 
         if (part.yRot != 0.0F) {
-            matrixStack.mulPose(Vector3f.YP.rotation(part.yRot));
+            matrixStack.mulPose(Axis.YP.rotation(part.yRot));
         }
 
         if (part.xRot != 0.0F) {
-            matrixStack.mulPose(Vector3f.XP.rotation(-part.xRot));
+            matrixStack.mulPose(Axis.XP.rotation(-part.xRot));
         }
 
         matrixStack.scale(part.xScale, part.yScale, part.zScale);
@@ -438,24 +437,7 @@ public class AnimFunctions {
     }
 
     public static Vec3 getWorldPos(Entity entity, CappinModelPart part, float partialTick) {
-        return getWorldPos(Vec3.ZERO, entity, part, partialTick);
+        return Vec3.ZERO;
 
-    }
-
-    public static Vec3 getWorldPos(Vec3 offset, Entity entity, CappinModelPart part, float partialTick) {
-        PoseStack matrixStack = new PoseStack();
-        Vec3 position = entity.getPosition(partialTick).add(offset);
-        matrixStack.translate(position.x(), position.y(), position.z());
-        matrixStack.mulPose(new Quaternion(0, -Mth.rotLerp(partialTick, ((LivingEntity)entity).yBodyRotO, ((LivingEntity)entity).yBodyRot) + 180, 0, true));
-        matrixStack.scale(-1, 1, 1);
-        matrixStack.translate(0, -1.5f, 0);
-        getGlobalTransFormI(part, matrixStack);
-        matrixStack.scale(0.1F, 0.1F, 0.1F);
-        PoseStack.Pose matrixEntry = matrixStack.last();
-        Matrix4f matrix4f = matrixEntry.pose();
-
-        Vector4f vec = new Vector4f(0, 0, 0, 1);
-        vec.transform(matrix4f);
-        return new Vec3(vec.x(), vec.y(), vec.z());
     }
 }

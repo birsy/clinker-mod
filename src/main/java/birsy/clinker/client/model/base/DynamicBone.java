@@ -31,6 +31,6 @@ public class DynamicBone extends InterpolatedBone {
         pPoseStack.scale(Mth.lerp(partialTick, pXSize, xSize), Mth.lerp(partialTick, pYSize, ySize), Mth.lerp(partialTick, pZSize, zSize));
         this.currentRotation = pRotation.slerp(rotation, partialTick, currentRotation);
         this.currentRotation.normalize();
-        pPoseStack.mulPose(this.currentRotation.toMojangQuaternion());
+        pPoseStack.mulPose(this.currentRotation);
     }
 }

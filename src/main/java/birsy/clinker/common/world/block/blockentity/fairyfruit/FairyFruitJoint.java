@@ -1,11 +1,13 @@
 package birsy.clinker.common.world.block.blockentity.fairyfruit;
 
 import birsy.clinker.common.world.physics.particle.CollidingParticle;
+import birsy.clinker.core.util.JomlConversions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.joml.Quaterniond;
+import org.joml.Vector3d;
 
 public class FairyFruitJoint extends CollidingParticle {
     public final int index;
@@ -75,7 +77,7 @@ public class FairyFruitJoint extends CollidingParticle {
         if (this.topAttachment == null || this.isRoot) return roll;
         Vec3 topCenter = this.topAttachment.getCenter(partialTick);
         Vec3 bottomCenter = this.bottomAttachment == null ? this.getPosition(partialTick) : this.bottomAttachment.getCenter(partialTick);
-        return Quaterniond.lookAt(topCenter, bottomCenter, new Vec3(0, -1, 0)).normalize();
+        return new Quaterniond().lookAlong(JomlConversions.toJOML(topCenter.subtract(bottomCenter)), new Vector3d(0, 1, 0));
     }
 
     protected void destroy() {

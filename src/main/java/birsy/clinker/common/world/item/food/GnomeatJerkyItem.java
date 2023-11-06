@@ -9,7 +9,6 @@ public class GnomeatJerkyItem extends Item
 	public GnomeatJerkyItem()
 	{
 		super(new Item.Properties()
-				.tab(Clinker.CLINKER_FOOD)
 				.food(new FoodProperties.Builder()
 						.nutrition(5)
 						.saturationMod(5.0F)

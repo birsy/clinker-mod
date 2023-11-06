@@ -29,7 +29,7 @@ public class ServerboundInteractableAddFailurePacket extends ServerboundPacket {
 
     @Override
     public void run(NetworkEvent.Context context) {
-        Interactable i = InteractableManager.serverInteractableManagers.get(context.getSender().getLevel()).storage.getInteractable(uuid);
+        Interactable i = InteractableManager.serverInteractableManagers.get(context.getSender().level()).storage.getInteractable(uuid);
         ClinkerPacketHandler.sendToClient(context.getSender(), new ClientboundInteractableAddPacket(i));
     }
 }

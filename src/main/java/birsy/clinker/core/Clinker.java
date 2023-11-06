@@ -3,6 +3,7 @@ package birsy.clinker.core;
 import birsy.clinker.client.render.GUIRenderer;
 import birsy.clinker.client.gui.AlchemyBundleGUIRenderer;
 import birsy.clinker.common.networking.ClinkerPacketHandler;
+import birsy.clinker.common.world.entity.OrdnanceEntity;
 import birsy.clinker.common.world.level.chunk.gen.OthershoreChunkGenerator;
 import birsy.clinker.common.world.level.chunk.gen.TestChunkGenerator;
 import birsy.clinker.core.registry.*;
@@ -13,6 +14,14 @@ import birsy.clinker.core.util.ClinkerFontManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 
+import net.minecraft.core.BlockSource;
+import net.minecraft.core.Position;
+import net.minecraft.core.dispenser.AbstractProjectileDispenseBehavior;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.DispenserBlock;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,7 +45,6 @@ public class Clinker
 
 	public Clinker() throws InterruptedException {
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-
         ClinkerPacketHandler.register();
         ClinkerSounds.SOUNDS.register(modEventBus);
         ClinkerItems.ITEMS.register(modEventBus);
@@ -49,8 +57,6 @@ public class Clinker
         //ClinkerElements.ELEMENTS.register(modEventBus);
         ClinkerParticles.PARTICLES.register(modEventBus);
 
-        //TODO : STRUCTURES. LOOK INTO WAVE FUNCTION COLLAPSE?
-
         ClinkerBiomeTest.BIOMES.register(modEventBus);
 
         modEventBus.addListener(this::setup);
@@ -62,6 +68,18 @@ public class Clinker
 	
 	private void setup(final FMLCommonSetupEvent event)
     {
+        DispenserBlock.registerBehavior(ClinkerItems.ORDNANCE.get(), new AbstractProjectileDispenseBehavior() {
+            protected Projectile getProjectile(Level level, Position position, ItemStack item) {
+                OrdnanceEntity entity = OrdnanceEntity.create(level, position.x(), position.y(), position.z());
+                return entity;
+            }
+
+            @Override
+            protected void playSound(BlockSource pSource) {
+                pSource.getLevel().playSound(null, pSource.x(), pSource.y(), pSource.z(), SoundEvents.TRIDENT_THROW, SoundSource.BLOCKS, 0.5F, 0.4F / (pSource.getLevel().getRandom().nextFloat() * 0.4F + 0.8F));
+            }
+        });
+
         event.enqueueWork(() -> {
             OthershoreChunkGenerator.register();
             TestChunkGenerator.register();
@@ -76,7 +94,7 @@ public class Clinker
 
         ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.LOCUST_LOG.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.LOCUST_LEAVES.get(), RenderType.cutoutMipped());
-        ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.LOCUST_DOOR.get(), RenderType.cutout());
+        //ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.LOCUST_DOOR.get(), RenderType.cutout());
 
         ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.SHORT_MUD_REEDS.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.MUD_REEDS.get(), RenderType.cutout());
@@ -85,46 +103,6 @@ public class Clinker
         fontManager = new ClinkerFontManager(Minecraft.getInstance());
         GUIRenderer.alchemyBundleGUIRenderer = new AlchemyBundleGUIRenderer(Minecraft.getInstance());
     }
-
-    @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD, modid = Clinker.MOD_ID)
-    public static class RegistryEvents {
-    }
-
-    public static final CreativeModeTab CLINKER_MISC = new CreativeModeTab("clinkerItems")
-    {
-        @Override
-        public ItemStack makeIcon()
-        {
-        	return new ItemStack(ClinkerItems.SULFUR.get());
-        }
-    };
-    
-    public static final CreativeModeTab CLINKER_BLOCKS = new CreativeModeTab("clinkerBlocks")
-    {
-        @Override
-        public ItemStack makeIcon()
-        {
-        	return new ItemStack(ClinkerBlocks.BRIMSTONE_BRICKS.get().asItem());
-        }
-    };
-    
-    public static final CreativeModeTab CLINKER_TOOLS = new CreativeModeTab("clinkerTools")
-    {
-        @Override
-        public ItemStack makeIcon()
-        {
-        	return new ItemStack(ClinkerItems.LEAD_SWORD.get());
-        }
-    };
-    
-    public static final CreativeModeTab CLINKER_FOOD = new CreativeModeTab("clinkerFood")
-    {
-        @Override
-        public ItemStack makeIcon()
-        {
-        	return new ItemStack(ClinkerItems.GNOMEAT_JERKY.get());
-        }
-    };
 
     /*
 

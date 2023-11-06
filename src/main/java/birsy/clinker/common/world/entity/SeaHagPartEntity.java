@@ -2,6 +2,7 @@ package birsy.clinker.common.world.entity;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
@@ -44,7 +45,7 @@ public class SeaHagPartEntity extends PartEntity<SeaHagEntity> {
         }
     }
 
-    public Packet<?> getAddEntityPacket() {
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
         throw new UnsupportedOperationException();
     }
     public boolean isPickable() {
@@ -52,7 +53,7 @@ public class SeaHagPartEntity extends PartEntity<SeaHagEntity> {
     }
 
     protected void collideWithNearbyEntities() {
-        List<Entity> entities = this.level.getEntities(this, this.getBoundingBox().expandTowards(0.20000000298023224D, 0.0D, 0.20000000298023224D));
+        List<Entity> entities = this.level().getEntities(this, this.getBoundingBox().expandTowards(0.20000000298023224D, 0.0D, 0.20000000298023224D));
         Entity parent = this.getParent();
         if (parent != null) {
             entities.stream().filter(entity -> entity != parent && !(entity instanceof SeaHagPartEntity && ((SeaHagPartEntity) entity).getParent() == parent) && entity.isPushable()).forEach(entity -> entity.push(parent));

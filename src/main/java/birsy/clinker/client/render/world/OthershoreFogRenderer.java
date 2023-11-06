@@ -34,13 +34,13 @@ public class OthershoreFogRenderer {
     @SubscribeEvent
     public static void onRenderFog(ViewportEvent.RenderFog event) {
         final Entity player = event.getCamera().getEntity();
-        final Level world = player.level;
+        final Level world = player.level();
         final ClientLevel clientLevel = mc.level;
 
         if (world.dimension() == ClinkerWorld.OTHERSHORE) {
             event.setCanceled(true);
             Vec3 playerVecPos = player.getEyePosition((float) event.getPartialTick());
-            BlockPos playerPos = new BlockPos(playerVecPos);
+            BlockPos playerPos = BlockPos.containing(playerVecPos);
 
             //Make it a little foggier when it's darker....
             final float darknessAmount = (calculateInterpolatedLight(world, playerVecPos, LightLayer.SKY, false) / 16.0F);
@@ -70,7 +70,7 @@ public class OthershoreFogRenderer {
     public static void onRenderFogColors(ViewportEvent.ComputeFogColor event)
     {
         final Entity player = event.getRenderer().getMainCamera().getEntity();
-        final Level world = player.level;
+        final Level world = player.level();
         final ClientLevel clientLevel = mc.level;
 
         if (world.dimension() == ClinkerWorld.OTHERSHORE) {

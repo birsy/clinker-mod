@@ -2,19 +2,17 @@ package birsy.clinker.client.render.particle;
 
 import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 @OnlyIn(Dist.CLIENT)
 public class AshCloudParticle extends TextureSheetParticle {
@@ -64,14 +62,14 @@ public class AshCloudParticle extends TextureSheetParticle {
         float y = (float)(Mth.lerp(pPartialTicks, this.yo, this.y) - vec3.y());
         float z = (float)(Mth.lerp(pPartialTicks, this.zo, this.z) - vec3.z());
 
-        Quaternion rotation;
+        Quaternionf rotation;
 
         if (this.roll == 0.0F) {
             rotation = camera.rotation();
         } else {
-            rotation = new Quaternion(camera.rotation());
+            rotation = new Quaternionf(camera.rotation());
             float roll = Mth.lerp(pPartialTicks, this.oRoll, this.roll);
-            rotation.mul(Vector3f.ZP.rotation(roll));
+            rotation.mul(Axis.ZP.rotation(roll));
         }
 
         Vector3f[] verticies = new Vector3f[]{
@@ -83,7 +81,7 @@ public class AshCloudParticle extends TextureSheetParticle {
         float quadSize = this.getQuadSize(pPartialTicks);
 
         for (Vector3f vertex : verticies) {
-            vertex.transform(rotation);
+            rotation.transform(vertex);
             vertex.mul(quadSize);
             vertex.add(x, y, z);
         }

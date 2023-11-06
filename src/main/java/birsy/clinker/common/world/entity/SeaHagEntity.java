@@ -98,7 +98,7 @@ public class SeaHagEntity extends Monster {
 
             Vec3 legPos = getLegPosition(leg, 1.0F);
             Vec3 footPos = getDesiredFootPosition(leg, 1.0F).subtract(0, 3, 0);
-            BlockHitResult raycast = this.getLevel().clip(new ClipContext(legPos, footPos, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, this));
+            BlockHitResult raycast = this.level().clip(new ClipContext(legPos, footPos, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, this));
             if (leg == 0) {
                 //Clinker.LOGGER.info(footPos);
             }

@@ -133,10 +133,10 @@ public class SalamanderTailModel<T extends AbstractSalamanderPartEntity> extends
 
 		AnimFunctions.bob(this.salamanderTailRoot, globalSpeed * 0.1F, 0.5F * globalHeight, false, offsetAge, 0.5F);
 
-		AnimFunctions.swing(this.salamanderThickTailFurRight, globalSpeed * 0.1F, 0.05f * globalDegree, true, 1.0F, 0.0F, offsetAge, 0.5F, AnimFunctions.Axis.X);
-		AnimFunctions.swing(this.salamanderThickTailFurLeft, globalSpeed * 0.1F, 0.05f * globalDegree, true, 1.0F, 0.0F, offsetAge, 0.5F, AnimFunctions.Axis.X);
-		AnimFunctions.swing(this.salamanderThinTailFurRight, globalSpeed * 0.1F, 0.05f * globalDegree, true, 1.0F, 0.0F, offsetAge, 0.5F, AnimFunctions.Axis.X);
-		AnimFunctions.swing(this.salamanderThinTailFurLeft, globalSpeed * 0.1F, 0.05f * globalDegree, true, 1.0F, 0.0F, offsetAge, 0.5F, AnimFunctions.Axis.X);
+		AnimFunctions.swing(this.salamanderThickTailFurRight, globalSpeed * 0.1F, 0.05f * globalDegree, true, 1.0F, 0.0F, offsetAge, 0.5F, AnimFunctions.RotAxis.X);
+		AnimFunctions.swing(this.salamanderThickTailFurLeft, globalSpeed * 0.1F, 0.05f * globalDegree, true, 1.0F, 0.0F, offsetAge, 0.5F, AnimFunctions.RotAxis.X);
+		AnimFunctions.swing(this.salamanderThinTailFurRight, globalSpeed * 0.1F, 0.05f * globalDegree, true, 1.0F, 0.0F, offsetAge, 0.5F, AnimFunctions.RotAxis.X);
+		AnimFunctions.swing(this.salamanderThinTailFurLeft, globalSpeed * 0.1F, 0.05f * globalDegree, true, 1.0F, 0.0F, offsetAge, 0.5F, AnimFunctions.RotAxis.X);
 
 		for (int i = 0; i < thickDanglyBits.length; i++) {
 			CappinModelPart bit = thickDanglyBits[i];
@@ -144,7 +144,7 @@ public class SalamanderTailModel<T extends AbstractSalamanderPartEntity> extends
 			bit.setScale(0.9F, 0.9F, 0.9F);
 
 			AnimFunctions.cancelRotation(bit, true, false, true);
-			AnimFunctions.swing(bit, globalSpeed * 0.1F + (i * 0.01F), 0.05f * globalDegree, true, 1.0F + (i * 0.5F), 0.25F, offsetAge + (i * 0.5F), 0.5F, AnimFunctions.Axis.X);
+			AnimFunctions.swing(bit, globalSpeed * 0.1F + (i * 0.01F), 0.05f * globalDegree, true, 1.0F + (i * 0.5F), 0.25F, offsetAge + (i * 0.5F), 0.5F, AnimFunctions.RotAxis.X);
 		}
 
 		for (int i = 0; i < thinDanglyBits.length; i++) {
@@ -153,13 +153,13 @@ public class SalamanderTailModel<T extends AbstractSalamanderPartEntity> extends
 			bit.setScale(0.9F, 0.9F, 0.9F);
 
 			AnimFunctions.cancelRotation(bit, true, false, true);
-			AnimFunctions.swing(bit, globalSpeed * 0.1F + (i * 0.01F), 0.05f * globalDegree, true, 1.0F + (i * 0.5F), 0.25F, offsetAge + (i * 0.5F), 0.5F, AnimFunctions.Axis.X);
+			AnimFunctions.swing(bit, globalSpeed * 0.1F + (i * 0.01F), 0.05f * globalDegree, true, 1.0F + (i * 0.5F), 0.25F, offsetAge + (i * 0.5F), 0.5F, AnimFunctions.RotAxis.X);
 		}
 
 		//walkin
 		float walkSpeed = 0.8F * globalSpeed;
 		AnimFunctions.bob(this.salamanderTailRoot, 2.0F * walkSpeed, 0.5F * globalHeight, false, 1.0F, f, f1);
-		AnimFunctions.swing(this.salamanderTailRoot, walkSpeed, 0.05f * globalDegree, false, 0.0F, 0.0F, f, f1, AnimFunctions.Axis.Z);
+		AnimFunctions.swing(this.salamanderTailRoot, walkSpeed, 0.05f * globalDegree, false, 0.0F, 0.0F, f, f1, AnimFunctions.RotAxis.Z);
 
 		this.salamanderTailRoot.y -= 2 * f1;
 		this.salamanderThinTailFurTop.visible = false;

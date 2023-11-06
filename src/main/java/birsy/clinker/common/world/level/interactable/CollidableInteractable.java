@@ -76,7 +76,7 @@ public class CollidableInteractable extends Interactable {
     }
 
     public static Vec3 collideWithEntities(Vec3 velocityVector, Entity entity) {
-        InteractableManager manager = entity.getLevel().isClientSide ? InteractableManager.clientInteractableManager : InteractableManager.serverInteractableManagers.get(entity.getLevel());
+        InteractableManager manager = entity.level().isClientSide ? InteractableManager.clientInteractableManager : InteractableManager.serverInteractableManagers.get(entity.level());
         Collection<Interactable> interactables = manager.storage.getInteractablesInBounds(entity.getBoundingBox().inflate(1.0));
         interactables = interactables.stream().filter(interactable -> {
             boolean isEntityParent = false;

@@ -4,7 +4,7 @@ import birsy.clinker.common.world.entity.IVelocityTilt;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -28,8 +28,8 @@ public abstract class ClinkerEntityRenderer<T extends Mob, M extends EntityModel
     @Override
     protected void setupRotations(T pEntityLiving, PoseStack pMatrixStack, float pAgeInTicks, float pRotationYaw, float pPartialTicks) {
         if (pEntityLiving instanceof IVelocityTilt) {
-            pMatrixStack.mulPose(Vector3f.XP.rotationDegrees(((IVelocityTilt) pEntityLiving).getPitch(pPartialTicks)));
-            pMatrixStack.mulPose(Vector3f.ZP.rotationDegrees(((IVelocityTilt) pEntityLiving).getRoll(pPartialTicks)));
+            pMatrixStack.mulPose(Axis.XP.rotationDegrees(((IVelocityTilt) pEntityLiving).getPitch(pPartialTicks)));
+            pMatrixStack.mulPose(Axis.ZP.rotationDegrees(((IVelocityTilt) pEntityLiving).getRoll(pPartialTicks)));
         }
         super.setupRotations(pEntityLiving, pMatrixStack, pAgeInTicks, pRotationYaw, pPartialTicks);
     }
@@ -83,8 +83,8 @@ public abstract class ClinkerEntityRenderer<T extends Mob, M extends EntityModel
         float animationSpeed = 0.0F;
         float animationAmount = 0.0F;
         if (!shouldSit && pEntity.isAlive()) {
-            animationSpeed = Mth.lerp(pPartialTicks, pEntity.animationSpeedOld, pEntity.animationSpeed);
-            animationAmount = pEntity.animationPosition - pEntity.animationSpeed * (1.0F - pPartialTicks);
+            animationSpeed = pEntity.walkAnimation.speed(pPartialTicks);
+            animationAmount = pEntity.walkAnimation.speed(pPartialTicks) - pEntity.walkAnimation.speed(pPartialTicks) * (1.0F - pPartialTicks);
             if (pEntity.isBaby()) {
                 animationAmount *= 3.0F;
             }

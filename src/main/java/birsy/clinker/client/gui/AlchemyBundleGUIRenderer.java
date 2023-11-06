@@ -5,7 +5,7 @@ import birsy.clinker.core.registry.ClinkerItems;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.resources.ResourceLocation;
@@ -19,13 +19,14 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.joml.Matrix4f;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 @OnlyIn(Dist.CLIENT)
-public class AlchemyBundleGUIRenderer extends GuiComponent {
+public class AlchemyBundleGUIRenderer {
     public static final ResourceLocation BUNDLE_LOCATION = new ResourceLocation(Clinker.MOD_ID, "textures/gui/alchemy_bundle.png");
     private final Minecraft minecraft;
     private final ItemRenderer itemRenderer;
@@ -120,7 +121,7 @@ public class AlchemyBundleGUIRenderer extends GuiComponent {
         int z = 0;
         for (BaggedItem item : items) {
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 0.5F);
-            item.render(itemRenderer, minecraft.player, pPoseStack, openProgress, ticks + partialTick, partialTick, z++);
+            //item.render(itemRenderer, minecraft.player, pPoseStack, openProgress, ticks + partialTick, partialTick, z++);
         }
 
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -205,13 +206,13 @@ public class AlchemyBundleGUIRenderer extends GuiComponent {
             //this.currentPosition = this.targetPosition;
         }
 
-        protected void render(ItemRenderer renderer, Player player, PoseStack pPoseStack, float floatProgress, float ticks, float partialTick, int z) {
+        protected void render(ItemRenderer renderer, GuiGraphics graphics, Player player, PoseStack pPoseStack, float floatProgress, float ticks, float partialTick, int z) {
             float x = Mth.lerp(partialTick, previousPosition.x, currentPosition.x) + (Mth.sin(z + ticks * 0.05F) * floatProgress * 0.5F);
             float y = Mth.lerp(partialTick, previousPosition.y, currentPosition.y) + (Mth.cos(z + ticks * 0.07F) * floatProgress * 0.5F);
             float rot = ticks + partialTick + z;
             GuiHelper.tryRenderGuiItem(renderer, stack, rot, x, y, 0.5F);
             RenderSystem.setShader(GameRenderer::getPositionColorShader);
-            GuiHelper.renderGuiItemDecorations(renderer, Minecraft.getInstance().fontFilterFishy, stack, x, y, 0.5F, null);
+            GuiHelper.renderGuiItemDecorations(graphics, Minecraft.getInstance().fontFilterFishy, stack, x, y, 0.5F, null);
         }
     }
 }

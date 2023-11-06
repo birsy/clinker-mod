@@ -82,15 +82,15 @@ public class BasicModelPart {
         pPoseStack.translate(this.x / 16.0F, this.y / 16.0F, this.z / 16.0F);
 
         if (this.zRot != 0.0F) {
-            pPoseStack.mulPose(Vector3f.ZP.rotation(this.zRot));
+            pPoseStack.mulPose(Axis.ZP.rotation(this.zRot));
         }
 
         if (this.yRot != 0.0F) {
-            pPoseStack.mulPose(Vector3f.YP.rotation(this.yRot));
+            pPoseStack.mulPose(Axis.YP.rotation(this.yRot));
         }
 
         if (this.xRot != 0.0F) {
-            pPoseStack.mulPose(Vector3f.XP.rotation(this.xRot));
+            pPoseStack.mulPose(Axis.XP.rotation(this.xRot));
         }
 
         pPoseStack.scale(xScale, yScale, zScale);
@@ -145,21 +145,5 @@ public class BasicModelPart {
             parent.getGlobalTransForm(matrixStack);
         }
         this.translateAndRotateAndScale(matrixStack);
-    }
-
-    public Vec3 getWorldPos(Entity entity, float partialTick) {
-        PoseStack matrixStack = new PoseStack();
-        Vec3 position = entity.getPosition(partialTick);
-        matrixStack.translate(position.x(), position.y(), position.z());
-        matrixStack.mulPose(new Quaternion(0, -entity.getViewYRot(partialTick) + 180, 0, true));
-        matrixStack.scale(-1, -1, 1);
-        matrixStack.translate(0, -1.5f, 0);
-        this.getGlobalTransForm(matrixStack);
-        PoseStack.Pose matrixEntry = matrixStack.last();
-        Matrix4f matrix4f = matrixEntry.pose();
-
-        Vector4f vec = new Vector4f(0, 0, 0, 1);
-        vec.transform(matrix4f);
-        return new Vec3(vec.x(), vec.y(), vec.z());
     }
 }

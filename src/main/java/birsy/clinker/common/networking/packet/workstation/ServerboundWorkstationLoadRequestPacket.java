@@ -34,7 +34,7 @@ public class ServerboundWorkstationLoadRequestPacket extends ServerboundPacket {
     @Override
     public void run(NetworkEvent.Context context) {
         Entity sender = context.getSender();
-        if (sender.level instanceof ServerLevel level) {
+        if (sender.level() instanceof ServerLevel level) {
             WorkstationManager manager = WorkstationManager.managerByLevel.get(level);
             manager.loadWorkstationToClient(id, context.getSender());
         }

@@ -4,7 +4,7 @@ import birsy.clinker.common.world.block.FermentationBarrelBlock;
 import birsy.clinker.common.world.block.blockentity.FermentationBarrelBlockEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -38,11 +38,11 @@ public class FermentationBarrelRenderer<T extends FermentationBarrelBlockEntity>
         @Override
     public void render(T pBlockEntity, float pPartialTick, PoseStack pPoseStack, MultiBufferSource pBufferSource, int pPackedLight, int pPackedOverlay) {
         pPoseStack.pushPose();
-        pPoseStack.mulPose(Vector3f.ZP.rotation((float) Math.PI));
+        pPoseStack.mulPose(Axis.ZP.rotation((float) Math.PI));
 
         pPoseStack.translate(-1, -1.9375, 0);
         pPoseStack.translate(0.5, 0, 0.5);
-        pPoseStack.mulPose(Vector3f.YP.rotationDegrees(pBlockEntity.getBlockState().getValue(FermentationBarrelBlock.FACING).toYRot()));
+        pPoseStack.mulPose(Axis.YP.rotationDegrees(pBlockEntity.getBlockState().getValue(FermentationBarrelBlock.FACING).toYRot()));
         pPoseStack.translate(-0.5 + 0.125, 0, -0.5 + 0.125);
         lid.xRot = pBlockEntity.getOpenNess(pPartialTick);
         lid.render(pPoseStack, pBufferSource.getBuffer(RenderType.entitySolid(TEXTURE)), pPackedLight, pPackedOverlay);

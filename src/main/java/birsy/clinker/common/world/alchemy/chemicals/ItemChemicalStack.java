@@ -2,6 +2,8 @@ package birsy.clinker.common.world.alchemy.chemicals;
 
 import birsy.clinker.common.world.alchemy.MatterState;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
@@ -19,7 +21,7 @@ public class ItemChemicalStack implements ChemicalHolder, ItemLike {
     }
 
     public ItemChemicalStack(CompoundTag tagIn) {
-        this(Registry.ITEM.get(new ResourceLocation(tagIn.getString("id"))), tagIn.getInt("amount"));
+        this(ForgeRegistries.ITEMS.getValue(new ResourceLocation(tagIn.getString("id"))), tagIn.getInt("amount"));
     }
 
 

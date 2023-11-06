@@ -13,6 +13,7 @@ import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
 import net.minecraft.client.GameNarrator;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -32,6 +33,7 @@ import org.joml.*;
 import org.lwjgl.glfw.GLFW;
 
 import java.lang.Math;
+import java.util.Optional;
 
 @OnlyIn(Dist.CLIENT)
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = Clinker.MOD_ID)
@@ -64,6 +66,8 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
 
     protected float itemOffsetX;
     protected float itemOffsetY;
+
+    WorkstationPhysicsObject hoveredObject;
 
     public AlchemicalWorkstationScreen(Workstation workstation) {
         super(GameNarrator.NO_TITLE);
@@ -213,6 +217,38 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
     }
 
     @Override
+    public void mouseMoved(double pMouseX, double pMouseY) {
+        this.updateHoveredObject(pMouseX, pMouseY);
+        super.mouseMoved(pMouseX, pMouseY);
+    }
+
+    public void updateHoveredObject(double mouseX, double mouseY) {
+        Minecraft minecraft = Minecraft.getInstance();
+        Vec3 rayOrigin = workstation.camera.position;
+        Vec3 rayDirection = minecraft.gameRenderer.getMainCamera().getNearPlane().getPointOnPlane((float) (mouseX / minecraft.screen.width), (float) (mouseY / minecraft.screen.height));
+        rayDirection = rayOrigin.add(rayDirection);
+
+        // todo: make this not shit : )
+        for (WorkstationPhysicsObject object : workstation.environment.objects) {
+            Optional<Vec3> raycast = object.collider.boundingBox.clip(rayOrigin, rayDirection.scale(4));
+            if (raycast.isPresent()) {
+                this.setHoveredObject(object);
+                Clinker.LOGGER.info("got");
+                return;
+            }
+        }
+        this.setHoveredObject(null);
+    }
+
+    public void setHoveredObject(WorkstationPhysicsObject object) {
+        if (this.hoveredObject != null) {
+            this.hoveredObject.isHovered = false;
+        }
+        if (object != null) object.isHovered = true;
+        this.hoveredObject = object;
+    }
+
+    @Override
     protected void updateHoverState(int pMouseX, int pMouseY, float pPartialTick) {
         GuiElement newHoveredElement = GuiHelper.findHoveredElement(leafNodes, pMouseX, pMouseY, pPartialTick);
         if (newHoveredElement != hoveredElement) {
@@ -228,6 +264,17 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
     }
 
     @Override
+    public boolean mouseDragged(double pMouseX, double pMouseY, int pButton, double pDragX, double pDragY) {
+        if (this.hoveredObject != null) {
+            Camera camera = minecraft.gameRenderer.getMainCamera();
+            Vec3 push = new Vec3(camera.left).scale(pDragX);
+            push = push.add(new Vec3(camera.up).scale(pDragY));
+            this.hoveredObject.position = this.hoveredObject.position.add(push);
+        }
+        return super.mouseDragged(pMouseX, pMouseY, pButton, pDragX, pDragY);
+    }
+
+    @Override
     public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
         this.cursorState = ClinkerCursor.CursorState.GRAB;
         if (hoveredElement != null) {
@@ -239,6 +286,7 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
             clickedElement.clicked = true;
             clickedElement.button = pButton;
         }
+
         return super.mouseClicked(pMouseX, pMouseY, pButton);
     }
 
@@ -249,7 +297,7 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
     }
 
     @Override
-    public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+    public void render(GuiGraphics graphics, int pMouseX, int pMouseY, float pPartialTick) {
         if (this.movingLeft) this.workstation.camera.lineProgress -= cameraSpeed * Minecraft.getInstance().getDeltaFrameTime();
         if (this.movingRight) this.workstation.camera.lineProgress += cameraSpeed * Minecraft.getInstance().getDeltaFrameTime();
         this.workstation.camera.update();
@@ -259,9 +307,9 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
         inventoryElement.pY = inventoryElement.y;
         inventoryElement.setScreenTransition(this.getScreenTransition(pPartialTick));
 
-        super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
+        super.render(graphics, pMouseX, pMouseY, pPartialTick);
 
-        renderMouse(pPoseStack, pPartialTick);
+        renderMouse(graphics.pose(), pPartialTick);
     }
     
     private void renderMouse(PoseStack pPoseStack, float pPartialTick) {
@@ -312,21 +360,27 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
     public void setCameraView(Camera camera, PoseStack matrixStack, float partialTick) {
         Vec3 pos = getCamPos(partialTick);
         camera.setPosition(camera.getPosition().lerp(pos, getScreenTransition(partialTick)));
-        Quaterniond quaterniond = new Quaterniond().slerp(this.pCamRotation.slerp(this.camRotation, partialTick, new Quaterniond()), getScreenTransition(partialTick));
-        camera.rotation.set((float) quaterniond.x(), (float) quaterniond.y(), (float) quaterniond.z(), (float) quaterniond.w());
+
+        //Quaterniond workshopCameraRotation = this.pCamRotation.slerp(this.camRotation, partialTick, new Quaterniond());
+        //Quaterniond quaterniond = new Quaterniond(camera.rotation()).slerp(workshopCameraRotation, getScreenTransition(partialTick));
+        //GuiHelper.setCameraRotation(camera, this.camRotation);
+
         if (matrixStack != null) {
-            matrixStack.mulPose(new Quaternionf(new AxisAngle4f(Mth.lerp(getScreenTransition(partialTick), 0, -25), new Vector3f(1, 0, 0))));
-            matrixStack.mulPose(new Quaternionf(quaterniond));
+           // matrixStack.mulPose(new Quaternionf(new AxisAngle4f(Mth.lerp(getScreenTransition(partialTick), 0, -25), new Vector3f(1, 0, 0))));
+           // matrixStack.mulPose(new Quaternionf(quaterniond));
         }
     }
 
     @SubscribeEvent
     public static void resetCameraAngles(ViewportEvent.ComputeCameraAngles event) {
         if (Minecraft.getInstance().screen instanceof AlchemicalWorkstationScreen screen) {
+            Quaterniond workshopCameraRotation = screen.pCamRotation.slerp(screen.camRotation, event.getPartialTick(), new Quaterniond());
+            Vector3d angles = workshopCameraRotation.getEulerAnglesYXZ(new Vector3d());
+
             float transition = screen.getScreenTransition((float) event.getPartialTick());
-            event.setPitch(Mth.rotLerp(transition, event.getPitch(), 0));
-            event.setRoll(Mth.rotLerp(transition, event.getRoll(), 0));
-            event.setYaw(Mth.rotLerp(transition, event.getYaw(), 0));
+            event.setPitch(Mth.rotLerp(transition, event.getPitch(), 20.0F));
+            event.setRoll(Mth.rotLerp(transition, event.getRoll(), (float) Math.toDegrees(angles.z)));
+            event.setYaw(Mth.rotLerp(transition, event.getYaw(), (float) Math.toDegrees(angles.y)));
         }
     }
 
@@ -606,7 +660,10 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
 
             } else if (this.screen.hoveredElement == null && !isHoveringParent) {
                 this.inventory.setItem(this.index, ItemStack.EMPTY);
-                WorkstationPhysicsObject object = new WorkstationPhysicsObject(this.screen.workstation.camera.position.add(this.screen.workstation.camera.direction.scale(1.2)).add(0, 0.2, 0), 1.0F,
+                Vec3 position = this.screen.workstation.camera.position;
+                position = new Vec3(Math.round(position.x()), Math.round(position.y()), Math.round(position.z()));
+                position = position.add(-0.5, -0.5, -2.00 - (1.0F / 16.0F));
+                WorkstationPhysicsObject object = new WorkstationPhysicsObject(position, 1.0F,
                         3.0F / 16.0F, 3.0F / 16.0F, 3.0F / 16.0F);
                 this.screen.workstation.environment.addObject(object);
             } else {

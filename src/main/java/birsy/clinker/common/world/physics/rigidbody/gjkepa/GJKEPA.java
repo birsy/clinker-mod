@@ -3,8 +3,9 @@ package birsy.clinker.common.world.physics.rigidbody.gjkepa;
 
 import birsy.clinker.common.world.physics.rigidbody.colliders.ICollisionShape;
 import birsy.clinker.core.Clinker;
-import com.mojang.math.Quaternion;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Quaterniond;
+import org.joml.Quaternionf;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -581,23 +582,23 @@ public class GJKEPA {
         return new EPANormalResult(normals, minimumDistanceTriangle, minimumDistance);
     }
 
-    public static Vec3 rotateQuaternion (Vec3 vector, Quaternion rotation) {
-        Quaternion vectorAsQuaternion = new Quaternion((float)vector.x, (float)vector.y, (float)vector.z, 0.0f);
-        Quaternion mut = rotation.copy();
+    public static Vec3 rotateQuaternion (Vec3 vector, Quaternionf rotation) {
+        Quaternionf vectorAsQuaternion = new Quaternionf((float)vector.x, (float)vector.y, (float)vector.z, 0.0f);
+        Quaternionf mut = new Quaternionf(rotation);
         vectorAsQuaternion.mul(mut) ;
-        mut.conj();
+        mut.conjugate();
         mut.mul(vectorAsQuaternion);
-        return new Vec3(mut.i(), mut.j(), mut.k());
+        return new Vec3(mut.x(), mut.y(), mut.z());
     }
 
-    public static Vec3 rotateQuaternionReverse(Vec3 vector, Quaternion Q) {
-        Quaternion vectorAsQuaternion = new Quaternion((float)vector.x, (float)vector.y, (float)vector.z, 0.0f) ;
-        Quaternion mut = Q.copy();
-        mut.conj();
+    public static Vec3 rotateQuaternionReverse(Vec3 vector, Quaternionf Q) {
+        Quaternionf vectorAsQuaternion = new Quaternionf((float)vector.x, (float)vector.y, (float)vector.z, 0.0f) ;
+        Quaternionf mut = new Quaternionf(Q);
+        mut.conjugate();
         vectorAsQuaternion.mul(mut);
-        mut.conj();
+        mut.conjugate();
         mut.mul(vectorAsQuaternion);
-        return new Vec3(mut.i(), mut.j(), mut.k());
+        return new Vec3(mut.x(), mut.y(), mut.z());
     }
 
     public record EvolutionResult(boolean complete, Vec3 direction) {}

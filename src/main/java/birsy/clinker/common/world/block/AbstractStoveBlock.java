@@ -24,14 +24,14 @@ public abstract class AbstractStoveBlock extends AbstractDoubleBlock {
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
     public static final EnumProperty<ChestType> TYPE = BlockStateProperties.CHEST_TYPE;
-
+    private static final ChestType[] BY_ID = ChestType.values();
     protected final VoxelShape[][] shapes = new VoxelShape[3][4];
 
     public AbstractStoveBlock(Properties pProperties) {
         super(pProperties, DoubleBlockHalf.LOWER);
 
         int j = 0;
-        for (ChestType chestType : ChestType.BY_ID) {
+        for (ChestType chestType : BY_ID) {
             int i = 0;
             for (Direction direction : Direction.Plane.HORIZONTAL) {
                 shapes[j][i] = this.createShape(direction, chestType);
@@ -116,7 +116,7 @@ public abstract class AbstractStoveBlock extends AbstractDoubleBlock {
             BlockState state = level.getBlockState(pos);
             if (this.isValidType(state)) {
                 if (state.getValue(FACING) == facing && state.getValue(TYPE) == ChestType.SINGLE) {
-                    return ChestType.BY_ID[i + 1];
+                    return BY_ID[i + 1];
                 }
             }
         }

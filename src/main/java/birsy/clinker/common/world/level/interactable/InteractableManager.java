@@ -52,7 +52,7 @@ public class InteractableManager {
      */
     public static void addServerInteractable(Interactable interactable, ServerLevel level) {
         Vec3 position = interactable.getTransform().getPosition();
-        BlockPos blockPos = new BlockPos(position.x(), position.y(), position.z());
+        BlockPos blockPos = BlockPos.containing(position.x(), position.y(), position.z());
 
         LevelChunk chunk = level.getChunkAt(blockPos);
         //ClinkerPacketHandler.sendToClientsInChunk((chunk), new ClientboundInteractableAddPacket(interactable));
@@ -173,17 +173,20 @@ public class InteractableManager {
         if (clientInteractableManager == null) return;
 
         LocalPlayer player = mc.player;
-        double reach = player.getReachDistance();
+        double blockReach = player.getBlockReach();
+        double entityReach = player.getEntityReach();
+
         Level level = InteractableManager.clientInteractableManager.level;
 
         Vec3 direction = player.getLookAngle();
         Vec3 fromPos = player.getEyePosition(mc.getPartialTick());
-        Vec3 toPos = direction.scale(reach).add(fromPos);
+        Vec3 toPos = direction.scale(blockReach).add(fromPos);
+        Vec3 toPosEntity = direction.scale(entityReach).add(fromPos);
 
         ClipContext cContext = new ClipContext(fromPos, toPos, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player);
         BlockHitResult bResult = level.clip(cContext);
         double blockDistance = bResult == null ? Float.POSITIVE_INFINITY : bResult.getLocation().distanceTo(fromPos);
-        EntityHitResult eResult = ProjectileUtil.getEntityHitResult(player, fromPos, toPos, new AABB(fromPos, toPos), (entity) -> !entity.isSpectator() && entity.isPickable(), reach);
+        EntityHitResult eResult = ProjectileUtil.getEntityHitResult(player, fromPos, toPos, new AABB(fromPos, toPosEntity), (entity) -> !entity.isSpectator() && entity.isPickable(), entityReach);
         double entityDistance = eResult == null ? Float.POSITIVE_INFINITY : eResult.getLocation().distanceTo(fromPos);
 
         List<Interactable> interactablesInChunks = InteractableManager.clientInteractableManager.storage.getInteractablesInBounds(new AABB(fromPos, toPos));
@@ -218,7 +221,7 @@ public class InteractableManager {
             LocalPlayer player = mc.player;
             Vec3 fromPos = player.getEyePosition(mc.getPartialTick());
             Vec3 direction = player.getLookAngle();
-            Vec3 toPos = direction.scale(player.getReachDistance()).add(fromPos);
+            Vec3 toPos = direction.scale(player.getBlockReach()).add(fromPos);
             InteractionContext iContext = new InteractionContext(fromPos, toPos, event.getHand());
 
             Options options = mc.options;

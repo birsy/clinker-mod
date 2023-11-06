@@ -92,8 +92,8 @@ public abstract class SalamanderRenderer<T extends AbstractSalamanderPartEntity,
         float animationSpeed = 0.0F;
         float animationAmount = 0.0F;
         if (!shouldSit && pEntity.isAlive()) {
-            animationSpeed = Mth.lerp(pPartialTicks, pEntity.animationSpeedOld, pEntity.animationSpeed);
-            animationAmount = pEntity.animationPosition - pEntity.animationSpeed * (1.0F - pPartialTicks);
+            //animationSpeed = Mth.lerp(pPartialTicks, pEntity.animationSpeedOld, pEntity.animationSpeed);
+            //animationAmount = pEntity.animationPosition - pEntity.animationSpeed * (1.0F - pPartialTicks);
             if (pEntity.isBaby()) {
                 animationAmount *= 3.0F;
             }

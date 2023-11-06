@@ -2,7 +2,7 @@ package birsy.clinker.client.render.entity;
 
 import birsy.clinker.common.world.entity.LumberingAspenEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -26,8 +26,8 @@ public class LumberingAspenRenderer extends EntityRenderer<LumberingAspenEntity>
         Vec3i trunkSize = pEntity.getTrunkSize();
         pMatrixStack.pushPose();
         float ticks = pEntity.tickCount + pPartialTicks;
-        pMatrixStack.mulPose(Vector3f.XP.rotation(Mth.cos(ticks * 0.1F) * 0.1F));
-        pMatrixStack.mulPose(Vector3f.ZP.rotation(Mth.sin(ticks * 0.11F) * 0.1F));
+        pMatrixStack.mulPose(Axis.XP.rotation(Mth.cos(ticks * 0.1F) * 0.1F));
+        pMatrixStack.mulPose(Axis.ZP.rotation(Mth.sin(ticks * 0.11F) * 0.1F));
         for (int x = 0; x < trunkSize.getX(); x++) {
             for (int y = 0; y < trunkSize.getY(); y++) {
                 for (int z = 0; z < trunkSize.getZ(); z++) {

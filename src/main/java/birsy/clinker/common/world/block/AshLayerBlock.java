@@ -17,8 +17,8 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
+
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -44,7 +44,7 @@ public class AshLayerBlock extends AshBlock implements SimpleWaterloggedBlock
 	
 	public AshLayerBlock()
 	{
-		super(Block.Properties.of(Material.SNOW, MaterialColor.COLOR_GRAY)
+		super(Block.Properties.of().mapColor(MapColor.COLOR_GRAY)
 				.strength(0.5F)
 				.sound(SoundType.SNOW));
 		this.registerDefaultState(this.stateDefinition.any().setValue(LAYERS, Integer.valueOf(1)).setValue(WATERLOGGED, Boolean.valueOf(false)));

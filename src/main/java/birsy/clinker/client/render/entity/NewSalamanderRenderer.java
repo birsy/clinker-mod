@@ -45,14 +45,14 @@ public class NewSalamanderRenderer extends InterpolatedEntityRenderer<NewSalaman
                 for (SalamanderSkeletonFactory.SalamanderSegmentSkeleton segment : salamanderSkeleton.segments) {
                     for (Object obj : segment.constraints) {
                         if (obj instanceof Constraint constraint) {
-                            constraint.renderDebugInfo(pEntity.getSkeleton(), pEntity, pPartialTick, pPoseStack, pBuffer);
+                            //constraint.renderDebugInfo(pEntity.getSkeleton(), pEntity, pPartialTick, pPoseStack, pBuffer);
                         }
                     }
                 }
             }
         }
         pPoseStack.popPose();
-        renderDebug(pEntity, pEntityYaw, pPartialTick, pPoseStack, pBuffer, pPackedLight);
+        //renderDebug(pEntity, pEntityYaw, pPartialTick, pPoseStack, pBuffer, pPackedLight);
     }
 
     @Override

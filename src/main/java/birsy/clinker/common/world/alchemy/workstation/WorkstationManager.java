@@ -67,6 +67,7 @@ public class WorkstationManager {
     @SubscribeEvent
     public static void onBlockChange(BlockEvent event) {
         WorkstationManager manager = managerByLevel.get(event.getLevel());
+        if (manager == null) return;
         Workstation workstationAtPos = manager.getWorkstationAtBlock(event.getPos());
 
         if (event.getState().is(ClinkerTags.WORKSTATION) && workstationAtPos == null) {

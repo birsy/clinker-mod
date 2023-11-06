@@ -9,7 +9,7 @@ import birsy.clinker.core.Clinker;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -106,16 +106,16 @@ public abstract class InterpolatedEntityRenderer<T extends LivingEntity & Interp
             if (deathTime > 1.0F) {
                 deathTime = 1.0F;
             }
-            pMatrixStack.mulPose(Vector3f.ZP.rotationDegrees(deathTime * this.getFlipDegrees(pEntityLiving)));
+            pMatrixStack.mulPose(Axis.ZP.rotationDegrees(deathTime * this.getFlipDegrees(pEntityLiving)));
         } else if (pEntityLiving.isAutoSpinAttack()) {
-            pMatrixStack.mulPose(Vector3f.XP.rotationDegrees(-90.0F - pEntityLiving.getXRot()));
-            pMatrixStack.mulPose(Vector3f.YP.rotationDegrees(((float)pEntityLiving.tickCount + pPartialTicks) * -75.0F));
+            pMatrixStack.mulPose(Axis.XP.rotationDegrees(-90.0F - pEntityLiving.getXRot()));
+            pMatrixStack.mulPose(Axis.YP.rotationDegrees(((float)pEntityLiving.tickCount + pPartialTicks) * -75.0F));
         } else if (LivingEntityRenderer.isEntityUpsideDown(pEntityLiving)) {
             pMatrixStack.translate(0.0D, pEntityLiving.getBbHeight() + 0.1F, 0.0D);
-            pMatrixStack.mulPose(Vector3f.ZP.rotationDegrees(180.0F));
+            pMatrixStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
         }
         if (pEntityLiving.isFullyFrozen()) {
-            pMatrixStack.mulPose(Vector3f.YP.rotationDegrees(Mth.cos(pEntityLiving.tickCount * 3.25F) * Mth.PI * 0.4F));
+            pMatrixStack.mulPose(Axis.YP.rotationDegrees(Mth.cos(pEntityLiving.tickCount * 3.25F) * Mth.PI * 0.4F));
         }
 
         //pMatrixStack.mulPose(Vector3f.YP.rotationDegrees(180));

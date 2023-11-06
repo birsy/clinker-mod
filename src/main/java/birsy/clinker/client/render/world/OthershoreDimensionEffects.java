@@ -1,50 +1,35 @@
 package birsy.clinker.client.render.world;
 
 import birsy.clinker.client.render.ClinkerShaders;
-import birsy.clinker.client.render.world.blockentity.SarcophagusInnardsRenderer;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
-import com.mojang.math.Vector4f;
+import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
 import net.minecraft.client.GraphicsStatus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.DimensionSpecialEffects;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.texture.AbstractTexture;
-import net.minecraft.client.renderer.texture.SimpleTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.core.Direction;
-import net.minecraft.core.Vec3i;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.PackType;
-import net.minecraft.util.CubicSampler;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.level.LightLayer;
-import net.minecraft.world.level.biome.BiomeManager;
-import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.resource.PathPackResources;
-import net.minecraftforge.resource.ResourcePackLoader;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL11C;
-import org.lwjgl.opengl.GL45;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 import java.awt.*;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Random;
 
 
 @OnlyIn(Dist.CLIENT)
@@ -108,7 +93,7 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
         // some math to make it all a little smoother and fancy looking. just kept adding functions until it looked good.
         skyLightColor.lerp(new Vector3f(0.0f, 0.0f, 1.0f), (float) Math.pow((1 - skyL), 1.1));
         skyL = ((1 / ((1.5F * skyL * skyL * skyL) - 2)) + 2) / 1.5F;
-        skyLightColor.lerp(Vector3f.ZERO, skyL);
+        skyLightColor.lerp(new Vector3f(), skyL);
         skyLightColor.mul(skyDarken);
 
         colors.set(blockLightColor.x() + skyLightColor.x(), blockLightColor.y() + skyLightColor.y(), blockLightColor.z() + skyLightColor.z());
@@ -185,7 +170,6 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
 
         //creates the sky disc
         RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
-        RenderSystem.enableTexture();
         RenderSystem.setShaderTexture(0, new ResourceLocation(Clinker.MOD_ID, "textures/environment/cloud_map_a.png"));
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.enableBlend();
@@ -220,7 +204,6 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
         float aboveCloudAlphaOffset = Mth.clamp(MathUtils.mapRange(-45.0F, -50.0F, 1.0F, 0.0F, cameraOffset), 0.0F, 1.0F);
         //Clinker.LOGGER.info(cameraOffset);
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        RenderSystem.disableTexture();
         renderCone(poseStack, bufferbuilder, resolution, false, radius, height, skyRed, skyGreen, skyBlue, 1.0F * aboveCloudAlphaOffset, 0.0F, skyRed, skyGreen, skyBlue, 1.0F * aboveCloudAlphaOffset);
         renderCone(poseStack, bufferbuilder, resolution, true, radius, -height, skyRed, skyGreen, skyBlue, 1.0F, 0.0F, skyRed, skyGreen, skyBlue, 1.0F * aboveCloudAlphaOffset);
 
@@ -360,17 +343,16 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
         float alpha = star[8] * Mth.lerp(skyLightFactor, 1.0F, 0.1F) * 0.8F;
 
         poseStack.translate(0, height, 0);
-        poseStack.mulPose(Vector3f.YP.rotationDegrees(time * distanceFactor * starSpeed));
-        poseStack.mulPose(Vector3f.XP.rotationDegrees(xRot));
-        poseStack.mulPose(Vector3f.ZP.rotationDegrees(zRot));
-        poseStack.mulPose(Vector3f.YP.rotationDegrees(yRot));
+        poseStack.mulPose(Axis.YP.rotationDegrees(time * distanceFactor * starSpeed));
+        poseStack.mulPose(Axis.XP.rotationDegrees(xRot));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(zRot));
+        poseStack.mulPose(Axis.YP.rotationDegrees(yRot));
 
         Matrix4f matrix = poseStack.last().pose();
 
         if (renderIndividual) bufferBuilder.begin(VertexFormat.Mode.QUADS, isFancy ? DefaultVertexFormat.POSITION_COLOR_TEX : DefaultVertexFormat.POSITION_COLOR);
         if (isFancy) {
             RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
-            RenderSystem.enableTexture();
             RenderSystem.setShaderTexture(0, STAR_TEXTURE);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
@@ -380,7 +362,6 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
             bufferBuilder.vertex(matrix, -radius, distance,  radius).color(red, green, blue, alpha * alpha).uv(0, 1).endVertex();
         } else {
             RenderSystem.setShader(GameRenderer::getPositionColorShader);
-            RenderSystem.disableTexture();
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
             bufferBuilder.vertex(matrix, -radius, distance, -radius).color(red, green, blue, alpha * alpha).endVertex();

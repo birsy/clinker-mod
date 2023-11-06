@@ -1,5 +1,6 @@
 package birsy.clinker.common.world.alchemy.workstation;
 
+import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.JomlConversions;
 import birsy.clinker.core.util.MathUtils;
 import net.minecraft.world.phys.AABB;
@@ -19,6 +20,7 @@ public class WorkstationPhysicsObject {
     protected Quaterniond pRotation;
     protected Vec3 acceleration;
     protected Quaterniond torque;
+    public boolean isHovered = false;
 
     public double mass;
     protected double inverseMass;
@@ -63,32 +65,35 @@ public class WorkstationPhysicsObject {
         this.collider.updateTransform(this.position, this.rotation);
     }
 
+    // DONT FUCKING WORRY ABOUT ROTATION SHIT FOR NOW
+    // todo: rotation shit
     public void push(Vector3d pos, Vector3d nudge) {
-        Vector3d currentPos = JomlConversions.toJOML(this.position);
-
-        nudge = this.rotation.transformInverse(nudge);
-        pos = this.rotation.transformInverse(pos.sub(currentPos));
-
-        Vector3d angularNudge = this.inverseInertiaTensor.transform(pos.cross(nudge, new Vector3d()));
-
-        double normalMass = -pos.cross(angularNudge, new Vector3d()).dot(nudge) / nudge.dot(nudge) + this.inverseMass;
-
-        if (nudge.dot(nudge) < Double.MIN_NORMAL) {
-            return;
-        }
-
-        double scalar = 1 / normalMass;
-
-        nudge = this.rotation.transform(nudge);
-        angularNudge = this.rotation.transform(angularNudge);
-
-        currentPos.add(nudge.mul(scalar * this.inverseMass));
-
-        // update actual pose
-        this.position = JomlConversions.toMojang(currentPos);
-
-        // rotational push
-        this.pushRotate(angularNudge, scalar);
+        this.position = this.position.add(JomlConversions.toMojang(nudge));
+//        Vector3d currentPos = JomlConversions.toJOML(this.position);
+//
+//        nudge = this.rotation.transformInverse(nudge);
+//        pos = this.rotation.transformInverse(pos.sub(currentPos));
+//
+//        Vector3d angularNudge = this.inverseInertiaTensor.transform(pos.cross(nudge, new Vector3d()));
+//
+//        double normalMass = -pos.cross(angularNudge, new Vector3d()).dot(nudge) / nudge.dot(nudge) + this.inverseMass;
+//
+//        if (nudge.dot(nudge) < Double.MIN_NORMAL) {
+//            return;
+//        }
+//
+//        double scalar = 1 / normalMass;
+//
+//        nudge = this.rotation.transform(nudge);
+//        angularNudge = this.rotation.transform(angularNudge);
+//
+//        currentPos.add(nudge);
+//
+//        // update actual pose
+//        this.position = JomlConversions.toMojang(currentPos);
+//
+//        // rotational push
+//        this.pushRotate(angularNudge, scalar);
     }
     private void pushRotate(Vector3d angularNudge, double scalar) {
         Quaterniond q = new Quaterniond(

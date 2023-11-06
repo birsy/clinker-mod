@@ -24,7 +24,7 @@ public class TextBox extends PageElement {
     public void render(PoseStack stack, float partialTicks) {
         for (int i = 0; i < textLines.size(); i++) {
             FormattedCharSequence formattedcharsequence = this.textLines.get(i);
-            this.font.draw(stack, formattedcharsequence, x, y + i * (this.font.lineHeight + lineSpace), 0);
+            //this.font.drawInBatch(stack, formattedcharsequence, x, y + i * (this.font.lineHeight + lineSpace), 0);
         }
     }
 }

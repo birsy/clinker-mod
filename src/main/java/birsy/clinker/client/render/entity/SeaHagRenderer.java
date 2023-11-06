@@ -5,8 +5,6 @@ import birsy.clinker.client.render.entity.model.base.AnimFunctions;
 import birsy.clinker.common.world.entity.SeaHagEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Matrix3f;
-import com.mojang.math.Matrix4f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -14,6 +12,8 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
 
 public class SeaHagRenderer extends ClinkerEntityRenderer<SeaHagEntity, SeaHagModel<SeaHagEntity>> {
     private static final ResourceLocation SEA_HAG_LOCATION = new ResourceLocation(Clinker.MOD_ID, "textures/entity/sea_hag.png");

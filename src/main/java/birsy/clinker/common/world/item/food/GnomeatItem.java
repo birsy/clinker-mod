@@ -22,7 +22,6 @@ public class GnomeatItem extends Item
 	public GnomeatItem()
 	{
 		super(new Item.Properties()
-				.tab(Clinker.CLINKER_FOOD)
 				.food(new FoodProperties.Builder()
 						.nutrition(2)
 						.saturationMod(2.0F)
