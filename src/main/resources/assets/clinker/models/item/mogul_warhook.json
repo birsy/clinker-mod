@@ -1,0 +1,21 @@
+{
+   "parent": "minecraft:item/handheld",
+   "loader": "forge:separate_transforms",
+   "textures": {
+      "layer0": "clinker:item/mogul_warhook"
+   },
+   "base": {
+      "parent": "builtin/entity"
+   },
+   "perspectives": {
+      "gui": {
+         "parent": "clinker:item/mogul_warhook_inventory"
+      },
+      "fixed": {
+         "parent": "clinker:item/mogul_warhook_inventory"
+      },
+      "ground": {
+         "parent": "clinker:item/mogul_warhook_inventory"
+      }
+   }
+}

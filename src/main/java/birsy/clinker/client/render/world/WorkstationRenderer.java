@@ -53,7 +53,7 @@ public class WorkstationRenderer {
         }
 
         for (Workstation workstation : renderableWorkstations) {
-            renderWorkstation(poseStack, pBuffer, workstation, pPartialTicks);
+            //renderWorkstation(poseStack, pBuffer, workstation, pPartialTicks);
         }
     }
 

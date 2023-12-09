@@ -2,8 +2,7 @@ package birsy.clinker.mixin.client;
 
 import birsy.clinker.client.render.entity.base.InterpolatedEntityRenderer;
 import birsy.clinker.common.world.alchemy.workstation.WorkstationManager;
-import birsy.clinker.common.world.level.interactable.InteractableManager;
-import birsy.clinker.core.Clinker;
+import birsy.clinker.common.world.level.interactableOLD.InteractableManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.entity.Entity;

@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.level.interactable;
+package birsy.clinker.common.world.level.interactableOLD;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;

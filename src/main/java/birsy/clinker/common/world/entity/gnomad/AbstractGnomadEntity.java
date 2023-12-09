@@ -1,7 +1,6 @@
 package birsy.clinker.common.world.entity.gnomad;
 
 import birsy.clinker.common.world.entity.IVelocityTilt;
-import birsy.clinker.common.world.entity.ai.ISitter;
 import birsy.clinker.core.util.MathUtils;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntitySelector;
@@ -15,7 +14,7 @@ import net.minecraft.world.phys.Vec3;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractGnomadEntity extends Monster implements IVelocityTilt, ISitter {
+public abstract class AbstractGnomadEntity extends Monster implements IVelocityTilt {
     private float pRoll = 0.0F;
     private float roll = 0.0F;
     private float pPitch = 0.0F;
@@ -44,6 +43,10 @@ public abstract class AbstractGnomadEntity extends Monster implements IVelocityT
         this.updateHeadShaking();
         this.updateSitting();
         this.updateEntityRotation(this);
+    }
+
+    private void updateSitting() {
+        this.setSitTicks(Mth.clamp(this.getSitTicks(1.0F) + ((this.isSitting() ? 1.0F : -1.0F) * (0.075F)), 0, 1));
     }
 
     public void updateHeadShaking() {

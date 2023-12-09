@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.level.interactable;
+package birsy.clinker.common.world.level.interactableOLD;
 
 import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.interactable.ServerboundInteractableInteractionPacket;

@@ -1,7 +1,6 @@
-package birsy.clinker.common.world.level.interactable.storage;
+package birsy.clinker.common.world.level.interactableOLD.storage;
 
-import birsy.clinker.common.world.level.interactable.Interactable;
-import birsy.clinker.core.Clinker;
+import birsy.clinker.common.world.level.interactableOLD.Interactable;
 import it.unimi.dsi.fastutil.longs.*;
 import net.minecraft.core.SectionPos;
 import net.minecraft.world.level.ChunkPos;

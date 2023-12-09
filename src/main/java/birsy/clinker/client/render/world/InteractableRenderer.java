@@ -1,8 +1,8 @@
 package birsy.clinker.client.render.world;
 
 import birsy.clinker.client.render.DebugRenderUtil;
-import birsy.clinker.common.world.level.interactable.Interactable;
-import birsy.clinker.common.world.level.interactable.InteractableManager;
+import birsy.clinker.common.world.level.interactableOLD.Interactable;
+import birsy.clinker.common.world.level.interactableOLD.InteractableManager;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.common.world.physics.rigidbody.Transform;
 import com.mojang.blaze3d.vertex.PoseStack;

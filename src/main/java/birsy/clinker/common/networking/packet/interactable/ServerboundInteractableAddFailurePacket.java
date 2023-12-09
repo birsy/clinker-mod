@@ -2,9 +2,8 @@ package birsy.clinker.common.networking.packet.interactable;
 
 import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.ServerboundPacket;
-import birsy.clinker.common.networking.packet.interactable.ClientboundInteractableAddPacket;
-import birsy.clinker.common.world.level.interactable.Interactable;
-import birsy.clinker.common.world.level.interactable.InteractableManager;
+import birsy.clinker.common.world.level.interactableOLD.Interactable;
+import birsy.clinker.common.world.level.interactableOLD.InteractableManager;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 

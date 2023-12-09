@@ -2,13 +2,11 @@ package birsy.clinker.core.registry;
 
 import birsy.clinker.client.render.entity.*;
 import birsy.clinker.client.render.entity.model.*;
-import birsy.clinker.common.world.entity.LumberingAspenEntity;
-import birsy.clinker.common.world.entity.MudScarabEntity;
-import birsy.clinker.common.world.entity.OrdnanceEntity;
+import birsy.clinker.common.world.entity.*;
+import birsy.clinker.common.world.entity.gnomad.NewGnomadEntity;
 import birsy.clinker.common.world.entity.salamander.NewSalamanderEntity;
 import birsy.clinker.common.world.entity.salamander.SalamanderBodyEntity;
 import birsy.clinker.common.world.entity.salamander.SalamanderHeadEntity;
-import birsy.clinker.common.world.entity.SeaHagEntity;
 import birsy.clinker.common.world.entity.gnomad.GnomadAxemanEntity;
 import birsy.clinker.core.Clinker;
 import net.minecraft.resources.ResourceLocation;
@@ -57,6 +55,11 @@ public class ClinkerEntities {
                     .sized(1.0f, 1.5f)
                     .build(new ResourceLocation(Clinker.MOD_ID, "gnomad_axeman").toString()));
 
+    public static final RegistryObject<EntityType<NewGnomadEntity>> GNOMAD = ENTITY_TYPES.register("gnomad", () ->
+            EntityType.Builder.of(NewGnomadEntity::new, MobCategory.MONSTER)
+                    .sized(1.0f, 1.5f)
+                    .build(new ResourceLocation(Clinker.MOD_ID, "gnomad").toString()));
+
     public static final RegistryObject<EntityType<LumberingAspenEntity>> LUMBERING_ASPEN = ENTITY_TYPES.register("lumbering_aspen", () ->
             EntityType.Builder.of(LumberingAspenEntity::new, MobCategory.AMBIENT)
                     .sized(1.0f, 1.0f)
@@ -66,7 +69,10 @@ public class ClinkerEntities {
             EntityType.Builder.of(OrdnanceEntity::new, MobCategory.MISC)
                     .sized(0.5F, 0.5F)
                     .build(new ResourceLocation(Clinker.MOD_ID, "ordnance").toString()));
-
+    public static final RegistryObject<EntityType<WarhookEntity>> WARHOOK = ENTITY_TYPES.register("warhook", () ->
+            EntityType.Builder.of(WarhookEntity::new, MobCategory.MISC)
+                    .sized(0.5F, 0.5F)
+                    .build(new ResourceLocation(Clinker.MOD_ID, "warhook").toString()));
     @SubscribeEvent
     public static void registerEntityAttribute(EntityAttributeCreationEvent event) {
         event.put(MUD_SCARAB.get(), MudScarabEntity.createAttributes().build());
@@ -75,6 +81,7 @@ public class ClinkerEntities {
         event.put(SALAMANDER.get(), NewSalamanderEntity.createAttributes().build());
         event.put(SEA_HAG.get(), SeaHagEntity.createAttributes().build());
         event.put(GNOMAD_AXEMAN.get(), GnomadAxemanEntity.createAttributes().build());
+        event.put(GNOMAD.get(), NewGnomadEntity.createAttributes().build());
         event.put(LUMBERING_ASPEN.get(), LumberingAspenEntity.createAttributes().build());
     }
 
@@ -91,6 +98,9 @@ public class ClinkerEntities {
         event.registerEntityRenderer(ClinkerEntities.LUMBERING_ASPEN.get(), LumberingAspenRenderer::new);
 
         event.registerEntityRenderer(ClinkerEntities.ORDNANCE.get(), OrdnanceRenderer::new);
+        event.registerEntityRenderer(ClinkerEntities.WARHOOK.get(), WarhookRenderer::new);
+
+        event.registerEntityRenderer(ClinkerEntities.GNOMAD.get(), NewGnomadRenderer::new);
     }
 
     @SubscribeEvent

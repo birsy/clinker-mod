@@ -69,6 +69,22 @@ public class OrdnanceEntity extends Projectile {
     public static OrdnanceEntity toss(Level pLevel, LivingEntity thrower) {
         OrdnanceEntity entity = new OrdnanceEntity(ClinkerEntities.ORDNANCE.get(), pLevel);
         entity.setOwner(thrower);
+        entity.shootFromRotation(thrower, thrower.getXRot(), thrower.getYRot(), 0.0F, 0.8F, 0.0F);
+        entity.setPos(thrower.getEyePosition().add(entity.getDeltaMovement().normalize()));
+        return entity;
+    }
+
+    public static OrdnanceEntity fireAtPosition(Level pLevel, Vec3 currentPosition, Vec3 targetPosition, int timeInTicks) {
+        OrdnanceEntity entity = OrdnanceEntity.create(pLevel, currentPosition.x, currentPosition.y, currentPosition.z);
+        double timeSquared = timeInTicks * timeInTicks;
+        Vec3 delta = targetPosition.subtract(currentPosition);
+        Vec3 acceleration = new Vec3(0, -0.024, 0);
+
+        double velocityX = (delta.x - (0.5 * acceleration.x * timeSquared)) / (double)timeInTicks;
+        double velocityY = (delta.y - (0.5 * acceleration.y * timeSquared)) / (double)timeInTicks;
+        double velocityZ = (delta.z - (0.5 * acceleration.z * timeSquared)) / (double)timeInTicks;
+        entity.setDeltaMovement(velocityX, velocityY, velocityZ);
+
         return entity;
     }
 
@@ -133,23 +149,27 @@ public class OrdnanceEntity extends Projectile {
             }
             velocity = VectorUtils.reflect(normal, velocity).scale(bounceStrength);
             this.level().gameEvent(GameEvent.PROJECTILE_LAND, blockHitResult.getBlockPos(), GameEvent.Context.of(this, this.level().getBlockState(blockHitResult.getBlockPos())));
-            this.playCollisionSound(1, 0.6F);
+            this.onHitBlock(blockHitResult);
         } else if (entityHitResult != null) {
             if (entityHitResult.getType() == HitResult.Type.ENTITY) {
                 entityHitResult.getEntity().hurt(this.damageSources().mobProjectile(this, (LivingEntity) this.getOwner()), 3.0F);
                 velocity = velocity.scale(-bounceStrength * 0.2F);
                 this.level().gameEvent(GameEvent.PROJECTILE_LAND, entityHitResult.getLocation(), GameEvent.Context.of(this, null));
-                this.playCollisionSound(1, 0.4F);
+                this.onHitEntity(entityHitResult);
             }
         }
+
         this.previousVelocity = this.getDeltaMovement();
         this.setDeltaMovement(velocity);
 
-        Vec3 finalTime = position.add(velocity).add(0, 0, 0);
-        this.setPos(finalTime);
+        Vec3 finalPos = position.add(velocity);
+        this.setPos(finalPos);
 
         this.incrementFuseTime();
         if (this.getFuseTime() > this.getMaxFuseTime()) {
+            this.detonate();
+        }
+        if (this.isOnFire()) {
             this.detonate();
         }
 
@@ -180,6 +200,20 @@ public class OrdnanceEntity extends Projectile {
 
         this.setDeflected(deflectionTime > 0);
         this.deflectionTime--;
+    }
+
+    @Override
+    protected void onHitEntity(EntityHitResult pResult) {
+        super.onHitEntity(pResult);
+        this.level().gameEvent(GameEvent.PROJECTILE_LAND, pResult.getLocation(), GameEvent.Context.of(this, null));
+        this.playCollisionSound(1, 0.4F);
+    }
+
+    @Override
+    protected void onHitBlock(BlockHitResult pResult) {
+        super.onHitBlock(pResult);
+        this.level().gameEvent(GameEvent.PROJECTILE_LAND, pResult.getLocation(), GameEvent.Context.of(this, null));
+        this.playCollisionSound(1, 0.6F);
     }
 
     public void playCollisionSound(float volumeMultiplier, float pitchMultiplier) {

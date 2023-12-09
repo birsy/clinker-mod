@@ -44,6 +44,7 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import javax.annotation.Nullable;
 import java.util.HashMap;
 
+@Deprecated
 public class GnomadAxemanEntity extends AbstractGnomadEntity implements InventoryCarrier {
     protected static final ImmutableList<SensorType<? extends Sensor<? super GnomadAxemanEntity>>> SENSOR_TYPES = ImmutableList.of(
             SensorType.NEAREST_LIVING_ENTITIES,

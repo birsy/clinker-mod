@@ -2,8 +2,7 @@
 package birsy.clinker.mixin.common;
 
 import birsy.clinker.common.world.alchemy.workstation.WorkstationManager;
-import birsy.clinker.common.world.level.interactable.InteractableManager;
-import birsy.clinker.core.Clinker;
+import birsy.clinker.common.world.level.interactableOLD.InteractableManager;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;

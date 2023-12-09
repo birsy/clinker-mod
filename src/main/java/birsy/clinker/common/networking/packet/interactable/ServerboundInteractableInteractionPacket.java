@@ -1,14 +1,13 @@
 package birsy.clinker.common.networking.packet.interactable;
 
 import birsy.clinker.common.networking.packet.ServerboundPacket;
-import birsy.clinker.common.world.level.interactable.Interactable;
-import birsy.clinker.common.world.level.interactable.InteractableManager;
-import birsy.clinker.common.world.level.interactable.InteractionInfo;
+import birsy.clinker.common.world.level.interactableOLD.Interactable;
+import birsy.clinker.common.world.level.interactableOLD.InteractableManager;
+import birsy.clinker.common.world.level.interactableOLD.InteractionInfo;
 import birsy.clinker.core.Clinker;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkEvent;
 
 public class ServerboundInteractableInteractionPacket extends ServerboundPacket {

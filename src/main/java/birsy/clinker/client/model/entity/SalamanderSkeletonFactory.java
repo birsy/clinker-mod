@@ -904,5 +904,4 @@ public class SalamanderSkeletonFactory implements SkeletonFactory {
             //pPoseStack.mulPose(this.currentRotation.toMojangQuaternion());
         }
 	}
-
 }

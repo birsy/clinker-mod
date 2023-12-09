@@ -1,9 +1,6 @@
 package birsy.clinker.core.registry;
 
-import birsy.clinker.common.world.item.AlchemicalItem;
-import birsy.clinker.common.world.item.AlchemyBookItem;
-import birsy.clinker.common.world.item.LadleItem;
-import birsy.clinker.common.world.item.OrdnanceItem;
+import birsy.clinker.common.world.item.*;
 import birsy.clinker.common.world.item.food.GnomeatItem;
 import birsy.clinker.common.world.item.food.GnomeatJerkyItem;
 import birsy.clinker.common.world.item.materials.enums.ClinkerItemTier;
@@ -43,7 +40,7 @@ public class ClinkerItems
 	public static final RegistryObject<Item> CENTIPEDE_SHELL = ITEMS.register("centipede_shell", () -> new Item(new Item.Properties()));
 	public static final RegistryObject<Item> SALT = ITEMS.register("salt", () -> new Item(new Item.Properties()));
 	public static final RegistryObject<Item> FAIRY_FRUIT = ITEMS.register("fairy_fruit", () -> new ItemNameBlockItem(ClinkerBlocks.FAIRY_FRUIT_BLOCK.get(), new Item.Properties()));
-	public static final RegistryObject<Item> ORDNANCE = ITEMS.register("ordnance", () -> new OrdnanceItem(new Item.Properties()));
+	public static final RegistryObject<Item> ORDNANCE = ITEMS.register("ordnance", () -> new OrdnanceItem(new Item.Properties().stacksTo(24)));
 
 	/**
 	 * FOOD
@@ -71,6 +68,8 @@ public class ClinkerItems
 	new HoeItem(ClinkerItemTier.LEAD, 0, -2.8F, new Item.Properties()));
 
 	public static final RegistryObject<Item> LADLE = ITEMS.register("ladle", () -> new LadleItem(new Item.Properties()));
+
+	public static final RegistryObject<Item> MOGUL_WARHOOK = ITEMS.register("mogul_warhook", () -> new MogulWarhookItem(new Item.Properties().stacksTo(1).defaultDurability(10430).rarity(Rarity.UNCOMMON)));
 
 	/**
 	 * ARMOR

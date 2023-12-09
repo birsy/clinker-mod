@@ -22,6 +22,7 @@ import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.forgespi.Environment;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -69,11 +70,17 @@ public class WorkstationManager {
         WorkstationManager manager = managerByLevel.get(event.getLevel());
         if (manager == null) return;
         Workstation workstationAtPos = manager.getWorkstationAtBlock(event.getPos());
-
-        if (event.getState().is(ClinkerTags.WORKSTATION) && workstationAtPos == null) {
-            manager.addWorkstationBlock(event.getPos());
-        } else if (!event.getState().is(ClinkerTags.WORKSTATION) && workstationAtPos != null) {
-            manager.removeWorkstationBlockFromUUID(event.getPos(), workstationAtPos.uuid);
+        // doing this so it doesnt keep crashing while im rebuilding the fucking mod
+        // todo: remove this before release
+        try {
+            if (event.getState().is(ClinkerTags.WORKSTATION) && workstationAtPos == null) {
+                manager.addWorkstationBlock(event.getPos());
+            } else if (!event.getState().is(ClinkerTags.WORKSTATION) && workstationAtPos != null) {
+                manager.removeWorkstationBlockFromUUID(event.getPos(), workstationAtPos.uuid);
+            }
+        } catch (NoClassDefFoundError e) {
+            //do nothing
+            return;
         }
     }
 

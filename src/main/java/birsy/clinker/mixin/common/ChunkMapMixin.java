@@ -1,6 +1,6 @@
 package birsy.clinker.mixin.common;
 
-import birsy.clinker.common.world.level.interactable.InteractableManager;
+import birsy.clinker.common.world.level.interactableOLD.InteractableManager;
 import birsy.clinker.core.Clinker;
 import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
 import net.minecraft.server.level.ChunkMap;

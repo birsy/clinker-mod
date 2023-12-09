@@ -7,6 +7,7 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -117,21 +118,16 @@ public class DebugRenderUtil {
         pPoseStack.popPose();
     }
 
-    public static void renderLine(PoseStack pPoseStack, VertexConsumer pConsumer, double pMinX, double pMinY, double pMinZ, double pMaxX, double pMaxY, double pMaxZ, float pRed, float pGreen, float pBlue, float pAlpha) {
-        Matrix4f matrix4f = pPoseStack.last().pose();
-        Matrix3f matrix3f = pPoseStack.last().normal();
-        float minX = (float)pMinX;
-        float minY = (float)pMinY;
-        float minZ = (float)pMinZ;
-        float maxX = (float)pMaxX;
-        float maxY = (float)pMaxY;
-        float maxZ = (float)pMaxZ;
-        Vector3f normal = new Vector3f(minX, minY, minZ);
-        normal.sub(new Vector3f(maxX, maxY, maxZ));
-        normal.normalize();
+    public static void renderLine(PoseStack pPoseStack, VertexConsumer pConsumer, Vec3 point1, Vec3 point2, float pRed, float pGreen, float pBlue, float pAlpha) {
+        renderLine(pPoseStack, pConsumer, point1.x(), point1.y(), point1.z(), point2.x(), point2.y(), point2.z(), pRed, pGreen, pBlue, pAlpha);
+    }
 
-        pConsumer.vertex(matrix4f, minX, minY, minZ).color(pRed, pGreen, pBlue, pAlpha).normal(matrix3f, normal.x(), normal.y(), normal.z()).endVertex();
-        pConsumer.vertex(matrix4f, maxX, maxY, maxZ).color(pRed, pGreen, pBlue, pAlpha).normal(matrix3f, normal.x(), normal.y(), normal.z()).endVertex();
+    public static void renderLine(PoseStack pPoseStack, VertexConsumer pConsumer, Vec3 point1, Vec3 point2, float r1, float g1, float b1, float a1, float r2, float g2, float b2, float a2) {
+        renderLine(pPoseStack, pConsumer, point1.x(), point1.y(), point1.z(), point2.x(), point2.y(), point2.z(), r1, g1, b1, a1, r2, g2, b2, a2);
+    }
+
+    public static void renderLine(PoseStack pPoseStack, VertexConsumer pConsumer, double pMinX, double pMinY, double pMinZ, double pMaxX, double pMaxY, double pMaxZ, float pRed, float pGreen, float pBlue, float pAlpha) {
+        renderLine(pPoseStack, pConsumer, pMinX, pMinY, pMinZ, pMaxX, pMaxY, pMaxZ, pRed, pGreen, pBlue, pAlpha, pRed, pGreen, pBlue, pAlpha);
     }
 
     public static void renderLine(PoseStack pPoseStack, VertexConsumer pConsumer, double pMinX, double pMinY, double pMinZ, double pMaxX, double pMaxY, double pMaxZ, float r1, float g1, float b1, float a1, float r2, float g2, float b2, float a2) {

@@ -1,6 +1,6 @@
 package birsy.clinker.mixin.common;
 
-import birsy.clinker.common.world.level.interactable.CollidableInteractable;
+import birsy.clinker.common.world.level.interactableOLD.CollidableInteractable;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;

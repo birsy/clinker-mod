@@ -1,7 +1,7 @@
 package birsy.clinker.common.world.entity.salamander;
 
-import birsy.clinker.common.world.level.interactable.CollidableInteractable;
-import birsy.clinker.common.world.level.interactable.InteractionContext;
+import birsy.clinker.common.world.level.interactableOLD.CollidableInteractable;
+import birsy.clinker.common.world.level.interactableOLD.InteractionContext;
 import birsy.clinker.common.world.physics.rigidbody.colliders.OBBCollisionShape;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;

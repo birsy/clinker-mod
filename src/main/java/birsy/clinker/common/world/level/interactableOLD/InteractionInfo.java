@@ -1,7 +1,6 @@
-package birsy.clinker.common.world.level.interactable;
+package birsy.clinker.common.world.level.interactableOLD;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.ClipContext;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;

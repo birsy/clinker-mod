@@ -20,6 +20,7 @@ println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty '
 minecraft {
     mappings channel: mapping_channel, version: mapping_version
     copyIdeResources = true
+
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
     runs {
@@ -69,7 +70,7 @@ repositories {
 }
 
 dependencies {
-    minecraft "net.neoforged:forge:${minecraft_version}-${neo_version}"
+    minecraft "net.neoforged:neoforge:${minecraft_version}-${neo_version}"
 	annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     //apply from: "https://raw.githubusercontent.com/thedarkcolour/KotlinForForge/site/thedarkcolour/kotlinforforge/gradle/kff-${kotlinForForgeVersion}.gradle"
     //implementation "foundry.veil:Veil-forge-${minecraft_version}:1.0.0.7"
