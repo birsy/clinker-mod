@@ -1,6 +1,5 @@
 package birsy.clinker.client.render;
 
-import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
@@ -9,7 +8,7 @@ import net.minecraft.Util;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.ForgeHooksClient;
+import net.neoforged.neoforge.client.ClientHooks;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -30,7 +29,7 @@ public class ClinkerRenderTypes {
     protected static final RenderStateShard.LightmapStateShard LIGHTMAP = new RenderStateShard.LightmapStateShard(true);
     protected static final RenderStateShard.OverlayStateShard OVERLAY = new RenderStateShard.OverlayStateShard(true);
 
-    private static final RenderStateShard.ShaderStateShard RENDERTYPE_ENTITY_UNLIT_TRANSLUCENT_SHADER = new RenderStateShard.ShaderStateShard(ForgeHooksClient.ClientEvents::getEntityTranslucentUnlitShader);
+    private static final RenderStateShard.ShaderStateShard RENDERTYPE_ENTITY_UNLIT_TRANSLUCENT_SHADER = new RenderStateShard.ShaderStateShard(ClientHooks.ClientEvents::getEntityTranslucentUnlitShader);
     private static final RenderStateShard.ShaderStateShard RENDERTYPE_ENTITY_UNLIT_CUTOUT_SHADER = new RenderStateShard.ShaderStateShard(ClinkerShaders::getEntityCutoutUnlitShader);
     private static final RenderStateShard.ShaderStateShard RENDERTYPE_ENTITY_UNLIT_CUTOUT_NOCULL_SHADER = new RenderStateShard.ShaderStateShard(ClinkerShaders::getEntityCutoutNoCullUnlitShader);
 

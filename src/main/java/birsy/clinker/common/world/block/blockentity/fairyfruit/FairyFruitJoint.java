@@ -4,8 +4,8 @@ import birsy.clinker.common.world.physics.particle.CollidingParticle;
 import birsy.clinker.core.util.JomlConversions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Quaterniond;
 import org.joml.Vector3d;
 

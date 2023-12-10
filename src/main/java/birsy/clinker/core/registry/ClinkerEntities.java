@@ -9,67 +9,69 @@ import birsy.clinker.common.world.entity.salamander.SalamanderBodyEntity;
 import birsy.clinker.common.world.entity.salamander.SalamanderHeadEntity;
 import birsy.clinker.common.world.entity.gnomad.GnomadAxemanEntity;
 import birsy.clinker.core.Clinker;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
+import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.function.Supplier;
 
 @Mod.EventBusSubscriber(modid = Clinker.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ClinkerEntities {
-    public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, Clinker.MOD_ID);
+    public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, Clinker.MOD_ID);
 
-    public static final RegistryObject<EntityType<MudScarabEntity>> MUD_SCARAB = ENTITY_TYPES.register("mud_scarab", () ->
+    public static final Supplier<EntityType<MudScarabEntity>> MUD_SCARAB = ENTITY_TYPES.register("mud_scarab", () ->
             EntityType.Builder.of(MudScarabEntity::new, MobCategory.MONSTER)
             .sized(2.0F, 1.9F)
             .build(new ResourceLocation(Clinker.MOD_ID, "mud_scarab").toString()));
 
-    public static final RegistryObject<EntityType<SalamanderHeadEntity>> SALAMANDER_HEAD = ENTITY_TYPES.register("salamander_head", () ->
+    public static final Supplier<EntityType<SalamanderHeadEntity>> SALAMANDER_HEAD = ENTITY_TYPES.register("salamander_head", () ->
             EntityType.Builder.of(SalamanderHeadEntity::new, MobCategory.MONSTER).fireImmune()
                     .sized(1.0F, 1.0F)
                     .build(new ResourceLocation(Clinker.MOD_ID, "salamander_head").toString()));
-    public static final RegistryObject<EntityType<SalamanderBodyEntity>> SALAMANDER_BODY = ENTITY_TYPES.register("salamander_body", () ->
+    public static final Supplier<EntityType<SalamanderBodyEntity>> SALAMANDER_BODY = ENTITY_TYPES.register("salamander_body", () ->
             EntityType.Builder.of(SalamanderBodyEntity::new, MobCategory.MONSTER).fireImmune()
                     .sized(1.0F, 1.0F)
                     .noSave().noSummon()
                     .build(new ResourceLocation(Clinker.MOD_ID, "salamander_body").toString()));
 
-    public static final RegistryObject<EntityType<NewSalamanderEntity>> SALAMANDER = ENTITY_TYPES.register("salamander", () ->
+    public static final Supplier<EntityType<NewSalamanderEntity>> SALAMANDER = ENTITY_TYPES.register("salamander", () ->
             EntityType.Builder.of(NewSalamanderEntity::new, MobCategory.MONSTER).fireImmune()
                     .sized(1.0F, 1.0F)
                     .build(new ResourceLocation(Clinker.MOD_ID, "salamander").toString()));
 
-    public static final RegistryObject<EntityType<SeaHagEntity>> SEA_HAG = ENTITY_TYPES.register("sea_hag", () ->
+    public static final Supplier<EntityType<SeaHagEntity>> SEA_HAG = ENTITY_TYPES.register("sea_hag", () ->
             EntityType.Builder.of(SeaHagEntity::new, MobCategory.MONSTER)
                     .sized(2.5F, 2.5F)
                     .build(new ResourceLocation(Clinker.MOD_ID, "sea_hag").toString()));
 
-    public static final RegistryObject<EntityType<GnomadAxemanEntity>> GNOMAD_AXEMAN = ENTITY_TYPES.register("gnomad_axeman", () ->
+    public static final Supplier<EntityType<GnomadAxemanEntity>> GNOMAD_AXEMAN = ENTITY_TYPES.register("gnomad_axeman", () ->
             EntityType.Builder.of(GnomadAxemanEntity::new, MobCategory.MONSTER)
                     .sized(1.0f, 1.5f)
                     .build(new ResourceLocation(Clinker.MOD_ID, "gnomad_axeman").toString()));
 
-    public static final RegistryObject<EntityType<NewGnomadEntity>> GNOMAD = ENTITY_TYPES.register("gnomad", () ->
+    public static final Supplier<EntityType<NewGnomadEntity>> GNOMAD = ENTITY_TYPES.register("gnomad", () ->
             EntityType.Builder.of(NewGnomadEntity::new, MobCategory.MONSTER)
                     .sized(1.0f, 1.5f)
                     .build(new ResourceLocation(Clinker.MOD_ID, "gnomad").toString()));
 
-    public static final RegistryObject<EntityType<LumberingAspenEntity>> LUMBERING_ASPEN = ENTITY_TYPES.register("lumbering_aspen", () ->
+    public static final Supplier<EntityType<LumberingAspenEntity>> LUMBERING_ASPEN = ENTITY_TYPES.register("lumbering_aspen", () ->
             EntityType.Builder.of(LumberingAspenEntity::new, MobCategory.AMBIENT)
                     .sized(1.0f, 1.0f)
                     .build(new ResourceLocation(Clinker.MOD_ID, "lumbering_aspen").toString()));
 
-    public static final RegistryObject<EntityType<OrdnanceEntity>> ORDNANCE = ENTITY_TYPES.register("ordnance", () ->
+    public static final Supplier<EntityType<OrdnanceEntity>> ORDNANCE = ENTITY_TYPES.register("ordnance", () ->
             EntityType.Builder.of(OrdnanceEntity::new, MobCategory.MISC)
                     .sized(0.5F, 0.5F)
                     .build(new ResourceLocation(Clinker.MOD_ID, "ordnance").toString()));
-    public static final RegistryObject<EntityType<WarhookEntity>> WARHOOK = ENTITY_TYPES.register("warhook", () ->
+    public static final Supplier<EntityType<WarhookEntity>> WARHOOK = ENTITY_TYPES.register("warhook", () ->
             EntityType.Builder.of(WarhookEntity::new, MobCategory.MISC)
                     .sized(0.5F, 0.5F)
                     .build(new ResourceLocation(Clinker.MOD_ID, "warhook").toString()));

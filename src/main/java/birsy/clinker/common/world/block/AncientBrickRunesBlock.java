@@ -26,7 +26,7 @@ public class AncientBrickRunesBlock extends Block {
 	public static final EnumProperty<Rune> RUNE = EnumProperty.create("rune", Rune.class);
 	
 	public AncientBrickRunesBlock() {
-		super(Block.Properties.copy(ClinkerBlocks.ANCIENT_BRICKS.get()));
+		super(Block.Properties.ofFullCopy(ClinkerBlocks.ANCIENT_BRICKS.get()));
 		this.registerDefaultState(this.stateDefinition.any().setValue(RUNE, Rune.RANDOM));
 	}
 	

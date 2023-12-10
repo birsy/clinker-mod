@@ -7,7 +7,8 @@ import birsy.clinker.core.Clinker;
 import birsy.clinker.common.world.physics.rigidbody.Transform;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.NetworkEvent;
 
 import java.util.UUID;
 

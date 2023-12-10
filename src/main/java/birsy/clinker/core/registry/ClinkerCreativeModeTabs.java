@@ -1,21 +1,22 @@
 package birsy.clinker.core.registry;
 
 import birsy.clinker.core.Clinker;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.function.Supplier;
 
 public class ClinkerCreativeModeTabs {
-    public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Clinker.MOD_ID);
+    public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(BuiltInRegistries.CREATIVE_MODE_TAB, Clinker.MOD_ID);
 
-    public static final RegistryObject<CreativeModeTab> CLINKER_BLOCKS = TABS.register("clinker_blocks",
+    public static final Supplier<CreativeModeTab> CLINKER_BLOCKS = TABS.register("clinker_blocks",
             () -> CreativeModeTab.builder()
                     .icon(() -> ClinkerBlocks.STOVE.get().asItem().getDefaultInstance())
                     .withSlotColor(10658645)
                     .displayItems(ClinkerCreativeModeTabs::addBlocks)
                     .build());
-    public static final RegistryObject<CreativeModeTab> CLINKER_ITEMS = TABS.register("clinker_items",
+    public static final Supplier<CreativeModeTab> CLINKER_ITEMS = TABS.register("clinker_items",
             () -> CreativeModeTab.builder()
                     .icon(() -> ClinkerItems.SULFUR.get().asItem().getDefaultInstance())
                     .withSlotColor(10658645)
@@ -93,13 +94,10 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(ClinkerBlocks.ANCIENT_STONE.get());
         pOutput.accept(ClinkerBlocks.ANCIENT_BRICK_FLAT.get());
         pOutput.accept(ClinkerBlocks.ANCIENT_RUNE.get());
-        pOutput.accept(ClinkerBlocks.OVERWORLD_LEAD_ORE.get());
-        pOutput.accept(ClinkerBlocks.NETHER_LEAD_ORE.get());
         pOutput.accept(ClinkerBlocks.LEAD_ORE.get());
         pOutput.accept(ClinkerBlocks.LOCUST_LOG.get());
         pOutput.accept(ClinkerBlocks.TRIMMED_LOCUST_LOG.get());
         pOutput.accept(ClinkerBlocks.STRIPPED_LOCUST_LOG.get());
-        pOutput.accept(ClinkerBlocks.LOCUST_LEAVES.get());
         pOutput.accept(ClinkerBlocks.LOCUST_PLANKS.get());
         pOutput.accept(ClinkerBlocks.LOCUST_STAIRS.get());
         pOutput.accept(ClinkerBlocks.LOCUST_SLAB.get());

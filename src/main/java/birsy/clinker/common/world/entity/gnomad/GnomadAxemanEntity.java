@@ -175,9 +175,9 @@ public class GnomadAxemanEntity extends AbstractGnomadEntity implements Inventor
             this.playSound(SoundEvents.ARMOR_EQUIP_IRON, 0.5F, 0.5F);
         }
 
-        armorAttribute.removeModifier(armor.armorModifier);
-        speedAttribute.removeModifier(armor.speedModifier);
-        knockbackAttribute.removeModifier(armor.knockbackModifier);
+        armorAttribute.removeModifier(armor.armorModifier.getId());
+        speedAttribute.removeModifier(armor.speedModifier.getId());
+        knockbackAttribute.removeModifier(armor.knockbackModifier.getId());
 
         armorAttribute.addTransientModifier(armor.armorModifier);
         speedAttribute.addTransientModifier(armor.speedModifier);

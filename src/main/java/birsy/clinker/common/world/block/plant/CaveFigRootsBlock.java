@@ -1,6 +1,8 @@
 package birsy.clinker.common.world.block.plant;
 
+import birsy.clinker.common.world.block.CounterBlock;
 import birsy.clinker.core.registry.ClinkerBlocks;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -23,6 +25,7 @@ import javax.annotation.Nullable;
 
 public class CaveFigRootsBlock extends PipeBlock implements SimpleWaterloggedBlock {
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+    public static final MapCodec<CaveFigRootsBlock> CODEC = simpleCodec(CaveFigRootsBlock::new);
 
     public CaveFigRootsBlock(Properties properties) {
         super(0.1875F, properties);
@@ -130,5 +133,10 @@ public class CaveFigRootsBlock extends PipeBlock implements SimpleWaterloggedBlo
     @Override
     public FluidState getFluidState(BlockState pState) {
         return pState.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(pState);
+    }
+
+    @Override
+    protected MapCodec<? extends PipeBlock> codec() {
+        return CODEC;
     }
 }

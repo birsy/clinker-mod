@@ -67,7 +67,7 @@ public class TestChunkGenerator extends ChunkGenerator {
     public TestChunkGenerator(BiomeSource pBiomeSource, Holder<NoiseGeneratorSettings> settings) {
         super(pBiomeSource);
         this.settingsHolder = settings;
-        this.settings = this.settingsHolder.get();
+        this.settings = this.settingsHolder.value();
         this.globalFluidPicker = (a, b, c) -> new Aquifer.FluidStatus(this.settings.seaLevel(), this.settings.defaultFluid());
 
         this.voronoi = new VoronoiGenerator(0);

@@ -2,6 +2,7 @@ package birsy.clinker.common.world.block;
 
 import birsy.clinker.common.world.block.blockentity.SarcophagusBlockEntity;
 import birsy.clinker.core.registry.ClinkerBlockEntities;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -42,6 +43,7 @@ public class SarcophagusBlock extends BaseEntityBlock {
         map.put(Direction.SOUTH,Block.box(0.0D, 0.0D, 14.0D,16.0D,16.0D,16.0D));
         map.put(Direction.WEST, Block.box(0.0D, 0.0D, 0.0D, 2.0D, 16.0D,16.0D));
         map.put(Direction.EAST, Block.box(14.0D,0.0D, 0.0D, 16.0D,16.0D,16.0D));});
+    public static final MapCodec<SarcophagusBlock> CODEC = simpleCodec(SarcophagusBlock::new);
 
     public SarcophagusBlock(Properties properties) {
         super(properties);
@@ -53,6 +55,11 @@ public class SarcophagusBlock extends BaseEntityBlock {
                 .setValue(UP, true)
                 .setValue(DOWN, true)
                 .setValue(GUTS, 3));
+    }
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
     }
 
     public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {

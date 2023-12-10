@@ -22,8 +22,8 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
 
 @OnlyIn(Dist.CLIENT)
@@ -101,7 +101,7 @@ public class MothParticle extends Particle {
         if (this.random.nextInt(512) == 0) { this.takeoff(); return; }
 
         Vec3 antiNormal = new Vec3(-this.attachmentDirection.getNormal().getX(), -this.attachmentDirection.getNormal().getY(), -this.attachmentDirection.getNormal().getY());
-        BlockHitResult raycast = this.level.clip(new ClipContext(pos, pos.add(antiNormal.scale(0.05)), ClipContext.Block.VISUAL, ClipContext.Fluid.ANY, null));
+        BlockHitResult raycast = this.level.clip(new ClipContext(pos, pos.add(antiNormal.scale(0.05)), ClipContext.Block.VISUAL, ClipContext.Fluid.ANY, (Entity) null));
         if (raycast.getType() == HitResult.Type.MISS) { this.takeoff(); return; }
 
         for (Entity entity : level.getEntities(null, this.getBoundingBox().inflate(16))) {
@@ -117,7 +117,7 @@ public class MothParticle extends Particle {
     public void move(double pX, double pY, double pZ) {
         Vec3 pos = new Vec3(this.x, this.y, this.z);
         Vec3 nextPos = pos.add(pX, pY, pZ);
-        BlockHitResult raycast = this.level.clip(new ClipContext(pos, nextPos, ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, null));
+        BlockHitResult raycast = this.level.clip(new ClipContext(pos, nextPos, ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, (Entity) null));
 
         this.setBoundingBox(this.getBoundingBox().move(raycast.getLocation().subtract(pos)));
         this.setLocationFromBoundingbox();

@@ -1,7 +1,7 @@
 package birsy.clinker.common.world.alchemy.chemicals;
 
 import birsy.clinker.common.world.alchemy.MatterState;
-import birsy.clinker.core.registry.ClinkerRegistries;
+import birsy.clinker.common.world.alchemy.anatomy.EntityBody;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 
@@ -21,11 +21,16 @@ public class ChemicalStack implements ChemicalHolder, ChemicalLike {
     }
 
     public ChemicalStack(CompoundTag tagIn) {
-        Chemical chemical = ClinkerRegistries.CHEMICAL.get().getValue(new ResourceLocation(tagIn.getString("id")));
+        //Chemical chemical = ClinkerRegistries.CHEMICAL.get().getValue(new ResourceLocation(tagIn.getString("id")));
         MatterState state = MatterState.fromName(tagIn.getString("state"));
         float amount = tagIn.getFloat("amount");
 
-        this.chemical = chemical;
+        this.chemical = new Chemical(new Chemical.Properties()) {
+            @Override
+            public void affectOrgan(EntityBody.EntityOrgan organ, float dillution) {
+
+            }
+        };
         this.amount = amount;
         this.state = state;
     }
@@ -71,8 +76,8 @@ public class ChemicalStack implements ChemicalHolder, ChemicalLike {
 
     @Override
     public CompoundTag write(CompoundTag tagIn) {
-        ResourceLocation key = ClinkerRegistries.CHEMICAL.get().getKey(this.asChemical());
-        tagIn.putString("id", key.toString());
+        //ResourceLocation key = ClinkerRegistries.CHEMICAL.get().getKey(this.asChemical());
+        tagIn.putString("id", "a");
         tagIn.putString("state", this.getState().name);
         tagIn.putFloat ("amount", this.getAmount());
 
@@ -81,7 +86,7 @@ public class ChemicalStack implements ChemicalHolder, ChemicalLike {
 
     @Override
     public ChemicalHolder read(CompoundTag tagIn) {
-        Chemical chemical = ClinkerRegistries.CHEMICAL.get().getValue(new ResourceLocation(tagIn.getString("id")));
+        //Chemical chemical = ClinkerRegistries.CHEMICAL.get().getValue(new ResourceLocation(tagIn.getString("id")));
         MatterState state = MatterState.fromName(tagIn.getString("state"));
         float amount = tagIn.getFloat("amount");
 

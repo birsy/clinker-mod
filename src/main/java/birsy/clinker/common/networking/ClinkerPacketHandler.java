@@ -10,9 +10,10 @@ import birsy.clinker.core.Clinker;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.neoforged.neoforge.network.NetworkRegistry;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.simple.SimpleChannel;
+
 
 public class ClinkerPacketHandler {
     public static SimpleChannel NETWORK;
@@ -38,7 +39,7 @@ public class ClinkerPacketHandler {
     public static void registerPackets() {
         NETWORK.registerMessage(createId(), ClientboundInteractableAddPacket.class, ClientboundInteractableAddPacket::toBytes, ClientboundInteractableAddPacket::new, ClientboundInteractableAddPacket::handle);
         NETWORK.registerMessage(createId(), ClientboundInteractableRemovePacket.class, ClientboundInteractableRemovePacket::toBytes, ClientboundInteractableRemovePacket::new, ClientboundInteractableRemovePacket::handle);
-        NETWORK.registerMessage(createId(), ClientboundInteractableTranslationSyncPacket.class, ClientboundInteractableTranslationSyncPacket::toBytes, ClientboundInteractableTranslationSyncPacket::new, ClientboundInteractableTranslationSyncPacket::handle);        NETWORK.registerMessage(createId(), ClientboundInteractableTranslationSyncPacket.class, ClientboundInteractableTranslationSyncPacket::toBytes, ClientboundInteractableTranslationSyncPacket::new, ClientboundInteractableTranslationSyncPacket::handle);
+        NETWORK.registerMessage(createId(), ClientboundInteractableTranslationSyncPacket.class, ClientboundInteractableTranslationSyncPacket::toBytes, ClientboundInteractableTranslationSyncPacket::new, ClientboundInteractableTranslationSyncPacket::handle);
         NETWORK.registerMessage(createId(), ClientboundInteractableShapeSyncPacket.class, ClientboundInteractableShapeSyncPacket::toBytes, ClientboundInteractableShapeSyncPacket::new, ClientboundInteractableShapeSyncPacket::handle);
         NETWORK.registerMessage(createId(), ServerboundInteractableInteractionPacket.class, ServerboundInteractableInteractionPacket::toBytes, ServerboundInteractableInteractionPacket::new, ServerboundInteractableInteractionPacket::handle);
 
@@ -56,7 +57,6 @@ public class ClinkerPacketHandler {
         NETWORK.registerMessage(createId(), ServerboundWorkstationLoadRequestPacket.class, ServerboundWorkstationLoadRequestPacket::toBytes, ServerboundWorkstationLoadRequestPacket::new, ServerboundWorkstationLoadRequestPacket::handle);
 
         NETWORK.registerMessage(createId(), ClientboundOrdnanceExplosionPacket.class, ClientboundOrdnanceExplosionPacket::toBytes, ClientboundOrdnanceExplosionPacket::new, ClientboundOrdnanceExplosionPacket::handle);
-
 
         Clinker.LOGGER.info("REGISTERED PACKETS!!!");
     }

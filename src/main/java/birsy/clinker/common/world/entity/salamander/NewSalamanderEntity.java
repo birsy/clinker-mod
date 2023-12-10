@@ -255,7 +255,7 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
     @Override
     public void knockback(double pStrength, double pX, double pZ) {
         if (lastHitJoint == null) return;
-        net.minecraftforge.event.entity.living.LivingKnockBackEvent event = net.minecraftforge.common.ForgeHooks.onLivingKnockBack(this, (float) pStrength, pX, pZ);
+        net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent event = net.neoforged.neoforge.common.CommonHooks.onLivingKnockBack(this, (float) pStrength, pX, pZ);
         if(event.isCanceled()) return;
         pStrength = event.getStrength();
         pX = event.getRatioX();

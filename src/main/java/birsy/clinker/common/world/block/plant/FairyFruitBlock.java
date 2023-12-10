@@ -1,8 +1,10 @@
 package birsy.clinker.common.world.block.plant;
 
+import birsy.clinker.common.world.block.SarcophagusBlock;
 import birsy.clinker.common.world.block.blockentity.fairyfruit.FairyFruitBlockEntity;
 import birsy.clinker.common.world.block.blockentity.fairyfruit.FairyFruitSegment;
 import birsy.clinker.core.registry.ClinkerBlockEntities;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -31,10 +33,16 @@ import javax.annotation.Nullable;
 public class FairyFruitBlock extends BaseEntityBlock implements SimpleWaterloggedBlock, BonemealableBlock {
     private static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     protected static final VoxelShape SHAPE = Block.box(2.0D, 10.0D, 2.0D, 14.0D, 16.0D, 14.0D);
+    public static final MapCodec<FairyFruitBlock> CODEC = simpleCodec(FairyFruitBlock::new);
 
     public FairyFruitBlock(BlockBehaviour.Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(WATERLOGGED, false));
+    }
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
     }
 
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> p_153358_) {
@@ -64,6 +72,11 @@ public class FairyFruitBlock extends BaseEntityBlock implements SimpleWaterlogge
 
     public boolean isValidBonemealTarget(LevelReader pLevel, BlockPos pPos, BlockState pState, boolean pIsClient) {
         return pLevel.getBlockEntity(pPos) instanceof FairyFruitBlockEntity;
+    }
+
+    @Override
+    public boolean isValidBonemealTarget(LevelReader p_256559_, BlockPos p_50898_, BlockState p_50899_) {
+        return false;
     }
 
     public boolean isBonemealSuccess(Level pLevel, RandomSource pRandom, BlockPos pPos, BlockState pState) {

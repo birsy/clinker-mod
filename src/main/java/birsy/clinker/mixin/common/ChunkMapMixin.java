@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ChunkMap.class)
 public class ChunkMapMixin {
-    @Inject(method = "playerLoadedChunk(Lnet/minecraft/server/level/ServerPlayer;Lorg/apache/commons/lang3/mutable/MutableObject;Lnet/minecraft/world/level/chunk/LevelChunk;)V", at = @At("TAIL"))
+    ///@Inject(method = "playerLoadedChunk(Lnet/minecraft/server/level/ServerPlayer;Lorg/apache/commons/lang3/mutable/MutableObject;Lnet/minecraft/world/level/chunk/LevelChunk;)V", at = @At("TAIL"))
     public void playerLoadedChunk(ServerPlayer pPlayer, MutableObject<ClientboundLevelChunkWithLightPacket> pPacketCache, LevelChunk pChunk, CallbackInfo ci) {
         if (InteractableManager.serverInteractableManagers.get(pPlayer.level()) == null) {
             Clinker.LOGGER.warn("Uh oh! ServerLevel " + pPlayer.level().dimension().location() + " unregistered!");

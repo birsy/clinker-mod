@@ -5,7 +5,7 @@ import birsy.clinker.common.networking.packet.ServerboundPacket;
 import birsy.clinker.common.world.level.interactableOLD.Interactable;
 import birsy.clinker.common.world.level.interactableOLD.InteractableManager;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.NetworkEvent;
 
 import java.util.UUID;
 

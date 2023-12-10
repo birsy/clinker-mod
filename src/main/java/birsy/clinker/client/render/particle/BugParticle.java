@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -59,7 +60,7 @@ public abstract class BugParticle extends Particle {
     public void move(double pX, double pY, double pZ) {
         Vec3 pos = new Vec3(this.x, this.y, this.z);
         Vec3 nextPos = pos.add(pX, pY, pZ);
-        BlockHitResult raycast = this.level.clip(new ClipContext(pos, nextPos, ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, null));
+        BlockHitResult raycast = this.level.clip(new ClipContext(pos, nextPos, ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, (Entity) null));
 
         this.distanceMoved += raycast.getLocation().distanceTo(pos);
 

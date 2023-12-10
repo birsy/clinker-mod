@@ -1,7 +1,7 @@
 package birsy.clinker.common.networking.packet;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -11,8 +11,7 @@ public abstract class ServerboundPacket {
 
     public abstract void toBytes(FriendlyByteBuf buffer);
 
-    public boolean handle(Supplier<NetworkEvent.Context> contextSupplier) {
-        NetworkEvent.Context context = contextSupplier.get();
+    public boolean handle(NetworkEvent.Context context) {
         context.enqueueWork(() -> this.run(context));
         context.setPacketHandled(true);
         return true;

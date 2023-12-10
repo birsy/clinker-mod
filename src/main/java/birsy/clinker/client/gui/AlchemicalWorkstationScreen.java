@@ -24,11 +24,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.ViewportEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.ViewportEvent;
 import org.joml.*;
 import org.lwjgl.glfw.GLFW;
 
@@ -267,8 +267,8 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
     public boolean mouseDragged(double pMouseX, double pMouseY, int pButton, double pDragX, double pDragY) {
         if (this.hoveredObject != null) {
             Camera camera = minecraft.gameRenderer.getMainCamera();
-            Vec3 push = new Vec3(camera.left).scale(pDragX);
-            push = push.add(new Vec3(camera.up).scale(pDragY));
+            Vec3 push = new Vec3(camera.getLeftVector()).scale(pDragX);
+            push = push.add(new Vec3(camera.getUpVector()).scale(pDragY));
             this.hoveredObject.position = this.hoveredObject.position.add(push);
         }
         return super.mouseDragged(pMouseX, pMouseY, pButton, pDragX, pDragY);

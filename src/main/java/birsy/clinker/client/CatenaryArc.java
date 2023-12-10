@@ -1,6 +1,5 @@
 package birsy.clinker.client;
 
-import birsy.clinker.core.Clinker;
 import net.minecraft.util.Mth;
 import org.joml.Vector3d;
 

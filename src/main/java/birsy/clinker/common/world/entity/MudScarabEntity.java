@@ -29,8 +29,8 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 public class MudScarabEntity extends AbstractBugEntity implements InterpolatedSkeletonParent {
     private float pHeight = 0;
@@ -158,9 +158,10 @@ public class MudScarabEntity extends AbstractBugEntity implements InterpolatedSk
         return 0.4375F;
     }
 
+
     @Override
-    public double getPassengersRidingOffset() {
-        return this.getBbHeight();
+    public Vec3 getPassengerRidingPosition(Entity p_295664_) {
+        return super.getPassengerRidingPosition(p_295664_).add(0, this.getBbHeight(), 0);
     }
 
     @Override

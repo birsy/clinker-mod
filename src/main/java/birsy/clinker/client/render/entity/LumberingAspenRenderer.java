@@ -13,7 +13,7 @@ import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.core.Vec3i;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraftforge.client.model.data.ModelData;
+import net.neoforged.neoforge.client.model.data.ModelData;
 
 public class LumberingAspenRenderer extends EntityRenderer<LumberingAspenEntity> {
     public LumberingAspenRenderer(EntityRendererProvider.Context context) {

@@ -28,8 +28,8 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec2;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
 import org.joml.Quaterniond;
 import org.joml.Vector3f;
@@ -91,7 +91,7 @@ public class GuiHelper {
                 CrashReport crashreport = CrashReport.forThrowable(throwable, "Rendering item");
                 CrashReportCategory crashreportcategory = crashreport.addCategory("Item being rendered");
                 crashreportcategory.setDetail("Item Type", () -> String.valueOf(pStack.getItem()));
-                crashreportcategory.setDetail("Registry Name", () -> String.valueOf(net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(pStack.getItem())));
+                //crashreportcategory.setDetail("Registry Name", () -> String.valueOf(net.neoforged.registries.ForgeRegistries.ITEMS.getKey(pStack.getItem())));
                 crashreportcategory.setDetail("Item Damage", () -> String.valueOf(pStack.getDamageValue()));
                 crashreportcategory.setDetail("Item NBT", () -> String.valueOf(pStack.getTag()));
                 crashreportcategory.setDetail("Item Foil", () -> String.valueOf(pStack.hasFoil()));
@@ -174,7 +174,7 @@ public class GuiHelper {
                 RenderSystem.enableDepthTest();
             }
 
-            net.minecraftforge.client.ItemDecoratorHandler.of(pStack).render(graphics, font, pStack, (int) pXPosition, (int) pYPosition);
+            net.neoforged.neoforge.client.ItemDecoratorHandler.of(pStack).render(graphics, font, pStack, (int) pXPosition, (int) pYPosition);
         }
     }
 
@@ -187,7 +187,7 @@ public class GuiHelper {
                 CrashReport crashreport = CrashReport.forThrowable(throwable, "Rendering item");
                 CrashReportCategory crashreportcategory = crashreport.addCategory("Item being rendered");
                 crashreportcategory.setDetail("Item Type", () -> String.valueOf(pStack.getItem()));
-                crashreportcategory.setDetail("Registry Name", () -> String.valueOf(net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(pStack.getItem())));
+                //crashreportcategory.setDetail("Registry Name", () -> String.valueOf(net.neoforged.registries.ForgeRegistries.ITEMS.getKey(pStack.getItem())));
                 crashreportcategory.setDetail("Item Damage", () -> String.valueOf(pStack.getDamageValue()));
                 crashreportcategory.setDetail("Item NBT", () -> String.valueOf(pStack.getTag()));
                 crashreportcategory.setDetail("Item Foil", () -> String.valueOf(pStack.hasFoil()));

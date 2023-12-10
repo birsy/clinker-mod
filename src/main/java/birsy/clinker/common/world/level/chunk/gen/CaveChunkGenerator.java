@@ -61,7 +61,7 @@ public class CaveChunkGenerator extends ChunkGenerator {
     public CaveChunkGenerator(BiomeSource pBiomeSource, Holder<NoiseGeneratorSettings> settings) {
         super(pBiomeSource);
         this.settingsHolder = settings;
-        this.settings = this.settingsHolder.get();
+        this.settings = this.settingsHolder.value();
         this.sampler = new OthershoreNoiseSampler(0);
         this.globalFluidPicker = (a, b, c) -> new Aquifer.FluidStatus(this.settings.seaLevel(), this.settings.defaultFluid());
     }

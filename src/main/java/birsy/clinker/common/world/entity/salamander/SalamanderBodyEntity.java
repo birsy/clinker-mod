@@ -20,7 +20,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.ITeleporter;
+import net.neoforged.neoforge.common.util.ITeleporter;
 
 import javax.annotation.Nullable;
 
@@ -102,11 +102,12 @@ public class SalamanderBodyEntity extends AbstractSalamanderPartEntity {
             this.despawn();
         } else if (!this.isPersistenceRequired() && !this.requiresCustomPersistence()) {
             Entity entity = this.level().getNearestPlayer(this, -1.0D);
-            net.minecraftforge.eventbus.api.Event.Result result = net.minecraftforge.event.ForgeEventFactory.canEntityDespawn(this, (ServerLevelAccessor) this.level());
-            if (result == net.minecraftforge.eventbus.api.Event.Result.DENY) {
+
+            net.neoforged.bus.api.Event.Result result = net.neoforged.neoforge.event.EventHooks.canEntityDespawn(this, (ServerLevel) this.level());
+            if (result == net.neoforged.bus.api.Event.Result.DENY) {
                 noActionTime = 0;
                 entity = null;
-            } else if (result == net.minecraftforge.eventbus.api.Event.Result.ALLOW) {
+            } else if (result == net.neoforged.bus.api.Event.Result.ALLOW) {
                 this.despawn();
                 entity = null;
             }

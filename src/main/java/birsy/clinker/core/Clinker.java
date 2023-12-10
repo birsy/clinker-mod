@@ -7,41 +7,35 @@ import birsy.clinker.common.world.entity.OrdnanceEntity;
 import birsy.clinker.common.world.level.chunk.gen.OthershoreChunkGenerator;
 import birsy.clinker.common.world.level.chunk.gen.TestChunkGenerator;
 import birsy.clinker.core.registry.*;
-import birsy.clinker.core.registry.world.ClinkerBiomeTest;
 import birsy.clinker.core.registry.world.ClinkerFeatures;
 import birsy.clinker.core.registry.world.ClinkerWorld;
-import birsy.clinker.core.util.ClinkerFontManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
-
-import net.minecraft.core.BlockSource;
 import net.minecraft.core.Position;
 import net.minecraft.core.dispenser.AbstractProjectileDispenseBehavior;
+import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DispenserBlock;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.common.NeoForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 @Mod(Clinker.MOD_ID)
-public class Clinker
-{
+public class Clinker {
 	public static final String MOD_ID = "clinker";
 	public static boolean devmode = true;
 	public static final Logger LOGGER = LogManager.getLogger(MOD_ID.toUpperCase());
-    public static ClinkerFontManager fontManager;
 
 	public Clinker() throws InterruptedException {
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -54,29 +48,23 @@ public class Clinker
         ClinkerBlockEntities.BLOCK_ENTITY_TYPES.register(modEventBus);
         ClinkerEntities.ENTITY_TYPES.register(modEventBus);
         ClinkerFeatures.FEATURES.register(modEventBus);
-        //ClinkerElements.ELEMENTS.register(modEventBus);
         ClinkerParticles.PARTICLES.register(modEventBus);
-
-        ClinkerBiomeTest.BIOMES.register(modEventBus);
 
         modEventBus.addListener(this::setup);
         modEventBus.addListener(this::doClientStuff);
 
-        MinecraftForge.EVENT_BUS.register(this);
-
+        NeoForge.EVENT_BUS.register(this);
     }
 	
-	private void setup(final FMLCommonSetupEvent event)
-    {
+	private void setup(final FMLCommonSetupEvent event) {
         DispenserBlock.registerBehavior(ClinkerItems.ORDNANCE.get(), new AbstractProjectileDispenseBehavior() {
             protected Projectile getProjectile(Level level, Position position, ItemStack item) {
-                OrdnanceEntity entity = OrdnanceEntity.create(level, position.x(), position.y(), position.z());
-                return entity;
+                return OrdnanceEntity.create(level, position.x(), position.y(), position.z());
             }
 
             @Override
             protected void playSound(BlockSource pSource) {
-                pSource.getLevel().playSound(null, pSource.x(), pSource.y(), pSource.z(), SoundEvents.TRIDENT_THROW, SoundSource.BLOCKS, 0.5F, 0.4F / (pSource.getLevel().getRandom().nextFloat() * 0.4F + 0.8F));
+                pSource.level().playSound(null, pSource.pos().getX(), pSource.pos().getY(), pSource.pos().getZ(), SoundEvents.TRIDENT_THROW, SoundSource.BLOCKS, 0.5F, 0.4F / (pSource.level().getRandom().nextFloat() * 0.4F + 0.8F));
             }
         });
 
@@ -88,19 +76,16 @@ public class Clinker
         });
     }
 
-    private void doClientStuff(final FMLClientSetupEvent event)
-    {
+    private void doClientStuff(final FMLClientSetupEvent event) {
         ClinkerBlockEntities.registerTileEntityRenderers();
 
         ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.LOCUST_LOG.get(), RenderType.cutout());
-        ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.LOCUST_LEAVES.get(), RenderType.cutoutMipped());
         //ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.LOCUST_DOOR.get(), RenderType.cutout());
 
         ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.SHORT_MUD_REEDS.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.MUD_REEDS.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.TALL_MUD_REEDS.get(), RenderType.cutout());
 
-        fontManager = new ClinkerFontManager(Minecraft.getInstance());
         GUIRenderer.alchemyBundleGUIRenderer = new AlchemyBundleGUIRenderer(Minecraft.getInstance());
     }
 

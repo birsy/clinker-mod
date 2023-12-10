@@ -8,7 +8,7 @@ import birsy.clinker.core.Clinker;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.NetworkEvent;
 
 public class ServerboundInteractableInteractionPacket extends ServerboundPacket {
     private InteractionInfo interactionInfo;

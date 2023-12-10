@@ -2,6 +2,7 @@ package birsy.clinker.common.world.block;
 
 import birsy.clinker.common.world.block.blockentity.FermentationBarrelBlockEntity;
 import birsy.clinker.core.registry.ClinkerBlockEntities;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
@@ -19,6 +20,7 @@ import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.*;
@@ -38,9 +40,15 @@ public class FermentationBarrelBlock extends BaseEntityBlock {
     private static final VoxelShape INSIDE = box(2.0D, 2.0D, 2.0D, 14.0D, 15.0D, 14.0D);
     private static final VoxelShape OPEN_SHAPE = Shapes.join(Shapes.block(), INSIDE_TOP_OPEN, BooleanOp.ONLY_FIRST);
     private static final VoxelShape CLOSED_SHAPE = Shapes.join(Shapes.block(), INSIDE, BooleanOp.ONLY_FIRST);
+    public static final MapCodec<FermentationBarrelBlock> CODEC = simpleCodec(FermentationBarrelBlock::new);
 
     public FermentationBarrelBlock() {
-        super(Properties.copy(Blocks.BARREL).noOcclusion());
+        super(Properties.ofFullCopy(Blocks.BARREL).noOcclusion());
+        this.registerDefaultState(this.stateDefinition.any().setValue(OPEN, true).setValue(FACING, Direction.NORTH));
+    }
+
+    public FermentationBarrelBlock(BlockBehaviour.Properties behaviour) {
+        super(Properties.ofFullCopy(Blocks.BARREL).noOcclusion());
         this.registerDefaultState(this.stateDefinition.any().setValue(OPEN, true).setValue(FACING, Direction.NORTH));
     }
 
@@ -70,6 +78,11 @@ public class FermentationBarrelBlock extends BaseEntityBlock {
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> pBlockEntityType) {
         return pLevel.isClientSide ? BaseEntityBlock.createTickerHelper(pBlockEntityType, ClinkerBlockEntities.FERMENTATION_BARREL.get(), FermentationBarrelBlockEntity::serverTick) : null;
+    }
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
     }
 
     public RenderShape getRenderShape(BlockState pState) {
