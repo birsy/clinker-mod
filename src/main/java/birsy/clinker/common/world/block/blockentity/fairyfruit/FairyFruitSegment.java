@@ -33,9 +33,9 @@ public class FairyFruitSegment extends LinkConstraint<FairyFruitJoint> {
         this.getBottomJoint().shouldCollide = true;
 
         if (this.length != this.pLength && this.interactable != null) {
-            this.interactable.shape.size = new Vec3(this.interactable.shape.size.x(), this.length * 0.5, this.interactable.shape.size.z());
-            this.interactable.shape.recalculateVertices();
-            this.interactable.updateShape();
+            //this.interactable.shape.size = new Vec3(this.interactable.shape.size.x(), this.length * 0.5, this.interactable.shape.size.z());
+            //this.interactable.shape.recalculateVertices();
+            //this.interactable.updateShape();
         }
     }
 
@@ -49,8 +49,8 @@ public class FairyFruitSegment extends LinkConstraint<FairyFruitJoint> {
             if (level == null) return;
             if (interactable == null) return;
 
-            Vec3 size = this.interactable.shape.size;
-            double boundX = size.x, boundY = size.y, boundZ = size.z;
+            //Vec3 size = this.interactable.shape.size;
+            double boundX = 0.5, boundY = 0.5, boundZ = 0.5;
 
             Vec3 segmentPosition = this.getCenter(1.0);
             float particleDensity = 0.1F;
@@ -101,7 +101,7 @@ public class FairyFruitSegment extends LinkConstraint<FairyFruitJoint> {
     protected void destroy() {
         this.addDestroyEffects();
         this.remove();
-        this.interactable.markForRemoval();
+        //this.interactable.markForRemoval();
         this.getBottomJoint().destroy();
     }
 

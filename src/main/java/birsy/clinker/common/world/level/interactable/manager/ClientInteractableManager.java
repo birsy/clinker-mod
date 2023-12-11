@@ -2,6 +2,7 @@ package birsy.clinker.common.world.level.interactable.manager;
 
 import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.interactable.ServerboundInteractableLoadChunkRequestPacket;
+import birsy.clinker.common.world.level.interactable.ClientInteractionHandler;
 import birsy.clinker.common.world.level.interactable.Interactable;
 import it.unimi.dsi.fastutil.longs.LongAVLTreeSet;
 import it.unimi.dsi.fastutil.longs.LongSortedSet;
@@ -13,6 +14,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.Collection;
+import java.util.Optional;
 
 @OnlyIn(Dist.CLIENT)
 public class ClientInteractableManager extends InteractableManager {
@@ -20,6 +22,7 @@ public class ClientInteractableManager extends InteractableManager {
 
     public ClientInteractableManager(ClientLevel level) {
         super(level);
+        this.interactionHandler = new ClientInteractionHandler(this);
     }
 
     @Override
@@ -54,5 +57,9 @@ public class ClientInteractableManager extends InteractableManager {
             SectionPos pos = SectionPos.of(chunk.getPos(), y);
             this.storage.unloadSection(pos);
         }
+    }
+
+    public Optional<Interactable> getSeenInteractable() {
+        return ((ClientInteractionHandler) this.interactionHandler).seenInteractable;
     }
 }

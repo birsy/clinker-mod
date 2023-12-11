@@ -4,9 +4,9 @@ import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.ClientboundFairyFruitGrowPacket;
 import birsy.clinker.common.networking.packet.ClientboundFairyFruitRemovalPacket;
 import birsy.clinker.common.networking.packet.ClientboundFairyFruitSyncPacket;
-import birsy.clinker.common.world.level.interactableOLD.Interactable;
-import birsy.clinker.common.world.level.interactableOLD.InteractableManager;
-import birsy.clinker.common.world.level.interactableOLD.InteractableParent;
+
+import birsy.clinker.common.world.level.interactable.Interactable;
+import birsy.clinker.common.world.level.interactable.InteractableParent;
 import birsy.clinker.common.world.physics.particle.ParticleParent;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlockEntities;
@@ -63,13 +63,13 @@ public class FairyFruitBlockEntity extends BlockEntity implements InteractablePa
         this.root.pPosition = this.getPosition();
         for (FairyFruitSegment segment : this.segments) {
             if (segment.interactable == null) {
-                FairyFruitInteractable interactable = new FairyFruitInteractable(this, segment, new OBBCollisionShape(0.25, 0.5, 0.25));
-                this.addChild(interactable);
-                InteractableManager.addServerInteractable(interactable, (ServerLevel) level);
+                //FairyFruitInteractable interactable = new FairyFruitInteractable(this, segment, new OBBCollisionShape(0.25, 0.5, 0.25));
+                //this.addChild(interactable);
+                //InteractableManager.addServerInteractable(interactable, (ServerLevel) level);
             }
 
-            segment.interactable.setPosition(segment.getCenter(1.0F));
-            segment.interactable.setRotation(segment.getOrientation(1.0F, ORIENTATION_FORWARD));
+            //segment.interactable.setPosition(segment.getCenter(1.0F));
+            //segment.interactable.setRotation(segment.getOrientation(1.0F, ORIENTATION_FORWARD));
         }
 
         ClinkerPacketHandler.sendToClientsTrackingChunk(level.getChunkAt(this.getBlockPos()), new ClientboundFairyFruitSyncPacket(this));
@@ -88,7 +88,7 @@ public class FairyFruitBlockEntity extends BlockEntity implements InteractablePa
             FairyFruitSegment segment = (FairyFruitSegment) segmentIterator.next();
             if (segment.shouldBeRemoved) {
                 if (this.hasLevel() && !this.level.isClientSide) ClinkerPacketHandler.sendToClientsTrackingChunk(this.level.getChunkAt(this.getBlockPos()), new ClientboundFairyFruitRemovalPacket(segment));
-                if (segment.interactable != null) segment.interactable.markForRemoval();
+                //if (segment.interactable != null) segment.interactable.markForRemoval();
                 segmentIterator.remove();
             }
         }
@@ -255,10 +255,10 @@ public class FairyFruitBlockEntity extends BlockEntity implements InteractablePa
         }
     }
 
-    @Override
-    public List<Interactable> getChildInteractables() {
-        return interactables;
-    }
+//    @Override
+//    public List<Interactable> getChildInteractables() {
+//        return interactables;
+//    }
     @Nullable
     @Override
     public Vec3 getPosition() {

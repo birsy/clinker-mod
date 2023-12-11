@@ -1,80 +1,72 @@
 package birsy.clinker.client.render.world;
 
 import birsy.clinker.client.render.DebugRenderUtil;
-import birsy.clinker.common.world.level.interactableOLD.Interactable;
-import birsy.clinker.common.world.level.interactableOLD.InteractableManager;
+import birsy.clinker.common.world.level.interactable.Interactable;
+import birsy.clinker.common.world.level.interactable.InteractableAttachment;
+import birsy.clinker.common.world.level.interactable.manager.ClientInteractableManager;
+import birsy.clinker.common.world.level.interactable.manager.InteractableManager;
 import birsy.clinker.core.Clinker;
-import birsy.clinker.common.world.physics.rigidbody.Transform;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.client.event.RenderHighlightEvent;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
-import org.joml.Quaterniond;
+import net.neoforged.neoforge.client.event.RenderHighlightEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.joml.Quaternionf;
+import org.joml.Vector3d;
 
 @OnlyIn(Dist.CLIENT)
 @Mod.EventBusSubscriber(modid = Clinker.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class InteractableRenderer {
     @SubscribeEvent
     public static void onRenderHighlight(RenderHighlightEvent.Block event) {
-        if (InteractableManager.seenInteractable.isPresent()) {
-            if (!InteractableManager.seenInteractable.get().hasOutline) return;
-            event.setCanceled(InteractableManager.seenInteractable.get().hasOutline);
-        }
+//        if (InteractableManager.seenInteractable.isPresent()) {
+//            if (!InteractableManager.seenInteractable.get().hasOutline) return;
+//            event.setCanceled(InteractableManager.seenInteractable.get().hasOutline);
+//        }
     }
 
     @SubscribeEvent
     public static void onRenderLevel(RenderLevelStageEvent event) {
-//        Clinker.LOGGER.info("START: " + event.getPoseStack().poseStack.size());
-//
-//        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SKY) {
-//            event.getPoseStack().pushPose();
-//            Vec3 camPos = event.getCamera().getPosition();
-//            event.getPoseStack().translate(-camPos.x(), -camPos.y(), -camPos.z());
-//
-//            if (InteractableManager.seenInteractable.isPresent()) {
-//                if (!InteractableManager.seenInteractable.get().hasOutline) return;
-//                renderInteractable(event.getPoseStack(), event.getLevelRenderer().renderBuffers.bufferSource().getBuffer(RenderType.lines()), InteractableManager.seenInteractable.get(), event.getPartialTick(), 0.0F, 0.0F, 0.0F, 0.4F);
-//            }
-//
-//            renderDebug(event.getPoseStack(), event.getLevelRenderer().renderBuffers.bufferSource().getBuffer(RenderType.lines()), event.getFrustum(), event.getPartialTick());
-//
-//            event.getPoseStack().popPose();
-//        }
-//
-//        Clinker.LOGGER.info("END: " + event.getPoseStack().poseStack.size());
-    }
+        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SKY) {
+            Minecraft minecraft = Minecraft.getInstance();
+            EntityRenderDispatcher entityRenderDispatcher = minecraft.getEntityRenderDispatcher();
 
-    private static void renderDebug(PoseStack poseStack, VertexConsumer pBuffer, Frustum camera, float pPartialTicks) {
-        if (!Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes()) return;
+            if (entityRenderDispatcher.shouldRenderHitBoxes()) {
+                ClientInteractableManager manager = (ClientInteractableManager) InteractableAttachment.getInteractableManagerForLevel(minecraft.level);
 
-        for (Interactable interactable : InteractableManager.clientInteractableManager.storage.getAllInteractables()) {
-            if (camera.isVisible(interactable.shape.getBounds().inflate(0.5))) {
-                renderInteractable(poseStack, pBuffer, interactable, pPartialTicks, 0.3F, 0.28F, 0.44F, 1.0F);
+                PoseStack stack = event.getPoseStack();
+                stack.pushPose();
+                Vec3 camPos = minecraft.gameRenderer.getMainCamera().getPosition();
+                stack.translate(-camPos.x, -camPos.y, -camPos.z);
+
+                for (Interactable interactable : manager.storage.getInteractables()) {
+                    boolean isSeenInteractable = false;
+                    if (manager.getSeenInteractable().isPresent()) isSeenInteractable = interactable == manager.getSeenInteractable().get();
+
+                    stack.pushPose();
+                    Vector3d position = interactable.getPosition(event.getPartialTick());
+                    stack.translate(position.x, position.y, position.z);
+
+                    DebugRenderUtil.renderBox(event.getPoseStack(), event.getLevelRenderer().renderBuffers.bufferSource().getBuffer(RenderType.LINES),
+                            interactable.getBounds().move(-position.x, -position.y, -position.z), 1F, 1F, 1F, 0.5F);
+
+                    stack.mulPose(new Quaternionf(interactable.getOrientation(event.getPartialTick())));
+
+                    DebugRenderUtil.renderBox(event.getPoseStack(), event.getLevelRenderer().renderBuffers.bufferSource().getBuffer(RenderType.LINES),
+                            interactable.size.x() * -0.5F, interactable.size.y() * -0.5F, interactable.size.z() * -0.5F,
+                            interactable.size.x() * 0.5F,  interactable.size.y() * 0.5F,  interactable.size.z() * 0.5F,
+                            1.0F,  isSeenInteractable ? 1.0F : 0.5F, 0.5F, 1.0F);
+                    stack.popPose();
+                }
+                stack.popPose();
             }
         }
-    }
-
-    private static void renderInteractable(PoseStack poseStack, VertexConsumer pBuffer, Interactable interactable, float pPartialTicks, float r, float g, float b, float a) {
-        AABB aabb = new AABB(interactable.shape.size.scale(-1.0), interactable.shape.size);
-        Transform transform = interactable.previousTransform.lerp(interactable.getTransform(), pPartialTicks);
-        Vec3 position = transform.getPosition();
-        Quaterniond orientation = transform.getOrientation();
-
-        poseStack.pushPose();
-
-        poseStack.translate(position.x(), position.y(), position.z());
-        poseStack.mulPose(new Quaternionf(orientation));
-        DebugRenderUtil.renderBox(poseStack, pBuffer, aabb, r, g, b, a);
-
-        poseStack.popPose();
     }
 }

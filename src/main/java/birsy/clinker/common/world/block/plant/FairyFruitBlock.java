@@ -116,7 +116,7 @@ public class FairyFruitBlock extends BaseEntityBlock implements SimpleWaterlogge
             for (FairyFruitSegment segment : entity.segments) {
                 segment.addDestroyEffects();
             }
-            entity.remove();
+            //entity.remove();
         }
         super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
     }

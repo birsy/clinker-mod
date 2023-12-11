@@ -8,6 +8,11 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.phys.Vec3;
+import org.joml.AxisAngle4d;
+import org.joml.Quaterniond;
+import org.joml.Vector3d;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,12 +48,26 @@ public class ServerInteractableManager extends InteractableManager {
         // interactables aren't serialized, so i don't have to load anything from the chunk on the serverside.
     }
 
+    int ticksExisted = 0;
     @Override
     public void tick() {
+        ticksExisted++;
+        if (ticksExisted > 30 && ticksExisted % 40 == 0) {
+            if (!this.level.players().isEmpty()) {
+                Vec3 playerPos = this.level.players().get(0).position();
+                Vector3d position = new Vector3d(playerPos.x(), playerPos.y(), playerPos.z());
+                Quaterniond orientation = new Quaterniond(new AxisAngle4d(this.level.random.nextDouble() * Math.PI,
+                        new Vector3d(this.level.random.nextDouble() * 2 - 1, this.level.random.nextDouble() * 2 - 1, this.level.random.nextDouble() * 2 - 1).normalize()));
+                Vector3f size = new Vector3f(this.level.random.nextFloat() * 2, this.level.random.nextFloat() * 2, this.level.random.nextFloat() * 2);
+                //addInteractable(new Interactable(size, position, orientation));
+            }
+        }
+
         this.interactionHandler.tick();
         storage.reorganize();
         for (Interactable interactable : storage.getInteractables()) {
             interactable.tick();
+            interactable.setOrientation(interactable.getOrientation().rotateX(0.02));
             if (!interactable.markedDirty) return;
             if (!interactable.shouldSync) return;
             ChunkPos pos = interactable.getSectionPos().chunk();

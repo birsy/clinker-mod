@@ -20,6 +20,7 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -56,7 +57,8 @@ public class Clinker {
 
         NeoForge.EVENT_BUS.register(this);
     }
-	
+
+    @SubscribeEvent
 	private void setup(final FMLCommonSetupEvent event) {
         DispenserBlock.registerBehavior(ClinkerItems.ORDNANCE.get(), new AbstractProjectileDispenseBehavior() {
             protected Projectile getProjectile(Level level, Position position, ItemStack item) {
@@ -70,13 +72,14 @@ public class Clinker {
         });
 
         event.enqueueWork(() -> {
-            OthershoreChunkGenerator.register();
-            TestChunkGenerator.register();
+            //OthershoreChunkGenerator.register();
+            //TestChunkGenerator.register();
             //AxeItem.STRIPPABLES.put(ClinkerBlocks.LOCUST_LOG.get(), ClinkerBlocks.STRIPPED_LOCUST_LOG.get());
             //AxeItem.STRIPPABLES.put(ClinkerBlocks.SWAMP_ASPEN_LOG.get(), ClinkerBlocks.STRIPPED_SWAMP_ASPEN_LOG.get());
         });
     }
 
+    @SubscribeEvent
     private void doClientStuff(final FMLClientSetupEvent event) {
         ClinkerBlockEntities.registerTileEntityRenderers();
 

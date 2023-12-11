@@ -28,6 +28,10 @@ public class InteractableStorage {
         return lookupBySection.getInteractablesInSection(pos);
     }
 
+    public boolean sectionContainsInteractables(SectionPos pos) {
+        return lookupBySection.sectionContainsInteractables(pos);
+    }
+
     public void unloadSection(SectionPos pos) {
         for (Interactable interactable : this.getInteractablesInSection(pos)) {
             levelLookup.removeInteractable(interactable);

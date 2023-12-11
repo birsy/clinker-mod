@@ -4,9 +4,8 @@ import birsy.clinker.client.model.base.InterpolatedSkeleton;
 import birsy.clinker.client.model.base.InterpolatedSkeletonParent;
 import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.ClientboundSalamanderSyncPacket;
-import birsy.clinker.common.world.level.interactableOLD.Interactable;
-import birsy.clinker.common.world.level.interactableOLD.InteractableManager;
-import birsy.clinker.common.world.level.interactableOLD.InteractableParent;
+
+import birsy.clinker.common.world.level.interactable.InteractableParent;
 import birsy.clinker.common.world.physics.rigidbody.colliders.OBBCollisionShape;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.JomlConversions;
@@ -51,7 +50,7 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
     public List<SalamanderJoint> joints;
     public List<SalamanderSegment> segments;
 
-    public List<Interactable> childInteractables;
+    //public List<Interactable> childInteractables;
 
     // ANIMATION DEBUG
     private SalamanderJoint clientJoint1, clientJoint2;
@@ -61,7 +60,7 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
 
     public NewSalamanderEntity(EntityType<? extends NewSalamanderEntity> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
-        this.childInteractables = new ArrayList<>();
+        //this.childInteractables = new ArrayList<>();
         this.joints = new ArrayList<>();
         this.segments = new ArrayList<>();
 
@@ -100,12 +99,12 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
     }
 
     public void addInteractableToJoint(SalamanderJoint joint) {
-        if (!this.level().isClientSide()) {
-            SalamanderBodyInteractable interactable = new SalamanderBodyInteractable(this, joint, new OBBCollisionShape(0.5 * joint.radius, 0.5 * joint.radius, 0.5));
-            interactable.setPosition(joint.position);
-
-            InteractableManager.addServerInteractable(interactable, (ServerLevel) this.level());
-        }
+//        if (!this.level().isClientSide()) {
+//            SalamanderBodyInteractable interactable = new SalamanderBodyInteractable(this, joint, new OBBCollisionShape(0.5 * joint.radius, 0.5 * joint.radius, 0.5));
+//            interactable.setPosition(joint.position);
+//
+//            InteractableManager.addServerInteractable(interactable, (ServerLevel) this.level());
+//        }
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -141,12 +140,12 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
         }
 
         if (!this.level().isClientSide()) {
-            for (Interactable interactable : this.childInteractables) {
-                if (interactable instanceof SalamanderBodyInteractable bodyInteractable) {
-                    bodyInteractable.setPosition(bodyInteractable.jointParent.getSmoothedPosition(1.0));
-                    bodyInteractable.setRotation(bodyInteractable.jointParent.getOrientation(1.0));
-                }
-            }
+//            for (Interactable interactable : this.childInteractables) {
+//                if (interactable instanceof SalamanderBodyInteractable bodyInteractable) {
+//                    bodyInteractable.setPosition(bodyInteractable.jointParent.getSmoothedPosition(1.0));
+//                    bodyInteractable.setRotation(bodyInteractable.jointParent.getOrientation(1.0));
+//                }
+//            }
             ClinkerPacketHandler.sendToClientsTrackingChunk((LevelChunk) this.level().getChunk(this.blockPosition()), new ClientboundSalamanderSyncPacket(this));
         }
 
@@ -408,21 +407,21 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
         return new ClientboundAddEntityPacket(this);
     }
 
-    @Override
-    public List<Interactable> getChildInteractables() {
-        return childInteractables;
-    }
-
-    @Override
-    public void clearChildren() {
-        if (childInteractables != null) childInteractables.clear();
-    }
+//    @Override
+//    public List<Interactable> getChildInteractables() {
+//        return childInteractables;
+//    }
+//
+//    @Override
+//    public void clearChildren() {
+//        if (childInteractables != null) childInteractables.clear();
+//    }
 
     @Override
     public void remove(RemovalReason pReason) {
         super.remove(pReason);
         Clinker.LOGGER.info("removed salamander");
-        this.remove();
+        //this.remove();
     }
 
     InterpolatedSkeleton skeleton;

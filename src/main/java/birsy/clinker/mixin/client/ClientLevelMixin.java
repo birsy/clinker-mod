@@ -32,7 +32,7 @@ public class ClientLevelMixin {
     @Inject(method = "<init>(Lnet/minecraft/client/multiplayer/ClientPacketListener;Lnet/minecraft/client/multiplayer/ClientLevel$ClientLevelData;Lnet/minecraft/resources/ResourceKey;Lnet/minecraft/core/Holder;IILjava/util/function/Supplier;Lnet/minecraft/client/renderer/LevelRenderer;ZJ)V", at = @At("TAIL"))
     private void init(ClientPacketListener p_205505_, ClientLevel.ClientLevelData p_205506_, ResourceKey p_205507_, Holder p_205508_, int p_205509_, int p_205510_, Supplier p_205511_, LevelRenderer p_205512_, boolean p_205513_, long p_205514_, CallbackInfo ci) {
         ClientLevel me = (ClientLevel)(Object)this;
-        InteractableAttachment.attachManagerToLevel(me, new ClientInteractableManager(me));
+        //InteractableAttachment.attachManagerToLevel(me, new ClientInteractableManager(me));
     }
 
     @Inject(method = "addEntity(Lnet/minecraft/world/entity/Entity;)V", at = @At("TAIL"))
@@ -46,12 +46,6 @@ public class ClientLevelMixin {
     public void unload(LevelChunk pChunk, CallbackInfo ci) {
         ClientLevel me = (ClientLevel)(Object)this;
         InteractableAttachment.getInteractableManagerForLevel(me).unloadChunk(pChunk);
-    }
-
-    @Inject(method = "onChunkLoaded(Lnet/minecraft/world/level/ChunkPos;)V", at = @At("TAIL"))
-    public void load(ChunkPos chunkPos, CallbackInfo ci) {
-        ClientLevel me = (ClientLevel)(Object)this;
-        InteractableAttachment.getInteractableManagerForLevel(me).loadChunk(me.getChunk(chunkPos.x, chunkPos.z));
     }
 
     @Inject(method = "tick(Ljava/util/function/BooleanSupplier;)V", at = @At("TAIL"))

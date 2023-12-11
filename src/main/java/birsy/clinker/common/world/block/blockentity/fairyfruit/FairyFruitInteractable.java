@@ -2,8 +2,6 @@ package birsy.clinker.common.world.block.blockentity.fairyfruit;
 
 import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.ClientboundFairyFruitBreakPacket;
-import birsy.clinker.common.networking.packet.interactableOLD.ServerboundInteractableInteractionPacket;
-import birsy.clinker.common.world.level.interactableOLD.*;
 import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.common.world.physics.rigidbody.colliders.OBBCollisionShape;
 import net.minecraft.core.BlockPos;
@@ -16,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-public class FairyFruitInteractable extends CollidableInteractable {
+public class FairyFruitInteractable {}/*extends CollidableInteractable {
     final BlockPos pos;
     final int index;
     public FairyFruitBlockEntity parent;
@@ -115,4 +113,4 @@ public class FairyFruitInteractable extends CollidableInteractable {
     public <I extends Interactable> I reconstructOnClient(CompoundTag tag) {
         return (I) new FairyFruitInteractable(new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z")), tag.getInt("index"), (OBBCollisionShape) new OBBCollisionShape(0, 0, 0).deserialize(tag), tag.getUUID("uuid"));
     }
-}
+}*/

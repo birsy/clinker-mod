@@ -65,7 +65,26 @@ public class WorkstationManager {
     }
 
     @SubscribeEvent
-    public static void onBlockChange(BlockEvent event) {
+    public static void onBlockBreak(BlockEvent.BreakEvent event) {
+        WorkstationManager manager = managerByLevel.get(event.getLevel());
+        if (manager == null) return;
+        Workstation workstationAtPos = manager.getWorkstationAtBlock(event.getPos());
+        // doing this so it doesnt keep crashing while im rebuilding the fucking mod
+        // todo: remove this before release
+        try {
+            if (event.getState().is(ClinkerTags.WORKSTATION) && workstationAtPos == null) {
+                manager.addWorkstationBlock(event.getPos());
+            } else if (!event.getState().is(ClinkerTags.WORKSTATION) && workstationAtPos != null) {
+                manager.removeWorkstationBlockFromUUID(event.getPos(), workstationAtPos.uuid);
+            }
+        } catch (NoClassDefFoundError e) {
+            //do nothing
+            return;
+        }
+    }
+
+    @SubscribeEvent
+    public static void onBlockPlace(BlockEvent.EntityPlaceEvent event) {
         WorkstationManager manager = managerByLevel.get(event.getLevel());
         if (manager == null) return;
         Workstation workstationAtPos = manager.getWorkstationAtBlock(event.getPos());

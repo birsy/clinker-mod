@@ -1,14 +1,12 @@
 package birsy.clinker.common.world.entity.salamander;
 
-import birsy.clinker.common.world.level.interactableOLD.CollidableInteractable;
-import birsy.clinker.common.world.level.interactableOLD.InteractionContext;
 import birsy.clinker.common.world.physics.rigidbody.colliders.OBBCollisionShape;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
-public class SalamanderBodyInteractable extends CollidableInteractable {
+public class SalamanderBodyInteractable {} /*extends CollidableInteractable {
     final NewSalamanderEntity entityParent;
     final NewSalamanderEntity.SalamanderJoint jointParent;
 
@@ -59,4 +57,4 @@ public class SalamanderBodyInteractable extends CollidableInteractable {
         jointParent.push(movement);
         super.push(movement);
     }
-}
+}*/

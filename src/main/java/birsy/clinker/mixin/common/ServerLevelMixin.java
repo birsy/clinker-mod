@@ -28,17 +28,11 @@ public abstract class ServerLevelMixin {
     @Inject(method = "<init>(Lnet/minecraft/server/MinecraftServer;Ljava/util/concurrent/Executor;Lnet/minecraft/world/level/storage/LevelStorageSource$LevelStorageAccess;Lnet/minecraft/world/level/storage/ServerLevelData;Lnet/minecraft/resources/ResourceKey;Lnet/minecraft/world/level/dimension/LevelStem;Lnet/minecraft/server/level/progress/ChunkProgressListener;ZJLjava/util/List;ZLnet/minecraft/world/RandomSequences;)V", at = @At("TAIL"))
     public void init(MinecraftServer pServer, Executor pDispatcher, LevelStorageSource.LevelStorageAccess pLevelStorageAccess, ServerLevelData pServerLevelData, ResourceKey pDimension, LevelStem pLevelStem, ChunkProgressListener pProgressListener, boolean pIsDebug, long pBiomeZoomSeed, List pCustomSpawners, boolean pTickTime, RandomSequences pRandomSequences, CallbackInfo ci) {
         ServerLevel me = (ServerLevel)(Object)this;
-        InteractableAttachment.attachManagerToLevel(me, new ServerInteractableManager(me));
+        //InteractableAttachment.attachManagerToLevel(me, new ServerInteractableManager(me));
 
         WorkstationManager manager = new WorkstationManager(me);
         WorkstationManager.managerByLevel.put(me, manager);
         WorkstationManager.managerByDimension.put(me.dimension(), manager);
-    }
-
-    @Inject(method = "unload(Lnet/minecraft/world/level/chunk/LevelChunk;)V", at = @At("TAIL"))
-    public void unload(LevelChunk pChunk, CallbackInfo ci) {
-        ServerLevel me = (ServerLevel)(Object)this;
-        InteractableAttachment.getInteractableManagerForLevel(me).unloadChunk(pChunk);
     }
 
     @Inject(method = "tick(Ljava/util/function/BooleanSupplier;)V", at = @At("TAIL"))
