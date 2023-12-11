@@ -147,7 +147,7 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
                     bodyInteractable.setRotation(bodyInteractable.jointParent.getOrientation(1.0));
                 }
             }
-            ClinkerPacketHandler.sendToClientsInChunk((LevelChunk) this.level().getChunk(this.blockPosition()), new ClientboundSalamanderSyncPacket(this));
+            ClinkerPacketHandler.sendToClientsTrackingChunk((LevelChunk) this.level().getChunk(this.blockPosition()), new ClientboundSalamanderSyncPacket(this));
         }
 
         this.setControllerPosition(this.headJoint.position);

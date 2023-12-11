@@ -2,7 +2,7 @@ package birsy.clinker.common.world.block.blockentity.fairyfruit;
 
 import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.ClientboundFairyFruitBreakPacket;
-import birsy.clinker.common.networking.packet.interactable.ServerboundInteractableInteractionPacket;
+import birsy.clinker.common.networking.packet.interactableOLD.ServerboundInteractableInteractionPacket;
 import birsy.clinker.common.world.level.interactableOLD.*;
 import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.common.world.physics.rigidbody.colliders.OBBCollisionShape;
@@ -78,7 +78,7 @@ public class FairyFruitInteractable extends CollidableInteractable {
             if (player.getAbilities().mayBuild &&
                     player.getItemInHand(interactionContext.hand()).getItem().canAttackBlock(this.parent.getBlockState(), this.parent.getLevel(), MathUtils.blockPosFromVec3(this.getPosition()), player)) {
                 this.parent.breakAt(entity, segmentParent.index);
-                if (parent.hasLevel() && !clientSide) ClinkerPacketHandler.sendToClientsInChunk(parent.getLevel().getChunkAt(parent.getBlockPos()), new ClientboundFairyFruitBreakPacket(parent, segmentParent.index, entity));
+                if (parent.hasLevel() && !clientSide) ClinkerPacketHandler.sendToClientsTrackingChunk(parent.getLevel().getChunkAt(parent.getBlockPos()), new ClientboundFairyFruitBreakPacket(parent, segmentParent.index, entity));
             }
         }
         return true;

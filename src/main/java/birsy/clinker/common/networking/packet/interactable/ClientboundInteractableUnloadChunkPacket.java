@@ -1,29 +1,27 @@
 package birsy.clinker.common.networking.packet.interactable;
 
 import birsy.clinker.common.networking.packet.ClientboundPacket;
-import birsy.clinker.common.world.level.interactable.Interactable;
 import birsy.clinker.common.world.level.interactable.InteractableAttachment;
 import birsy.clinker.common.world.level.interactable.manager.ClientInteractableManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.ChunkPos;
 import net.neoforged.neoforge.network.NetworkEvent;
 
-import java.util.UUID;
+public class ClientboundInteractableUnloadChunkPacket extends ClientboundPacket {
+    final ChunkPos pos;
 
-public class ClientboundInteractableRemovePacket extends ClientboundPacket {
-    private UUID id;
-    public ClientboundInteractableRemovePacket(Interactable interactable) {
-        this.id = interactable.id;
+    public ClientboundInteractableUnloadChunkPacket(ChunkPos pos) {
+        this.pos = pos;
     }
-
-    public ClientboundInteractableRemovePacket(FriendlyByteBuf buffer) {
-        this.id = buffer.readUUID();
+    public ClientboundInteractableUnloadChunkPacket(FriendlyByteBuf buffer) {
+        this.pos = buffer.readChunkPos();
     }
 
     @Override
     public void toBytes(FriendlyByteBuf buffer) {
-        buffer.writeUUID(this.id);
+        buffer.writeChunkPos(pos);
     }
 
     @Override
@@ -31,7 +29,6 @@ public class ClientboundInteractableRemovePacket extends ClientboundPacket {
         Minecraft minecraft = Minecraft.getInstance();
         ClientLevel level = minecraft.level;
         ClientInteractableManager manager = (ClientInteractableManager) InteractableAttachment.getInteractableManagerForLevel(level);
-        Interactable interactable = manager.getInteractable(id);
-        if (interactable != null) manager.removeInteractable(interactable);
+        manager.unloadChunk(level.getChunk(pos.x, pos.z));
     }
 }

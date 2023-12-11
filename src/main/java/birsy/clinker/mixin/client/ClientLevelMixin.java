@@ -2,11 +2,18 @@ package birsy.clinker.mixin.client;
 
 import birsy.clinker.client.render.entity.base.InterpolatedEntityRenderer;
 import birsy.clinker.common.world.alchemy.workstation.WorkstationManager;
-import birsy.clinker.common.world.level.interactableOLD.InteractableManager;
+import birsy.clinker.common.world.level.interactable.InteractableAttachment;
+import birsy.clinker.common.world.level.interactable.manager.ClientInteractableManager;
+import birsy.clinker.common.world.level.interactable.manager.ServerInteractableManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.core.Holder;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.LevelChunk;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,28 +23,39 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 @Mixin(ClientLevel.class)
 public class ClientLevelMixin {
     @Shadow @Final private Minecraft minecraft;
 
-    @Inject(method = "addEntity(ILnet/minecraft/world/entity/Entity;)V", at = @At("TAIL"))
-    private void addEntity(int pEntityId, Entity pEntityToSpawn, CallbackInfo ci) {
-        if (this.minecraft.getEntityRenderDispatcher().getRenderer(pEntityToSpawn) instanceof InterpolatedEntityRenderer renderer) {
-            renderer.createSkeleton((LivingEntity) pEntityToSpawn);
+    @Inject(method = "<init>(Lnet/minecraft/client/multiplayer/ClientPacketListener;Lnet/minecraft/client/multiplayer/ClientLevel$ClientLevelData;Lnet/minecraft/resources/ResourceKey;Lnet/minecraft/core/Holder;IILjava/util/function/Supplier;Lnet/minecraft/client/renderer/LevelRenderer;ZJ)V", at = @At("TAIL"))
+    private void init(ClientPacketListener p_205505_, ClientLevel.ClientLevelData p_205506_, ResourceKey p_205507_, Holder p_205508_, int p_205509_, int p_205510_, Supplier p_205511_, LevelRenderer p_205512_, boolean p_205513_, long p_205514_, CallbackInfo ci) {
+        ClientLevel me = (ClientLevel)(Object)this;
+        InteractableAttachment.attachManagerToLevel(me, new ClientInteractableManager(me));
+    }
+
+    @Inject(method = "addEntity(Lnet/minecraft/world/entity/Entity;)V", at = @At("TAIL"))
+    private void addEntity(Entity entity, CallbackInfo ci) {
+        if (this.minecraft.getEntityRenderDispatcher().getRenderer(entity) instanceof InterpolatedEntityRenderer renderer) {
+            renderer.createSkeleton((LivingEntity) entity);
         }
     }
 
     @Inject(method = "unload(Lnet/minecraft/world/level/chunk/LevelChunk;)V", at = @At("TAIL"))
     public void unload(LevelChunk pChunk, CallbackInfo ci) {
-        InteractableManager manager = InteractableManager.clientInteractableManager;
-        manager.unloadChunk(pChunk.getPos());
+        ClientLevel me = (ClientLevel)(Object)this;
+        InteractableAttachment.getInteractableManagerForLevel(me).unloadChunk(pChunk);
+    }
+
+    @Inject(method = "onChunkLoaded(Lnet/minecraft/world/level/ChunkPos;)V", at = @At("TAIL"))
+    public void load(ChunkPos chunkPos, CallbackInfo ci) {
+        ClientLevel me = (ClientLevel)(Object)this;
+        InteractableAttachment.getInteractableManagerForLevel(me).loadChunk(me.getChunk(chunkPos.x, chunkPos.z));
     }
 
     @Inject(method = "tick(Ljava/util/function/BooleanSupplier;)V", at = @At("TAIL"))
     public void tick(BooleanSupplier pHasTimeLeft, CallbackInfo ci) {
-        InteractableManager iManager = InteractableManager.clientInteractableManager;
-        iManager.tick();
         WorkstationManager wManager = WorkstationManager.clientWorkstationManager;
         wManager.tick();
     }

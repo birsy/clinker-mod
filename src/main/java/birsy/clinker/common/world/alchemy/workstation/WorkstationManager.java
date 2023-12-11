@@ -14,7 +14,6 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -118,14 +117,14 @@ public class WorkstationManager {
             if (!adjacentWorkstations.isEmpty()) {
                 for (Workstation adjacentWorkstation : adjacentWorkstations) {
                     nearestWorkstation.merge(adjacentWorkstation);
-                    ClinkerPacketHandler.sendToClientsInChunk(this.level.getChunkAt(pos), new ClientboundWorkstationMergePacket(nearestWorkstation.uuid, adjacentWorkstation.uuid));
+                    ClinkerPacketHandler.sendToClientsTrackingChunk(this.level.getChunkAt(pos), new ClientboundWorkstationMergePacket(nearestWorkstation.uuid, adjacentWorkstation.uuid));
                     workstationStorage.remove(adjacentWorkstation.uuid);
                 }
             }
         }
 
         nearestWorkstation.addBlock(pos);
-        ClinkerPacketHandler.sendToClientsInChunk(this.level.getChunkAt(pos), new ClientboundWorkstationChangeBlockPacket(pos, true, nearestWorkstation.uuid));
+        ClinkerPacketHandler.sendToClientsTrackingChunk(this.level.getChunkAt(pos), new ClientboundWorkstationChangeBlockPacket(pos, true, nearestWorkstation.uuid));
     }
 
     public void loadWorkstationToClient(UUID id, ServerPlayer client) {
@@ -170,7 +169,7 @@ public class WorkstationManager {
     public void removeWorkstationBlockFromUUID(BlockPos pos, UUID id) {
         if (!this.workstationStorage.containsKey(id)) { Clinker.LOGGER.warn("No workstation of UUID " + id.toString() + " exists!"); return; }
         this.workstationStorage.get(id).removeBlock(pos);
-        if (!this.isClientSide) ClinkerPacketHandler.sendToClientsInChunk(this.level.getChunkAt(pos), new ClientboundWorkstationChangeBlockPacket(pos, false, id));
+        if (!this.isClientSide) ClinkerPacketHandler.sendToClientsTrackingChunk(this.level.getChunkAt(pos), new ClientboundWorkstationChangeBlockPacket(pos, false, id));
     }
 
     private void clear() {

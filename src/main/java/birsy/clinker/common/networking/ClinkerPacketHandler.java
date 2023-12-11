@@ -21,8 +21,7 @@ public class ClinkerPacketHandler {
     private static final String PROTOCOL_VERSION = "1";
     private static int packetId = 0;
     private static int createId() {
-        packetId = packetId + 1;
-        return packetId;
+        return packetId++;
     }
 
     public static void register() {
@@ -37,11 +36,13 @@ public class ClinkerPacketHandler {
     }
 
     public static void registerPackets() {
+        NETWORK.registerMessage(createId(), ServerboundInteractableLoadChunkRequestPacket.class, ServerboundInteractableLoadChunkRequestPacket::toBytes, ServerboundInteractableLoadChunkRequestPacket::new, ServerboundInteractableLoadChunkRequestPacket::handle);
+        NETWORK.registerMessage(createId(), ServerboundInteractableLoadRequestPacket.class, ServerboundInteractableLoadRequestPacket::toBytes, ServerboundInteractableLoadRequestPacket::new, ServerboundInteractableLoadRequestPacket::handle);
+        NETWORK.registerMessage(createId(), ClientboundInteractableLoadChunkPacket.class, ClientboundInteractableLoadChunkPacket::toBytes, ClientboundInteractableLoadChunkPacket::new, ClientboundInteractableLoadChunkPacket::handle);
+        NETWORK.registerMessage(createId(), ClientboundInteractableUnloadChunkPacket.class, ClientboundInteractableUnloadChunkPacket::toBytes, ClientboundInteractableUnloadChunkPacket::new, ClientboundInteractableUnloadChunkPacket::handle);
         NETWORK.registerMessage(createId(), ClientboundInteractableAddPacket.class, ClientboundInteractableAddPacket::toBytes, ClientboundInteractableAddPacket::new, ClientboundInteractableAddPacket::handle);
         NETWORK.registerMessage(createId(), ClientboundInteractableRemovePacket.class, ClientboundInteractableRemovePacket::toBytes, ClientboundInteractableRemovePacket::new, ClientboundInteractableRemovePacket::handle);
-        NETWORK.registerMessage(createId(), ClientboundInteractableTranslationSyncPacket.class, ClientboundInteractableTranslationSyncPacket::toBytes, ClientboundInteractableTranslationSyncPacket::new, ClientboundInteractableTranslationSyncPacket::handle);
-        NETWORK.registerMessage(createId(), ClientboundInteractableShapeSyncPacket.class, ClientboundInteractableShapeSyncPacket::toBytes, ClientboundInteractableShapeSyncPacket::new, ClientboundInteractableShapeSyncPacket::handle);
-        NETWORK.registerMessage(createId(), ServerboundInteractableInteractionPacket.class, ServerboundInteractableInteractionPacket::toBytes, ServerboundInteractableInteractionPacket::new, ServerboundInteractableInteractionPacket::handle);
+        NETWORK.registerMessage(createId(), ClientboundInteractableUpdatePacket.class, ClientboundInteractableUpdatePacket::toBytes, ClientboundInteractableUpdatePacket::new, ClientboundInteractableUpdatePacket::handle);
 
         NETWORK.registerMessage(createId(), ClientboundSalamanderSyncPacket.class, ClientboundSalamanderSyncPacket::toBytes, ClientboundSalamanderSyncPacket::new, ClientboundSalamanderSyncPacket::handle);
         NETWORK.registerMessage(createId(), ClientboundPushPacket.class, ClientboundPushPacket::toBytes, ClientboundPushPacket::new, ClientboundPushPacket::handle);
@@ -70,7 +71,7 @@ public class ClinkerPacketHandler {
     public static <M> void sendToAllClients(M packet) {
         NETWORK.send(PacketDistributor.ALL.noArg(), packet);
     }
-    public static <M> void sendToClientsInChunk(LevelChunk chunk, M packet) {
+    public static <M> void sendToClientsTrackingChunk(LevelChunk chunk, M packet) {
         NETWORK.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk), packet);
     }
 }

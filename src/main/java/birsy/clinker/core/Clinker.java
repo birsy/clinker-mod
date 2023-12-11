@@ -49,6 +49,7 @@ public class Clinker {
         ClinkerEntities.ENTITY_TYPES.register(modEventBus);
         ClinkerFeatures.FEATURES.register(modEventBus);
         ClinkerParticles.PARTICLES.register(modEventBus);
+        ClinkerDataAttachments.ATTACHMENT_TYPES.register(modEventBus);
 
         modEventBus.addListener(this::setup);
         modEventBus.addListener(this::doClientStuff);

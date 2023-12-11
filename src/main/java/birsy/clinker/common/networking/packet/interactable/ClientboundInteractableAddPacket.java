@@ -1,48 +1,39 @@
 package birsy.clinker.common.networking.packet.interactable;
 
-import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.ClientboundPacket;
-import birsy.clinker.common.world.level.interactableOLD.Interactable;
-import birsy.clinker.common.world.level.interactableOLD.InteractableManager;
-import birsy.clinker.core.Clinker;
-import net.minecraft.nbt.CompoundTag;
+import birsy.clinker.common.world.level.interactable.Interactable;
+import birsy.clinker.common.world.level.interactable.InteractableAttachment;
+import birsy.clinker.common.world.level.interactable.manager.ClientInteractableManager;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.FriendlyByteBuf;
 import net.neoforged.neoforge.network.NetworkEvent;
+import org.joml.Quaterniond;
+import org.joml.Vector3d;
 
 import java.util.UUID;
 
 public class ClientboundInteractableAddPacket extends ClientboundPacket {
-    private Interactable interactable;
-    private UUID uuid;
+    final Interactable interactable;
+
     public ClientboundInteractableAddPacket(Interactable interactable) {
         this.interactable = interactable;
     }
 
     public ClientboundInteractableAddPacket(FriendlyByteBuf buffer) {
-        CompoundTag NBT = buffer.readNbt();
-        this.interactable = Interactable.deserialize(NBT);
-
-        if (this.interactable == null) {
-            Clinker.LOGGER.warn("Interactable deserialization failed! Trying again.");
-            this.uuid = NBT.getUUID("uuid");
-        } else {
-            this.interactable.initialized = false;
-        }
+        this.interactable = Interactable.deserializeNBT(buffer.readNbt());
     }
 
     @Override
     public void toBytes(FriendlyByteBuf buffer) {
-        buffer.writeNbt(interactable.serialize());
+        buffer.writeNbt(this.interactable.serializeNBT());
     }
 
     @Override
     public void run(NetworkEvent.Context context) {
-        if (interactable == null) {
-            if (uuid == null) throw new RuntimeException("Interactable UUID failed to serialized. If this happens, something has gone terribly, terribly wrong. Sorry!");
-            ClinkerPacketHandler.sendToServer(new ServerboundInteractableAddFailurePacket(uuid));
-            return;
-        }
-        InteractableManager clientManager = InteractableManager.clientInteractableManager;
-        clientManager.addClientsideInteractable(this.interactable);
+        Minecraft minecraft = Minecraft.getInstance();
+        ClientLevel level = minecraft.level;
+        ClientInteractableManager manager = (ClientInteractableManager) InteractableAttachment.getInteractableManagerForLevel(level);
+        manager.addInteractable(interactable);
     }
 }

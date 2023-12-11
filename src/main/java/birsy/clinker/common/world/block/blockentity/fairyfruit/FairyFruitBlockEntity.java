@@ -72,7 +72,7 @@ public class FairyFruitBlockEntity extends BlockEntity implements InteractablePa
             segment.interactable.setRotation(segment.getOrientation(1.0F, ORIENTATION_FORWARD));
         }
 
-        ClinkerPacketHandler.sendToClientsInChunk(level.getChunkAt(this.getBlockPos()), new ClientboundFairyFruitSyncPacket(this));
+        ClinkerPacketHandler.sendToClientsTrackingChunk(level.getChunkAt(this.getBlockPos()), new ClientboundFairyFruitSyncPacket(this));
     }
 
     public void clientTick() {
@@ -87,7 +87,7 @@ public class FairyFruitBlockEntity extends BlockEntity implements InteractablePa
         while (segmentIterator.hasNext()) {
             FairyFruitSegment segment = (FairyFruitSegment) segmentIterator.next();
             if (segment.shouldBeRemoved) {
-                if (this.hasLevel() && !this.level.isClientSide) ClinkerPacketHandler.sendToClientsInChunk(this.level.getChunkAt(this.getBlockPos()), new ClientboundFairyFruitRemovalPacket(segment));
+                if (this.hasLevel() && !this.level.isClientSide) ClinkerPacketHandler.sendToClientsTrackingChunk(this.level.getChunkAt(this.getBlockPos()), new ClientboundFairyFruitRemovalPacket(segment));
                 if (segment.interactable != null) segment.interactable.markForRemoval();
                 segmentIterator.remove();
             }
@@ -97,7 +97,7 @@ public class FairyFruitBlockEntity extends BlockEntity implements InteractablePa
         while (jointIterator.hasNext()) {
             FairyFruitJoint joint = (FairyFruitJoint) jointIterator.next();
             if (joint.shouldBeRemoved) {
-                if (this.hasLevel() && !this.level.isClientSide) ClinkerPacketHandler.sendToClientsInChunk(this.level.getChunkAt(this.getBlockPos()), new ClientboundFairyFruitRemovalPacket(joint));
+                if (this.hasLevel() && !this.level.isClientSide) ClinkerPacketHandler.sendToClientsTrackingChunk(this.level.getChunkAt(this.getBlockPos()), new ClientboundFairyFruitRemovalPacket(joint));
                 jointIterator.remove();
             }
         }
@@ -153,7 +153,7 @@ public class FairyFruitBlockEntity extends BlockEntity implements InteractablePa
 
         if (fromBoneMeal) newSegment.addBoneMealEffects();
         if (this.hasLevel()) this.canGrow = this.level.random.nextInt(this.segments.size()) < 4;
-        if (this.hasLevel() && !this.level.isClientSide() && sendPacket) ClinkerPacketHandler.sendToClientsInChunk(this.level.getChunkAt(this.worldPosition), new ClientboundFairyFruitGrowPacket(this, fromBoneMeal));
+        if (this.hasLevel() && !this.level.isClientSide() && sendPacket) ClinkerPacketHandler.sendToClientsTrackingChunk(this.level.getChunkAt(this.worldPosition), new ClientboundFairyFruitGrowPacket(this, fromBoneMeal));
     }
 
     public void setTip(FairyFruitJoint newTip) {
@@ -291,7 +291,7 @@ public class FairyFruitBlockEntity extends BlockEntity implements InteractablePa
 
         }
 
-        ClinkerPacketHandler.sendToClientsInChunk(level.getChunkAt(this.getBlockPos()), new ClientboundFairyFruitSyncPacket(this));
+        ClinkerPacketHandler.sendToClientsTrackingChunk(level.getChunkAt(this.getBlockPos()), new ClientboundFairyFruitSyncPacket(this));
     }
 
     public void clientTick() {
@@ -394,7 +394,7 @@ public class FairyFruitBlockEntity extends BlockEntity implements InteractablePa
         FairyFruitSegment newSegment = new FairyFruitSegment(this, this.tip, newTip, 1);
         this.setTip(newTip);
 
-        if (this.hasLevel() && !this.level.isClientSide() && sendPacket) ClinkerPacketHandler.sendToClientsInChunk(this.level.getChunkAt(this.worldPosition), new ClientboundFairyFruitGrowPacket(this, newSegment.index, newTip.index));
+        if (this.hasLevel() && !this.level.isClientSide() && sendPacket) ClinkerPacketHandler.sendToClientsTrackingChunk(this.level.getChunkAt(this.worldPosition), new ClientboundFairyFruitGrowPacket(this, newSegment.index, newTip.index));
     }
     
     public void setTip(FairyFruitJoint newTip) {
