@@ -1,7 +1,7 @@
 package birsy.clinker.common.world.block;
 
 import birsy.clinker.common.world.block.blockentity.SarcophagusBlockEntity;
-import birsy.clinker.core.registry.ClinkerBlockEntities;
+import birsy.clinker.core.registry.entity.ClinkerBlockEntities;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;

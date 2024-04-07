@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CollidingParticle {
+    public boolean locked = false;
+
     public Vec3 physicsPrevPosition;
     public Vec3 pPosition;
     public Vec3 position;
@@ -65,6 +67,7 @@ public class CollidingParticle {
 
     protected void beginTick(float deltaTime) {
         this.pPosition = this.position;
+        if (this.locked) return;
         Vec3 velocity = this.getDeltaMovement();
 
         velocity = velocity.add(pushes);
@@ -77,6 +80,10 @@ public class CollidingParticle {
     }
 
     protected void finalizeTick() {
+        if (this.locked) {
+            this.physicsNextPosition = this.position;
+            return;
+        }
         applyCollisionConstraints();
         this.position = this.physicsNextPosition;
     }
@@ -97,19 +104,19 @@ public class CollidingParticle {
         return Entity.collideBoundingBox(null, velocity, aabb, level, list);
     }
 
-    protected void accelerate(Vec3 amount) {
+    public void accelerate(Vec3 amount) {
         this.acceleration = this.acceleration.add(amount);
     }
 
-    protected void push(Vec3 amount) {
+    public void push(Vec3 amount) {
         this.push(amount.x, amount.y, amount.z);
     }
 
-    protected void push(double x, double y, double z) {
+    public void push(double x, double y, double z) {
         pushes = pushes.add(x, y, z);
     }
 
-    protected Vec3 getDeltaMovement() {
+    public Vec3 getDeltaMovement() {
         return this.position.subtract(this.physicsPrevPosition);
     }
 
@@ -118,7 +125,7 @@ public class CollidingParticle {
         
         Vec3 directionVector = Vec3.ZERO;
         for (LinkConstraint constraint : linkConstraints) {
-            directionVector.add(constraint.getVector(partialTick));
+            directionVector.add(constraint.getDirection(partialTick));
         }
         directionVector = directionVector.scale(1.0D / (double)linkConstraints.size());
 

@@ -1,77 +1,76 @@
 package birsy.clinker.common.networking;
 
 import birsy.clinker.common.networking.packet.*;
+import birsy.clinker.common.networking.packet.debug.GnomadSquadDebugPacket;
 import birsy.clinker.common.networking.packet.interactable.*;
 import birsy.clinker.common.networking.packet.workstation.ClientboundWorkstationChangeBlockPacket;
 import birsy.clinker.common.networking.packet.workstation.ClientboundWorkstationLoadPacket;
 import birsy.clinker.common.networking.packet.workstation.ClientboundWorkstationMergePacket;
 import birsy.clinker.common.networking.packet.workstation.ServerboundWorkstationLoadRequestPacket;
 import birsy.clinker.core.Clinker;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.chunk.LevelChunk;
-import net.neoforged.neoforge.network.NetworkRegistry;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.simple.SimpleChannel;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
+import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
 
-
+@Mod.EventBusSubscriber(modid = Clinker.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ClinkerPacketHandler {
-    public static SimpleChannel NETWORK;
-
-    private static final String PROTOCOL_VERSION = "1";
-    private static int packetId = 0;
-    private static int createId() {
-        return packetId++;
+    // todo: make this a thing for each packet and not this shitty awful thing.
+    public static ResourceLocation createId(Class clazz) {
+        return new ResourceLocation(Clinker.MOD_ID, clazz.getSimpleName().toLowerCase());
     }
 
-    public static void register() {
-        NETWORK = NetworkRegistry.newSimpleChannel(
-                new ResourceLocation(Clinker.MOD_ID, "main"),
-                () -> PROTOCOL_VERSION,
-                PROTOCOL_VERSION::equals,
-                PROTOCOL_VERSION::equals
-        );
+    @SubscribeEvent
+    public static void register(RegisterPayloadHandlerEvent event) {
+        final IPayloadRegistrar registrar = event.registrar(Clinker.MOD_ID);
+        registrar.play(createId(ClientboundUrnPathPacket.class), ClientboundUrnPathPacket::new, ClientboundUrnPathPacket::handle);
 
-        registerPackets();
+        registrar.play(createId(ServerboundInteractableLoadChunkRequestPacket.class), ServerboundInteractableLoadChunkRequestPacket::new, ServerboundInteractableLoadChunkRequestPacket::handle);
+        registrar.play(createId(ServerboundInteractableLoadRequestPacket.class), ServerboundInteractableLoadRequestPacket::new, ServerboundInteractableLoadRequestPacket::handle);
+        registrar.play(createId(ClientboundInteractableLoadChunkPacket.class), ClientboundInteractableLoadChunkPacket::new, ClientboundInteractableLoadChunkPacket::handle);
+        registrar.play(createId(ClientboundInteractableUnloadChunkPacket.class), ClientboundInteractableUnloadChunkPacket::new, ClientboundInteractableUnloadChunkPacket::handle);
+        registrar.play(createId(ClientboundInteractableAddPacket.class), ClientboundInteractableAddPacket::new, ClientboundInteractableAddPacket::handle);
+        registrar.play(createId(ClientboundInteractableRemovePacket.class), ClientboundInteractableRemovePacket::new, ClientboundInteractableRemovePacket::handle);
+        registrar.play(createId(ClientboundInteractableUpdatePacket.class), ClientboundInteractableUpdatePacket::new, ClientboundInteractableUpdatePacket::handle);
+
+        registrar.play(createId(ClientboundSalamanderSyncPacket.class), ClientboundSalamanderSyncPacket::new, ClientboundSalamanderSyncPacket::handle);
+        registrar.play(createId(ClientboundPushPacket.class), ClientboundPushPacket::new, ClientboundPushPacket::handle);
+
+        registrar.play(createId(ClientboundWorkstationChangeBlockPacket.class), ClientboundWorkstationChangeBlockPacket::new, ClientboundWorkstationChangeBlockPacket::handle);
+        registrar.play(createId(ClientboundWorkstationLoadPacket.class), ClientboundWorkstationLoadPacket::new, ClientboundWorkstationLoadPacket::handle);
+        registrar.play(createId(ClientboundWorkstationMergePacket.class), ClientboundWorkstationMergePacket::new, ClientboundWorkstationMergePacket::handle);
+        registrar.play(createId(ServerboundWorkstationLoadRequestPacket.class), ServerboundWorkstationLoadRequestPacket::new, ServerboundWorkstationLoadRequestPacket::handle);
+
+        registrar.play(createId(ClientboundOrdnanceExplosionPacket.class), ClientboundOrdnanceExplosionPacket::new, ClientboundOrdnanceExplosionPacket::handle);
+
+        registrar.play(createId(ClientboundMoldGrowthPacket.class), ClientboundMoldGrowthPacket::new, ClientboundMoldGrowthPacket::handle);
+
+        registrar.play(createId(GnomadSquadDebugPacket.class), GnomadSquadDebugPacket::new, GnomadSquadDebugPacket::handle);
+
+        Clinker.LOGGER.info("REGISTERED CLINKER PACKETS!");
     }
 
-    public static void registerPackets() {
-        NETWORK.registerMessage(createId(), ServerboundInteractableLoadChunkRequestPacket.class, ServerboundInteractableLoadChunkRequestPacket::toBytes, ServerboundInteractableLoadChunkRequestPacket::new, ServerboundInteractableLoadChunkRequestPacket::handle);
-        NETWORK.registerMessage(createId(), ServerboundInteractableLoadRequestPacket.class, ServerboundInteractableLoadRequestPacket::toBytes, ServerboundInteractableLoadRequestPacket::new, ServerboundInteractableLoadRequestPacket::handle);
-        NETWORK.registerMessage(createId(), ClientboundInteractableLoadChunkPacket.class, ClientboundInteractableLoadChunkPacket::toBytes, ClientboundInteractableLoadChunkPacket::new, ClientboundInteractableLoadChunkPacket::handle);
-        NETWORK.registerMessage(createId(), ClientboundInteractableUnloadChunkPacket.class, ClientboundInteractableUnloadChunkPacket::toBytes, ClientboundInteractableUnloadChunkPacket::new, ClientboundInteractableUnloadChunkPacket::handle);
-        NETWORK.registerMessage(createId(), ClientboundInteractableAddPacket.class, ClientboundInteractableAddPacket::toBytes, ClientboundInteractableAddPacket::new, ClientboundInteractableAddPacket::handle);
-        NETWORK.registerMessage(createId(), ClientboundInteractableRemovePacket.class, ClientboundInteractableRemovePacket::toBytes, ClientboundInteractableRemovePacket::new, ClientboundInteractableRemovePacket::handle);
-        NETWORK.registerMessage(createId(), ClientboundInteractableUpdatePacket.class, ClientboundInteractableUpdatePacket::toBytes, ClientboundInteractableUpdatePacket::new, ClientboundInteractableUpdatePacket::handle);
 
-        NETWORK.registerMessage(createId(), ClientboundSalamanderSyncPacket.class, ClientboundSalamanderSyncPacket::toBytes, ClientboundSalamanderSyncPacket::new, ClientboundSalamanderSyncPacket::handle);
-        NETWORK.registerMessage(createId(), ClientboundPushPacket.class, ClientboundPushPacket::toBytes, ClientboundPushPacket::new, ClientboundPushPacket::handle);
-
-        NETWORK.registerMessage(createId(), ClientboundFairyFruitSyncPacket.class, ClientboundFairyFruitSyncPacket::toBytes, ClientboundFairyFruitSyncPacket::new, ClientboundFairyFruitSyncPacket::handle);
-        NETWORK.registerMessage(createId(), ClientboundFairyFruitGrowPacket.class, ClientboundFairyFruitGrowPacket::toBytes, buffer -> new ClientboundFairyFruitGrowPacket(buffer), ClientboundFairyFruitGrowPacket::handle);
-        NETWORK.registerMessage(createId(), ClientboundFairyFruitBreakPacket.class, ClientboundFairyFruitBreakPacket::toBytes, ClientboundFairyFruitBreakPacket::new, ClientboundFairyFruitBreakPacket::handle);
-        NETWORK.registerMessage(createId(), ClientboundFairyFruitRemovalPacket.class, ClientboundFairyFruitRemovalPacket::toBytes, ClientboundFairyFruitRemovalPacket::new, ClientboundFairyFruitRemovalPacket::handle);
-
-        NETWORK.registerMessage(createId(), ClientboundWorkstationChangeBlockPacket.class, ClientboundWorkstationChangeBlockPacket::toBytes, ClientboundWorkstationChangeBlockPacket::new, ClientboundWorkstationChangeBlockPacket::handle);
-        NETWORK.registerMessage(createId(), ClientboundWorkstationLoadPacket.class, ClientboundWorkstationLoadPacket::toBytes, ClientboundWorkstationLoadPacket::new, ClientboundWorkstationLoadPacket::handle);
-        NETWORK.registerMessage(createId(), ClientboundWorkstationMergePacket.class, ClientboundWorkstationMergePacket::toBytes, ClientboundWorkstationMergePacket::new, ClientboundWorkstationMergePacket::handle);
-        NETWORK.registerMessage(createId(), ServerboundWorkstationLoadRequestPacket.class, ServerboundWorkstationLoadRequestPacket::toBytes, ServerboundWorkstationLoadRequestPacket::new, ServerboundWorkstationLoadRequestPacket::handle);
-
-        NETWORK.registerMessage(createId(), ClientboundOrdnanceExplosionPacket.class, ClientboundOrdnanceExplosionPacket::toBytes, ClientboundOrdnanceExplosionPacket::new, ClientboundOrdnanceExplosionPacket::handle);
-
-        Clinker.LOGGER.info("REGISTERED PACKETS!!!");
+    public static <M extends CustomPacketPayload> void sendToServer(M packet) {
+        PacketDistributor.SERVER.noArg().send(packet);
+    }
+    public static <M extends CustomPacketPayload> void sendToClient(ServerPlayer client, M packet) {
+        PacketDistributor.PLAYER.with(client).send(packet);
+    }
+    public static <M extends CustomPacketPayload> void sendToAllClients(M packet) {
+        PacketDistributor.ALL.noArg().send(packet);
+    }
+    public static <M extends CustomPacketPayload> void sendToClientsTrackingChunk(LevelChunk chunk, M packet) {
+        PacketDistributor.TRACKING_CHUNK.with(chunk).send(packet);
+    }
+    public static <M extends CustomPacketPayload> void sendToClientsTrackingEntity(Entity entity, M packet) {
+        PacketDistributor.TRACKING_ENTITY.with(entity).send(packet);
     }
 
-    public static <M> void sendToServer(M packet) {
-        NETWORK.sendToServer(packet);
-    }
-    public static <M> void sendToClient(ServerPlayer client, M packet) {
-        NETWORK.send(PacketDistributor.PLAYER.with(() -> client), packet);
-    }
-    public static <M> void sendToAllClients(M packet) {
-        NETWORK.send(PacketDistributor.ALL.noArg(), packet);
-    }
-    public static <M> void sendToClientsTrackingChunk(LevelChunk chunk, M packet) {
-        NETWORK.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk), packet);
-    }
 }

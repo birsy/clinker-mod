@@ -59,7 +59,7 @@ public class ServerInteractableManager extends InteractableManager {
                 Quaterniond orientation = new Quaterniond(new AxisAngle4d(this.level.random.nextDouble() * Math.PI,
                         new Vector3d(this.level.random.nextDouble() * 2 - 1, this.level.random.nextDouble() * 2 - 1, this.level.random.nextDouble() * 2 - 1).normalize()));
                 Vector3f size = new Vector3f(this.level.random.nextFloat() * 2, this.level.random.nextFloat() * 2, this.level.random.nextFloat() * 2);
-                //addInteractable(new Interactable(size, position, orientation));
+                //addInteractable(new Interactable(size, new Vector3d(0, 0, 0), orientation));
             }
         }
 

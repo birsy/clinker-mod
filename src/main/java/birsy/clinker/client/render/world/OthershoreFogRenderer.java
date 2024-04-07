@@ -45,7 +45,7 @@ public class OthershoreFogRenderer {
             //Make it a little foggier when it's darker....
             final float darknessAmount = (calculateInterpolatedLight(world, playerVecPos, LightLayer.SKY, false) / 16.0F);
             final float deepCaveHeightMultiplier = Mth.clamp(MathUtils.mapRange(-10, 10, 1.0F, 0, (float) playerVecPos.y), 0, 0.5F);
-            float multiplier = 1.8F;
+            float multiplier = 1.2F;
 
             if (event.getType() == FogType.NONE) {
                 event.setFogShape(FogShape.CYLINDER);

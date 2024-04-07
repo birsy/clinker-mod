@@ -29,4 +29,8 @@ public class InteractableLookup {
     public Collection<Interactable> getInteractables() {
         return byUuid.values();
     }
+
+    public void clear() {
+        this.byUuid.clear();
+    }
 }

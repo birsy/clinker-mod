@@ -2,6 +2,7 @@ package birsy.clinker.common.world.level.interactable;
 
 
 import birsy.clinker.core.util.CollisionUtils;
+import birsy.clinker.core.util.collision.colliders.BoxCollider;
 import net.minecraft.core.SectionPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -24,19 +25,24 @@ public class Interactable {
     public boolean shouldSync = true;
     public Vector3f size;
     private AABB bounds;
+    public boolean colliding = false;
     private boolean calculatedBounds = false;
+    public BoxCollider collider;
 
     public Interactable(Vector3f size, Vector3d position, Quaterniond orientation) {
-        this(UUID.randomUUID());
+        this(size, UUID.randomUUID());
         this.size = size;
         this.position = position;
         this.previousPosition = new Vector3d(position);
         this.orientation = orientation;
         this.previousOrientation = new Quaterniond(orientation);
+        this.collider.setPosition(this.position);
+        this.collider.setOrientation(this.orientation);
     }
 
-    public Interactable(UUID id) {
+    public Interactable(Vector3f size, UUID id) {
         this.id = id;
+        this.collider = new BoxCollider(new Vector3d(), new Quaterniond(), new Vector3d(size));
     }
 
     public void tick() {
@@ -59,6 +65,7 @@ public class Interactable {
         if (calculatedBounds && this.bounds != null) this.bounds = this.bounds.move(this.position.x - newPosition.x, this.position.y - newPosition.y, this.position.z - newPosition.z());
         this.position.set(newPosition);
         this.markedDirty = true;
+        this.collider.setPosition(position);
     }
 
     /**
@@ -76,6 +83,7 @@ public class Interactable {
         this.orientation.set(orientation);
         this.markedDirty = true;
         this.calculatedBounds = false;
+        collider.setOrientation(orientation);
     }
 
     public void move(Vector3d offset) {
@@ -138,7 +146,7 @@ public class Interactable {
         Vector3d pos = new Vector3d(nbt.getDouble("xp"), nbt.getDouble("yp"), nbt.getDouble("zp"));
         Quaterniond rot = new Quaterniond(nbt.getDouble("xo"), nbt.getDouble("yo"), nbt.getDouble("zo"), nbt.getDouble("wo"));
         Vector3f size = new Vector3f(nbt.getFloat("xs"), nbt.getFloat("ys"), nbt.getFloat("zs"));
-        Interactable interactable = new Interactable(id);
+        Interactable interactable = new Interactable(size, id);
         interactable.position = pos;
         interactable.previousPosition = new Vector3d(pos);
         interactable.orientation = rot;

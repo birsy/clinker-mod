@@ -13,6 +13,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
+import org.joml.Vector3d;
 import org.joml.Vector3f;
 
 import java.lang.reflect.Array;
@@ -24,6 +25,16 @@ import java.util.function.Function;
 /* cappin's math utils
  * hope you find this useful :) */
 public class MathUtils {
+
+    // return pdf(x) = standard Gaussian pdf
+    public static double pdf(double x) {
+        return Math.exp(-x*x / 2) / Math.sqrt(2 * Math.PI);
+    }
+
+    // return pdf(x, mu, sigma) = Gaussian pdf with mean mu and stddev sigma
+    public static double pdf(double x, double mu, double sigma) {
+        return pdf((x - mu) / sigma) / sigma;
+    }
 
     public static double min(double... nums) {
         double min = nums[0];
@@ -75,6 +86,34 @@ public class MathUtils {
             }
         } else {
             return new Vec3(Mth.clamp(point.x(), aabb.minX, aabb.maxX), Mth.clamp(point.y(), aabb.minY, aabb.maxY), Mth.clamp(point.z(), aabb.minZ, aabb.maxZ));
+        }
+
+        return point;
+    }
+
+    public static Vector3d closestPointOnAABB(Vector3d point, AABB aabb) {
+        if (aabb.contains(point.x(), point.y(), point.z())) {
+            //find which face it is closest to
+            double closestXDist = findClosestDistance(point.x, aabb.minX, aabb.maxX);
+            double closestYDist = findClosestDistance(point.y, aabb.minY, aabb.maxY);
+            double closestZDist = findClosestDistance(point.z, aabb.minZ, aabb.maxZ);
+
+            double absClosestXDist = Math.abs(closestXDist);
+            double absClosestYDist = Math.abs(closestYDist);
+            double absClosestZDist = Math.abs(closestZDist);
+
+            double min = min(absClosestXDist, absClosestYDist, absClosestZDist);
+
+            //move it to that face.
+            if (min == absClosestXDist) {
+                return new Vector3d(point.x - closestXDist, point.y, point.z);
+            } else if (min == absClosestYDist) {
+                return new Vector3d(point.x, point.y - closestYDist, point.z);
+            } else if (min == absClosestZDist) {
+                return new Vector3d(point.x, point.y, point.z - closestZDist);
+            }
+        } else {
+            return new Vector3d(Mth.clamp(point.x(), aabb.minX, aabb.maxX), Mth.clamp(point.y(), aabb.minY, aabb.maxY), Mth.clamp(point.z(), aabb.minZ, aabb.maxZ));
         }
 
         return point;
@@ -135,18 +174,12 @@ public class MathUtils {
         return BlockPos.containing(vector.x(), vector.y(), vector.z());
     }
 
-    // Like modulo, but works with negative numbers
+    // like modulo, but works with negative numbers
     // from: https://stackoverflow.com/questions/4412179/best-way-to-make-javas-modulus-behave-like-it-should-with-negative-numbers/4412200#4412200
     public static int wrap(int x, int n) {
         int remainder = (x % n); // may be negative if x is negative
         //if remainder is negative, adds n, otherwise adds 0
         return ((remainder >> 31) & n) + remainder;
-    }
-
-    public static <T extends Object> void addAll(Collection<T> collection, T... objects) {
-        for (T object : objects) {
-            collection.add(object);
-        }
     }
 
     public static Vec3 vec3Lerp(float delta, Vec3 start, Vec3 end) {

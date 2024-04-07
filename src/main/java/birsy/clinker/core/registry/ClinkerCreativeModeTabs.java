@@ -2,7 +2,9 @@ package birsy.clinker.core.registry;
 
 import birsy.clinker.core.Clinker;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
@@ -12,13 +14,15 @@ public class ClinkerCreativeModeTabs {
 
     public static final Supplier<CreativeModeTab> CLINKER_BLOCKS = TABS.register("clinker_blocks",
             () -> CreativeModeTab.builder()
-                    .icon(() -> ClinkerBlocks.STOVE.get().asItem().getDefaultInstance())
+                    .title(Component.translatable("creative_tab.clinker_blocks.name"))
+                    .icon(() -> new ItemStack(ClinkerBlocks.STOVE.get().asItem()))
                     .withSlotColor(10658645)
                     .displayItems(ClinkerCreativeModeTabs::addBlocks)
                     .build());
     public static final Supplier<CreativeModeTab> CLINKER_ITEMS = TABS.register("clinker_items",
             () -> CreativeModeTab.builder()
-                    .icon(() -> ClinkerItems.SULFUR.get().asItem().getDefaultInstance())
+                    .title(Component.translatable("creative_tab.clinker_items.name"))
+                    .icon(() -> new ItemStack(ClinkerItems.SULFUR.get().asItem()))
                     .withSlotColor(10658645)
                     .displayItems(ClinkerCreativeModeTabs::addItems)
                     .build());
@@ -108,6 +112,7 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(ClinkerBlocks.MUD_REEDS.get());
         pOutput.accept(ClinkerBlocks.CAVE_FIG_STEM.get());
         pOutput.accept(ClinkerBlocks.CAVE_FIG_ROOTS.get());
+        pOutput.accept(ClinkerBlocks.DRIED_CLOVERS.get());
     }
 
     public static void addItems(CreativeModeTab.ItemDisplayParameters pParameters, CreativeModeTab.Output pOutput) {
@@ -133,5 +138,6 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(ClinkerItems.LEAD_SHOVEL.get());
         pOutput.accept(ClinkerItems.LEAD_HOE.get());
         pOutput.accept(ClinkerItems.LADLE.get());
+        pOutput.accept(ClinkerItems.ORDNANCE.get());
     }
 }

@@ -8,8 +8,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.NetworkEvent;
-import net.neoforged.neoforge.network.NetworkEvent;
+
+
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +50,7 @@ public class ClientboundSalamanderSyncPacket extends ClientboundPacket {
     }
 
     @Override
-    public void toBytes(FriendlyByteBuf buffer) {
+    public void write(FriendlyByteBuf buffer) {
         long[] bits = {entityUUID.getMostSignificantBits(), entityUUID.getLeastSignificantBits()};
         buffer.writeLongArray(bits);
         buffer.writeInt(entityID);
@@ -74,7 +75,7 @@ public class ClientboundSalamanderSyncPacket extends ClientboundPacket {
     }
 
     @Override
-    public void run(NetworkEvent.Context context) {
+    public void run(PlayPayloadContext context) {
         Minecraft mc = Minecraft.getInstance();
         ClientLevel level = mc.level;
         Entity entity = level.getEntity(this.entityID);

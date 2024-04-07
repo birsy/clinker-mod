@@ -3,7 +3,6 @@ package birsy.clinker.client.render.world;
 import birsy.clinker.client.render.ClinkerShaders;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
-import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
@@ -20,27 +19,32 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 
 
+// fucking terrible old ass code.
+// todo: redo everything
 @OnlyIn(Dist.CLIENT)
 public class OthershoreDimensionEffects extends DimensionSpecialEffects {
     private final Minecraft mc = Minecraft.getInstance();
     private static final ResourceLocation STAR_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/environment/star.png");
     private static final ResourceLocation NOISE_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/environment/noise.png");
-    public static final ResourceLocation LIGHTMAP = new ResourceLocation(Clinker.MOD_ID, "textures/environment/lightmap.png");
-    public static NativeImage lightmapImage = new NativeImage(16, 16, false);
+    private static final ResourceLocation CLOUD_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/environment/cloud_map_a.png");
+    private static final ResourceLocation FOG_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/environment/fog.png");
 
-    private float[][] starInfo = null;
+    private List<Star> starInfo = null;
     public OthershoreDimensionEffects() {
         super(256.0F, true, SkyType.NORMAL, false, false);
     }
@@ -106,8 +110,9 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
         }
     }
 
-    private float[][] getOrCreateStarInfo() {
-        if (starInfo == null) {
+    // ????
+    private List<Star> getOrCreateStarInfo() {
+        if (starInfo == null || starInfo.isEmpty()) {
             RandomSource random = RandomSource.create(10842L);
             float maxStarDistance = 300.0F;
             float minStarDistance = 30.0F;
@@ -115,18 +120,18 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
             float maxStarRadius = 1.8F;
             int starCount = 1024;
 
-            this.starInfo = new float[starCount][];
+            this.starInfo = new ArrayList<>();
             for(int star = 0; star < starCount; ++star) {
                 float d = random.nextFloat();
                 d *= d;
                 float sDist = Mth.lerp(d, minStarDistance, maxStarDistance);
                 float sRad = Mth.lerp(d, minStarRadius, maxStarRadius) * random.nextFloat();
-                float sHeight = (float)random.nextGaussian();
+                float sHeight = (float)random.nextGaussian() * 15.0F;
 
                 float dFactor = Mth.clamp(d, 0.0F, 1.0F);
 
-                float xRot = (random.nextFloat() * 2) - 1;
-                float zRot = (random.nextFloat() * 2) - 1;
+                float xRot = 90.0F;
+                float zRot = ((random.nextFloat() * 2) - 1) * 180.0F;
                 float yRot = random.nextFloat() * 360.0F;
 
                 Color color = Color.getHSBColor((float) Math.abs(random.nextGaussian()), 0.3F, 1.0F);
@@ -134,19 +139,19 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
                 float red = color.getRed() / 255.0F;
                 float green = color.getGreen() / 255.0F;
                 float blue = color.getBlue() / 255.0F;
-                float alpha = (1 - dFactor); //* Mth.sqrt(1 - Mth.clamp(Math.abs(sHeight), 0.0F, 1.0F));
-
-                xRot = 90.0F;//90.0F + (xRot * 60.0F);
-                zRot = (zRot * 180.0F);
+                float alpha = (1 - dFactor);
 
                 boolean isFancy = star < (0.1F * starCount);
 
-                this.starInfo[star] = new float[]{sDist, sRad, xRot, yRot, zRot, red, green, blue, alpha, sHeight * 25.0F, dFactor, isFancy ? 1.0F : 0.0F};
+                this.starInfo.add(new Star(sDist, sRad, xRot, yRot, zRot, red, green, blue, alpha, sHeight, dFactor, isFancy));
             }
+
+            this.starInfo.sort(Comparator.comparingDouble(star -> star.distance));
         }
 
         return starInfo;
     }
+
 
     @Override
     public boolean renderSky(ClientLevel level, int ticks, float partialTick, PoseStack poseStack, Camera camera, Matrix4f projectionMatrix, boolean isFoggy, Runnable setupFog) {
@@ -164,13 +169,13 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
         float skyGreen = (float)skyColor.y;
         float skyBlue = (float)skyColor.z;
         Vec3 cameraPos = camera.getPosition();
-        float cameraOffset = (float) -Math.min((cameraPos.y - 64.0F) * 0.16F, 100.0F);
-        //Clinker.LOGGER.info(cameraOffset);
+        float camY = (float) cameraPos.y;
+        float cameraOffset = -camY - 30;//(float) -Math.min((camY - 64.0F) * 0.16F, 100.0F);
         BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
 
         //creates the sky disc
         RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
-        RenderSystem.setShaderTexture(0, new ResourceLocation(Clinker.MOD_ID, "textures/environment/cloud_map_a.png"));
+        RenderSystem.setShaderTexture(0, CLOUD_TEXTURE);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
@@ -201,34 +206,52 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
         }
         BufferUploader.drawWithShader(bufferbuilder.end());
 
-        float aboveCloudAlphaOffset = Mth.clamp(MathUtils.mapRange(-45.0F, -50.0F, 1.0F, 0.0F, cameraOffset), 0.0F, 1.0F);
+        float aboveCloudAlphaOffset = Mth.clamp(MathUtils.mapRange(300F, 350F, 1.0F, 0.0F, camY), 0.0F, 1.0F);
         //Clinker.LOGGER.info(cameraOffset);
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         renderCone(poseStack, bufferbuilder, resolution, false, radius, height, skyRed, skyGreen, skyBlue, 1.0F * aboveCloudAlphaOffset, 0.0F, skyRed, skyGreen, skyBlue, 1.0F * aboveCloudAlphaOffset);
         renderCone(poseStack, bufferbuilder, resolution, true, radius, -height, skyRed, skyGreen, skyBlue, 1.0F, 0.0F, skyRed, skyGreen, skyBlue, 1.0F * aboveCloudAlphaOffset);
-
-        poseStack.pushPose();
-        poseStack.translate(0, cameraOffset, 0);
-        Vector3f edgeColor = new Vector3f(trueFogColor.x(), trueFogColor.y(), trueFogColor.z());
-        edgeColor.lerp(fogColor, 0.7F);
-        renderCone(poseStack, bufferbuilder, resolution, true, 500.0F, -20.0F, trueFogColor.x(), trueFogColor.y(), trueFogColor.z(), 1.0F, -20.0F, edgeColor.x(), edgeColor.y(), edgeColor.z(), 0.0F);
-        renderCone(poseStack, bufferbuilder, resolution, false, 500.0F, 50.0F, trueFogColor.x(), trueFogColor.y(), trueFogColor.z(), 1.0F * aboveCloudAlphaOffset, 40.0F, edgeColor.x(), edgeColor.y(), edgeColor.z(), 0.0F);
-        poseStack.popPose();
         poseStack.popPose();
 
 
         //clouds and stars
         poseStack.pushPose();
+        Matrix4f projMatrix = new Matrix4f(RenderSystem.getProjectionMatrix());
+        RenderSystem.setProjectionMatrix(RenderSystem.getProjectionMatrix().setPerspective(
+                (float)(Minecraft.getInstance().gameRenderer.getFov(camera, partialTick, true) * (float) (Math.PI / 180.0)),
+                (float)Minecraft.getInstance().getWindow().getWidth() / (float)Minecraft.getInstance().getWindow().getHeight(),
+                0.05F,
+                3125.0F), VertexSorting.DISTANCE_TO_ORIGIN);
+
+        // Account for view bobbing
+        if (mc.options.bobView().get() && mc.getCameraEntity() instanceof Player) {
+            Player player = (Player) mc.getCameraEntity();
+            float playerStep = player.walkDist - player.walkDistO;
+            float stepSize = -(player.walkDist + playerStep * partialTick);
+            float viewBob = Mth.lerp(partialTick, player.oBob, player.bob);
+
+            Quaternionf cameraRotation = camera.rotation();
+            Vector3f xAxis = cameraRotation.transform(new Vector3f(1, 0, 0));
+            Vector3f ZAxis = cameraRotation.transform(new Vector3f(0, 0, 1));
+
+            Quaternionf bobXRotation = new Quaternionf().rotateAxis((float) Math.toRadians(Math.abs(Mth.cos(stepSize * (float) Math.PI - 0.2f) * viewBob) * 5f), xAxis);
+            Quaternionf bobZRotation = new Quaternionf().rotateAxis((float) Math.toRadians(Mth.sin(stepSize * (float) Math.PI) * viewBob * 3f), ZAxis);
+            poseStack.mulPose(bobXRotation.conjugate());
+            poseStack.mulPose(bobZRotation.conjugate());
+            poseStack.translate(Mth.sin(stepSize * (float) Math.PI) * viewBob * 0.5f, Math.abs(Mth.cos(stepSize * (float) Math.PI) * viewBob), 0f);
+        }
+
         poseStack.translate(0, cameraOffset, 0);
         int ringResolution = 24;
-        float ringHeight = 80.0F;
+        float ringHeight = 500.0F;//80.0F;
         int ringNum = mc.options.graphicsMode().get() == GraphicsStatus.FAST ? 16 : 24;
-        float maxRadius = 500.0F;
-        float minRadius = 20.0F;
+        float maxRadius = 3125.0F;//500.0F;
+        float minRadius = 125.0F;//20.0F;
 
         float alpha = 0.8F;
 
-        ArrayList<float[]> stars = new ArrayList<>(Arrays.stream(getOrCreateStarInfo()).toList());
+        List<Star> stars = getOrCreateStarInfo();
+        int starStartIndex = stars.size() - 1;
 
         for (int ring = ringNum; ring >= 0; ring--) {
             poseStack.pushPose();
@@ -247,36 +270,86 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
             RenderSystem.setShaderGameTime(ticks, partialTick);
             poseStack.pushPose();
             poseStack.translate(0, (ringHeight / 5), 0);
-            for (int starIndex = 0; starIndex < stars.size(); starIndex++) {
-                float[] star = stars.get(starIndex);
-                if (star[0] > rRadius) {
-                    renderStar(poseStack, bufferbuilder, star, lightFactor, time, 0.08F, star[11] > 0.0F, true);
-                    stars.remove(starIndex);
+            poseStack.scale(6.25F, 6.25F, 6.25F);
+
+            RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
+            RenderSystem.setShaderTexture(0, STAR_TEXTURE);
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+            bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
+            for (int starIndex = starStartIndex; starIndex >= 0; starIndex--) {
+                Star star = stars.get(starIndex);
+
+                if (star.distance > rRadius / 6.25F) {
+                    renderStar(poseStack, bufferbuilder, star, lightFactor, time, 0.08F, true);
+                } else {
+                    starStartIndex = starIndex;
+                    break;
                 }
             }
+            BufferUploader.drawWithShader(bufferbuilder.end());
+
             poseStack.popPose();
             RenderSystem.setShaderTexture(0, NOISE_TEXTURE);
             renderCloudRing(poseStack, bufferbuilder, ringResolution, rRadius, ringHeight, 20.0F, 0.0F, ringDist, ringColor.x(), ringColor.y(), ringColor.z(), alpha * 0.8F, ringColor.x(), ringColor.y(), ringColor.z(), 1.0F);
             poseStack.popPose();
         }
 
+        poseStack.pushPose();
+        RenderSystem.setShader(ClinkerShaders::getPositionColorTextureUnclampedShader);
+        RenderSystem.setShaderTexture(0, FOG_TEXTURE);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        Vector3f edgeColor = new Vector3f(trueFogColor.x(), trueFogColor.y(), trueFogColor.z());
+        edgeColor.lerp(new Vector3f((float) skyColor.x(), (float) skyColor.y(), (float) skyColor.z()), MathUtils.ease(1 / ringNum, MathUtils.EasingType.easeOutCirc));
+        float upperHeight = 380F;
+        float lowerHeight = 50;
+        float colorMult = 1.2F;
+        float inverseAboveCloudAlphaOffset = Mth.clamp(MathUtils.mapRange(350F, 400F, 0.0F, 1.0F, camY), 0.0F, 1.0F);
+        renderCone(poseStack, bufferbuilder, resolution, true, minRadius + 30.0F, upperHeight, trueFogColor.x(), trueFogColor.y(), trueFogColor.z(), inverseAboveCloudAlphaOffset, upperHeight + 30.0F, edgeColor.x(), edgeColor.y(), edgeColor.z(), 1.0F);
+        renderCone(poseStack, bufferbuilder, resolution, false, minRadius + 30.0F, upperHeight, trueFogColor.x() * colorMult, trueFogColor.y() * colorMult, trueFogColor.z() * colorMult, aboveCloudAlphaOffset, upperHeight - 30.0F, edgeColor.x(), edgeColor.y(), edgeColor.z(), 1.0F);
+        renderCone(poseStack, bufferbuilder, resolution, true, minRadius + 30.0F, lowerHeight, trueFogColor.x(), trueFogColor.y(), trueFogColor.z(), 1.0F, lowerHeight, edgeColor.x(), edgeColor.y(), edgeColor.z(), 1.0F);
+
+        // cone prevents skybox from looking wonky at high render distances.
+        float offset = 30;
+        float horizonConeHeight = -offset - Math.max(cameraOffset, 50);
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        renderCone(poseStack, bufferbuilder, resolution, true, minRadius, horizonConeHeight, trueFogColor.x(), trueFogColor.y(), trueFogColor.z(), 1.0F, horizonConeHeight, trueFogColor.x(), trueFogColor.y(), trueFogColor.z(), 0.5F);
+        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        Matrix4f matrix = poseStack.last().pose();
+        for(int segment = 0; segment < resolution; ++segment) {
+            float angle1 = (float)segment * ((float)Math.PI * 2F) / ((float)resolution);
+            float x1 = Mth.sin(angle1) * minRadius;
+            float z1 = Mth.cos(angle1) * minRadius;
+
+            float angle2 = (segment + 1.0F) * ((float)Math.PI * 2F) / ((float)resolution);
+            float x2 = Mth.sin(angle2) * minRadius;
+            float z2 = Mth.cos(angle2) * minRadius;
+
+            bufferbuilder.vertex(matrix, x1, horizonConeHeight, z1).color(trueFogColor.x(), trueFogColor.y(), trueFogColor.z(), 0.5F).endVertex();
+            bufferbuilder.vertex(matrix, x1, horizonConeHeight + offset,z1).color(trueFogColor.x(), trueFogColor.y(), trueFogColor.z(), 0).endVertex();
+            bufferbuilder.vertex(matrix, x2, horizonConeHeight + offset,z2).color(trueFogColor.x(), trueFogColor.y(), trueFogColor.z(), 0).endVertex();
+            bufferbuilder.vertex(matrix, x2, horizonConeHeight, z2).color(trueFogColor.x(), trueFogColor.y(), trueFogColor.z(), 0.5F).endVertex();
+        }
+        BufferUploader.drawWithShader(bufferbuilder.end());
+
+        poseStack.popPose();
 
         poseStack.popPose();
 
         RenderSystem.depthMask(true);
-        return true;//super.renderSky(level, ticks, partialTick, poseStack, camera, projectionMatrix, isFoggy, setupFog);
+        RenderSystem.setProjectionMatrix(projMatrix, VertexSorting.DISTANCE_TO_ORIGIN);
+        return true;
     }
 
     private void renderCone(PoseStack poseStack, BufferBuilder bufferBuilder, int resolution, boolean normal, float radius, float topVertexHeight, float topR, float topG, float topB, float topA, float bottomVertexHeight, float bottomR, float bottomG, float bottomB, float bottomA) {
         Matrix4f matrix = poseStack.last().pose();
-        bufferBuilder.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
-        bufferBuilder.vertex(matrix, 0.0F, topVertexHeight, 0.0F).color(topR, topG, topB, topA).endVertex();
+        bufferBuilder.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR_TEX);
+        bufferBuilder.vertex(matrix, 0.0F, topVertexHeight, 0.0F).color(topR, topG, topB, topA).uv(0.5F, 0.5F).endVertex();
         for(int vertex = 0; vertex <= resolution; ++vertex) {
             float angle = (float)vertex * ((float)Math.PI * 2F) / ((float)resolution);
-            float x = Mth.sin(angle) * radius;
-            float z = Mth.cos(angle) * radius;
+            float x = Mth.sin(angle);
+            float z = Mth.cos(angle);
 
-            bufferBuilder.vertex(matrix, x, bottomVertexHeight, normal ? z : -z).color(bottomR, bottomG, bottomB, bottomA).endVertex();
+            bufferBuilder.vertex(matrix, x * radius, bottomVertexHeight, (normal ? z : -z) * radius).color(bottomR, bottomG, bottomB, bottomA).uv((x + 1) * 0.5F, (z + 1) * 0.5F).endVertex();
         }
 
         BufferUploader.drawWithShader(bufferBuilder.end());
@@ -324,23 +397,24 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
         BufferUploader.drawWithShader(bufferBuilder.end());
     }
 
-    private void renderStar(PoseStack poseStack, BufferBuilder bufferBuilder, float[] star, float skyLightFactor, float time, float starSpeed, boolean isFancy, boolean renderIndividual) {
+    private void renderStar(PoseStack poseStack, BufferBuilder bufferBuilder, Star star, float skyLightFactor, float time, float starSpeed, boolean isFancy) {
         poseStack.pushPose();
 
-        float distanceFactor = star[10];
+        float distanceFactor = star.distanceFactor;
 
-        float distance = star[0];
-        float radius = star[1] * (1 - distanceFactor) * (isFancy ? 3.0F : 1.0F);
-        float height = star[9];
+        float distance = star.distance;
+        float radius = star.size * (1 - distanceFactor) * (isFancy ? 3.0F : 1.0F) * 1.1F;
+        float height = star.height;
 
-        float xRot = star[2];
-        float yRot = star[3];
-        float zRot = star[4];
+        float xRot = star.xRot;
+        float yRot = star.yRot;
+        float zRot = star.zRot;
 
-        float red = star[5];
-        float green = star[6];
-        float blue = star[7];
-        float alpha = star[8] * Mth.lerp(skyLightFactor, 1.0F, 0.1F) * 0.8F;
+        float red = star.red;
+        float green = star.green;
+        float blue = star.blue;
+        float alpha = star.alpha * Mth.lerp(skyLightFactor, 1.0F, 0.1F) * 0.8F;
+        alpha *= alpha;
 
         poseStack.translate(0, height, 0);
         poseStack.mulPose(Axis.YP.rotationDegrees(time * distanceFactor * starSpeed));
@@ -350,37 +424,31 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
 
         Matrix4f matrix = poseStack.last().pose();
 
-        if (renderIndividual) bufferBuilder.begin(VertexFormat.Mode.QUADS, isFancy ? DefaultVertexFormat.POSITION_COLOR_TEX : DefaultVertexFormat.POSITION_COLOR);
-        if (isFancy) {
-            RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
-            RenderSystem.setShaderTexture(0, STAR_TEXTURE);
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-
-            bufferBuilder.vertex(matrix, -radius, distance, -radius).color(red, green, blue, alpha * alpha).uv(0, 0).endVertex();
-            bufferBuilder.vertex(matrix,  radius, distance, -radius).color(red, green, blue, alpha * alpha).uv(1, 0).endVertex();
-            bufferBuilder.vertex(matrix,  radius, distance,  radius).color(red, green, blue, alpha * alpha).uv(1, 1).endVertex();
-            bufferBuilder.vertex(matrix, -radius, distance,  radius).color(red, green, blue, alpha * alpha).uv(0, 1).endVertex();
+        if (star.fancy) {
+            bufferBuilder.vertex(matrix, -radius, distance, -radius).color(red, green, blue, alpha).uv(0, 0).endVertex();
+            bufferBuilder.vertex(matrix,  radius, distance, -radius).color(red, green, blue, alpha).uv(1, 0).endVertex();
+            bufferBuilder.vertex(matrix,  radius, distance,  radius).color(red, green, blue, alpha).uv(1, 1).endVertex();
+            bufferBuilder.vertex(matrix, -radius, distance,  radius).color(red, green, blue, alpha).uv(0, 1).endVertex();
         } else {
-            RenderSystem.setShader(GameRenderer::getPositionColorShader);
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-
-            bufferBuilder.vertex(matrix, -radius, distance, -radius).color(red, green, blue, alpha * alpha).endVertex();
-            bufferBuilder.vertex(matrix,  radius, distance, -radius).color(red, green, blue, alpha * alpha).endVertex();
-            bufferBuilder.vertex(matrix,  radius, distance,  radius).color(red, green, blue, alpha * alpha).endVertex();
-            bufferBuilder.vertex(matrix, -radius, distance,  radius).color(red, green, blue, alpha * alpha).endVertex();
+            bufferBuilder.vertex(matrix, -radius, distance, -radius).color(red, green, blue, alpha).uv(0, 0).endVertex();
+            bufferBuilder.vertex(matrix,  radius, distance, -radius).color(red, green, blue, alpha).uv(1, 0).endVertex();
+            bufferBuilder.vertex(matrix,  radius, distance,  radius).color(red, green, blue, alpha).uv(1, 1).endVertex();
+            bufferBuilder.vertex(matrix, -radius, distance,  radius).color(red, green, blue, alpha).uv(0, 1).endVertex();
         }
-        if (renderIndividual) BufferUploader.drawWithShader(bufferBuilder.end());
 
         poseStack.popPose();
     }
 
     @Override
     public boolean renderSnowAndRain(ClientLevel level, int ticks, float partialTick, LightTexture lightTexture, double camX, double camY, double camZ) {
-        return true;//super.renderSnowAndRain(level, ticks, partialTick, lightTexture, camX, camY, camZ);
+        return false;//super.renderSnowAndRain(level, ticks, partialTick, lightTexture, camX, camY, camZ);
     }
 
     @Override
     public boolean tickRain(ClientLevel level, int ticks, Camera camera) {
-        return true;
+        return false;
     }
+
+    //todo : instanced?
+    private record Star(float size, float distance, float xRot, float yRot, float zRot, float red, float green, float blue, float alpha, float height, float distanceFactor, boolean fancy) {}
 }

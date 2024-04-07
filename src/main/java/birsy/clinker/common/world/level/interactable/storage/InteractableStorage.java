@@ -4,6 +4,7 @@ import birsy.clinker.common.world.level.interactable.Interactable;
 import net.minecraft.core.SectionPos;
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -52,5 +53,14 @@ public class InteractableStorage {
     public void removeInteractable(Interactable interactable) {
         levelLookup.removeInteractable(interactable);
         lookupBySection.removeInteractable(interactable);
+    }
+
+    public Set<SectionPos> getSectionsWithInteractables() {
+        return lookupBySection.getSectionsWithInteractables();
+    }
+
+    public void clear() {
+        levelLookup.clear();
+        lookupBySection.clear();
     }
 }

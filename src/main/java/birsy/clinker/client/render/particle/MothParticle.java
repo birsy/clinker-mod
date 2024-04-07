@@ -1,5 +1,6 @@
 package birsy.clinker.client.render.particle;
 
+import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.core.util.noise.FastNoiseLite;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -19,9 +20,11 @@ import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
@@ -37,9 +40,15 @@ public class MothParticle extends Particle {
     private float seed;
 
     private Vec3 heading;
+    private float currentLightLevel;
+    private Vec3 maxLightDirection;
+    private Vec3 lightHeading = Vec3.ZERO;
     private boolean flying;
     private float takeoffTimer;
     private Direction attachmentDirection;
+
+
+    BlockPos currentBlockPos, previousBlockPos;
 
     protected MothParticle(ClientLevel pLevel, double pX, double pY, double pZ, double pXSpeed, double pYSpeed, double pZSpeed, SpriteSet pSprites) {
         super(pLevel, pX, pY, pZ);
@@ -55,6 +64,9 @@ public class MothParticle extends Particle {
         this.flying = true;
         this.takeoffTimer = 0;
         this.attachmentDirection = Direction.DOWN;
+
+        this.currentBlockPos = BlockPos.containing(this.getPos().add(0.5, 0.5, 0.5));
+
         this.setLifetime(1000);
     }
 
@@ -62,6 +74,7 @@ public class MothParticle extends Particle {
     public void tick() {
         super.tick();
         float flapSpeed = 60;
+
 
         if (this.flying) {
             tickFlying();
@@ -71,13 +84,58 @@ public class MothParticle extends Particle {
         }
 
         this.pFlap = this.flap;
-        this.flap = (float) this.noise.GetNoise(this.age * flapSpeed, this.seed);
+        this.flap = (float) this.noise.GetNoise(this.age * flapSpeed, this.seed * 100);
+    }
+
+    private void updateBlockPosition(BlockPos newPos) {
+        float maxLight = 0;
+        Vec3 lightPosOffset = Vec3.ZERO;
+        for (int x = -1; x <= 1; x++) {
+            for (int y = -1; y <= 1; y++) {
+                for (int z = -1; z <= 1; z++) {
+                    float light = this.level.getBrightness(LightLayer.BLOCK, newPos.offset(x , y , z));
+
+                    if (light > maxLight) {
+                        maxLight = light;
+                        lightPosOffset = new Vec3(x, y, z);
+                    }
+                }
+            }
+        }
+
+        this.currentLightLevel = this.level.getBrightness(LightLayer.BLOCK, newPos);
+        this.maxLightDirection = lightPosOffset.normalize();
+    }
+
+    private Vec3 getLightHeading() {
+        // begin to move in circles around lights if you're close by!
+        float lerpFactor = this.currentLightLevel;
+        if (lerpFactor > 10.0F) {
+            lerpFactor = 1.0F;
+        } else {
+            lerpFactor = 0.0F;
+        }
+
+        this.lightHeading = this.lightHeading.lerp(this.maxLightDirection.lerp(this.maxLightDirection.cross(new Vec3(0, 1, 0)), lerpFactor), 0.1).normalize();
+        if (this.maxLightDirection == Vec3.ZERO) return Vec3.ZERO;
+        return this.lightHeading;
     }
 
     private void tickFlying() {
         this.takeoffTimer = (float) Mth.clamp(this.takeoffTimer - 0.1, 0, 1);
 
-        this.heading = getRandomNoiseHeading();
+        this.heading = this.getRandomNoiseHeading();
+
+        this.currentBlockPos = BlockPos.containing(this.getPos().add(0.5, 0.5, 0.5));
+        if (this.previousBlockPos != this.currentBlockPos) {
+            this.previousBlockPos = this.currentBlockPos;
+            this.updateBlockPosition(this.currentBlockPos);
+        }
+
+        Vec3 lightHeading = this.getLightHeading();
+        //Clinker.LOGGER.info(this.lightHeading);
+        if (lightHeading != Vec3.ZERO) this.heading = this.heading.lerp(lightHeading, 0.3F);
+
         this.heading = this.heading.lerp(this.getTakeoffHeading(), this.takeoffTimer);
         this.heading.normalize();
 
@@ -101,7 +159,7 @@ public class MothParticle extends Particle {
         if (this.random.nextInt(512) == 0) { this.takeoff(); return; }
 
         Vec3 antiNormal = new Vec3(-this.attachmentDirection.getNormal().getX(), -this.attachmentDirection.getNormal().getY(), -this.attachmentDirection.getNormal().getY());
-        BlockHitResult raycast = this.level.clip(new ClipContext(pos, pos.add(antiNormal.scale(0.05)), ClipContext.Block.VISUAL, ClipContext.Fluid.ANY, (Entity) null));
+        BlockHitResult raycast = this.level.clip(new ClipContext(pos, pos.add(antiNormal.scale(0.05)), ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, CollisionContext.empty()));
         if (raycast.getType() == HitResult.Type.MISS) { this.takeoff(); return; }
 
         for (Entity entity : level.getEntities(null, this.getBoundingBox().inflate(16))) {
@@ -117,7 +175,7 @@ public class MothParticle extends Particle {
     public void move(double pX, double pY, double pZ) {
         Vec3 pos = new Vec3(this.x, this.y, this.z);
         Vec3 nextPos = pos.add(pX, pY, pZ);
-        BlockHitResult raycast = this.level.clip(new ClipContext(pos, nextPos, ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, (Entity) null));
+        BlockHitResult raycast = this.level.clip(new ClipContext(pos, nextPos, ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, CollisionContext.empty()));
 
         this.setBoundingBox(this.getBoundingBox().move(raycast.getLocation().subtract(pos)));
         this.setLocationFromBoundingbox();

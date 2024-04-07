@@ -2,12 +2,10 @@ package birsy.clinker.common.world.block.blockentity;
 
 import birsy.clinker.client.sound.StoveSoundInstance;
 import birsy.clinker.common.world.block.AbstractStoveBlock;
-import birsy.clinker.core.registry.ClinkerBlockEntities;
+import birsy.clinker.core.registry.entity.ClinkerBlockEntities;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.sounds.BeeFlyingSoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.entity.animal.Bee;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;

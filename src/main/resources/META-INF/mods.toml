@@ -70,7 +70,7 @@ Hence, it is the most popular of all pursuits."'''
     # the modid of the dependency
     modId="neoforge" #mandatory
     # Does this dependency have to exist - if not, ordering below must be specified
-    mandatory=true #mandatory
+type = "required"
     # The version range of the dependency
     versionRange="${neo_version_range}" #mandatory
     # An ordering relationship for the dependency - BEFORE or AFTER required if the dependency is not mandatory
@@ -82,11 +82,24 @@ Hence, it is the most popular of all pursuits."'''
 # Here's another dependency
 [[dependencies.${mod_id}]]
     modId="minecraft"
-    mandatory=true
+type = "required"
     # This version range declares a minimum of the current minecraft version up to but not including the next major version
     versionRange="${minecraft_version_range}"
     ordering="NONE"
     side="BOTH"
+[[dependencies.${mod_id}]]
+    modId="veil"
+    type = "required"
+    # This version range declares a minimum of the current minecraft version up to but not including the next major version
+    versionRange="[1.0,)"
+    ordering="BEFORE"
+    side="CLIENT"
+[[dependencies.${mod_id}]]
+    modId="smartbrainlib"
+    type = "required"
+    versionRange="[1.8,)"
+    ordering="NONE"
+    side="SERVER"
 
 [[mixins]]
 config="clinker.mixins.json"

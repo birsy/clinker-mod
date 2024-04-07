@@ -2,9 +2,7 @@ package birsy.clinker.mixin.client;
 
 import birsy.clinker.client.render.entity.base.InterpolatedEntityRenderer;
 import birsy.clinker.common.world.alchemy.workstation.WorkstationManager;
-import birsy.clinker.common.world.level.interactable.InteractableAttachment;
-import birsy.clinker.common.world.level.interactable.manager.ClientInteractableManager;
-import birsy.clinker.common.world.level.interactable.manager.ServerInteractableManager;
+import birsy.clinker.common.world.level.interactable.InteractableLevelAttachment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -13,7 +11,6 @@ import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.LevelChunk;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -45,7 +42,7 @@ public class ClientLevelMixin {
     @Inject(method = "unload(Lnet/minecraft/world/level/chunk/LevelChunk;)V", at = @At("TAIL"))
     public void unload(LevelChunk pChunk, CallbackInfo ci) {
         ClientLevel me = (ClientLevel)(Object)this;
-        InteractableAttachment.getInteractableManagerForLevel(me).unloadChunk(pChunk);
+        //InteractableLevelAttachment.getInteractableManagerForLevel(me).unloadChunk(pChunk);
     }
 
     @Inject(method = "tick(Ljava/util/function/BooleanSupplier;)V", at = @At("TAIL"))

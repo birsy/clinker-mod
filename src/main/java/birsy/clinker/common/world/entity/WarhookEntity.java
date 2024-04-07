@@ -1,7 +1,6 @@
 package birsy.clinker.common.world.entity;
 
-import birsy.clinker.core.Clinker;
-import birsy.clinker.core.registry.ClinkerEntities;
+import birsy.clinker.core.registry.entity.ClinkerEntities;
 import birsy.clinker.core.registry.ClinkerItems;
 import birsy.clinker.core.util.VectorUtils;
 import net.minecraft.nbt.CompoundTag;

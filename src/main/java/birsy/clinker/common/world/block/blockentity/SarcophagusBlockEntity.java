@@ -1,7 +1,7 @@
 package birsy.clinker.common.world.block.blockentity;
 
 import birsy.clinker.common.world.block.SarcophagusBlock;
-import birsy.clinker.core.registry.ClinkerBlockEntities;
+import birsy.clinker.core.registry.entity.ClinkerBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;

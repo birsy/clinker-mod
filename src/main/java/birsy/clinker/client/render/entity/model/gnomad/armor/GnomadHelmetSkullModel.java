@@ -4,12 +4,12 @@ import birsy.clinker.client.render.entity.model.base.AnimFunctions;
 import birsy.clinker.client.render.entity.model.base.DynamicModelPart;
 import birsy.clinker.client.render.entity.model.gnomad.GnomadAccessoryModel;
 import birsy.clinker.client.render.entity.model.gnomad.GnomadAxemanDynamicModel;
-import birsy.clinker.common.world.entity.gnomad.GnomadAxemanEntity;
+import birsy.clinker.common.world.entity.gnomad.OldGnomadAxemanEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.resources.ResourceLocation;
 
-public class GnomadHelmetSkullModel<T extends GnomadAxemanDynamicModel, E extends GnomadAxemanEntity> extends GnomadAccessoryModel<T, E> {
+public class GnomadHelmetSkullModel<T extends GnomadAxemanDynamicModel, E extends OldGnomadAxemanEntity> extends GnomadAccessoryModel<T, E> {
     public DynamicModelPart gnomadHelmet;
     public DynamicModelPart gnomadHat;
 
@@ -26,7 +26,7 @@ public class GnomadHelmetSkullModel<T extends GnomadAxemanDynamicModel, E extend
     }
 
     @Override
-    public void render(GnomadAxemanDynamicModel model, GnomadAxemanEntity entity, float partialTick, PoseStack pPoseStack, VertexConsumer pBuffer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha) {
+    public void render(GnomadAxemanDynamicModel model, OldGnomadAxemanEntity entity, float partialTick, PoseStack pPoseStack, VertexConsumer pBuffer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha) {
         this.gnomadHat.resetPose();
         model.gnomadHead.getGlobalTransForm(pPoseStack);
         float ageInTicks = (entity.tickCount + partialTick) * 0.1F;

@@ -1,0 +1,16 @@
+{
+  "values": [
+    "clinker:raw_lead",
+    "clinker:lead_ingot",
+    "clinker:lead_nugget",
+    "clinker:raw_lead_block",
+    "clinker:lead_block",
+    "clinker:lead_ore",
+    "clinker:lead_sword",
+    "clinker:lead_axe",
+    "clinker:lead_pickaxe",
+    "clinker:lead_shovel",
+    "clinker:lead_hoe",
+    "clinker:mogul_warhook"
+  ]
+}

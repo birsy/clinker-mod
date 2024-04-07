@@ -1,0 +1,8 @@
+{
+  "feature": "clinker:surface_dried_clovers",
+  "placement": [
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}

@@ -2,7 +2,7 @@ package birsy.clinker.client.render.entity;
 
 import birsy.clinker.client.render.entity.layer.OldSalamanderGlowLayer;
 import birsy.clinker.client.render.entity.model.SalamanderTailModel;
-import birsy.clinker.common.world.entity.salamander.AbstractSalamanderPartEntity;
+import birsy.clinker.common.world.entity.salamanderOLD.AbstractSalamanderPartEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;

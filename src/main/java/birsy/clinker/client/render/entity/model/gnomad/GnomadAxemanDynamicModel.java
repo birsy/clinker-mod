@@ -4,7 +4,7 @@ import birsy.clinker.client.render.entity.model.base.AnimFunctions;
 import birsy.clinker.client.render.entity.model.base.DynamicModel;
 import birsy.clinker.client.render.entity.model.base.DynamicModelPart;
 import birsy.clinker.common.world.entity.gnomad.GnomadArmor;
-import birsy.clinker.common.world.entity.gnomad.GnomadAxemanEntity;
+import birsy.clinker.common.world.entity.gnomad.OldGnomadAxemanEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.ArmedModel;
@@ -15,7 +15,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class GnomadAxemanDynamicModel<T extends GnomadAxemanEntity> extends EntityModel<T> implements ArmedModel {
+public class GnomadAxemanDynamicModel<T extends OldGnomadAxemanEntity> extends EntityModel<T> implements ArmedModel {
 	public float sitTransition;
 	public float headShakingIntensity;
 	public DynamicModel skeleton;

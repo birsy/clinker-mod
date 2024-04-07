@@ -5,16 +5,14 @@ import birsy.clinker.client.model.base.InterpolatedSkeletonParent;
 import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.ClientboundSalamanderSyncPacket;
 
-import birsy.clinker.common.world.level.interactable.InteractableParent;
-import birsy.clinker.common.world.physics.rigidbody.colliders.OBBCollisionShape;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.JomlConversions;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -29,6 +27,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.neoforge.entity.PartEntity;
+import org.jetbrains.annotations.Nullable;
 import org.joml.AxisAngle4d;
 import org.joml.Quaterniond;
 import org.joml.Vector3d;
@@ -40,7 +40,7 @@ import java.util.List;
 // todo:
 //  slipperiness
 //  reimplement ai
-public class NewSalamanderEntity extends LivingEntity implements InteractableParent, InterpolatedSkeletonParent {
+public class NewSalamanderEntity extends LivingEntity implements InterpolatedSkeletonParent {
     private static final Vec3 gravity = new Vec3(0, -8, 0);
 
     public SalamanderJoint headJoint;
@@ -53,14 +53,15 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
     //public List<Interactable> childInteractables;
 
     // ANIMATION DEBUG
-    private SalamanderJoint clientJoint1, clientJoint2;
-    private SalamanderSegment clientSegment;
+    //private SalamanderJoint clientJoint1, clientJoint2;
+    //private SalamanderSegment clientSegment;
+
+    public List<SalamanderPartEntity> partEntities = new ArrayList<>();
 
     public static float[] SEGMENT_WIDTHS = {11.0F / 16.0F, (11.0F / 16.0F) * 0.85F, 8.0F / 16.0F, 5.0F / 16.0F};
 
     public NewSalamanderEntity(EntityType<? extends NewSalamanderEntity> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
-        //this.childInteractables = new ArrayList<>();
         this.joints = new ArrayList<>();
         this.segments = new ArrayList<>();
 
@@ -72,7 +73,6 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
         SalamanderJoint previousJoint = new SalamanderJoint(this, SEGMENT_WIDTHS[0] * 0.5F, id++);
         this.headJoint = previousJoint;
         previousJoint.isHead = true;
-        addInteractableToJoint(previousJoint);
         int length = 10;
         for (int i = 1; i < length; i++) {
             byte girth = 0;
@@ -88,23 +88,26 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
             segment.girth = girth;
             if (i <= 1) this.headSegment = segment;
             previousJoint = joint;
-            addInteractableToJoint(joint);
         }
 
-        if (pLevel.isClientSide) {
-//            clientJoint1 = new SalamanderJoint(this, SEGMENT_WIDTHS[0] * 0.5F, 2);
-//            clientJoint2 = new SalamanderJoint(this, SEGMENT_WIDTHS[0] * 0.5F, 3);
-//            clientSegment = new SalamanderSegment(this, clientJoint1, clientJoint2, 1.0, true);
+        for (SalamanderSegment segment : this.segments) {
+            addEntityToSegment(segment);
         }
+
+        // increment the id counter by all my part segments, and myself.
+        this.setId(ENTITY_COUNTER.getAndAdd(this.partEntities.size() + 1) + 1);
     }
 
-    public void addInteractableToJoint(SalamanderJoint joint) {
-//        if (!this.level().isClientSide()) {
-//            SalamanderBodyInteractable interactable = new SalamanderBodyInteractable(this, joint, new OBBCollisionShape(0.5 * joint.radius, 0.5 * joint.radius, 0.5));
-//            interactable.setPosition(joint.position);
-//
-//            InteractableManager.addServerInteractable(interactable, (ServerLevel) this.level());
-//        }
+    public void addEntityToSegment(SalamanderSegment segment) {
+        SalamanderPartEntity segmentEntity = new SalamanderPartEntity(this, segment);
+        segmentEntity.setPos(segment.getCenter(1.0F));
+        this.partEntities.add(segmentEntity);
+    }
+
+    @Override
+    public void setId(int id) {
+        super.setId(id);
+        for (int i = 0; i < this.partEntities.size(); i++) this.partEntities.get(i).setId(id + i + 1);
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -139,38 +142,27 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
             joint.finalizeTick();
         }
 
+        for (SalamanderPartEntity partEntity : this.partEntities) {
+            partEntity.setPos(partEntity.segmentParent.getCenter(1.0F));
+        }
+
         if (!this.level().isClientSide()) {
-//            for (Interactable interactable : this.childInteractables) {
-//                if (interactable instanceof SalamanderBodyInteractable bodyInteractable) {
-//                    bodyInteractable.setPosition(bodyInteractable.jointParent.getSmoothedPosition(1.0));
-//                    bodyInteractable.setRotation(bodyInteractable.jointParent.getOrientation(1.0));
-//                }
-//            }
             ClinkerPacketHandler.sendToClientsTrackingChunk((LevelChunk) this.level().getChunk(this.blockPosition()), new ClientboundSalamanderSyncPacket(this));
         }
 
-        this.setControllerPosition(this.headJoint.position);
-
-//        if (this.level().isClientSide) {
-//            Entity cameraEntity = Minecraft.getInstance().cameraEntity;
-//            Vec3 pos = cameraEntity.position().lerp(cameraEntity.getEyePosition(), 0.5F);
-//            Vec3 offset = cameraEntity.getViewVector(1.0F).normalize().scale(0.5);
-//            clientJoint1.position = pos.add(offset);
-//            clientJoint2.position = pos.subtract(offset);
-//        }
+        this.setControllerPosition(this.headJoint.position.add(0, -0.5, 0));
 
         for (SalamanderSegment segment : this.segments) {
             segment.updateLegs();
         }
-
-        //Clinker.LOGGER.info(this.getPosition(1.0F));
-
     }
 
     private void setControllerPosition(Vec3 position) {
         this.setPosRaw(position.x(), position.y(), position.z());
         this.setBoundingBox(this.makeBoundingBox());
     }
+
+
 
     private void applyBouyancyAndDragForce(SalamanderJoint joint) {
         double mass = 0.9;
@@ -354,7 +346,7 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
 //            joint.isHead = head;
 //            if (head) this.headJoint = joint;
 //
-//            addInteractableToJoint(joint);
+//            addEntityToJoint(joint);
 //        }
 //
 //        CompoundTag segmentsTag = pCompound.getCompound("segments");
@@ -398,39 +390,30 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
     }
 
     @Override
-    public void setItemSlot(EquipmentSlot pSlot, ItemStack pStack) {
-
-    }
+    public void setItemSlot(EquipmentSlot pSlot, ItemStack pStack) {}
 
     @Override
     public Packet<ClientGamePacketListener> getAddEntityPacket() {
         return new ClientboundAddEntityPacket(this);
     }
 
-//    @Override
-//    public List<Interactable> getChildInteractables() {
-//        return childInteractables;
-//    }
-//
-//    @Override
-//    public void clearChildren() {
-//        if (childInteractables != null) childInteractables.clear();
-//    }
+
+    @Override
+    public @Nullable PartEntity<?>[] getParts() {
+        return (PartEntity<?>[]) this.partEntities.toArray();
+    }
 
     @Override
     public void remove(RemovalReason pReason) {
         super.remove(pReason);
         Clinker.LOGGER.info("removed salamander");
-        //this.remove();
     }
 
     InterpolatedSkeleton skeleton;
-
     @Override
     public void setSkeleton(InterpolatedSkeleton skeleton) {
         this.skeleton = skeleton;
     }
-
     @Override
     public InterpolatedSkeleton getSkeleton() {
         return skeleton;
@@ -639,6 +622,11 @@ public class NewSalamanderEntity extends LivingEntity implements InteractablePar
 
             this.joint1.physicsNextPosition = center.add(direction.scale(this.length * 0.5));
             this.joint2.physicsNextPosition = center.subtract(direction.scale(this.length * 0.5));
+        }
+
+        public void push(double x, double y, double z) {
+            this.joint1.push(x, y, z);
+            this.joint2.push(x, y, z);
         }
 
         public static class SalamanderLeg {

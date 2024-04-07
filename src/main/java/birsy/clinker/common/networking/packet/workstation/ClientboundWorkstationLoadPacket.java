@@ -5,7 +5,8 @@ import birsy.clinker.common.world.alchemy.workstation.Workstation;
 import birsy.clinker.common.world.alchemy.workstation.WorkstationManager;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.neoforge.network.NetworkEvent;
+
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 import java.util.UUID;
 
@@ -24,12 +25,12 @@ public class ClientboundWorkstationLoadPacket extends ClientboundPacket {
     }
 
     @Override
-    public void toBytes(FriendlyByteBuf buffer) {
+    public void write(FriendlyByteBuf buffer) {
         buffer.writeUUID(id);
     }
 
     @Override
-    public void run(NetworkEvent.Context context) {
+    public void run(PlayPayloadContext context) {
         WorkstationManager clientManager = WorkstationManager.clientWorkstationManager;
         Workstation workstation = Workstation.deserialize(this.workstationTag, clientManager.level);
         clientManager.workstationStorage.remove(id);

@@ -1,14 +1,17 @@
 package birsy.clinker.client.render.world.blockentity;
 
 import birsy.clinker.client.render.ClinkerRenderTypes;
+import birsy.clinker.client.render.DebugRenderUtil;
+import birsy.clinker.client.render.RenderUtils;
 import birsy.clinker.client.render.entity.model.base.BasicModelPart;
 import birsy.clinker.common.world.block.blockentity.fairyfruit.FairyFruitBlockEntity;
-import birsy.clinker.common.world.block.blockentity.fairyfruit.FairyFruitJoint;
-import birsy.clinker.common.world.block.blockentity.fairyfruit.FairyFruitSegment;
+import birsy.clinker.common.world.block.blockentity.fairyfruit.FairyFruitVine;
 import birsy.clinker.core.Clinker;
-import birsy.clinker.core.util.MathUtils;
+import birsy.clinker.core.util.JomlConversions;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.renderer.LightTexture;
@@ -21,13 +24,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.LightLayer;
-import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Matrix4f;
-import org.joml.Quaterniond;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
+import org.joml.*;
 
+import java.util.List;
 import java.util.function.Function;
 
 public class FairyFruitRenderer<T extends FairyFruitBlockEntity> implements BlockEntityRenderer<T> {
@@ -45,177 +46,103 @@ public class FairyFruitRenderer<T extends FairyFruitBlockEntity> implements Bloc
     }
 
     @Override
-    public boolean shouldRender(T pBlockEntity, Vec3 pCameraPos) {
-        return BlockEntityRenderer.super.shouldRender(pBlockEntity, pCameraPos);
+    public AABB getRenderBoundingBox(T blockEntity) {
+        if (blockEntity.vine == null) return BlockEntityRenderer.super.getRenderBoundingBox(blockEntity);
+        if (blockEntity.vine.segments.isEmpty()) return BlockEntityRenderer.super.getRenderBoundingBox(blockEntity);
+        return new AABB(blockEntity.vine.origin, blockEntity.vine.getEndPosition()).inflate(2);
     }
 
     @Override
     public void render(T pBlockEntity, float pPartialTick, PoseStack pPoseStack, MultiBufferSource pBufferSource, int pPackedLight, int pPackedOverlay) {
-        if (pBlockEntity.segments.isEmpty()) return;
+        if (pBlockEntity.vine == null) return;
+        if (pBlockEntity.vine.segments.isEmpty()) return;
+
+        pBlockEntity.light.setPosition(JomlConversions.toJOML(pBlockEntity.vine.getEndPosition()));
+        pBlockEntity.light.setRadius(10);
+
         Vec3 parentPosition = new Vec3(pBlockEntity.getBlockPos().getX(), pBlockEntity.getBlockPos().getY(), pBlockEntity.getBlockPos().getZ());
-        Vec3 forward = FairyFruitBlockEntity.ORIENTATION_FORWARD;
-        float totalLength = pBlockEntity.getBlockPos().hashCode() % Mth.PI;
-        VertexConsumer consumer = pBufferSource.getBuffer(RenderType.entityCutout(TEXTURE));
-        pPoseStack.pushPose();
+        List<FairyFruitVine.FairyFruitVineSegment> segments = pBlockEntity.vine.segments;
 
-        int fruitLight = 15;
+        float totalDistance = pBlockEntity.lengthOffset;
+        Vec3 previousSegmentPosition = pBlockEntity.vine.origin.subtract(parentPosition);
 
-        for (int i = 0; i < pBlockEntity.segments.size(); i++) {
-            FairyFruitSegment segment = pBlockEntity.segments.get(i);
-            if (segment.shouldBeRemoved) break;
-            Vec3 topPos = segment.getTopJoint().getClientPosition(pPartialTick).subtract(parentPosition);
-            Vec3 bottomPos = segment.getBottomJoint().getClientPosition(pPartialTick).subtract(parentPosition);
-            //DebugRenderUtil.renderLine(pPoseStack, pBufferSource.getBuffer(RenderType.LINES), topPos.x(), topPos.y(), topPos.z(), bottomPos.x(), bottomPos.y(), bottomPos.z(), 1, 0, 1, 1);
-
-            if (segment.isTip()) {
-                FairyFruitJoint.FruitStage stage = segment.getBottomJoint().getFruitStage();
-                consumer = pBufferSource.getBuffer(ClinkerRenderTypes.entityUnlitTranslucent(new ResourceLocation("")));
-
-                pPoseStack.pushPose();
-
-                Vec3 fruitPos = topPos;
-
-                pPoseStack.translate(fruitPos.x(), fruitPos.y(), fruitPos.z());
-
-                pPoseStack.pushPose();
-                pPoseStack.mulPose(new Quaternionf(i > 1 ? pBlockEntity.segments.get(i - 1).getOrientation(pPartialTick, forward) : segment.getTopJoint().getOrientation(pPartialTick)));
-                pPoseStack.scale(-1.0F, -1.0F, 1.0F);
-
-                BlockPos bPos = pBlockEntity.getBlockPos().offset((int) (fruitPos.x() + 0.5), (int) fruitPos.y(), (int) (fruitPos.z() + 0.5));
-                int light = stage == FairyFruitJoint.FruitStage.FRUIT ? LightTexture.pack(fruitLight, pBlockEntity.getLevel().getBrightness(LightLayer.SKY,bPos)) :
-                        LightTexture.pack(pBlockEntity.getLevel().getBrightness(LightLayer.BLOCK, bPos), pBlockEntity.getLevel().getBrightness(LightLayer.SKY,bPos));
-
-                leavesModel.bud.visible = false;
-                this.leavesModel.leaf1.visible = false;
-                this.leavesModel.leaf2.visible = false;
-                this.leavesModel.root1.visible = true;
-                this.leavesModel.root2.visible = true;
-                leavesModel.renderToBuffer(pPoseStack, consumer, light, pPackedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
-                pPoseStack.popPose();
-
-                pPoseStack.pushPose();
-                pPoseStack.mulPose(new Quaternionf(segment.getTopJoint().getOrientation(pPartialTick)));
-                pPoseStack.scale(-1.0F, -1.0F, 1.0F);
-
-                this.fruitModel.setVisibility(stage);
-                fruitModel.renderToBuffer(pPoseStack, consumer, light, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
-                pPoseStack.popPose();
-
-                pPoseStack.popPose();
+        Vector3f[] biTangents = {new Vector3f(1, 0, 1).normalize(), new Vector3f(1, 0, -1).normalize()};
+        for (int i = 0; i < segments.size(); i++) {
+            FairyFruitVine.FairyFruitVineSegment segment = segments.get(i);
+            Vec3 segmentPosition = segment.getPosition(pPartialTick).subtract(parentPosition);
+            Vec3 nextSegmentPosition;
+            if (i == segments.size() - 1) {
+                nextSegmentPosition = segmentPosition.add(segmentPosition.subtract(previousSegmentPosition));
             } else {
-                boolean lowGlow = false;
-                Quaterniond topOrientation = segment.getTopJoint().getOrientation(pPartialTick);
-                Quaterniond bottomOrientation = segment.getBottomJoint().getOrientation(pPartialTick);
-                if (i + 1 < pBlockEntity.segments.size()) {
-                    FairyFruitSegment nextSegment = pBlockEntity.segments.get(i + 1);
-                    lowGlow = nextSegment.isTip() && nextSegment.getBottomJoint().getFruitStage() == FairyFruitJoint.FruitStage.FRUIT;
-                }
-                drawVineBetweenPoints(pBlockEntity, topPos, new Quaternionf(topOrientation),
-                        bottomPos, new Quaternionf(bottomOrientation),
-                        totalLength, totalLength += segment.getLength(pPartialTick), consumer, pPoseStack, pPackedLight, pPackedOverlay, lowGlow, fruitLight);
+                nextSegmentPosition = segments.get(i + 1).getPosition(pPartialTick).subtract(parentPosition);
             }
+
+            Vector3f tangent = previousSegmentPosition.subtract(segmentPosition).normalize().toVector3f();
+            Quaternionf rotation = new Quaternionf().rotateX((float) Mth.atan2(tangent.z, tangent.y)).rotateZ((float) -Mth.atan2(tangent.x, tangent.y));
+
+            Vector3f biTangent1 = biTangents[0].rotate(rotation, new Vector3f());
+            Vector3f normal1 = tangent.cross(biTangent1, new Vector3f()).normalize();
+            Vector3f biTangent2 = biTangents[1].rotate(rotation, new Vector3f());
+            Vector3f normal2 = tangent.cross(biTangent2, new Vector3f()).normalize();
+
+            Vector3f nextTangent = nextSegmentPosition.subtract(segmentPosition).normalize().toVector3f();
+            Quaternionf nextRotation = new Quaternionf().rotateX((float) Mth.atan2(nextTangent.z, nextTangent.y)).rotateZ((float) Mth.atan2(nextTangent.x, nextTangent.y));
+            Vector3f nextBiTangent1 = biTangents[0].rotate(nextRotation, new Vector3f()).mul(-1);
+            Vector3f nextNormal1 = nextTangent.cross(nextBiTangent1, new Vector3f()).normalize().mul(-1);
+            Vector3f nextBiTangent2 = biTangents[1].rotate(nextRotation, new Vector3f()).mul(-1);
+            Vector3f nextNormal2 = nextTangent.cross(nextBiTangent2, new Vector3f()).normalize().mul(-1);
+
+            int light = LightTexture.pack( pBlockEntity.getLevel().getBrightness(LightLayer.BLOCK, BlockPos.containing(segmentPosition.add(parentPosition))),
+                    pBlockEntity.getLevel().getBrightness(LightLayer.SKY, BlockPos.containing(segmentPosition.add(parentPosition))));
+            int nextLight = LightTexture.pack( pBlockEntity.getLevel().getBrightness(LightLayer.BLOCK, BlockPos.containing(nextSegmentPosition.add(parentPosition))),
+                    pBlockEntity.getLevel().getBrightness(LightLayer.SKY, BlockPos.containing(nextSegmentPosition.add(parentPosition))));
+            if (i == segments.size() - 1) nextLight = LightTexture.pack(15, pBlockEntity.getLevel().getBrightness(LightLayer.SKY, BlockPos.containing(segmentPosition.add(parentPosition))));
+
+            float distanceBetweenPoints = (float) previousSegmentPosition.distanceTo(segmentPosition);
+
+            float v1 = (totalDistance) * 0.5F;
+            float v2 = (totalDistance + distanceBetweenPoints) * 0.5F;
+            totalDistance += distanceBetweenPoints;
+
+            RenderUtils.drawFaceBetweenPoints(pBufferSource.getBuffer(ClinkerRenderTypes.entityUnlitCutout(TEXTURE)), pPoseStack, 0.25F * Mth.SQRT_OF_TWO,
+                    previousSegmentPosition.toVector3f(), tangent, normal1, biTangent1, light, OverlayTexture.NO_OVERLAY, 0, v1,
+                    segmentPosition.toVector3f(), nextTangent, nextNormal1, nextBiTangent1, nextLight, OverlayTexture.NO_OVERLAY, 0.25F, v2);
+            RenderUtils.drawFaceBetweenPoints(pBufferSource.getBuffer(ClinkerRenderTypes.entityUnlitCutout(TEXTURE)), pPoseStack, 0.25F,
+                    previousSegmentPosition.toVector3f(), tangent, normal1.mul(-1), biTangent1.mul(-1), light, OverlayTexture.NO_OVERLAY, 0, v1,
+                    segmentPosition.toVector3f(), nextTangent, nextNormal1.mul(-1), nextBiTangent1.mul(-1), nextLight, OverlayTexture.NO_OVERLAY, 0.25F, v2);
+
+            RenderUtils.drawFaceBetweenPoints(pBufferSource.getBuffer(ClinkerRenderTypes.entityUnlitCutout(TEXTURE)), pPoseStack, 0.25F * Mth.SQRT_OF_TWO,
+                    previousSegmentPosition.toVector3f(), tangent, normal2, biTangent2, light, OverlayTexture.NO_OVERLAY, 0, v1,
+                    segmentPosition.toVector3f(), nextTangent, nextNormal2, nextBiTangent2, nextLight, OverlayTexture.NO_OVERLAY, 0.25F, v2);
+            RenderUtils.drawFaceBetweenPoints(pBufferSource.getBuffer(ClinkerRenderTypes.entityUnlitCutout(TEXTURE)), pPoseStack, 0.25F,
+                    previousSegmentPosition.toVector3f(), tangent, normal2.mul(-1), biTangent2.mul(-1), light, OverlayTexture.NO_OVERLAY, 0, v1,
+                    segmentPosition.toVector3f(), nextTangent, nextNormal2.mul(-1), nextBiTangent2.mul(-1), nextLight, OverlayTexture.NO_OVERLAY, 0.25F, v2);
+
+            previousSegmentPosition = segmentPosition;
         }
 
+        Vec3 previousPos;
+        if (segments.size() > 2) {
+            previousPos = segments.get(segments.size() - 2).getPosition(pPartialTick).subtract(parentPosition);
+        } else {
+            previousPos = pBlockEntity.vine.origin.subtract(parentPosition);
+        }
+        Vec3 fruitPos = segments.get(segments.size() - 1).getPosition(pPartialTick).subtract(parentPosition);
+        pPoseStack.pushPose();
+        pPoseStack.translate(fruitPos.x(), fruitPos.y(), fruitPos.z());
+        pPoseStack.mulPose(Axis.XP.rotationDegrees(180));
+        Quaternionf rotation = new Quaternionf().rotateTo(new Vector3f(0, -1, 0), fruitPos.subtract(previousPos).multiply(-1, 1, 1).normalize().toVector3f());
+        pPoseStack.mulPose(rotation);
+        int packedFruitLight = LightTexture.pack(15, pBlockEntity.getLevel().getBrightness(LightLayer.SKY, BlockPos.containing(fruitPos.add(parentPosition))));
+        this.leavesModel.renderToBuffer(pPoseStack, pBufferSource.getBuffer(RenderType.entityCutoutNoCull(TEXTURE)), packedFruitLight, pPackedOverlay, 1, 1, 1, 1);
+        pPoseStack.mulPose(rotation.slerp(new Quaternionf(), 0.5F));
+        pPoseStack.translate(0, 0.03, 0);
+        this.fruitModel.bud.visible = false;
+        this.fruitModel.renderToBuffer(pPoseStack, pBufferSource.getBuffer(ClinkerRenderTypes.entityUnlitTranslucent(TEXTURE)), packedFruitLight, pPackedOverlay, 1, 1, 1, 0.8F);
         pPoseStack.popPose();
-
-        /*for (FairyFruitBlockEntity.FairyFruitJoint joint : pBlockEntity.joints) {
-            Vec3 jPos = joint.getClientPosition(pPartialTick).subtract(parentPosition);
-            DebugRenderUtil.renderSphere(pPoseStack, pBufferSource.getBuffer(RenderType.LINES), 32, (float)joint.radius, jPos.x, jPos.y, jPos.z, 0.2F, 0.2F, 0.8F, 0.6F);
-        }*/
     }
 
-    private void drawVineBetweenPoints(T entity, Vec3 point1, Quaternionf point1Rotation, Vec3 point2, Quaternionf point2Rotation, float uvOffset0, float uvOffset1, VertexConsumer buffer, PoseStack stack, int packedLight, int packedOverlay, boolean lowGlow, int fruitLight) {
-        Matrix4f matrix = stack.last().pose();
-        float thickness = ((8.0F / 16.0F) * 0.5F) / Mth.sqrt(2);
 
-        BlockPos samplePos1 = entity.getBlockPos().offset((int) point1.x(), (int) point1.y(), (int) point1.z());
-        BlockPos samplePos2 = entity.getBlockPos().offset((int) point2.x(), (int) point2.y(), (int) point2.z());
-        int light1 = packedLight;
-        int light2 = packedLight;
-        if (entity.hasLevel()) {
-            light1 = LightTexture.pack(entity.getLevel().getBrightness(LightLayer.BLOCK, samplePos1), entity.getLevel().getBrightness(LightLayer.SKY, samplePos1));
-            light2 = LightTexture.pack(lowGlow ? fruitLight : entity.getLevel().getBrightness(LightLayer.BLOCK, samplePos2), entity.getLevel().getBrightness(LightLayer.SKY, samplePos2));
-        }
-
-        Vector3f normal = new Vector3f(0, 1, 0);
-
-        /*Vector3f normal1a = new Vector3f(n, 0, n);
-        normal1a.transform(point1Rotation);
-        normal1a.transform(stack.last().normal());
-
-        Vector3f normal2a = new Vector3f(n, 0, n);
-        normal2a.transform(point2Rotation);
-        normal2a.transform(stack.last().normal());*/
-        /*Vector3f normal1b = new Vector3f(-n, 0, n);
-        normal1b.transform(point1Rotation);
-        normal1b.transform(stack.last().normal());
-
-        Vector3f normal2b = new Vector3f(-n, 0, n);
-        normal2b.transform(point2Rotation);
-        normal2b.transform(stack.last().normal());*/
-
-        // a little monstrous but it works and i will never have to touch this again!
-        renderFace(true, point1, normal, point1Rotation, point2, normal, point2Rotation, thickness, uvOffset0, uvOffset1, light1, light2, buffer, matrix);
-        renderFace(false, point1, normal, point1Rotation, point2, normal, point2Rotation, thickness, uvOffset0, uvOffset1, light1, light2, buffer, matrix);
-    }
-
-    public void renderFace(boolean orientation, Vec3 point1, Vector3f normal1, Quaternionf point1Rotation, Vec3 point2, Vector3f normal2, Quaternionf point2Rotation, float thickness, float uvOffset0, float uvOffset1, int light1, int light2, VertexConsumer buffer, Matrix4f matrix) {
-        int packedOverlay = OverlayTexture.NO_OVERLAY;
-        int dir = orientation ? -1 : 1;
-
-        vertex(buffer, matrix, point1, dir * -thickness, 0 , -thickness, point1Rotation)
-                .color(1.0F, 1.0F, 1.0F, 1.0F)
-                .uv(0, uvOffset0 * 0.5F)
-                .overlayCoords(packedOverlay).uv2(light1)
-                .normal(normal1.x(), normal1.y(), normal1.z()).endVertex();
-        vertex(buffer, matrix, point1, dir * thickness, 0, thickness, point1Rotation)
-                .color(1.0F, 1.0F, 1.0F, 1.0F)
-                .uv( (8.0F / 32.0F), uvOffset0 * 0.5F)
-                .overlayCoords(packedOverlay).uv2(light1)
-                .normal(normal1.x(), normal1.y(), normal1.z()).endVertex();
-        vertex(buffer, matrix, point2, dir * thickness, 0, thickness, point2Rotation)
-                .color(1.0F, 1.0F, 1.0F, 1.0F)
-                .uv( (8.0F / 32.0F), uvOffset1 * 0.5F)
-                .overlayCoords(packedOverlay).uv2(light2)
-                .normal(normal2.x(), normal2.y(), normal2.z()).endVertex();
-        vertex(buffer, matrix, point2, dir * -thickness, 0, -thickness, point2Rotation)
-                .color(1.0F, 1.0F, 1.0F, 1.0F)
-                .uv( 0, uvOffset1 * 0.5F)
-                .overlayCoords(packedOverlay).uv2(light2)
-                .normal(normal2.x(), normal2.y(), normal2.z()).endVertex();
-
-        normal1.mul(-1);
-        normal2.mul(-1);
-        vertex(buffer, matrix, point2, dir * -thickness, 0, -thickness, point2Rotation)
-                .color(1.0F, 1.0F, 1.0F, 1.0F)
-                .uv( (8.0F / 32.0F), uvOffset1 * 0.5F)
-                .overlayCoords(packedOverlay).uv2(light2)
-                .normal(normal2.x(), normal2.y(), normal2.z()).endVertex();
-        vertex(buffer, matrix, point2, dir * thickness, 0, thickness, point2Rotation)
-                .color(1.0F, 1.0F, 1.0F, 1.0F)
-                .uv( 0, uvOffset1 * 0.5F)
-                .overlayCoords(packedOverlay).uv2(light2)
-                .normal(normal2.x(), normal2.y(), normal2.z()).endVertex();
-        vertex(buffer, matrix, point1, dir * thickness, 0, thickness, point1Rotation)
-                .color(1.0F, 1.0F, 1.0F, 1.0F)
-                .uv( 0, uvOffset0 * 0.5F)
-                .overlayCoords(packedOverlay).uv2(light1)
-                .normal(normal1.x(), normal1.y(), normal1.z()).endVertex();
-        vertex(buffer, matrix, point1, dir * -thickness, 0 , -thickness, point1Rotation)
-                .color(1.0F, 1.0F, 1.0F, 1.0F)
-                .uv((8.0F / 32.0F), uvOffset0 * 0.5F)
-                .overlayCoords(packedOverlay).uv2(light1)
-                .normal(normal1.x(), normal1.y(), normal1.z()).endVertex();
-
-
-
-    }
-
-    public static VertexConsumer vertex(VertexConsumer buffer, Matrix4f matrix, Vec3 base, float x, float y, float z, Quaternionf rotation) {
-        Vector3f pos = new Vector3f(x, y, z);
-        pos = rotation.transform(pos);
-        return buffer.vertex(matrix, pos.x() + (float)base.x(), pos.y() + (float)base.y(), pos.z() + (float)base.z());
-    }
 
     public static class FairyFruitModel extends Model {
         public final BasicModelPart fruit;
@@ -233,11 +160,7 @@ public class FairyFruitRenderer<T extends FairyFruitBlockEntity> implements Bloc
             this.bud = new BasicModelPart(BasicModelPart.toCubeList(CubeListBuilder.create().texOffs(8, 22).addBox(-2.0F, 0.0F, -2.0F, 4.0F, 5.0F, 4.0F), 32, 32));
 
             this.root1 = new BasicModelPart(BasicModelPart.toCubeList(CubeListBuilder.create().texOffs(26, 24).addBox(-5.0F, -8.0F, 0.0F, 4.0F, 5.0F, 0.0F), 32, 32));
-            //this.root1.yRot = 0.7854F;
-            //this.root1.yRotInit = 0.7854F;
             this.root2 = new BasicModelPart(BasicModelPart.toCubeList(CubeListBuilder.create().texOffs(26, 24).addBox(-5.0F, -8.0F, 0.0F, 4.0F, 5.0F, 0.0F), 32, 32));
-            //this.root2.yRot = -0.7854F;
-            //this.root2.yRotInit = -0.7854F;
 
             this.leaf1 = new BasicModelPart(BasicModelPart.toCubeList(CubeListBuilder.create().texOffs(8, 13).addBox(-5.0F, -8.0F, 0.0F, 10.0F, 9.0F, 0.0F), 32, 32));
             this.leaf2 = new BasicModelPart(BasicModelPart.toCubeList(CubeListBuilder.create().texOffs(8, 3).addBox(0.0F, -8.0F, -5.0F, 0.0F, 9.0F, 10.0F), 32, 32));
@@ -249,26 +172,6 @@ public class FairyFruitRenderer<T extends FairyFruitBlockEntity> implements Bloc
             this.bud.render(pPoseStack, pBuffer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
             this.leaf1.render(pPoseStack, pBuffer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
             this.leaf2.render(pPoseStack, pBuffer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
-        }
-
-        public void setVisibility(FairyFruitJoint.FruitStage stage) {
-            this.fruit.visible = false;
-            this.bud.visible   = false;
-            this.root1.visible = false;
-            this.root2.visible = false;
-
-            switch (stage) {
-                case ROOT:
-                    this.root1.visible = true;
-                    this.root2.visible = true;
-                    break;
-                case BUD:
-                    this.bud.visible = true;
-                    break;
-                case FRUIT:
-                    this.fruit.visible = true;
-                    break;
-            }
         }
     }
 }

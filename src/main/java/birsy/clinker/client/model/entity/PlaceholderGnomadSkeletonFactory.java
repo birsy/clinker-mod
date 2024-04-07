@@ -6,7 +6,7 @@ import birsy.clinker.client.model.base.InterpolatedSkeleton;
 import birsy.clinker.client.model.base.SkeletonFactory;
 import birsy.clinker.client.model.base.mesh.ModelMesh;
 import birsy.clinker.client.model.base.mesh.StaticMesh;
-import birsy.clinker.common.world.entity.gnomad.NewGnomadEntity;
+import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
 import birsy.clinker.core.Clinker;
 import net.minecraft.world.phys.Vec3;
 import org.joml.AxisAngle4f;
@@ -42,13 +42,13 @@ public class PlaceholderGnomadSkeletonFactory implements SkeletonFactory {
 
 		@Override
 		public void animate(AnimationProperties properties) {
-			NewGnomadEntity entity = (NewGnomadEntity) properties.getProperty("entity");
+			GnomadEntity entity = (GnomadEntity) properties.getProperty("entity");
 			body.reset();
 			body.rotation.mul(this.getVelocityTilt(entity));
 			body.rotation.mul(new Quaternionf().rotateTo(new Vector3f(0, 0, -1), entity.getViewVector(1.0F).toVector3f()));
 		}
 
-		public Quaternionf getAccelerationTilt(NewGnomadEntity entity) {
+		public Quaternionf getAccelerationTilt(GnomadEntity entity) {
 			Vec3 acceleration = entity.acceleration.scale(1);
 			this.smoothedAcceleration = acceleration;
 			Vector3f axis = new Vector3f(0, 1, 0).cross(smoothedAcceleration.toVector3f()).normalize();
@@ -61,7 +61,7 @@ public class PlaceholderGnomadSkeletonFactory implements SkeletonFactory {
 			return new Quaternionf(new AxisAngle4f(-angle, axis));
 		}
 
-		public Quaternionf getVelocityTilt(NewGnomadEntity entity) {
+		public Quaternionf getVelocityTilt(GnomadEntity entity) {
 			Vec3 velocity = entity.getPosition(1).subtract(entity.getPosition(0));
 			this.smoothedVelocity = this.smoothedVelocity.lerp(velocity, 0.2F);
 

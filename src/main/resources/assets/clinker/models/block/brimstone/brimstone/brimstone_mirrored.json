@@ -1,7 +1,7 @@
 {
   "parent": "minecraft:block/cube_column_mirrored",
   "textures": {
-    "end": "clinker:block/smooth_brimstone_1",
+    "end": "clinker:block/brimstone/brimstone_top",
     "side": "clinker:block/brimstone/brimstone"
   }
 }

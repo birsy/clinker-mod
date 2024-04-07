@@ -1,10 +1,8 @@
 package birsy.clinker.client.render.entity;
 
-import birsy.clinker.common.world.entity.IVelocityTilt;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -27,10 +25,6 @@ public abstract class ClinkerEntityRenderer<T extends Mob, M extends EntityModel
     }
     @Override
     protected void setupRotations(T pEntityLiving, PoseStack pMatrixStack, float pAgeInTicks, float pRotationYaw, float pPartialTicks) {
-        if (pEntityLiving instanceof IVelocityTilt) {
-            pMatrixStack.mulPose(Axis.XP.rotationDegrees(((IVelocityTilt) pEntityLiving).getPitch(pPartialTicks)));
-            pMatrixStack.mulPose(Axis.ZP.rotationDegrees(((IVelocityTilt) pEntityLiving).getRoll(pPartialTicks)));
-        }
         super.setupRotations(pEntityLiving, pMatrixStack, pAgeInTicks, pRotationYaw, pPartialTicks);
     }
 

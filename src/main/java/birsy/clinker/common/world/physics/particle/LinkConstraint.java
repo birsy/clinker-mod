@@ -9,9 +9,9 @@ import org.joml.Vector3d;
 public class LinkConstraint<C extends CollidingParticle> extends Constraint {
     public final C joint1;
     public final C joint2;
-    protected double pLength;
-    protected double length;
-    protected double stiffness;
+    public double pLength;
+    public double length;
+    public double stiffness;
 
     public LinkConstraint(ParticleParent parent, C joint1, C joint2, double length) {
         super(parent);
@@ -37,8 +37,12 @@ public class LinkConstraint<C extends CollidingParticle> extends Constraint {
         return joint1.getPosition(partialTick).add(joint2.getPosition(partialTick)).scale(0.5);
     }
 
+    public Vec3 getVector(double partialTick) {
+        return joint1.getPosition(partialTick).subtract(joint2.getPosition(partialTick));
+    }
+
     public Vec3 getDirection(double partialTick) {
-        return joint1.getPosition(partialTick).subtract(joint2.getPosition(partialTick)).normalize();
+        return this.getVector(partialTick).normalize();
     }
 
     public double getLength(double partialTick) {
@@ -47,12 +51,6 @@ public class LinkConstraint<C extends CollidingParticle> extends Constraint {
 
     public Quaterniond getOrientation(double partialTick, Vec3 forward) {
         return new Quaterniond().lookAlong(JomlConversions.toJOML(joint1.getPosition(partialTick).subtract(joint2.getPosition(partialTick))), new Vector3d(0, 1, 0)).normalize();
-    }
-
-    public Vec3 getVector(double partialTick) {
-        Vec3 pos1 = this.joint1.pPosition.lerp(this.joint1.position, partialTick);
-        Vec3 pos2 = this.joint2.pPosition.lerp(this.joint2.position, partialTick);
-        return pos2.subtract(pos1);
     }
 
     public void push(Vec3 push) {

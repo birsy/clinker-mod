@@ -4,12 +4,12 @@ import birsy.clinker.client.render.entity.model.base.AnimFunctions;
 import birsy.clinker.client.render.entity.model.base.DynamicModelPart;
 import birsy.clinker.client.render.entity.model.gnomad.GnomadAccessoryModel;
 import birsy.clinker.client.render.entity.model.gnomad.GnomadAxemanDynamicModel;
-import birsy.clinker.common.world.entity.gnomad.GnomadAxemanEntity;
+import birsy.clinker.common.world.entity.gnomad.OldGnomadAxemanEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.resources.ResourceLocation;
 
-public class GnomadHelmetHatModel<T extends GnomadAxemanDynamicModel, E extends GnomadAxemanEntity> extends GnomadAccessoryModel<T, E> {
+public class GnomadHelmetHatModel<T extends GnomadAxemanDynamicModel, E extends OldGnomadAxemanEntity> extends GnomadAccessoryModel<T, E> {
     public DynamicModelPart gnomadHat;
 
     public GnomadHelmetHatModel(ResourceLocation location) {

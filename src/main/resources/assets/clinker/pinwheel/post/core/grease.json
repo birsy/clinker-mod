@@ -1,0 +1,12 @@
+{
+  "stages": [
+    {
+      "type": "veil:blit",
+      "shader": "clinker:ssao",
+      "in": "veil:deferred",
+      "out": "veil:post"
+    }
+  ],
+  "priority": 1000,
+  "replace": false
+}

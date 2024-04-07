@@ -5,7 +5,8 @@ import birsy.clinker.common.world.alchemy.workstation.WorkstationManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.neoforge.network.NetworkEvent;
+
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 import java.util.UUID;
 
@@ -29,7 +30,7 @@ public class ClientboundWorkstationChangeBlockPacket extends ClientboundPacket {
     }
 
     @Override
-    public void toBytes(FriendlyByteBuf buffer) {
+    public void write(FriendlyByteBuf buffer) {
         CompoundTag NBT = new CompoundTag();
         NBT.putUUID("uuid", this.id);
         NBT.putBoolean("add", this.add);
@@ -39,7 +40,7 @@ public class ClientboundWorkstationChangeBlockPacket extends ClientboundPacket {
     }
 
     @Override
-    public void run(NetworkEvent.Context context) {
+    public void run(PlayPayloadContext context) {
         WorkstationManager clientManager = WorkstationManager.clientWorkstationManager;
         if (this.add) {
             clientManager.addWorkstationBlockToUUID(pos, id);

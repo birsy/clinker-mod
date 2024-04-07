@@ -1,28 +1,19 @@
 package birsy.clinker.common.networking.packet.interactable;
 
 import birsy.clinker.common.networking.packet.ClientboundPacket;
-import birsy.clinker.common.networking.packet.ServerboundPacket;
 import birsy.clinker.common.world.level.interactable.Interactable;
-import birsy.clinker.common.world.level.interactable.InteractableAttachment;
+import birsy.clinker.common.world.level.interactable.InteractableLevelAttachment;
 import birsy.clinker.common.world.level.interactable.manager.ClientInteractableManager;
-import birsy.clinker.common.world.level.interactable.manager.InteractableManager;
-import birsy.clinker.common.world.level.interactable.manager.ServerInteractableManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.chunk.LevelChunk;
-import net.neoforged.neoforge.network.NetworkEvent;
+
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public class ClientboundInteractableLoadChunkPacket extends ClientboundPacket {
     final ChunkPos pos;
@@ -46,7 +37,7 @@ public class ClientboundInteractableLoadChunkPacket extends ClientboundPacket {
     }
 
     @Override
-    public void toBytes(FriendlyByteBuf buffer) {
+    public void write(FriendlyByteBuf buffer) {
         buffer.writeLong(pos.toLong());
         buffer.writeBoolean(requestedFromClient);
         CompoundTag tag = new CompoundTag();
@@ -58,10 +49,10 @@ public class ClientboundInteractableLoadChunkPacket extends ClientboundPacket {
     }
 
     @Override
-    public void run(NetworkEvent.Context context) {
+    public void run(PlayPayloadContext context) {
         Minecraft minecraft = Minecraft.getInstance();
         ClientLevel level = minecraft.level;
-        ClientInteractableManager manager = (ClientInteractableManager) InteractableAttachment.getInteractableManagerForLevel(level);
+        ClientInteractableManager manager = (ClientInteractableManager) InteractableLevelAttachment.getInteractableManagerForLevel(level);
         if (requestedFromClient) {
             manager.loadChunkFromPacket(this.pos, this.interactables);
         } else {

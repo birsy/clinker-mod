@@ -1,5 +1,6 @@
 package birsy.clinker.core.registry;
 
+import birsy.clinker.client.render.ExplosionLightParticle;
 import birsy.clinker.client.render.particle.*;
 import birsy.clinker.core.Clinker;
 import com.mojang.serialization.Codec;
@@ -30,9 +31,11 @@ public class ClinkerParticles
 	public static final Supplier<SimpleParticleType> RED_LIGHTNING = createSimpleParticle("red_lightning");
 	public static final Supplier<SimpleParticleType> SNOOZE = createSimpleParticle("snooze");
 	public static final Supplier<SimpleParticleType> MOTH = createSimpleParticle("moth");
+	public static final Supplier<SimpleParticleType> FIREFLY = createSimpleParticle("firefly");
 
 	public static final Supplier<ParticleType<DustColorTransitionOptions>> ORDNANCE_TRAIL = createParticle("ordnance_trail", DustColorTransitionOptions.DESERIALIZER, DustColorTransitionOptions.CODEC);
 	public static final Supplier<ParticleType<DustColorTransitionOptions>> ORDNANCE_EXPLOSION = createParticle("ordnance_explosion", DustColorTransitionOptions.DESERIALIZER, DustColorTransitionOptions.CODEC);
+	public static final Supplier<SimpleParticleType> EXPLOSION_LIGHT = createSimpleParticle("explosion_light");
 
 	public static Supplier<SimpleParticleType> createSimpleParticle(String name) {
 		Supplier<SimpleParticleType> particle = PARTICLES.register(name, () -> new SimpleParticleType(false));
@@ -50,12 +53,14 @@ public class ClinkerParticles
 	}
 
 	@SubscribeEvent
-	public static void registerParticleFactories(RegisterParticleProvidersEvent event) {
+	public static void registerParticleProviders(RegisterParticleProvidersEvent event) {
 		event.registerSpriteSet(LIGHTNING.get(), LightningParticle.Provider::new);
 		event.registerSpriteSet(RED_LIGHTNING.get(), LightningParticle.Provider::new);
 		event.registerSpriteSet(SNOOZE.get(), SnoozeParticle.Provider::new);
 		event.registerSpriteSet(MOTH.get(), MothParticle.Provider::new);
+		event.registerSpriteSet(FIREFLY.get(), FireflyParticle.Provider::new);
 		event.registerSpriteSet(ORDNANCE_TRAIL.get(), OrdnanceTrailParticle.Provider::new);
 		event.registerSpriteSet(ORDNANCE_EXPLOSION.get(), OrdnanceExplosionParticle.Provider::new);
+		event.registerSpriteSet(EXPLOSION_LIGHT.get(), ExplosionLightParticle.Provider::new);
 	}
 }

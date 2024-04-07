@@ -82,4 +82,8 @@ public abstract class InteractableManager {
             interactable.markedDirty = false;
         }
     }
+
+    public void clear() {
+        this.storage.clear();
+    }
 }

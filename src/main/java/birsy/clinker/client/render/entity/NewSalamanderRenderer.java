@@ -6,6 +6,7 @@ import birsy.clinker.client.render.DebugRenderUtil;
 import birsy.clinker.client.render.entity.base.InterpolatedEntityRenderer;
 import birsy.clinker.client.render.entity.layer.SalamanderOverlayLayer;
 import birsy.clinker.common.world.entity.salamander.NewSalamanderEntity;
+import birsy.clinker.common.world.entity.salamander.SalamanderPartEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -14,6 +15,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 public class NewSalamanderRenderer extends InterpolatedEntityRenderer<NewSalamanderEntity, SalamanderSkeletonFactory.SalamanderSkeleton> {
@@ -52,6 +54,16 @@ public class NewSalamanderRenderer extends InterpolatedEntityRenderer<NewSalaman
             }
         }
         pPoseStack.popPose();
+
+        for (SalamanderPartEntity partEntity : pEntity.partEntities) {
+            pPoseStack.pushPose();
+            AABB bounds = partEntity.getBoundingBox();
+            Vec3 offset = pEntity.position().scale(-1);
+            pPoseStack.translate(offset.x, offset.y, offset.z);
+            DebugRenderUtil.renderBox(pPoseStack, pBuffer.getBuffer(RenderType.LINES),bounds, 1.0F, 0.0F, 1.0F, 1.0F);
+            pPoseStack.popPose();
+        }
+
         //renderDebug(pEntity, pEntityYaw, pPartialTick, pPoseStack, pBuffer, pPackedLight);
     }
 

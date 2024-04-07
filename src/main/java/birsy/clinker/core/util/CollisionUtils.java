@@ -1,9 +1,12 @@
 package birsy.clinker.core.util;
 
+import birsy.clinker.common.world.alchemy.workstation.WorkstationPhysicsObject;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Quaterniond;
 import org.joml.Vector3d;
+import org.joml.Vector3f;
 
 import java.util.Optional;
 
@@ -30,5 +33,20 @@ public class CollisionUtils {
         return vec.map(vec3 -> toWorldSpace(box.position, box.orientation, new Vector3d(vec3.x(), vec3.y(), vec3.z())));
     }
 
+    public static Optional<CollisionManifold> sphereAABBCollision(Vector3d position, double radius, AABB aabb) {
+        aabb = aabb.inflate(radius);
+        if (aabb.contains(position.x(), position.y(), position.z())) {
+            //we are colliding!
+            Vector3d pointOnSurface = MathUtils.closestPointOnAABB(position, aabb);
+
+            Vector3d point = position.sub(pointOnSurface).normalize().mul(radius);
+            Vector3d adjustment = pointOnSurface.sub(position);
+            return Optional.of(new CollisionManifold(point, adjustment));
+        }
+
+        return Optional.empty();
+    }
+
+    public record CollisionManifold(Vector3d point, Vector3d adjustment) {}
     public record OrientableBoundingBox(Vector3d size, Vector3d position, Quaterniond orientation) {}
 }

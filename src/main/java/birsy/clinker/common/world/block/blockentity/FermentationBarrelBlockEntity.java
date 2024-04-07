@@ -2,7 +2,7 @@ package birsy.clinker.common.world.block.blockentity;
 
 import birsy.clinker.common.world.block.FermentationBarrelBlock;
 import birsy.clinker.core.Clinker;
-import birsy.clinker.core.registry.ClinkerBlockEntities;
+import birsy.clinker.core.registry.entity.ClinkerBlockEntities;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;

@@ -19,7 +19,6 @@ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.joml.Vector3d;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 @OnlyIn(Dist.CLIENT)
@@ -46,7 +45,7 @@ public class ClientInteractionHandler extends InteractionHandler {
         double blockReach = player.getBlockReach();
         double entityReach = player.getEntityReach();
 
-        ClientLevel level = (ClientLevel) this.level;
+        ClientLevel level = (ClientLevel) this.manager.level;
         Vec3 direction = player.getLookAngle();
         Vec3 fromPos = player.getEyePosition(minecraft.getPartialTick());
 
@@ -84,12 +83,12 @@ public class ClientInteractionHandler extends InteractionHandler {
 
     @SubscribeEvent
     public static void onRenderLevel(RenderLevelStageEvent event) {
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_LEVEL) return;
-        if (Minecraft.getInstance().isPaused()) return;
-        ClientInteractableManager manager = (ClientInteractableManager) InteractableAttachment.getInteractableManagerForLevel(Minecraft.getInstance().level);
-        if (manager != null) {
-            ClientInteractionHandler handler = (ClientInteractionHandler) manager.interactionHandler;
-            handler.update();
-        }
+//        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_LEVEL) return;
+//        if (Minecraft.getInstance().isPaused()) return;
+//        ClientInteractableManager manager = (ClientInteractableManager) InteractableLevelAttachment.getInteractableManagerForLevel(Minecraft.getInstance().level);
+//        if (manager != null) {
+//            ClientInteractionHandler handler = (ClientInteractionHandler) manager.interactionHandler;
+//            handler.update();
+//        }
     }
 }

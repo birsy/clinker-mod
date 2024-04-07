@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.resource.ResourcePackLoader;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -16,6 +17,10 @@ import org.joml.Vector3f;
 public class DebugRenderUtil {
     public static void renderCube(PoseStack pPoseStack, VertexConsumer pConsumer, float pRed, float pGreen, float pBlue, float pAlpha) {
         renderBox(pPoseStack, pConsumer, 0, 0, 0, 1, 1, 1, pRed, pGreen, pBlue, pAlpha);
+    }
+
+    public static void renderCubeCentered(PoseStack pPoseStack, VertexConsumer pConsumer, float pRed, float pGreen, float pBlue, float pAlpha) {
+        renderBox(pPoseStack, pConsumer, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, pRed, pGreen, pBlue, pAlpha);
     }
 
     public static void renderBox(PoseStack pPoseStack, VertexConsumer pConsumer, double pMinX, double pMinY, double pMinZ, double pMaxX, double pMaxY, double pMaxZ, float pRed, float pGreen, float pBlue, float pAlpha) {
@@ -155,4 +160,5 @@ public class DebugRenderUtil {
         pConsumer.vertex(matrix4f, minX, minY, minZ).color(pRed, pGreen, pBlue, pAlpha).normal(matrix3f, normal.x(), normal.y(), normal.z()).endVertex();
         pConsumer.vertex(matrix4f, maxX, maxY, maxZ).color(pRed, pGreen, pBlue, pAlpha).normal(matrix3f, normal.x(), normal.y(), normal.z()).endVertex();
     }
+
 }

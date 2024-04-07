@@ -4,7 +4,7 @@ import birsy.clinker.client.render.entity.model.gnomad.GnomadAccessoryModel;
 import birsy.clinker.client.render.entity.model.gnomad.GnomadAxemanDynamicModel;
 import birsy.clinker.client.render.entity.model.gnomad.armor.*;
 import birsy.clinker.common.world.entity.gnomad.GnomadArmor;
-import birsy.clinker.common.world.entity.gnomad.GnomadAxemanEntity;
+import birsy.clinker.common.world.entity.gnomad.OldGnomadAxemanEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -21,7 +21,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import java.util.HashMap;
 
 @OnlyIn(Dist.CLIENT)
-public class GnomadArmorLayer<T extends GnomadAxemanEntity, M extends GnomadAxemanDynamicModel<T>> extends RenderLayer<T, M> {
+public class GnomadArmorLayer<T extends OldGnomadAxemanEntity, M extends GnomadAxemanDynamicModel<T>> extends RenderLayer<T, M> {
     private static final HashMap<GnomadArmor, GnomadAccessoryModel> armorModels = Util.make(new HashMap<>(), (map) -> {
         for (GnomadArmor armor : GnomadArmor.values()) {
             map.put(armor, new GnomadEmptyAccessory());

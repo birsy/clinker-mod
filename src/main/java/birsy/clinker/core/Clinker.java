@@ -2,11 +2,12 @@ package birsy.clinker.core;
 
 import birsy.clinker.client.render.GUIRenderer;
 import birsy.clinker.client.gui.AlchemyBundleGUIRenderer;
-import birsy.clinker.common.networking.ClinkerPacketHandler;
-import birsy.clinker.common.world.entity.OrdnanceEntity;
-import birsy.clinker.common.world.level.chunk.gen.OthershoreChunkGenerator;
-import birsy.clinker.common.world.level.chunk.gen.TestChunkGenerator;
+import birsy.clinker.client.render.debug.ClinkerDebugRenderers;
+import birsy.clinker.common.world.entity.OldOrdnanceEntity;
 import birsy.clinker.core.registry.*;
+import birsy.clinker.core.registry.entity.ClinkerBlockEntities;
+import birsy.clinker.core.registry.entity.ClinkerEntities;
+import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import birsy.clinker.core.registry.world.ClinkerFeatures;
 import birsy.clinker.core.registry.world.ClinkerWorld;
 import net.minecraft.client.Minecraft;
@@ -20,12 +21,9 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.neoforged.neoforge.common.NeoForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,13 +32,11 @@ import net.minecraft.world.item.ItemStack;
 
 @Mod(Clinker.MOD_ID)
 public class Clinker {
-	public static final String MOD_ID = "clinker";
-	public static boolean devmode = true;
-	public static final Logger LOGGER = LogManager.getLogger(MOD_ID.toUpperCase());
+    public static final String MOD_ID = "clinker";
+    public static boolean devmode = true;
+    public static final Logger LOGGER = LogManager.getLogger(MOD_ID.toUpperCase());
 
-	public Clinker() throws InterruptedException {
-        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-        ClinkerPacketHandler.register();
+    public Clinker(IEventBus modEventBus) throws InterruptedException {
         ClinkerSounds.SOUNDS.register(modEventBus);
         ClinkerItems.ITEMS.register(modEventBus);
         ClinkerBlocks.BLOCKS.register(modEventBus);
@@ -48,21 +44,20 @@ public class Clinker {
         ClinkerWorld.CHUNK_GENERATORS.register(modEventBus);
         ClinkerBlockEntities.BLOCK_ENTITY_TYPES.register(modEventBus);
         ClinkerEntities.ENTITY_TYPES.register(modEventBus);
+        ClinkerMemoryModules.MEMORY_MODULE_TYPES.register(modEventBus);
         ClinkerFeatures.FEATURES.register(modEventBus);
         ClinkerParticles.PARTICLES.register(modEventBus);
         ClinkerDataAttachments.ATTACHMENT_TYPES.register(modEventBus);
+        ClinkerCreativeModeTabs.TABS.register(modEventBus);
 
         modEventBus.addListener(this::setup);
         modEventBus.addListener(this::doClientStuff);
-
-        NeoForge.EVENT_BUS.register(this);
     }
 
-    @SubscribeEvent
-	private void setup(final FMLCommonSetupEvent event) {
+    private void setup(final FMLCommonSetupEvent event) {
         DispenserBlock.registerBehavior(ClinkerItems.ORDNANCE.get(), new AbstractProjectileDispenseBehavior() {
             protected Projectile getProjectile(Level level, Position position, ItemStack item) {
-                return OrdnanceEntity.create(level, position.x(), position.y(), position.z());
+                return OldOrdnanceEntity.create(level, position.x(), position.y(), position.z());
             }
 
             @Override
@@ -79,8 +74,8 @@ public class Clinker {
         });
     }
 
-    @SubscribeEvent
     private void doClientStuff(final FMLClientSetupEvent event) {
+        ClinkerDebugRenderers.initialize();
         ClinkerBlockEntities.registerTileEntityRenderers();
 
         ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.LOCUST_LOG.get(), RenderType.cutout());

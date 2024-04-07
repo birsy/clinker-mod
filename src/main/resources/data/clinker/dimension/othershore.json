@@ -1,7 +1,7 @@
 {
   "type": "clinker:othershore",
   "generator": {
-    "type": "clinker:cave_chunk_generator",
+    "type": "clinker:test_chunk_generator",
     "settings": "clinker:othershore",
     "biome_source": {
       "type": "minecraft:fixed",

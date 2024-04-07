@@ -10,11 +10,12 @@
     "client.GameRendererMixin",
     "client.ClientLevelMixin",
     "client.GuiMixin",
-    "client.MinecraftMixin"
+    "client.DebugRendererMixin"
   ],
   "mixins": [
     "common.ServerLevelMixin",
     "common.EntityMixin",
-    "common.LevelMixin"
+    "common.LevelMixin",
+    "common.ItemEntityMixin"
   ]
 }

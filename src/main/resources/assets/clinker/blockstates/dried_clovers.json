@@ -1,0 +1,30 @@
+{
+    "variants": {
+        "": [
+            { "model": "clinker:block/fae_moss",
+                "y": 0
+            },
+            { "model": "clinker:block/fae_moss" ,
+                 "y": 90
+            },
+            { "model": "clinker:block/fae_moss" ,
+                "y": 180
+            },
+            { "model": "clinker:block/fae_moss" ,
+                "y": 270
+            },
+            { "model": "clinker:block/fae_moss_tall",
+                "y": 0
+            },
+            { "model": "clinker:block/fae_moss_tall" ,
+                "y": 90
+            },
+            { "model": "clinker:block/fae_moss_tall" ,
+                "y": 180
+            },
+            { "model": "clinker:block/fae_moss_tall" ,
+                "y": 270
+            }
+        ]
+    }
+}

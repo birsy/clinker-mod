@@ -1,5 +1,6 @@
 package birsy.clinker.common.world.block.plant;
 
+import birsy.clinker.common.world.block.AshLayerBlock;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -11,6 +12,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -25,11 +27,15 @@ public class DoubleMudReedsBlock extends DoublePlantBlock implements SimpleWater
 
     public DoubleMudReedsBlock(Properties properties) {
         super(properties);
+        this.registerDefaultState(this.stateDefinition.any().setValue(WATERLOGGED, false).setValue(HALF, DoubleBlockHalf.LOWER));
     }
 
     @Override
     protected boolean mayPlaceOn(BlockState pState, BlockGetter pLevel, BlockPos pPos) {
-        return pState.is(ClinkerBlocks.MUD.get()) || pState.is(ClinkerBlocks.BRIMSTONE.get());
+        return pState.is(ClinkerBlocks.MUD.get())
+                || pState.is(ClinkerBlocks.BRIMSTONE.get())
+                || pState.is(ClinkerBlocks.ASH.get())
+                || pState == ClinkerBlocks.ASH_LAYER.get().defaultBlockState().setValue(AshLayerBlock.LAYERS, 8);
     }
 
     public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {

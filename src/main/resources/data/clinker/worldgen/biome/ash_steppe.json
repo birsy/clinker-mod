@@ -34,5 +34,20 @@
   "spawners": {},
   "spawn_costs": {},
   "carvers": {},
-  "features": []
+  "features": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [
+      "clinker:mud_reeds_patch",
+      "clinker:surface_dried_clovers"
+    ],
+    []
+  ]
 }

@@ -1,8 +1,6 @@
 package birsy.clinker.common.world.item;
 
-import birsy.clinker.common.world.entity.OrdnanceEntity;
-import birsy.clinker.core.Clinker;
-import net.minecraft.server.level.ServerLevel;
+import birsy.clinker.common.world.entity.OldOrdnanceEntity;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
@@ -11,11 +9,6 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
-import net.neoforged.fml.common.Mod;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 //@Mod.EventBusSubscriber(modid = Clinker.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class OrdnanceItem extends Item {
@@ -29,7 +22,7 @@ public class OrdnanceItem extends Item {
         ItemStack itemstack = pPlayer.getItemInHand(pHand);
         pLevel.playSound(null, pPlayer.getX(), pPlayer.getY(), pPlayer.getZ(), SoundEvents.TRIDENT_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F / (pLevel.getRandom().nextFloat() * 0.4F + 0.8F));
         if (!pLevel.isClientSide) {
-            OrdnanceEntity entity = OrdnanceEntity.toss(pLevel, pPlayer);
+            OldOrdnanceEntity entity = OldOrdnanceEntity.toss(pLevel, pPlayer);
 
             pLevel.addFreshEntity(entity);
         }

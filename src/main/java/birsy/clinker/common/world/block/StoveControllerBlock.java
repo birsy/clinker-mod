@@ -1,7 +1,7 @@
 package birsy.clinker.common.world.block;
 
 import birsy.clinker.common.world.block.blockentity.StoveBlockEntity;
-import birsy.clinker.core.registry.ClinkerBlockEntities;
+import birsy.clinker.core.registry.entity.ClinkerBlockEntities;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

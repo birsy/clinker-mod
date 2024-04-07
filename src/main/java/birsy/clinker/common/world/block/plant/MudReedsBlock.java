@@ -1,8 +1,10 @@
 package birsy.clinker.common.world.block.plant;
 
+import birsy.clinker.common.world.block.AshLayerBlock;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -13,6 +15,7 @@ import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.AttachFace;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.material.FluidState;
@@ -30,6 +33,7 @@ public class MudReedsBlock extends BushBlock implements BonemealableBlock, IShea
 
     public MudReedsBlock(Properties properties) {
         super(properties);
+        this.registerDefaultState(this.stateDefinition.any().setValue(WATERLOGGED, false));
     }
 
     @Override
@@ -39,8 +43,10 @@ public class MudReedsBlock extends BushBlock implements BonemealableBlock, IShea
 
     @Override
     protected boolean mayPlaceOn(BlockState pState, BlockGetter pLevel, BlockPos pPos) {
-        return pState.is(ClinkerBlocks.MUD.get()) || pState.is(ClinkerBlocks.BRIMSTONE.get());
-    }
+        return pState.is(ClinkerBlocks.MUD.get())
+                || pState.is(ClinkerBlocks.BRIMSTONE.get())
+                || pState.is(ClinkerBlocks.ASH.get())
+                || pState == ClinkerBlocks.ASH_LAYER.get().defaultBlockState().setValue(AshLayerBlock.LAYERS, 8);    }
 
     public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
         return pState.is(ClinkerBlocks.SHORT_MUD_REEDS.get()) ? SHAPE_SHORT : SHAPE_TALL;

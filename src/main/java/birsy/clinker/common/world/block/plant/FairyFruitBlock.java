@@ -1,9 +1,7 @@
 package birsy.clinker.common.world.block.plant;
 
-import birsy.clinker.common.world.block.SarcophagusBlock;
 import birsy.clinker.common.world.block.blockentity.fairyfruit.FairyFruitBlockEntity;
-import birsy.clinker.common.world.block.blockentity.fairyfruit.FairyFruitSegment;
-import birsy.clinker.core.registry.ClinkerBlockEntities;
+import birsy.clinker.core.registry.entity.ClinkerBlockEntities;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -53,6 +51,11 @@ public class FairyFruitBlock extends BaseEntityBlock implements SimpleWaterlogge
         return blockState.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(blockState);
     }
 
+    @Override
+    public float getMaxHorizontalOffset() {
+        return super.getMaxHorizontalOffset();
+    }
+
     @Nullable
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         BlockState blockstate = super.getStateForPlacement(context);
@@ -80,7 +83,7 @@ public class FairyFruitBlock extends BaseEntityBlock implements SimpleWaterlogge
     }
 
     public boolean isBonemealSuccess(Level pLevel, RandomSource pRandom, BlockPos pPos, BlockState pState) {
-        if (pLevel.getBlockEntity(pPos) instanceof FairyFruitBlockEntity entity) return entity.canGrow;
+        //if (pLevel.getBlockEntity(pPos) instanceof FairyFruitBlockEntity entity) return entity.canGrow;
         return false;
     }
 
@@ -112,12 +115,6 @@ public class FairyFruitBlock extends BaseEntityBlock implements SimpleWaterlogge
 
     @Override
     public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
-        if (pLevel.getBlockEntity(pPos) instanceof FairyFruitBlockEntity entity) {
-            for (FairyFruitSegment segment : entity.segments) {
-                segment.addDestroyEffects();
-            }
-            //entity.remove();
-        }
         super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
     }
 

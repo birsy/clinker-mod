@@ -1,0 +1,16 @@
+{
+    "variants": {
+        "half=lower,lit=false": {
+            "model": "clinker:block/fulmina_flower_bottom"
+        },
+        "half=upper,lit=false": {
+            "model": "clinker:block/fulmina_flower_top"
+        },
+        "half=lower,lit=true": {
+            "model": "clinker:block/fulmina_flower_bottom_lit"
+        },
+        "half=upper,lit=true": {
+            "model": "clinker:block/fulmina_flower_top_lit"
+        }
+    }
+}

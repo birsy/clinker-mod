@@ -1,16 +1,16 @@
 package birsy.clinker.common.networking.packet.interactable;
 
 import birsy.clinker.common.networking.packet.ServerboundPacket;
-import birsy.clinker.common.world.level.interactable.InteractableAttachment;
+import birsy.clinker.common.world.level.interactable.InteractableLevelAttachment;
 import birsy.clinker.common.world.level.interactable.manager.ServerInteractableManager;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.network.NetworkEvent;
+
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 import java.util.UUID;
 
@@ -28,16 +28,16 @@ public class ServerboundInteractableLoadRequestPacket extends ServerboundPacket 
     }
 
     @Override
-    public void toBytes(FriendlyByteBuf buffer) {
+    public void write(FriendlyByteBuf buffer) {
         buffer.writeUUID(this.id);
         buffer.writeUtf(dimension.location().getNamespace());
         buffer.writeUtf(dimension.location().getPath());
     }
 
     @Override
-    public void run(NetworkEvent.Context context) {
-        ServerLevel level = InteractableAttachment.dimensionToServerLevel.get(dimension);
-        ServerInteractableManager manager = (ServerInteractableManager) InteractableAttachment.getInteractableManagerForLevel(level);
+    public void run(PlayPayloadContext context) {
+        ServerLevel level = InteractableLevelAttachment.dimensionToServerLevel.get(dimension);
+        ServerInteractableManager manager = (ServerInteractableManager) InteractableLevelAttachment.getInteractableManagerForLevel(level);
         if (manager.getInteractable(id) == null) return;
 
     }

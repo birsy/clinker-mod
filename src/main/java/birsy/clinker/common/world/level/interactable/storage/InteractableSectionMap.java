@@ -6,10 +6,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.core.SectionPos;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 
 public class InteractableSectionMap {
     private final Long2ObjectMap<InteractableLookup> lookupBySection = new Long2ObjectOpenHashMap<>();
@@ -17,6 +14,12 @@ public class InteractableSectionMap {
 
     public InteractableLookup getLookupInSection(SectionPos pos) {
         return lookupBySection.get(pos.asLong());
+    }
+
+    public Set<SectionPos> getSectionsWithInteractables() {
+        Set<SectionPos> set = new HashSet<>();
+        for (long key : lookupBySection.keySet()) set.add(SectionPos.of(key));
+        return set;
     }
 
     public Collection<Interactable> getInteractablesInSection(SectionPos pos) {
@@ -41,6 +44,11 @@ public class InteractableSectionMap {
         long key = sectionByInteractable.get(interactable.id);
         sectionByInteractable.remove(interactable.id);
         removeInteractableFromSection(interactable, SectionPos.of(key));
+    }
+
+    public void clear() {
+        lookupBySection.clear();
+        sectionByInteractable.clear();
     }
 
     protected boolean updateInteractablePosition(Interactable interactable) {

@@ -1,0 +1,7 @@
+{
+  "render_type": "cutout",
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "clinker:block/fulmina_flower/red_glowing_ashen_fulmina_flower_bottom"
+  }
+}

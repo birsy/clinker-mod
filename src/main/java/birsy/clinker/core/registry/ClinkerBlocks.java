@@ -1,10 +1,7 @@
 package birsy.clinker.core.registry;
 
 import birsy.clinker.common.world.block.*;
-import birsy.clinker.common.world.block.plant.CaveFigRootsBlock;
-import birsy.clinker.common.world.block.plant.DoubleMudReedsBlock;
-import birsy.clinker.common.world.block.plant.FairyFruitBlock;
-import birsy.clinker.common.world.block.plant.MudReedsBlock;
+import birsy.clinker.common.world.block.plant.*;
 import birsy.clinker.common.world.block.plant.aspen.SwampAspenLogBlock;
 import birsy.clinker.core.Clinker;
 import net.minecraft.core.Direction;
@@ -13,6 +10,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -38,8 +36,8 @@ public class ClinkerBlocks
 
 	public static final DeferredBlock<Block> BLANK_SARCOPHAGUS = createBlock("blank_sarcophagus", () -> new SarcophagusBlock(getBrimstoneProperties().noOcclusion()));
 	public static final DeferredBlock<Block> STOVE = createBlock("stove", () -> new StoveControllerBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BRICKS).sound(SoundType.NETHER_BRICKS)));
-	public static final DeferredBlock<Block> STOVE_DUMMY = createBlock("stove_dummy", () -> new StoveBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BRICKS).sound(SoundType.NETHER_BRICKS)));
-	public static final DeferredBlock<Block> STOVE_CHIMNEY = createBlock("stove_chimney", () -> new StoveChimneyBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BRICKS).sound(SoundType.NETHER_BRICKS).noOcclusion()));
+	public static final DeferredBlock<Block> STOVE_DUMMY = createBlockNoItem("stove_dummy", () -> new StoveBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BRICKS).sound(SoundType.NETHER_BRICKS)));
+	public static final DeferredBlock<Block> STOVE_CHIMNEY = createBlockNoItem("stove_chimney", () -> new StoveChimneyBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BRICKS).sound(SoundType.NETHER_BRICKS).noOcclusion()));
 
 	//Material Blocks
 	public static final DeferredBlock<Block> LEAD_BLOCK = createBlock("lead_block", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GRAY).strength(5.0f, 6.0f).sound(SoundType.NETHERITE_BLOCK)));
@@ -209,20 +207,29 @@ public class ClinkerBlocks
 	public static final DeferredBlock<Block> STRIPPED_SWAMP_ASPEN_LOG = createBlock("stripped_swamp_aspen_log", () -> new SwampAspenLogBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(2.0F).sound(SoundType.STEM).noOcclusion()));
 
 	//Plants
-	public static final DeferredBlock<Block> TALL_MUD_REEDS = createBlock("tall_mud_reeds", () -> new DoubleMudReedsBlock(BlockBehaviour.Properties.of().noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS)));
-	public static final DeferredBlock<Block> SHORT_MUD_REEDS = createBlock("short_mud_reeds", () -> new MudReedsBlock(BlockBehaviour.Properties.of().noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS)));
-	public static final DeferredBlock<Block> MUD_REEDS = createBlock("mud_reeds", () -> new MudReedsBlock(BlockBehaviour.Properties.of().noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS)));
+	public static final DeferredBlock<Block> TALL_MUD_REEDS = createBlock("tall_mud_reeds", () -> new DoubleMudReedsBlock(BlockBehaviour.Properties.of().noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS).offsetType(BlockBehaviour.OffsetType.XZ)));
+	public static final DeferredBlock<Block> SHORT_MUD_REEDS = createBlock("short_mud_reeds", () -> new MudReedsBlock(BlockBehaviour.Properties.of().noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS).offsetType(BlockBehaviour.OffsetType.XZ)));
+	public static final DeferredBlock<Block> MUD_REEDS = createBlock("mud_reeds", () -> new MudReedsBlock(BlockBehaviour.Properties.of().noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS).offsetType(BlockBehaviour.OffsetType.XZ)));
 
 	public static final DeferredBlock<Block> CAVE_FIG_STEM = createBlock("cave_fig_stem", () -> new HugeMushroomBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY).sound(SoundType.CALCITE)));
 	public static final DeferredBlock<Block> CAVE_FIG_ROOTS = createBlock("cave_fig_roots", () -> new CaveFigRootsBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY).noOcclusion().sound(SoundType.CALCITE)));
 
-	public static final DeferredBlock<Block> FAIRY_FRUIT_BLOCK = createBlock("fairy_fruit_block", () -> new FairyFruitBlock(BlockBehaviour.Properties.of().noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS).lightLevel((state) -> 10)));
+	public static final DeferredBlock<Block> FAIRY_FRUIT_BLOCK = createBlockNoItem("fairy_fruit_block", () -> new FairyFruitBlock(BlockBehaviour.Properties.of().noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS).offsetType(BlockBehaviour.OffsetType.XZ).lightLevel((state) -> 10)));
+
+	public static final DeferredBlock<Block> DRIED_CLOVERS = createBlock("dried_clovers", () -> new DriedCloversBlock(BlockBehaviour.Properties.of().noOcclusion().mapColor(MapColor.COLOR_GREEN).strength(0.1F).sound(SoundType.HANGING_ROOTS).replaceable().pushReaction(PushReaction.DESTROY)));
+
+	public static final DeferredBlock<Block> FULMINA_FLOWER = createBlock("fulmina_flower", () -> new FulminaFlowerBlock(BlockBehaviour.Properties.of().noOcclusion().mapColor(MapColor.COLOR_GRAY).strength(0.1F).sound(SoundType.HANGING_ROOTS).pushReaction(PushReaction.DESTROY).offsetType(BlockBehaviour.OffsetType.XZ).dynamicShape()));
 
 	//Special
 
 	public static DeferredBlock<Block> createBlock(String name, final Supplier<? extends Block> supplier) {
 		DeferredBlock<Block> block = BLOCKS.register(name, supplier);
 		BLOCK_ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties()));
+		return block;
+	}
+
+	public static DeferredBlock<Block> createBlockNoItem(String name, final Supplier<? extends Block> supplier) {
+		DeferredBlock<Block> block = BLOCKS.register(name, supplier);
 		return block;
 	}
 }

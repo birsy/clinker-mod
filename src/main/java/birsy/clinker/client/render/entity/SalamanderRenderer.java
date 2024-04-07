@@ -1,7 +1,7 @@
 package birsy.clinker.client.render.entity;
 
 import birsy.clinker.client.render.entity.model.AbstractSalamanderModel;
-import birsy.clinker.common.world.entity.salamander.AbstractSalamanderPartEntity;
+import birsy.clinker.common.world.entity.salamanderOLD.AbstractSalamanderPartEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;

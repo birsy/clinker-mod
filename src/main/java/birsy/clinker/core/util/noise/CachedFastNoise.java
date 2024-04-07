@@ -22,7 +22,7 @@ public class CachedFastNoise {
 
     public double get(double x, double y, double z) {
         double n = noise.GetNoise(x, y, z);
-        cache.put(new FastNoiseLite.Vector3(x, y, z), n);
+        //cache.put(new FastNoiseLite.Vector3(x, y, z), n);
         return n;
     }
 }
