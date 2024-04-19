@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.entity.gnomad.ai.behaviors;
+package birsy.clinker.common.world.entity.gnomad.gnomind.behaviors;
 
 import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
@@ -47,7 +47,7 @@ public class InitiateRelaxWithSquad<E extends GnomadEntity> extends ExtendedBeha
 
         BrainUtils.setForgettableMemory(entity, ClinkerMemoryModules.RELAXATION_SPOT.get(), relaxationSpot, 1800);
         for (GnomadEntity gnomadEntity : BrainUtils.getMemory(entity, ClinkerMemoryModules.GNOMADS_IN_SQUAD.get())) {
-            if (entity.getRandom().nextFloat() < this.proportion) {
+            if (!BrainUtils.hasMemory(gnomadEntity, ClinkerMemoryModules.RELAXATION_SPOT.get()) && gnomadEntity.getRandom().nextFloat() < this.proportion) {
                 BrainUtils.setForgettableMemory(gnomadEntity, ClinkerMemoryModules.RELAXATION_SPOT.get(), relaxationSpot, 1800);
             }
         }

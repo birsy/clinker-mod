@@ -1,13 +1,11 @@
-package birsy.clinker.common.world.entity.gnomad.ai.behaviors;
+package birsy.clinker.common.world.entity.gnomad.gnomind.behaviors;
 
-import birsy.clinker.common.world.entity.ai.SetWalkTarget;
 import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
 import birsy.clinker.common.world.entity.gnomad.GnomadSupplyDepot;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.memory.WalkTarget;

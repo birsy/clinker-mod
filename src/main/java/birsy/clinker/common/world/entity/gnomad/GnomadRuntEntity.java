@@ -3,10 +3,11 @@ package birsy.clinker.common.world.entity.gnomad;
 import birsy.clinker.common.world.entity.ai.SetRandomEntityLookTarget;
 import birsy.clinker.common.world.entity.ai.SetWalkTarget;
 import birsy.clinker.common.world.entity.ai.SetWalkTargetToEntity;
-import birsy.clinker.common.world.entity.gnomad.ai.behaviors.*;
-import birsy.clinker.common.world.entity.gnomad.ai.sensors.GnomadSquadSensor;
-import birsy.clinker.common.world.entity.gnomad.ai.sensors.SupplyDepotSensor;
-import birsy.clinker.common.world.entity.gnomad.ai.sensors.TargetSupplyDepotSensor;
+import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.*;
+import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.GnomadSquadSensor;
+import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.SupplyDepotSensor;
+import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.TargetSupplyDepotSensor;
+import birsy.clinker.common.world.entity.gnomad.squad.ResupplyTask;
 import birsy.clinker.core.registry.ClinkerTags;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import com.mojang.datafixers.util.Pair;
@@ -16,20 +17,24 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.behavior.SetWalkTargetFromBlockMemory;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.level.Level;
 import net.tslat.smartbrainlib.api.SmartBrainOwner;
 import net.tslat.smartbrainlib.api.core.BrainActivityGroup;
 import net.tslat.smartbrainlib.api.core.SmartBrainProvider;
+import net.tslat.smartbrainlib.api.core.behaviour.DelayedBehaviour;
 import net.tslat.smartbrainlib.api.core.behaviour.FirstApplicableBehaviour;
 import net.tslat.smartbrainlib.api.core.behaviour.OneRandomBehaviour;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.attack.AnimatableMeleeAttack;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.look.LookAtTarget;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.misc.Idle;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.misc.ReactToUnreachableTarget;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.move.AvoidEntity;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.move.WalkOrRunToWalkTarget;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.path.SetRandomWalkTarget;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.path.SetWalkTargetToAttackTarget;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.target.InvalidateAttackTarget;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.target.SetPlayerLookTarget;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.target.SetRandomLookTarget;
@@ -81,27 +86,8 @@ public class GnomadRuntEntity extends GnomadEntity implements SmartBrainOwner<Gn
                         &&  entity instanceof LivingEntity
                         && !entity.isDeadOrDying()
                         &&  entity.attackable())
-                        .startCondition((runt) -> true), // avoid anything that isnt a gnomad, unless we have a bomb.
-                new FirstApplicableBehaviour<GnomadRuntEntity>( // gather supplies if requested to!
-//                    new InvalidateResupplyTarget<>(), // if our target is dead or doesnt exist or
-//                    new ReactToUnreachableTarget<>()  // we can't reach the supply depot or the supply target, forget about them.
-//                            .reaction((entity, towering) -> {
-//                                this.setCarryingSuppliesForDelivery(false); // get rid of any supplies you're carrying, too.
-//                                BrainUtils.clearMemories(entity, ClinkerMemoryModules.SUPPLY_TARGET.get(), ClinkerMemoryModules.NEARBY_SUPPLY_DEPOTS.get());
-//                            }),
-//                    new DeliverSupplies<>(),
-                    new SetWalkTargetToEntity<>() // walk to the entity
-                            .entitySelector(entity -> BrainUtils.getMemory(entity, ClinkerMemoryModules.SUPPLY_TARGET.get()))
-                            .startCondition(entity -> BrainUtils.hasMemory(entity, ClinkerMemoryModules.SUPPLY_TARGET.get())),
-//                    new GatherSuppliesForDelivery<>(), // try to gather supplies.
-                    new SetWalkTarget<>() { // try to move towards our current supply depot, if we have one.
-                        private static final List<Pair<MemoryModuleType<?>, MemoryStatus>> MEMORY_REQUIREMENTS = ObjectArrayList.of(
-                            Pair.of(MemoryModuleType.WALK_TARGET, MemoryStatus.REGISTERED),
-                            Pair.of(ClinkerMemoryModules.SUPPLY_TARGET.get(), MemoryStatus.VALUE_PRESENT),
-                            Pair.of(ClinkerMemoryModules.NEARBY_SUPPLY_DEPOTS.get(), MemoryStatus.VALUE_PRESENT));
-                        @Override protected List<Pair<MemoryModuleType<?>, MemoryStatus>> getMemoryRequirements() {return MEMORY_REQUIREMENTS; } }
-                        .position(entity -> BrainUtils.getMemory(entity, ClinkerMemoryModules.NEARBY_SUPPLY_DEPOTS.get()).get(0).getDepotLocation()))
-                .startCondition(entity -> BrainUtils.hasMemory(entity, ClinkerMemoryModules.SUPPLY_TARGET.get()))
+                .startCondition((runt) -> true) // avoid anything that isnt a gnomad, unless we have a bomb.
+
         );
     }
 
@@ -139,8 +125,8 @@ public class GnomadRuntEntity extends GnomadEntity implements SmartBrainOwner<Gn
     @Override
     public BrainActivityGroup<GnomadRuntEntity> getFightTasks() { // these are the tasks that handle fighting
         return BrainActivityGroup.fightTasks(
-                new InvalidateAttackTarget<>()); // Cancel fighting if the target is no longer valid
-                //new SetWalkTargetToAttackTarget<>(),      // Set the walk target to the attack target
-                //new AnimatableMeleeAttack<>(0)); // Melee attack the target if close enough
+                new InvalidateAttackTarget<>(), // Cancel fighting if the target is no longer valid
+                new SetWalkTargetToAttackTarget<>(),      // Set the walk target to the attack target
+                new AnimatableMeleeAttack<>(0)); // Melee attack the target if close enough
     }
 }

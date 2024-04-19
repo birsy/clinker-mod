@@ -1,6 +1,6 @@
-package birsy.clinker.common.world.entity.gnomad.ai.behaviors;
+package birsy.clinker.common.world.entity.gnomad.gnomind.behaviors;
 
-import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
+import birsy.clinker.common.world.entity.gnomad.GnomadRuntEntity;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -9,7 +9,7 @@ import net.minecraft.world.entity.ai.memory.MemoryStatus;
 
 import java.util.List;
 
-public class GatherSuppliesForDelivery {} /*<E extends GnomadEntity & GnomadSupplyDeliverer> extends GatherSupplies<E> {
+public class GatherSuppliesForDelivery <E extends GnomadRuntEntity> extends GatherSupplies<E> {
     private static final List<Pair<MemoryModuleType<?>, MemoryStatus>> MEMORY_REQUIREMENTS = ObjectArrayList.of(
             Pair.of(ClinkerMemoryModules.SUPPLY_TARGET.get(), MemoryStatus.VALUE_PRESENT),
             Pair.of(ClinkerMemoryModules.TARGETED_SUPPLY_DEPOT.get(), MemoryStatus.VALUE_PRESENT),
@@ -24,6 +24,6 @@ public class GatherSuppliesForDelivery {} /*<E extends GnomadEntity & GnomadSupp
 
     @Override
     public void gatherSupplies(E entity) {
-        entity.setCarryingSuppliesForDelivery(true);
+        //entity.setCarryingSuppliesForDelivery(true);
     }
-}*/
+}

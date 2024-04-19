@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.entity.gnomad.ai;
+package birsy.clinker.common.world.entity.gnomad.gnomind;
 
 import birsy.clinker.common.world.entity.gnomad.OldGnomadAxemanEntity;
 import birsy.clinker.core.registry.entity.ClinkerEntities;

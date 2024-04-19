@@ -1,20 +1,4 @@
-package birsy.clinker.common.world.entity.gnomad.ai.behaviors;
-
-import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
-import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
-import com.mojang.datafixers.util.Pair;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.ai.behavior.EntityTracker;
-import net.minecraft.world.entity.ai.memory.MemoryModuleType;
-import net.minecraft.world.entity.ai.memory.MemoryStatus;
-import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.phys.HitResult;
-import net.tslat.smartbrainlib.api.core.behaviour.DelayedBehaviour;
-import net.tslat.smartbrainlib.util.BrainUtils;
-
-import java.util.List;
-import java.util.function.Function;
+package birsy.clinker.common.world.entity.gnomad.gnomind.behaviors;
 
 public class DeliverSupplies {} /*<E extends GnomadEntity & GnomadSupplyDeliverer> extends DelayedBehaviour<E> {
     private static final List<Pair<MemoryModuleType<?>, MemoryStatus>> MEMORY_REQUIREMENTS = ObjectArrayList.of(

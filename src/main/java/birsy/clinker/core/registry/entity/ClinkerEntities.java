@@ -4,6 +4,7 @@ import birsy.clinker.client.render.entity.*;
 import birsy.clinker.client.render.entity.model.*;
 import birsy.clinker.common.world.entity.*;
 import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
+import birsy.clinker.common.world.entity.gnomad.GnomadSoldierEntity;
 import birsy.clinker.common.world.entity.mold.MoldEntity;
 import birsy.clinker.common.world.entity.salamander.NewSalamanderEntity;
 import birsy.clinker.common.world.entity.salamanderOLD.SalamanderBodyEntity;
@@ -58,8 +59,8 @@ public class ClinkerEntities {
                     .sized(1.0f, 1.5f)
                     .build(new ResourceLocation(Clinker.MOD_ID, "gnomad_axeman").toString()));
 
-    public static final Supplier<EntityType<GnomadEntity>> GNOMAD = ENTITY_TYPES.register("gnomad", () ->
-            EntityType.Builder.of(GnomadEntity::new, MobCategory.MONSTER)
+    public static final Supplier<EntityType<GnomadSoldierEntity>> GNOMAD_SOLDIER = ENTITY_TYPES.register("gnomad_soldier", () ->
+            EntityType.Builder.of(GnomadSoldierEntity::new, MobCategory.MONSTER)
                     .sized(1.0f, 1.5f)
                     .build(new ResourceLocation(Clinker.MOD_ID, "gnomad").toString()));
 
@@ -95,7 +96,9 @@ public class ClinkerEntities {
         event.put(SALAMANDER.get(), NewSalamanderEntity.createAttributes().build());
         event.put(SEA_HAG.get(), SeaHagEntity.createAttributes().build());
         event.put(GNOMAD_AXEMAN.get(), OldGnomadAxemanEntity.createAttributes().build());
-        event.put(GNOMAD.get(), GnomadEntity.createAttributes().build());
+
+        event.put(GNOMAD_SOLDIER.get(), GnomadEntity.createAttributes().build());
+
         event.put(LUMBERING_ASPEN.get(), LumberingAspenEntity.createAttributes().build());
         event.put(FAE_URN.get(), UrnEntity.createAttributes().build());
         event.put(MOLD.get(), MoldEntity.createAttributes().build());
@@ -118,7 +121,7 @@ public class ClinkerEntities {
         event.registerEntityRenderer(ClinkerEntities.ORDNANCE.get(), OrdnanceRenderer::new);
         event.registerEntityRenderer(ClinkerEntities.WARHOOK.get(), WarhookRenderer::new);
 
-        event.registerEntityRenderer(ClinkerEntities.GNOMAD.get(), NewGnomadRenderer::new);
+        event.registerEntityRenderer(ClinkerEntities.GNOMAD_SOLDIER.get(), NewGnomadRenderer::new);
 
         event.registerEntityRenderer(ClinkerEntities.MOLD.get(), MoldRenderer::new);
     }

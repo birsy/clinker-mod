@@ -2,6 +2,7 @@ package birsy.clinker.common.networking;
 
 import birsy.clinker.common.networking.packet.*;
 import birsy.clinker.common.networking.packet.debug.GnomadSquadDebugPacket;
+import birsy.clinker.common.networking.packet.debug.GnomadSquadRemovalDebugPacket;
 import birsy.clinker.common.networking.packet.interactable.*;
 import birsy.clinker.common.networking.packet.workstation.ClientboundWorkstationChangeBlockPacket;
 import birsy.clinker.common.networking.packet.workstation.ClientboundWorkstationLoadPacket;
@@ -52,6 +53,7 @@ public class ClinkerPacketHandler {
         registrar.play(createId(ClientboundMoldGrowthPacket.class), ClientboundMoldGrowthPacket::new, ClientboundMoldGrowthPacket::handle);
 
         registrar.play(createId(GnomadSquadDebugPacket.class), GnomadSquadDebugPacket::new, GnomadSquadDebugPacket::handle);
+        registrar.play(createId(GnomadSquadRemovalDebugPacket.class), GnomadSquadRemovalDebugPacket::new, GnomadSquadRemovalDebugPacket::handle);
 
         Clinker.LOGGER.info("REGISTERED CLINKER PACKETS!");
     }

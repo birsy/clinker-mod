@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.entity.gnomad.ai.behaviors;
+package birsy.clinker.common.world.entity.gnomad.gnomind.behaviors;
 
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.world.entity.PathfinderMob;

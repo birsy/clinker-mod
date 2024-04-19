@@ -1,11 +1,9 @@
-package birsy.clinker.common.world.entity.gnomad.ai.sensors;
+package birsy.clinker.common.world.entity.gnomad.gnomind.sensors;
 
-import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
 import birsy.clinker.common.world.entity.gnomad.GnomadSupplyDepot;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import birsy.clinker.core.registry.entity.ClinkerSensors;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.minecraft.core.SectionPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
@@ -13,7 +11,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.sensing.SensorType;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.tslat.smartbrainlib.api.core.sensor.ExtendedSensor;
 import net.tslat.smartbrainlib.api.core.sensor.vanilla.NearbyLivingEntitySensor;
 import net.tslat.smartbrainlib.object.SquareRadius;

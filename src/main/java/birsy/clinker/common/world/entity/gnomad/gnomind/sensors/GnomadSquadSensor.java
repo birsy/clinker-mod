@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.entity.gnomad.ai.sensors;
+package birsy.clinker.common.world.entity.gnomad.gnomind.sensors;
 
 import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
@@ -17,11 +17,11 @@ import net.tslat.smartbrainlib.util.EntityRetrievalUtil;
 import java.util.Comparator;
 import java.util.List;
 
-public class GnomadSquadSensor<E extends GnomadEntity> extends NearbyLivingEntitySensor<E> {
+public class GnomadSquadSensor<E extends GnomadEntity> extends ExtendedSensor<E> {
     private static final List<MemoryModuleType<?>> MEMORIES = ObjectArrayList.of(ClinkerMemoryModules.GNOMADS_IN_SQUAD.get());
 
     public GnomadSquadSensor() {
-        this.setScanRate(entity -> 200);
+        this.setScanRate(entity -> 20);
     }
 
     @Override
@@ -36,15 +36,7 @@ public class GnomadSquadSensor<E extends GnomadEntity> extends NearbyLivingEntit
 
     @Override
     protected void doTick(ServerLevel level, E entity) {
-        SquareRadius radius = this.radius;
-
-        if (radius == null) {
-            double dist = entity.getAttributeValue(Attributes.FOLLOW_RANGE);
-            radius = new SquareRadius(dist, dist);
-        }
-
-        List<GnomadEntity> entities = EntityRetrievalUtil.getEntities(level, entity.getBoundingBox().inflate(radius.xzRadius(), radius.yRadius(), radius.xzRadius()), obj -> obj instanceof GnomadEntity gnomad && predicate().test(gnomad, entity));
-        entities.sort(Comparator.comparingDouble(squadmate -> entity.distanceToSqr(squadmate)));
-        BrainUtils.setMemory(entity, ClinkerMemoryModules.GNOMADS_IN_SQUAD.get(), entities);
+        List<GnomadEntity> squadMates = entity.squad.getMembersImmutable();
+        BrainUtils.setMemory(entity, ClinkerMemoryModules.GNOMADS_IN_SQUAD.get(), squadMates);
     }
 }

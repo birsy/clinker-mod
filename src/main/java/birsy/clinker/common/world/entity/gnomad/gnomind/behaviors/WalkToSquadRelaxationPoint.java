@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.entity.gnomad.ai.behaviors;
+package birsy.clinker.common.world.entity.gnomad.gnomind.behaviors;
 
 import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;

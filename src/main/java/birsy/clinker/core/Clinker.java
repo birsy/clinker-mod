@@ -8,6 +8,7 @@ import birsy.clinker.core.registry.*;
 import birsy.clinker.core.registry.entity.ClinkerBlockEntities;
 import birsy.clinker.core.registry.entity.ClinkerEntities;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
+import birsy.clinker.core.registry.entity.ClinkerSensors;
 import birsy.clinker.core.registry.world.ClinkerFeatures;
 import birsy.clinker.core.registry.world.ClinkerWorld;
 import net.minecraft.client.Minecraft;
@@ -43,8 +44,11 @@ public class Clinker {
         ClinkerBlocks.BLOCK_ITEMS.register(modEventBus);
         ClinkerWorld.CHUNK_GENERATORS.register(modEventBus);
         ClinkerBlockEntities.BLOCK_ENTITY_TYPES.register(modEventBus);
-        ClinkerEntities.ENTITY_TYPES.register(modEventBus);
+
         ClinkerMemoryModules.MEMORY_MODULE_TYPES.register(modEventBus);
+        ClinkerSensors.SENSOR_TYPES.register(modEventBus);
+        ClinkerEntities.ENTITY_TYPES.register(modEventBus);
+
         ClinkerFeatures.FEATURES.register(modEventBus);
         ClinkerParticles.PARTICLES.register(modEventBus);
         ClinkerDataAttachments.ATTACHMENT_TYPES.register(modEventBus);

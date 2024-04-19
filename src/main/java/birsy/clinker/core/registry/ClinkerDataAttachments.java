@@ -11,5 +11,6 @@ import java.util.function.Supplier;
 public class ClinkerDataAttachments {
     public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, Clinker.MOD_ID);
 
-
+    public static final Supplier<AttachmentType<Byte>> CHAIN_LIGHTNING = ATTACHMENT_TYPES.register(
+            "chain_lightning", () -> AttachmentType.builder(() -> 0).serialize(Codec.BYTE).build());
 }

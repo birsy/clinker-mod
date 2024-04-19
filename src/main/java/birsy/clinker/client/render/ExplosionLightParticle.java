@@ -44,6 +44,8 @@ public class ExplosionLightParticle extends Particle {
 
     @Override
     public void render(VertexConsumer p_107261_, Camera p_107262_, float partialTicks) {
+        if (this.light == null) return;
+
         float brightness = (0.6F - ((float)this.age + partialTicks - 1.0F) * 0.25F * 0.5F) * 10;
         light.setColor(brightness, brightness * 0.9F, brightness * 0.5F);
 

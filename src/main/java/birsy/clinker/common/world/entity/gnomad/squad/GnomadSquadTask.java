@@ -8,11 +8,12 @@ public abstract class GnomadSquadTask {
     protected int tickRate = 0;
 
     protected int ticksExisted;
-    protected final int timeOutTime;
+    protected int timeOutTime;
 
     boolean shouldRemove = false;
 
     private boolean initialized = false;
+    private boolean assigned = false;
     protected GnomadEntity assignee;
 
     protected GnomadSquadTask(int timeOutTime) {
@@ -32,7 +33,7 @@ public abstract class GnomadSquadTask {
         if (this.ticksExisted > this.timeOutTime) {
             this.fail(GnomadSquadTask.FailureType.TIMED_OUT);
         }
-        if (this.assignee != null && (this.assignee.isDeadOrDying() || this.assignee.isRemoved())) {
+        if (this.assigned && (this.assignee == null || this.assignee.isDeadOrDying() || this.assignee.isRemoved())) {
             this.fail(GnomadSquadTask.FailureType.ASSIGNEE_DIED);
         }
     }
@@ -51,6 +52,7 @@ public abstract class GnomadSquadTask {
 
     public void assign(GnomadEntity assignee) {
         this.assignee = assignee;
+        this.assigned = true;
     }
 
     public GnomadEntity getAssignee() {
@@ -66,6 +68,6 @@ public abstract class GnomadSquadTask {
     }
 
     public enum FailureType {
-        TIMED_OUT, ASSIGNEE_DIED, ASSIGNER_DIED;
+        TIMED_OUT, SQUAD_DISBANDED, ASSIGNEE_DIED, ASSIGNER_DIED;
     }
 }

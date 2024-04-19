@@ -1,6 +1,6 @@
 package birsy.clinker.common.world.entity.gnomad;
 
-import birsy.clinker.common.world.entity.gnomad.ai.GnomadAxemanAi;
+import birsy.clinker.common.world.entity.gnomad.gnomind.GnomadAxemanAi;
 import birsy.clinker.core.registry.ClinkerItems;
 import birsy.clinker.core.util.MathUtils;
 import com.google.common.collect.ImmutableList;

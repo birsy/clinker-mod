@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.entity.gnomad.ai.sensors;
+package birsy.clinker.common.world.entity.gnomad.gnomind.sensors;
 
 import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
 import birsy.clinker.common.world.entity.gnomad.GnomadSupplyDepot;
@@ -36,6 +36,7 @@ public class TargetSupplyDepotSensor<E extends GnomadEntity> extends NearbyLivin
     @Override
     protected void doTick(ServerLevel level, E entity) {
         List<GnomadSupplyDepot> depots = BrainUtils.getMemory(entity, ClinkerMemoryModules.NEARBY_SUPPLY_DEPOTS.get());
+        if (depots == null) return;
         for (GnomadSupplyDepot depot : depots) {
             // try to create a path to the depots
             // if one succeeds, set that to be the target

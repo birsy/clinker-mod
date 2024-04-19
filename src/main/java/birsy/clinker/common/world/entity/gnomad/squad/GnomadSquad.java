@@ -18,6 +18,7 @@ public class GnomadSquad {
     public boolean markedForRemoval = false;
     List<GnomadEntity> members;
     List<GnomadSquadTask> tasks;
+    List<GnomadSquadTask> pendingTasks;
 
     public static final float SQUAD_SEARCH_RADIUS = 10.0F;
 
@@ -26,12 +27,13 @@ public class GnomadSquad {
         this.level = level;
         this.members = new ArrayList<>();
         this.tasks = new ArrayList<>();
+        this.pendingTasks = new ArrayList<>();
     }
 
     public void tick() {
         this.updateTasks();
-        this.cullDeadOrRemovedMembers();
         this.searchForNewMembers(10.0F);
+        this.cullDeadOrRemovedMembers();
 
         if (ClinkerDebugRenderers.shouldRender) ClinkerPacketHandler.sendToAllClients(new GnomadSquadDebugPacket(this));
     }
@@ -42,6 +44,8 @@ public class GnomadSquad {
             GnomadEntity member = memberIterator.next();
             if (member == null || member.isRemoved() || member.isDeadOrDying() ) memberIterator.remove();
         }
+
+        if (this.members.size() <= 1) this.markedForRemoval = true;
     }
 
     private void updateTasks() {
@@ -55,6 +59,9 @@ public class GnomadSquad {
             task.attemptInvalidate();
 
             if (task.shouldRemove) {
+                if (pendingTasks.contains(task)) {
+                    pendingTasks.remove(task);
+                }
                 taskIterator.remove();
                 continue;
             }
@@ -66,10 +73,14 @@ public class GnomadSquad {
                 task.tick();
             }
         }
+
+        this.pendingTasks.sort(Comparator.comparingInt((GnomadSquadTask) -> GnomadSquadTask.remainingTime()));
     }
 
     private int searchIndex = 0;
     private void searchForNewMembers(double searchRadius) {
+        if (this.markedForRemoval) return;
+
         this.searchIndex = (this.searchIndex + 1) % (this.members.size() - 1);
         this.searchForNewMembersAroundGnomad(this.members.get(this.searchIndex), searchRadius);
     }
@@ -138,6 +149,12 @@ public class GnomadSquad {
 
     public void postTask(GnomadSquadTask task) {
         this.tasks.add(task);
+    }
+
+    public void assignTask(GnomadEntity entity, GnomadSquadTask task) {
+        entity.currentTask = task;
+        task.assign(entity);
+        this.pendingTasks.remove(task);
     }
 
     public List<GnomadSquadTask> getTasksImmutable() {

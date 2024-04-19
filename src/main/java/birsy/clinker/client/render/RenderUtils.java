@@ -2,6 +2,8 @@ package birsy.clinker.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
@@ -40,7 +42,7 @@ public class RenderUtils {
 
 
     public static void drawFaceBetweenPoints(VertexConsumer consumer, PoseStack stack, float width, Vec3 pos1, Vector3f tangent1, Vector3f normal1, Vector3f biTangent1, int packedLight1, int overlay1, float u1, float v1,
-                                             Vec3 pos2, Vector3f tangent2, Vector3f normal2, Vector3f biTangent2, int packedLight2, int overlay2, float u2, float v2) {
+                                                                                                    Vec3 pos2, Vector3f tangent2, Vector3f normal2, Vector3f biTangent2, int packedLight2, int overlay2, float u2, float v2) {
         Matrix4f pose = stack.last().pose();
         Matrix3f normal = stack.last().normal();
         consumer.vertex(pose, (float) (pos1.x() + biTangent1.x() * width), (float) (pos1.y + biTangent1.y() * width), (float) (pos1.z() + biTangent1.z() * width))
@@ -68,6 +70,40 @@ public class RenderUtils {
                 .normal(normal, normal1.x(), normal1.y(), normal1.z())
                 .endVertex();
     }
+
+    public static void drawFaceBetweenPoints(VertexConsumer consumer, PoseStack stack, float width, Vec3 pos1, Vector3f tangent1, Vector3f normal1, Vector3f biTangent1, float u1, float v1,
+                                             Vec3 pos2, Vector3f tangent2, Vector3f normal2, Vector3f biTangent2, float u2, float v2,
+                                             float r, float g, float b, float a) {
+        int overlay = OverlayTexture.NO_OVERLAY;
+        int light = LightTexture.FULL_BRIGHT;
+        Matrix4f pose = stack.last().pose();
+        Matrix3f normal = stack.last().normal();
+        consumer.vertex(pose, (float) (pos1.x() + biTangent1.x() * width), (float) (pos1.y + biTangent1.y() * width), (float) (pos1.z() + biTangent1.z() * width))
+                .color(r,g,b,a)
+                .uv(u1, v1)
+                .overlayCoords(overlay).uv2(light)
+                .normal(normal, normal1.x(), normal1.y(), normal1.z())
+                .endVertex();
+        consumer.vertex(pose, (float) (pos2.x() + biTangent2.x() * width), (float) (pos2.y + biTangent2.y() * width), (float) (pos2.z() + biTangent2.z() * width))
+                .color(r,g,b,a)
+                .uv(u1, v2)
+                .overlayCoords(overlay).uv2(light)
+                .normal(normal, normal2.x(), normal2.y(), normal2.z())
+                .endVertex();
+        consumer.vertex(pose, (float) (pos2.x() - biTangent2.x() * width), (float) (pos2.y - biTangent2.y() * width), (float) (pos2.z() - biTangent2.z() * width))
+                .color(r,g,b,a)
+                .uv(u2, v2)
+                .overlayCoords(overlay).uv2(light)
+                .normal(normal, normal2.x(), normal2.y(), normal2.z())
+                .endVertex();
+        consumer.vertex(pose, (float) (pos1.x() - biTangent1.x() * width), (float) (pos1.y - biTangent1.y() * width), (float) (pos1.z() - biTangent1.z() * width))
+                .color(r,g,b,a)
+                .uv(u2, v1)
+                .overlayCoords(overlay).uv2(light)
+                .normal(normal, normal1.x(), normal1.y(), normal1.z())
+                .endVertex();
+    }
+
 
     public static void drawFaceBetweenPoints(VertexConsumer consumer, PoseStack stack, float width, Vec3 pos1, Vector3f tangent1, Vector3f normal1, int packedLight1, int overlay1, float u1, float v1,
                                                                                                     Vec3 pos2, Vector3f tangent2, Vector3f normal2, int packedLight2, int overlay2, float u2, float v2) {

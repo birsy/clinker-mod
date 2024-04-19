@@ -143,7 +143,7 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
 
                 boolean isFancy = star < (0.1F * starCount);
 
-                this.starInfo.add(new Star(sDist, sRad, xRot, yRot, zRot, red, green, blue, alpha, sHeight, dFactor, isFancy));
+                this.starInfo.add(new Star(sRad, sDist, xRot, yRot, zRot, red, green, blue, alpha, sHeight, dFactor, isFancy));
             }
 
             this.starInfo.sort(Comparator.comparingDouble(star -> star.distance));
@@ -275,7 +275,6 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
             RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
             RenderSystem.setShaderTexture(0, STAR_TEXTURE);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-            bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
             for (int starIndex = starStartIndex; starIndex >= 0; starIndex--) {
                 Star star = stars.get(starIndex);
 
@@ -285,10 +284,11 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
                     starStartIndex = starIndex;
                     break;
                 }
+
             }
-            BufferUploader.drawWithShader(bufferbuilder.end());
 
             poseStack.popPose();
+
             RenderSystem.setShaderTexture(0, NOISE_TEXTURE);
             renderCloudRing(poseStack, bufferbuilder, ringResolution, rRadius, ringHeight, 20.0F, 0.0F, ringDist, ringColor.x(), ringColor.y(), ringColor.z(), alpha * 0.8F, ringColor.x(), ringColor.y(), ringColor.z(), 1.0F);
             poseStack.popPose();
@@ -331,9 +331,14 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
         }
         BufferUploader.drawWithShader(bufferbuilder.end());
 
+
+
         poseStack.popPose();
 
         poseStack.popPose();
+
+
+
 
         RenderSystem.depthMask(true);
         RenderSystem.setProjectionMatrix(projMatrix, VertexSorting.DISTANCE_TO_ORIGIN);
@@ -403,7 +408,7 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
         float distanceFactor = star.distanceFactor;
 
         float distance = star.distance;
-        float radius = star.size * (1 - distanceFactor) * (isFancy ? 3.0F : 1.0F) * 1.1F;
+        float radius = star.size * (1 - distanceFactor) * (star.fancy ? 3.0F : 1.0F) * 1.1F;
         float height = star.height;
 
         float xRot = star.xRot;
@@ -424,17 +429,22 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
 
         Matrix4f matrix = poseStack.last().pose();
 
+        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
+
+
         if (star.fancy) {
             bufferBuilder.vertex(matrix, -radius, distance, -radius).color(red, green, blue, alpha).uv(0, 0).endVertex();
             bufferBuilder.vertex(matrix,  radius, distance, -radius).color(red, green, blue, alpha).uv(1, 0).endVertex();
             bufferBuilder.vertex(matrix,  radius, distance,  radius).color(red, green, blue, alpha).uv(1, 1).endVertex();
             bufferBuilder.vertex(matrix, -radius, distance,  radius).color(red, green, blue, alpha).uv(0, 1).endVertex();
         } else {
-            bufferBuilder.vertex(matrix, -radius, distance, -radius).color(red, green, blue, alpha).uv(0, 0).endVertex();
-            bufferBuilder.vertex(matrix,  radius, distance, -radius).color(red, green, blue, alpha).uv(1, 0).endVertex();
-            bufferBuilder.vertex(matrix,  radius, distance,  radius).color(red, green, blue, alpha).uv(1, 1).endVertex();
-            bufferBuilder.vertex(matrix, -radius, distance,  radius).color(red, green, blue, alpha).uv(0, 1).endVertex();
+            float a = 0.4F, b = 0.4F;
+            bufferBuilder.vertex(matrix, -radius, distance, -radius).color(red, green, blue, alpha).uv(a, a).endVertex();
+            bufferBuilder.vertex(matrix,  radius, distance, -radius).color(red, green, blue, alpha).uv(b, a).endVertex();
+            bufferBuilder.vertex(matrix,  radius, distance,  radius).color(red, green, blue, alpha).uv(b, b).endVertex();
+            bufferBuilder.vertex(matrix, -radius, distance,  radius).color(red, green, blue, alpha).uv(a, b).endVertex();
         }
+        BufferUploader.drawWithShader(bufferBuilder.end());
 
         poseStack.popPose();
     }

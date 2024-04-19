@@ -1,8 +1,8 @@
 package birsy.clinker.core.registry.entity;
 
-import birsy.clinker.common.world.entity.gnomad.ai.sensors.GnomadSquadSensor;
-import birsy.clinker.common.world.entity.gnomad.ai.sensors.TargetSupplyDepotSensor;
-import birsy.clinker.common.world.entity.gnomad.ai.sensors.SupplyDepotSensor;
+import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.GnomadSquadSensor;
+import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.TargetSupplyDepotSensor;
+import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.SupplyDepotSensor;
 import birsy.clinker.core.Clinker;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.ai.sensing.SensorType;
