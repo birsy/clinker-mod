@@ -1,0 +1,5 @@
+{
+  "vertex": "veil:blit_screen",
+  "fragment": "clinker:fog",
+  "definitions": []
+}

@@ -25,16 +25,19 @@ public class HeightDebugSurfaceDecorator extends SurfaceDecorator {
 
     @Override
     public void buildSurface(BlockPos.MutableBlockPos pos, int seaLevel, boolean canSeeSun, float noiseDerivative, int maxElevationIncrease, int maxElevationDecrease, ChunkAccess chunk, NoiseGeneratorSettings settings) {
+        if (!canSeeSun && pos.getY() < 130) {
+            return;
+        }
+
         float ditherRandom = (this.random.nextFloat() * 2) - 1;
         ditherRandom *= 0.3F;
-        boolean shouldPlaceAsh = this.noise.GetNoise(pos.getX(), pos.getZ()) + ditherRandom > 0;
+        boolean shouldPlaceAsh = this.noise.GetNoise(pos.getX(), pos.getZ()) + ditherRandom > -0.5;
 
-
-        if (maxElevationDecrease > 0) {
+        if (maxElevationDecrease > 0 && maxElevationDecrease < 2) {
             if (this.noise.GetNoise(pos.getX(), 1000, pos.getZ()) > 0 && shouldPlaceAsh) {
                 chunk.setBlockState(pos, ClinkerBlocks.ASH.get().defaultBlockState(), false);
             }
-        } else {
+        } else if (maxElevationDecrease < 2) {
             if (shouldPlaceAsh) {
                 chunk.setBlockState(pos, ClinkerBlocks.ASH.get().defaultBlockState(), false);
             }
@@ -43,7 +46,9 @@ public class HeightDebugSurfaceDecorator extends SurfaceDecorator {
                 ditherRandomAshDuneAmount *= -0.15F;
                 double noiseSample = this.noise.GetNoise(pos.getX() * 5, 0, pos.getZ() * 5) + ditherRandomAshDuneAmount;
                 int ashAmount = ((int) MathUtils.mapRange(-1.0, 1.0, -1, 6, noiseSample));
-                if (ashAmount > 1) chunk.setBlockState(pos.above(), ClinkerBlocks.ASH_LAYER.get().defaultBlockState().setValue(AshLayerBlock.LAYERS, ashAmount), false);
+                if (ashAmount > 1) {
+                    chunk.setBlockState(pos.above(), ClinkerBlocks.ASH_LAYER.get().defaultBlockState().setValue(AshLayerBlock.LAYERS, ashAmount), false);
+                }
             }
         }
         //chunk.setBlockState(pos, elevationChangeToState[Mth.clamp(Math.abs(maxNeighborElevationChange), 0, elevationChangeToState.length - 1)], false);

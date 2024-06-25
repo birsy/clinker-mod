@@ -1,74 +1,107 @@
 package birsy.clinker.client.book.formatting;
 
-import birsy.clinker.client.gui.GuiHelper;
+import birsy.clinker.client.book.Page;
+import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.font.FontManager;
+import net.minecraft.client.gui.screens.inventory.BookViewScreen;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.network.chat.FormattedText;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+
+import java.util.List;
 
 public abstract class PageElement {
+    public Page page;
     float x, y;
+    int z;
+    float sizeX, sizeY;
+    float rotation;
 
-    public abstract void render(PoseStack stack, float partialTicks);
+    protected PageElement(float x, float y, float sizeX, float sizeY, int z) {
+        this.x = x;
+        this.y = y;
+        this.sizeX = sizeX;
+        this.sizeY = sizeY;
+        this.z = z;
+    }
+
+    public void render(PoseStack stack, MultiBufferSource source, float partialTicks) {
+        stack.pushPose();
+        stack.translate(this.getXPixelPosition(), this.getYPixelPosition(), 0);
+        stack.mulPose(new Quaternionf().rotateZ(this.rotation));
+        this.renderElementContents(stack, source, partialTicks);
+        stack.popPose();
+    }
+
+    public abstract void renderElementContents(PoseStack stack, MultiBufferSource source, float partialTicks);
     public void tick() {}
 
-    public static void drawRect(PoseStack pPoseStack, float x, float y, float width, float height, int packedOverlay, int packedLight, ResourceLocation texture, float uOffset, float vOffset, float textureX, float textureY) {
-        drawRect(pPoseStack, x, y, width, height, 0, 1.0F, 1.0F, 1.0F, packedOverlay, packedLight, texture, uOffset, vOffset, textureX, textureY);
+    public float getXPixelPosition() {
+        return this.x;
     }
-    public static void drawRect(PoseStack pPoseStack, float x, float y, float width, float height, float zOffset, int packedOverlay, int packedLight, ResourceLocation texture, float uOffset, float vOffset, float textureX, float textureY) {
-        drawRect(pPoseStack, x, y, width, height, zOffset, 1.0F, 1.0F, 1.0F, packedOverlay, packedLight, texture, uOffset, vOffset, textureX, textureY);
+    public float getYPixelPosition() {
+        return this.y;
     }
 
-    public static void drawRect(PoseStack pPoseStack, float x, float y, float width, float height, float offset, float r, float g, float b, int packedOverlay, int packedLight, ResourceLocation texture, float uOffset, float vOffset, float textureX, float textureY) {
-        RenderSystem.setShader(GameRenderer::getRendertypeEntityCutoutShader);
-        RenderSystem.setShaderTexture(0, texture);
+    public float getXPixelSize() {
+        return this.sizeX;
+    }
+    public float getYPixelSize() {
+        return this.sizeY;
+    }
+
+    public int getZ() {
+        return this.z;
+    }
+    public void setZ(int z) {
+        this.z = z;
+        if (this.page != null) this.page.markNeedsLayerRegen();
+    }
+
+
+    public void renderLayout(PoseStack stack, MultiBufferSource source) {
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.enableDepthTest();
+        RenderSystem.disableDepthTest();
 
-        Matrix4f pMatrix = pPoseStack.last().pose();
-        Matrix3f pMatrix3 = pPoseStack.last().normal();
+        Matrix4f pMatrix = stack.last().pose();
 
         BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        
-        float u1 = (uOffset) / textureX;
-        float u2 = (uOffset + width) / textureX;
-        float v1 = (vOffset) / textureY;
-        float v2 = (vOffset + height) / textureY;
+        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
-        bufferbuilder.vertex(pMatrix, x, y + height, offset)
-                .color(r, g, b, 1.0F)
-                .uv(u1, v2)
-                .overlayCoords(packedOverlay)
-                .uv2(packedLight)
-                .normal(pMatrix3, 0, 0, 1)
+        float x0 = this.getXPixelPosition();
+        float x1 = x0 + this.getXPixelSize();
+        float y0 = this.getYPixelPosition();
+        float y1 = y0 + this.getYPixelSize();
+
+        float r = 1.0F, g = 1.0F, b = 1.0F, a = 0.25F;
+
+        bufferbuilder.vertex(pMatrix, x0, y1, 0)
+                .color(r, g, b, a)
                 .endVertex();
-        bufferbuilder.vertex(pMatrix, x + width, y + height, offset)
-                .color(r, g, b, 1.0F)
-                .uv(u2, v2)
-                .overlayCoords(packedOverlay)
-                .uv2(packedLight)
-                .normal(pMatrix3, 0, 0, 1)
+        bufferbuilder.vertex(pMatrix, x1, y1, 0)
+                .color(r, g, b, a)
                 .endVertex();
-        bufferbuilder.vertex(pMatrix, x + width, y, offset)
-                .color(r, g, b, 1.0F)
-                .uv(u2, v1)
-                .overlayCoords(packedOverlay)
-                .uv2(packedLight)
-                .normal(pMatrix3, 0, 0, 1)
+        bufferbuilder.vertex(pMatrix, x1, y0, 0)
+                .color(r, g, b, a)
                 .endVertex();
-        bufferbuilder.vertex(pMatrix, x, y, offset)
-                .color(r, g, b, 1.0F)
-                .uv(u1, v1)
-                .overlayCoords(packedOverlay)
-                .uv2(packedLight)
-                .normal(pMatrix3, 0, 0, 1)
+        bufferbuilder.vertex(pMatrix, x0, y0, 0)
+                .color(r, g, b, a)
                 .endVertex();
-        
+
         BufferUploader.drawWithShader(bufferbuilder.end());
     }
 }

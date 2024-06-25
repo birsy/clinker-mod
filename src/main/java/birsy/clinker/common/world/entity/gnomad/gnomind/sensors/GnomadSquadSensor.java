@@ -36,6 +36,7 @@ public class GnomadSquadSensor<E extends GnomadEntity> extends ExtendedSensor<E>
 
     @Override
     protected void doTick(ServerLevel level, E entity) {
+        if (entity.squad == null) return;
         List<GnomadEntity> squadMates = entity.squad.getMembersImmutable();
         BrainUtils.setMemory(entity, ClinkerMemoryModules.GNOMADS_IN_SQUAD.get(), squadMates);
     }

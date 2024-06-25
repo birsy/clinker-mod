@@ -1,8 +1,8 @@
 {
   "pack": {
     "description": {
-      "text": "${mod_id} resources"
+      "text": "Clinker Resources"
     },
-    "pack_format": ${pack_format_number}
+    "pack_format": 22
   }
 }

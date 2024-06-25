@@ -65,5 +65,6 @@ public class ClinkerParticles
         event.registerSpriteSet(ORDNANCE_TRAIL.get(), OrdnanceExplosionParticle.Provider::new);
         event.registerSpriteSet(ORDNANCE_EXPLOSION.get(), OrdnanceExplosionParticle.Provider::new);
         event.registerSpriteSet(EXPLOSION_LIGHT.get(), ExplosionLightParticle.Provider::new);
+        event.registerSpriteSet(CHAIN_LIGHTNING.get(), ChainLightningParticle.Provider::new);
     }
 }

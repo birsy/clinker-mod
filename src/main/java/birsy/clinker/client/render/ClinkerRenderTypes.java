@@ -5,9 +5,11 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.Util;
+import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Sheets;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.ClientHooks;
 
@@ -26,6 +28,15 @@ public class ClinkerRenderTypes {
         RenderSystem.disableBlend();
         RenderSystem.defaultBlendFunc();
     });
+    protected static final RenderStateShard.TransparencyStateShard ADDITIVE_TRANSPARENCY = new RenderStateShard.TransparencyStateShard(
+            "additive_transparency", () -> {
+        RenderSystem.enableBlend();
+        RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
+    }, () -> {
+        RenderSystem.disableBlend();
+        RenderSystem.defaultBlendFunc();
+    }
+    );
     protected static final RenderStateShard.CullStateShard NO_CULL = new RenderStateShard.CullStateShard(false);
     protected static final RenderStateShard.LightmapStateShard LIGHTMAP = new RenderStateShard.LightmapStateShard(true);
     protected static final RenderStateShard.OverlayStateShard OVERLAY = new RenderStateShard.OverlayStateShard(true);
@@ -33,6 +44,7 @@ public class ClinkerRenderTypes {
     private static final RenderStateShard.ShaderStateShard RENDERTYPE_ENTITY_UNLIT_TRANSLUCENT_SHADER = new RenderStateShard.ShaderStateShard(ClientHooks.ClientEvents::getEntityTranslucentUnlitShader);
     private static final RenderStateShard.ShaderStateShard RENDERTYPE_ENTITY_UNLIT_CUTOUT_SHADER = new RenderStateShard.ShaderStateShard(ClinkerShaders::getEntityCutoutUnlitShader);
     private static final RenderStateShard.ShaderStateShard RENDERTYPE_ENTITY_UNLIT_CUTOUT_NOCULL_SHADER = new RenderStateShard.ShaderStateShard(ClinkerShaders::getEntityCutoutNoCullUnlitShader);
+    private static final RenderStateShard.ShaderStateShard RENDERTYPE_CHAIN_LIGHTNING = new RenderStateShard.ShaderStateShard(ClinkerShaders::getChainLightningShader);
 
     private static final BiFunction<ResourceLocation, Boolean, RenderType> ENTITY_UNLIT_TRANSLUCENT = Util.memoize((resourceLocation, outline) -> {
         RenderType.CompositeState compositeState = RenderType.CompositeState.builder().setShaderState(RENDERTYPE_ENTITY_UNLIT_TRANSLUCENT_SHADER).setTextureState(new RenderStateShard.TextureStateShard(resourceLocation, false, false)).setTransparencyState(TRANSLUCENT_TRANSPARENCY).setCullState(NO_CULL).setLightmapState(LIGHTMAP).setOverlayState(OVERLAY).createCompositeState(outline);
@@ -45,6 +57,17 @@ public class ClinkerRenderTypes {
     private static final BiFunction<ResourceLocation, Boolean, RenderType> ENTITY_UNLIT_CUTOUT_NOCULL = Util.memoize((resourceLocation, bool) -> {
         RenderType.CompositeState compositeState = RenderType.CompositeState.builder().setShaderState(RENDERTYPE_ENTITY_UNLIT_CUTOUT_NOCULL_SHADER).setTextureState(new RenderStateShard.TextureStateShard(resourceLocation, false, false)).setTransparencyState(NO_TRANSPARENCY).setCullState(NO_CULL).setLightmapState(LIGHTMAP).setOverlayState(OVERLAY).createCompositeState(bool);
         return RenderType.create("rendertype_entity_unlit_cutout_nocull", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, false, compositeState);
+    });
+    private static final Function<ResourceLocation, RenderType> CHAIN_LIGHTNING = Util.memoize((resourceLocation) -> {
+        RenderType.CompositeState compositeState = RenderType.CompositeState.builder()
+                .setShaderState(RENDERTYPE_CHAIN_LIGHTNING)
+                .setTextureState(new RenderStateShard.TextureStateShard(resourceLocation, false, false))
+                .setTransparencyState(ADDITIVE_TRANSPARENCY)
+                .setCullState(NO_CULL)
+                .setLightmapState(LIGHTMAP)
+                .setOverlayState(OVERLAY)
+                .createCompositeState(false);
+        return RenderType.create("rendertype_chain_lightning", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, false, compositeState);
     });
 
     public static RenderType entityUnlitTranslucent(ResourceLocation pLocation, boolean pOutline) {
@@ -59,5 +82,9 @@ public class ClinkerRenderTypes {
     public static RenderType entityUnlitCutoutNoCull(ResourceLocation pLocation) {
         return ENTITY_UNLIT_CUTOUT_NOCULL.apply(pLocation, true);
     }
+    public static RenderType chainLightning() {
+        return CHAIN_LIGHTNING.apply(TextureAtlas.LOCATION_PARTICLES);
+    }
+
 
 }

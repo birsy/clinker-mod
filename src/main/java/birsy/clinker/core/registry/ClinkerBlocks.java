@@ -207,9 +207,9 @@ public class ClinkerBlocks
 	public static final DeferredBlock<Block> STRIPPED_SWAMP_ASPEN_LOG = createBlock("stripped_swamp_aspen_log", () -> new SwampAspenLogBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(2.0F).sound(SoundType.STEM).noOcclusion()));
 
 	//Plants
-	public static final DeferredBlock<Block> TALL_MUD_REEDS = createBlock("tall_mud_reeds", () -> new DoubleMudReedsBlock(BlockBehaviour.Properties.of().noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS).offsetType(BlockBehaviour.OffsetType.XZ)));
-	public static final DeferredBlock<Block> SHORT_MUD_REEDS = createBlock("short_mud_reeds", () -> new MudReedsBlock(BlockBehaviour.Properties.of().noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS).offsetType(BlockBehaviour.OffsetType.XZ)));
-	public static final DeferredBlock<Block> MUD_REEDS = createBlock("mud_reeds", () -> new MudReedsBlock(BlockBehaviour.Properties.of().noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS).offsetType(BlockBehaviour.OffsetType.XZ)));
+	public static final DeferredBlock<Block> TALL_MUD_REEDS = createBlock("tall_mud_reeds", () -> new DoubleMudReedsBlock(BlockBehaviour.Properties.of().noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS).offsetType(BlockBehaviour.OffsetType.XZ).replaceable()));
+	public static final DeferredBlock<Block> SHORT_MUD_REEDS = createBlock("short_mud_reeds", () -> new MudReedsBlock(BlockBehaviour.Properties.of().noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS).offsetType(BlockBehaviour.OffsetType.XZ).replaceable()));
+	public static final DeferredBlock<Block> MUD_REEDS = createBlock("mud_reeds", () -> new MudReedsBlock(BlockBehaviour.Properties.of().noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS).offsetType(BlockBehaviour.OffsetType.XZ).replaceable()));
 
 	public static final DeferredBlock<Block> CAVE_FIG_STEM = createBlock("cave_fig_stem", () -> new HugeMushroomBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY).sound(SoundType.CALCITE)));
 	public static final DeferredBlock<Block> CAVE_FIG_ROOTS = createBlock("cave_fig_roots", () -> new CaveFigRootsBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY).noOcclusion().sound(SoundType.CALCITE)));

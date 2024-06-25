@@ -74,30 +74,35 @@ public class RenderUtils {
     public static void drawFaceBetweenPoints(VertexConsumer consumer, PoseStack stack, float width, Vec3 pos1, Vector3f tangent1, Vector3f normal1, Vector3f biTangent1, float u1, float v1,
                                              Vec3 pos2, Vector3f tangent2, Vector3f normal2, Vector3f biTangent2, float u2, float v2,
                                              float r, float g, float b, float a) {
+        drawFaceBetweenPoints(consumer, stack, width, pos1, tangent1, normal1, biTangent1, u1, v1, r, g, b, a, pos2, tangent2, normal2, biTangent2, u2, v2, r, g, b, a);
+    }
+
+    public static void drawFaceBetweenPoints(VertexConsumer consumer, PoseStack stack, float width, Vec3 pos1, Vector3f tangent1, Vector3f normal1, Vector3f biTangent1, float u1, float v1, float r1, float g1, float b1, float a1,
+                                             Vec3 pos2, Vector3f tangent2, Vector3f normal2, Vector3f biTangent2, float u2, float v2, float r2, float g2, float b2, float a2) {
         int overlay = OverlayTexture.NO_OVERLAY;
         int light = LightTexture.FULL_BRIGHT;
         Matrix4f pose = stack.last().pose();
         Matrix3f normal = stack.last().normal();
         consumer.vertex(pose, (float) (pos1.x() + biTangent1.x() * width), (float) (pos1.y + biTangent1.y() * width), (float) (pos1.z() + biTangent1.z() * width))
-                .color(r,g,b,a)
+                .color(r1,g1,b1,a1)
                 .uv(u1, v1)
                 .overlayCoords(overlay).uv2(light)
                 .normal(normal, normal1.x(), normal1.y(), normal1.z())
                 .endVertex();
         consumer.vertex(pose, (float) (pos2.x() + biTangent2.x() * width), (float) (pos2.y + biTangent2.y() * width), (float) (pos2.z() + biTangent2.z() * width))
-                .color(r,g,b,a)
+                .color(r2,g2,b2,a2)
                 .uv(u1, v2)
                 .overlayCoords(overlay).uv2(light)
                 .normal(normal, normal2.x(), normal2.y(), normal2.z())
                 .endVertex();
         consumer.vertex(pose, (float) (pos2.x() - biTangent2.x() * width), (float) (pos2.y - biTangent2.y() * width), (float) (pos2.z() - biTangent2.z() * width))
-                .color(r,g,b,a)
+                .color(r2,g2,b2,a2)
                 .uv(u2, v2)
                 .overlayCoords(overlay).uv2(light)
                 .normal(normal, normal2.x(), normal2.y(), normal2.z())
                 .endVertex();
         consumer.vertex(pose, (float) (pos1.x() - biTangent1.x() * width), (float) (pos1.y - biTangent1.y() * width), (float) (pos1.z() - biTangent1.z() * width))
-                .color(r,g,b,a)
+                .color(r1,g1,b1,a1)
                 .uv(u2, v1)
                 .overlayCoords(overlay).uv2(light)
                 .normal(normal, normal1.x(), normal1.y(), normal1.z())

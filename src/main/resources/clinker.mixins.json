@@ -3,19 +3,22 @@
   "package": "birsy.clinker.mixin",
   "compatibilityLevel": "JAVA_17",
   "minVersion": "0.8",
-  "injectors": { "defaultRequire": 1 },
+  "injectors": {
+    "defaultRequire": 1
+  },
   "refmap": "mixins.clinker.refmap.json",
   "client": [
-    "client.LevelRendererMixin",
-    "client.GameRendererMixin",
     "client.ClientLevelMixin",
+    "client.DebugRendererMixin",
+    "client.GameRendererMixin",
     "client.GuiMixin",
-    "client.DebugRendererMixin"
+    "client.LevelRendererMixin"
   ],
   "mixins": [
-    "common.ServerLevelMixin",
     "common.EntityMixin",
+    "common.ItemEntityMixin",
     "common.LevelMixin",
-    "common.ItemEntityMixin"
+    "common.RandomizableContainerBlockEntityMixin",
+    "common.ServerLevelMixin"
   ]
 }

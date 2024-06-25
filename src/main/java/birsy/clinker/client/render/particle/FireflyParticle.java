@@ -48,7 +48,6 @@ public class FireflyParticle extends TextureSheetParticle {
         if (VeilRenderSystem.renderer().getDeferredRenderer().isEnabled()) {
             this.light = new PointLight();
             VeilRenderSystem.renderer().getDeferredRenderer().getLightRenderer().addLight(this.light);
-            this.updateLight(0.0F);
         }
 
         this.seed = level.random.nextDouble();

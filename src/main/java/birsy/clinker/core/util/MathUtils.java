@@ -25,15 +25,11 @@ import java.util.function.Function;
 /* cappin's math utils
  * hope you find this useful :) */
 public class MathUtils {
-
-    // return pdf(x) = standard Gaussian pdf
-    public static double pdf(double x) {
-        return Math.exp(-x*x / 2) / Math.sqrt(2 * Math.PI);
+    public static double lerpSmoothing(double a, double b, double decayFactor, double deltaTime) {
+        return b + (a - b) * Math.exp(- decayFactor * deltaTime);
     }
-
-    // return pdf(x, mu, sigma) = Gaussian pdf with mean mu and stddev sigma
-    public static double pdf(double x, double mu, double sigma) {
-        return pdf((x - mu) / sigma) / sigma;
+    public static float lerpSmoothing(float a, float b, float decayFactor, float deltaTime) {
+        return (float) (b + (a - b) * Math.exp(- decayFactor * deltaTime));
     }
 
     public static double min(double... nums) {

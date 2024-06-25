@@ -16,6 +16,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
+import net.minecraft.world.level.levelgen.feature.configurations.RandomPatchConfiguration;
 
 public class MudReedsPatchFeature extends Feature<NoneFeatureConfiguration> {
     private static CachedFastNoise noise = Util.make(() -> {
@@ -85,4 +86,5 @@ public class MudReedsPatchFeature extends Feature<NoneFeatureConfiguration> {
 
         return placed;
     }
+
 }

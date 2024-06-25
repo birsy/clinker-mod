@@ -1,0 +1,28 @@
+{
+  "stages": [
+    {
+      "type": "veil:blit",
+      "shader": "clinker:fog",
+      "in": "minecraft:main",
+      "out": "swap"
+    },
+    {
+      "type": "veil:copy",
+      "in": "swap",
+      "out": "minecraft:main",
+      "color": true,
+      "depth": true
+    }
+  ],
+  "framebuffers": {
+    "swap": {
+      "depth": true
+    }
+  },
+  "textures": {
+    "HandDepthTexture": {
+      "type": "framebuffer",
+      "name": "veil:first_person:depth"
+    }
+  }
+}

@@ -1,8 +1,14 @@
 package birsy.clinker.common.world.level.gen.chunk;
 
+import birsy.clinker.common.world.level.gen.MetaChunk;
+import birsy.clinker.common.world.level.gen.MetaChunkTracker;
 import birsy.clinker.common.world.level.gen.chunk.biome.SurfaceDecorator;
 import birsy.clinker.common.world.level.gen.chunk.biome.SurfaceDecorators;
+import birsy.clinker.common.world.level.gen.chunk.biome.source.MultiDimensionalBiomeSource;
+import birsy.clinker.common.world.level.gen.chunk.biome.source.SingleBiomeProvider;
 import birsy.clinker.core.Clinker;
+import birsy.clinker.core.registry.world.ClinkerBiomes;
+import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.core.util.noise.CachedFastNoise;
 import birsy.clinker.core.util.noise.FastNoiseLite;
 import birsy.clinker.core.util.noise.VoronoiGenerator;
@@ -11,6 +17,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.Util;
 import net.minecraft.core.*;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.util.Mth;
@@ -18,8 +26,7 @@ import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.NoiseColumn;
 import net.minecraft.world.level.StructureManager;
 import net.minecraft.world.level.WorldGenLevel;
-import net.minecraft.world.level.biome.BiomeManager;
-import net.minecraft.world.level.biome.BiomeSource;
+import net.minecraft.world.level.biome.*;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -28,7 +35,10 @@ import net.minecraft.world.level.chunk.ChunkGeneratorStructureState;
 import net.minecraft.world.level.levelgen.*;
 import net.minecraft.world.level.levelgen.blending.Blender;
 import net.minecraft.world.level.levelgen.structure.StructureSet;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
+import net.minecraft.world.phys.Vec3;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -43,7 +53,7 @@ public class TestChunkGenerator extends ChunkGenerator {
     protected final NoiseGeneratorSettings settings;
     private final Aquifer.FluidPicker globalFluidPicker;
 
-    private static CachedFastNoise noise = Util.make(() -> {
+    private static final CachedFastNoise noise = Util.make(() -> {
         FastNoiseLite n = new FastNoiseLite();
         n.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2S);
         n.SetFrequency(0.04F);
@@ -54,26 +64,50 @@ public class TestChunkGenerator extends ChunkGenerator {
         n.SetFractalWeightedStrength(0.0F);
         return new CachedFastNoise(n);
     });
-    private VoronoiGenerator voronoi;
+
+
+    private static final VoronoiGenerator voronoi = new VoronoiGenerator(0);
     private static long seed;
     private float[][][] terrainShapeSamplePoints;
 
+    private MetaChunk metaChunk;
+    private List<MetaChunk.TerrainFeature> terrainFeatures;
+
     public TestChunkGenerator(BiomeSource pBiomeSource, Holder<NoiseGeneratorSettings> settings) {
-        super(pBiomeSource);
+        super(pBiomeSource);//Util.make(() -> {
+//            // this is just to get biomes from the dynamic registry in a way that vanilla BiomeSources understand.
+//            // this fucking sucks, but i do what i must...
+//            HolderLookup.Provider holderGetterProvider = VanillaRegistries.createLookup();
+//            HolderGetter<Biome> holderGetter = holderGetterProvider.lookupOrThrow(Registries.BIOME);
+//
+//            return new FixedBiomeSource(holderGetter.getOrThrow(Biomes.PLAINS));
+
+//            return new MultiDimensionalBiomeSource(
+//                    new SingleBiomeProvider(holderGetter.getOrThrow(Biomes.WINDSWEPT_FOREST)), MultiDimensionalBiomeSource.OverlapResolutionMethod.FIRST_COME_FIRST_SERVE)
+//
+//                        .defineDimension("temperature", (x, y, z) -> noise.get(x * 0.5, y * 0.5, z * 0.5), -1.0F, 1.0F)
+//                        .defineDimension("humidity", (x, y, z) -> noise.get(x * 0.2, y * 0.2 + 1000.0F, z * 0.2), -1.0F, 1.0F)
+//
+//                        .addBiome(new MultiDimensionalBiomeSource.BiomeSelector(holderGetter.getOrThrow(Biomes.PLAINS))
+//                                .defineRange("temperature", 0.0F, 0.5F)
+//                                .defineRange("humidity", -0.5F, 0.5F))
+//                        .addBiome(new MultiDimensionalBiomeSource.BiomeSelector(holderGetter.getOrThrow(Biomes.DESERT))
+//                                .defineRange("temperature", 0.5F, 1.0F)
+//                                .defineRange("humidity", -1.0F, -0.5F))
+//                        .addBiome(new MultiDimensionalBiomeSource.BiomeSelector(holderGetter.getOrThrow(Biomes.SWAMP))
+//                                .defineRange("temperature", 0.5F, 1.0F)
+//                                .defineRange("humidity", 0.0F, 1.0F));
+        //}));
         this.settingsHolder = settings;
         this.settings = this.settingsHolder.value();
         this.globalFluidPicker = (a, b, c) -> new Aquifer.FluidStatus(this.settings.seaLevel(), this.settings.defaultFluid());
+    }
 
-        this.voronoi = new VoronoiGenerator(0);
-    }
-    @Override
-    public ChunkGeneratorStructureState createState(HolderLookup<StructureSet> pStructureSetLookup, RandomState pRandomState, long pSeed) {
-        seed = pSeed;
-        return super.createState(pStructureSetLookup, pRandomState, pSeed);
-    }
-    private void setNoiseSeed(int seed) {
+
+
+    private void setNoiseSeed(long seed) {
         if (seed != this.noise.getNoise().GetSeed()) {
-            this.noise.getNoise().SetSeed(seed);
+            this.noise.getNoise().SetSeed((int) seed);
             this.noise.invalidateCache();
         }
         if (seed != this.voronoi.getSeed()) {
@@ -81,8 +115,33 @@ public class TestChunkGenerator extends ChunkGenerator {
         }
     }
 
+    // earliest possible reference to a seed
+    @Override
+    public ChunkGeneratorStructureState createState(HolderLookup<StructureSet> pStructureSetLookup, RandomState pRandomState, long pSeed) {
+        seed = pSeed;
+        this.setNoiseSeed(this.seed);
+        return super.createState(pStructureSetLookup, pRandomState, pSeed);
+    }
+
+    // earliest possible reference to the WorldGenLevel
+    @Override
+    public void createReferences(WorldGenLevel pLevel, StructureManager pStructureManager, ChunkAccess pChunk) {
+        this.metaChunk = MetaChunkTracker.getOrCreateMetaChunkAtChunk(pLevel, pChunk.getPos());
+        //Clinker.LOGGER.info("metachunk??");
+        super.createReferences(pLevel, pStructureManager, pChunk);
+    }
+
     public CompletableFuture<ChunkAccess> fillFromNoise(Executor executor, Blender densityBlender, RandomState random, StructureManager structureManager, ChunkAccess chunk) {
         //fillNoiseSampleArrays(chunk);
+        if (this.metaChunk != null) {
+            this.terrainFeatures = metaChunk.getFeaturesInChunk(chunk.getPos());
+            for (MetaChunk.TerrainFeature terrainFeature : this.terrainFeatures) {
+                Clinker.LOGGER.info(terrainFeature.getBoundingBoxes().get(0).getCenter());
+            }
+        } else {
+            this.terrainFeatures = new ArrayList<>();
+        }
+
         Heightmap[] heightmaps = {chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.OCEAN_FLOOR_WG), chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.WORLD_SURFACE_WG)};
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         for (int x = 0; x < 16; x++) {
@@ -125,7 +184,6 @@ public class TestChunkGenerator extends ChunkGenerator {
     }
 
     private static final int MAX_BLOCKS = 4;
-
     private void applySurfaceDecorators(WorldGenLevel level, ChunkAccess chunk) {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         int offset = 0;
@@ -195,9 +253,7 @@ public class TestChunkGenerator extends ChunkGenerator {
 
     // we don't actually use this for surface decorators since they don't have access to the neighboring chunks.
     // instead, use applyBiomeDecoration.
-    public void buildSurface(WorldGenRegion region, StructureManager structureManager, RandomState randomState, ChunkAccess chunk) {
-    }
-
+    public void buildSurface(WorldGenRegion region, StructureManager structureManager, RandomState randomState, ChunkAccess chunk) {}
     public void fillNoiseSampleArrays(ChunkAccess chunk) {
         int hSamplePoints = (int) Math.ceil(16 * 0.3F);
         int vSamplePoints = (int) Math.ceil(this.getGenDepth() * 0.15F);
@@ -223,7 +279,6 @@ public class TestChunkGenerator extends ChunkGenerator {
             }
         }
     }
-
     public float sampleDensityFromArray(float[][][] densityArray, int localX, int localY, int localZ) {
         int maxXZ = 16;
         int maxY = this.getGenDepth();
@@ -256,13 +311,190 @@ public class TestChunkGenerator extends ChunkGenerator {
         return yLerp;
     }
 
+    // multi-layer terracing!
+    // should look hytale-ish
     private float sampleDensity(float x, float y, float z) {
-        float heightFactor = 0.1F;
+        float unmodifiedY = y;
+        float heightFactor = 0.3F;
 
-        float freq = 0.8F;
-        float noise = (float) this.noise.get(x * freq, y * freq, z * freq);
-        noise = noise * noise * Mth.sign(noise);
-        return (noise) - (((y - this.getSeaLevel())) * heightFactor);
+        float yScale = 0.2F;
+        float scaledSeaLevel = this.getSeaLevel()*yScale;
+        y *= yScale;
+
+        if (y - scaledSeaLevel > 2.0F / heightFactor) {
+            return -1.0F;
+        }
+
+        float caveNoise = (float) sampleCaveNoise(x, y / yScale, z);
+
+        if (y - scaledSeaLevel < -2.0F / heightFactor) {
+            return caveNoise;
+        }
+
+        float freq = 0.2F;
+        float baseNoise = (float) this.noise.get(x * freq, y * freq, z * freq);
+        freq = 0.8F;
+        float detailNoise = (float) this.noise.get(x * freq, y * freq + 800.0F, z * freq);
+
+        float totalNoise = (1.0F - Math.abs(detailNoise))*0.2F - 1.0F;
+
+        freq = 0.2F;
+        float cliffExistenceNoise = (float) this.noise.get(x * freq, z * freq);
+        float threshold = 0.7F;
+        cliffExistenceNoise -= threshold;
+        if (cliffExistenceNoise < 0.0) {
+            cliffExistenceNoise *= 3.0F;
+        }
+
+        // terraces
+        for (int i = 2; i < 5; i++) {
+            float tFreq = 0.6F;
+            float terracedNoise = (float) (baseNoise + this.noise.get(x * tFreq, y * tFreq + (i * 500), z * tFreq) * 1.0);
+            tFreq = 1.0F;
+            terracedNoise += (float) (this.noise.get(x * tFreq, y * tFreq + (i * 500), z * tFreq) * 0.4F);
+            terracedNoise = terrace(terracedNoise + cliffExistenceNoise, i, 0.2F, 0.95F);
+            if (terracedNoise > totalNoise) {
+                totalNoise = terracedNoise;
+                // set surface flag for not ash dunes
+            }
+        }
+
+        float surfaceNoise = (totalNoise + baseNoise * 0.1F + detailNoise * 0.1F) - ((y - scaledSeaLevel) * heightFactor);
+
+        float value = (float) MathUtils.smoothMinExpo(caveNoise, surfaceNoise, 0.05F);
+        for (MetaChunk.TerrainFeature terrainFeature : this.terrainFeatures) {
+            value = terrainFeature.modifyNoiseLayers(value, x, unmodifiedY, z);
+        }
+        return value;
+    }
+
+    private static float terrace(float noiseVal, float stepCount, float lowerSteepness, float upperSteepness) {
+        float steps = stepCount * 0.5F;
+        float x = noiseVal * steps + 0.5F;
+        float expBase = (2*(x - Math.round(x)));
+        float steepness = expBase > 0.0 ? lowerSteepness : upperSteepness;
+        float expPower = 1.0f / (1.0f - steepness);
+        return (float) ((Math.round(x) + 0.5 * (Math.pow(Math.abs(expBase), expPower) * Math.signum(expBase))) - 0.5F) / steps;
+    }
+
+    public double sampleCaveNoise(double x, double y, double z) {
+        int maxHeight = 240;
+        int minHeight = 64;
+
+        double aHFreq = 1.0;
+        double aquiferMidHeight  = -40;
+        double aquiferUpperRange = aquiferMidHeight + MathUtils.mapRange(-1.0F, 1.0F, 10.0F, 45.0F, noise.get(x * aHFreq, z * aHFreq));
+        double aquiferLowerRange = aquiferMidHeight - 20;
+
+        double seaLevel = this.getSeaLevel();
+        double caveClamping = Mth.clamp(MathUtils.mapRange(aquiferUpperRange - 10, aquiferUpperRange + 15, 0, 1, y), 0, 1);
+        caveClamping *= Mth.clamp(MathUtils.mapRange(seaLevel - 20, seaLevel + 5, 1, 0.2, y), 0, 1);
+
+
+        //Stalagmite Noise;
+        double stalagHFreq = (1.0 / 16.0);
+        double stalagVFreq = (1.0 / 34.0);
+        voronoi.setOffsetAmount(1.0F);
+        VoronoiGenerator.VoronoiInfo stalagInfo = voronoi.get3(x * stalagHFreq, y * stalagVFreq, z * stalagHFreq);
+        Vec3 stalagVec = stalagInfo.localPos();
+        double yFac = ((Math.abs(stalagVec.y()) + 0.5));
+        yFac *= yFac;
+        double stalag = stalagVec.multiply(1, 0, 1).length() * yFac;
+        double stalagThreshold = MathUtils.map(0.5, 1.0, MathUtils.bias(stalagInfo.hash(), 0.8F)) * Mth.sqrt(3) * stalagHFreq;
+        stalag -= stalagThreshold;
+        stalag *= -1;
+
+        //Spaghetti Cave Noise
+        double sFreq = 0.4;
+        double sHFreq = sFreq * 0.5;
+        double sVFreq = sFreq * 1.3;
+
+        double sHFreq2 = 0.8;
+        double sCave1 = this.noise.get(x * sHFreq * sHFreq2, y * sVFreq, z * sHFreq * sHFreq2);
+        double sCave2 = this.noise.get(x * sHFreq, y * sVFreq + 3000.0, z * sHFreq);
+        double sCave = sCave1 * sCave1 + sCave2 * sCave2;
+        double threshold = 0.06 * caveClamping;
+
+        sCave -= threshold;
+
+        //Aquifer Cave Noise
+        double aCave = 1.0;
+        if (y < aquiferUpperRange + 10) {
+            double aFreq = 6.0;
+            double altNoise = noise.get(x * aFreq, z * aFreq);
+
+            double aTopThres = MathUtils.mapRange(aquiferLowerRange, aquiferMidHeight, 0.0F, 1.0F, y);
+            double aquiferSizeThrottling = y < aquiferMidHeight ?
+                    Mth.lerp(0.0, MathUtils.ease((float) aTopThres, MathUtils.EasingType.easeOutBounce), MathUtils.ease((float) aTopThres, MathUtils.EasingType.easeOutQuad)) :
+                    Mth.lerp(MathUtils.bias((altNoise + 1) / 2, 0.2), MathUtils.ease((float) MathUtils.mapRange(aquiferMidHeight, aquiferUpperRange, 1.0F, 0.0F, y), MathUtils.EasingType.easeOutQuad),
+                            MathUtils.ease((float) MathUtils.mapRange(aquiferMidHeight, aquiferUpperRange, 1.0F, 0.0F, y), MathUtils.EasingType.easeOutBounce));
+            double aquiferSizeThreshold = 0.5 * aquiferSizeThrottling;
+
+            double aquiferCaveNoiseValue = this.noise.get(x, z);
+            aCave = y > aquiferUpperRange ? 1 : y < aquiferLowerRange ? 1 : (aquiferCaveNoiseValue * aquiferCaveNoiseValue) - aquiferSizeThreshold;
+        }
+
+        //double[] bridgeCavern = sampleBridgeCaveNoise(x, y, z, seed);
+        double bCave = 1.0F;//bridgeCavern[0];
+        double bCaveShell = -1.0F;//bridgeCavern[1];
+
+        return MathUtils.smoothMinExpo(MathUtils.smoothMinExpo(sCave, stalag, -0.05) + Math.max(bCaveShell * 0.8, 0), bCave, 0.06);//MathUtils.smoothMinExpo(stalag, sampleBridgeCaveNoise(x, y, z, seed), -0.05);//MathUtils.smoothMinExpo(aCave, MathUtils.smoothMinExpo(sCave, stalag, -0.1), 0.06);
+    }
+
+    private double[] sampleBridgeCaveNoise (double x, double y, double z, long seed) {
+        Vec3 position = new Vec3(x, y, z);
+
+        double frequency = 1.0 / 200.0;
+        this.voronoi.setOffsetAmount(0.5F);
+        VoronoiGenerator.VoronoiInfo info = this.voronoi.get2(x * frequency, z * frequency);
+        double caveY = Mth.lerp(info.hash(), 10, 100);
+        Vec3 caveCenter = new Vec3(info.cellPos().x() / frequency, caveY, info.cellPos().z() / frequency);
+        Vec3 localPos = position.subtract(caveCenter);
+        double wiggleNoise = this.noise.get(x * 0.8, y * 0.8, z * 0.8);
+        wiggleNoise *= 8.0;
+        Vec3 distortPos = localPos.add(wiggleNoise, wiggleNoise, wiggleNoise);
+        double cavernRadius = 32.0;
+        double cavern = distortPos.multiply(1.0, 0.5, 1.0).length() - cavernRadius;
+        double shell = MathUtils.mapRange(cavernRadius, cavernRadius + 10.0, 1.0, -1.0, distortPos.multiply(1.0, 1.0, 1.0).length());
+        double bridge = 1.0 / frequency;
+        double tunnel = 1.0 / frequency;
+
+        float bridgeNumber = 4;//Mth.lerp(MathUtils.awfulRandom(info.hash() * 256.12342), 2, 5);
+        double bridgeHeight = caveCenter.y() - cavernRadius;
+        // TODO: please cache this
+        for (int i = 0; i < bridgeNumber; i++) {
+            bridgeHeight += ((cavernRadius * 2.0) / bridgeNumber); //MathUtils.awfulRandom(info.hash() * 512.12342 + i * 32) *
+            float rotation = (float) Mth.lerp(MathUtils.awfulRandom(info.hash() * 864.2343 + i * 12), 0, 2 * Math.PI);
+            Vec3 point1 = new Vec3(Mth.sin(rotation), 0, Mth.cos(rotation)).scale(cavernRadius * 2).add(caveCenter.x(), bridgeHeight, caveCenter.z());
+            Vec3 point2 = new Vec3(Mth.sin(rotation + Mth.PI), 0, Mth.cos(rotation + Mth.PI)).scale(cavernRadius * 2).add(caveCenter.x(), bridgeHeight, caveCenter.z());
+            Vec3 random = new Vec3((MathUtils.awfulRandom(info.hash() * 464.2383 + i * 2) * 2.0) - 1.0, 0, (MathUtils.awfulRandom(info.hash() * 33.2343 + i * 18) * 2.0) - 1.0).scale(16);
+            double bDistance = getBridgeDistance(position, point1.add(random), point2.add(random), 4);
+            double tDistance = getBridgeDistance(position, point1.add(random).add(0, 10, 0), point2.add(random).add(0, 10, 0), 3.5);
+
+            bridge = Math.min(bridge, bDistance);
+            tunnel = Math.min(tunnel, tDistance);
+        }
+
+        shell += Math.min((tunnel - 5) * 2, 0);
+        shell -= Math.min(bridge * 2, 0);
+        //shell = Mth.clamp(shell, 0, 1);
+        return new double[]{MathUtils.smoothMinExpo(MathUtils.smoothMinExpo((float) -bridge, (float) cavern, -5.0F), tunnel, 2.0F) * 0.05, shell};
+    }
+
+    // actually just a cylinder SDF
+    private double getBridgeDistance(Vec3 position, Vec3 bridgeStart, Vec3 bridgeEnd, double radius) {
+        Vec3  ba = bridgeEnd.subtract(bridgeStart);
+        Vec3  pa = position.subtract(bridgeStart);
+        double baba = ba.dot(ba);
+        double paba = pa.dot(ba);
+        double x = pa.scale(baba).subtract(ba.scale(paba)).length() - radius * baba;
+        double y = Math.abs(paba-baba*0.5)-baba*0.5;
+        double x2 = x*x;
+        double y2 = y*y*baba;
+
+        double d = (Math.max(x,y)<0.0) ? -Math.min(x2,y2) : ( ( (x > 0.0) ? x2 : 0.0) + ( (y > 0.0) ? y2 : 0.0) );
+
+        return Mth.sign(d) * Math.sqrt(Math.abs(d)) / baba;
     }
 
     public void addDebugScreenInfo(List<String> pInfo, RandomState pRandom, BlockPos pPos) {}
@@ -284,7 +516,7 @@ public class TestChunkGenerator extends ChunkGenerator {
         return 384;
     }
     public int getSeaLevel() {
-        return 100;
+        return 150;
     }
 
     public static void register() {

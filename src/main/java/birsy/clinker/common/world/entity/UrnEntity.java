@@ -291,7 +291,7 @@ public class UrnEntity extends AbstractGolem implements InterpolatedSkeletonPare
     }
 
     public static class UrnMoveController extends MoveControl {
-        public UrnMoveController(Mob p_24983_) {
+        public UrnMoveController(UrnEntity p_24983_) {
             super(p_24983_);
         }
 

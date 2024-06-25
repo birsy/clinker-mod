@@ -6,6 +6,7 @@ import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.shaders.FogShape;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.debug.DebugRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.CubicSampler;
 import net.minecraft.util.Mth;
@@ -69,6 +70,7 @@ public class OthershoreFogRenderer {
     @SubscribeEvent
     public static void onRenderFogColors(ViewportEvent.ComputeFogColor event)
     {
+
         final Entity player = event.getRenderer().getMainCamera().getEntity();
         final Level world = player.level();
         final ClientLevel clientLevel = mc.level;

@@ -11,6 +11,7 @@ import birsy.clinker.common.world.entity.salamanderOLD.SalamanderBodyEntity;
 import birsy.clinker.common.world.entity.salamanderOLD.SalamanderHeadEntity;
 import birsy.clinker.common.world.entity.gnomad.OldGnomadAxemanEntity;
 import birsy.clinker.core.Clinker;
+import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
@@ -82,6 +83,10 @@ public class ClinkerEntities {
             EntityType.Builder.of(WarhookEntity::new, MobCategory.MISC)
                     .sized(0.5F, 0.5F)
                     .build(new ResourceLocation(Clinker.MOD_ID, "warhook").toString()));
+    public static final Supplier<EntityType<RerollFlaskEntity>> REROLL_FLASK = ENTITY_TYPES.register("transmogrifying_flask", () ->
+            EntityType.Builder.of(RerollFlaskEntity::new, MobCategory.MISC)
+                    .sized(0.25F, 0.25F)
+                    .build(new ResourceLocation(Clinker.MOD_ID, "transmogrifying_flask").toString()));
 
     public static final Supplier<EntityType<MoldEntity>> MOLD = ENTITY_TYPES.register("mold", () ->
             EntityType.Builder.of(MoldEntity::new, MobCategory.MONSTER)
@@ -120,6 +125,7 @@ public class ClinkerEntities {
 
         event.registerEntityRenderer(ClinkerEntities.ORDNANCE.get(), OrdnanceRenderer::new);
         event.registerEntityRenderer(ClinkerEntities.WARHOOK.get(), WarhookRenderer::new);
+        event.registerEntityRenderer(ClinkerEntities.REROLL_FLASK.get(), ThrownItemRenderer::new);
 
         event.registerEntityRenderer(ClinkerEntities.GNOMAD_SOLDIER.get(), NewGnomadRenderer::new);
 

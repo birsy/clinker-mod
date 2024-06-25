@@ -24,6 +24,7 @@ import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.event.TickEvent;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -170,7 +171,7 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
         float skyBlue = (float)skyColor.z;
         Vec3 cameraPos = camera.getPosition();
         float camY = (float) cameraPos.y;
-        float cameraOffset = -camY - 30;//(float) -Math.min((camY - 64.0F) * 0.16F, 100.0F);
+        float cameraOffset = -camY + 10;//(float) -Math.min((camY - 64.0F) * 0.16F, 100.0F);
         BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
 
         //creates the sky disc

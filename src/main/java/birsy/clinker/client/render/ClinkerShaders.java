@@ -23,6 +23,8 @@ public class ClinkerShaders {
     private static ShaderInstance rendertypeEntityCutoutNoCullUnlitShader;
     @Nullable
     private static ShaderInstance positionColorTextureUnclampedShader;
+    @Nullable
+    private static ShaderInstance chainLightningShader;
 
     public static ShaderInstance getSkyCloudShader() {
         return Objects.requireNonNull(skyCloudShader, "Attempted to call getSkyCloudShader before shaders have finished loading.");
@@ -36,7 +38,9 @@ public class ClinkerShaders {
     public static ShaderInstance getPositionColorTextureUnclampedShader() {
         return Objects.requireNonNull(positionColorTextureUnclampedShader, "Attempted to call getPositionColorTextureUnclampedShader before shaders have finished loading.");
     }
-
+    public static ShaderInstance getChainLightningShader() {
+        return Objects.requireNonNull(chainLightningShader, "Attempted to call getChainLightningShader before shaders have finished loading.");
+    }
     @SubscribeEvent
     public static void registerShaders(RegisterShadersEvent event) throws IOException {
         Clinker.LOGGER.info("registering shaders!");
@@ -44,5 +48,8 @@ public class ClinkerShaders {
         event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation(Clinker.MOD_ID,"rendertype_entity_unlit_cutout"), DefaultVertexFormat.NEW_ENTITY), (shader) -> rendertypeEntityCutoutUnlitShader = shader);
         event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation(Clinker.MOD_ID,"rendertype_entity_unlit_cutout_nocull"), DefaultVertexFormat.NEW_ENTITY), (shader) -> rendertypeEntityCutoutNoCullUnlitShader = shader);
         event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation(Clinker.MOD_ID,"position_color_tex_unclamped"), DefaultVertexFormat.POSITION_COLOR_TEX), (shader) -> positionColorTextureUnclampedShader = shader);
+        event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation(Clinker.MOD_ID,"chain_lightning"), DefaultVertexFormat.NEW_ENTITY), (shader) -> chainLightningShader = shader);
     }
+
+
 }

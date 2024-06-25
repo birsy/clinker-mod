@@ -1,7 +1,11 @@
 package birsy.clinker.client.render.particle;
 
+import birsy.clinker.client.render.ClinkerRenderTypes;
 import birsy.clinker.client.render.RenderUtils;
+import birsy.clinker.common.world.alchemy.effects.ChainLightningHandler;
+import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerParticles;
+import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.brigadier.StringReader;
@@ -33,10 +37,12 @@ import java.util.List;
 @OnlyIn(Dist.CLIENT)
 public class ChainLightningParticle extends Particle {
     protected TextureAtlasSprite sprite;
-    private final RenderType renderType = RenderType.energySwirl(TextureAtlas.LOCATION_PARTICLES, 0, 0);
+    private final RenderType renderType = ClinkerRenderTypes.chainLightning();
 
     Vec3 startPos, endPos;
     private List<Vec3> boltPositions;
+    private List<Float> boltDistances;
+    private float totalDistance;
 
     protected ChainLightningParticle(ClientLevel pLevel, Vec3 startPos, Vec3 endPos, SpriteSet pSprites) {
         super(pLevel, startPos.x(), startPos.y(), startPos.z());
@@ -44,24 +50,34 @@ public class ChainLightningParticle extends Particle {
         this.endPos = endPos;
         this.sprite = pSprites.get(pLevel.random);
         this.boltPositions = new ArrayList<>();
+        this.boltDistances = new ArrayList<>();
         this.boltPositions.add(startPos);
         this.boltPositions.add(endPos);
 
         // randomly split the line segment in two and jitter points
         // should look vaguely lightning-y...
         float distance = 4.0f; //startPos.distanceTo(endPos);
-        int splits = pLevel.random.nextInt((int) (distance * 4.0), (int) (distance * 8.0));
+        int splits = pLevel.random.nextInt((int) (distance * 1.0), (int) (distance * 4.0));
         for (int i = 0; i < splits; i++) {
             int splitIndex = pLevel.random.nextInt(this.boltPositions.size() - 1);
             Vec3 newPoint = this.boltPositions.get(splitIndex).add(this.boltPositions.get(splitIndex + 1)).scale(0.5);
 
-            float averageOffset = (float) newPoint.distanceTo(this.boltPositions.get(splitIndex)) * 0.5f;
+            float averageOffset = (float) newPoint.distanceTo(this.boltPositions.get(splitIndex)) * 0.2f;
             newPoint = newPoint.add(pLevel.random.nextGaussian() * averageOffset, pLevel.random.nextGaussian() * averageOffset, pLevel.random.nextGaussian() * averageOffset);
 
             this.boltPositions.add(splitIndex + 1, newPoint);
         }
 
-        this.setLifetime(1000);
+        this.totalDistance = 0.0f;
+        boltDistances.add(0.0f);
+        for (int i = 1; i < boltPositions.size(); i++) {
+            Vec3 pos1 = boltPositions.get(i - 1);
+            Vec3 pos2 = boltPositions.get(i);
+            this.totalDistance += pos1.distanceTo(pos2);
+            boltDistances.add(this.totalDistance);
+        }
+
+        this.setLifetime(ChainLightningHandler.BOLT_TRAVEL_TIME);
     }
 
     @Override
@@ -74,6 +90,8 @@ public class ChainLightningParticle extends Particle {
     }
 
     public void render(VertexConsumer pBuffer, Camera camera, float pPartialTicks) {
+        float time = (float)this.age / (float)this.lifetime;
+
         Vec3 camPos = camera.getPosition();
         PoseStack posestack = new PoseStack();
         posestack.translate(-camPos.x, -camPos.y, -camPos.z);
@@ -95,9 +113,13 @@ public class ChainLightningParticle extends Particle {
             Vector3f normal1 = new Vector3f(tangent1).cross(biTangent1);
             Vector3f normal2 = new Vector3f(tangent2).cross(biTangent2);
 
-            RenderUtils.drawFaceBetweenPoints(vertexconsumer, posestack, 0.25f, pos1, tangent1, biTangent1, normal1, sprite.getU0(), sprite.getV0(),
-                                                                                        pos2, tangent2, biTangent2, normal2, sprite.getU1(), sprite.getV1(),
-                                                                                        1, 1, 1, 1);
+            float d1 = boltDistances.get(i) / totalDistance;
+            float d2 = boltDistances.get(i + 1) / totalDistance;
+            float v1 = Mth.lerp(1.0f - d1, sprite.getV0(), sprite.getV1());
+            float v2 = Mth.lerp(1.0f - d2, sprite.getV0(), sprite.getV1());
+
+            RenderUtils.drawFaceBetweenPoints(vertexconsumer, posestack, 0.05f, pos1, tangent1, biTangent1, normal1, sprite.getU0(), v1, 1, 1, 1, time,
+                                                                                        pos2, tangent2, biTangent2, normal2, sprite.getU1(), v2, 1, 1, 1, time);
         }
 
         bufferSource.endBatch();

@@ -47,7 +47,6 @@ public class OrdnanceRenderer extends EntityRenderer<OldOrdnanceEntity> {
             pEntity.light.setRadius(Math.max(1, bombFlash * bombFlash * 2));
         }
 
-
         int overlay = OverlayTexture.pack(bombFlash, pEntity.hurtMarked && !deflection);
         int blockLight = pEntity.level().getBrightness(LightLayer.BLOCK, pEntity.blockPosition()), skyLight = pEntity.level().getBrightness(LightLayer.SKY, pEntity.blockPosition());
         if (deflection) {
