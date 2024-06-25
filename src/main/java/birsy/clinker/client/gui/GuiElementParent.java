@@ -3,6 +3,7 @@ package birsy.clinker.client.gui;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec2;
@@ -48,7 +49,11 @@ public abstract class GuiElementParent extends Screen {
         for (GuiElement root : this.roots) {
             root.render(graphics.pose(), pMouseX, pMouseY, pPartialTick);
         }
-        super.render(graphics, pMouseX, pMouseY, pPartialTick);
+
+        // not calling super so we don't get a background
+        for(Renderable renderable : this.renderables) {
+            renderable.render(graphics, pMouseX, pMouseY, pPartialTick);
+        }
     }
 
     @Override

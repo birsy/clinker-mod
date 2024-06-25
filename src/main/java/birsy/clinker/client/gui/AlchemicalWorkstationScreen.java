@@ -302,7 +302,7 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
         if (this.movingRight) this.workstation.camera.lineProgress += cameraSpeed * Minecraft.getInstance().getDeltaFrameTime();
         this.workstation.camera.update();
 
-        Vec2 middle = GuiHelper.toGuiSpace(this, this.minecraft.getWindow().getWidth() * 0.5F, this.minecraft.getWindow().getHeight() * 0.5F);
+        Vec2 middle = GuiHelper.toGuiSpace(this, this.width, this.height);
         inventoryElement.y = middle.y - (inventoryElement.height * 0.5F);
         inventoryElement.pY = inventoryElement.y;
         inventoryElement.setScreenTransition(this.getScreenTransition(pPartialTick));

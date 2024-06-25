@@ -55,8 +55,8 @@ public class StoveRenderer<T extends StoveBlockEntity> implements BlockEntityRen
         pPoseStack.translate(0, -1.5, 0);
         pPoseStack.translate(-0.5, 0.0, 0.5);
 
-        this.renderStove(pPoseStack, pBufferSource, pPackedLight, pPackedOverlay, pBlockEntity.type, pBlockEntity.facingDirection, true, false, 1);
-        this.renderStove(pPoseStack, pBufferSource, pPackedLight, pPackedOverlay, pBlockEntity.type, pBlockEntity.facingDirection, false, false, .3F);
+        this.renderStove(pPoseStack, pBufferSource, pPackedLight, pPackedOverlay, pBlockEntity.type, pBlockEntity.facingDirection, true, true   , 1);
+        this.renderStove(pPoseStack, pBufferSource, pPackedLight, pPackedOverlay, pBlockEntity.type, pBlockEntity.facingDirection, false, true, .3F);
 
         pPoseStack.popPose();
     }
