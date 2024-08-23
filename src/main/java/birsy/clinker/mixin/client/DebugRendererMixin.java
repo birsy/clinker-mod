@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(DebugRenderer.class)
-public class DebugRendererMixin {
+public abstract class DebugRendererMixin {
     @Shadow @Final public DebugRenderer.SimpleDebugRenderer chunkBorderRenderer;
 
     @Shadow @Final public DebugRenderer.SimpleDebugRenderer waterDebugRenderer;
@@ -57,7 +57,7 @@ public class DebugRendererMixin {
     @Shadow @Final public PathfindingRenderer pathfindingRenderer;
 
     @Inject(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;DDD)V", at = @At("TAIL"))
-    private void render(PoseStack poseStack, MultiBufferSource.BufferSource bufferSource, double a, double b, double c, CallbackInfo ci) {
+    private void clinker$render(PoseStack poseStack, MultiBufferSource.BufferSource bufferSource, double a, double b, double c, CallbackInfo ci) {
         for (DebugRenderer.SimpleDebugRenderer renderer : ClinkerDebugRenderers.renderers) {
             if (SharedConstants.IS_RUNNING_IN_IDE && ClinkerDebugRenderers.shouldRender) renderer.render(poseStack, bufferSource, a, b, c);
         }

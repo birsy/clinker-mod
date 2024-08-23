@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import static birsy.clinker.common.world.ChestRerollHandler.*;
 
 @Mixin(RandomizableContainerBlockEntity.class)
-public class RandomizableContainerBlockEntityMixin {
+public abstract class RandomizableContainerBlockEntityMixin {
     // wildcard mixins
     // doesn't work?
     // why not??

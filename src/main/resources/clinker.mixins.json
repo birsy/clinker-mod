@@ -12,13 +12,14 @@
     "client.DebugRendererMixin",
     "client.GameRendererMixin",
     "client.GuiMixin",
-    "client.LevelRendererMixin"
+    "client.LevelRendererMixin",
+    "client.EntityRenderDispatcherMixin"
   ],
   "mixins": [
     "common.EntityMixin",
     "common.ItemEntityMixin",
-    "common.LevelMixin",
     "common.RandomizableContainerBlockEntityMixin",
-    "common.ServerLevelMixin"
+    "common.ServerLevelMixin",
+    "common.ServerEntityMixin"
   ]
 }

@@ -24,7 +24,7 @@ import java.util.function.BooleanSupplier;
 public abstract class ServerLevelMixin {
 
     @Inject(method = "<init>(Lnet/minecraft/server/MinecraftServer;Ljava/util/concurrent/Executor;Lnet/minecraft/world/level/storage/LevelStorageSource$LevelStorageAccess;Lnet/minecraft/world/level/storage/ServerLevelData;Lnet/minecraft/resources/ResourceKey;Lnet/minecraft/world/level/dimension/LevelStem;Lnet/minecraft/server/level/progress/ChunkProgressListener;ZJLjava/util/List;ZLnet/minecraft/world/RandomSequences;)V", at = @At("TAIL"))
-    public void init(MinecraftServer pServer, Executor pDispatcher, LevelStorageSource.LevelStorageAccess pLevelStorageAccess, ServerLevelData pServerLevelData, ResourceKey pDimension, LevelStem pLevelStem, ChunkProgressListener pProgressListener, boolean pIsDebug, long pBiomeZoomSeed, List pCustomSpawners, boolean pTickTime, RandomSequences pRandomSequences, CallbackInfo ci) {
+    public void clinker$init(MinecraftServer pServer, Executor pDispatcher, LevelStorageSource.LevelStorageAccess pLevelStorageAccess, ServerLevelData pServerLevelData, ResourceKey pDimension, LevelStem pLevelStem, ChunkProgressListener pProgressListener, boolean pIsDebug, long pBiomeZoomSeed, List pCustomSpawners, boolean pTickTime, RandomSequences pRandomSequences, CallbackInfo ci) {
         ServerLevel me = (ServerLevel)(Object)this;
         //InteractableAttachment.attachManagerToLevel(me, new ServerInteractableManager(me));
 
@@ -34,7 +34,7 @@ public abstract class ServerLevelMixin {
     }
 
     @Inject(method = "tick(Ljava/util/function/BooleanSupplier;)V", at = @At("TAIL"))
-    public void tick(BooleanSupplier pHasTimeLeft, CallbackInfo ci) {
+    public void clinker$tick(BooleanSupplier pHasTimeLeft, CallbackInfo ci) {
         //InteractableManager iManager = InteractableManager.serverInteractableManagers.get(((ServerLevel)(Object)this));
         //iManager.tick();
         WorkstationManager wManager = WorkstationManager.managerByLevel.get(((ServerLevel)(Object)this));

@@ -70,7 +70,7 @@ public abstract class InterpolatedEntityRenderer<T extends LivingEntity & Interp
         if (pEntity.getSkeleton() != null) {
             for (Object obj : pEntity.getSkeleton().constraints) {
                 if (obj instanceof Constraint constraint) {
-                    constraint.renderDebugInfo(pEntity.getSkeleton(), pEntity, pPartialTicks, poseStack, pBuffer);
+                    //constraint.renderDebugInfo(pEntity.getSkeleton(), pEntity, pPartialTicks, poseStack, pBuffer);
                 }
             }
         }

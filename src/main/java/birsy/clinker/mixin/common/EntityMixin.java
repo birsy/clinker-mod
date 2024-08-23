@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Entity.class)
 public abstract class EntityMixin {
     @Inject(method = "collide(Lnet/minecraft/world/phys/Vec3;)Lnet/minecraft/world/phys/Vec3;", at = @At("RETURN"), cancellable = true)
-    private void collide(Vec3 pVec, CallbackInfoReturnable<Vec3> cir) {
+    private void clinker$collide(Vec3 pVec, CallbackInfoReturnable<Vec3> cir) {
         //Vec3 newVelocity = CollidableInteractable.collideWithEntities(cir.getReturnValue(), (Entity)(Object)this);
         //if (newVelocity != null) cir.setReturnValue(newVelocity);
     }

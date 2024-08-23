@@ -8,7 +8,7 @@ public abstract class Constraint {
         this.parent.addConstraint(this);
     }
 
-    abstract void apply();
+    protected abstract void apply();
 
     public void tick() {}
 }

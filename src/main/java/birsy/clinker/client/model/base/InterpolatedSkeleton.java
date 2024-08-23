@@ -44,7 +44,7 @@ public abstract class InterpolatedSkeleton<P extends InterpolatedSkeletonParent>
         }
         this.animate(properties);
         for (Constraint constraint : this.constraints) {
-            constraint.apply();
+            //constraint.apply();
         }
         //this.applyConstraints(8);
     }

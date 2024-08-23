@@ -205,6 +205,8 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
             float distortWiggleV1 = Mth.cos(wiggleTime) * 0.5F * distortionAmount;
             bufferbuilder.vertex(m1, x, Mth.sin((angle * 4) + (time * 0.1F)) * 5, -z).color(fogColor.x(), fogColor.y(), fogColor.z(), 0.0F).uv(((x / radius) + 1) * 0.5F + uvOffset1 + distortWiggleV1, ((z / radius) + 1) * 0.5F + uvOffset1 + distortWiggleU1).endVertex();
         }
+
+
         BufferUploader.drawWithShader(bufferbuilder.end());
 
         float aboveCloudAlphaOffset = Mth.clamp(MathUtils.mapRange(300F, 350F, 1.0F, 0.0F, camY), 0.0F, 1.0F);

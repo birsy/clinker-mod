@@ -23,30 +23,30 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 @Mixin(ClientLevel.class)
-public class ClientLevelMixin {
+public final class ClientLevelMixin {
     @Shadow @Final private Minecraft minecraft;
 
     @Inject(method = "<init>(Lnet/minecraft/client/multiplayer/ClientPacketListener;Lnet/minecraft/client/multiplayer/ClientLevel$ClientLevelData;Lnet/minecraft/resources/ResourceKey;Lnet/minecraft/core/Holder;IILjava/util/function/Supplier;Lnet/minecraft/client/renderer/LevelRenderer;ZJ)V", at = @At("TAIL"))
-    private void init(ClientPacketListener p_205505_, ClientLevel.ClientLevelData p_205506_, ResourceKey p_205507_, Holder p_205508_, int p_205509_, int p_205510_, Supplier p_205511_, LevelRenderer p_205512_, boolean p_205513_, long p_205514_, CallbackInfo ci) {
+    private void clinker$init(ClientPacketListener p_205505_, ClientLevel.ClientLevelData p_205506_, ResourceKey p_205507_, Holder p_205508_, int p_205509_, int p_205510_, Supplier p_205511_, LevelRenderer p_205512_, boolean p_205513_, long p_205514_, CallbackInfo ci) {
         ClientLevel me = (ClientLevel)(Object)this;
         //InteractableAttachment.attachManagerToLevel(me, new ClientInteractableManager(me));
     }
 
     @Inject(method = "addEntity(Lnet/minecraft/world/entity/Entity;)V", at = @At("TAIL"))
-    private void addEntity(Entity entity, CallbackInfo ci) {
+    private void clinker$addEntity(Entity entity, CallbackInfo ci) {
         if (this.minecraft.getEntityRenderDispatcher().getRenderer(entity) instanceof InterpolatedEntityRenderer renderer) {
             renderer.createSkeleton((LivingEntity) entity);
         }
     }
 
     @Inject(method = "unload(Lnet/minecraft/world/level/chunk/LevelChunk;)V", at = @At("TAIL"))
-    public void unload(LevelChunk pChunk, CallbackInfo ci) {
+    public void clinker$unload(LevelChunk pChunk, CallbackInfo ci) {
         ClientLevel me = (ClientLevel)(Object)this;
         //InteractableLevelAttachment.getInteractableManagerForLevel(me).unloadChunk(pChunk);
     }
 
     @Inject(method = "tick(Ljava/util/function/BooleanSupplier;)V", at = @At("TAIL"))
-    public void tick(BooleanSupplier pHasTimeLeft, CallbackInfo ci) {
+    public void clinker$tick(BooleanSupplier pHasTimeLeft, CallbackInfo ci) {
         WorkstationManager wManager = WorkstationManager.clientWorkstationManager;
         wManager.tick();
     }

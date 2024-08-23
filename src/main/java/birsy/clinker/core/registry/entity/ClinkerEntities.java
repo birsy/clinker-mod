@@ -11,9 +11,11 @@ import birsy.clinker.common.world.entity.salamanderOLD.SalamanderBodyEntity;
 import birsy.clinker.common.world.entity.salamanderOLD.SalamanderHeadEntity;
 import birsy.clinker.common.world.entity.gnomad.OldGnomadAxemanEntity;
 import birsy.clinker.core.Clinker;
+import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 
@@ -93,6 +95,26 @@ public class ClinkerEntities {
                     .sized(1.0F, 1.0F)
                     .build(new ResourceLocation(Clinker.MOD_ID, "mold").toString()));
 
+    public static final Supplier<EntityType<InverseKinematicsLegEntity>> LEGS = ENTITY_TYPES.register("legs", () ->
+            EntityType.Builder.of(InverseKinematicsLegEntity::new, MobCategory.MISC)
+                    .sized(1.0F, 1.0F)
+                    .build(new ResourceLocation(Clinker.MOD_ID, "legs").toString()));
+
+    public static final Supplier<EntityType<FrogNoMoreEntity>> FROG_NO_MORE = ENTITY_TYPES.register("frog_no_more", () ->
+            EntityType.Builder.of(FrogNoMoreEntity::new, MobCategory.MONSTER)
+                    .sized(1.2F, 1.0F)
+                    .build(new ResourceLocation(Clinker.MOD_ID, "frog_no_more").toString()));
+
+    public static final Supplier<EntityType<ColliderEntity>> COLLIDER = ENTITY_TYPES.register("collider", () ->
+            EntityType.Builder.<ColliderEntity>of(ColliderEntity::new, MobCategory.MISC)
+                    .sized(0.0F, 0.0F)//.noSave().noSummon()
+                    .build(new ResourceLocation(Clinker.MOD_ID, "collider").toString()));
+
+    public static final Supplier<EntityType<TestRopeEntity>> TEST_ROPE = ENTITY_TYPES.register("test_rope", () ->
+            EntityType.Builder.of(TestRopeEntity::new, MobCategory.CREATURE)
+                    .sized(1.0F, 1.0F)
+                    .build(new ResourceLocation(Clinker.MOD_ID, "test_rope").toString()));
+
     @SubscribeEvent
     public static void registerEntityAttribute(EntityAttributeCreationEvent event) {
         event.put(MUD_SCARAB.get(), MudScarabEntity.createAttributes().build());
@@ -108,6 +130,11 @@ public class ClinkerEntities {
         event.put(FAE_URN.get(), UrnEntity.createAttributes().build());
         event.put(MOLD.get(), MoldEntity.createAttributes().build());
 
+        event.put(LEGS.get(), MoldEntity.createAttributes().build());
+        event.put(FROG_NO_MORE.get(), FrogNoMoreEntity.createAttributes().build());
+
+        event.put(COLLIDER.get(), FrogNoMoreEntity.createAttributes().build());
+        event.put(TEST_ROPE.get(), FrogNoMoreEntity.createAttributes().build());
     }
 
     @SubscribeEvent
@@ -130,6 +157,12 @@ public class ClinkerEntities {
         event.registerEntityRenderer(ClinkerEntities.GNOMAD_SOLDIER.get(), NewGnomadRenderer::new);
 
         event.registerEntityRenderer(ClinkerEntities.MOLD.get(), MoldRenderer::new);
+
+        event.registerEntityRenderer(ClinkerEntities.LEGS.get(), InverseKinematicsEntityRenderer::new);
+        event.registerEntityRenderer(ClinkerEntities.FROG_NO_MORE.get(), FrogNoMoreRenderer::new);
+
+        event.registerEntityRenderer(ClinkerEntities.COLLIDER.get(), DebugEntityRenderer::new);
+        event.registerEntityRenderer(ClinkerEntities.TEST_ROPE.get(), DebugRopeEntityRenderer::new);
     }
 
     @SubscribeEvent

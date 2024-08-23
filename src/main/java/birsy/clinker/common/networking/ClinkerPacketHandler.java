@@ -55,6 +55,12 @@ public class ClinkerPacketHandler {
         registrar.play(createId(GnomadSquadDebugPacket.class), GnomadSquadDebugPacket::new, GnomadSquadDebugPacket::handle);
         registrar.play(createId(GnomadSquadRemovalDebugPacket.class), GnomadSquadRemovalDebugPacket::new, GnomadSquadRemovalDebugPacket::handle);
 
+        registrar.play(createId(ClientboundInverseKinematicsStepPacket.class), ClientboundInverseKinematicsStepPacket::new, ClientboundInverseKinematicsStepPacket::handle);
+
+        registrar.play(createId(ClientboundRopeEntityInitPacket.class), ClientboundRopeEntityInitPacket::new, ClientboundRopeEntityInitPacket::handle);
+        registrar.play(createId(ClientboundRopeEntitySegmentAddPacket.class), ClientboundRopeEntitySegmentAddPacket::new, ClientboundRopeEntitySegmentAddPacket::handle);
+        registrar.play(createId(ClientboundRopeEntitySyncPacket.class), ClientboundRopeEntitySyncPacket::new, ClientboundRopeEntitySyncPacket::handle);
+
         Clinker.LOGGER.info("REGISTERED CLINKER PACKETS!");
     }
 

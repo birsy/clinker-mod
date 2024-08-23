@@ -32,6 +32,34 @@ public class MathUtils {
         return (float) (b + (a - b) * Math.exp(- decayFactor * deltaTime));
     }
 
+    /**
+     * moves A towards B by amount
+     * @param a the value
+     * @param b the value to approach
+     * @param c the amount to approach by
+     * @return a, moved towards b
+     */
+    public static float approach(float a, float b, float amount) {
+        if (Math.abs(a - b) < amount) {
+            return b;
+        }
+        return (a > b) ? a - amount : a + amount;
+    }
+
+    /**
+     * moves A towards B by amount
+     * @param a the value
+     * @param b the value to approach
+     * @param c the amount to approach by
+     * @return a, moved towards b
+     */
+    public static double approach(double a, double b, double amount) {
+        if (Math.abs(a - b) < amount) {
+            return b;
+        }
+        return (a > b) ? a - amount : a + amount;
+    }
+
     public static double min(double... nums) {
         double min = nums[0];
         for (double num : nums) {

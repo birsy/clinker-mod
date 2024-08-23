@@ -35,8 +35,7 @@ public class ClientboundSalamanderSyncPacket extends ClientboundPacket {
     }
 
     public ClientboundSalamanderSyncPacket(FriendlyByteBuf buffer) {
-        long[] bits = buffer.readLongArray();
-        this.entityUUID = new UUID(bits[0], bits[1]);
+        this.entityUUID = buffer.readUUID();
         this.entityID = buffer.readInt();
 
         this.positions = new ArrayList<>();
@@ -51,8 +50,7 @@ public class ClientboundSalamanderSyncPacket extends ClientboundPacket {
 
     @Override
     public void write(FriendlyByteBuf buffer) {
-        long[] bits = {entityUUID.getMostSignificantBits(), entityUUID.getLeastSignificantBits()};
-        buffer.writeLongArray(bits);
+        buffer.writeUUID(entityUUID);
         buffer.writeInt(entityID);
 
         CompoundTag tag = new CompoundTag();

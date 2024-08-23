@@ -11,6 +11,7 @@ import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -103,8 +104,25 @@ public class InterpolatedBone {
         }
 
         //subtract that from the global space rotation
-
+        //and set the current rotation to the result of that.
         parentRotation.difference(globalSpaceRotation, this.rotation);
+    }
+
+    public void setModelSpaceTransform(Vector3f position, Quaternionf rotation) {
+        Matrix4f parentTransform = new Matrix4f();
+
+        for (InterpolatedBone bone : this.parentChain) {
+            parentTransform.translate(bone.x, bone.y, bone.z);
+            parentTransform.rotate(bone.rotation);
+            parentTransform.scale(bone.xSize, bone.ySize, bone.zSize);
+        }
+
+        Matrix4f modelSpaceBoneTransform = new Matrix4f().translate(position).rotate(rotation);
+        modelSpaceBoneTransform.mul(parentTransform.invert());
+
+        // position = modelSpaceBoneTransform.transformPosition(new Vector3f(0, 0, 0));
+        // rotation = modelSpaceBoneTransform.getNormalizedRotation(new Quaternionf());
+
     }
 
     protected void tick(float deltaTime) {}
@@ -115,6 +133,14 @@ public class InterpolatedBone {
         this.currentRotation.normalize();
         pPoseStack.mulPose(this.currentRotation);
         pPoseStack.scale(Mth.lerp(partialTick, pXSize, xSize), Mth.lerp(partialTick, pYSize, ySize), Mth.lerp(partialTick, pZSize, zSize));
+    }
+
+    public void transform(Matrix4f matrix4f, float partialTick) {
+        matrix4f.translate(Mth.lerp(partialTick, pX, x), Mth.lerp(partialTick, pY, y), Mth.lerp(partialTick, pZ, z));
+        this.currentRotation = pRotation.slerp(rotation, partialTick, currentRotation);
+        this.currentRotation.normalize();
+        matrix4f.rotate(this.currentRotation);
+        matrix4f.scale(Mth.lerp(partialTick, pXSize, xSize), Mth.lerp(partialTick, pYSize, ySize), Mth.lerp(partialTick, pZSize, zSize));
     }
 
     public void render(Map<String, ModelMesh> meshes, float partialTick, PoseStack pPoseStack, VertexConsumer pVertexConsumer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha, boolean drawChildren) {
@@ -159,6 +185,7 @@ public class InterpolatedBone {
 
         return pPoseStack.last().pose();
     }
+
 
     public void rotate(float angle, Direction.Axis axis) {
         switch (axis) {

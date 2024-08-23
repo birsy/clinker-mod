@@ -21,6 +21,14 @@ public class VectorUtils {
         return new Vector3d(vec.x, vec.y, vec.z);
     }
 
+    public static Vector3d toJOML(Vec3 vec, Vector3d holder) {
+        return holder.set(vec.x, vec.y, vec.z);
+    }
+
+    public static Vec3 toMoj(Vector3d vec) {
+        return new Vec3(vec.x, vec.y, vec.z);
+    }
+
     public static Vec3 slerp(Vec3 start, Vec3 end, float percent) {
         double dot = start.dot(end);
         double theta = Math.acos(dot) * percent;

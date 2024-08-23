@@ -3,10 +3,16 @@ package birsy.clinker.client.model.entity;
 import birsy.clinker.client.model.base.InterpolatedSkeleton;
 import birsy.clinker.client.model.base.InterpolatedBone;
 import birsy.clinker.client.model.base.SkeletonFactory;
+import birsy.clinker.client.model.base.constraint.Constraint;
 import birsy.clinker.client.model.base.constraint.InverseKinematicsConstraint;
 import birsy.clinker.client.model.base.mesh.ModelMesh;
 import birsy.clinker.client.model.base.mesh.StaticMesh;
 import birsy.clinker.client.model.base.AnimationProperties;
+import birsy.clinker.client.render.entity.model.base.AnimFunctions;
+import birsy.clinker.common.world.entity.FrogNoMoreEntity;
+import birsy.clinker.common.world.entity.proceduralanimation.IKLegSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -479,59 +485,129 @@ public class FrogNoMoreSkeletonFactory implements SkeletonFactory {
 		protected InverseKinematicsConstraint RightArmIK;
 		protected InverseKinematicsConstraint[] IKConstraints;
 
+		private float rollingAverageHeight = 0.0F;
+		private float rollingAverageHeight2 = 0.0F;
+
 		@Override
 		public void animate(AnimationProperties properties) {
 			for (Object value : this.parts.values()) {
 				if (value instanceof InterpolatedBone bone) {
-					//bone.reset();
+					bone.reset();
 				}
 			}
 
-			float age = properties.getNumProperty("ageInTicks");
+			FrogNoMoreEntity entity = (FrogNoMoreEntity)properties.getProperty("entity");
+			float f = properties.getNumProperty("limbSwing");
+			float f1 = 1.1F * properties.getNumProperty("limbSwingAmount");
+			float ageInTicks = properties.getNumProperty("ageInTicks");
+			float bodyYaw = properties.getNumProperty("bodyYaw");
+			float netHeadYaw = properties.getNumProperty("netHeadYaw");
+			float headPitch = properties.getNumProperty("headPitch");
+			float globalSpeed = 1.25F;
+			float globalHeight = 1.0F;
+			float globalDegree = 1.85F;
 
-			this.Body.y = this.Body.initialY + 2;
+			IKLegSystem ikLegSystem = entity.getLegSystem();
+			this.RightArmIK.target.set(ikLegSystem.getLeg(2).getTargetPos()).sub((float) entity.getX(), (float) entity.getY(), (float) entity.getZ()).mul(16.0F);
+			this.LeftArmIK.target.set(ikLegSystem.getLeg(3).getTargetPos()).sub((float) entity.getX(), (float) entity.getY(), (float) entity.getZ()).mul(16.0F);
+			this.RightLegIK.target.set(ikLegSystem.getLeg(0).getTargetPos()).sub((float) entity.getX(), (float) entity.getY(), (float) entity.getZ()).mul(16.0F);
+			this.LeftLegIK.target.set(ikLegSystem.getLeg(1).getTargetPos()).sub((float) entity.getX(), (float) entity.getY(), (float) entity.getZ()).mul(16.0F);
 
-			for (InverseKinematicsConstraint ikConstraint : IKConstraints) {
-				boolean isLeft = ikConstraint == LeftArmIK || ikConstraint == LeftLegIK;
+			float averageHeight = 0.0F;
+			for (InverseKinematicsConstraint ikConstraint : this.IKConstraints) {
+				ikConstraint.poleTarget.set(ikConstraint.target).add(Mth.sin(bodyYaw * Mth.DEG_TO_RAD) * 16, 0.25F * 16, Mth.cos(bodyYaw * Mth.DEG_TO_RAD) * 16);
+				averageHeight += ikConstraint.target.y;
+			}
+			averageHeight *= 0.25;
+			this.rollingAverageHeight = Mth.lerp(0.05F, rollingAverageHeight, averageHeight);
+			this.rollingAverageHeight2 = Mth.lerp(0.05F, rollingAverageHeight2, averageHeight);
 
-				Vector3f point = ikConstraint.points.get(0);
-				ikConstraint.target = new Vector3f(point);
-				ikConstraint.target.add(isLeft ? -8 : 8, 0, 0);
-				ikConstraint.poleTarget.set(ikConstraint.target.x(), ikConstraint.target.y(), ikConstraint.target.z());
-				ikConstraint.poleTarget.add(0, 3, 12);
+			this.Body.y += Mth.sin(ageInTicks * 0.07F) * 0.1F;
+			this.Body.rotate((float) Math.toRadians(bodyYaw), Direction.Axis.Y);
+			this.Body.y += rollingAverageHeight2;
+			AnimFunctions.look(Neck, netHeadYaw, Math.max(headPitch, 0.0F), 2, 2);
+			AnimFunctions.look(Head, netHeadYaw, Math.max(headPitch, 0.0F), 2, 2);
+
+			AnimFunctions.swing(this.Tail, globalSpeed * 0.05F, globalDegree * 0.02F, false, -2.0F, 0.0F, ageInTicks, 0.5F, Direction.Axis.Z);
+			AnimFunctions.swing(this.Body, globalSpeed * 0.05F, globalDegree * 0.02F, false, 0.0F, 0.0F, ageInTicks, 0.5F, Direction.Axis.Z);
+			AnimFunctions.swing(this.Neck, globalSpeed * 0.05F, globalDegree * 0.02F, false, 2.0F, 0.0F, ageInTicks, 0.5F, Direction.Axis.Z);
+			AnimFunctions.swing(this.Head, globalSpeed * 0.05F, globalDegree * 0.02F, false, 4.0F, 0.0F, ageInTicks, 0.5F, Direction.Axis.Z);
+			AnimFunctions.swing(this.Head, globalSpeed * 0.05F, globalDegree * 0.02F, false, 4.0F, -0.1F, ageInTicks, 0.5F, Direction.Axis.X);
+			AnimFunctions.swing(this.Neck, globalSpeed * 0.03F, globalDegree * 0.02F, false, 4.0F, -0.1F, ageInTicks, 0.5F, Direction.Axis.X);
+			AnimFunctions.swing(this.Jaw, globalSpeed * 0.04F, globalDegree * 0.03F, false, 4.0F, -0.1F, ageInTicks, 0.5F, Direction.Axis.X);
+
+			this.Head.rotate(rollingAverageHeight * 0.005F, Direction.Axis.X);
+			this.Neck.rotate(-rollingAverageHeight * 0.005F, Direction.Axis.X);
+			this.Body.rotate(rollingAverageHeight * 0.005F, Direction.Axis.X);
+
+			this.UpperRightArm.rotation.rotateZ(90.0F * Mth.DEG_TO_RAD);
+			this.UpperLeftArm.rotation.rotateZ(-90.0F * Mth.DEG_TO_RAD);
+			this.UpperRightLeg.rotation.rotateZ(90.0F * Mth.DEG_TO_RAD);
+			this.UpperLeftLeg.rotation.rotateZ(-90.0F * Mth.DEG_TO_RAD);
+
+			for (Object constraint : this.constraints) {
+				if (constraint instanceof Constraint c) {
+					c.apply();
+				}
 			}
 
-			float stepSpeed = age * 0.2F;
-			float stepHeight = 4;
-			float strideLength = -8;
-			LeftLegIK.target.y = (((Mth.sin(stepSpeed) + 1) * 0.5F) * stepHeight + 2);
-			LeftLegIK.target.z = (LeftLegIK.target.z() + Mth.cos(stepSpeed * 1.0F) * -strideLength);
-			LeftArmIK.target.y = (((Mth.cos(stepSpeed) + 1) * 0.5F) * stepHeight + 2);
-			LeftArmIK.target.z = (LeftArmIK.target.z() + Mth.sin(stepSpeed * 1.0F) * strideLength);
-			RightLegIK.target.y = (((Mth.cos(stepSpeed) + 1) * 0.5F) * stepHeight + 2);
-			RightLegIK.target.z = (RightLegIK.target.z() + Mth.sin(stepSpeed * 1.0F) * strideLength);
-			RightArmIK.target.y = (((Mth.sin(stepSpeed) + 1) * 0.5F) * stepHeight + 2);
-			RightArmIK.target.z = (RightArmIK.target.z() + Mth.cos(stepSpeed * 1.0F) * -strideLength);
-
-			float aY = 0;
-			float aZ = 0;
-			for (InverseKinematicsConstraint ikConstraint : IKConstraints) {
-				aY += ikConstraint.target.y();
-				aZ += ikConstraint.target.z() - ikConstraint.points.get(0).z();
-			}
-			aY /= (float)IKConstraints.length;
-			aZ /= (float)IKConstraints.length;
-
-			this.Body.y += aY * 1;
-			this.Body.z = this.Body.initialZ - aZ * 0.25F;
-
-
-			Quaternionf footRotation = new Quaternionf().rotateAxis(3.1415F, 1, 0, 0);
+			Quaternionf footRotation = new Quaternionf().rotateAxis(3.1415F, 1, 0, 0).premul(this.Body.rotation);
 			this.LeftFoot.setGlobalSpaceRotation(footRotation);
 			this.RightFoot.setGlobalSpaceRotation(footRotation);
-			Quaternionf handRotation = new Quaternionf().rotateAxis(1.57075F, 1, 0, 0);
+			Quaternionf handRotation = new Quaternionf().rotateAxis(1.57075F, 1, 0, 0).premul(this.Body.rotation);
 			this.LeftHand.setGlobalSpaceRotation(handRotation);
 			this.RightHand.setGlobalSpaceRotation(handRotation);
+
+			Vector3f poseSpaceTailPos = new Vector3f(this.Tail.x, this.Tail.y, this.Tail.z).rotateY((float) Math.toRadians(bodyYaw));
+			Vector3f tailDirection = entity.tail.position.toVector3f().sub((float) entity.getX(), (float) entity.getY(), (float) entity.getZ()).mul(16.0F);
+			tailDirection.sub(poseSpaceTailPos).normalize();
+			this.Tail.setGlobalSpaceRotation(new Quaternionf().lookAlong(tailDirection.mul(1, 1, -1), new Vector3f(0, 1, 0)));
+
+//			float age = properties.getNumProperty("ageInTicks");
+//
+//			this.Body.y = this.Body.initialY + 2;
+//
+//			for (InverseKinematicsConstraint ikConstraint : IKConstraints) {
+//				boolean isLeft = ikConstraint == LeftArmIK || ikConstraint == LeftLegIK;
+//
+//				Vector3f point = ikConstraint.points.get(0);
+//				ikConstraint.target = new Vector3f(point);
+//				ikConstraint.target.add(isLeft ? -8 : 8, 0, 0);
+//				ikConstraint.poleTarget.set(ikConstraint.target.x(), ikConstraint.target.y(), ikConstraint.target.z());
+//				ikConstraint.poleTarget.add(0, 3, 12);
+//			}
+//
+//			float stepSpeed = age * 0.2F;
+//			float stepHeight = 4;
+//			float strideLength = -8;
+//			LeftLegIK.target.y = (((Mth.sin(stepSpeed) + 1) * 0.5F) * stepHeight + 2);
+//			LeftLegIK.target.z = (LeftLegIK.target.z() + Mth.cos(stepSpeed * 1.0F) * -strideLength);
+//			LeftArmIK.target.y = (((Mth.cos(stepSpeed) + 1) * 0.5F) * stepHeight + 2);
+//			LeftArmIK.target.z = (LeftArmIK.target.z() + Mth.sin(stepSpeed * 1.0F) * strideLength);
+//			RightLegIK.target.y = (((Mth.cos(stepSpeed) + 1) * 0.5F) * stepHeight + 2);
+//			RightLegIK.target.z = (RightLegIK.target.z() + Mth.sin(stepSpeed * 1.0F) * strideLength);
+//			RightArmIK.target.y = (((Mth.sin(stepSpeed) + 1) * 0.5F) * stepHeight + 2);
+//			RightArmIK.target.z = (RightArmIK.target.z() + Mth.cos(stepSpeed * 1.0F) * -strideLength);
+//
+//			float aY = 0;
+//			float aZ = 0;
+//			for (InverseKinematicsConstraint ikConstraint : IKConstraints) {
+//				aY += ikConstraint.target.y();
+//				aZ += ikConstraint.target.z() - ikConstraint.points.get(0).z();
+//			}
+//			aY /= (float)IKConstraints.length;
+//			aZ /= (float)IKConstraints.length;
+//
+//			this.Body.y += aY * 1;
+//			this.Body.z = this.Body.initialZ - aZ * 0.25F;
+//
+//
+//			Quaternionf footRotation = new Quaternionf().rotateAxis(3.1415F, 1, 0, 0);
+//			this.LeftFoot.setGlobalSpaceRotation(footRotation);
+//			this.RightFoot.setGlobalSpaceRotation(footRotation);
+//			Quaternionf handRotation = new Quaternionf().rotateAxis(1.57075F, 1, 0, 0);
+//			this.LeftHand.setGlobalSpaceRotation(handRotation);
+//			this.RightHand.setGlobalSpaceRotation(handRotation);
 		}
 	}
 }

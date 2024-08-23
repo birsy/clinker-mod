@@ -94,7 +94,7 @@ public class DebugRenderUtil {
         pPoseStack.popPose();
     }
 
-    public static void renderCircle(PoseStack pPoseStack, VertexConsumer pConsumer, int resolution, float radius, double x, double y, double z, float pRed, float pGreen, float pBlue, float pAlpha) {
+    public static void renderCircleBillboard(PoseStack pPoseStack, VertexConsumer pConsumer, int resolution, float radius, double x, double y, double z, float pRed, float pGreen, float pBlue, float pAlpha) {
         Minecraft mc = Minecraft.getInstance();
         Camera pRenderInfo = mc.gameRenderer.getMainCamera();
 
@@ -113,11 +113,27 @@ public class DebugRenderUtil {
             float s2 = Mth.sin(angle2) * radius;
             float c2 = Mth.cos(angle2) * radius;
 
-            Vector3f normal = new Vector3f(s1, 0, c1);
-            normal.sub(new Vector3f(s2, 0, c2));
-            normal.normalize();
-
             renderLine(matrix4f, matrix3f, pConsumer, s1, c1, 0, s2, c2, 0, pRed, pGreen, pBlue, pAlpha);
+        }
+
+        pPoseStack.popPose();
+    }
+
+    public static void renderCircle(PoseStack pPoseStack, VertexConsumer pConsumer, int resolution, float radius, double x, double y, double z, float pRed, float pGreen, float pBlue, float pAlpha) {
+        pPoseStack.pushPose();
+        pPoseStack.translate(x, y, z);
+
+        Matrix4f matrix4f = pPoseStack.last().pose();
+        Matrix3f matrix3f = pPoseStack.last().normal();
+        for (int segment = 0; segment < resolution; segment++) {
+            float angle1 = (segment / (float)resolution) * Mth.TWO_PI;
+            float angle2 = ((segment + 1) / (float)resolution) * Mth.TWO_PI;
+            float s1 = Mth.sin(angle1) * radius;
+            float c1 = Mth.cos(angle1) * radius;
+            float s2 = Mth.sin(angle2) * radius;
+            float c2 = Mth.cos(angle2) * radius;
+
+            renderLine(matrix4f, matrix3f, pConsumer, s1, 0, c1, s2, 0, c2, pRed, pGreen, pBlue, pAlpha);
         }
 
         pPoseStack.popPose();
@@ -153,12 +169,9 @@ public class DebugRenderUtil {
     }
 
     public static void renderLine(Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer pConsumer, float minX, float minY, float minZ, float maxX, float maxY, float maxZ, float pRed, float pGreen, float pBlue, float pAlpha) {
-        Vector3f normal = new Vector3f(minX, minY, minZ);
-        normal.sub(new Vector3f(maxX, maxY, maxZ));
-        normal.normalize();
-
-        pConsumer.vertex(matrix4f, minX, minY, minZ).color(pRed, pGreen, pBlue, pAlpha).normal(matrix3f, normal.x(), normal.y(), normal.z()).endVertex();
-        pConsumer.vertex(matrix4f, maxX, maxY, maxZ).color(pRed, pGreen, pBlue, pAlpha).normal(matrix3f, normal.x(), normal.y(), normal.z()).endVertex();
+        float length = Mth.sqrt((minX - maxX)*(minX - maxX) + (minY - maxY)*(minY - maxY) + (minZ - maxZ)*(minZ - maxZ));
+        pConsumer.vertex(matrix4f, minX, minY, minZ).color(pRed, pGreen, pBlue, pAlpha).normal(matrix3f, (minX - maxX) / length, (minY - maxY) / length, (minZ - maxZ) / length).endVertex();
+        pConsumer.vertex(matrix4f, maxX, maxY, maxZ).color(pRed, pGreen, pBlue, pAlpha).normal(matrix3f, (minX - maxX) / length, (minY - maxY) / length, (minZ - maxZ) / length).endVertex();
     }
 
 }

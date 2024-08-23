@@ -4,7 +4,6 @@ import birsy.clinker.client.model.base.InterpolatedBone;
 import birsy.clinker.client.model.base.InterpolatedSkeleton;
 import birsy.clinker.client.model.base.InterpolatedSkeletonParent;
 import birsy.clinker.client.render.DebugRenderUtil;
-import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.VectorUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -55,7 +54,7 @@ public class InverseKinematicsConstraint implements Constraint {
         for (int i = 0; i < points.size() - 1; i++) {
             segmentLengths.add(points.get(i + 1).distance(points.get(i)));
         }
-        this.updatePointLocations();
+        this.setPointLocations();
 
         jointDirections = new boolean[points.size()];
     }
@@ -65,7 +64,7 @@ public class InverseKinematicsConstraint implements Constraint {
 
     @Override
     public void apply() {
-        this.updatePointLocations();
+        this.setPointLocations();
         this.updateJointDirections();
 
         // thanks sebastian lague
@@ -187,7 +186,7 @@ public class InverseKinematicsConstraint implements Constraint {
     }
 
     // updates IK point locations based off bone transforms.
-    private List<Vector3f> updatePointLocations() {
+    private List<Vector3f> setPointLocations() {
         PoseStack stack = new PoseStack();
         for (int i = 0; i < this.points.size() - 1; i++) {
             stack.pushPose();

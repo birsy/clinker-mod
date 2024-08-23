@@ -25,7 +25,7 @@ public abstract class GameRendererMixin {
     @Shadow @Final private Camera mainCamera;
 
     @Inject(method = "renderLevel(FJLcom/mojang/blaze3d/vertex/PoseStack;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;prepareCullFrustum(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/world/phys/Vec3;Lorg/joml/Matrix4f;)V"))
-    private void renderLevel(float pPartialTicks, long pFinishTimeNano, PoseStack pMatrixStack, CallbackInfo ci) {
+    private void clinker$renderLevel(float pPartialTicks, long pFinishTimeNano, PoseStack pMatrixStack, CallbackInfo ci) {
         if (minecraft.screen instanceof AlchemicalWorkstationScreen screen) {
             screen.setCameraView(mainCamera, pMatrixStack, minecraft.getPartialTick());
         }

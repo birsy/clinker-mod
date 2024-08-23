@@ -71,6 +71,7 @@ public class CollidingParticle {
         Vec3 velocity = this.getDeltaMovement();
 
         velocity = velocity.add(pushes);
+        velocity.scale(0.5F);
         this.pushes = Vec3.ZERO;
 
         this.physicsPrevPosition = this.position;
