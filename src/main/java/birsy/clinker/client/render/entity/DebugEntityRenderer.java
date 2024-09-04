@@ -31,8 +31,10 @@ public class DebugEntityRenderer extends EntityRenderer<Entity> {
     @Override
     public void render(Entity pEntity, float pEntityYaw, float pPartialTick, PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight) {
         super.render(pEntity, pEntityYaw, pPartialTick, pPoseStack, pBuffer, pPackedLight);
-        //DebugRenderUtil.renderCubeCentered(pPoseStack, pBuffer.getBuffer(RenderType.LINES), 1,1,1,1);
-        this.dispatcher.renderSingleBlock(Blocks.POLISHED_DEEPSLATE.defaultBlockState(), pPoseStack, pBuffer, pPackedLight, OverlayTexture.NO_OVERLAY);
+        pPoseStack.pushPose();
+        pPoseStack.translate(-0.5, 0, -0.5);
+        //this.dispatcher.renderSingleBlock(Blocks.POLISHED_DEEPSLATE.defaultBlockState(), pPoseStack, pBuffer, pPackedLight, OverlayTexture.NO_OVERLAY);
+        pPoseStack.popPose();
     }
 
     @Override

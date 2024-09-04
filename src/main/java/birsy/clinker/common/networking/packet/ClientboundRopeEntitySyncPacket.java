@@ -47,20 +47,23 @@ public class ClientboundRopeEntitySyncPacket extends ClientboundPacket {
         ClientLevel level = Minecraft.getInstance().level;
         Entity entity = level.getEntity(this.entityId);
         if (entity == null || !(entity instanceof RopeEntity)) {
-            Clinker.LOGGER.warn("No rope entity with id " + this.entityId + " found on client! Unable to synchronize segments!");
+            Clinker.LOGGER.warn("No rope entity with id {} found on client! Unable to synchronize segments!", this.entityId);
             return;
         }
 
         RopeEntity ropeEntity = (RopeEntity) entity;
         if (ropeEntity.segments.size()*3 != this.segmentPositions.length) {
-            Clinker.LOGGER.warn("Rope entity with id " + this.entityId + " has mismatched segment count! Unable to synchronize segments!");
+            Clinker.LOGGER.warn("Rope entity with id {} has mismatched segment count! Unable to synchronize segments!", this.entityId);
             return;
         }
 
         for (int i = 0; i < ropeEntity.segments.size(); i++) {
             int j = i * 3;
             RopeEntity.RopeEntitySegment segment = ((RopeEntity.RopeEntitySegment) ropeEntity.segments.get(i));
-            segment.setNextPosition(this.segmentPositions[j + 0], this.segmentPositions[j + 1], this.segmentPositions[j + 2]);
+            segment.setNextPosition(
+                    this.segmentPositions[j + 0],
+                    this.segmentPositions[j + 1],
+                    this.segmentPositions[j + 2]);
         }
     }
 }

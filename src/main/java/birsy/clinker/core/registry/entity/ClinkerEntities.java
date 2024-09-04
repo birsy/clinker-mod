@@ -105,9 +105,9 @@ public class ClinkerEntities {
                     .sized(1.2F, 1.0F)
                     .build(new ResourceLocation(Clinker.MOD_ID, "frog_no_more").toString()));
 
-    public static final Supplier<EntityType<ColliderEntity>> COLLIDER = ENTITY_TYPES.register("collider", () ->
-            EntityType.Builder.<ColliderEntity>of(ColliderEntity::new, MobCategory.MISC)
-                    .sized(0.0F, 0.0F)//.noSave().noSummon()
+    public static final Supplier<EntityType<ColliderEntity<?>>> COLLIDER = ENTITY_TYPES.register("collider", () ->
+            EntityType.Builder.<ColliderEntity<?>>of(ColliderEntity::new, MobCategory.MISC)
+                    .sized(1.0F, 1.0F).noSave().noSummon()
                     .build(new ResourceLocation(Clinker.MOD_ID, "collider").toString()));
 
     public static final Supplier<EntityType<TestRopeEntity>> TEST_ROPE = ENTITY_TYPES.register("test_rope", () ->
@@ -133,7 +133,7 @@ public class ClinkerEntities {
         event.put(LEGS.get(), MoldEntity.createAttributes().build());
         event.put(FROG_NO_MORE.get(), FrogNoMoreEntity.createAttributes().build());
 
-        event.put(COLLIDER.get(), FrogNoMoreEntity.createAttributes().build());
+        //event.put(COLLIDER.get(), FrogNoMoreEntity.createAttributes().build());
         event.put(TEST_ROPE.get(), FrogNoMoreEntity.createAttributes().build());
     }
 

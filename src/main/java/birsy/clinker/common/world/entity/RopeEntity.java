@@ -2,12 +2,17 @@ package birsy.clinker.common.world.entity;
 
 import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.ClientboundRopeEntitySegmentAddPacket;
+import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.VectorUtils;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.IceBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -39,7 +44,7 @@ public abstract class RopeEntity<T extends RopeEntity.RopeEntitySegment> extends
         super.tick();
         if (!this.segments.isEmpty()) {
             Vector3dc headPos = segments.get(0).getPosition();
-            //this.setPos(headPos.x(), headPos.y(), headPos.z());
+            this.setPos(headPos.x(), headPos.y(), headPos.z());
         }
         this.updateSegments();
     }
@@ -85,38 +90,42 @@ public abstract class RopeEntity<T extends RopeEntity.RopeEntitySegment> extends
     private Vector3d direction = new Vector3d();
     private void updateSegments() {
         if (this.level().isClientSide()) {
-            //for (T segment : this.segments) segment.updateClient();
+            for (T segment : this.segments) segment.updateClient();
             return;
         }
 
         for (T segment : this.segments) {
-            //segment.integrate();
+            segment.accelerate(0, -0.08, 0);
+            segment.integrate();
         }
         // run the rope simulation
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < segments.size() - 1; j++) {
-//                T segmentA = segments.get(j + 0);
-//                T segmentB = segments.get(j + 1);
-//
-//                Vector3d pos1 = segmentA.nextPosition;
-//                Vector3d pos2 = segmentB.nextPosition;
-//
-//                pos1.add(pos2, center).mul(0.5);
-//                pos1.sub(pos2, direction).normalize().mul(0.5);
-//
-//                center.add(direction.mul(segmentA.length, segmentA.nextPosition), segmentA.nextPosition);
-//                center.sub(direction.mul(segmentB.length, segmentB.nextPosition), segmentB.nextPosition);
+                T segmentA = segments.get(j + 0);
+                T segmentB = segments.get(j + 1);
+
+                Vector3d pos1 = segmentA.nextPosition;
+                Vector3d pos2 = segmentB.nextPosition;
+
+                pos1.add(pos2, center).mul(0.5);
+                pos1.sub(pos2, direction).normalize().mul(0.5);
+
+                center.add(direction.mul(segmentA.length*2, segmentA.nextPosition), segmentA.nextPosition);
+                center.sub(direction.mul(segmentB.length*2, segmentB.nextPosition), segmentB.nextPosition);
             }
 
             // we don't need to run the collision solver for every rope iteration, only a couple will do fine.
-            if (i % 3 == 0) {
+            if (true) {
                 for (T segment : this.segments) {
-                    //segment.applyLevelCollisionsAndFinalize(this.level());
+                    segment.applyLevelCollisionsAndFinalize(this.level());
                 }
             }
         }
+        int i = 0;
         for (T segment : this.segments) {
-            //segment.finalizeSim();
+            segment.finalizeSim();
+            //if (i == 0) Clinker.LOGGER.info(segment.position);
+            i++;
         }
     }
 
@@ -151,6 +160,7 @@ public abstract class RopeEntity<T extends RopeEntity.RopeEntitySegment> extends
                     zMovement *= 0.05F;
                     if (!pushReceiver.isVehicle() && pushReceiver.isPushable()) {
                         this.push(pushReceiver, -xMovement, 0.0, -zMovement);
+                        //this.push(-xMovement, 0.0, -zMovement);
                     }
 
                     if (!pusher.isVehicle() && pusher.isPushable()) {
@@ -180,7 +190,6 @@ public abstract class RopeEntity<T extends RopeEntity.RopeEntitySegment> extends
             this.length = length;
             if (!this.parent.level().isClientSide()) {
                 this.collider = ColliderEntity.create(parent, radius * 2.0F, radius * 2.0F);
-                this.collider.noPhysics = true;
                 this.parent.level().addFreshEntity(this.collider);
             }
         }
@@ -230,21 +239,34 @@ public abstract class RopeEntity<T extends RopeEntity.RopeEntitySegment> extends
             this.position.add(velocity, this.nextPosition);
         }
 
+        Vector3d velocityWithoutCollision = new Vector3d();
         protected void applyLevelCollisionsAndFinalize(Level level) {
             AABB aabb = new AABB(
                     this.position.x + radius, this.position.y + radius, this.position.z + radius,
                     this.position.x - radius, this.position.y - radius, this.position.z - radius
             );
             this.nextPosition.sub(this.position, this.velocity);
+            this.velocityWithoutCollision.set(this.velocity);
             List<VoxelShape> list = level.getEntityCollisions(parent, aabb.expandTowards(this.velocity.x, this.velocity.y, this.velocity.z));
             VectorUtils.toJOML(collideBoundingBox(parent, VectorUtils.toMoj(this.velocity), aabb, level, list), this.velocity);
+
+            // apply friction
+            // ...only on y-axis. simplifies + this is actually how vanilla handles it LOL
+            // sorry ryan. Will Not Work With Landlord :)
+            if (Math.abs(this.velocity.y - this.velocityWithoutCollision.y) > 0.01) {
+                // get the block at our feet
+                BlockPos feetPosition = BlockPos.containing(this.position.x, this.position.y - (this.radius + 0.01), this.position.z);
+                float friction = this.parent.level().getBlockState(feetPosition).getFriction(this.parent.level(), feetPosition, this.parent);
+                friction = Mth.lerp(0.5F, friction, 1.0F);
+                velocity.mul(friction, 1.0F, friction);
+            }
 
             this.position.add(velocity, this.nextPosition);
         }
 
         protected void finalizeSim() {
             this.position.set(this.nextPosition);
-            this.collider.setPos(this.position.x, this.position.y, this.position.z);
+            this.collider.setPos(this.position.x, this.position.y - (this.radius), this.position.z);
         }
 
         @OnlyIn(Dist.CLIENT)

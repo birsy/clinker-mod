@@ -34,9 +34,9 @@ public class TestRopeEntity extends RopeEntity<RopeEntity.RopeEntitySegment> {
 
 
         for (int i = 0; i < this.segments.size(); i++) {
-            RopeEntitySegment segment = this.segments.get(i);
-            segment.setInitialPosition(this.getX(), this.getY() + 0.5, this.getZ() + i);
-            segment.collider.setPos(this.getX(), this.getY(), this.getZ() + i);
+            //RopeEntitySegment segment = this.segments.get(i);
+            //segment.setInitialPosition(this.getX(), this.getY() + 0.5, this.getZ() + i);
+            //segment.collider.setPos(this.getX(), this.getY(), this.getZ() + i);
             //Clinker.LOGGER.info(segment.collider.getPosition(1.0F));
         }
     }
