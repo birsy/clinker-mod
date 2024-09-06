@@ -112,7 +112,7 @@ public class ClinkerEntities {
 
     public static final Supplier<EntityType<TestRopeEntity>> TEST_ROPE = ENTITY_TYPES.register("test_rope", () ->
             EntityType.Builder.of(TestRopeEntity::new, MobCategory.CREATURE)
-                    .sized(1.0F, 1.0F)
+                    .sized(0.5F, 0.5F)
                     .build(new ResourceLocation(Clinker.MOD_ID, "test_rope").toString()));
 
     @SubscribeEvent
@@ -133,7 +133,7 @@ public class ClinkerEntities {
         event.put(LEGS.get(), MoldEntity.createAttributes().build());
         event.put(FROG_NO_MORE.get(), FrogNoMoreEntity.createAttributes().build());
 
-        //event.put(COLLIDER.get(), FrogNoMoreEntity.createAttributes().build());
+        //event.put(TEST.get(), FrogNoMoreEntity.createAttributes().build());
         event.put(TEST_ROPE.get(), FrogNoMoreEntity.createAttributes().build());
     }
 
@@ -161,7 +161,7 @@ public class ClinkerEntities {
         event.registerEntityRenderer(ClinkerEntities.LEGS.get(), InverseKinematicsEntityRenderer::new);
         event.registerEntityRenderer(ClinkerEntities.FROG_NO_MORE.get(), FrogNoMoreRenderer::new);
 
-        event.registerEntityRenderer(ClinkerEntities.COLLIDER.get(), DebugEntityRenderer::new);
+        event.registerEntityRenderer(ClinkerEntities.COLLIDER.get(), NoopRenderer::new);
         event.registerEntityRenderer(ClinkerEntities.TEST_ROPE.get(), DebugRopeEntityRenderer::new);
     }
 

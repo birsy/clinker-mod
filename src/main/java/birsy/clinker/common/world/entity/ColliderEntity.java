@@ -16,6 +16,7 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
@@ -25,7 +26,9 @@ import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.api.distmarker.Dist;
@@ -47,7 +50,7 @@ public class ColliderEntity<T extends Entity & CollisionParent> extends Entity i
 
     public ColliderEntity(EntityType<? extends ColliderEntity> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
-        this.setInvulnerable(true);
+        //this.setInvulnerable(true);
         //this.noPhysics = true;
     }
 
@@ -56,17 +59,27 @@ public class ColliderEntity<T extends Entity & CollisionParent> extends Entity i
     }
 
     public ColliderEntity<T> setParent(T parent) {
-        this.parentMob = parent;
         this.entityData.set(DATA_PARENT_ID_ID, parent.getId());
+        this.parentMob = parent;
+        this.updateParent();
         return this;
     }
 
+    private void updateParent() {
+        this.blocksBuilding = this.parentMob.blocksBuilding;
+    }
+
     public T getParent() {
-        if (parentMob == null) {
+        if (parentMob == null || this.level().getEntity(this.entityData.get(DATA_PARENT_ID_ID)) != parentMob) {
             Entity newParentMob = this.level().getEntity(this.entityData.get(DATA_PARENT_ID_ID));
             if (newParentMob != null) {
-                if (newParentMob instanceof Entity && newParentMob instanceof CollisionParent) this.parentMob = (T) newParentMob;
-                else throw new ClassCastException("Invalid entity type of entity with id " + this.entityData.get(DATA_PARENT_ID_ID) + " for ColliderEntity!");
+                if (newParentMob instanceof Entity && newParentMob instanceof CollisionParent) {
+                    this.parentMob = (T) newParentMob;
+                    this.updateParent();
+                } else {
+                    Clinker.LOGGER.error("Something has gone terribly wrong. No valid entity exists with id {} for ColliderEntity!", this.entityData.get(DATA_PARENT_ID_ID));
+                    this.remove(RemovalReason.DISCARDED);
+                }
             }
         }
 
@@ -79,9 +92,11 @@ public class ColliderEntity<T extends Entity & CollisionParent> extends Entity i
         if (!this.level().isClientSide) {
             if (this.parentMob == null || this.parentMob.isRemoved() || this.parentMob.level() != this.level()) {
                 this.remove(RemovalReason.DISCARDED);
-            } else {
-                this.entityData.set(DATA_PARENT_ID_ID, this.parentMob.getId());
             }
+        }
+
+        if (this.canBeCollidedWith()) {
+            this.pushEntities();
         }
     }
 
@@ -123,7 +138,7 @@ public class ColliderEntity<T extends Entity & CollisionParent> extends Entity i
 
     @Override
     public boolean isPickable() {
-        if (this.getParent() == null) return false;
+        if (this.getParent() == null) return super.isPickable();
         return this.getParent().isPickable();
     }
 
@@ -143,27 +158,72 @@ public class ColliderEntity<T extends Entity & CollisionParent> extends Entity i
 
     @Override
     public void push(Entity pusher) {
-        if (pusher instanceof Player) Clinker.LOGGER.info("pushed!" + pusher.getName().getString());
         if (this.getParent() == null) return;
         this.getParent().push(this, pusher);
     }
 
     @Override
     public boolean isPushable() {
-        if (this.getParent() == null) return true;
+        if (this.getParent() == null) return super.isPushable();
         return this.getParent().isPushable();
     }
 
     @Override
     public boolean is(Entity pEntity) {
+        if (this.parentMob == null) return super.is(pEntity);
         if (pEntity instanceof ColliderEntity<?> collider) return collider.parentMob == this.getParent();
         return this == pEntity || this.getParent() == pEntity;
     }
 
     @Override
     public boolean canCollideWith(Entity pEntity) {
-        if (pEntity.is(this.getParent())) return false;
+        if (this.is(pEntity)) return false;
         return super.canCollideWith(pEntity);
+    }
+
+    @Override
+    public boolean canBeCollidedWith() {
+        if (this.getParent() == null) return super.canBeCollidedWith();
+        return this.getParent().canBeCollidedWith();
+    }
+
+    @Override
+    public boolean canChangeDimensions() {
+        return false;
+    }
+
+    // stolen from LivingEntity
+    protected void pushEntities() {
+        if (this.level().isClientSide()) {
+            this.level().getEntities(EntityTypeTest.forClass(Player.class), this.getBoundingBox(), EntitySelector.pushableBy(this)).forEach(this::doPush);
+        } else {
+            List<Entity> nearbyEntities = this.level().getEntities(this, this.getBoundingBox(), EntitySelector.pushableBy(this));
+            if (!nearbyEntities.isEmpty()) {
+                int i = this.level().getGameRules().getInt(GameRules.RULE_MAX_ENTITY_CRAMMING);
+                if (i > 0 && nearbyEntities.size() > i - 1 && this.random.nextInt(4) == 0) {
+                    int j = 0;
+
+                    for(Entity entity : nearbyEntities) {
+                        if (!entity.isPassenger()) {
+                            ++j;
+                        }
+                    }
+
+                    if (j > i - 1) {
+                        this.hurt(this.damageSources().cramming(), 6.0F);
+                    }
+                }
+
+                for(Entity entity1 : nearbyEntities) {
+                    this.doPush(entity1);
+                }
+            }
+        }
+    }
+
+
+    protected void doPush(Entity p_20971_) {
+        p_20971_.push(this);
     }
 
     @Override
@@ -187,6 +247,9 @@ public class ColliderEntity<T extends Entity & CollisionParent> extends Entity i
     public void onSyncedDataUpdated(EntityDataAccessor<?> pKey) {
         super.onSyncedDataUpdated(pKey);
         if (DATA_HEIGHT_ID.equals(pKey) || DATA_WIDTH_ID.equals(pKey)) {
+            this.setBoundingBox(this.makeBoundingBox());
+        }
+        if (DATA_PARENT_ID_ID.equals(pKey)) {
             this.setBoundingBox(this.makeBoundingBox());
         }
     }

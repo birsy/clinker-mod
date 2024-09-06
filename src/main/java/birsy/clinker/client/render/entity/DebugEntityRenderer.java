@@ -33,7 +33,7 @@ public class DebugEntityRenderer extends EntityRenderer<Entity> {
         super.render(pEntity, pEntityYaw, pPartialTick, pPoseStack, pBuffer, pPackedLight);
         pPoseStack.pushPose();
         pPoseStack.translate(-0.5, 0, -0.5);
-        //this.dispatcher.renderSingleBlock(Blocks.POLISHED_DEEPSLATE.defaultBlockState(), pPoseStack, pBuffer, pPackedLight, OverlayTexture.NO_OVERLAY);
+        this.dispatcher.renderSingleBlock(Blocks.DISPENSER.defaultBlockState(), pPoseStack, pBuffer, pPackedLight, OverlayTexture.NO_OVERLAY);
         pPoseStack.popPose();
     }
 

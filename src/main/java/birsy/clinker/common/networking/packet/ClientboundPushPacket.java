@@ -10,29 +10,33 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 public class ClientboundPushPacket extends ClientboundPacket{
-    private Vec3 amount;
+    private final double x, y, z;
 
-    public ClientboundPushPacket(Vec3 amount) {
-        this.amount = amount;
+    public ClientboundPushPacket(double x, double y, double z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
 
     public ClientboundPushPacket(FriendlyByteBuf buffer) {
         CompoundTag tag = buffer.readNbt();
-        this.amount = new Vec3(tag.getDouble("x"), tag.getDouble("y"), tag.getDouble("z"));
+        this.x = tag.getDouble("x");
+        this.y = tag.getDouble("y");
+        this.z = tag.getDouble("z");
     }
 
     @Override
     public void write(FriendlyByteBuf buffer) {
         CompoundTag tag = new CompoundTag();
-        tag.putDouble("x", amount.x());
-        tag.putDouble("y", amount.y());
-        tag.putDouble("z", amount.z());
+        tag.putDouble("x", x);
+        tag.putDouble("y", y);
+        tag.putDouble("z", z);
 
         buffer.writeNbt(tag);
     }
 
     @Override
     public void run(PlayPayloadContext context) {
-        Minecraft.getInstance().player.move(MoverType.PLAYER, amount);
+        Minecraft.getInstance().player.push(x, y, z);
     }
 }

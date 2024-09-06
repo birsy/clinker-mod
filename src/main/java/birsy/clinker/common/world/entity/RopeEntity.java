@@ -1,14 +1,27 @@
 package birsy.clinker.common.world.entity;
 
 import birsy.clinker.common.networking.ClinkerPacketHandler;
+import birsy.clinker.common.networking.packet.ClientboundPushPacket;
 import birsy.clinker.common.networking.packet.ClientboundRopeEntitySegmentAddPacket;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.VectorUtils;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.stats.Stats;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.animal.AbstractGolem;
+import net.minecraft.world.entity.animal.Chicken;
 import net.minecraft.world.entity.animal.Pig;
+import net.minecraft.world.entity.monster.Blaze;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.IceBlock;
@@ -29,6 +42,7 @@ import java.util.Map;
 public abstract class RopeEntity<T extends RopeEntity.RopeEntitySegment> extends PathfinderMob implements CollisionParent {
     public List<T> segments;
     public Map<ColliderEntity, T> segmentByCollider;
+    protected RopeEntitySegment lastHitSegment = null;
 
     public RopeEntity(EntityType<? extends PathfinderMob> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -44,9 +58,14 @@ public abstract class RopeEntity<T extends RopeEntity.RopeEntitySegment> extends
         super.tick();
         if (!this.segments.isEmpty()) {
             Vector3dc headPos = segments.get(0).getPosition();
-            this.setPos(headPos.x(), headPos.y(), headPos.z());
+            this.setPos(headPos.x(), headPos.y() - this.getDimensions(this.getPose()).height*0.5, headPos.z());
         }
         this.updateSegments();
+    }
+
+    @Override
+    public void makePoofParticles() {
+
     }
 
     @Override
@@ -55,6 +74,11 @@ public abstract class RopeEntity<T extends RopeEntity.RopeEntitySegment> extends
             segment.remove(pReason);
         }
         super.remove(pReason);
+    }
+
+    @Override
+    protected int calculateFallDamage(float pFallDistance, float pDamageMultiplier) {
+        return 0;
     }
 
     @Override
@@ -110,8 +134,8 @@ public abstract class RopeEntity<T extends RopeEntity.RopeEntitySegment> extends
                 pos1.add(pos2, center).mul(0.5);
                 pos1.sub(pos2, direction).normalize().mul(0.5);
 
-                center.add(direction.mul(segmentA.length*2, segmentA.nextPosition), segmentA.nextPosition);
-                center.sub(direction.mul(segmentB.length*2, segmentB.nextPosition), segmentB.nextPosition);
+                center.add(direction.mul(segmentA.length, segmentA.nextPosition), segmentA.nextPosition);
+                center.sub(direction.mul(segmentB.length, segmentB.nextPosition), segmentB.nextPosition);
             }
 
             // we don't need to run the collision solver for every rope iteration, only a couple will do fine.
@@ -124,19 +148,72 @@ public abstract class RopeEntity<T extends RopeEntity.RopeEntitySegment> extends
         int i = 0;
         for (T segment : this.segments) {
             segment.finalizeSim();
-            //if (i == 0) Clinker.LOGGER.info(segment.position);
             i++;
+        }
+    }
+
+
+
+    private boolean wasSegmentHit = false;
+    private final Vector3d normalizedKnockback = new Vector3d();
+    @Override
+    public void knockback(double pStrength, double pX, double pZ) {
+        if (lastHitSegment == null || !this.wasSegmentHit) {
+            super.knockback(pStrength, pX, pZ);
+            return;
+        }
+
+        net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent event = net.neoforged.neoforge.common.CommonHooks.onLivingKnockBack(this, (float) pStrength, pX, pZ);
+        if(event.isCanceled()) return;
+        pStrength = event.getStrength();
+        pX = event.getRatioX();
+        pZ = event.getRatioZ();
+        pStrength *= 1.0 - this.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE);
+        if (!(pStrength <= 0.0)) {
+            Vector3dc movement = this.lastHitSegment.getDeltaMovement();
+            normalizedKnockback.set(pX, 0.0, pZ).normalize().mul(pStrength);
+
+            this.lastHitSegment.accelerate(
+                    movement.x() / 2.0 - normalizedKnockback.x,
+                    this.lastHitSegment.onGround() ? Math.min(0.4, movement.y() / 2.0 + pStrength) : movement.y(),
+                    movement.z() / 2.0 - normalizedKnockback.z);
+        }
+    }
+
+    @Override
+    protected void playHurtSound(DamageSource pSource) {
+        if (lastHitSegment == null || !this.wasSegmentHit) {
+            super.playHurtSound(pSource);
+            return;
+        }
+        this.ambientSoundTime = -this.getAmbientSoundInterval();
+
+        SoundEvent soundevent = this.getHurtSound(pSource);
+        if (soundevent != null) {
+            if (!this.isSilent()) this.level().playSound(null,
+                    this.lastHitSegment.position.x,
+                    this.lastHitSegment.position.y,
+                    this.lastHitSegment.position.z, 
+                    soundevent, this.getSoundSource(), this.getSoundVolume(), this.getVoicePitch());
         }
     }
 
     @Override
     public boolean hurt(ColliderEntity damageReceiver, DamageSource pSource, float pAmount) {
+        if (this.segmentByCollider.containsKey(damageReceiver)) {
+            this.wasSegmentHit = true;
+            this.lastHitSegment = this.segmentByCollider.get(damageReceiver);
+            this.hurt(pSource, pAmount);
+            this.wasSegmentHit = false;
+        }
+
         return this.hurt(pSource, pAmount);
     }
     @Override
     public void push(ColliderEntity pushReceiver, double xAmount, double yAmount, double zAmount) {
         if (this.segmentByCollider.containsKey(pushReceiver)) this.segmentByCollider.get(pushReceiver).accelerate(xAmount, yAmount, zAmount);
     }
+
     @Override
     public void push(ColliderEntity pushReceiver, Entity pusher) {
         // copied from Entity.push()
@@ -160,10 +237,10 @@ public abstract class RopeEntity<T extends RopeEntity.RopeEntitySegment> extends
                     zMovement *= 0.05F;
                     if (!pushReceiver.isVehicle() && pushReceiver.isPushable()) {
                         this.push(pushReceiver, -xMovement, 0.0, -zMovement);
-                        //this.push(-xMovement, 0.0, -zMovement);
                     }
 
                     if (!pusher.isVehicle() && pusher.isPushable()) {
+                        if (pusher instanceof ServerPlayer client) ClinkerPacketHandler.sendToClient(client, new ClientboundPushPacket(xMovement, 0.0, zMovement));
                         pusher.push(xMovement, 0.0, zMovement);
                     }
                 }
@@ -171,12 +248,16 @@ public abstract class RopeEntity<T extends RopeEntity.RopeEntitySegment> extends
         }
     }
 
-    public class RopeEntitySegment {
+    public static class RopeEntitySegment {
         public final RopeEntity parent;
         public final int type;
-        protected final Vector3d position = new Vector3d(0, 0, 0), previousPosition = new Vector3d(0, 0, 0), nextPosition = new Vector3d(0, 0, 0);
-        protected final Vector3d acceleration = new Vector3d(0, 0, 0);
+        protected final Vector3d
+                position = new Vector3d(0, 0, 0),
+                previousPosition = new Vector3d(0, 0, 0),
+                nextPosition = new Vector3d(0, 0, 0),
+                acceleration = new Vector3d(0, 0, 0);
         protected ColliderEntity collider;
+        protected boolean isOnGround;
 
         public final float radius, length;
 
@@ -199,6 +280,17 @@ public abstract class RopeEntity<T extends RopeEntity.RopeEntitySegment> extends
             this.position.set(x, y, z);
             this.nextPosition.set(x, y, z);
             this.acceleration.set(0);
+        }
+
+        private final Vector3d deltaMovement = new Vector3d();
+        public Vector3dc getDeltaMovement() {
+            return this.getDeltaMovement(deltaMovement);
+        }
+        public Vector3d getDeltaMovement(Vector3d assignment) {
+            return this.position.sub(this.previousPosition, assignment);
+        }
+        public boolean onGround() {
+            return this.isOnGround;
         }
 
         public void setPosition(double x, double y, double z) {
@@ -230,7 +322,9 @@ public abstract class RopeEntity<T extends RopeEntity.RopeEntitySegment> extends
 
         private final Vector3d velocity = new Vector3d(0);
         protected void integrate() {
-            this.position.sub(this.previousPosition, this.velocity).mul(0.95);
+            this.isOnGround = false;
+
+            this.getDeltaMovement(this.velocity).mul(0.95);
             this.previousPosition.set(this.position);
 
             this.velocity.add(this.acceleration);
@@ -259,6 +353,8 @@ public abstract class RopeEntity<T extends RopeEntity.RopeEntitySegment> extends
                 float friction = this.parent.level().getBlockState(feetPosition).getFriction(this.parent.level(), feetPosition, this.parent);
                 friction = Mth.lerp(0.5F, friction, 1.0F);
                 velocity.mul(friction, 1.0F, friction);
+
+                this.isOnGround = true;
             }
 
             this.position.add(velocity, this.nextPosition);
