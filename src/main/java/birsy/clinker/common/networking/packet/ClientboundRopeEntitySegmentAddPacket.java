@@ -1,6 +1,6 @@
 package birsy.clinker.common.networking.packet;
 
-import birsy.clinker.common.world.entity.RopeEntity;
+import birsy.clinker.common.world.entity.rope.RopeEntity;
 import birsy.clinker.core.Clinker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;

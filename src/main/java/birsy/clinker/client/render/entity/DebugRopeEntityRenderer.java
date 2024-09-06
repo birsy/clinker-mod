@@ -1,7 +1,7 @@
 package birsy.clinker.client.render.entity;
 
 import birsy.clinker.client.render.DebugRenderUtil;
-import birsy.clinker.common.world.entity.RopeEntity;
+import birsy.clinker.common.world.entity.rope.RopeEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;

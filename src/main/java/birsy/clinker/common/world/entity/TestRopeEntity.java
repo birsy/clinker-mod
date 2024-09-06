@@ -1,5 +1,6 @@
 package birsy.clinker.common.world.entity;
 
+import birsy.clinker.common.world.entity.rope.RopeEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.EntityType;

@@ -3,7 +3,7 @@ package birsy.clinker.mixin.common;
 import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.ClientboundRopeEntityInitPacket;
 import birsy.clinker.common.networking.packet.ClientboundRopeEntitySyncPacket;
-import birsy.clinker.common.world.entity.RopeEntity;
+import birsy.clinker.common.world.entity.rope.RopeEntity;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;

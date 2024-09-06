@@ -1,33 +1,20 @@
-package birsy.clinker.common.world.entity;
+package birsy.clinker.common.world.entity.rope;
 
 import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.ClientboundPushPacket;
 import birsy.clinker.common.networking.packet.ClientboundRopeEntitySegmentAddPacket;
-import birsy.clinker.core.Clinker;
+import birsy.clinker.common.world.entity.ColliderEntity;
+import birsy.clinker.common.world.entity.CollisionParent;
 import birsy.clinker.core.util.VectorUtils;
-import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.stats.Stats;
-import net.minecraft.tags.DamageTypeTags;
-import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.animal.AbstractGolem;
-import net.minecraft.world.entity.animal.Chicken;
-import net.minecraft.world.entity.animal.Pig;
-import net.minecraft.world.entity.monster.Blaze;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.IceBlock;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -48,12 +35,14 @@ public abstract class RopeEntity<T extends RopeEntity.RopeEntitySegment> extends
 
     public RopeEntity(EntityType<? extends PathfinderMob> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
+        this.moveControl = new RopeMoveController(this);
+
         this.setNoGravity(true);
         this.segments = new ArrayList<>();
         this.segmentByCollider = new HashMap<>();
     }
 
-    protected abstract T createSegment(int segmentType);
+    protected abstract T createSegment(int segmentType, int index);
 
     @Override
     public void tick() {
@@ -63,6 +52,11 @@ public abstract class RopeEntity<T extends RopeEntity.RopeEntitySegment> extends
             this.setPos(headPos.x(), headPos.y() - this.getDimensions(this.getPose()).height*0.5, headPos.z());
         }
         this.updateSegments();
+    }
+
+    @Override
+    public void travel(Vec3 pTravelVector) {
+        super.travel(pTravelVector);
     }
 
     @Override
@@ -114,7 +108,7 @@ public abstract class RopeEntity<T extends RopeEntity.RopeEntitySegment> extends
         this.addSegmentToEnd(type, !this.level().isClientSide());
     }
     public void addSegmentToEnd(int type, boolean network) {
-        T segment = createSegment(type);
+        T segment = createSegment(type, this.segments.size());
         this.segments.add(segment);
         this.segmentByCollider.put(segment.collider, segment);
 
@@ -126,6 +120,8 @@ public abstract class RopeEntity<T extends RopeEntity.RopeEntitySegment> extends
     private Vector3d center = new Vector3d();
     private Vector3d direction = new Vector3d();
     private void updateSegments() {
+        for (int i = 0; i < this.segments.size(); i++) segments.get(i).index = i;
+
         if (this.level().isClientSide()) {
             for (T segment : this.segments) segment.updateClient();
             return;
@@ -268,13 +264,18 @@ public abstract class RopeEntity<T extends RopeEntity.RopeEntitySegment> extends
                 position = new Vector3d(0, 0, 0),
                 previousPosition = new Vector3d(0, 0, 0),
                 nextPosition = new Vector3d(0, 0, 0),
-                acceleration = new Vector3d(0, 0, 0);
+                acceleration = new Vector3d(0, 0, 0),
+                walk = new Vector3d(0, 0, 0),
+                previousWalk = new Vector3d(0, 0, 0);
         protected ColliderEntity collider;
         protected boolean isOnGround;
+        protected boolean canFly = false;
+
+        protected int index;
 
         public final float radius, length;
 
-        protected RopeEntitySegment(RopeEntity parent, int type, float radius, float length) {
+        protected RopeEntitySegment(RopeEntity parent, int type, float radius, float length, int index) {
             this.parent = parent;
             this.type = type;
             this.position.set(parent.getX(), parent.getY(), parent.getZ());
@@ -286,6 +287,8 @@ public abstract class RopeEntity<T extends RopeEntity.RopeEntitySegment> extends
                 this.collider = ColliderEntity.create(parent, radius * 2.0F, radius * 2.0F);
                 this.parent.level().addFreshEntity(this.collider);
             }
+
+            this.index = index;
         }
 
         public void setInitialPosition(double x, double y, double z) {
@@ -300,7 +303,7 @@ public abstract class RopeEntity<T extends RopeEntity.RopeEntitySegment> extends
             return this.getDeltaMovement(deltaMovement);
         }
         public Vector3d getDeltaMovement(Vector3d assignment) {
-            return this.position.sub(this.previousPosition, assignment);
+            return this.position.sub(this.previousPosition, assignment).sub(this.previousWalk);
         }
         public boolean onGround() {
             return this.isOnGround;
@@ -325,16 +328,41 @@ public abstract class RopeEntity<T extends RopeEntity.RopeEntitySegment> extends
             return this.previousPosition.lerp(this.position, partialTick, this.interpolatedPosition);
         }
 
+        private final Vector3d connectionDir = new Vector3d(0, 0, 1);
+        public Vector3dc connectionDirection(float partialTick) {
+            if (this.index == 0) {
+                return VectorUtils.toJOML(this.parent.getViewVector(partialTick), connectionDir);
+            }
+            return ((RopeEntitySegment) this.parent.segments.get(this.index - 1)).getPosition(partialTick)
+                    .sub(this.getPosition(partialTick), this.connectionDir);
+        }
+
+        public double getWalkAmount(float partialTick) {
+            return this.walk.dot(this.connectionDirection(partialTick));
+        }
+
+        private final Vector3d strafeDir = new Vector3d(1, 0, 0);
+        public double getStrafeAmount(float partialTick) {
+            return this.walk.dot(this.connectionDirection(partialTick).cross(0, 1, 0, strafeDir));
+        }
+
         protected void accelerate(double x, double y, double z) {
             this.acceleration.add(x, y, z);
         }
 
         protected void walk(double x, double y, double z) {
-
+            if (!this.isOnGround && !this.canFly) {
+                float airControlMultiplier = 0.1F;
+                this.walk.add(x * airControlMultiplier, y * airControlMultiplier, z * airControlMultiplier);
+                return;
+            }
+            this.walk.add(x, y, z);
         }
 
         private final Vector3d velocity = new Vector3d(0);
         protected void integrate() {
+            this.previousWalk.set(this.walk);
+
             this.isOnGround = false;
 
             this.getDeltaMovement(this.velocity).mul(0.95);
@@ -343,24 +371,29 @@ public abstract class RopeEntity<T extends RopeEntity.RopeEntitySegment> extends
             this.velocity.add(this.acceleration);
             this.acceleration.set(0, 0, 0);
 
-            this.position.add(velocity, this.nextPosition);
+            this.position.add(this.velocity, this.nextPosition).add(this.walk, this.nextPosition);
+
+            this.walk.set(0,0,0);
         }
 
-        Vector3d velocityWithoutCollision = new Vector3d();
+        private final Vector3d movementWithoutCollision = new Vector3d();
+        private final Vector3d movement = new Vector3d();
         protected void applyLevelCollisionsAndFinalize(Level level) {
             AABB aabb = new AABB(
                     this.position.x + radius, this.position.y + radius, this.position.z + radius,
                     this.position.x - radius, this.position.y - radius, this.position.z - radius
             );
-            this.nextPosition.sub(this.position, this.velocity);
-            this.velocityWithoutCollision.set(this.velocity);
-            List<VoxelShape> list = level.getEntityCollisions(parent, aabb.expandTowards(this.velocity.x, this.velocity.y, this.velocity.z));
-            VectorUtils.toJOML(collideBoundingBox(parent, VectorUtils.toMoj(this.velocity), aabb, level, list), this.velocity);
+            this.nextPosition.sub(this.position, this.movement);
+            this.movementWithoutCollision.set(this.movement);
+
+            // constrain movement based off level collisions...
+            List<VoxelShape> list = level.getEntityCollisions(parent, aabb.expandTowards(this.movement.x, this.movement.y, this.movement.z));
+            VectorUtils.toJOML(collideBoundingBox(parent, VectorUtils.toMoj(this.movement), aabb, level, list), this.movement);
 
             // apply friction
             // ...only on y-axis. simplifies + this is actually how vanilla handles it LOL
             // sorry ryan. Will Not Work With Landlord :)
-            if (Math.abs(this.velocity.y - this.velocityWithoutCollision.y) > 0.01) {
+            if (Math.abs(this.movement.y - this.movementWithoutCollision.y) > 0.01) {
                 // get the block at our feet
                 BlockPos feetPosition = BlockPos.containing(this.position.x, this.position.y - (this.radius + 0.01), this.position.z);
                 float friction = this.parent.level().getBlockState(feetPosition).getFriction(this.parent.level(), feetPosition, this.parent);
@@ -370,7 +403,7 @@ public abstract class RopeEntity<T extends RopeEntity.RopeEntitySegment> extends
                 this.isOnGround = true;
             }
 
-            this.position.add(velocity, this.nextPosition);
+            this.position.add(this.movement, this.nextPosition);
         }
 
         protected void finalizeSim() {
