@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(DebugPackets.class)
 public abstract class DebugPacketsMixin {
     @Shadow
-    protected static void sendPacketToAllPlayers(ServerLevel p_133692_, CustomPacketPayload p_296119_) {}
+    private static void sendPacketToAllPlayers(ServerLevel p_133692_, CustomPacketPayload p_296119_) {}
 
     @Inject(method = "sendPathFindingPacket(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/Mob;Lnet/minecraft/world/level/pathfinder/Path;F)V", at = @At("TAIL"))
     private static void clinker$sendPathFindingPacket(Level level, Mob mob, Path path, float maxNodeDistance, CallbackInfo ci) {

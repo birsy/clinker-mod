@@ -7,8 +7,10 @@ import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.VectorUtils;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.EntityTypeTags;
@@ -65,7 +67,18 @@ public abstract class RopeEntity<T extends RopeEntity.RopeEntitySegment> extends
 
     @Override
     public void makePoofParticles() {
-
+        for (RopeEntitySegment segment : this.segments) {
+            for(int i = 0; i < 20; ++i) {
+                double d0 = this.random.nextGaussian() * 0.02;
+                double d1 = this.random.nextGaussian() * 0.02;
+                double d2 = this.random.nextGaussian() * 0.02;
+                this.level().addParticle(ParticleTypes.POOF,
+                        segment.getPosition().x() + (((this.random.nextFloat() * 2.0) - 1.0) * segment.radius),
+                        segment.getPosition().y() + (((this.random.nextFloat() * 2.0) - 1.0) * segment.radius),
+                        segment.getPosition().z() + (((this.random.nextFloat() * 2.0) - 1.0) * segment.radius),
+                        d0, d1, d2);
+            }
+        }
     }
 
     @Override
