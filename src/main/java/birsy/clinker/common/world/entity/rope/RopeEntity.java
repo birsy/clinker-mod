@@ -6,20 +6,21 @@ import birsy.clinker.common.networking.packet.ClientboundRopeEntitySegmentAddPac
 import birsy.clinker.common.world.entity.ColliderEntity;
 import birsy.clinker.common.world.entity.CollisionParent;
 import birsy.clinker.core.util.VectorUtils;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.minecraft.world.phys.shapes.CollisionContext;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 
@@ -28,7 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class RopeEntity<T extends RopeEntity.RopeEntitySegment> extends PathfinderMob implements CollisionParent {
+public abstract class RopeEntity<T extends RopeEntitySegment> extends PathfinderMob implements CollisionParent {
     public List<T> segments;
     public Map<ColliderEntity, T> segmentByCollider;
     protected RopeEntitySegment lastHitSegment = null;
@@ -36,7 +37,6 @@ public abstract class RopeEntity<T extends RopeEntity.RopeEntitySegment> extends
     public RopeEntity(EntityType<? extends PathfinderMob> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         this.moveControl = new RopeMoveController(this);
-
         this.setNoGravity(true);
         this.segments = new ArrayList<>();
         this.segmentByCollider = new HashMap<>();
@@ -49,14 +49,16 @@ public abstract class RopeEntity<T extends RopeEntity.RopeEntitySegment> extends
         super.tick();
         if (!this.segments.isEmpty()) {
             Vector3dc headPos = segments.get(0).getPosition();
-            this.setPos(headPos.x(), headPos.y() - this.getDimensions(this.getPose()).height*0.5, headPos.z());
+            Vector3dc headOffset = segments.get(0).getAttachmentDirection(1.0F);
+            float radius = segments.get(0).radius;
+            this.setPos(headPos.x() + headOffset.x()*radius, headPos.y() - this.getEyeHeight() + headOffset.y()*radius, headPos.z() + headOffset.z()*radius);
         }
         this.updateSegments();
     }
 
     @Override
-    public void travel(Vec3 pTravelVector) {
-        super.travel(pTravelVector);
+    public boolean isInWall() {
+        return this.segments.get(0).collider.isInWall();
     }
 
     @Override
@@ -117,14 +119,31 @@ public abstract class RopeEntity<T extends RopeEntity.RopeEntitySegment> extends
         }
     }
 
-    private Vector3d center = new Vector3d();
-    private Vector3d direction = new Vector3d();
+    private final Vector3d center = new Vector3d();
+    private final Vector3d direction = new Vector3d();
     private void updateSegments() {
         for (int i = 0; i < this.segments.size(); i++) segments.get(i).index = i;
 
         if (this.level().isClientSide()) {
             for (T segment : this.segments) segment.updateClient();
             return;
+        }
+
+        // if there's something between two segments, turn off horizontal collision for one of the segments
+        for (int i = 1; i < segments.size(); i++) {
+            RopeEntitySegment behindSegment = segments.get(i);
+            RopeEntitySegment aheadSegment = segments.get(i - 1);
+            if (behindSegment.position.distance(aheadSegment.position) > behindSegment.length * 1.5) {
+                //behindSegment.canCollideHorizontally = false;
+                behindSegment.accelerate(0, 1,  0);
+                continue;
+            }
+            BlockHitResult raycast = this.level().clip(new ClipContext(
+                    VectorUtils.toMoj(behindSegment.position), VectorUtils.toMoj(aheadSegment.position), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.of(this)
+            ));
+            if (raycast.isInside() || raycast.getType() == HitResult.Type.BLOCK) behindSegment.accelerate(0, 0.1,  0);
+
+            behindSegment.canCollideHorizontally = true;
         }
 
         for (T segment : this.segments) {
@@ -147,17 +166,20 @@ public abstract class RopeEntity<T extends RopeEntity.RopeEntitySegment> extends
                 center.sub(direction.mul(segmentB.length, segmentB.nextPosition), segmentB.nextPosition);
             }
 
-            // we don't need to run the collision solver for every rope iteration, only a couple will do fine.
-            if (true) {
+            if (i % 2 == 0) {
                 for (T segment : this.segments) {
-                    segment.applyLevelCollisionsAndFinalize(this.level());
+                    // self collisions
+                    for (T segmentB : this.segments) {
+                        segment.collideWithOtherSegment(segmentB);
+                    }
+                    segment.collideWithLevel();
                 }
             }
         }
-        int i = 0;
+
         for (T segment : this.segments) {
+            segment.collideWithLevel();
             segment.finalizeSim();
-            i++;
         }
     }
 
@@ -168,8 +190,7 @@ public abstract class RopeEntity<T extends RopeEntity.RopeEntitySegment> extends
     @Override
     public void knockback(double pStrength, double pX, double pZ) {
         if (lastHitSegment == null || !this.wasSegmentHit) {
-            super.knockback(pStrength, pX, pZ);
-            return;
+            lastHitSegment = this.segments.get(0);
         }
 
         net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent event = net.neoforged.neoforge.common.CommonHooks.onLivingKnockBack(this, (float) pStrength, pX, pZ);
@@ -184,7 +205,7 @@ public abstract class RopeEntity<T extends RopeEntity.RopeEntitySegment> extends
 
             this.lastHitSegment.accelerate(
                     movement.x() / 2.0 - normalizedKnockback.x,
-                    this.lastHitSegment.onGround() ? Math.min(0.4, movement.y() / 2.0 + pStrength) : movement.y(),
+                    this.lastHitSegment.isOnGround() ? Math.min(0.4, movement.y() / 2.0 + pStrength) : movement.y(),
                     movement.z() / 2.0 - normalizedKnockback.z);
         }
     }
@@ -254,171 +275,6 @@ public abstract class RopeEntity<T extends RopeEntity.RopeEntitySegment> extends
                     }
                 }
             }
-        }
-    }
-
-    public static class RopeEntitySegment {
-        public final RopeEntity parent;
-        public final int type;
-        protected final Vector3d
-                position = new Vector3d(0, 0, 0),
-                previousPosition = new Vector3d(0, 0, 0),
-                nextPosition = new Vector3d(0, 0, 0),
-                acceleration = new Vector3d(0, 0, 0),
-                walk = new Vector3d(0, 0, 0),
-                previousWalk = new Vector3d(0, 0, 0);
-        protected ColliderEntity collider;
-        protected boolean isOnGround;
-        protected boolean canFly = false;
-
-        protected int index;
-
-        public final float radius, length;
-
-        protected RopeEntitySegment(RopeEntity parent, int type, float radius, float length, int index) {
-            this.parent = parent;
-            this.type = type;
-            this.position.set(parent.getX(), parent.getY(), parent.getZ());
-            this.previousPosition.set(position);
-            this.nextPosition.set(position);
-            this.radius = radius;
-            this.length = length;
-            if (!this.parent.level().isClientSide()) {
-                this.collider = ColliderEntity.create(parent, radius * 2.0F, radius * 2.0F);
-                this.parent.level().addFreshEntity(this.collider);
-            }
-
-            this.index = index;
-        }
-
-        public void setInitialPosition(double x, double y, double z) {
-            this.previousPosition.set(x, y, z);
-            this.position.set(x, y, z);
-            this.nextPosition.set(x, y, z);
-            this.acceleration.set(0);
-        }
-
-        private final Vector3d deltaMovement = new Vector3d();
-        public Vector3dc getDeltaMovement() {
-            return this.getDeltaMovement(deltaMovement);
-        }
-        public Vector3d getDeltaMovement(Vector3d assignment) {
-            return this.position.sub(this.previousPosition, assignment).sub(this.previousWalk);
-        }
-        public boolean onGround() {
-            return this.isOnGround;
-        }
-
-        public void setPosition(double x, double y, double z) {
-            this.position.set(x, y, z);
-        }
-
-        public void setNextPosition(double x, double y, double z) {
-            this.nextPosition.set(x, y, z);
-        }
-
-        public Vector3dc getPosition() {
-            return this.position;
-        }
-
-        @OnlyIn(Dist.CLIENT)
-        Vector3d interpolatedPosition = new Vector3d();
-        @OnlyIn(Dist.CLIENT)
-        public Vector3dc getPosition(float partialTick) {
-            return this.previousPosition.lerp(this.position, partialTick, this.interpolatedPosition);
-        }
-
-        private final Vector3d connectionDir = new Vector3d(0, 0, 1);
-        public Vector3dc connectionDirection(float partialTick) {
-            if (this.index == 0) {
-                return VectorUtils.toJOML(this.parent.getViewVector(partialTick), connectionDir);
-            }
-            return ((RopeEntitySegment) this.parent.segments.get(this.index - 1)).getPosition(partialTick)
-                    .sub(this.getPosition(partialTick), this.connectionDir);
-        }
-
-        public double getWalkAmount(float partialTick) {
-            return this.walk.dot(this.connectionDirection(partialTick));
-        }
-
-        private final Vector3d strafeDir = new Vector3d(1, 0, 0);
-        public double getStrafeAmount(float partialTick) {
-            return this.walk.dot(this.connectionDirection(partialTick).cross(0, 1, 0, strafeDir));
-        }
-
-        protected void accelerate(double x, double y, double z) {
-            this.acceleration.add(x, y, z);
-        }
-
-        protected void walk(double x, double y, double z) {
-            if (!this.isOnGround && !this.canFly) {
-                float airControlMultiplier = 0.1F;
-                this.walk.add(x * airControlMultiplier, y * airControlMultiplier, z * airControlMultiplier);
-                return;
-            }
-            this.walk.add(x, y, z);
-        }
-
-        private final Vector3d velocity = new Vector3d(0);
-        protected void integrate() {
-            this.previousWalk.set(this.walk);
-
-            this.isOnGround = false;
-
-            this.getDeltaMovement(this.velocity).mul(0.95);
-            this.previousPosition.set(this.position);
-
-            this.velocity.add(this.acceleration);
-            this.acceleration.set(0, 0, 0);
-
-            this.position.add(this.velocity, this.nextPosition).add(this.walk, this.nextPosition);
-
-            this.walk.set(0,0,0);
-        }
-
-        private final Vector3d movementWithoutCollision = new Vector3d();
-        private final Vector3d movement = new Vector3d();
-        protected void applyLevelCollisionsAndFinalize(Level level) {
-            AABB aabb = new AABB(
-                    this.position.x + radius, this.position.y + radius, this.position.z + radius,
-                    this.position.x - radius, this.position.y - radius, this.position.z - radius
-            );
-            this.nextPosition.sub(this.position, this.movement);
-            this.movementWithoutCollision.set(this.movement);
-
-            // constrain movement based off level collisions...
-            List<VoxelShape> list = level.getEntityCollisions(parent, aabb.expandTowards(this.movement.x, this.movement.y, this.movement.z));
-            VectorUtils.toJOML(collideBoundingBox(parent, VectorUtils.toMoj(this.movement), aabb, level, list), this.movement);
-
-            // apply friction
-            // ...only on y-axis. simplifies + this is actually how vanilla handles it LOL
-            // sorry ryan. Will Not Work With Landlord :)
-            if (Math.abs(this.movement.y - this.movementWithoutCollision.y) > 0.01) {
-                // get the block at our feet
-                BlockPos feetPosition = BlockPos.containing(this.position.x, this.position.y - (this.radius + 0.01), this.position.z);
-                float friction = this.parent.level().getBlockState(feetPosition).getFriction(this.parent.level(), feetPosition, this.parent);
-                friction = Mth.lerp(0.5F, friction, 1.0F);
-                velocity.mul(friction, 1.0F, friction);
-
-                this.isOnGround = true;
-            }
-
-            this.position.add(this.movement, this.nextPosition);
-        }
-
-        protected void finalizeSim() {
-            this.position.set(this.nextPosition);
-            this.collider.setPos(this.position.x, this.position.y - (this.radius), this.position.z);
-        }
-
-        @OnlyIn(Dist.CLIENT)
-        protected void updateClient() {
-            this.previousPosition.set(this.position);
-            this.position.set(this.nextPosition);
-        }
-
-        public void remove(RemovalReason reason) {
-            this.collider.remove(reason);
         }
     }
 }

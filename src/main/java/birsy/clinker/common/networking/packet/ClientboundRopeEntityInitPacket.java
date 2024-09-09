@@ -1,6 +1,7 @@
 package birsy.clinker.common.networking.packet;
 
 import birsy.clinker.common.world.entity.rope.RopeEntity;
+import birsy.clinker.common.world.entity.rope.RopeEntitySegment;
 import birsy.clinker.core.Clinker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -16,7 +17,7 @@ public class ClientboundRopeEntityInitPacket extends ClientboundPacket {
         this.entityId = ropeEntity.getId();
         this.segmentTypes = new int[ropeEntity.segments.size()];
         for (int i = 0; i < ropeEntity.segments.size(); i++) {
-            segmentTypes[i] = ((RopeEntity.RopeEntitySegment) ropeEntity.segments.get(i)).type;
+            segmentTypes[i] = ((RopeEntitySegment) ropeEntity.segments.get(i)).type;
         }
     }
 
@@ -49,7 +50,7 @@ public class ClientboundRopeEntityInitPacket extends ClientboundPacket {
         RopeEntity ropeEntity = (RopeEntity) entity;
 
         // out with the old
-        for (Object segment : ropeEntity.segments) ((RopeEntity.RopeEntitySegment) segment).remove(Entity.RemovalReason.DISCARDED);
+        for (Object segment : ropeEntity.segments) ((RopeEntitySegment) segment).remove(Entity.RemovalReason.DISCARDED);
         ropeEntity.segments.clear();
         ropeEntity.segmentByCollider.clear();
 
