@@ -1,6 +1,6 @@
 package birsy.clinker.common.world.entity.ordnance;
 
-import birsy.clinker.client.render.particle.OrdnanceExplosionParticle;
+import birsy.clinker.client.particle.OrdnanceExplosionParticle;
 import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.ClientboundOrdnanceExplosionPacket;
 import birsy.clinker.common.world.entity.ordnance.modifer.OrdnanceModifier;

@@ -1,6 +1,6 @@
 package birsy.clinker.common.world.alchemy.effects;
 
-import birsy.clinker.client.render.particle.ChainLightningParticle;
+import birsy.clinker.client.particle.ChainLightningParticle;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerDataAttachments;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;

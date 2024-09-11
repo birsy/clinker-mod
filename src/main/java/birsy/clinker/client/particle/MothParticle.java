@@ -1,6 +1,5 @@
-package birsy.clinker.client.render.particle;
+package birsy.clinker.client.particle;
 
-import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.core.util.noise.FastNoiseLite;
 import com.mojang.blaze3d.vertex.PoseStack;

@@ -1,6 +1,5 @@
 package birsy.clinker.client.render;
 
-import birsy.clinker.client.render.particle.FireflyParticle;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.api.client.render.deferred.light.PointLight;
@@ -12,7 +11,6 @@ import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 

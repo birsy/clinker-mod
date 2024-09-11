@@ -1,7 +1,7 @@
 package birsy.clinker.core.registry;
 
 import birsy.clinker.client.render.ExplosionLightParticle;
-import birsy.clinker.client.render.particle.*;
+import birsy.clinker.client.particle.*;
 import birsy.clinker.core.Clinker;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.particles.DustColorTransitionOptions;

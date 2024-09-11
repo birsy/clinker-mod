@@ -1,10 +1,9 @@
-package birsy.clinker.client.render.particle;
+package birsy.clinker.client.particle;
 
 import birsy.clinker.core.registry.ClinkerParticles;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
 import net.minecraft.core.particles.DustColorTransitionOptions;
-import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;

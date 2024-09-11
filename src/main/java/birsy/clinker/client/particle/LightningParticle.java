@@ -1,4 +1,4 @@
-package birsy.clinker.client.render.particle;
+package birsy.clinker.client.particle;
 
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;

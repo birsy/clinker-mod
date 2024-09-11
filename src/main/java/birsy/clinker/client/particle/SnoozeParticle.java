@@ -1,19 +1,14 @@
-package birsy.clinker.client.render.particle;
+package birsy.clinker.client.particle;
 
-import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Vec3i;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-
-import java.util.Random;
 
 @OnlyIn(Dist.CLIENT)
 public class SnoozeParticle extends SimpleAnimatedParticle {
