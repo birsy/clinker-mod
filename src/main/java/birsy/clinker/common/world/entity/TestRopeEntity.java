@@ -1,9 +1,12 @@
 package birsy.clinker.common.world.entity;
 
+import birsy.clinker.common.networking.ClinkerPacketHandler;
+import birsy.clinker.common.networking.packet.ClientboundPathfindingDebugPacket;
+import birsy.clinker.common.world.entity.ai.ClinkerSmoothGroundNavigation;
+import birsy.clinker.common.world.entity.ai.SetRandomWalkTargetCloseEnough;
 import birsy.clinker.common.world.entity.rope.RopeEntity;
 import birsy.clinker.common.world.entity.rope.RopeEntitySegment;
-import birsy.clinker.core.Clinker;
-import birsy.clinker.core.util.MathUtils;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
@@ -13,6 +16,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.SpawnGroupData;
+import net.minecraft.world.entity.ai.Brain;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ClipContext;
@@ -22,18 +27,32 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.tslat.smartbrainlib.api.SmartBrainOwner;
+import net.tslat.smartbrainlib.api.core.BrainActivityGroup;
+import net.tslat.smartbrainlib.api.core.SmartBrainProvider;
+import net.tslat.smartbrainlib.api.core.behaviour.FirstApplicableBehaviour;
+import net.tslat.smartbrainlib.api.core.behaviour.OneRandomBehaviour;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.attack.AnimatableMeleeAttack;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.look.LookAtTarget;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.misc.Idle;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.move.MoveToWalkTarget;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.path.SetRandomWalkTarget;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.path.SetWalkTargetToAttackTarget;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.target.InvalidateAttackTarget;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.target.SetPlayerLookTarget;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.target.SetRandomLookTarget;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.target.TargetOrRetaliate;
+import net.tslat.smartbrainlib.api.core.navigation.SmoothGroundNavigation;
+import net.tslat.smartbrainlib.api.core.sensor.ExtendedSensor;
+import net.tslat.smartbrainlib.api.core.sensor.custom.GenericAttackTargetSensor;
+import net.tslat.smartbrainlib.api.core.sensor.vanilla.HurtBySensor;
+import net.tslat.smartbrainlib.api.core.sensor.vanilla.NearbyLivingEntitySensor;
 import net.tslat.smartbrainlib.util.EntityRetrievalUtil;
 import org.jetbrains.annotations.Nullable;
 
-public class TestRopeEntity extends RopeEntity<RopeEntitySegment> {
-    public enum SegmentType {
-        HEAD(0), BODY(1), BODY_LEGS(2), TAIL_START(3), TAIL_MIDDLE(4), TAIL_END(5);
-        private final int index;
-        private static final SegmentType[] fromIndex = SegmentType.values();
-        SegmentType(int index) { this.index = index; }
-        public int index() { return this.index; }
-        public static SegmentType fromIndex(int index) { return fromIndex[index]; }
-    }
+import java.util.List;
+
+public class TestRopeEntity extends RopeEntity<RopeEntitySegment> implements SmartBrainOwner<TestRopeEntity> {
 
     public TestRopeEntity(EntityType<? extends PathfinderMob> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -51,18 +70,25 @@ public class TestRopeEntity extends RopeEntity<RopeEntitySegment> {
             this.addSegmentToEnd(SegmentType.TAIL_MIDDLE.index(), false);
             this.addSegmentToEnd(SegmentType.TAIL_END.index(), false);
         }
+
+    }
+
+    @Override
+    protected PathNavigation createNavigation(Level pLevel) {
+        return new ClinkerSmoothGroundNavigation(this, pLevel, 1.5F);
     }
 
     @Override
     public void tick() {
         super.tick();
+
     }
 
-    @Override
-    public void aiStep() {
-        super.aiStep();
-        this.debugMove();
-    }
+//    @Override
+//    public void aiStep() {
+//        super.aiStep();
+//        this.debugMove();
+//    }
 
     private void debugMove() {
         float maxSpeed = 2.0F;
@@ -136,5 +162,63 @@ public class TestRopeEntity extends RopeEntity<RopeEntitySegment> {
             case TAIL_MIDDLE -> new RopeEntitySegment(this, segmentType, 4.0F / 16.0F, 1.0F, index);
             case TAIL_END -> new RopeEntitySegment(this, segmentType, 2.5F / 16.0F, 1.0F, index);
         };
+    }
+
+    public enum SegmentType {
+        HEAD(0), BODY(1), BODY_LEGS(2), TAIL_START(3), TAIL_MIDDLE(4), TAIL_END(5);
+        private final int index;
+        private static final SegmentType[] fromIndex = SegmentType.values();
+        SegmentType(int index) { this.index = index; }
+        public int index() { return this.index; }
+        public static SegmentType fromIndex(int index) { return fromIndex[index]; }
+    }
+
+    /* AI STUFF */
+    @Override
+    protected void customServerAiStep() {
+        tickBrain(this);
+        if (this.navigation.getPath() != null) {
+            ClinkerPacketHandler.sendToAllClients(new ClientboundPathfindingDebugPacket(this, this.navigation.getPath()));
+        }
+    }
+
+    @Override
+    protected Brain.Provider<?> brainProvider() {
+        return new SmartBrainProvider<>(this);
+    }
+
+    @Override
+    public List<? extends ExtendedSensor<? extends TestRopeEntity>> getSensors() {
+        return ObjectArrayList.of(
+                new NearbyLivingEntitySensor<>(),
+                new HurtBySensor<>()
+        );
+    }
+
+    @Override
+    public BrainActivityGroup<TestRopeEntity> getCoreTasks() { // These are the tasks that run all the time (usually)
+        return BrainActivityGroup.coreTasks(
+                new LookAtTarget<>(),                      // Have the entity turn to face and look at its current look target
+                new MoveToWalkTarget<>());                 // Walk towards the current walk target
+    }
+
+    @Override
+    public BrainActivityGroup<TestRopeEntity> getIdleTasks() { // These are the tasks that run when the mob isn't doing anything else (usually)
+        return BrainActivityGroup.idleTasks(
+                new FirstApplicableBehaviour<TestRopeEntity>(      // Run only one of the below behaviours, trying each one in order. Include the generic type because JavaC is silly
+                        new TargetOrRetaliate<>(),            // Set the attack target and walk target based on nearby entities
+                        new SetPlayerLookTarget<>(),          // Set the look target for the nearest player
+                        new SetRandomLookTarget<>()),         // Set a random look target
+                new OneRandomBehaviour<>(                 // Run a random task from the below options
+                        new SetRandomWalkTargetCloseEnough<>().closeEnoughDist(3),          // Set a random walk target to a nearby position
+                        new Idle<>().runFor(entity -> entity.getRandom().nextInt(30, 200)))); // Do nothing for 1.5->3 seconds
+    }
+
+    @Override
+    public BrainActivityGroup<TestRopeEntity> getFightTasks() { // These are the tasks that handle fighting
+        return BrainActivityGroup.fightTasks(
+                new InvalidateAttackTarget<>(), // Cancel fighting if the target is no longer valid
+                new SetWalkTargetToAttackTarget<>(),      // Set the walk target to the attack target
+                new AnimatableMeleeAttack<>(0)); // Melee attack the target if close enough
     }
 }

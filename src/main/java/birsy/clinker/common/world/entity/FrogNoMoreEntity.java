@@ -62,6 +62,7 @@ public class FrogNoMoreEntity extends Monster implements IKLocomotionEntity, Int
     public static AttributeSupplier.Builder createAttributes() {
         return createLivingAttributes()
                 .add(Attributes.ATTACK_DAMAGE, 1.0D)
+                .add(Attributes.ATTACK_KNOCKBACK, 0.5D)
                 .add(Attributes.FOLLOW_RANGE, 16.0);
     }
 

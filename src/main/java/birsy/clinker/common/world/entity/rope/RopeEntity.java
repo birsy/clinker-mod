@@ -6,6 +6,7 @@ import birsy.clinker.common.networking.packet.ClientboundRopeEntitySegmentAddPac
 import birsy.clinker.common.world.entity.ColliderEntity;
 import birsy.clinker.common.world.entity.CollisionParent;
 import birsy.clinker.core.util.VectorUtils;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -14,8 +15,10 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.control.BodyRotationControl;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -31,15 +34,21 @@ import java.util.Map;
 
 public abstract class RopeEntity<T extends RopeEntitySegment> extends PathfinderMob implements CollisionParent {
     public List<T> segments;
-    public Map<ColliderEntity, T> segmentByCollider;
+    public Map<ColliderEntity<?>, T> segmentByCollider;
     protected RopeEntitySegment lastHitSegment = null;
 
     public RopeEntity(EntityType<? extends PathfinderMob> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
+        this.lookControl = new RopeLookController(this);
         this.moveControl = new RopeMoveController(this);
         this.setNoGravity(true);
         this.segments = new ArrayList<>();
         this.segmentByCollider = new HashMap<>();
+    }
+
+    @Override
+    protected BodyRotationControl createBodyControl() {
+        return new RopeLookController.RopeBodyRotationControl(this);
     }
 
     protected abstract T createSegment(int segmentType, int index);
@@ -147,7 +156,16 @@ public abstract class RopeEntity<T extends RopeEntitySegment> extends Pathfinder
         }
 
         for (T segment : this.segments) {
-            segment.accelerate(0, -0.08, 0);
+            BlockPos segmentPos = BlockPos.containing(segment.position.x, segment.position.y, segment.position.z);
+            FluidState fluidAtPos = this.level().getFluidState(segmentPos);
+            if (fluidAtPos.isEmpty()) {
+                segment.accelerate(0, -0.08, 0);
+            } else {
+                Vec3 flowVector = fluidAtPos.getFlow(this.level(), segmentPos);
+                float flowSpeed = 0.08F;
+                segment.accelerate(flowVector.x() * flowSpeed, flowVector.y() * flowSpeed, flowVector.z() * flowSpeed);
+            }
+
             segment.integrate();
         }
         // run the rope simulation

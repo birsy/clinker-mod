@@ -30,7 +30,7 @@ public class ClinkerPacketHandler {
     @SubscribeEvent
     public static void register(RegisterPayloadHandlerEvent event) {
         final IPayloadRegistrar registrar = event.registrar(Clinker.MOD_ID);
-        registrar.play(createId(ClientboundUrnPathPacket.class), ClientboundUrnPathPacket::new, ClientboundUrnPathPacket::handle);
+        registrar.play(createId(ClientboundPathfindingDebugPacket.class), ClientboundPathfindingDebugPacket::new, ClientboundPathfindingDebugPacket::handle);
 
         registrar.play(createId(ServerboundInteractableLoadChunkRequestPacket.class), ServerboundInteractableLoadChunkRequestPacket::new, ServerboundInteractableLoadChunkRequestPacket::handle);
         registrar.play(createId(ServerboundInteractableLoadRequestPacket.class), ServerboundInteractableLoadRequestPacket::new, ServerboundInteractableLoadRequestPacket::handle);

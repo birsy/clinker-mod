@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.Path;
 
@@ -13,18 +14,20 @@ import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClientboundUrnPathPacket extends ClientboundPacket {
+public class ClientboundPathfindingDebugPacket extends ClientboundPacket {
     private final Path path;
-
+    private final float maxDistanceToWaypoint;
     private final int id;
 
-    public ClientboundUrnPathPacket(UrnEntity entity, Path path) {
+    public ClientboundPathfindingDebugPacket(Mob entity, Path path) {
         this.path = path;
+        this.maxDistanceToWaypoint = entity.getNavigation().getMaxDistanceToWaypoint();
         this.id = entity.getId();
     }
 
-    public ClientboundUrnPathPacket(FriendlyByteBuf buffer) {
+    public ClientboundPathfindingDebugPacket(FriendlyByteBuf buffer) {
         this.id = buffer.readInt();
+        this.maxDistanceToWaypoint = buffer.readFloat();
         BlockPos target = buffer.readBlockPos();
         boolean reached  = buffer.readBoolean();
         int index = buffer.readInt();
@@ -41,6 +44,7 @@ public class ClientboundUrnPathPacket extends ClientboundPacket {
     @Override
     public void write(FriendlyByteBuf buffer) {
         buffer.writeInt(this.id);
+        buffer.writeFloat(this.maxDistanceToWaypoint);
         buffer.writeBlockPos(path.getTarget());
         buffer.writeBoolean(path.canReach());
         buffer.writeInt(this.path.getNextNodeIndex());
@@ -54,11 +58,6 @@ public class ClientboundUrnPathPacket extends ClientboundPacket {
     @Override
     public void run(PlayPayloadContext context) {
         Minecraft mc = Minecraft.getInstance();
-        ClientLevel level = mc.level;
-        if (level.getEntity(this.id) instanceof UrnEntity urn) {
-            urn.clientPath = path;
-        }
-
-        //mc.debugRenderer.pathfindingRenderer.addPath(id, path, 5);
+        mc.debugRenderer.pathfindingRenderer.addPath(id, path, maxDistanceToWaypoint);
     }
 }

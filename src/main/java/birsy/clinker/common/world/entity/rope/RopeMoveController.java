@@ -32,6 +32,8 @@ public class RopeMoveController extends MoveControl {
         Vector3d desiredDirection = new Vector3d(this.wantedX, this.wantedY, this.wantedZ).sub(me.position().x, me.position().y, me.position().z).normalize();
 
         if (this.operation == Operation.MOVE_TO) {
+            if (this.getEntity().segments.get(0).getPosition().distance(this.wantedX, this.wantedY, this.wantedZ) <
+                    this.getEntity().segments.get(0).radius * 2) this.operation = Operation.WAIT;
             Vector3d slitherVector = new Vector3d();
 
             // move segments forward

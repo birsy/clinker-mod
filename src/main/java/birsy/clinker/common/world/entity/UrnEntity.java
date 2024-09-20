@@ -3,25 +3,14 @@ package birsy.clinker.common.world.entity;
 import birsy.clinker.client.model.base.InterpolatedSkeleton;
 import birsy.clinker.client.model.base.InterpolatedSkeletonParent;
 import birsy.clinker.common.networking.ClinkerPacketHandler;
-import birsy.clinker.common.networking.packet.ClientboundUrnPathPacket;
+import birsy.clinker.common.networking.packet.ClientboundPathfindingDebugPacket;
 import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.core.util.VectorUtils;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -34,8 +23,6 @@ import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.animal.AbstractGolem;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -49,8 +36,6 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Optional;
 
 public class UrnEntity extends AbstractGolem implements InterpolatedSkeletonParent {
     private Vec3 desiredPosition, targetDesiredPosition;
@@ -204,7 +189,7 @@ public class UrnEntity extends AbstractGolem implements InterpolatedSkeletonPare
         this.setNoGravity(true);
 
         if (this.navigation.getPath() != null) {
-            ClinkerPacketHandler.sendToAllClients(new ClientboundUrnPathPacket(this, this.navigation.getPath()));
+            ClinkerPacketHandler.sendToAllClients(new ClientboundPathfindingDebugPacket(this, this.navigation.getPath()));
         }
 
         if (this.navigation.getPath() != null) {
