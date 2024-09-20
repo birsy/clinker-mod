@@ -39,7 +39,7 @@ public abstract class RopeEntity<T extends RopeEntitySegment> extends Pathfinder
 
     public RopeEntity(EntityType<? extends PathfinderMob> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
-        this.lookControl = new RopeLookController(this);
+        //this.lookControl = new RopeLookController(this);
         this.moveControl = new RopeMoveController(this);
         this.setNoGravity(true);
         this.segments = new ArrayList<>();

@@ -32,6 +32,7 @@ public class ClinkerParticles
     public static final Supplier<SimpleParticleType> SNOOZE = createSimpleParticle("snooze");
     public static final Supplier<SimpleParticleType> MOTH = createSimpleParticle("moth");
     public static final Supplier<SimpleParticleType> FIREFLY = createSimpleParticle("firefly");
+    public static final Supplier<SimpleParticleType> FIRE_SPEW = createSimpleParticle("fire_spew");
 
     public static final Supplier<ParticleType<DustColorTransitionOptions>> ORDNANCE_TRAIL = createParticle("ordnance_trail", DustColorTransitionOptions.DESERIALIZER, DustColorTransitionOptions.CODEC);
     public static final Supplier<ParticleType<DustColorTransitionOptions>> ORDNANCE_EXPLOSION = createParticle("ordnance_explosion", DustColorTransitionOptions.DESERIALIZER, DustColorTransitionOptions.CODEC);
@@ -66,5 +67,7 @@ public class ClinkerParticles
         event.registerSpriteSet(ORDNANCE_EXPLOSION.get(), OrdnanceExplosionParticle.Provider::new);
         event.registerSpriteSet(EXPLOSION_LIGHT.get(), ExplosionLightParticle.Provider::new);
         event.registerSpriteSet(CHAIN_LIGHTNING.get(), ChainLightningParticle.Provider::new);
+        event.registerSpriteSet(FIRE_SPEW.get(), FireSpewParticle.Provider::new);
+
     }
 }

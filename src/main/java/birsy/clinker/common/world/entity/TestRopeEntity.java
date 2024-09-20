@@ -6,6 +6,8 @@ import birsy.clinker.common.world.entity.ai.ClinkerSmoothGroundNavigation;
 import birsy.clinker.common.world.entity.ai.SetRandomWalkTargetCloseEnough;
 import birsy.clinker.common.world.entity.rope.RopeEntity;
 import birsy.clinker.common.world.entity.rope.RopeEntitySegment;
+import birsy.clinker.core.registry.ClinkerParticles;
+import birsy.clinker.core.util.MathUtils;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.Vec3i;
@@ -49,6 +51,8 @@ import net.tslat.smartbrainlib.api.core.sensor.vanilla.HurtBySensor;
 import net.tslat.smartbrainlib.api.core.sensor.vanilla.NearbyLivingEntitySensor;
 import net.tslat.smartbrainlib.util.EntityRetrievalUtil;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Quaternionf;
+import org.joml.Vector3d;
 
 import java.util.List;
 
@@ -81,7 +85,32 @@ public class TestRopeEntity extends RopeEntity<RopeEntitySegment> implements Sma
     @Override
     public void tick() {
         super.tick();
+        if (this.level().isClientSide()) {
+            spawnFireParticles(8);
+        }
+    }
 
+    private final Quaternionf rotation = new Quaternionf();
+    private final Vector3d position = new Vector3d(), velocity = new Vector3d();
+    private void spawnFireParticles(int count) {
+        rotation.set(0, 0, 0, 1).rotateY(this.getViewYRot(1.0F) * -Mth.DEG_TO_RAD).rotateX(this.getViewXRot(1.0F) * Mth.DEG_TO_RAD);
+
+        for (int i = 0; i < count; i++) {
+            float angle = this.random.nextFloat() * 2 * Mth.PI;
+            float radius = this.random.nextFloat();
+            radius = (float) Math.pow(radius, 3);
+            float speed = (1 - radius)*0.05F + 0.1F;//MathUtils.map(0.1F, 0.2F, this.random.nextFloat());
+            float x = Mth.sin(angle), y = Mth.cos(angle);
+            position.set(x, y, 0).normalize().mul(radius * 0.1F);
+            velocity.set(x * radius*2, y * radius*2, -3).normalize().mul(speed);
+
+            position.set(rotation.transform(position));
+            velocity.set(rotation.transform(velocity));
+
+            this.level().addParticle(ClinkerParticles.FIRE_SPEW.get(),
+                    position.x + this.getX(), position.y + this.getY() + this.getEyeHeight(), position.z + this.getZ(),
+                    velocity.x, velocity.y, velocity.z);
+        }
     }
 
 //    @Override
@@ -207,10 +236,10 @@ public class TestRopeEntity extends RopeEntity<RopeEntitySegment> implements Sma
         return BrainActivityGroup.idleTasks(
                 new FirstApplicableBehaviour<TestRopeEntity>(      // Run only one of the below behaviours, trying each one in order. Include the generic type because JavaC is silly
                         new TargetOrRetaliate<>(),            // Set the attack target and walk target based on nearby entities
-                        new SetPlayerLookTarget<>(),          // Set the look target for the nearest player
-                        new SetRandomLookTarget<>()),         // Set a random look target
+                        new SetPlayerLookTarget<>()),//,          // Set the look target for the nearest player
+                        //new SetRandomLookTarget<>()),         // Set a random look target
                 new OneRandomBehaviour<>(                 // Run a random task from the below options
-                        new SetRandomWalkTargetCloseEnough<>().closeEnoughDist(3),          // Set a random walk target to a nearby position
+                        //new SetRandomWalkTargetCloseEnough<>().closeEnoughDist(3),          // Set a random walk target to a nearby position
                         new Idle<>().runFor(entity -> entity.getRandom().nextInt(30, 200)))); // Do nothing for 1.5->3 seconds
     }
 

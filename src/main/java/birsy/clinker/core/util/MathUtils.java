@@ -32,6 +32,14 @@ public class MathUtils {
         return (float) (b + (a - b) * Math.exp(- decayFactor * deltaTime));
     }
 
+    public static float smoothstep(float x) {
+        return x * x * (3.0F - 2.0F * x);
+    }
+
+    public static double smoothstep(double x) {
+        return x * x * (3.0 - 2.0 * x);
+    }
+
     /**
      * moves A towards B by amount
      * @param a the value
