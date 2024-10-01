@@ -38,7 +38,7 @@ public class FireSpewParticle extends Particle {
                             double pX, double pY, double pZ, double pXSpeed, double pYSpeed, double pZSpeed, SpriteSet pSprites) {
         super(pLevel, pX, pY, pZ, pXSpeed, pYSpeed, pZSpeed);
         this.sprite = pSprites.get(0, 10);
-        this.lifetime = 100;
+        this.lifetime = 20;
         this.velocity.set(pXSpeed, pYSpeed, pZSpeed);
         this.pVelocity.set(this.velocity);
     }
@@ -71,8 +71,8 @@ public class FireSpewParticle extends Particle {
 
             Vec3i normal = raycast.getDirection().getNormal();
             float dot = this.velocity.dot(normal.getX(), normal.getY(), normal.getZ());
-            if (Math.abs(dot) < 0.1F) {
-                dot *= 1.1F;
+            //if (Math.abs(dot) < 0.1F) {
+                dot *= 1.0F;
                 this.velocity.sub(normal.getX() * dot, normal.getY() * dot, normal.getZ() * dot).normalize();
 
                 nextX = raycast.getLocation().x() + this.velocity.x() * remainingLength + normal.getX()*0.1;
@@ -80,7 +80,7 @@ public class FireSpewParticle extends Particle {
                 nextZ = raycast.getLocation().z() + this.velocity.z() * remainingLength + normal.getZ()*0.1;
 
                 this.velocity.mul(velocityLength);
-            }
+            //}
 
         }
 
@@ -95,11 +95,12 @@ public class FireSpewParticle extends Particle {
     }
 
     private void updateColor() {
-        float factor = ((float) this.age / this.lifetime);
+        float offset = 0;
+        float factor = (this.age + offset) / (this.lifetime);
         this.alpha = MathUtils.smoothstep(1.0F - factor);
 
-        factor = (float) Math.pow(factor, 0.5);
-        float transitionFac = 0.25F;
+        //factor = (float) Math.pow(factor, 0.5);
+        float transitionFac = 0.1F;
         if (factor < transitionFac) {
             factor = factor / transitionFac;
             factor = MathUtils.smoothstep(factor);
@@ -130,14 +131,17 @@ public class FireSpewParticle extends Particle {
         Vector3f forward = this.pVelocity.lerp(this.velocity, pPartialTicks, new Vector3f()).normalize();
         Vector3f directionToCamera = new Vector3f(x, y, z).normalize();
         Vector3f tangent = forward.cross(directionToCamera, new Vector3f()).normalize();
-        forward.mul(vel.length() * 3);
+        forward.mul(vel.length());
+        float backFactor = ((float) this.age / this.lifetime);
+        float frontFactor = ((this.age - vel.length()*20) / this.lifetime);
 
         Vector3f[] verticies = new Vector3f[]{
-                tangent.mul(-1, new Vector3f()).sub(forward).mul(0.8F),
-                tangent.mul(-1, new Vector3f()).add(forward),
-                tangent.add(forward, new Vector3f()),
-                tangent.sub(forward, new Vector3f())
+                tangent.mul(-1, new Vector3f()).mul(0.3F * (1 / (1-frontFactor))).sub(forward),
+                tangent.mul(-1, new Vector3f()).mul(0.3F * (1 / (1-backFactor))),//.add(forward),
+                tangent.mul(1, new Vector3f()).mul(0.3F * (1 / (1-backFactor))),//.add(forward),
+                tangent.mul(1, new Vector3f()).mul(0.3F * (1 / (1-frontFactor))).sub(forward)
         };
+
 
         for (Vector3f vertex : verticies) {
             vertex.add(x,y,z);
@@ -145,9 +149,9 @@ public class FireSpewParticle extends Particle {
 
 
         float f6 = this.sprite.getU0();
-        float f7 = this.sprite.getU1();
         float f4 = this.sprite.getV0();
-        float f5 = this.sprite.getV1();
+        float f7 = (this.sprite.getU1() - this.sprite.getU0())*(14F/32F) + this.sprite.getU0();
+        float f5 = (this.sprite.getV1() - this.sprite.getV0())*(21F/32F) + this.sprite.getV0();
         int j = LightTexture.FULL_BRIGHT;
         pBuffer.vertex(verticies[0].x(), verticies[0].y(), verticies[0].z())
                 .uv(f7, f5)

@@ -363,7 +363,7 @@ public class CaveSurfaceBuilder {
 
         this.spaghettiCaveNoise1.SetFractalType(FastNoiseLite.FractalType.FBm);
         this.spaghettiCaveNoise1.SetFractalOctaves(3);
-        this.spaghettiCaveNoise1.SetFractalLacunarity(0.5);
+        this.spaghettiCaveNoise1.SetFractalLacunarity(0.5F);
         this.spaghettiCaveNoise1.SetFractalGain(1.7F);
         this.spaghettiCaveNoise1.SetFractalWeightedStrength(0.0F);
 
@@ -378,7 +378,7 @@ public class CaveSurfaceBuilder {
 
         this.spaghettiCaveNoise2.SetFractalType(FastNoiseLite.FractalType.FBm);
         this.spaghettiCaveNoise2.SetFractalOctaves(3);
-        this.spaghettiCaveNoise2.SetFractalLacunarity(0.5);
+        this.spaghettiCaveNoise2.SetFractalLacunarity(0.5F);
         this.spaghettiCaveNoise2.SetFractalGain(1.7F);
         this.spaghettiCaveNoise2.SetFractalWeightedStrength(0.0F);
 

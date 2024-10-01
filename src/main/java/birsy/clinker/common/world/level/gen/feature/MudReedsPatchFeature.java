@@ -6,10 +6,12 @@ import birsy.clinker.core.util.noise.FastNoiseLite;
 import com.mojang.serialization.Codec;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.DoublePlantBlock;
+import net.minecraft.world.level.block.SupportType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -57,6 +59,7 @@ public class MudReedsPatchFeature extends Feature<NoneFeatureConfiguration> {
                 int y = level.getHeight(Heightmap.Types.WORLD_SURFACE_WG, x, z);
                 pos.setY(y);
 
+                if (!level.getBlockState(pos.below()).isFaceSturdy(level, pos.below(), Direction.UP, SupportType.FULL)) continue;
                 if (Math.abs(y - originHeight) > 2) continue;
 
                 float freq = 1 / 8.0F;

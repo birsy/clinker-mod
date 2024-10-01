@@ -4,10 +4,7 @@ import birsy.clinker.common.world.level.gen.MetaChunk;
 import birsy.clinker.common.world.level.gen.MetaChunkTracker;
 import birsy.clinker.common.world.level.gen.chunk.biome.SurfaceDecorator;
 import birsy.clinker.common.world.level.gen.chunk.biome.SurfaceDecorators;
-import birsy.clinker.common.world.level.gen.chunk.biome.source.MultiDimensionalBiomeSource;
-import birsy.clinker.common.world.level.gen.chunk.biome.source.SingleBiomeProvider;
 import birsy.clinker.core.Clinker;
-import birsy.clinker.core.registry.world.ClinkerBiomes;
 import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.core.util.noise.CachedFastNoise;
 import birsy.clinker.core.util.noise.FastNoiseLite;
@@ -17,8 +14,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.Util;
 import net.minecraft.core.*;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.util.Mth;
@@ -35,8 +30,8 @@ import net.minecraft.world.level.chunk.ChunkGeneratorStructureState;
 import net.minecraft.world.level.levelgen.*;
 import net.minecraft.world.level.levelgen.blending.Blender;
 import net.minecraft.world.level.levelgen.structure.StructureSet;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +54,7 @@ public class TestChunkGenerator extends ChunkGenerator {
         n.SetFrequency(0.04F);
         n.SetFractalType(FastNoiseLite.FractalType.FBm);
         n.SetFractalOctaves(1);
-        n.SetFractalLacunarity(0.5);
+        n.SetFractalLacunarity(0.5F);
         n.SetFractalGain(1.7F);
         n.SetFractalWeightedStrength(0.0F);
         return new CachedFastNoise(n);
@@ -67,7 +62,7 @@ public class TestChunkGenerator extends ChunkGenerator {
 
 
     private static final VoronoiGenerator voronoi = new VoronoiGenerator(0);
-    private static long seed;
+    private long seed;
     private float[][][] terrainShapeSamplePoints;
 
     private MetaChunk metaChunk;
@@ -183,66 +178,75 @@ public class TestChunkGenerator extends ChunkGenerator {
         return new NoiseColumn(chunk.getMinBuildHeight(), states);
     }
 
-    private static final int MAX_BLOCKS = 4;
+    private static final Vector3f ZERO = new Vector3f(0);
+    private static final int MAX_ELEVATION_DIFFERENCE = 4;
     private void applySurfaceDecorators(WorldGenLevel level, ChunkAccess chunk) {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
-        int offset = 0;
+        BlockPos.MutableBlockPos neighborPos = new BlockPos.MutableBlockPos().set(pos);
+
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
-                //when it encounters a new surface, check the biome and generate the corresponding surface.
-                int startHeight = chunk.getHeight(Heightmap.Types.WORLD_SURFACE_WG, x + offset, z + offset);
-                pos.set(x + chunk.getPos().getMinBlockX() + offset, startHeight, z + chunk.getPos().getMinBlockZ() + offset);
+                int startHeight = chunk.getHeight(Heightmap.Types.WORLD_SURFACE_WG, x, z);
+                pos.set(x + chunk.getPos().getMinBlockX(), startHeight, z + chunk.getPos().getMinBlockZ());
 
-                boolean isInSolid = false;
                 boolean visibleToSun = true;
-                while (pos.getY() > chunk.getMinBuildHeight() + 5) {
-                    if (level.getBlockState(pos).isCollisionShapeFullBlock(level, pos)) {
-                        if (!isInSolid) {
-                            ResourceLocation biome = level.getBiome(pos).unwrapKey().get().location();
-                            SurfaceDecorator decorator = SurfaceDecorators.getSurfaceDecorator(biome);
+                while (pos.getY() > chunk.getMinBuildHeight() + 1) {
+                    //when it encounters a new surface, check the biome and generate the corresponding surface.
+                    if (level.getBlockState(pos) == this.settings.defaultBlock()) {
+                        ResourceLocation biome = level.getBiome(pos).unwrapKey().get().location();
+                        SurfaceDecorator decorator = SurfaceDecorators.getSurfaceDecorator(biome);
+                        decorator.setSeed(this.seed);
 
-                            // probably really slow. too bad!
-                            int maxElevationIncrease = 0;
-                            int maxElevationDecrease = 0;
-                            directions:
+                        neighborPos.set(pos);
+                        int depth = 1;
+                        while (neighborPos.getY() > chunk.getMinBuildHeight() + 1) {
+                            neighborPos.move(Direction.DOWN);
+                            if (level.getBlockState(neighborPos) == this.settings.defaultBlock()) depth++;
+                            else break;
+                        }
+
+                        int maxElevationIncrease = 0;
+                        int maxElevationDecrease = 0;
+                        if (decorator.shouldCalculateElevationChange(visibleToSun, pos.getY())) {
                             for (Direction direction : Direction.Plane.HORIZONTAL) {
-                                BlockPos.MutableBlockPos neighborPos = pos.immutable().mutable().move(direction);
+                                neighborPos.set(pos).move(direction);
                                 boolean movingUp = level.getBlockState(neighborPos).isCollisionShapeFullBlock(level, neighborPos);
                                 Direction moveDirection = movingUp ? Direction.UP : Direction.DOWN;
 
-                                for (int i = 0; i < MAX_BLOCKS + 1; i++) {
+                                for (int i = 0; i < MAX_ELEVATION_DIFFERENCE + 1; i++) {
                                     neighborPos.move(moveDirection);
 
-                                    // no blocks will return a greater difference in height than this, can safely return out.
-                                    if (i == MAX_BLOCKS) {
-                                        if (movingUp) { maxElevationIncrease = MAX_BLOCKS; }
-                                        else { maxElevationDecrease = MAX_BLOCKS; }
-                                        break;
-                                    }
+                                    if (movingUp) maxElevationIncrease = Math.max(maxElevationIncrease, i);
+                                    else maxElevationDecrease = Math.max(maxElevationDecrease, i + 1);
 
-                                    boolean isTop = movingUp ? !level.getBlockState(neighborPos).isCollisionShapeFullBlock(level, neighborPos) : level.getBlockState(neighborPos).isCollisionShapeFullBlock(level, neighborPos);
-                                    if (isTop) {
-                                        if (movingUp) { maxElevationIncrease = Math.max(maxElevationIncrease, i); }
-                                        else { maxElevationDecrease = Math.max(maxElevationDecrease, i + 1); }
-                                        break;
-                                    }
+                                    if (neighborPos.getY() < chunk.getMinBuildHeight() + 1) break;
+
+                                    boolean isTop = movingUp != level.getBlockState(neighborPos).isCollisionShapeFullBlock(level, neighborPos);
+                                    if (isTop) break;
                                 }
                             }
-
-                            //decorator.setSeed(level.getSeed());
-                            decorator.buildSurface(pos, this.getSeaLevel(), visibleToSun, 0, maxElevationIncrease, maxElevationDecrease, chunk, this.settings);
-                            isInSolid = true;
-                            visibleToSun = false;
                         }
-                    } else {
-                        isInSolid = false;
+
+                        decorator.buildSurface(chunk, new BlockPos.MutableBlockPos().set(pos), this.getSeaLevel(), visibleToSun, depth, maxElevationIncrease, maxElevationDecrease, (dx, dy, dz) -> ZERO);
+                        visibleToSun = false;
+
+                        // move down to the next air block
+                        pos.move(Direction.DOWN, depth - 1);
                     }
 
                     pos.move(Direction.DOWN);
-
                 }
             }
         }
+    }
+
+    public void applyCarvers(WorldGenRegion level, long seed, RandomState p_224168_, BiomeManager p_224169_, StructureManager p_224170_, ChunkAccess chunk, GenerationStep.Carving p_224172_) {
+//        BlockPos.MutableBlockPos testPos = new BlockPos(chunk.getPos().getMinBlockX() + 8, 0, chunk.getPos().getMinBlockZ() + 8).mutable();
+//        for (int y = chunk.getMinBuildHeight() + 1; y < chunk.getMaxBuildHeight() - 1; y++) {
+//            testPos.setY(y);
+//            level.setBlock(testPos, Blocks.GREEN_STAINED_GLASS.defaultBlockState(), 2);
+//        }
+        //this.applySurfaceDecorators(level, chunk);
     }
 
     @Override
@@ -498,7 +502,7 @@ public class TestChunkGenerator extends ChunkGenerator {
     }
 
     public void addDebugScreenInfo(List<String> pInfo, RandomState pRandom, BlockPos pPos) {}
-    public void applyCarvers(WorldGenRegion p_224166_, long seed, RandomState p_224168_, BiomeManager p_224169_, StructureManager p_224170_, ChunkAccess p_224171_, GenerationStep.Carving p_224172_) {}
+
     public void spawnOriginalMobs(WorldGenRegion pLevel) {}
     protected Codec<? extends ChunkGenerator> codec() {
         return CODEC;

@@ -86,7 +86,9 @@ public class TestRopeEntity extends RopeEntity<RopeEntitySegment> implements Sma
     public void tick() {
         super.tick();
         if (this.level().isClientSide()) {
-            spawnFireParticles(8);
+            //spawnFireParticles(8);
+        } else {
+            this.debugMove();
         }
     }
 
@@ -100,6 +102,7 @@ public class TestRopeEntity extends RopeEntity<RopeEntitySegment> implements Sma
             float radius = this.random.nextFloat();
             radius = (float) Math.pow(radius, 3);
             float speed = (1 - radius)*0.05F + 0.1F;//MathUtils.map(0.1F, 0.2F, this.random.nextFloat());
+            speed *= 3;
             float x = Mth.sin(angle), y = Mth.cos(angle);
             position.set(x, y, 0).normalize().mul(radius * 0.1F);
             velocity.set(x * radius*2, y * radius*2, -3).normalize().mul(speed);
@@ -236,11 +239,13 @@ public class TestRopeEntity extends RopeEntity<RopeEntitySegment> implements Sma
         return BrainActivityGroup.idleTasks(
                 new FirstApplicableBehaviour<TestRopeEntity>(      // Run only one of the below behaviours, trying each one in order. Include the generic type because JavaC is silly
                         new TargetOrRetaliate<>(),            // Set the attack target and walk target based on nearby entities
-                        new SetPlayerLookTarget<>()),//,          // Set the look target for the nearest player
-                        //new SetRandomLookTarget<>()),         // Set a random look target
+                        new SetPlayerLookTarget<>(),//,          // Set the look target for the nearest player
+                        new SetRandomLookTarget<>()),         // Set a random look target
                 new OneRandomBehaviour<>(                 // Run a random task from the below options
-                        //new SetRandomWalkTargetCloseEnough<>().closeEnoughDist(3),          // Set a random walk target to a nearby position
-                        new Idle<>().runFor(entity -> entity.getRandom().nextInt(30, 200)))); // Do nothing for 1.5->3 seconds
+                        new SetRandomWalkTargetCloseEnough<>().closeEnoughDist(3), // Set a random walk target to a nearby position
+                        new Idle<>().runFor(entity -> entity.getRandom().nextInt(30, 200)) // Do nothing for 1.5->3 seconds
+                )
+        );
     }
 
     @Override

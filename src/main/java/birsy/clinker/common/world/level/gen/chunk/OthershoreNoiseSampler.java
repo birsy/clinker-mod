@@ -58,7 +58,7 @@ public class OthershoreNoiseSampler {
         this.largeNoise.SetFrequency(0.04F);
         this.largeNoise.SetFractalType(FastNoiseLite.FractalType.FBm);
         this.largeNoise.SetFractalOctaves(1);
-        this.largeNoise.SetFractalLacunarity(0.5);
+        this.largeNoise.SetFractalLacunarity(0.5F);
         this.largeNoise.SetFractalGain(1.7F);
         this.largeNoise.SetFractalWeightedStrength(0.0F);
 

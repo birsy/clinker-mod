@@ -13,7 +13,7 @@ public class SurfaceDecorators {
 
     static {
         register(new ResourceLocation(Clinker.MOD_ID, "ash_steppe"),
-                 new HeightDebugSurfaceDecorator());
+                 new AshSteppeSurfaceDecorator());
     }
 
     //new BasicSurfaceDecorator(ClinkerBlocks.ASH.get().defaultBlockState(), ClinkerBlocks.BRIMSTONE.get().defaultBlockState(), ClinkerBlocks.BRIMSTONE.get().defaultBlockState(), 0)

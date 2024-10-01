@@ -113,7 +113,7 @@ public class ChainLightningParticle extends Particle {
             float v2 = Mth.lerp(1.0f - d2, sprite.getV0(), sprite.getV1());
 
             RenderUtils.drawFaceBetweenPoints(vertexconsumer, posestack, 0.05f, pos1, tangent1, biTangent1, normal1, sprite.getU0(), v1, 1, 1, 1, time,
-                                                                                        pos2, tangent2, biTangent2, normal2, sprite.getU1(), v2, 1, 1, 1, time);
+                                                                                       pos2, tangent2, biTangent2, normal2, sprite.getU1(), v2, 1, 1, 1, time);
         }
 
         bufferSource.endBatch();

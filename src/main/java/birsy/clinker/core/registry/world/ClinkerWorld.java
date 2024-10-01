@@ -4,6 +4,7 @@ import birsy.clinker.client.render.world.OthershoreDimensionEffects;
 import birsy.clinker.common.world.level.gen.chunk.CaveChunkGenerator;
 import birsy.clinker.common.world.level.gen.chunk.OthershoreChunkGenerator;
 import birsy.clinker.common.world.level.gen.chunk.TestChunkGenerator;
+import birsy.clinker.common.world.level.gen.chunk.TestChunkGenerator2;
 import birsy.clinker.core.Clinker;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.registries.BuiltInRegistries;

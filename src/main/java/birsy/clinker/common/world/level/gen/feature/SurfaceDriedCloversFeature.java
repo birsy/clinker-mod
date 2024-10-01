@@ -12,6 +12,7 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SnowyDirtBlock;
+import net.minecraft.world.level.block.SupportType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.Feature;
@@ -62,6 +63,8 @@ public class SurfaceDriedCloversFeature extends Feature<NoneFeatureConfiguration
                 int heightmap = level.getHeight(Heightmap.Types.WORLD_SURFACE_WG, x, z);
 
                 pos.set(x, heightmap, z);
+                if (!level.getBlockState(pos.below()).isFaceSturdy(level, pos.below(), Direction.UP, SupportType.FULL)) continue;
+
                 float diff = getWeightedAverageHeightDifference(pos, level);
                 float frequency = 1.0F / 8.0F;
                 float factor = (float) (diff * noise.GetNoise(x * frequency, z * frequency));
