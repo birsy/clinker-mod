@@ -1,4 +1,4 @@
-package birsy.clinker.client.gui;
+package birsy.clinker.client.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
@@ -29,13 +29,16 @@ public class ZosimusRenderer {
                 0, torso.height - 0.25F, 0.0F,
                 0, torso.height + 0.5F, 0.0F,
                 0.25F);
-        this.head = new ZosimusCube(neck, 0, -0.25F, 0, 0.5F, 0.5F, 0.4F);
-        this.hat = new ZosimusCube(neck, 0, head.height + 0.2F, 0, 0.4F, 0.4F, 0.3F);
+        this.head = new ZosimusCube(neck, 0, -0.25F, 0, 0.8F, 0.8F, 0.75F);
+        this.hat = new ZosimusCube(head, 0, head.height + 0.2F, 0, 0.7F, 0.7F, 0.65F);
     }
 
     public void render(PoseStack pPoseStack, double tickTime, float partialTicks) {
         pPoseStack.pushPose();
-        pPoseStack.scale(16, 16, 16);
+        pPoseStack.scale(32, 32, 32);
+        pPoseStack.translate(3, 3, 0);
+        this.root.xRot = 0;
+        this.root.yRot = (float) (tickTime * 0.1F) % Mth.TWO_PI;
         this.root.render(pPoseStack);
         pPoseStack.popPose();
     }
@@ -54,11 +57,11 @@ public class ZosimusRenderer {
         @Override
         protected void draw(PoseStack stack) {
             Matrix4f matrix = stack.last().pose();
-
-            float renderWidth = Mth.abs(Mth.cos(xRot) * width) + Mth.abs(Mth.sin(xRot) * depth);
+            float xRotation = this.getTotalXRot();
+            float renderWidth = Mth.lerp(Mth.abs(Mth.sin(xRotation)), this.width, this.depth);
             drawSkinBox(matrix,
-                    renderWidth * -0.5F, height * -0.5F,
-                    renderWidth * 0.5F,  height * 0.5F);
+                    renderWidth * -1.0F, height * -1.0F,
+                    renderWidth,  height);
         }
     }
 
@@ -74,7 +77,7 @@ public class ZosimusRenderer {
         }
 
         @Override
-        void draw(PoseStack stack) {
+        protected void draw(PoseStack stack) {
             Matrix4f matrix = stack.last().pose();
             float tx = this.getTransformedX(this.x, this.y, this.z),
                   ty = this.getTransformedY(this.x, this.y, this.z);
@@ -89,12 +92,12 @@ public class ZosimusRenderer {
         protected void render(PoseStack stack) {
             stack.pushPose();
             this.transformPoseStack(stack);
-            this.draw(stack);
-            float tx = this.getTransformedX(this.x, this.y, this.z),
-                  ty = this.getTransformedY(this.x, this.y, this.z);
-            stack.translate(this.getTransformedX(this.x2, this.y2, this.z2) - tx,
-                            this.getTransformedY(this.x2, this.y2, this.z2) - ty,
-                        0);
+//            this.draw(stack);
+//            float tx = this.getTransformedX(this.x, this.y, this.z),
+//                  ty = this.getTransformedY(this.x, this.y, this.z);
+//            stack.translate(this.getTransformedX(this.x2, this.y2, this.z2) - tx,
+//                            -(this.getTransformedY(this.x2, this.y2, this.z2) - ty),
+//                        0);
             for (ZosimusBodyPart child : this.children) child.render(stack);
             stack.popPose();
         }
@@ -132,16 +135,26 @@ public class ZosimusRenderer {
             return transformPos.y;
         }
 
+        public float getTotalXRot() {
+            if (parent == null) return this.xRot;
+            return this.xRot + parent.getTotalXRot();
+        }
+
+        public float getTotalYRot() {
+            if (parent == null) return this.yRot;
+            return this.yRot + parent.getTotalYRot();
+        }
+
         private Quaternionf setRotationQuaternion() {
             this.transformQuat.set(0, 0, 0, 1)
-                    .rotateLocalY(this.yRot)
-                    .rotateLocalX(this.xRot);
+                    .rotateLocalY(this.getTotalYRot())
+                    .rotateLocalX(this.getTotalXRot());
             return this.transformQuat;
         }
 
         protected void transformPoseStack(PoseStack stack) {
             stack.mulPose(Axis.ZP.rotation(this.tilt));
-            stack.translate(this.getTransformedX(this.x, this.y, this.z), this.getTransformedY(this.x, this.y, this.z), 0);
+            stack.translate(this.getTransformedX(this.x, this.y, this.z), -this.getTransformedY(this.x, this.y, this.z), 0);
         }
 
         protected void render(PoseStack stack) {

@@ -2,6 +2,7 @@ package birsy.clinker.client.render;
 
 import birsy.clinker.client.gui.AlchemyBundleGUIRenderer;
 import birsy.clinker.core.Clinker;
+import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 
 import net.neoforged.bus.api.SubscribeEvent;
@@ -12,9 +13,10 @@ import net.neoforged.neoforge.event.TickEvent;
 @Mod.EventBusSubscriber(modid = Clinker.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class GUIRenderer {
     public static AlchemyBundleGUIRenderer alchemyBundleGUIRenderer;
-
+    public static ZosimusRenderer zosimusRenderer = new ZosimusRenderer();
     @SubscribeEvent
     public static void onRenderGUI(RenderGuiEvent.Post event) {
+        zosimusRenderer.render(event.getGuiGraphics().pose(), Minecraft.getInstance().levelRenderer.getTicks() + event.getPartialTick(), event.getPartialTick());
        //alchemyBundleGUIRenderer.runShaders(event.getPoseStack(), event.getPartialTick());
     }
 
