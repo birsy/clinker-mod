@@ -40,6 +40,14 @@ public class MathUtils {
         return x * x * (3.0 - 2.0 * x);
     }
 
+    public static double smoothAbs(double x, double smoothness) {
+        return Math.sqrt(x*x + smoothness);
+    }
+
+    public static float smoothAbs(float x, float smoothness) {
+        return Mth.sqrt(x*x + smoothness);
+    }
+
     /**
      * moves A towards B by amount
      * @param a the value
