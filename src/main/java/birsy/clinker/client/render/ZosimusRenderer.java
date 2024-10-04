@@ -14,9 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ZosimusRenderer {
-    final ZosimusBodyPart root;
-    final ZosimusCube torso, head, hat;
-    final ZosimusTube neck;
+    ZosimusBodyPart root;
+    ZosimusCube torso, head, hat;
+    ZosimusTube neck;
 
     public ZosimusRenderer() {
         this.root = new ZosimusBodyPart(null, 0, 0,0);
@@ -29,16 +29,20 @@ public class ZosimusRenderer {
                 0, torso.height - 0.25F, 0.0F,
                 0, torso.height + 0.5F, 0.0F,
                 0.25F);
-        this.head = new ZosimusCube(neck, 0, -0.25F, 0, 0.8F, 0.8F, 0.75F);
+        this.head = new ZosimusCube(neck, 0, torso.height + 0.5F, 0, 0.8F, 0.8F, 0.75F);
         this.hat = new ZosimusCube(head, 0, head.height + 0.2F, 0, 0.7F, 0.7F, 0.65F);
     }
 
     public void render(PoseStack pPoseStack, double tickTime, float partialTicks) {
         pPoseStack.pushPose();
         pPoseStack.scale(32, 32, 32);
-        pPoseStack.translate(3, 3, 0);
-        this.root.xRot = 0;
-        this.root.yRot = (float) (tickTime * 0.1F) % Mth.TWO_PI;
+        pPoseStack.translate(3, 5, 0);
+        this.head.y = 1.5F;
+        this.head.depth = 0.75F;
+
+        this.root.xRot = Mth.cos((float) tickTime * 0.1F)*0.25F;
+        this.root.yRot = Mth.sin((float) tickTime * 0.1F)*0.25F;//(float) (tickTime * 0.1F) % Mth.TWO_PI;
+        this.head.yRot = 0;//Mth.sin((float) tickTime * 0.1F);
         this.root.render(pPoseStack);
         pPoseStack.popPose();
     }
@@ -57,8 +61,8 @@ public class ZosimusRenderer {
         @Override
         protected void draw(PoseStack stack) {
             Matrix4f matrix = stack.last().pose();
-            float xRotation = this.getTotalXRot();
-            float renderWidth = Mth.lerp(Mth.abs(Mth.sin(xRotation)), this.width, this.depth);
+            float yRotation = this.getTotalYRot();
+            float renderWidth = Mth.abs(Mth.cos(yRotation)) * this.width + Math.abs(Mth.sin(yRotation)) * this.depth;
             drawSkinBox(matrix,
                     renderWidth * -1.0F, height * -1.0F,
                     renderWidth,  height);
