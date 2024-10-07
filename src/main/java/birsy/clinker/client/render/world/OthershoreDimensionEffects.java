@@ -375,8 +375,6 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
         Matrix4f matrix = poseStack.last().pose();
         float uvSquish = cameraDistance * cameraDistance * 3.0F;
 
-        RenderSystem.setShaderFogEnd(cameraDistance);
-
         float u1 = 0;
         float u2 = 0; //nothing changes new year's day!
         float uvRatio = 0;
@@ -401,7 +399,10 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
             bufferBuilder.vertex(matrix, x2, - ringOffset, z2).color(bottomR, bottomG, bottomB, bottomA).uv(u2, 0.0F - uvSquish).endVertex();
         }
         uvRatio /= ringHeight;
-        RenderSystem.setShaderFogStart(uvRatio);
+
+        RenderSystem.getShader().getUniform("UVRatio").set(uvRatio);
+        RenderSystem.getShader().getUniform("RingDistance").set(cameraDistance);
+
         BufferUploader.drawWithShader(bufferBuilder.end());
     }
 

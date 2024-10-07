@@ -3,8 +3,8 @@
 uniform sampler2D Sampler0;
 uniform vec4 ColorModulator;
 uniform float GameTime;
-uniform float FogStart; //maximum UV
-uniform float FogEnd; //ring distance
+uniform float UVRatio;
+uniform float RingDistance;
 
 in vec4 vertexColor;
 in vec2 texCoord0;
@@ -33,21 +33,16 @@ float detailNoise(vec2 uv) {
     return (noise(uv) + noise(uv * 2) * 0.5 + noise(uv * 4) * 0.25) / 1.75;
 }
 
-vec2 uvRez(vec2 uv, float rez) {
-    return floor(uv * rez) / rez;
-}
-
-vec2 uvRez(vec2 uv, vec2 rez) {
-    return floor(uv * rez) / rez;
-}
+vec2 uvRez(vec2 uv, float rez) { return floor(uv * rez) / rez; }
+vec2 uvRez(vec2 uv, vec2 rez) { return floor(uv * rez) / rez; }
 
 void main() {
     //noise
     float size = 1.0;
-    vec2 resolution = 400.0 * vec2(FogStart, 1.0);
+    vec2 resolution = 400.0 * vec2(UVRatio, 1.0);
     vec2 uv = texCoord0 * size;
-    uv += FogEnd * 83.141592653;
-    float speed = -15.0 * (1.0 - FogEnd);
+    uv += RingDistance * 83.141592653;
+    float speed = -15.0 * (1.0 - RingDistance);
     float uvMix = map(1.0 - (uv.x), 0.5, 1.0, 0.0, 1.0);
     float verticalOffset = ((sin((uvRez(uv, resolution).x) * 2.0 * 3.141592653 * 8.0 - (GameTime * speed * 0.1)) + 1.0) * 0.5) * 0.01;
 
@@ -92,6 +87,6 @@ void main() {
     value *= 5.0;
     value = clamp(value, 0.0, 1.0);
 
-    noisevalue *= (1.0 - gradient) * (1 - FogEnd) * 0.5;
+    noisevalue *= (1.0 - gradient) * (1 - RingDistance) * 0.5;
     fragColor = vertexColor * vec4(1.0 + noisevalue, 1.0 + noisevalue, 1.0 + noisevalue, value);
 }
