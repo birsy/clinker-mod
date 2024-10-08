@@ -28,6 +28,13 @@ public class ClinkerShaders {
     @Nullable
     private static ShaderInstance fireSpewShader;
 
+    @Nullable
+    private static ShaderInstance skyOuterShader;
+    @Nullable
+    private static ShaderInstance skyOuterCloudShader;
+    @Nullable
+    private static ShaderInstance skyOuterStarShader;
+
     public static ShaderInstance getSkyCloudShader() {
         return Objects.requireNonNull(skyCloudShader, "Attempted to call getSkyCloudShader before shaders have finished loading.");
     }
@@ -46,6 +53,15 @@ public class ClinkerShaders {
     public static ShaderInstance getFireSpewShader() {
         return Objects.requireNonNull(fireSpewShader, "Attempted to call getFireSpewShader before shaders have finished loading.");
     }
+    public static ShaderInstance getSkyOuterShader() {
+        return Objects.requireNonNull(skyOuterShader, "Attempted to call getSkyOuterShader before shaders have finished loading.");
+    }
+    public static ShaderInstance getSkyOuterCloudShader() {
+        return Objects.requireNonNull(skyOuterCloudShader, "Attempted to call getSkyOuterCloudShader before shaders have finished loading.");
+    }
+    public static ShaderInstance getSkyOuterStarShader() {
+        return Objects.requireNonNull(skyOuterStarShader, "Attempted to call getSkyOuterStarShader before shaders have finished loading.");
+    }
     @SubscribeEvent
     public static void registerShaders(RegisterShadersEvent event) throws IOException {
         Clinker.LOGGER.info("registering shaders!");
@@ -56,6 +72,9 @@ public class ClinkerShaders {
         event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation(Clinker.MOD_ID,"chain_lightning"), DefaultVertexFormat.NEW_ENTITY), (shader) -> chainLightningShader = shader);
         event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation(Clinker.MOD_ID,"fire_spew"), DefaultVertexFormat.NEW_ENTITY), (shader) -> fireSpewShader = shader);
 
+        event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation(Clinker.MOD_ID,"sky_outer"), DefaultVertexFormat.POSITION_TEX_COLOR), (shader) -> skyOuterShader = shader);
+        event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation(Clinker.MOD_ID,"sky_outer_cloud"), DefaultVertexFormat.POSITION_TEX_COLOR), (shader) -> skyOuterCloudShader = shader);
+        event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation(Clinker.MOD_ID,"sky_outer_star"), DefaultVertexFormat.POSITION_TEX_COLOR), (shader) -> skyOuterStarShader = shader);
     }
 
 

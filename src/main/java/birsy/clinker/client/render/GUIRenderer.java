@@ -16,7 +16,7 @@ public class GUIRenderer {
     public static ZosimusRenderer zosimusRenderer = new ZosimusRenderer();
     @SubscribeEvent
     public static void onRenderGUI(RenderGuiEvent.Post event) {
-        zosimusRenderer.render(event.getGuiGraphics().pose(), Minecraft.getInstance().levelRenderer.getTicks() + event.getPartialTick(), event.getPartialTick());
+        //zosimusRenderer.render(event.getGuiGraphics().pose(), Minecraft.getInstance().levelRenderer.getTicks() + event.getPartialTick(), event.getPartialTick());
        //alchemyBundleGUIRenderer.runShaders(event.getPoseStack(), event.getPartialTick());
     }
 

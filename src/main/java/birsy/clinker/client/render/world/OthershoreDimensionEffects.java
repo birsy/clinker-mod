@@ -45,9 +45,12 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
     private static final ResourceLocation CLOUD_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/environment/cloud_map_a.png");
     private static final ResourceLocation FOG_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/environment/fog.png");
 
+    OthershoreSkyRenderer skyRenderer;
+
     private List<Star> starInfo = null;
     public OthershoreDimensionEffects() {
         super(256.0F, true, SkyType.NORMAL, false, false);
+        this.skyRenderer = new OthershoreSkyRenderer(RandomSource.create(1337));
     }
 
     public Vec3 getBrightnessDependentFogColor(Vec3 pFogColor, float pBrightness) {
@@ -156,196 +159,199 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
 
     @Override
     public boolean renderSky(ClientLevel level, int ticks, float partialTick, PoseStack poseStack, Camera camera, Matrix4f projectionMatrix, boolean isFoggy, Runnable setupFog) {
-        //setup and variables i'll probably need for everything
         setupFog.run();
-        float time = (ticks + partialTick);
-        float lightFactor = OthershoreFogRenderer.calculateInterpolatedLight(level, camera.getPosition(), LightLayer.SKY, true);
-        Vec3 skyColor = level.getSkyColor(camera.getPosition(), partialTick);
-        float[] tfg = RenderSystem.getShaderFogColor();
-        Vector3f trueFogColor = new Vector3f(tfg[0], tfg[1], tfg[2]);
-        Vector3f fogColor = new Vector3f(68.0F / 256.0F, 75.0F / 256.0F, 125.0F / 256.0F);
-        fogColor.lerp(new Vector3f((float) skyColor.x(), (float) skyColor.y(), (float) skyColor.z()), 0.1F);
-        fogColor.lerp(trueFogColor, lightFactor);
-        float skyRed = (float)skyColor.x;
-        float skyGreen = (float)skyColor.y;
-        float skyBlue = (float)skyColor.z;
-        Vec3 cameraPos = camera.getPosition();
-        float camY = (float) cameraPos.y;
-        float cameraOffset = -camY + 10;//(float) -Math.min((camY - 64.0F) * 0.16F, 100.0F);
-        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
-
-        //creates the sky disc
-        RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
-        RenderSystem.setShaderTexture(0, CLOUD_TEXTURE);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.depthMask(false);
-        bufferbuilder.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR_TEX);
-        poseStack.pushPose();
-        Matrix4f m1 = poseStack.last().pose();
-        float height = MathUtils.minMaxSin(time * 0.01F, 50, 60);
-        int resolution = 24;
-        float radius = 120.0F;
-
-        float uvOffset1 = -time * 0.0005F;
-        float distortionAmount = 0.5F;
-        float distortWiggleU = Mth.sin(uvOffset1) * distortionAmount;
-        float distortWiggleV = Mth.cos(uvOffset1) * distortionAmount;
-
-        bufferbuilder.vertex(m1, 0.0F, height, 0.0F).color(skyRed, skyGreen, skyBlue, 1.0F).uv(0.5F + uvOffset1 + distortWiggleU, 0.5F + uvOffset1 + distortWiggleV).endVertex();
-        for(int vertex = 0; vertex <= resolution; ++vertex) {
-            float angle = (float)vertex * ((float)Math.PI * 2F) / ((float)resolution);
-            float x = Mth.sin(angle) * radius;
-            float z = Mth.cos(angle) * radius;
-
-            float vOffset = Mth.sin(angle);
-            float wiggleTime = vOffset - uvOffset1 * 2.0F;
-            float distortWiggleU1 = Mth.sin(wiggleTime) * 0.5F * distortionAmount;
-            float distortWiggleV1 = Mth.cos(wiggleTime) * 0.5F * distortionAmount;
-            bufferbuilder.vertex(m1, x, Mth.sin((angle * 4) + (time * 0.1F)) * 5, -z).color(fogColor.x(), fogColor.y(), fogColor.z(), 0.0F).uv(((x / radius) + 1) * 0.5F + uvOffset1 + distortWiggleV1, ((z / radius) + 1) * 0.5F + uvOffset1 + distortWiggleU1).endVertex();
-        }
-
-
-        BufferUploader.drawWithShader(bufferbuilder.end());
-
-        float aboveCloudAlphaOffset = Mth.clamp(MathUtils.mapRange(300F, 350F, 1.0F, 0.0F, camY), 0.0F, 1.0F);
-        //Clinker.LOGGER.info(cameraOffset);
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        renderCone(poseStack, bufferbuilder, resolution, false, radius, height, skyRed, skyGreen, skyBlue, 1.0F * aboveCloudAlphaOffset, 0.0F, skyRed, skyGreen, skyBlue, 1.0F * aboveCloudAlphaOffset);
-        renderCone(poseStack, bufferbuilder, resolution, true, radius, -height, skyRed, skyGreen, skyBlue, 1.0F, 0.0F, skyRed, skyGreen, skyBlue, 1.0F * aboveCloudAlphaOffset);
-        poseStack.popPose();
-
-
-        //clouds and stars
-        poseStack.pushPose();
-        Matrix4f projMatrix = new Matrix4f(RenderSystem.getProjectionMatrix());
-        RenderSystem.setProjectionMatrix(RenderSystem.getProjectionMatrix().setPerspective(
-                (float)(Minecraft.getInstance().gameRenderer.getFov(camera, partialTick, true) * (float) (Math.PI / 180.0)),
-                (float)Minecraft.getInstance().getWindow().getWidth() / (float)Minecraft.getInstance().getWindow().getHeight(),
-                0.05F,
-                3125.0F), VertexSorting.DISTANCE_TO_ORIGIN);
-
-        // Account for view bobbing
-        if (mc.options.bobView().get() && mc.getCameraEntity() instanceof Player) {
-            Player player = (Player) mc.getCameraEntity();
-            float playerStep = player.walkDist - player.walkDistO;
-            float stepSize = -(player.walkDist + playerStep * partialTick);
-            float viewBob = Mth.lerp(partialTick, player.oBob, player.bob);
-
-            Quaternionf cameraRotation = camera.rotation();
-            Vector3f xAxis = cameraRotation.transform(new Vector3f(1, 0, 0));
-            Vector3f ZAxis = cameraRotation.transform(new Vector3f(0, 0, 1));
-
-            Quaternionf bobXRotation = new Quaternionf().rotateAxis((float) Math.toRadians(Math.abs(Mth.cos(stepSize * (float) Math.PI - 0.2f) * viewBob) * 5f), xAxis);
-            Quaternionf bobZRotation = new Quaternionf().rotateAxis((float) Math.toRadians(Mth.sin(stepSize * (float) Math.PI) * viewBob * 3f), ZAxis);
-            poseStack.mulPose(bobXRotation.conjugate());
-            poseStack.mulPose(bobZRotation.conjugate());
-            poseStack.translate(Mth.sin(stepSize * (float) Math.PI) * viewBob * 0.5f, Math.abs(Mth.cos(stepSize * (float) Math.PI) * viewBob), 0f);
-        }
-
-        poseStack.translate(0, cameraOffset, 0);
-        int ringResolution = 24;
-        float ringHeight = 500.0F;//80.0F;
-        int ringNum = mc.options.graphicsMode().get() == GraphicsStatus.FAST ? 16 : 24;
-        float maxRadius = 3125.0F;//500.0F;
-        float minRadius = 125.0F;//20.0F;
-
-        float alpha = 0.8F;
-
-        List<Star> stars = getOrCreateStarInfo();
-        int starStartIndex = stars.size() - 1;
-
-        for (int ring = ringNum; ring >= 0; ring--) {
-            poseStack.pushPose();
-            float ringDist = (float)ring / (float)ringNum;
-            ringDist *= ringDist;
-
-            float rRadius = Mth.lerp(ringDist, minRadius, maxRadius);
-            float smoothRingDist = MathUtils.ease(ringDist, MathUtils.EasingType.easeOutCirc);//ringDist * ringDist * (3.0F - 2.0F * ringDist);
-           // smoothRingDist = smoothRingDist * smoothRingDist * (3.0F - 2.0F * smoothRingDist);
-
-            Vector3f ringColor = new Vector3f(trueFogColor.x(), trueFogColor.y(), trueFogColor.z());
-            ringColor.lerp(fogColor, smoothRingDist * 0.7F);
-            ringColor.lerp(new Vector3f((float) skyColor.x(), (float) skyColor.y(), (float) skyColor.z()), smoothRingDist);
-            ringColor.lerp(trueFogColor, (1 - aboveCloudAlphaOffset) * 0.8F);
-
-            RenderSystem.setShaderGameTime(ticks, partialTick);
-            poseStack.pushPose();
-            poseStack.translate(0, (ringHeight / 5), 0);
-            poseStack.scale(6.25F, 6.25F, 6.25F);
-
-            RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
-            RenderSystem.setShaderTexture(0, STAR_TEXTURE);
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-            for (int starIndex = starStartIndex; starIndex >= 0; starIndex--) {
-                Star star = stars.get(starIndex);
-
-                if (star.distance > rRadius / 6.25F) {
-                    renderStar(poseStack, bufferbuilder, star, lightFactor, time, 0.08F, true);
-                } else {
-                    starStartIndex = starIndex;
-                    break;
-                }
-
-            }
-
-            poseStack.popPose();
-
-            RenderSystem.setShaderTexture(0, NOISE_TEXTURE);
-            renderCloudRing(poseStack, bufferbuilder, ringResolution, rRadius, ringHeight, 20.0F, 0.0F, ringDist, ringColor.x(), ringColor.y(), ringColor.z(), alpha * 0.8F, ringColor.x(), ringColor.y(), ringColor.z(), 1.0F);
-            poseStack.popPose();
-        }
-
-        poseStack.pushPose();
-        RenderSystem.setShader(ClinkerShaders::getPositionColorTextureUnclampedShader);
-        RenderSystem.setShaderTexture(0, FOG_TEXTURE);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        Vector3f edgeColor = new Vector3f(trueFogColor.x(), trueFogColor.y(), trueFogColor.z());
-        edgeColor.lerp(new Vector3f((float) skyColor.x(), (float) skyColor.y(), (float) skyColor.z()), MathUtils.ease(1 / ringNum, MathUtils.EasingType.easeOutCirc));
-        float upperHeight = 380F;
-        float lowerHeight = 50;
-        float colorMult = 1.2F;
-        float inverseAboveCloudAlphaOffset = Mth.clamp(MathUtils.mapRange(350F, 400F, 0.0F, 1.0F, camY), 0.0F, 1.0F);
-        renderCone(poseStack, bufferbuilder, resolution, true, minRadius + 30.0F, upperHeight, trueFogColor.x(), trueFogColor.y(), trueFogColor.z(), inverseAboveCloudAlphaOffset, upperHeight + 30.0F, edgeColor.x(), edgeColor.y(), edgeColor.z(), 1.0F);
-        renderCone(poseStack, bufferbuilder, resolution, false, minRadius + 30.0F, upperHeight, trueFogColor.x() * colorMult, trueFogColor.y() * colorMult, trueFogColor.z() * colorMult, aboveCloudAlphaOffset, upperHeight - 30.0F, edgeColor.x(), edgeColor.y(), edgeColor.z(), 1.0F);
-        renderCone(poseStack, bufferbuilder, resolution, true, minRadius + 30.0F, lowerHeight, trueFogColor.x(), trueFogColor.y(), trueFogColor.z(), 1.0F, lowerHeight, edgeColor.x(), edgeColor.y(), edgeColor.z(), 1.0F);
-
-        // cone prevents skybox from looking wonky at high render distances.
-        float offset = 30;
-        float horizonConeHeight = -offset - Math.max(cameraOffset, 50);
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        renderCone(poseStack, bufferbuilder, resolution, true, minRadius, horizonConeHeight, trueFogColor.x(), trueFogColor.y(), trueFogColor.z(), 1.0F, horizonConeHeight, trueFogColor.x(), trueFogColor.y(), trueFogColor.z(), 0.5F);
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        Matrix4f matrix = poseStack.last().pose();
-        for(int segment = 0; segment < resolution; ++segment) {
-            float angle1 = (float)segment * ((float)Math.PI * 2F) / ((float)resolution);
-            float x1 = Mth.sin(angle1) * minRadius;
-            float z1 = Mth.cos(angle1) * minRadius;
-
-            float angle2 = (segment + 1.0F) * ((float)Math.PI * 2F) / ((float)resolution);
-            float x2 = Mth.sin(angle2) * minRadius;
-            float z2 = Mth.cos(angle2) * minRadius;
-
-            bufferbuilder.vertex(matrix, x1, horizonConeHeight, z1).color(trueFogColor.x(), trueFogColor.y(), trueFogColor.z(), 0.5F).endVertex();
-            bufferbuilder.vertex(matrix, x1, horizonConeHeight + offset,z1).color(trueFogColor.x(), trueFogColor.y(), trueFogColor.z(), 0).endVertex();
-            bufferbuilder.vertex(matrix, x2, horizonConeHeight + offset,z2).color(trueFogColor.x(), trueFogColor.y(), trueFogColor.z(), 0).endVertex();
-            bufferbuilder.vertex(matrix, x2, horizonConeHeight, z2).color(trueFogColor.x(), trueFogColor.y(), trueFogColor.z(), 0.5F).endVertex();
-        }
-        BufferUploader.drawWithShader(bufferbuilder.end());
-
-
-
-        poseStack.popPose();
-
-        poseStack.popPose();
-
-
-
-
-        RenderSystem.depthMask(true);
-        RenderSystem.setProjectionMatrix(projMatrix, VertexSorting.DISTANCE_TO_ORIGIN);
+        this.skyRenderer.render(level, ticks, partialTick, poseStack, camera, projectionMatrix);
         return true;
+//        //setup and variables i'll probably need for everything
+//        setupFog.run();
+//        float time = (ticks + partialTick);
+//        float lightFactor = OthershoreFogRenderer.calculateInterpolatedLight(level, camera.getPosition(), LightLayer.SKY, true);
+//        Vec3 skyColor = level.getSkyColor(camera.getPosition(), partialTick);
+//        float[] tfg = RenderSystem.getShaderFogColor();
+//        Vector3f trueFogColor = new Vector3f(tfg[0], tfg[1], tfg[2]);
+//        Vector3f fogColor = new Vector3f(68.0F / 256.0F, 75.0F / 256.0F, 125.0F / 256.0F);
+//        fogColor.lerp(new Vector3f((float) skyColor.x(), (float) skyColor.y(), (float) skyColor.z()), 0.1F);
+//        fogColor.lerp(trueFogColor, lightFactor);
+//        float skyRed = (float)skyColor.x;
+//        float skyGreen = (float)skyColor.y;
+//        float skyBlue = (float)skyColor.z;
+//        Vec3 cameraPos = camera.getPosition();
+//        float camY = (float) cameraPos.y;
+//        float cameraOffset = -camY + 10;//(float) -Math.min((camY - 64.0F) * 0.16F, 100.0F);
+//        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
+//
+//        //creates the sky disc
+//        RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
+//        RenderSystem.setShaderTexture(0, CLOUD_TEXTURE);
+//        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+//        RenderSystem.enableBlend();
+//        RenderSystem.defaultBlendFunc();
+//        RenderSystem.depthMask(false);
+//        bufferbuilder.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR_TEX);
+//        poseStack.pushPose();
+//        Matrix4f m1 = poseStack.last().pose();
+//        float height = MathUtils.minMaxSin(time * 0.01F, 50, 60);
+//        int resolution = 24;
+//        float radius = 120.0F;
+//
+//        float uvOffset1 = -time * 0.0005F;
+//        float distortionAmount = 0.5F;
+//        float distortWiggleU = Mth.sin(uvOffset1) * distortionAmount;
+//        float distortWiggleV = Mth.cos(uvOffset1) * distortionAmount;
+//
+//        bufferbuilder.vertex(m1, 0.0F, height, 0.0F).color(skyRed, skyGreen, skyBlue, 1.0F).uv(0.5F + uvOffset1 + distortWiggleU, 0.5F + uvOffset1 + distortWiggleV).endVertex();
+//        for(int vertex = 0; vertex <= resolution; ++vertex) {
+//            float angle = (float)vertex * ((float)Math.PI * 2F) / ((float)resolution);
+//            float x = Mth.sin(angle) * radius;
+//            float z = Mth.cos(angle) * radius;
+//
+//            float vOffset = Mth.sin(angle);
+//            float wiggleTime = vOffset - uvOffset1 * 2.0F;
+//            float distortWiggleU1 = Mth.sin(wiggleTime) * 0.5F * distortionAmount;
+//            float distortWiggleV1 = Mth.cos(wiggleTime) * 0.5F * distortionAmount;
+//            bufferbuilder.vertex(m1, x, Mth.sin((angle * 4) + (time * 0.1F)) * 5, -z).color(fogColor.x(), fogColor.y(), fogColor.z(), 0.0F).uv(((x / radius) + 1) * 0.5F + uvOffset1 + distortWiggleV1, ((z / radius) + 1) * 0.5F + uvOffset1 + distortWiggleU1).endVertex();
+//        }
+//
+//
+//        BufferUploader.drawWithShader(bufferbuilder.end());
+//
+//        float aboveCloudAlphaOffset = Mth.clamp(MathUtils.mapRange(300F, 350F, 1.0F, 0.0F, camY), 0.0F, 1.0F);
+//        //Clinker.LOGGER.info(cameraOffset);
+//        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+//        renderCone(poseStack, bufferbuilder, resolution, false, radius, height, skyRed, skyGreen, skyBlue, 1.0F * aboveCloudAlphaOffset, 0.0F, skyRed, skyGreen, skyBlue, 1.0F * aboveCloudAlphaOffset);
+//        renderCone(poseStack, bufferbuilder, resolution, true, radius, -height, skyRed, skyGreen, skyBlue, 1.0F, 0.0F, skyRed, skyGreen, skyBlue, 1.0F * aboveCloudAlphaOffset);
+//        poseStack.popPose();
+//
+//
+//        //clouds and stars
+//        poseStack.pushPose();
+//        Matrix4f projMatrix = new Matrix4f(RenderSystem.getProjectionMatrix());
+//        RenderSystem.setProjectionMatrix(RenderSystem.getProjectionMatrix().setPerspective(
+//                (float)(Minecraft.getInstance().gameRenderer.getFov(camera, partialTick, true) * (float) (Math.PI / 180.0)),
+//                (float)Minecraft.getInstance().getWindow().getWidth() / (float)Minecraft.getInstance().getWindow().getHeight(),
+//                0.05F,
+//                3125.0F), VertexSorting.DISTANCE_TO_ORIGIN);
+//
+//        // Account for view bobbing
+//        if (mc.options.bobView().get() && mc.getCameraEntity() instanceof Player) {
+//            Player player = (Player) mc.getCameraEntity();
+//            float playerStep = player.walkDist - player.walkDistO;
+//            float stepSize = -(player.walkDist + playerStep * partialTick);
+//            float viewBob = Mth.lerp(partialTick, player.oBob, player.bob);
+//
+//            Quaternionf cameraRotation = camera.rotation();
+//            Vector3f xAxis = cameraRotation.transform(new Vector3f(1, 0, 0));
+//            Vector3f ZAxis = cameraRotation.transform(new Vector3f(0, 0, 1));
+//
+//            Quaternionf bobXRotation = new Quaternionf().rotateAxis((float) Math.toRadians(Math.abs(Mth.cos(stepSize * (float) Math.PI - 0.2f) * viewBob) * 5f), xAxis);
+//            Quaternionf bobZRotation = new Quaternionf().rotateAxis((float) Math.toRadians(Mth.sin(stepSize * (float) Math.PI) * viewBob * 3f), ZAxis);
+//            poseStack.mulPose(bobXRotation.conjugate());
+//            poseStack.mulPose(bobZRotation.conjugate());
+//            poseStack.translate(Mth.sin(stepSize * (float) Math.PI) * viewBob * 0.5f, Math.abs(Mth.cos(stepSize * (float) Math.PI) * viewBob), 0f);
+//        }
+//
+//        poseStack.translate(0, cameraOffset, 0);
+//        int ringResolution = 24;
+//        float ringHeight = 500.0F;//80.0F;
+//        int ringNum = mc.options.graphicsMode().get() == GraphicsStatus.FAST ? 16 : 24;
+//        float maxRadius = 3125.0F;//500.0F;
+//        float minRadius = 125.0F;//20.0F;
+//
+//        float alpha = 0.8F;
+//
+//        List<Star> stars = getOrCreateStarInfo();
+//        int starStartIndex = stars.size() - 1;
+//
+//        for (int ring = ringNum; ring >= 0; ring--) {
+//            poseStack.pushPose();
+//            float ringDist = (float)ring / (float)ringNum;
+//            ringDist *= ringDist;
+//
+//            float rRadius = Mth.lerp(ringDist, minRadius, maxRadius);
+//            float smoothRingDist = MathUtils.ease(ringDist, MathUtils.EasingType.easeOutCirc);//ringDist * ringDist * (3.0F - 2.0F * ringDist);
+//           // smoothRingDist = smoothRingDist * smoothRingDist * (3.0F - 2.0F * smoothRingDist);
+//
+//            Vector3f ringColor = new Vector3f(trueFogColor.x(), trueFogColor.y(), trueFogColor.z());
+//            ringColor.lerp(fogColor, smoothRingDist * 0.7F);
+//            ringColor.lerp(new Vector3f((float) skyColor.x(), (float) skyColor.y(), (float) skyColor.z()), smoothRingDist);
+//            ringColor.lerp(trueFogColor, (1 - aboveCloudAlphaOffset) * 0.8F);
+//
+//            RenderSystem.setShaderGameTime(ticks, partialTick);
+//            poseStack.pushPose();
+//            poseStack.translate(0, (ringHeight / 5), 0);
+//            poseStack.scale(6.25F, 6.25F, 6.25F);
+//
+//            RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
+//            RenderSystem.setShaderTexture(0, STAR_TEXTURE);
+//            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+//            for (int starIndex = starStartIndex; starIndex >= 0; starIndex--) {
+//                Star star = stars.get(starIndex);
+//
+//                if (star.distance > rRadius / 6.25F) {
+//                    renderStar(poseStack, bufferbuilder, star, lightFactor, time, 0.08F, true);
+//                } else {
+//                    starStartIndex = starIndex;
+//                    break;
+//                }
+//
+//            }
+//
+//            poseStack.popPose();
+//
+//            RenderSystem.setShaderTexture(0, NOISE_TEXTURE);
+//            renderCloudRing(poseStack, bufferbuilder, ringResolution, rRadius, ringHeight, 20.0F, 0.0F, ringDist, ringColor.x(), ringColor.y(), ringColor.z(), alpha * 0.8F, ringColor.x(), ringColor.y(), ringColor.z(), 1.0F);
+//            poseStack.popPose();
+//        }
+//
+//        poseStack.pushPose();
+//        RenderSystem.setShader(ClinkerShaders::getPositionColorTextureUnclampedShader);
+//        RenderSystem.setShaderTexture(0, FOG_TEXTURE);
+//        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+//        Vector3f edgeColor = new Vector3f(trueFogColor.x(), trueFogColor.y(), trueFogColor.z());
+//        edgeColor.lerp(new Vector3f((float) skyColor.x(), (float) skyColor.y(), (float) skyColor.z()), MathUtils.ease(1 / ringNum, MathUtils.EasingType.easeOutCirc));
+//        float upperHeight = 380F;
+//        float lowerHeight = 50;
+//        float colorMult = 1.2F;
+//        float inverseAboveCloudAlphaOffset = Mth.clamp(MathUtils.mapRange(350F, 400F, 0.0F, 1.0F, camY), 0.0F, 1.0F);
+//        renderCone(poseStack, bufferbuilder, resolution, true, minRadius + 30.0F, upperHeight, trueFogColor.x(), trueFogColor.y(), trueFogColor.z(), inverseAboveCloudAlphaOffset, upperHeight + 30.0F, edgeColor.x(), edgeColor.y(), edgeColor.z(), 1.0F);
+//        renderCone(poseStack, bufferbuilder, resolution, false, minRadius + 30.0F, upperHeight, trueFogColor.x() * colorMult, trueFogColor.y() * colorMult, trueFogColor.z() * colorMult, aboveCloudAlphaOffset, upperHeight - 30.0F, edgeColor.x(), edgeColor.y(), edgeColor.z(), 1.0F);
+//        renderCone(poseStack, bufferbuilder, resolution, true, minRadius + 30.0F, lowerHeight, trueFogColor.x(), trueFogColor.y(), trueFogColor.z(), 1.0F, lowerHeight, edgeColor.x(), edgeColor.y(), edgeColor.z(), 1.0F);
+//
+//        // cone prevents skybox from looking wonky at high render distances.
+//        float offset = 30;
+//        float horizonConeHeight = -offset - Math.max(cameraOffset, 50);
+//        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+//        renderCone(poseStack, bufferbuilder, resolution, true, minRadius, horizonConeHeight, trueFogColor.x(), trueFogColor.y(), trueFogColor.z(), 1.0F, horizonConeHeight, trueFogColor.x(), trueFogColor.y(), trueFogColor.z(), 0.5F);
+//        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+//        Matrix4f matrix = poseStack.last().pose();
+//        for(int segment = 0; segment < resolution; ++segment) {
+//            float angle1 = (float)segment * ((float)Math.PI * 2F) / ((float)resolution);
+//            float x1 = Mth.sin(angle1) * minRadius;
+//            float z1 = Mth.cos(angle1) * minRadius;
+//
+//            float angle2 = (segment + 1.0F) * ((float)Math.PI * 2F) / ((float)resolution);
+//            float x2 = Mth.sin(angle2) * minRadius;
+//            float z2 = Mth.cos(angle2) * minRadius;
+//
+//            bufferbuilder.vertex(matrix, x1, horizonConeHeight, z1).color(trueFogColor.x(), trueFogColor.y(), trueFogColor.z(), 0.5F).endVertex();
+//            bufferbuilder.vertex(matrix, x1, horizonConeHeight + offset,z1).color(trueFogColor.x(), trueFogColor.y(), trueFogColor.z(), 0).endVertex();
+//            bufferbuilder.vertex(matrix, x2, horizonConeHeight + offset,z2).color(trueFogColor.x(), trueFogColor.y(), trueFogColor.z(), 0).endVertex();
+//            bufferbuilder.vertex(matrix, x2, horizonConeHeight, z2).color(trueFogColor.x(), trueFogColor.y(), trueFogColor.z(), 0.5F).endVertex();
+//        }
+//        BufferUploader.drawWithShader(bufferbuilder.end());
+//
+//
+//
+//        poseStack.popPose();
+//
+//        poseStack.popPose();
+//
+//
+//
+//
+//        RenderSystem.depthMask(true);
+//        RenderSystem.setProjectionMatrix(projMatrix, VertexSorting.DISTANCE_TO_ORIGIN);
+//        return true;
     }
 
     private void renderCone(PoseStack poseStack, BufferBuilder bufferBuilder, int resolution, boolean normal, float radius, float topVertexHeight, float topR, float topG, float topB, float topA, float bottomVertexHeight, float bottomR, float bottomG, float bottomB, float bottomA) {

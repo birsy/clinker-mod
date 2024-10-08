@@ -38,7 +38,7 @@ public class ZosimusRenderer {
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
 
         this.root.yRot = (float) (tickTime * 0.1F);//Mth.cos((float) (tickTime * 0.08F));
-        this.root.xRot = 0.5F;//Mth.sin((float) (tickTime * 0.4F)) * 0.5F;
+        this.root.xRot = 0.5F;//Mth.sin((float) (tickTime * 0.1F)) * 0.5F;
         this.root.tilt = 0.0F;
         this.root.render(bufferbuilder, pPoseStack);
         BufferUploader.drawWithShader(bufferbuilder.end());
@@ -72,7 +72,8 @@ public class ZosimusRenderer {
 
             float drawXRot = Mth.wrapDegrees(this.getTotalXRot() * Mth.RAD_TO_DEG) * Mth.DEG_TO_RAD;
             float yOffset = drawXRot;
-            drawY += yOffset * Mth.sin(drawYRot) * getParent().getHeadHeight()*0.5F;
+            float factor = drawYRot / Mth.HALF_PI;
+            drawY += Mth.lerp(factor * factor, yOffset, 0.0F) * getParent().getHeadHeight()*0.5F;
 
             Matrix4f matrix = stack.last().pose();
             drawEye(matrix, bufferbuilder, false, false, drawX - 0.15F, drawY);
@@ -91,7 +92,6 @@ public class ZosimusRenderer {
             float x1 = -eyeWidth * 0.5F + eyeX, y1 = -eyeHeight * 0.5F + eyeY;
             float x2 =  eyeWidth * 0.5F + eyeX, y2 =  eyeHeight * 0.5F + eyeY;
 
-            //Clinker.LOGGER.info("{}, {} | {}, {}", x1, y1, x2, y2);
             x1 = Mth.clamp(x1, -headWidth, headWidth);
             y1 = Mth.clamp(y1, -headHeight, 0);
             x2 = Mth.clamp(x2, -headWidth, headWidth);
@@ -106,13 +106,13 @@ public class ZosimusRenderer {
                 u2 = temp;
             }
             bufferbuilder.vertex(matrix, x1, y2, 1)
-                    .color(1F,1F,1F,1F).uv(u1, v2).endVertex();
+                    .color(181, 138, 88, 255).uv(u1, v2).endVertex();
             bufferbuilder.vertex(matrix, x2, y2, 1)
-                    .color(1F,1F,1F,1F).uv(u2, v2).endVertex();
+                    .color(181, 138, 88, 255).uv(u2, v2).endVertex();
             bufferbuilder.vertex(matrix, x2, y1, 1)
-                    .color(1F,1F,1F,1F).uv(u2, v1).endVertex();
+                    .color(181, 138, 88, 255).uv(u2, v1).endVertex();
             bufferbuilder.vertex(matrix, x1, y1, 1)
-                    .color(1F,1F,1F,1F).uv(u1, v1).endVertex();
+                    .color(181, 138, 88, 255).uv(u1, v1).endVertex();
         }
     }
 
@@ -171,6 +171,24 @@ public class ZosimusRenderer {
                     .color(1F,1F,1F,1F).uv(u2, v1).endVertex();
             bufferbuilder.vertex(matrix, x1, y1, 0)
                     .color(1F,1F,1F,1F).uv(u1, v1).endVertex();
+
+            float clamping = 1 - Mth.clamp(this.getTotalYRot() / Mth.HALF_PI, 0, 1);
+            float xRot = this.getTotalXRot();
+            y1 = -neckHeight - Mth.sin(xRot) * neckWidth * 0.5F * clamping;
+            y2 = -neckHeight + Mth.sin(xRot) * neckWidth * 0.5F * clamping;
+            if (y1 > y2) {
+                float temp = y1;
+                y1 = y2;
+                y2 = temp;
+            }
+            bufferbuilder.vertex(matrix, x1, y2, 0)
+                    .color(1F,1F,1F,1F).uv(1.0F, 1.0F).endVertex();
+            bufferbuilder.vertex(matrix, x2, y2, 0)
+                    .color(1F,1F,1F,1F).uv(1.0F, 1.0F).endVertex();
+            bufferbuilder.vertex(matrix, x2, y1, 0)
+                    .color(1F,1F,1F,1F).uv(1.0F, 1.0F).endVertex();
+            bufferbuilder.vertex(matrix, x1, y1, 0)
+                    .color(1F,1F,1F,1F).uv(1.0F, 1.0F).endVertex();
 
 //            bufferbuilder.vertex(matrix, x1, y2, zOffset)
 //                    .color(1F,1F,1F,1F).uv(u1, v2).endVertex();
