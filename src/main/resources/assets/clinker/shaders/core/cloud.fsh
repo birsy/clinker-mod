@@ -10,6 +10,7 @@ uniform vec2 UVOffset;
 uniform float Depth;
 uniform float Radius;
 uniform float GameTime;
+uniform float Facing;
 
 in vec2 texCoord0;
 in vec4 vertexColor;
@@ -37,7 +38,6 @@ void main() {
     dpth *= dpth;
 
     float clouds = mix(textureA.b, textureA2.b, sin(GameTime * 500.0) * 0.5 + 0.5) * 0.7 + textureC.b * 0.3;
-    //clouds = map(clouds, 0.0, 1.0, 0.0, 1.0);
 
     float difference = (clouds - (1.0 - Depth));
     difference *= 10.0;
@@ -47,12 +47,14 @@ void main() {
     alpha = map(alpha, 0.0, Radius - (Radius*0.4) * Depth * Depth, 0.0, 1.0);
     alpha = 1.0 - alpha;
 
-    vec4 color = vec4(clamp(FogColor.rgb * (1 + dpth * 0.75), vec3(0.0), vec3(1.0)), difference * alpha * alpha * alpha * fadeAway * 0.5 * Depth);
+    float colorMult = mix((1 + dpth * 0.75), 1.0F, Facing);
+    vec4 color = vec4(clamp(FogColor.rgb * colorMult, vec3(0.0), vec3(1.0)), difference * alpha * alpha * alpha * fadeAway * 0.5 * Depth);
     float mixFactor = 1.0 - Depth;
     mixFactor = clamp(mixFactor * 3.0, 0.0, 1.0);
     mixFactor = sqrt(mixFactor);
     mixFactor = map(mixFactor, 0.0, 1.0, 0.5, 1.0);
     color = mix(vec4(SkyColor.rgb, color.a), color, mixFactor);
+    color.a = clamp(color.a, 0.0, 1.0);
 
     fragColor = color * ColorModulator;
 }
