@@ -15,7 +15,6 @@ import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
 @OnlyIn(Dist.CLIENT)
@@ -52,22 +51,44 @@ public class OthershoreCloudRenderer {
         ShaderInstance shader = RenderSystem.getShader();
 
         poseStack.translate(0, -camY, 0);
+        
+        float thickness = 48.0F;
+
+        float cloudsStart = 250;
+        float cloudsEnd = 450;
+        if (camY < cloudsEnd)
+            drawCloudLayer(cloudsStart, radius, thickness, true, camX, camY, camZ, skyColor, poseStack, projectionMatrix, shader);
+        if (camY > cloudsStart + thickness)
+            drawCloudLayer(cloudsEnd, radius, thickness * 0.5F, false, camX, camY, camZ, skyColor, poseStack, projectionMatrix, shader);
+
+        poseStack.popPose();
+    }
+
+    private void drawCloudLayer(float height, float radius, float thickness, boolean lower, double camX, double camY, double camZ, Vector3fc skyColor, PoseStack poseStack, Matrix4f projectionMatrix, ShaderInstance shader) {
         int layers = 16;
-        float thickness = 3F;
-        if (camY < 250 + layers*thickness) {
+        float layerThickness = (thickness / layers);
+
+        if (camY < height + layers* layerThickness) {
             for (int i = layers - 1; i >= 0; i--) {
                 poseStack.pushPose();
-                float y = 250 + i*thickness;
+                float y = height + i* layerThickness;
                 poseStack.translate(0, y, 0);
-                poseStack.scale(1, thickness, 1);
+                poseStack.scale(1, layerThickness, 1);
 
+                if (lower) {
+                    setShaderUniform(shader, "SkyColor", skyColor.x() * 0.8F, skyColor.y() * 0.8F, skyColor.z() * 0.8F, 1.0F);
+                } else {
+                    setShaderUniform(shader, "SkyColor", RenderSystem.getShaderFogColor());
+                }
                 setShaderUniform(shader, "SkyColor", skyColor.x() * 0.8F, skyColor.y() * 0.8F, skyColor.z() * 0.8F, 1.0F);
                 setShaderUniform(shader, "FogColor", RenderSystem.getShaderFogColor());
                 setShaderUniform(shader, "UVOffset", (float)((camX * 0.5F) % radius), (float)((camZ * 0.5F) % radius));
-                setShaderUniform(shader, "Depth", (float) i / (layers - 2));
+                float depth = (float) i / (layers - 2);
+                if (!lower) depth = 1.0F - depth;
+                setShaderUniform(shader, "Depth", depth);
                 setShaderUniform(shader, "Radius", radius);
 
-                if (y + thickness > camY) {
+                if (y + layerThickness > camY) {
                     cloudLayerDownBuffer.bind();
                     cloudLayerDownBuffer.drawWithShader(poseStack.last().pose(), projectionMatrix, shader);
                     VertexBuffer.unbind();
@@ -76,19 +97,26 @@ public class OthershoreCloudRenderer {
                 poseStack.popPose();
             }
         }
-        if (camY > 250) {
+        if (camY > height) {
             for (int i = 0; i < layers; i++) {
                 poseStack.pushPose();
-                float y = 250 + i*thickness;
+                float y = height + i* layerThickness;
                 poseStack.translate(0, y, 0);
-                poseStack.scale(1, thickness, 1);
+                poseStack.scale(1, layerThickness, 1);
 
+                if (lower) {
+                    setShaderUniform(shader, "SkyColor", skyColor.x() * 0.8F, skyColor.y() * 0.8F, skyColor.z() * 0.8F, 1.0F);
+                } else {
+                    setShaderUniform(shader, "SkyColor", RenderSystem.getShaderFogColor());
+                }
                 setShaderUniform(shader, "FogColor", RenderSystem.getShaderFogColor());
                 setShaderUniform(shader, "UVOffset", (float)(((camX * 0.5F)/radius) % 1), (float)(((camZ * 0.5F)/radius) % 1));
-                setShaderUniform(shader, "Depth", (float) i / (layers - 2));
+                float depth = (float) i / (layers - 2);
+                if (!lower) depth = 1.0F - depth;
+                setShaderUniform(shader, "Depth", depth);
                 setShaderUniform(shader, "Radius", radius);
 
-                if (y - thickness < camY){
+                if (y - layerThickness < camY){
                     cloudLayerUpBuffer.bind();
                     cloudLayerUpBuffer.drawWithShader(poseStack.last().pose(), projectionMatrix, shader);
                     VertexBuffer.unbind();
@@ -97,9 +125,6 @@ public class OthershoreCloudRenderer {
                 poseStack.popPose();
             }
         }
-
-
-        poseStack.popPose();
     }
 
     private VertexBuffer buildCloudBuffer(VertexBuffer vbo, int resolution, int layers, boolean down, float radius) {

@@ -26,6 +26,8 @@ float map(float value, float min1, float max1, float min2, float max2) {
 void main() {
     vec2 uv = uvRez((texCoord0*Radius + UVOffset), 1.0) / 400.0F;
     vec4 textureA = texture(Sampler0, (uv + GameTime*2.5)*0.5);
+    vec4 textureA2 = texture(Sampler0, (uv + GameTime*-2.5)*0.6 + 0.55555);
+
     vec4 textureB = texture(Sampler0, (uv + GameTime*3)*0.8);
     vec4 textureC = texture(Sampler0, (uv + GameTime*-4)*1.0 + textureB.r);
 
@@ -34,7 +36,7 @@ void main() {
     float dpth = (1.0 - Depth);
     dpth *= dpth;
 
-    float clouds = mix(textureA.b, textureB.b, sin(GameTime * 100.0));// * 0.7 + textureC.b * 0.3;
+    float clouds = mix(textureA.b, textureA2.b, sin(GameTime * 500.0) * 0.5 + 0.5) * 0.7 + textureC.b * 0.3;
     //clouds = map(clouds, 0.0, 1.0, 0.0, 1.0);
 
     float difference = (clouds - (1.0 - Depth));
