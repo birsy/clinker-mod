@@ -2,6 +2,7 @@ package birsy.clinker.client.render.world;
 
 import birsy.clinker.client.render.ClinkerShaders;
 import birsy.clinker.core.Clinker;
+import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.shaders.Uniform;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -21,6 +22,7 @@ import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -40,8 +42,15 @@ public class OthershoreSkyRenderer {
 
     private VertexBuffer cloudRingBuffer;
     private VertexBuffer[] floatingStarBuffers;
+
+    private VertexBuffer horizonFogBuffer;
+
     private final RandomSource random;
 
+    private static int RING_COUNT = 24;
+    private static float RING_MIN_RADIUS = 192.0F;
+    private static float RING_MAX_RADIUS = 3125.0F;
+    private static float RING_HEIGHT = 500.0F;
 
     public OthershoreSkyRenderer(RandomSource random) {
         RenderSystem.assertOnRenderThread();
@@ -59,7 +68,10 @@ public class OthershoreSkyRenderer {
                 0.05F,
                 5000.0F), VertexSorting.DISTANCE_TO_ORIGIN);
 
-        buildVBOs();
+        // rebuilds the star VBOs
+        // runs only if the render distance changes
+        buildStarVBOs();
+
         Vec3 cameraPos = camera.getPosition();
         Vector3fc skyColor = this.getSkyColor(level, cameraPos, partialTick);
         float[] fogColor = RenderSystem.getShaderFogColor();
@@ -95,13 +107,18 @@ public class OthershoreSkyRenderer {
             poseStack.translate(Mth.sin(stepSize * (float) Math.PI) * viewBob * 0.5f, Math.abs(Mth.cos(stepSize * (float) Math.PI) * viewBob), 0f);
         }
 
-        float scale = 3000.0F;
+        poseStack.pushPose();
+        float scale = 4990.0F;
         poseStack.scale(scale, scale, scale);
 
-        cameraPos = cameraPos.scale(1.0 / scale);
-
         drawOuterSky(level, ticks, partialTick, projMatrix, poseStack,
-                (float) cameraPos.x, (float) cameraPos.z,
+                (float) cameraPos.x / scale, (float) cameraPos.z / scale,
+                fogColor[0], fogColor[1], fogColor[2],
+                skyColor.x(), skyColor.y(), skyColor.z());
+        poseStack.popPose();
+
+        drawCloudRings(level, ticks, partialTick, projMatrix, poseStack,
+                (float) cameraPos.y,
                 fogColor[0], fogColor[1], fogColor[2],
                 skyColor.x(), skyColor.y(), skyColor.z());
 
@@ -167,46 +184,109 @@ public class OthershoreSkyRenderer {
                                 float camY,
                                 float fogR, float fogG, float fogB,
                                 float skyR, float skyG, float skyB) {
-//        for (int ring = 24; ring >= 0; ring--) {
-//            poseStack.pushPose();
-//            float ringDist = (float)ring / (float)ringNum;
-//            ringDist *= ringDist;
-//
-//            float rRadius = Mth.lerp(ringDist, minRadius, maxRadius);
-//            float smoothRingDist = MathUtils.ease(ringDist, MathUtils.EasingType.easeOutCirc);//ringDist * ringDist * (3.0F - 2.0F * ringDist);
-//           // smoothRingDist = smoothRingDist * smoothRingDist * (3.0F - 2.0F * smoothRingDist);
-//
-//            Vector3f ringColor = new Vector3f(trueFogColor.x(), trueFogColor.y(), trueFogColor.z());
-//            ringColor.lerp(fogColor, smoothRingDist * 0.7F);
-//            ringColor.lerp(new Vector3f((float) skyColor.x(), (float) skyColor.y(), (float) skyColor.z()), smoothRingDist);
-//            ringColor.lerp(trueFogColor, (1 - aboveCloudAlphaOffset) * 0.8F);
-//
-//            RenderSystem.setShaderGameTime(ticks, partialTick);
-//            poseStack.pushPose();
-//            poseStack.translate(0, (ringHeight / 5), 0);
-//            poseStack.scale(6.25F, 6.25F, 6.25F);
-//
-//            RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
-//            RenderSystem.setShaderTexture(0, STAR_TEXTURE);
-//            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-//            for (int starIndex = starStartIndex; starIndex >= 0; starIndex--) {
-//                Star star = stars.get(starIndex);
-//
-//                if (star.distance > rRadius / 6.25F) {
-//                    renderStar(poseStack, bufferbuilder, star, lightFactor, time, 0.08F, true);
-//                } else {
-//                    starStartIndex = starIndex;
-//                    break;
-//                }
-//
-//            }
-//
-//            poseStack.popPose();
-//
-//            RenderSystem.setShaderTexture(0, NOISE_TEXTURE);
-//            renderCloudRing(poseStack, bufferbuilder, ringResolution, rRadius, ringHeight, 20.0F, 0.0F, ringDist, ringColor.x(), ringColor.y(), ringColor.z(), alpha * 0.8F, ringColor.x(), ringColor.y(), ringColor.z(), 1.0F);
-//            poseStack.popPose();
-//        }
+        float aboveCloudAlphaOffset = Mth.clamp(MathUtils.mapRange(400F, 450F, 1.0F, 0.0F, camY), 0.0F, 1.0F);
+
+
+        float time = ticks + partialTick;
+
+        float cloudR = 68.0F / 256.0F, cloudG = 75.0F / 256.0F, cloudB = 125.0F / 256.0F;
+        float delta = 0.1F;
+        cloudR = Mth.lerp(delta, cloudR, skyR); cloudG = Mth.lerp(delta, cloudG, skyG); cloudB = Mth.lerp(delta, cloudB, skyB);
+        delta = 0.0F;
+        cloudR = Mth.lerp(delta, cloudR, fogR); cloudG = Mth.lerp(delta, cloudG, fogG); cloudB = Mth.lerp(delta, cloudB, fogB);
+
+        poseStack.pushPose();
+        poseStack.translate(0, -(camY - 250.0F), 0);
+        float skyColMult = 0.8F;
+
+        drawHorizon(poseStack.last().pose(), skyR * skyColMult, skyG * skyColMult, skyB * skyColMult, aboveCloudAlphaOffset);
+
+        for (int ring = RING_COUNT; ring >= 0; ring--) {
+            poseStack.pushPose();
+            float ringDist = ((float)ring) / RING_COUNT;
+            ringDist *= ringDist;
+
+            float ringRadius = Mth.lerp(ringDist, RING_MIN_RADIUS, RING_MAX_RADIUS);
+
+            // draw stars
+            RenderSystem.setShader(ClinkerShaders::getSkyStarShader);
+            RenderSystem.setShaderTexture(0, STAR_TEXTURE);
+            RenderSystem.setShaderTexture(1, STAR_COLOR_TEXTURE);
+            ShaderInstance starShader = RenderSystem.getShader();
+
+            setShaderUniform(starShader, "Rotation", time * 0.0005F);
+            setShaderUniform(starShader, "TwinkleTime", time * 0.1F);
+
+            floatingStarBuffers[ring].bind();
+            floatingStarBuffers[ring].drawWithShader(poseStack.last().pose(), projMatrix, RenderSystem.getShader());
+            VertexBuffer.unbind();
+
+
+            // draw cloud rings
+            RenderSystem.setShaderTexture(0, NOISE_TEXTURE);
+            RenderSystem.setShader(ClinkerShaders::getSkyCloudShader);
+            RenderSystem.setShaderGameTime(ticks, partialTick);
+
+            float smoothRingDist = MathUtils.ease(ringDist, MathUtils.EasingType.easeOutCirc);
+            float ringR = fogR, ringG = fogG, ringB = fogB;
+            delta = smoothRingDist * 0.7F;
+            ringR = Mth.lerp(delta, ringR, cloudR); ringG = Mth.lerp(delta, ringG, cloudG); ringB = Mth.lerp(delta, ringB, cloudB);
+            delta = smoothRingDist;
+            ringR = Mth.lerp(delta, ringR, skyR*skyColMult); ringG = Mth.lerp(delta, ringG, skyG*skyColMult); ringB = Mth.lerp(delta, ringB, skyB*skyColMult);
+            delta = (1 - aboveCloudAlphaOffset);
+            ringR = Mth.lerp(delta, ringR, fogR); ringG = Mth.lerp(delta, ringG, fogG); ringB = Mth.lerp(delta, ringB, fogB);
+
+            ShaderInstance cloudShader = RenderSystem.getShader();
+            setShaderUniform(cloudShader, "UVRatio", (Mth.TWO_PI * ringRadius) / RING_HEIGHT);
+            setShaderUniform(cloudShader, "UVSquish", ringDist * ringDist * 3.0F);
+            setShaderUniform(cloudShader, "RingDistance", ringDist);
+            setShaderUniform(cloudShader, "RingColor", ringR, ringG, ringB, 1.0F);
+
+            poseStack.scale(ringRadius, RING_HEIGHT, ringRadius);
+            cloudRingBuffer.bind();
+            cloudRingBuffer.drawWithShader(poseStack.last().pose(), projMatrix, RenderSystem.getShader());
+            VertexBuffer.unbind();
+
+            poseStack.popPose();
+        }
+        poseStack.popPose();
+
+        RenderSystem.setShaderColor(fogR, fogG, fogB, 1.0F);
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+
+        horizonFogBuffer.bind();
+        horizonFogBuffer.drawWithShader(poseStack.last().pose(), projMatrix, RenderSystem.getShader());
+        VertexBuffer.unbind();
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+
+    }
+
+    private void drawHorizon(Matrix4f matrix, float skyR, float skyG, float skyB, float aboveCloudOffset) {
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
+
+        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        for (int i = 0; i < 16; i++) {
+            float f1 = (i / (float) 16);
+            float x1 = Mth.sin(f1 * Mth.TWO_PI) * RING_MAX_RADIUS;
+            float z1 = Mth.cos(f1 * Mth.TWO_PI) * RING_MAX_RADIUS;
+
+            float f2 = ((i + 1) / (float) 16);
+            float x2 = Mth.sin(f2 * Mth.TWO_PI) * RING_MAX_RADIUS;
+            float z2 = Mth.cos(f2 * Mth.TWO_PI) * RING_MAX_RADIUS;
+
+            bufferbuilder.vertex(matrix, x1,-RING_HEIGHT, z1).color(skyR, skyG, skyB, 0.0F).endVertex();
+            bufferbuilder.vertex(matrix, x1, 0.0F, z1).color(skyR, skyG, skyB, aboveCloudOffset).endVertex();
+            bufferbuilder.vertex(matrix, x2, 0.0F, z2).color(skyR, skyG, skyB, aboveCloudOffset).endVertex();
+            bufferbuilder.vertex(matrix, x2,-RING_HEIGHT, z2).color(skyR, skyG, skyB, 0.0F).endVertex();
+
+            bufferbuilder.vertex(matrix, x1,0.0F, z1).color(skyR, skyG, skyB, aboveCloudOffset).endVertex();
+            bufferbuilder.vertex(matrix, x1, RING_HEIGHT, z1).color(skyR, skyG, skyB, 0.0F).endVertex();
+            bufferbuilder.vertex(matrix, x2, RING_HEIGHT, z2).color(skyR, skyG, skyB, 0.0F).endVertex();
+            bufferbuilder.vertex(matrix, x2,0.0F, z2).color(skyR, skyG, skyB, aboveCloudOffset).endVertex();
+        }
+
+        BufferUploader.drawWithShader(bufferbuilder.end());
     }
 
     private Vector3f skyColor = new Vector3f();
@@ -238,16 +318,28 @@ public class OthershoreSkyRenderer {
         this.outerSkyBuffer = this.buildOuterSkyBuffer(this.outerSkyBuffer, 32);
         this.outerStarsBuffer = this.buildOuterStarsBuffer(this.outerStarsBuffer, 2048);
         this.outerCloudsBuffer = this.buildOuterCloudsBuffer(this.outerCloudsBuffer, 32, 32);
-        this.cloudRingBuffer = this.buildCloudBuffer(this.cloudRingBuffer, 64);
+        this.cloudRingBuffer = this.buildCloudBuffer(this.cloudRingBuffer, 32);
+        this.horizonFogBuffer = this.buildHorizonFogBuffer(this.horizonFogBuffer, 32);
+        buildStarVBOs();
+    }
+    private float previousRenderDistance = -1;
+    private void buildStarVBOs() {
+        RING_MIN_RADIUS = (Minecraft.getInstance().options.getEffectiveRenderDistance()+1) * 16;
+        if (previousRenderDistance != RING_MIN_RADIUS) {
+            previousRenderDistance = RING_MIN_RADIUS;
+            this.floatingStarBuffers = new VertexBuffer[RING_COUNT + 1];
+            for (int i = 0; i < RING_COUNT + 1; i++) {
+                float factor = i / (float) RING_COUNT;
+                factor *= factor;
+                float nextFactor = (i + 1) / (float) RING_COUNT;
+                nextFactor *= nextFactor;
+                this.floatingStarBuffers[i] = buildStarBuffer(this.floatingStarBuffers[i], factor, nextFactor, 50);
+            }
 
-        int ringCount = 24;
-        //this.floatingStarBuffers = new VertexBuffer[ringCount];
-        for (int i = 0; i < ringCount; i++) {
-            float factor = i / (float) ringCount;
-            //this.floatingStarBuffers[i] = buildStarBuffer(this.floatingStarBuffers[i], factor, factor + (1.0F / ringCount), 1500 / ringCount);
+            this.horizonFogBuffer = this.buildHorizonFogBuffer(this.horizonFogBuffer, 32);
         }
     }
-    private VertexBuffer buildStarBuffer(VertexBuffer vbo, float rangeStart, float rangeEnd, int count) {
+    private @NotNull VertexBuffer buildStarBuffer(VertexBuffer vbo, float rangeStart, float rangeEnd, int count) {
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder bufferBuilder = tesselator.getBuilder();
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
@@ -255,45 +347,48 @@ public class OthershoreSkyRenderer {
         if (vbo != null) vbo.close();
         vbo = new VertexBuffer(VertexBuffer.Usage.STATIC);
 
-        float maxStarDistance = 300.0F;
-        float minStarDistance = 30.0F;
-        float minStarRadius = 0.1F;
-        float maxStarRadius = 1.8F;
+        float maxStarDistance = RING_MAX_RADIUS;
+        float minStarDistance = RING_MIN_RADIUS;
+        float minStarRadius = 3.0F;
+        float maxStarRadius = 5.0F;
 
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
         Matrix4f matrix = new Matrix4f();
         for (int i = 0; i < count; i++) {
-            matrix.identity()
-                    .rotateLocalZ(random.nextFloat() * Mth.TWO_PI)
-                    .rotateY(random.nextFloat() * Mth.TWO_PI);
+            matrix.identity().rotateY(random.nextFloat() * Mth.TWO_PI);
             float distanceFactor = Mth.lerp(random.nextFloat(), rangeStart, rangeEnd);
 
             float distance = Mth.lerp(distanceFactor, minStarDistance, maxStarDistance);
-            float radius = Mth.lerp(distanceFactor, minStarRadius, maxStarRadius) * random.nextFloat();
-            float height = (float) random.nextGaussian() * 15.0F;
+            float scaling = Mth.lerp(distanceFactor, 1.0F, 5.0F);
+            float radius = Mth.lerp(random.nextFloat(), minStarRadius, maxStarRadius) * scaling;
+            float height = -30.0F + (float) random.nextGaussian() * RING_HEIGHT * 0.5F * 0.1F;
 
-            boolean fancy = random.nextInt(10) == 0;
-            float u1 = fancy ? 0.5F : 0.0F, v1 = 0.0F;
-            float u2 = fancy ? 1.0F : 0.5F, v2 = 1.0F;
+            float fancy = random.nextInt(10) == 0 ? 0.5F : 0.0F;
+            float u1 = 0.0F, v1 = 0.0F;
+            float u2 = 1.0F, v2 = 1.0F;
 
-            float rotationSpeedMultiplier = distanceFactor * 0.08F;
+            float rotationSpeedMultiplier = (distanceFactor * distanceFactor * 0.08F) * ((random.nextFloat() * 2.0F) - 1.0F);
+            rotationSpeedMultiplier = (rotationSpeedMultiplier + 1.0F) * 0.5F;
             float gradientPos = random.nextFloat();
+            float brightness = Mth.clamp((1.0F - distanceFactor) + ((random.nextFloat() * 2.0F) - 1.0F) * 0.7F, 0.0F, 1.0F);
+            fancy += (brightness * brightness) * 0.5F * random.nextFloat();
+            float twinkleOffset = random.nextFloat();
 
             bufferBuilder.vertex(matrix, -radius, height - radius, distance)
                     .uv(u1, v1)
-                    .color(rotationSpeedMultiplier, gradientPos, 1.0F, 1.0F)
+                    .color(rotationSpeedMultiplier, gradientPos, twinkleOffset, fancy)
                     .endVertex();
             bufferBuilder.vertex(matrix, -radius, height + radius, distance)
                     .uv(u2, v1)
-                    .color(rotationSpeedMultiplier, gradientPos, 1.0F, 1.0F)
+                    .color(rotationSpeedMultiplier, gradientPos, twinkleOffset, fancy)
                     .endVertex();
             bufferBuilder.vertex(matrix,  radius, height + radius, distance)
                     .uv(u2, v2)
-                    .color(rotationSpeedMultiplier, gradientPos, 1.0F, 1.0F)
+                    .color(rotationSpeedMultiplier, gradientPos, twinkleOffset, fancy)
                     .endVertex();
             bufferBuilder.vertex(matrix,  radius, height - radius, distance)
                     .uv(u1, v2)
-                    .color(rotationSpeedMultiplier, gradientPos, 1.0F, 1.0F)
+                    .color(rotationSpeedMultiplier, gradientPos, twinkleOffset, fancy)
                     .endVertex();
         }
         BufferBuilder.RenderedBuffer renderedBuffer = bufferBuilder.end();
@@ -307,25 +402,25 @@ public class OthershoreSkyRenderer {
     private VertexBuffer buildCloudBuffer(VertexBuffer vbo, int resolution) {
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder bufferBuilder = tesselator.getBuilder();
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
 
         if (vbo != null) vbo.close();
         vbo = new VertexBuffer(VertexBuffer.Usage.STATIC);
 
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
         for (int i = 0; i < resolution; i++) {
             float f1 = (i / (float) resolution);
             float x1 = Mth.sin(f1 * Mth.TWO_PI);
             float z1 = Mth.cos(f1 * Mth.TWO_PI);
 
-            float f2 = (i + 1 / (float) resolution);
+            float f2 = ((i + 1) / (float) resolution);
             float x2 = Mth.sin(f2 * Mth.TWO_PI);
             float z2 = Mth.cos(f2 * Mth.TWO_PI);
 
-            bufferBuilder.vertex(x1,-0.5, z1).uv(f1, 0.0F).endVertex();
-            bufferBuilder.vertex(x1, 0.5, z1).uv(f1, 1.0F).endVertex();
-            bufferBuilder.vertex(x2, 0.5, z2).uv(f2, 1.0F).endVertex();
-            bufferBuilder.vertex(x2,-0.5, z2).uv(f2, 0.0F).endVertex();
+            bufferBuilder.vertex(x1,-0.5, z1).color(0xFFFFFFFF).uv(f1, 0.0F).endVertex();
+            bufferBuilder.vertex(x1, 0.5, z1).color(0xFFFFFFFF).uv(f1, 1.0F).endVertex();
+            bufferBuilder.vertex(x2, 0.5, z2).color(0xFFFFFFFF).uv(f2, 1.0F).endVertex();
+            bufferBuilder.vertex(x2,-0.5, z2).color(0xFFFFFFFF).uv(f2, 0.0F).endVertex();
         }
         BufferBuilder.RenderedBuffer renderedBuffer = bufferBuilder.end();
 
@@ -349,10 +444,10 @@ public class OthershoreSkyRenderer {
         // sky
         buildCone(bufferBuilder, resolution, 1.0F, 1.0F, 0.0F,
                 1.0F, 0.0F, 0.0F, 1.0F,
-                0.0F, 1.0F, 0.0F, 1.0F);
+                 0.0F, 1.0F, 0.0F, 1.0F);
         buildCone(bufferBuilder, resolution, 1.0F, -1.0F, 0.0F,
-                1.0F, 0.0F, 0.0F, 1.0F,
-                0.0F, 0.0F, 0.0F, 1.0F);
+                1.0F,0.0F, 0.0F, 1.0F,
+                 1.0F, 0.0F, 0.0F, 1.0F);
 
         BufferBuilder.RenderedBuffer renderedBuffer = bufferBuilder.end();
 
@@ -436,6 +531,79 @@ public class OthershoreSkyRenderer {
                     .color(brightness, gradientPos, twinkleOffset, fancy)
                     .endVertex();
         }
+        BufferBuilder.RenderedBuffer renderedBuffer = bufferBuilder.end();
+
+        vbo.bind();
+        vbo.upload(renderedBuffer);
+        VertexBuffer.unbind();
+
+        return vbo;
+    }
+    private VertexBuffer buildHorizonFogBuffer(VertexBuffer vbo, int resolution) {
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder bufferBuilder = tesselator.getBuilder();
+        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+
+        if (vbo != null) vbo.close();
+        vbo = new VertexBuffer(VertexBuffer.Usage.STATIC);
+
+        bufferBuilder.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
+
+        for (int i = 0; i < resolution; i++) {
+            float f1 = i / (float) resolution;
+            float x1 = Mth.sin(f1 * Mth.TWO_PI) * RING_MIN_RADIUS;
+            float z1 = Mth.cos(f1 * Mth.TWO_PI) * RING_MIN_RADIUS;
+
+            float f2 = (i + 1) / (float) resolution;
+            float x2 = Mth.sin(f2 * Mth.TWO_PI) * RING_MIN_RADIUS;
+            float z2 = Mth.cos(f2 * Mth.TWO_PI) * RING_MIN_RADIUS;
+
+            // triangle at the bottom
+            bufferBuilder.vertex(x1, -0.25F * RING_HEIGHT, -z1)
+                    .color(1.0F, 1.0F, 1.0F, 1.0F)
+                    .endVertex();
+            bufferBuilder.vertex(0.0, -0.5F * RING_HEIGHT, 0.0)
+                    .color(1.0F, 1.0F, 1.0F, 1.0F)
+                    .endVertex();
+            bufferBuilder.vertex(x2, -0.25F * RING_HEIGHT, -z2)
+                    .color(1.0F, 1.0F, 1.0F, 1.0F)
+                    .endVertex();
+
+            // two quads
+            bufferBuilder.vertex(x1, 0.1F * RING_HEIGHT, z1)
+                    .color(1.0F, 1.0F, 1.0F, 0.0F)
+                    .endVertex();
+            bufferBuilder.vertex(x2, 0.1F * RING_HEIGHT, z2)
+                    .color(1.0F, 1.0F, 1.0F, 0.0F)
+                    .endVertex();
+            bufferBuilder.vertex(x1,-0.25F * RING_HEIGHT, z1)
+                    .color(1.0F, 1.0F, 1.0F, 1.0F)
+                    .endVertex();
+
+            bufferBuilder.vertex(x2, 0.1F * RING_HEIGHT, z2)
+                    .color(1.0F, 1.0F, 1.0F, 0.0F)
+                    .endVertex();
+            bufferBuilder.vertex(x2,-0.25F * RING_HEIGHT, z2)
+                    .color(1.0F, 1.0F, 1.0F, 1.0F)
+                    .endVertex();
+            bufferBuilder.vertex(x1,-0.25F * RING_HEIGHT, z1)
+                    .color(1.0F, 1.0F, 1.0F, 1.0F)
+                    .endVertex();
+
+
+
+
+//            bufferBuilder.vertex(x2, 0.0F, z2)
+//                    .color(1.0F, 1.0F, 1.0F, 1.0F)
+//                    .endVertex();
+//            bufferBuilder.vertex(x2, -0.25F * RING_HEIGHT, z2)
+//                    .color(1.0F, 1.0F, 1.0F, 1.0F)
+//                    .endVertex();
+//            bufferBuilder.vertex(x1,-0.25F * RING_HEIGHT , z1)
+//                    .color(1.0F, 1.0F, 1.0F, 1.0F)
+//                    .endVertex();
+        }
+
         BufferBuilder.RenderedBuffer renderedBuffer = bufferBuilder.end();
 
         vbo.bind();

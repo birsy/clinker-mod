@@ -24,6 +24,8 @@ public class ClinkerShaders {
     @Nullable
     private static ShaderInstance positionColorTextureUnclampedShader;
     @Nullable
+    private static ShaderInstance positionColorUnclampedShader;
+    @Nullable
     private static ShaderInstance chainLightningShader;
     @Nullable
     private static ShaderInstance fireSpewShader;
@@ -34,10 +36,10 @@ public class ClinkerShaders {
     private static ShaderInstance skyOuterCloudShader;
     @Nullable
     private static ShaderInstance skyOuterStarShader;
+    @Nullable
+    private static ShaderInstance skyStarShader;
 
-    public static ShaderInstance getSkyCloudShader() {
-        return Objects.requireNonNull(skyCloudShader, "Attempted to call getSkyCloudShader before shaders have finished loading.");
-    }
+
     public static ShaderInstance getEntityCutoutUnlitShader() {
         return Objects.requireNonNull(rendertypeEntityCutoutUnlitShader, "Attempted to call getEntityCutoutUnlitShader before shaders have finished loading.");
     }
@@ -47,11 +49,21 @@ public class ClinkerShaders {
     public static ShaderInstance getPositionColorTextureUnclampedShader() {
         return Objects.requireNonNull(positionColorTextureUnclampedShader, "Attempted to call getPositionColorTextureUnclampedShader before shaders have finished loading.");
     }
+    public static ShaderInstance getPositionColorUnclampedShader() {
+        return Objects.requireNonNull(positionColorUnclampedShader, "Attempted to call getPositionColorUnclampedShader before shaders have finished loading.");
+    }
     public static ShaderInstance getChainLightningShader() {
         return Objects.requireNonNull(chainLightningShader, "Attempted to call getChainLightningShader before shaders have finished loading.");
     }
     public static ShaderInstance getFireSpewShader() {
         return Objects.requireNonNull(fireSpewShader, "Attempted to call getFireSpewShader before shaders have finished loading.");
+    }
+
+    public static ShaderInstance getSkyCloudShader() {
+        return Objects.requireNonNull(skyCloudShader, "Attempted to call getSkyCloudShader before shaders have finished loading.");
+    }
+    public static ShaderInstance getSkyStarShader() {
+        return Objects.requireNonNull(skyStarShader, "Attempted to call getSkyStarShader before shaders have finished loading.");
     }
     public static ShaderInstance getSkyOuterShader() {
         return Objects.requireNonNull(skyOuterShader, "Attempted to call getSkyOuterShader before shaders have finished loading.");
@@ -62,16 +74,21 @@ public class ClinkerShaders {
     public static ShaderInstance getSkyOuterStarShader() {
         return Objects.requireNonNull(skyOuterStarShader, "Attempted to call getSkyOuterStarShader before shaders have finished loading.");
     }
+
     @SubscribeEvent
     public static void registerShaders(RegisterShadersEvent event) throws IOException {
         Clinker.LOGGER.info("registering shaders!");
-        event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation(Clinker.MOD_ID,"sky_cloud"), DefaultVertexFormat.POSITION_COLOR_TEX), (shader) -> skyCloudShader = shader);
         event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation(Clinker.MOD_ID,"rendertype_entity_unlit_cutout"), DefaultVertexFormat.NEW_ENTITY), (shader) -> rendertypeEntityCutoutUnlitShader = shader);
         event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation(Clinker.MOD_ID,"rendertype_entity_unlit_cutout_nocull"), DefaultVertexFormat.NEW_ENTITY), (shader) -> rendertypeEntityCutoutNoCullUnlitShader = shader);
+
         event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation(Clinker.MOD_ID,"position_color_tex_unclamped"), DefaultVertexFormat.POSITION_COLOR_TEX), (shader) -> positionColorTextureUnclampedShader = shader);
+        event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation(Clinker.MOD_ID,"position_color_unclamped"), DefaultVertexFormat.POSITION_COLOR), (shader) -> positionColorUnclampedShader = shader);
+
         event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation(Clinker.MOD_ID,"chain_lightning"), DefaultVertexFormat.NEW_ENTITY), (shader) -> chainLightningShader = shader);
         event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation(Clinker.MOD_ID,"fire_spew"), DefaultVertexFormat.NEW_ENTITY), (shader) -> fireSpewShader = shader);
 
+        event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation(Clinker.MOD_ID,"sky_cloud"), DefaultVertexFormat.POSITION_COLOR_TEX), (shader) -> skyCloudShader = shader);
+        event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation(Clinker.MOD_ID,"sky_star"), DefaultVertexFormat.POSITION_TEX_COLOR), (shader) -> skyStarShader = shader);
         event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation(Clinker.MOD_ID,"sky_outer"), DefaultVertexFormat.POSITION_TEX_COLOR), (shader) -> skyOuterShader = shader);
         event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation(Clinker.MOD_ID,"sky_outer_cloud"), DefaultVertexFormat.POSITION_TEX_COLOR), (shader) -> skyOuterCloudShader = shader);
         event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation(Clinker.MOD_ID,"sky_outer_star"), DefaultVertexFormat.POSITION_TEX_COLOR), (shader) -> skyOuterStarShader = shader);

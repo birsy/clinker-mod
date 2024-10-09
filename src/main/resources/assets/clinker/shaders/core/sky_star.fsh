@@ -3,8 +3,6 @@
 uniform sampler2D Sampler0;
 uniform sampler2D Sampler1;
 
-uniform float TwinkleTime;
-
 uniform vec4 ColorModulator;
 
 in vec2 texCoord0;
