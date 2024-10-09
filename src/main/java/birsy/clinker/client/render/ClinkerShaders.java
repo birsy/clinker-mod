@@ -39,6 +39,8 @@ public class ClinkerShaders {
     @Nullable
     private static ShaderInstance skyStarShader;
 
+    @Nullable
+    private static ShaderInstance cloudShader;
 
     public static ShaderInstance getEntityCutoutUnlitShader() {
         return Objects.requireNonNull(rendertypeEntityCutoutUnlitShader, "Attempted to call getEntityCutoutUnlitShader before shaders have finished loading.");
@@ -75,6 +77,10 @@ public class ClinkerShaders {
         return Objects.requireNonNull(skyOuterStarShader, "Attempted to call getSkyOuterStarShader before shaders have finished loading.");
     }
 
+    public static ShaderInstance getCloudShader() {
+        return Objects.requireNonNull(cloudShader, "Attempted to call getCloudShader before shaders have finished loading.");
+    }
+
     @SubscribeEvent
     public static void registerShaders(RegisterShadersEvent event) throws IOException {
         Clinker.LOGGER.info("registering shaders!");
@@ -92,6 +98,8 @@ public class ClinkerShaders {
         event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation(Clinker.MOD_ID,"sky_outer"), DefaultVertexFormat.POSITION_TEX_COLOR), (shader) -> skyOuterShader = shader);
         event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation(Clinker.MOD_ID,"sky_outer_cloud"), DefaultVertexFormat.POSITION_TEX_COLOR), (shader) -> skyOuterCloudShader = shader);
         event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation(Clinker.MOD_ID,"sky_outer_star"), DefaultVertexFormat.POSITION_TEX_COLOR), (shader) -> skyOuterStarShader = shader);
+
+        event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation(Clinker.MOD_ID,"cloud"), DefaultVertexFormat.POSITION_TEX_COLOR), (shader) -> cloudShader = shader);
     }
 
 

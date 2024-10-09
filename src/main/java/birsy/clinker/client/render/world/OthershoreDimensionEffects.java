@@ -1,56 +1,33 @@
 package birsy.clinker.client.render.world;
 
-import birsy.clinker.client.render.ClinkerShaders;
-import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
-import net.minecraft.client.GraphicsStatus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.DimensionSpecialEffects;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.texture.AbstractTexture;
-import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.event.TickEvent;
 import org.joml.Matrix4f;
-import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 
-
-// fucking terrible old ass code.
-// todo: redo everything
 @OnlyIn(Dist.CLIENT)
 public class OthershoreDimensionEffects extends DimensionSpecialEffects {
     private final Minecraft mc = Minecraft.getInstance();
-    private static final ResourceLocation STAR_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/environment/star.png");
-    private static final ResourceLocation NOISE_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/environment/noise.png");
-    private static final ResourceLocation CLOUD_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/environment/cloud_map_a.png");
-    private static final ResourceLocation FOG_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/environment/fog.png");
 
     OthershoreSkyRenderer skyRenderer;
+    OthershoreCloudRenderer cloudRenderer;
 
-    private List<Star> starInfo = null;
     public OthershoreDimensionEffects() {
         super(256.0F, true, SkyType.NORMAL, false, false);
         this.skyRenderer = new OthershoreSkyRenderer(RandomSource.create(1337));
+        this.cloudRenderer = new OthershoreCloudRenderer();
     }
 
     @Override
@@ -65,6 +42,7 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
 
     @Override
     public boolean renderClouds(ClientLevel level, int ticks, float partialTick, PoseStack pPoseStack, double camX, double camY, double camZ, Matrix4f projectionMatrix) {
+        this.cloudRenderer.render(level, ticks, partialTick, pPoseStack, camX, camY, camZ, projectionMatrix);
         return true;
     }
 
