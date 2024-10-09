@@ -57,7 +57,7 @@ public class OthershoreSkyRenderer {
         this.buildVBOs();
     }
 
-    public void render(ClientLevel level, int ticks, float partialTick, PoseStack poseStack, Camera camera, Matrix4f projectionMatrix) {
+    public void render(ClientLevel level, int ticks, float partialTick, PoseStack poseStack, Camera camera, Matrix4f projectionMatrix, Vector3fc skyColor) {
         Minecraft mc = Minecraft.getInstance();
 
         Matrix4f projMatrix = new Matrix4f(projectionMatrix);
@@ -72,7 +72,6 @@ public class OthershoreSkyRenderer {
         buildStarVBOs();
 
         Vec3 cameraPos = camera.getPosition();
-        Vector3fc skyColor = this.getSkyColor(level, cameraPos, partialTick);
         float[] fogColor = RenderSystem.getShaderFogColor();
 
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -170,7 +169,7 @@ public class OthershoreSkyRenderer {
         RenderSystem.setShaderTexture(0,OUTER_CLOUD_TEXTURE);
 
         ShaderInstance outerCloudShader = RenderSystem.getShader();
-        setShaderUniform(outerCloudShader, "SkyColor", skyColor.x(), skyColor.y(), skyColor.z(), 1.0F);
+        setShaderUniform(outerCloudShader, "SkyColor", skyR, skyG, skyB, 1.0F);
         setShaderUniform(outerSkyShader, "FogColor", fogR, fogG, fogB, 1.0F);
         setShaderUniform(outerCloudShader, "WindOffset", 0.5F * time * 0.00002F + camX, time * 0.00002F + camZ);
 
@@ -286,31 +285,6 @@ public class OthershoreSkyRenderer {
         }
 
         BufferUploader.drawWithShader(bufferbuilder.end());
-    }
-
-    private Vector3f skyColor = new Vector3f();
-    public Vector3fc getSkyColor(ClientLevel level, Vec3 pPos, float pPartialTick) {
-        Vec3 pos = pPos.subtract(2.0, 2.0, 2.0).scale(0.25);
-        BiomeManager biomemanager = level.getBiomeManager();
-        Vec3 interpolatedSkyColor = CubicSampler.gaussianSampleVec3(
-                pos, (x, y, z) -> Vec3.fromRGB24(biomemanager.getNoiseBiomeAtQuart(x, y, z).value().getSkyColor())
-        );
-        float r = (float)interpolatedSkyColor.x;
-        float g = (float)interpolatedSkyColor.y;
-        float b = (float)interpolatedSkyColor.z;
-
-        int i = level.getSkyFlashTime();
-        if (i > 0) {
-            float lightningFlicker = i - pPartialTick;
-            if (lightningFlicker > 1.0F) lightningFlicker = 1.0F;
-
-            lightningFlicker *= 0.45F;
-            r = r * (1.0F - lightningFlicker) + 0.8F * lightningFlicker;
-            g = g * (1.0F - lightningFlicker) + 0.8F * lightningFlicker;
-            b = b * (1.0F - lightningFlicker) + lightningFlicker;
-        }
-
-        return skyColor.set(r, g, b);
     }
 
     private void buildVBOs() {

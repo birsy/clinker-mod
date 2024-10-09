@@ -8,13 +8,16 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.DimensionSpecialEffects;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.util.CubicSampler;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 
 @OnlyIn(Dist.CLIENT)
@@ -40,9 +43,41 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
         return false;
     }
 
+    private Vector3f skyColor = new Vector3f();
+    public Vector3fc getSkyColor(ClientLevel level, Vec3 pPos, float pPartialTick) {
+        Vec3 pos = pPos.subtract(2.0, 2.0, 2.0).scale(0.25);
+        BiomeManager biomemanager = level.getBiomeManager();
+        Vec3 interpolatedSkyColor = CubicSampler.gaussianSampleVec3(
+                pos, (x, y, z) -> Vec3.fromRGB24(biomemanager.getNoiseBiomeAtQuart(x, y, z).value().getSkyColor())
+        );
+        float r = (float)interpolatedSkyColor.x;
+        float g = (float)interpolatedSkyColor.y;
+        float b = (float)interpolatedSkyColor.z;
+
+        int i = level.getSkyFlashTime();
+        if (i > 0) {
+            float lightningFlicker = i - pPartialTick;
+            if (lightningFlicker > 1.0F) lightningFlicker = 1.0F;
+
+            lightningFlicker *= 0.45F;
+            r = r * (1.0F - lightningFlicker) + 0.8F * lightningFlicker;
+            g = g * (1.0F - lightningFlicker) + 0.8F * lightningFlicker;
+            b = b * (1.0F - lightningFlicker) + lightningFlicker;
+        }
+
+        return skyColor.set(r, g, b);
+    }
+
     @Override
     public boolean renderClouds(ClientLevel level, int ticks, float partialTick, PoseStack pPoseStack, double camX, double camY, double camZ, Matrix4f projectionMatrix) {
-        this.cloudRenderer.render(level, ticks, partialTick, pPoseStack, camX, camY, camZ, projectionMatrix);
+        this.cloudRenderer.render(level, ticks, partialTick, pPoseStack, camX, camY, camZ, projectionMatrix, this.getSkyColor(level, new Vec3(camX, camY, camZ), partialTick));
+        return true;
+    }
+
+    @Override
+    public boolean renderSky(ClientLevel level, int ticks, float partialTick, PoseStack poseStack, Camera camera, Matrix4f projectionMatrix, boolean isFoggy, Runnable setupFog) {
+        setupFog.run();
+        this.skyRenderer.render(level, ticks, partialTick, poseStack, camera, projectionMatrix, this.getSkyColor(level, camera.getPosition(), partialTick));
         return true;
     }
 
@@ -90,13 +125,6 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
         } else {
             colors.add(ambientBrightness * 0.8F, ambientBrightness * 0.8F, ambientBrightness);
         }
-    }
-
-    @Override
-    public boolean renderSky(ClientLevel level, int ticks, float partialTick, PoseStack poseStack, Camera camera, Matrix4f projectionMatrix, boolean isFoggy, Runnable setupFog) {
-        setupFog.run();
-        this.skyRenderer.render(level, ticks, partialTick, poseStack, camera, projectionMatrix);
-        return true;
     }
 
     @Override
