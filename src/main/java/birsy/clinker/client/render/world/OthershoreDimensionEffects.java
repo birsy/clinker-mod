@@ -68,7 +68,6 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
         return true;
     }
 
-
     @Override
     public void adjustLightmapColors(ClientLevel level, float partialTicks, float skyDarken, float skyLight, float blockLight, int pixelX, int pixelY, Vector3f colors) {
         // skylight, between 1 and 0 so it's easier to work with.
@@ -114,7 +113,6 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
             colors.add(ambientBrightness * 0.8F, ambientBrightness * 0.8F, ambientBrightness);
         }
     }
-
 
     @Override
     public boolean renderSky(ClientLevel level, int ticks, float partialTick, PoseStack poseStack, Camera camera, Matrix4f projectionMatrix, boolean isFoggy, Runnable setupFog) {

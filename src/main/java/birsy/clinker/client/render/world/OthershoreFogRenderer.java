@@ -40,6 +40,7 @@ public class OthershoreFogRenderer {
 
         if (world.dimension() == ClinkerWorld.OTHERSHORE) {
             event.setCanceled(true);
+            event.setFogShape(FogShape.SPHERE);
             Vec3 playerVecPos = player.getEyePosition((float) event.getPartialTick());
             BlockPos playerPos = BlockPos.containing(playerVecPos);
 

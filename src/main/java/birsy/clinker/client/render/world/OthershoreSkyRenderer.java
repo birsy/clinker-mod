@@ -339,7 +339,7 @@ public class OthershoreSkyRenderer {
             this.horizonFogBuffer = this.buildHorizonFogBuffer(this.horizonFogBuffer, 32);
         }
     }
-    private @NotNull VertexBuffer buildStarBuffer(VertexBuffer vbo, float rangeStart, float rangeEnd, int count) {
+    private VertexBuffer buildStarBuffer(VertexBuffer vbo, float rangeStart, float rangeEnd, int count) {
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder bufferBuilder = tesselator.getBuilder();
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
