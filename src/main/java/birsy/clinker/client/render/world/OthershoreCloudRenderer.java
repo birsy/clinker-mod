@@ -25,10 +25,7 @@ public class OthershoreCloudRenderer {
     private VertexBuffer cloudLayerDownBuffer;
     private VertexBuffer cloudLayerUpBuffer;
 
-
-    public OthershoreCloudRenderer() {
-
-    }
+    public OthershoreCloudRenderer() {}
 
     private float previousRadius = -1.0F;
     public void render(ClientLevel level, int ticks, float partialTick, PoseStack poseStack, double camX, double camY, double camZ, Matrix4f projectionMatrix, Vector3fc skyColor) {
@@ -44,47 +41,39 @@ public class OthershoreCloudRenderer {
 
         float radius = (Minecraft.getInstance().options.getEffectiveRenderDistance()+1) * 4.0F * 16.0F;
 
-        // rebuilt VBOs if the render distance changes
+        // rebuild VBOs if the render distance changes
         if (radius != previousRadius) {
             previousRadius = radius;
             this.cloudLayerDownBuffer = buildCloudBuffer(cloudLayerDownBuffer, 64, 16, true, radius);
             this.cloudLayerUpBuffer = buildCloudBuffer(cloudLayerUpBuffer, 64, 16, false, radius);
         }
-        
+
         RenderSystem.setShader(ClinkerShaders::getCloudShader);
         RenderSystem.setShaderTexture(0, NOISE_TEXTURE);
         poseStack.pushPose();
+        poseStack.translate(0, -camY, 0);
 
         ShaderInstance shader = RenderSystem.getShader();
 
-        poseStack.translate(0, -camY, 0);
-
         float thickness = 48.0F;
-
         float cloudsStart = 250;
         float cloudsEnd = 450;
-
         float transitionLerp = Mth.clamp(
                 MathUtils.mapRange(cloudsStart, cloudsStart + thickness, 0.0F, 1.0F, (float)camY),
                 0.0F, 1.0F);
+
         // render ordering magic
         if (Math.abs(camY - cloudsStart) < Math.abs(camY - cloudsEnd)) {
-            if (camY > cloudsStart)
-                drawCloudLayer(cloudsEnd, radius, thickness * 0.5F, false, skyColor, transitionLerp, camX, camY, camZ, poseStack, projectionMatrix, shader);
-            if (camY < cloudsEnd + thickness)
-                drawCloudLayer(cloudsStart, radius, thickness, true, skyColor, transitionLerp, camX, camY, camZ, poseStack, projectionMatrix, shader);
-
+            if (camY > cloudsStart) drawCloudLayer(cloudsEnd, radius, thickness * 0.5F, false, skyColor, transitionLerp, camX, camY, camZ, poseStack, projectionMatrix, shader);
+            if (camY < cloudsEnd + thickness) drawCloudLayer(cloudsStart, radius, thickness, true, skyColor, transitionLerp, camX, camY, camZ, poseStack, projectionMatrix, shader);
         } else {
-            if (camY < cloudsEnd + thickness)
-                drawCloudLayer(cloudsStart, radius, thickness, true, skyColor, transitionLerp, camX, camY, camZ, poseStack, projectionMatrix, shader);
-            if (camY > cloudsStart)
-                drawCloudLayer(cloudsEnd, radius, thickness * 0.5F, false, skyColor, transitionLerp, camX, camY, camZ, poseStack, projectionMatrix, shader);
+            if (camY < cloudsEnd + thickness) drawCloudLayer(cloudsStart, radius, thickness, true, skyColor, transitionLerp, camX, camY, camZ, poseStack, projectionMatrix, shader);
+            if (camY > cloudsStart) drawCloudLayer(cloudsEnd, radius, thickness * 0.5F, false, skyColor, transitionLerp, camX, camY, camZ, poseStack, projectionMatrix, shader);
         }
 
         // todo:
         // increase fog surrounding player when inside cloud layer
         // create a little sphere around the player (at fog distance) to blot surroundings
-
 
         poseStack.popPose();
     }
@@ -184,7 +173,6 @@ public class OthershoreCloudRenderer {
 
         return vbo;
     }
-
 
     private void buildDisc(BufferBuilder bufferBuilder, int resolution, float radius, float height, float r, float g, float b, float a, boolean winding) {
         for (int i = 0; i < resolution; i++) {

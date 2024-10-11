@@ -56,9 +56,7 @@ public class MathUtils {
      * @return a, moved towards b
      */
     public static float approach(float a, float b, float amount) {
-        if (Math.abs(a - b) < amount) {
-            return b;
-        }
+        if (Math.abs(a - b) < amount) return b;
         return (a > b) ? a - amount : a + amount;
     }
 
@@ -70,9 +68,7 @@ public class MathUtils {
      * @return a, moved towards b
      */
     public static double approach(double a, double b, double amount) {
-        if (Math.abs(a - b) < amount) {
-            return b;
-        }
+        if (Math.abs(a - b) < amount) return b;
         return (a > b) ? a - amount : a + amount;
     }
 
