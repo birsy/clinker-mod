@@ -1,8 +1,7 @@
-package birsy.clinker.common.world.level.heatgraph;
+package birsy.clinker.common.world.level.heatnetwork;
 
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
-import net.minecraft.util.Mth;
 
 public class HeatConnection {
     final HeatSocket a, b;
@@ -24,5 +23,9 @@ public class HeatConnection {
 
     public float getTransferredHeat(float heatIn) {
         return MathUtils.approach(heatIn * efficiency, 0, loss);
+    }
+
+    public static float calculateEfficiencyGiven(float initialValue, float loss, float range) {
+        return (float) Math.pow(loss / (initialValue + loss), 1.0 / range);
     }
 }

@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.level.heatgraph;
+package birsy.clinker.common.world.level.heatnetwork;
 
 import javax.annotation.Nullable;
 

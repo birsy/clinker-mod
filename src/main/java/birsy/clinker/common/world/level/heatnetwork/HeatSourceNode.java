@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.level.heatgraph;
+package birsy.clinker.common.world.level.heatnetwork;
 
 import java.util.function.Function;
 
@@ -10,6 +10,10 @@ public class HeatSourceNode extends HeatNode {
         super(sockets);
         this.sourceIndex = sourceIndex;
         this.outputHeatSupplier = outputHeatSupplier;
+    }
+
+    public HeatSourceNode(long sourceIndex, int sockets, float temperature) {
+        this(sourceIndex, sockets, (node) -> temperature);
     }
 
     public float getOutputHeat() {

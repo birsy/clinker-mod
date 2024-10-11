@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.level.heatgraph;
+package birsy.clinker.common.world.level.heatnetwork;
 
 import it.unimi.dsi.fastutil.longs.Long2FloatMap;
 import it.unimi.dsi.fastutil.longs.Long2FloatOpenHashMap;
