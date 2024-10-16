@@ -2,7 +2,6 @@ package birsy.clinker.common.world.block;
 
 import birsy.clinker.common.world.block.blockentity.TestHeatBlockEntity;
 import birsy.clinker.common.world.level.heatnetwork.HeatNode;
-import birsy.clinker.core.registry.entity.ClinkerBlockEntities;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -14,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Function;
 
 public class TestHeatBlock extends BaseEntityBlock {
-    //public static final MapCodec<TestHeatBlock> CODEC = simpleCodec(props -> new TestHeatBlock(props, ClinkerBlockEntities.STOVE, (blockEntity) -> new HeatNode(8)));
+    public static final MapCodec<TestHeatBlock> CODEC = simpleCodec((props -> new TestHeatBlock(props, (blockEntity) -> new HeatNode(8))));
     protected final Function<TestHeatBlockEntity, HeatNode> heatNodeSupplier;
     private final BlockEntityType<? extends TestHeatBlockEntity> blockEntityType;
 
@@ -26,7 +25,7 @@ public class TestHeatBlock extends BaseEntityBlock {
 
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
-        return null;
+        return CODEC;
     }
 
     @Override
