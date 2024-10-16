@@ -99,13 +99,15 @@ public class InterpolatedNoiseField implements NoiseFieldWithOffset {
         float oll = getValueLocal(fX, cY, cZ);
         float lll = getValueLocal(cX, cY, cZ);
 
-        return (float) Mth.lerp3(
-                dX, dY, dZ,
-                ooo, loo,
-                olo, llo,
-                ool, lol,
-                oll, lll
-        );
+        float x1 = Mth.lerp(dX, ooo, loo);
+        float x2 = Mth.lerp(dX, olo, llo);
+        float x3 = Mth.lerp(dX, ool, lol);
+        float x4 = Mth.lerp(dX, oll, lll);
+
+        float y1 = Mth.lerp(dY, x1, x2);
+        float y2 = Mth.lerp(dY, x3, x4);
+
+        return Mth.lerp(dZ, y1, y2);
     }
 
     private static final double EPSILON = 0.01;

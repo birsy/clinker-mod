@@ -12,9 +12,9 @@ import java.util.Queue;
  * allowing changes to the network
  * to propagate over time!
  */
-public class TileHeatNode extends HeatNode implements HeatNode.Updatable {
-    public final BlockEntity entity;
-    private final Queue<Runnable> queuedUpdates;
+public class TileHeatNode extends HeatNode {
+    final BlockEntity entity;
+    final private Queue<Runnable> queuedUpdates;
 
     public TileHeatNode(int sockets, BlockEntity entity) {
         super(sockets);

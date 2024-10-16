@@ -3,7 +3,7 @@ package birsy.clinker.common.world.level.heatnetwork;
 import javax.annotation.Nullable;
 
 public class HeatSocket {
-    public final HeatNode node;
+    final HeatNode node;
     HeatConnection connection;
 
     public HeatSocket(HeatNode node) {
@@ -12,10 +12,6 @@ public class HeatSocket {
 
     public boolean connected() {
         return this.connection != null;
-    }
-
-    public HeatConnection connection() {
-        return this.connection;
     }
 
     @Nullable

@@ -1,13 +1,11 @@
 package birsy.clinker.common.world.level.heatnetwork;
 
-import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.longs.Long2FloatMap;
 import it.unimi.dsi.fastutil.longs.Long2FloatOpenHashMap;
 import net.minecraft.util.Mth;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
-import java.util.Collection;
 
 public class HeatNode {
     public final HeatSocket[] sockets;
@@ -51,31 +49,14 @@ public class HeatNode {
         return null;
     }
 
-    // run this BEFORE removing anything from the network.
-    protected ImmutableList<HeatSourceNode> collectRelevantHeatSources() {
-        ImmutableList.Builder<HeatSourceNode> builder = ImmutableList.builder();
-        for (Long sourceIndex : contributedHeatBySource.keySet()) {
+    protected void repropagateRelevantSources() {
+        contributedHeatBySource.forEach((sourceIndex, heat) -> {
             HeatSourceNode sourceNode = this.searchForSource(sourceIndex);
             if (sourceNode != null) {
-                builder.add(sourceNode);
+                sourceNode.depropagate();
+                sourceNode.propagate();
             }
-        }
-
-        return builder.build();
-    }
-
-    // run this only after removing anything from the network.
-    protected void repropagateRelevantSources(Collection<HeatSourceNode> heatSources) {
-        for (Long sourceIndex : contributedHeatBySource.keySet()) {
-            for (HeatSourceNode heatSource : heatSources) {
-                if (heatSource.sourceIndex == sourceIndex) {
-                    heatSource.depropagate();
-                    heatSource.propagate();
-                    return;
-                }
-            }
-            this.depropagate(sourceIndex);
-        }
+        });
     }
 
     protected void addHeatSource(long sourceIndex, float amountContributed) {
@@ -132,9 +113,5 @@ public class HeatNode {
                 node.depropagate(sourceIndex);
             }
         }
-    }
-
-    public interface Updatable {
-        void update();
     }
 }
