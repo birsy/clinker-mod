@@ -109,7 +109,7 @@ public class ClinkerShaders {
 
         event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation(Clinker.MOD_ID,"cloud"), DefaultVertexFormat.POSITION_TEX_COLOR), (shader) -> cloudShader = shader);
 
-        //event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation(Clinker.MOD_ID,"skinned_entity"), NecromancerVertexFormat.SKINNED_ENTITY), (shader) -> skinnedEntityShader = shader);
+        event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation(Clinker.MOD_ID,"skinned_entity"), NecromancerVertexFormat.SKINNED_ENTITY), (shader) -> skinnedEntityShader = shader);
     }
 
 

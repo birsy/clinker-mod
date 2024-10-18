@@ -1,5 +1,6 @@
 package birsy.clinker.client.render.world;
 
+import birsy.clinker.client.necromancer.render.NecromancerEntityRenderer;
 import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Camera;
@@ -31,6 +32,9 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
         super(256.0F, true, SkyType.NORMAL, false, false);
         this.skyRenderer = new OthershoreSkyRenderer(RandomSource.create(1337));
         this.cloudRenderer = new OthershoreCloudRenderer();
+
+        // TODO REMOVE THIS
+        NecromancerEntityRenderer.buildSkinAndSkeletonTemporary();
     }
 
     @Override
@@ -76,6 +80,8 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
 
     @Override
     public boolean renderSky(ClientLevel level, int ticks, float partialTick, PoseStack poseStack, Camera camera, Matrix4f projectionMatrix, boolean isFoggy, Runnable setupFog) {
+        NecromancerEntityRenderer.buildSkinAndSkeletonTemporary();
+
         setupFog.run();
         this.skyRenderer.render(level, ticks, partialTick, poseStack, camera, projectionMatrix, this.getSkyColor(level, camera.getPosition(), partialTick));
         return true;

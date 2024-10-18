@@ -1,14 +1,21 @@
 package birsy.clinker.client.necromancer.render;
 
+import birsy.clinker.client.render.ClinkerShaders;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 
 public class SkinBuilder {
     private final float textureSizeX, textureSizeY;
     private final BufferBuilder bufferBuilder;
+    private final VertexBuffer vbo;
 
     public SkinBuilder(float textureSizeX, float textureSizeY) {
         this.textureSizeX = textureSizeX;
         this.textureSizeY = textureSizeY;
+       // RenderSystem.setShader(ClinkerShaders::getSkinnedEntityShader);
+
+        this.vbo = new VertexBuffer(VertexBuffer.Usage.STATIC);
+
         this.bufferBuilder = Tesselator.getInstance().getBuilder();
         bufferBuilder.begin(VertexFormat.Mode.TRIANGLES, NecromancerVertexFormat.SKINNED_ENTITY);
     }
@@ -29,13 +36,12 @@ public class SkinBuilder {
         quad(PlaneAxis.Y_NEGATIVE, false, offsetX, offsetY, offsetZ,
                 sizeX, sizeZ,
                 u + sizeX + sizeZ, v, boneIndex);
-        // front face
         quad(PlaneAxis.Z_POSITIVE, false, offsetX, offsetY, offsetZ + sizeZ,
                 sizeX, sizeY,
-                u + sizeZ, v + sizeZ, boneIndex);
+                u + sizeX + sizeZ + sizeX, v + sizeZ, boneIndex);
         quad(PlaneAxis.Z_NEGATIVE, false, offsetX, offsetY, offsetZ,
                 sizeX, sizeY,
-                u, v + sizeZ, boneIndex);
+                u + sizeZ, v + sizeZ, boneIndex);
 
 
         return this;
@@ -55,40 +61,72 @@ public class SkinBuilder {
         float pX = axis.perpendicularX(), pY = axis.perpendicularY(), pZ = axis.perpendicularZ();
         float oX = axis.opposite().perpendicularX(), oY = axis.opposite().perpendicularY(), oZ = axis.opposite().perpendicularZ();
 
-        // triangle 1
-        vertex(offsetX + pX * width * 0 + oX * height * 0,
-               offsetY + pY * width * 0 + oY * height * 0,
-               offsetZ + pZ * width * 0 + oZ * height * 0,
-               u1, v1, nX, nY, nZ, boneIndex);
-        vertex(offsetX + pX * width * 0 + oX * height * 1,
-               offsetY + pY * width * 0 + oY * height * 1,
-               offsetZ + pZ * width * 0 + oZ * height * 1,
-               u1, v2, nX, nY, nZ, boneIndex);
-        vertex(offsetX + pX * width * 1 + oX * height * 1,
-               offsetY + pY * width * 1 + oY * height * 1,
-               offsetZ + pZ * width * 1 + oZ * height * 1,
-               u2, v2, nX, nY, nZ, boneIndex);
+        switch (axis) {
+            case Z_POSITIVE:
+            case X_NEGATIVE:
+            case Y_NEGATIVE:
+                vertex(offsetX + pX * width * 0 + oX * height * 0,
+                        offsetY + pY * width * 0 + oY * height * 0,
+                        offsetZ + pZ * width * 0 + oZ * height * 0,
+                        u1, v2, nX, nY, nZ, boneIndex);
+                vertex(offsetX + pX * width * 0 + oX * height * 1,
+                        offsetY + pY * width * 0 + oY * height * 1,
+                        offsetZ + pZ * width * 0 + oZ * height * 1,
+                        u2, v2, nX, nY, nZ, boneIndex);
+                vertex(offsetX + pX * width * 1 + oX * height * 1,
+                        offsetY + pY * width * 1 + oY * height * 1,
+                        offsetZ + pZ * width * 1 + oZ * height * 1,
+                        u2, v1, nX, nY, nZ, boneIndex);
 
-        // triangle 2
-        vertex(offsetX + pX * width * 1 + oX * height * 1,
-                offsetY + pY * width * 1 + oY * height * 1,
-                offsetZ + pZ * width * 1 + oZ * height * 1,
-                u2, v2, nX, nY, nZ, boneIndex);
-        vertex(offsetX + pX * width * 1 + oX * height * 0,
-               offsetY + pY * width * 1 + oY * height * 0,
-               offsetZ + pZ * width * 1 + oZ * height * 0,
-               u2, v1, nX, nY, nZ, boneIndex);
-        vertex(offsetX + pX * width * 0 + oX * height * 0,
-                offsetY + pY * width * 0 + oY * height * 0,
-                offsetZ + pZ * width * 0 + oZ * height * 0,
-                u1, v1, nX, nY, nZ, boneIndex);
+                vertex(offsetX + pX * width * 1 + oX * height * 1,
+                        offsetY + pY * width * 1 + oY * height * 1,
+                        offsetZ + pZ * width * 1 + oZ * height * 1,
+                        u2, v1, nX, nY, nZ, boneIndex);
+                vertex(offsetX + pX * width * 1 + oX * height * 0,
+                        offsetY + pY * width * 1 + oY * height * 0,
+                        offsetZ + pZ * width * 1 + oZ * height * 0,
+                        u1, v1, nX, nY, nZ, boneIndex);
+                vertex(offsetX + pX * width * 0 + oX * height * 0,
+                        offsetY + pY * width * 0 + oY * height * 0,
+                        offsetZ + pZ * width * 0 + oZ * height * 0,
+                        u1, v2, nX, nY, nZ, boneIndex);
+                break;
+            case X_POSITIVE:
+            case Y_POSITIVE:
+            case Z_NEGATIVE:
+                vertex(offsetX + pX * width * 0 + oX * height * 0,
+                        offsetY + pY * width * 0 + oY * height * 0,
+                        offsetZ + pZ * width * 0 + oZ * height * 0,
+                        u2, v2, nX, nY, nZ, boneIndex);
+                vertex(offsetX + pX * width * 0 + oX * height * 1,
+                        offsetY + pY * width * 0 + oY * height * 1,
+                        offsetZ + pZ * width * 0 + oZ * height * 1,
+                        u2, v1, nX, nY, nZ, boneIndex);
+                vertex(offsetX + pX * width * 1 + oX * height * 1,
+                        offsetY + pY * width * 1 + oY * height * 1,
+                        offsetZ + pZ * width * 1 + oZ * height * 1,
+                        u1, v1, nX, nY, nZ, boneIndex);
+
+                vertex(offsetX + pX * width * 1 + oX * height * 1,
+                        offsetY + pY * width * 1 + oY * height * 1,
+                        offsetZ + pZ * width * 1 + oZ * height * 1,
+                        u1, v1, nX, nY, nZ, boneIndex);
+                vertex(offsetX + pX * width * 1 + oX * height * 0,
+                       offsetY + pY * width * 1 + oY * height * 0,
+                       offsetZ + pZ * width * 1 + oZ * height * 0,
+                        u1, v2, nX, nY, nZ, boneIndex);
+                vertex(offsetX + pX * width * 0 + oX * height * 0,
+                        offsetY + pY * width * 0 + oY * height * 0,
+                        offsetZ + pZ * width * 0 + oZ * height * 0,
+                        u2, v2, nX, nY, nZ, boneIndex);
+                break;
+        }
+
 
         return this;
     }
 
     public Skin build() {
-        VertexBuffer vbo = new VertexBuffer(VertexBuffer.Usage.STATIC);
-
         BufferBuilder.RenderedBuffer renderedBuffer = this.bufferBuilder.end();
 
         vbo.bind();
@@ -103,9 +141,10 @@ public class SkinBuilder {
                 .vertex(x, y, z)
                 .color(0xFFFFFFFF)
                 .uv(u / this.textureSizeX, v / this.textureSizeY)
-                .normal(nx, ny, nz)
-                .misc(NecromancerVertexFormat.ELEMENT_BONE_INDEX, boneIndex)
-                .endVertex();
+                .normal(nx, ny, nz);
+        bufferBuilder.putByte(0, (byte) boneIndex);
+        bufferBuilder.nextElement();
+        bufferBuilder.endVertex();
     }
 
     public enum PlaneAxis {
@@ -122,7 +161,7 @@ public class SkinBuilder {
         private static final PlaneAxis[] OPPOSITE = new PlaneAxis[] {
                 X_NEGATIVE, X_POSITIVE,
                 Y_NEGATIVE, Y_POSITIVE,
-                Z_NEGATIVE, Z_NEGATIVE
+                Z_NEGATIVE, Z_POSITIVE
         };
         public PlaneAxis opposite() {
             return OPPOSITE[this.ordinal];

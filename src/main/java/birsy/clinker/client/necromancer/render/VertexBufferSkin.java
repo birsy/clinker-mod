@@ -5,14 +5,16 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexBuffer;
 
 public class VertexBufferSkin implements Skin {
-    private final VertexBuffer vertexBuffer;
+    private final VertexBuffer vbo;
 
-    public VertexBufferSkin(VertexBuffer vertexBuffer) {
-        this.vertexBuffer = vertexBuffer;
+    public VertexBufferSkin(VertexBuffer vbo) {
+        this.vbo = vbo;
     }
 
     @Override
     public void draw(PoseStack poseStack) {
-        vertexBuffer.drawWithShader(poseStack.last().pose(), RenderSystem.getProjectionMatrix(), RenderSystem.getShader());
+        vbo.bind();
+        vbo.drawWithShader(poseStack.last().pose(), RenderSystem.getProjectionMatrix(), RenderSystem.getShader());
+        VertexBuffer.unbind();
     }
 }

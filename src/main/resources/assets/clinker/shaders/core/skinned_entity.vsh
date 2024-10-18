@@ -15,12 +15,17 @@ uniform sampler2D Sampler2;
 uniform mat4 ModelViewMat;
 uniform mat4 ProjMat;
 uniform mat3 IViewRotMat;
+uniform mat3 NormalMatt;
+
 uniform int FogShape;
 
 uniform vec3 Light0_Direction;
 uniform vec3 Light1_Direction;
 
-uniform mat4x3 BoneTransforms[256];
+uniform ivec2 OverlayCoordinates;
+uniform ivec2 LightmapCoordinates;
+
+uniform mat4 BoneTransforms[2];
 
 out float vertexDistance;
 out vec4 vertexColor;
@@ -30,12 +35,13 @@ out vec2 texCoord0;
 out vec4 normal;
 
 void main() {
-    gl_Position = ProjMat * ModelViewMat * vec4(BoneTransforms[BoneIndex] * Position, 1.0);
+    vec3 poseSpacePosition = (BoneTransforms[BoneIndex] * vec4(Position, 1.0)).xyz;
+    gl_Position = ProjMat * ModelViewMat * vec4(poseSpacePosition, 1.0);
+    normal = vec4(NormalMatt * Normal, 0.0);
 
-    vertexDistance = fog_distance(ModelViewMat, IViewRotMat * Position, FogShape);
-    vertexColor = minecraft_mix_light(Light0_Direction, Light1_Direction, Normal, Color);
-    lightMapColor = texelFetch(Sampler2, UV2 / 16, 0);
-    overlayColor = texelFetch(Sampler1, UV1, 0);
+    vertexDistance = fog_distance(ModelViewMat, IViewRotMat * poseSpacePosition, FogShape);
+    vertexColor = minecraft_mix_light(Light0_Direction, Light1_Direction, normal.xyz, Color);
+    lightMapColor = texelFetch(Sampler2, LightmapCoordinates, 0);
+    overlayColor = texelFetch(Sampler1, OverlayCoordinates, 0);
     texCoord0 = UV0;
-    normal = ProjMat * ModelViewMat * vec4(Normal, 0.0);
 }
