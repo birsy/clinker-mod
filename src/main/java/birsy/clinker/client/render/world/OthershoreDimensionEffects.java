@@ -74,21 +74,26 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
 
     @Override
     public boolean renderClouds(ClientLevel level, int ticks, float partialTick, PoseStack pPoseStack, double camX, double camY, double camZ, Matrix4f projectionMatrix) {
+        Minecraft.getInstance().getProfiler().push("clinker.drawClouds");
         this.cloudRenderer.render(level, ticks, partialTick, pPoseStack, camX, camY, camZ, projectionMatrix, this.getSkyColor(level, new Vec3(camX, camY, camZ), partialTick));
+        Minecraft.getInstance().getProfiler().pop();
         return true;
     }
 
     @Override
     public boolean renderSky(ClientLevel level, int ticks, float partialTick, PoseStack poseStack, Camera camera, Matrix4f projectionMatrix, boolean isFoggy, Runnable setupFog) {
-        NecromancerEntityRenderer.buildSkinAndSkeletonTemporary();
+        //NecromancerEntityRenderer.buildSkinAndSkeletonTemporary();
 
+        Minecraft.getInstance().getProfiler().push("clinker.drawSky");
         setupFog.run();
         this.skyRenderer.render(level, ticks, partialTick, poseStack, camera, projectionMatrix, this.getSkyColor(level, camera.getPosition(), partialTick));
+        Minecraft.getInstance().getProfiler().pop();
         return true;
     }
 
     @Override
     public void adjustLightmapColors(ClientLevel level, float partialTicks, float skyDarken, float skyLight, float blockLight, int pixelX, int pixelY, Vector3f colors) {
+        Minecraft.getInstance().getProfiler().push("clinker.updateLightmap");
         // skylight, between 1 and 0 so it's easier to work with.
         float skyL = (float) pixelY / 15.0F;
         // ditto
@@ -131,6 +136,7 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
         } else {
             colors.add(ambientBrightness * 0.8F, ambientBrightness * 0.8F, ambientBrightness);
         }
+        Minecraft.getInstance().getProfiler().pop();
     }
 
     @Override

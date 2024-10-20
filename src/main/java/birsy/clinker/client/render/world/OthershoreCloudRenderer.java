@@ -44,8 +44,8 @@ public class OthershoreCloudRenderer {
         // rebuild VBOs if the render distance changes
         if (radius != previousRadius) {
             previousRadius = radius;
-            this.cloudLayerDownBuffer = buildCloudBuffer(cloudLayerDownBuffer, 64, 16, true, radius);
-            this.cloudLayerUpBuffer = buildCloudBuffer(cloudLayerUpBuffer, 64, 16, false, radius);
+            this.cloudLayerDownBuffer = buildCloudBuffer(cloudLayerDownBuffer, 64, 2, true, radius);
+            this.cloudLayerUpBuffer = buildCloudBuffer(cloudLayerUpBuffer, 64, 2, false, radius);
         }
 
         RenderSystem.setShader(ClinkerShaders::getCloudShader);

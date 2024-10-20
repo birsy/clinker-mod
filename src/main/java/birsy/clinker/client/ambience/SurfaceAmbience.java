@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -16,7 +17,7 @@ import org.joml.Vector3f;
 
 public class SurfaceAmbience {
     private final Minecraft minecraft;
-    private float aboveGroundFactor = 1.0F;
+    private float aboveGroundFactor, prevAboveGroundFactor = 1.0F;
 
     public SurfaceAmbience(Minecraft minecraft) {
         this.minecraft = minecraft;
@@ -27,7 +28,6 @@ public class SurfaceAmbience {
     public void tick() {
         ClientLevel level = minecraft.level;
         Camera camera = minecraft.gameRenderer.getMainCamera();
-        BlockPos cameraPos = camera.getBlockPosition();
         Vector3f cameraLook = camera.getLookVector();
         boolean aboveGround = false;
 
@@ -76,11 +76,12 @@ public class SurfaceAmbience {
         }
 
         float mixFactor = 1.0F / 32.0F;
+        prevAboveGroundFactor = aboveGroundFactor;
         aboveGroundFactor = aboveGroundFactor * (1.0F - mixFactor) + (aboveGround ? 1.0F : 0.0F) * mixFactor;
     }
 
-    public void render() {
-
+    public float getAboveGroundFactor(double partialTick) {
+        return (float) Mth.lerp(partialTick, prevAboveGroundFactor, aboveGroundFactor);
     }
 
     private static boolean isSolidBlock(Level level, BlockPos pos) {
