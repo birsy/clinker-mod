@@ -29,10 +29,13 @@ public class SurfaceAmbience {
         ClientLevel level = minecraft.level;
         Camera camera = minecraft.gameRenderer.getMainCamera();
         Vector3f cameraLook = camera.getLookVector();
-        boolean aboveGround = false;
+        boolean aboveGround = true;
 
         BlockHitResult cast = level.clip(
-                new ClipContext(camera.getPosition(), camera.getPosition().add(cameraLook.x * 16, cameraLook.y * 16, cameraLook.z * 16), ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, CollisionContext.empty())
+                new ClipContext(
+                        camera.getPosition(),
+                        camera.getPosition().add(cameraLook.x * 8, cameraLook.y * 8, cameraLook.z * 8),
+                        ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, CollisionContext.empty())
         );
 
         // our sample positions are randomly set.
@@ -42,8 +45,8 @@ public class SurfaceAmbience {
             samplePos.set(cast.getBlockPos());
 
             // some random offset
-            int x = (int) (level.random.nextGaussian() * 8);
-            int z = (int) (level.random.nextGaussian() * 8);
+            int x = (int) (level.random.nextGaussian() * 5);
+            int z = (int) (level.random.nextGaussian() * 5);
 
             samplePos.move(x, 2, z);
             if (!isSolidBlock(level, samplePos)) {
@@ -51,9 +54,9 @@ public class SurfaceAmbience {
             }
         }
 
-        int heightY = Math.max(level.getHeight(Heightmap.Types.WORLD_SURFACE, samplePos.getX(), samplePos.getZ()), level.getSeaLevel());
+        int heightY = level.getHeight(Heightmap.Types.WORLD_SURFACE, samplePos.getX(), samplePos.getZ());
         // if we're above the height map and sea level, we're always considered outside.
-        boolean aboveHeightMap = samplePos.getY() > heightY;
+        boolean aboveHeightMap = camera.getPosition().y > heightY;
         if (!aboveHeightMap) {
             // count the number of fully solid blocks above us.
             int solidBlocksEncountered = 0;
@@ -72,7 +75,7 @@ public class SurfaceAmbience {
             }
         }
 
-        float mixFactor = 1.0F / 32.0F;
+        float mixFactor = 1.0F / 48.0F;
         prevAboveGroundFactor = aboveGroundFactor;
         aboveGroundFactor = aboveGroundFactor * (1.0F - mixFactor) + (aboveGround ? 1.0F : 0.0F) * mixFactor;
     }

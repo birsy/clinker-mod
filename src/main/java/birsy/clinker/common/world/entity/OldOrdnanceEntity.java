@@ -57,8 +57,6 @@ public class OldOrdnanceEntity extends Projectile {
     @OnlyIn(Dist.CLIENT)
     private OrdnanceSoundInstance sound;
     @OnlyIn(Dist.CLIENT)
-    private Vec3 previousVelocity = Vec3.ZERO;
-    @OnlyIn(Dist.CLIENT)
     private float spin, pSpin;
     @OnlyIn(Dist.CLIENT)
     public PointLight light;
@@ -200,7 +198,6 @@ public class OldOrdnanceEntity extends Projectile {
                 }
             }
 
-            this.previousVelocity = this.getDeltaMovement();
             if (this.isStuck()) {
                 velocity = Vec3.ZERO;
                 if (this.stuckEntity.isPresent()) {
