@@ -42,7 +42,7 @@ public class OthershoreFogRenderer {
         ClientLevel level = Minecraft.getInstance().level;
 
         if (level.dimension() != ClinkerWorld.OTHERSHORE) return;
-        //if (event.getRenderer().getMainCamera().getFluidInCamera() != FogType.NONE || event.getRenderer().getMainCamera().getFluidInCamera() != FogType.WATER) return;
+        if (event.getRenderer().getMainCamera().getFluidInCamera() == FogType.LAVA || event.getRenderer().getMainCamera().getFluidInCamera() == FogType.POWDER_SNOW) return;
 
         BiomeManager biomemanager = level.getBiomeManager();
         Vec3 biomeSamplePos = event.getRenderer().getMainCamera().getPosition().subtract(2.0D, 2.0D, 2.0D).scale(0.25D);
