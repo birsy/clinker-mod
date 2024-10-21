@@ -1,6 +1,6 @@
 package birsy.clinker.client.render.entity;
 
-import birsy.clinker.common.world.entity.OldOrdnanceEntity;
+import birsy.clinker.common.world.entity.projectile.OrdnanceEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -20,7 +20,7 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
-public class OrdnanceRenderer extends EntityRenderer<OldOrdnanceEntity> {
+public class OrdnanceRenderer extends EntityRenderer<OrdnanceEntity> {
     private static final ResourceLocation ORDNANCE_LOCATION = new ResourceLocation(Clinker.MOD_ID, "textures/entity/ordnance.png");
 
     public OrdnanceRenderer(EntityRendererProvider.Context pContext) {
@@ -28,7 +28,7 @@ public class OrdnanceRenderer extends EntityRenderer<OldOrdnanceEntity> {
     }
 
     @Override
-    public void render(OldOrdnanceEntity pEntity, float pEntityYaw, float pPartialTick, PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight) {
+    public void render(OrdnanceEntity pEntity, float pEntityYaw, float pPartialTick, PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight) {
 
         VertexConsumer consumer = pBuffer.getBuffer(RenderType.entityCutout(this.getTextureLocation(pEntity)));
 
@@ -72,7 +72,7 @@ public class OrdnanceRenderer extends EntityRenderer<OldOrdnanceEntity> {
         super.render(pEntity, pEntityYaw, pPartialTick, pPoseStack, pBuffer, pPackedLight);
     }
     
-    public void drawBomb(PoseStack stack, VertexConsumer consumer, int pPackedLight, int overlayTexture, OldOrdnanceEntity pEntity, float pPartialTick, Vec3 directionTowardsCamera) {
+    public void drawBomb(PoseStack stack, VertexConsumer consumer, int pPackedLight, int overlayTexture, OrdnanceEntity pEntity, float pPartialTick, Vec3 directionTowardsCamera) {
         stack.pushPose();
         Vec3 dir = directionTowardsCamera.scale(8 / 16.0F);
         stack.translate(dir.x(), dir.y(), dir.z());
@@ -105,7 +105,7 @@ public class OrdnanceRenderer extends EntityRenderer<OldOrdnanceEntity> {
         stack.popPose();
     }
 
-    public void drawRope(PoseStack stack, VertexConsumer consumer, float xV, float yV, float zV, int pPackedLight, int overlayTexture, OldOrdnanceEntity pEntity, float pPartialTick, Vec3 directionTowardsCamera) {
+    public void drawRope(PoseStack stack, VertexConsumer consumer, float xV, float yV, float zV, int pPackedLight, int overlayTexture, OrdnanceEntity pEntity, float pPartialTick, Vec3 directionTowardsCamera) {
         stack.pushPose();
         Vector3f offsetVector = new Vector3f(0, 5.5f, 0);
         offsetVector = this.entityRenderDispatcher.cameraOrientation().rotateLocalZ(pEntity.getSpin(pPartialTick), new Quaternionf()).transform(offsetVector);
@@ -171,7 +171,7 @@ public class OrdnanceRenderer extends EntityRenderer<OldOrdnanceEntity> {
     }
 
     @Override
-    public ResourceLocation getTextureLocation(OldOrdnanceEntity pEntity) {
+    public ResourceLocation getTextureLocation(OrdnanceEntity pEntity) {
         return ORDNANCE_LOCATION;
     }
 }

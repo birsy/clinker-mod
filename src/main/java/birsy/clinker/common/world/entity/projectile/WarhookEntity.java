@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.entity;
+package birsy.clinker.common.world.entity.projectile;
 
 import birsy.clinker.core.registry.entity.ClinkerEntities;
 import birsy.clinker.core.registry.ClinkerItems;

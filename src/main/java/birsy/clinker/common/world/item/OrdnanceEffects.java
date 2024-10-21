@@ -1,6 +1,6 @@
 package birsy.clinker.common.world.item;
 
-import birsy.clinker.common.world.entity.OldOrdnanceEntity;
+import birsy.clinker.common.world.entity.projectile.OrdnanceEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -17,7 +17,7 @@ public class OrdnanceEffects {
     private float stun;
     private List<OrdnanceModifier> modifiers;
 
-    public float getRadius(OldOrdnanceEntity ordnance) {
+    public float getRadius(OrdnanceEntity ordnance) {
         float initialRadius = this.radius;
         for (OrdnanceModifier modifier : this.modifiers) {
             initialRadius = modifier.getAdjustedRadius(initialRadius, ordnance);
@@ -25,7 +25,7 @@ public class OrdnanceEffects {
         return initialRadius;
     }
 
-    public float getDamage(@Nullable OldOrdnanceEntity ordnance, @Nullable Entity entity, float distance) {
+    public float getDamage(@Nullable OrdnanceEntity ordnance, @Nullable Entity entity, float distance) {
         float radius = this.getRadius(ordnance);
         float initialDamage = getRadiusAdjustedFactor(radius, distance, this.damage);
         for (OrdnanceModifier modifier : this.modifiers) {
@@ -34,7 +34,7 @@ public class OrdnanceEffects {
         return initialDamage;
     }
 
-    public float getKnockback(@Nullable OldOrdnanceEntity ordnance, @Nullable Entity entity, float distance) {
+    public float getKnockback(@Nullable OrdnanceEntity ordnance, @Nullable Entity entity, float distance) {
         float radius = this.getRadius(ordnance);
         float initialKnockback = getRadiusAdjustedFactor(radius, distance, this.knockback);
         for (OrdnanceModifier modifier : this.modifiers) {
@@ -43,7 +43,7 @@ public class OrdnanceEffects {
         return initialKnockback;
     }
 
-    public float getStun(@Nullable OldOrdnanceEntity ordnance, @Nullable Entity entity, float distance) {
+    public float getStun(@Nullable OrdnanceEntity ordnance, @Nullable Entity entity, float distance) {
         float radius = this.getRadius(ordnance);
         float initialStun = getRadiusAdjustedFactor(radius, distance, this.knockback);
         for (OrdnanceModifier modifier : this.modifiers) {
@@ -72,23 +72,23 @@ public class OrdnanceEffects {
             this.amount = amount;
         }
 
-        protected void onOrdnanceCreation(OldOrdnanceEntity ordnance) {}
+        protected void onOrdnanceCreation(OrdnanceEntity ordnance) {}
 
-        protected void onFuseEnd(OldOrdnanceEntity ordnance) {}
-        protected void onImpact(OldOrdnanceEntity ordnance, Vec3 velocity) {}
-        protected void onImpactTerrain(OldOrdnanceEntity ordnance, Vec3 velocity, BlockState state, BlockPos blockPos, Vec3 impactPosition) { this.onImpact(ordnance, velocity); }
-        protected void onImpactEntity(OldOrdnanceEntity ordnance, Vec3 velocity, Entity entity, Vec3 position) { this.onImpact(ordnance, velocity); }
+        protected void onFuseEnd(OrdnanceEntity ordnance) {}
+        protected void onImpact(OrdnanceEntity ordnance, Vec3 velocity) {}
+        protected void onImpactTerrain(OrdnanceEntity ordnance, Vec3 velocity, BlockState state, BlockPos blockPos, Vec3 impactPosition) { this.onImpact(ordnance, velocity); }
+        protected void onImpactEntity(OrdnanceEntity ordnance, Vec3 velocity, Entity entity, Vec3 position) { this.onImpact(ordnance, velocity); }
 
-        public float getAdjustedRadius(float radiusIn, @Nullable OldOrdnanceEntity ordnance) {
+        public float getAdjustedRadius(float radiusIn, @Nullable OrdnanceEntity ordnance) {
             return radiusIn;
         }
-        public float getAdjustedDamage(float damageIn, float distance, float radius, @Nullable Entity entity, @Nullable OldOrdnanceEntity ordnance) {
+        public float getAdjustedDamage(float damageIn, float distance, float radius, @Nullable Entity entity, @Nullable OrdnanceEntity ordnance) {
             return damageIn;
         }
-        public float getAdjustedKnockback(float knockbackIn, float distance, float radius, @Nullable Entity entity, @Nullable OldOrdnanceEntity ordnance) {
+        public float getAdjustedKnockback(float knockbackIn, float distance, float radius, @Nullable Entity entity, @Nullable OrdnanceEntity ordnance) {
             return knockbackIn;
         }
-        public float getAdjustedStun(float stunIn, float distance, float radius, @Nullable Entity entity, @Nullable OldOrdnanceEntity ordnance) {
+        public float getAdjustedStun(float stunIn, float distance, float radius, @Nullable Entity entity, @Nullable OrdnanceEntity ordnance) {
             return stunIn;
         }
     }
@@ -112,7 +112,7 @@ public class OrdnanceEffects {
         }
 
         @Override
-        protected void onImpact(OldOrdnanceEntity ordnance, Vec3 velocity) {
+        protected void onImpact(OrdnanceEntity ordnance, Vec3 velocity) {
             super.onImpact(ordnance, velocity);
             ordnance.detonate();
         }
@@ -125,13 +125,13 @@ public class OrdnanceEffects {
         }
 
         @Override
-        protected void onImpactEntity(OldOrdnanceEntity ordnance, Vec3 velocity, Entity entity, Vec3 position) {
+        protected void onImpactEntity(OrdnanceEntity ordnance, Vec3 velocity, Entity entity, Vec3 position) {
             super.onImpactEntity(ordnance, velocity, entity, position);
             ordnance.stickToEntity(entity);
         }
 
         @Override
-        protected void onImpactTerrain(OldOrdnanceEntity ordnance, Vec3 velocity, BlockState state, BlockPos blockPos, Vec3 impactPosition) {
+        protected void onImpactTerrain(OrdnanceEntity ordnance, Vec3 velocity, BlockState state, BlockPos blockPos, Vec3 impactPosition) {
             super.onImpactTerrain(ordnance, velocity, state, blockPos, impactPosition);
             ordnance.setStuck(true);
         }
@@ -144,7 +144,7 @@ public class OrdnanceEffects {
         }
 
         @Override
-        protected void onOrdnanceCreation(OldOrdnanceEntity ordnance) {
+        protected void onOrdnanceCreation(OrdnanceEntity ordnance) {
             super.onOrdnanceCreation(ordnance);
             float elasticity = (-0.5F / (this.amount + 1.0F)) + 1.0F;
             ordnance.setElasticity(elasticity);

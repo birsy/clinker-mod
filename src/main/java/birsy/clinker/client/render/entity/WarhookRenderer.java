@@ -2,10 +2,8 @@ package birsy.clinker.client.render.entity;
 
 import birsy.clinker.client.CatenaryArc;
 import birsy.clinker.client.model.entity.MogulWarhookModel;
-import birsy.clinker.client.render.ClinkerRenderTypes;
-import birsy.clinker.client.render.DebugRenderUtil;
 import birsy.clinker.client.render.RenderUtils;
-import birsy.clinker.common.world.entity.WarhookEntity;
+import birsy.clinker.common.world.entity.projectile.WarhookEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;

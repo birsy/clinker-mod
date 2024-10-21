@@ -1,6 +1,6 @@
 package birsy.clinker.common.world.item;
 
-import birsy.clinker.common.world.entity.OldOrdnanceEntity;
+import birsy.clinker.common.world.entity.projectile.OrdnanceEntity;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
@@ -22,7 +22,7 @@ public class OrdnanceItem extends Item {
         ItemStack itemstack = pPlayer.getItemInHand(pHand);
         pLevel.playSound(null, pPlayer.getX(), pPlayer.getY(), pPlayer.getZ(), SoundEvents.TRIDENT_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F / (pLevel.getRandom().nextFloat() * 0.4F + 0.8F));
         if (!pLevel.isClientSide) {
-            OldOrdnanceEntity entity = OldOrdnanceEntity.toss(pLevel, pPlayer);
+            OrdnanceEntity entity = OrdnanceEntity.toss(pLevel, pPlayer);
 
             pLevel.addFreshEntity(entity);
         }
