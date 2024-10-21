@@ -1,6 +1,6 @@
 package birsy.clinker.common.networking.packet;
 
-import birsy.clinker.common.world.entity.OldOrdnanceEntity;
+import birsy.clinker.common.world.entity.projectile.OrdnanceEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.FriendlyByteBuf;
@@ -30,6 +30,6 @@ public class ClientboundOrdnanceExplosionPacket extends ClientboundPacket {
     public void run(PlayPayloadContext context) {
         Minecraft mc = Minecraft.getInstance();
         ClientLevel level = mc.level;
-        OldOrdnanceEntity.createOrdnanceExplosion(position, level, null, null);
+        OrdnanceEntity.createOrdnanceExplosion(position, level, null, null);
     }
 }

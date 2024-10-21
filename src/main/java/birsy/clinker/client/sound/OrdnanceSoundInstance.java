@@ -1,6 +1,6 @@
 package birsy.clinker.client.sound;
 
-import birsy.clinker.common.world.entity.OldOrdnanceEntity;
+import birsy.clinker.common.world.entity.projectile.OrdnanceEntity;
 import birsy.clinker.core.registry.ClinkerSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
@@ -12,9 +12,9 @@ import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class OrdnanceSoundInstance extends AbstractTickableSoundInstance {
-    private final OldOrdnanceEntity entity;
+    private final OrdnanceEntity entity;
 
-    public OrdnanceSoundInstance(OldOrdnanceEntity pEntity) {
+    public OrdnanceSoundInstance(OrdnanceEntity pEntity) {
         super(ClinkerSounds.ORDNANCE_SPARKLE_LOOP.get(),  SoundSource.BLOCKS, RandomSource.create(0));
         this.volume = 1;
         this.pitch = 1;

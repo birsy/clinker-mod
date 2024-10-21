@@ -7,6 +7,9 @@ import birsy.clinker.common.world.entity.*;
 import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
 import birsy.clinker.common.world.entity.gnomad.GnomadSoldierEntity;
 import birsy.clinker.common.world.entity.mold.MoldEntity;
+import birsy.clinker.common.world.entity.projectile.OrdnanceEntity;
+import birsy.clinker.common.world.entity.projectile.RerollFlaskEntity;
+import birsy.clinker.common.world.entity.projectile.WarhookEntity;
 import birsy.clinker.common.world.entity.salamander.NewSalamanderEntity;
 import birsy.clinker.common.world.entity.salamanderOLD.SalamanderBodyEntity;
 import birsy.clinker.common.world.entity.salamanderOLD.SalamanderHeadEntity;
@@ -16,7 +19,6 @@ import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 
@@ -78,8 +80,8 @@ public class ClinkerEntities {
                     .sized(1.0f, 1.0f)
                     .build(new ResourceLocation(Clinker.MOD_ID, "fae_urn").toString()));
 
-    public static final Supplier<EntityType<OldOrdnanceEntity>> ORDNANCE = ENTITY_TYPES.register("ordnance", () ->
-            EntityType.Builder.of(OldOrdnanceEntity::new, MobCategory.MISC)
+    public static final Supplier<EntityType<OrdnanceEntity>> ORDNANCE = ENTITY_TYPES.register("ordnance", () ->
+            EntityType.Builder.of(OrdnanceEntity::new, MobCategory.MISC)
                     .sized(0.5F, 0.5F)
                     .build(new ResourceLocation(Clinker.MOD_ID, "ordnance").toString()));
     public static final Supplier<EntityType<WarhookEntity>> WARHOOK = ENTITY_TYPES.register("warhook", () ->

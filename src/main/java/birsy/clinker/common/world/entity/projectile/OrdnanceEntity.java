@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.entity;
+package birsy.clinker.common.world.entity.projectile;
 
 import birsy.clinker.client.particle.OrdnanceExplosionParticle;
 import birsy.clinker.client.particle.OrdnanceTrailParticle;
@@ -11,8 +11,6 @@ import birsy.clinker.core.registry.ClinkerParticles;
 import birsy.clinker.core.registry.ClinkerSounds;
 import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.core.util.VectorUtils;
-import foundry.veil.api.client.render.VeilRenderSystem;
-import foundry.veil.api.client.render.deferred.light.PointLight;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -43,52 +41,46 @@ import org.joml.Vector3f;
 import java.awt.*;
 import java.util.Optional;
 
-@Deprecated
-public class OldOrdnanceEntity extends Projectile {
+public class OrdnanceEntity extends Projectile {
     private static final Vec3[] PARTICLE_POINTS = MathUtils.generateSpherePoints(500);
-    private static final EntityDataAccessor<Integer> DATA_FUSE_TIME = SynchedEntityData.defineId(OldOrdnanceEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Integer> DATA_MAX_FUSE_TIME = SynchedEntityData.defineId(OldOrdnanceEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Boolean> DATA_DEFLECTION = SynchedEntityData.defineId(OldOrdnanceEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Integer> DATA_FUSE_TIME = SynchedEntityData.defineId(OrdnanceEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> DATA_MAX_FUSE_TIME = SynchedEntityData.defineId(OrdnanceEntity.class, EntityDataSerializers.INT);
 
-    private static final EntityDataAccessor<Boolean> DATA_STUCK = SynchedEntityData.defineId(OldOrdnanceEntity.class, EntityDataSerializers.BOOLEAN);
+    private OrdnanceEffects ordnanceEffects;
+
     Optional<Entity> stuckEntity = Optional.empty();
-    private Vec3 stuckEntityOffset = Vec3.ZERO;
+    float stuckEntityAngleOffset, stuckEntityHeight;
 
     @OnlyIn(Dist.CLIENT)
     private OrdnanceSoundInstance sound;
     @OnlyIn(Dist.CLIENT)
-    private Vec3 previousVelocity = Vec3.ZERO;
-    @OnlyIn(Dist.CLIENT)
     private float spin, pSpin;
-    @OnlyIn(Dist.CLIENT)
-    public PointLight light;
 
     int deflectionTime;
 
-    float damageMultiplier = 1.0F;
     float elasticity = 0.5F;
 
-    public OldOrdnanceEntity(EntityType<? extends Projectile> pEntityType, Level pLevel) {
+    public OrdnanceEntity(EntityType<? extends Projectile> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
     }
 
-    public static OldOrdnanceEntity create(Level pLevel, double x, double y, double z) {
-        OldOrdnanceEntity entity = new OldOrdnanceEntity(ClinkerEntities.ORDNANCE.get(), pLevel);
+    public static OrdnanceEntity create(Level pLevel, double x, double y, double z) {
+        OrdnanceEntity entity = new OrdnanceEntity(ClinkerEntities.ORDNANCE.get(), pLevel);
         entity.setPos(x, y, z);
         pLevel.addFreshEntity(entity);
         return entity;
     }
 
-    public static OldOrdnanceEntity toss(Level pLevel, LivingEntity thrower) {
-        OldOrdnanceEntity entity = new OldOrdnanceEntity(ClinkerEntities.ORDNANCE.get(), pLevel);
+    public static OrdnanceEntity toss(Level pLevel, LivingEntity thrower) {
+        OrdnanceEntity entity = new OrdnanceEntity(ClinkerEntities.ORDNANCE.get(), pLevel);
         entity.setOwner(thrower);
         entity.shootFromRotation(thrower, thrower.getXRot(), thrower.getYRot(), 0.0F, 0.8F, 0.0F);
         entity.setPos(thrower.getEyePosition().add(entity.getDeltaMovement().normalize()));
         return entity;
     }
 
-    public static OldOrdnanceEntity fireAtPosition(Level pLevel, Vec3 currentPosition, Vec3 targetPosition, int timeInTicks) {
-        OldOrdnanceEntity entity = OldOrdnanceEntity.create(pLevel, currentPosition.x, currentPosition.y, currentPosition.z);
+    public static OrdnanceEntity fireAtPosition(Level pLevel, Vec3 currentPosition, Vec3 targetPosition, int timeInTicks) {
+        OrdnanceEntity entity = OrdnanceEntity.create(pLevel, currentPosition.x, currentPosition.y, currentPosition.z);
         double timeSquared = timeInTicks * timeInTicks;
         Vec3 delta = targetPosition.subtract(currentPosition);
         Vec3 acceleration = new Vec3(0, -0.024, 0);
@@ -102,59 +94,23 @@ public class OldOrdnanceEntity extends Projectile {
     }
 
     @Override
-    public void onAddedToWorld() {
-        super.onAddedToWorld();
-        if (this.level().isClientSide) {
-            if (VeilRenderSystem.renderer().getDeferredRenderer().isEnabled()) {
-                this.light = new PointLight();
-                this.light.setRadius(1.0F);
-                this.light.setColor(0, 0, 0);
-                this.light.setPosition(this.getX(), this.getY(), this.getZ());
-                VeilRenderSystem.renderer().getDeferredRenderer().getLightRenderer().addLight(this.light);
-            }
-        }
-    }
-
-    @Override
-    public void onClientRemoval() {
-        super.onClientRemoval();
-        if (this.level().isClientSide) {
-            if (VeilRenderSystem.renderer().getDeferredRenderer().isEnabled()) {
-                if (this.light != null) VeilRenderSystem.renderer().getDeferredRenderer().getLightRenderer().removeLight(this.light);
-            }
-        }
-    }
-
-    @Override
-    public void remove(RemovalReason p_146834_) {
-        super.remove(p_146834_);
-        if (this.level().isClientSide) {
-            if (VeilRenderSystem.renderer().getDeferredRenderer().isEnabled()) {
-                if (this.light != null) VeilRenderSystem.renderer().getDeferredRenderer().getLightRenderer().removeLight(this.light);
-            }
-        }
-    }
-
-    @Override
     protected void defineSynchedData() {
         this.entityData.define(DATA_FUSE_TIME, 0);
         this.entityData.define(DATA_MAX_FUSE_TIME, 6 * 20);
-        this.entityData.define(DATA_DEFLECTION, false);
-        this.entityData.define(DATA_STUCK, false);
     }
 
     @Override
     protected void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
-        pCompound.putInt("Fuse Time", this.getFuseTime());
-        pCompound.putInt("Max Fuse Time", this.getMaxFuseTime());
+        pCompound.putInt("FuseTime", this.getFuseTime());
+        ordnanceEffects.serialize(pCompound);
    }
 
     @Override
     protected void readAdditionalSaveData(CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
-        this.setFuseTime(pCompound.getInt("Fuse Time"));
-        this.setMaxFuseTime(pCompound.getInt("Max Fuse Time"));
+        this.setFuseTime(pCompound.getInt("FuseTime"));
+        this.ordnanceEffects = OrdnanceEffects.deserialize(pCompound);
     }
 
     @Override
@@ -200,14 +156,6 @@ public class OldOrdnanceEntity extends Projectile {
                 }
             }
 
-            this.previousVelocity = this.getDeltaMovement();
-            if (this.isStuck()) {
-                velocity = Vec3.ZERO;
-                if (this.stuckEntity.isPresent()) {
-                    this.setPos(this.stuckEntity.get().position().add(this.stuckEntityOffset));
-                }
-            }
-
             this.setDeltaMovement(velocity);
 
             Vec3 finalPos = position.add(velocity);
@@ -248,7 +196,6 @@ public class OldOrdnanceEntity extends Projectile {
             }
         }
 
-        this.setDeflected(deflectionTime > 0);
         this.deflectionTime--;
     }
 
@@ -297,12 +244,6 @@ public class OldOrdnanceEntity extends Projectile {
         return Mth.lerp(partialTicks, this.pSpin, this.spin);
     }
 
-    @Override
-    protected boolean canHitEntity(Entity pTarget) {
-        // if we're currently stuck on something, we can't hit any entities.
-        if (this.isStuck()) return false;
-        return true;
-    }
     public boolean isPickable() {
         return true;
     }
@@ -318,9 +259,7 @@ public class OldOrdnanceEntity extends Projectile {
             Entity entity = pSource.getDirectEntity();
             boolean isDeflection = false;
             if (entity != null) {
-                this.setStuck(false);
-
-                if (entity instanceof OldOrdnanceEntity) return false;
+                if (entity instanceof OrdnanceEntity) return false;
 
                 if (!this.level().isClientSide) {
                     Vec3 vec3 = entity.getLookAngle();
@@ -329,7 +268,6 @@ public class OldOrdnanceEntity extends Projectile {
                     this.setDeltaMovement(this.getDeltaMovement().add(vec3.scale(isDeflection ? 0.8 : 0.5)));
                     this.setOwner(entity);
                     this.level().playSound(null, this.position().x(), this.position().y(), this.position().z(), SoundEvents.TRIDENT_HIT, SoundSource.BLOCKS, isDeflection ? 1.5F : 0.5F, isDeflection ? 0.5F : 1.0F);
-                    this.setDeflected(isDeflection);
                     this.deflectionTime = 2;
                 }
 
@@ -353,16 +291,8 @@ public class OldOrdnanceEntity extends Projectile {
         this.discard();
     }
 
-    public static void createOrdnanceExplosion(Vec3 location, Level level, @Nullable Entity thrower, @Nullable OldOrdnanceEntity ordnance) {
+    public static void createOrdnanceExplosion(Vec3 location, Level level, @Nullable Entity thrower, @Nullable OrdnanceEntity ordnance) {
         float radius = 5F;
-
-        if (ordnance != null) {
-            if (level.isClientSide) {
-                if (VeilRenderSystem.renderer().getDeferredRenderer().isEnabled()) {
-                    if (ordnance.light != null) VeilRenderSystem.renderer().getDeferredRenderer().getLightRenderer().removeLight(ordnance.light);
-                }
-            }
-        }
 
         if (level.isClientSide) {
             for (Vec3 particlePoint : PARTICLE_POINTS) {
@@ -419,37 +349,7 @@ public class OldOrdnanceEntity extends Projectile {
         this.setFuseTime(this.getFuseTime() + 1);
     }
 
-    public void setMaxFuseTime(int time) {
-        this.entityData.set(DATA_MAX_FUSE_TIME, time);
-    }
-
     public int getMaxFuseTime() {
-        return this.entityData.get(DATA_MAX_FUSE_TIME);
-    }
-
-    public boolean isDeflected() {
-        return this.entityData.get(DATA_DEFLECTION);
-    }
-
-    public void setDeflected(boolean deflected) {
-        this.entityData.set(DATA_DEFLECTION, deflected);
-    }
-
-    public boolean isStuck() {
-        return this.entityData.get(DATA_STUCK);
-    }
-
-    public void setStuck(boolean stuck) {
-        this.entityData.set(DATA_STUCK, stuck);
-    }
-
-    public void stickToEntity(Entity entity) {
-        this.stuckEntity = Optional.of(entity);
-        this.stuckEntityOffset = this.position().subtract(entity.position());
-        this.setStuck(true);
-    }
-
-    public void setElasticity(float elasticity) {
-
+        return this.ordnanceEffects.maxFuseTime();
     }
 }

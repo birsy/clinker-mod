@@ -1,6 +1,5 @@
-package birsy.clinker.common.world.entity;
+package birsy.clinker.common.world.entity.projectile;
 
-import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerDataAttachments;
 import birsy.clinker.core.registry.ClinkerItems;
 import birsy.clinker.core.registry.entity.ClinkerEntities;
@@ -19,7 +18,6 @@ import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;

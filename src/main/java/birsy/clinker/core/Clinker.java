@@ -3,7 +3,7 @@ package birsy.clinker.core;
 import birsy.clinker.client.render.GUIRenderer;
 import birsy.clinker.client.gui.AlchemyBundleGUIRenderer;
 import birsy.clinker.client.render.debug.ClinkerDebugRenderers;
-import birsy.clinker.common.world.entity.OldOrdnanceEntity;
+import birsy.clinker.common.world.entity.projectile.OrdnanceEntity;
 import birsy.clinker.core.registry.*;
 import birsy.clinker.core.registry.entity.ClinkerBlockEntities;
 import birsy.clinker.core.registry.entity.ClinkerEntities;
@@ -61,7 +61,7 @@ public class Clinker {
     private void setup(final FMLCommonSetupEvent event) {
         DispenserBlock.registerBehavior(ClinkerItems.ORDNANCE.get(), new AbstractProjectileDispenseBehavior() {
             protected Projectile getProjectile(Level level, Position position, ItemStack item) {
-                return OldOrdnanceEntity.create(level, position.x(), position.y(), position.z());
+                return OrdnanceEntity.create(level, position.x(), position.y(), position.z());
             }
 
             @Override

@@ -1,6 +1,6 @@
 package birsy.clinker.common.world.item;
 
-import birsy.clinker.common.world.entity.RerollFlaskEntity;
+import birsy.clinker.common.world.entity.projectile.RerollFlaskEntity;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;

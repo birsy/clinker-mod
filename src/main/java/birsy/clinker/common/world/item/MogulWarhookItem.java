@@ -1,7 +1,7 @@
 package birsy.clinker.common.world.item;
 
 import birsy.clinker.client.render.world.item.ClinkerBlockEntityWithoutLevelRenderer;
-import birsy.clinker.common.world.entity.WarhookEntity;
+import birsy.clinker.common.world.entity.projectile.WarhookEntity;
 import birsy.clinker.core.registry.ClinkerItems;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
