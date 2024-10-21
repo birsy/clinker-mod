@@ -34,16 +34,14 @@
         { "name": "LightmapCoordinates", "type": "int", "count": 2, "values": [ 15, 15 ] },
         { "name": "OverlayCoordinates", "type": "int", "count": 2, "values": [ 0, 0 ] },
 
-        { "name": "BoneTransforms", "type": "matrix4x4", "count": 32, "values": [
+        { "name": "BoneTransforms", "type": "float", "count": 24, "values": [
             1.0, 0.0, 0.0, 0.0,
             0.0, 1.0, 0.0, 0.0,
             0.0, 0.0, 1.0, 0.0,
-            0.0, 0.0, 0.0, 1.0,
 
             1.0, 0.0, 0.0, 0.0,
             0.0, 1.0, 0.0, 0.0,
-            0.0, 0.0, 1.0, 0.0,
-            0.0, 0.0, 0.0, 1.0 ]
+            0.0, 0.0, 1.0, 0.0 ]
         }
     ]
 }
