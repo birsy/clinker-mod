@@ -47,31 +47,28 @@ public class SurfaceAmbience {
 
             samplePos.move(x, 2, z);
             if (!isSolidBlock(level, samplePos)) {
-                aboveGround = true;
                 break;
             }
         }
 
-        if (aboveGround) {
-            int heightY = Math.max(level.getHeight(Heightmap.Types.WORLD_SURFACE, samplePos.getX(), samplePos.getZ()), level.getSeaLevel());
-            // if we're above the height map and sea level, we're always considered outside.
-            boolean aboveHeightMap = samplePos.getY() > heightY;
-            if (!aboveHeightMap) {
-                // count the number of fully solid blocks above us.
-                int solidBlocksEncountered = 0;
-                iteratorPos.set(samplePos);
-                while (iteratorPos.getY() < 256) {
-                    BlockState state = level.getBlockState(iteratorPos);
-                    if (state.isCollisionShapeFullBlock(level, iteratorPos) && state.blocksMotion() && state.canOcclude()) {
-                        solidBlocksEncountered++;
-                    }
-
-                    if (solidBlocksEncountered >= 12) {
-                        aboveGround = false;
-                        break;
-                    }
-                    iteratorPos.move(Direction.UP);
+        int heightY = Math.max(level.getHeight(Heightmap.Types.WORLD_SURFACE, samplePos.getX(), samplePos.getZ()), level.getSeaLevel());
+        // if we're above the height map and sea level, we're always considered outside.
+        boolean aboveHeightMap = samplePos.getY() > heightY;
+        if (!aboveHeightMap) {
+            // count the number of fully solid blocks above us.
+            int solidBlocksEncountered = 0;
+            iteratorPos.set(samplePos);
+            while (iteratorPos.getY() < heightY) {
+                BlockState state = level.getBlockState(iteratorPos);
+                if (state.isCollisionShapeFullBlock(level, iteratorPos) && state.blocksMotion() && state.canOcclude()) {
+                    solidBlocksEncountered++;
                 }
+
+                if (solidBlocksEncountered >= 12) {
+                    aboveGround = false;
+                    break;
+                }
+                iteratorPos.move(Direction.UP);
             }
         }
 
