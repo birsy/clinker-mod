@@ -1,6 +1,6 @@
 package birsy.clinker.core.registry;
 
-import birsy.clinker.client.render.ExplosionLightParticle;
+import birsy.clinker.client.particle.ExplosionLightParticle;
 import birsy.clinker.client.particle.*;
 import birsy.clinker.core.Clinker;
 import com.mojang.serialization.Codec;
@@ -34,8 +34,12 @@ public class ClinkerParticles
     public static final Supplier<SimpleParticleType> FIREFLY = createSimpleParticle("firefly");
     public static final Supplier<SimpleParticleType> FIRE_SPEW = createSimpleParticle("fire_spew");
 
-    public static final Supplier<ParticleType<DustColorTransitionOptions>> ORDNANCE_TRAIL = createParticle("ordnance_trail", DustColorTransitionOptions.DESERIALIZER, DustColorTransitionOptions.CODEC);
-    public static final Supplier<ParticleType<DustColorTransitionOptions>> ORDNANCE_EXPLOSION = createParticle("ordnance_explosion", DustColorTransitionOptions.DESERIALIZER, DustColorTransitionOptions.CODEC);
+    public static final Supplier<ParticleType<DustColorTransitionOptions>> ORDNANCE_TRAIL = createParticle("ordnance_trail",
+            DustColorTransitionOptions.DESERIALIZER,
+            DustColorTransitionOptions.CODEC);
+    public static final Supplier<ParticleType<DustColorTransitionOptions>> ORDNANCE_EXPLOSION = createParticle("ordnance_explosion",
+            DustColorTransitionOptions.DESERIALIZER,
+            DustColorTransitionOptions.CODEC);
     public static final Supplier<SimpleParticleType> EXPLOSION_LIGHT = createSimpleParticle("explosion_light");
 
     public static final Supplier<ParticleType<ChainLightningParticle.ChainLightningParticleOptions>> CHAIN_LIGHTNING = createParticle("chain_lightning", ChainLightningParticle.ChainLightningParticleOptions.DESERIALIZER, ChainLightningParticle.ChainLightningParticleOptions.CODEC);
@@ -63,7 +67,7 @@ public class ClinkerParticles
         event.registerSpriteSet(SNOOZE.get(), SnoozeParticle.Provider::new);
         event.registerSpriteSet(MOTH.get(), MothParticle.Provider::new);
         event.registerSpriteSet(FIREFLY.get(), FireflyParticle.Provider::new);
-        event.registerSpriteSet(ORDNANCE_TRAIL.get(), OrdnanceExplosionParticle.Provider::new);
+        event.registerSpriteSet(ORDNANCE_TRAIL.get(), OrdnanceTrailParticle.Provider::new);
         event.registerSpriteSet(ORDNANCE_EXPLOSION.get(), OrdnanceExplosionParticle.Provider::new);
         event.registerSpriteSet(EXPLOSION_LIGHT.get(), ExplosionLightParticle.Provider::new);
         event.registerSpriteSet(CHAIN_LIGHTNING.get(), ChainLightningParticle.Provider::new);

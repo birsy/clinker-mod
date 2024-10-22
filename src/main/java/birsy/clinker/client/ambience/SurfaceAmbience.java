@@ -75,13 +75,14 @@ public class SurfaceAmbience {
             }
         }
 
-        float mixFactor = 1.0F / 48.0F;
+        float mixFactor = 1.0F / 64.0F;
         prevAboveGroundFactor = aboveGroundFactor;
-        aboveGroundFactor = aboveGroundFactor * (1.0F - mixFactor) + (aboveGround ? 1.0F : 0.0F) * mixFactor;
+        aboveGroundFactor = aboveGroundFactor * (1.0F - mixFactor) + (aboveGround ? 1.0F : -1.0F) * mixFactor;
+        Clinker.LOGGER.info(aboveGroundFactor);
     }
 
     public float getAboveGroundFactor(double partialTick) {
-        return (float) Mth.lerp(partialTick, prevAboveGroundFactor, aboveGroundFactor);
+        return (float) (Mth.lerp(partialTick, prevAboveGroundFactor, aboveGroundFactor) + 1.0F) / 2.0F;
     }
 
     private static boolean isSolidBlock(Level level, BlockPos pos) {

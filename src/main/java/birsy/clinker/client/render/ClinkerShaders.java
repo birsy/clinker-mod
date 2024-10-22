@@ -1,6 +1,5 @@
 package birsy.clinker.client.render;
 
-import birsy.clinker.client.necromancer.render.NecromancerVertexFormat;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.minecraft.client.renderer.ShaderInstance;
@@ -43,8 +42,8 @@ public class ClinkerShaders {
     @Nullable
     private static ShaderInstance cloudShader;
 
-    @Nullable
-    private static ShaderInstance skinnedEntityShader;
+    //@Nullable
+    //private static ShaderInstance skinnedEntityShader;
 
     public static ShaderInstance getEntityCutoutUnlitShader() {
         return Objects.requireNonNull(rendertypeEntityCutoutUnlitShader, "Attempted to call getEntityCutoutUnlitShader before shaders have finished loading.");
@@ -85,9 +84,9 @@ public class ClinkerShaders {
         return Objects.requireNonNull(cloudShader, "Attempted to call getCloudShader before shaders have finished loading.");
     }
 
-    public static ShaderInstance getSkinnedEntityShader() {
-        return Objects.requireNonNull(skinnedEntityShader, "Attempted to call getSkinnedEntityShader before shaders have finished loading.");
-    }
+    //public static ShaderInstance getSkinnedEntityShader() {
+    //    return Objects.requireNonNull(skinnedEntityShader, "Attempted to call getSkinnedEntityShader before shaders have finished loading.");
+    //}
 
     @SubscribeEvent
     public static void registerShaders(RegisterShadersEvent event) throws IOException {
@@ -109,7 +108,7 @@ public class ClinkerShaders {
 
         event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation(Clinker.MOD_ID,"cloud"), DefaultVertexFormat.POSITION_TEX_COLOR), (shader) -> cloudShader = shader);
 
-        event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation(Clinker.MOD_ID,"skinned_entity"), NecromancerVertexFormat.SKINNED_ENTITY), (shader) -> skinnedEntityShader = shader);
+        //event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation(Clinker.MOD_ID,"skinned_entity"), NecromancerVertexFormat.SKINNED_ENTITY), (shader) -> skinnedEntityShader = shader);
     }
 
 

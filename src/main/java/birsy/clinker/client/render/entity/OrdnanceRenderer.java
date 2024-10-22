@@ -32,27 +32,15 @@ public class OrdnanceRenderer extends EntityRenderer<OrdnanceEntity> {
 
         VertexConsumer consumer = pBuffer.getBuffer(RenderType.entityCutout(this.getTextureLocation(pEntity)));
 
-        boolean deflection = false;//pEntity.isDeflected();
         float fuseTime = (pEntity.getFuseTime() + pPartialTick) / (pEntity.getMaxFuseTime() + 1.0F);
         float fuseFactor = fuseTime * 120;
         float bombFlash = Mth.clamp(Mth.sin(((fuseFactor * fuseFactor * Mth.PI) / 20.0F) * 0.02F), 0, 1) * fuseTime;
         float bigPuffTime = 110;
         if (fuseFactor > bigPuffTime) bombFlash = Math.max((float) (1 - Math.pow((fuseFactor - 120) / (120 - bigPuffTime), 4)) * fuseTime, bombFlash);
 
-        float lightBrightness = 3.0F;
-        Vec3 position = pEntity.getPosition(pPartialTick);
-        if (pEntity.light != null) {
-            pEntity.light.setPosition(position.x(), position.y() + (pEntity.getBbHeight() * 0.5F), position.z());
-            pEntity.light.setColor(bombFlash * lightBrightness, bombFlash * lightBrightness, bombFlash * lightBrightness);
-            pEntity.light.setRadius(Math.max(1, bombFlash * bombFlash * 2));
-        }
-
-        int overlay = OverlayTexture.pack(bombFlash, pEntity.hurtMarked && !deflection);
-        int blockLight = pEntity.level().getBrightness(LightLayer.BLOCK, pEntity.blockPosition()), skyLight = pEntity.level().getBrightness(LightLayer.SKY, pEntity.blockPosition());
-        if (deflection) {
-            blockLight = 15;
-            skyLight = 15;
-        }
+        int overlay = OverlayTexture.pack(bombFlash, pEntity.hurtMarked);
+        int blockLight = pEntity.level().getBrightness(LightLayer.BLOCK, pEntity.blockPosition()),
+            skyLight = pEntity.level().getBrightness(LightLayer.SKY, pEntity.blockPosition());
         int light = LightTexture.pack(Math.max((int) (bombFlash * 16), blockLight), skyLight);
 
         Vec3 directionTowardsCamera = this.entityRenderDispatcher.camera.getPosition().subtract(pEntity.getPosition(pPartialTick)).normalize();
@@ -60,10 +48,9 @@ public class OrdnanceRenderer extends EntityRenderer<OrdnanceEntity> {
         pPoseStack.pushPose();
         pPoseStack.translate(0, pEntity.getBbHeight() * 0.5F, 0);
         float size = 1 / 16.0F;
-        size *= 1 + Mth.sqrt(bombFlash) * 0.2;
-        size *= 0.6;
+        size *= 1 + Mth.sqrt(bombFlash) * 0.2F;
+        size *= 0.6F;
         pPoseStack.scale(size, size, size);
-
 
         drawBomb(pPoseStack, consumer, light, overlay, pEntity, pPartialTick, directionTowardsCamera);
 

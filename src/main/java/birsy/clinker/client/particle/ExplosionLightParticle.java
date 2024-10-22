@@ -1,4 +1,4 @@
-package birsy.clinker.client.render;
+package birsy.clinker.client.particle;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import foundry.veil.api.client.render.VeilRenderSystem;

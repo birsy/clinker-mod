@@ -1,6 +1,5 @@
 package birsy.clinker.core.registry.entity;
 
-import birsy.clinker.client.necromancer.render.NecromancerEntityRenderer;
 import birsy.clinker.client.render.entity.*;
 import birsy.clinker.client.render.entity.model.*;
 import birsy.clinker.common.world.entity.*;
@@ -118,13 +117,6 @@ public class ClinkerEntities {
                     .sized(0.5F, 0.5F)
                     .build(new ResourceLocation(Clinker.MOD_ID, "test_rope").toString()));
 
-
-    // TESTING
-    public static final Supplier<EntityType<FrogNoMoreEntity>> NECROMANCER_RENDER_TEST = ENTITY_TYPES.register("necromancer_render_test", () ->
-            EntityType.Builder.of(FrogNoMoreEntity::new, MobCategory.MISC)
-                    .sized(1.0F, 1.0F)
-                    .build(new ResourceLocation(Clinker.MOD_ID, "necromancer_render_test").toString()));
-
     @SubscribeEvent
     public static void registerEntityAttribute(EntityAttributeCreationEvent event) {
         event.put(MUD_SCARAB.get(), MudScarabEntity.createAttributes().build());
@@ -145,9 +137,6 @@ public class ClinkerEntities {
 
         //event.put(TEST.get(), FrogNoMoreEntity.createAttributes().build());
         event.put(TEST_ROPE.get(), FrogNoMoreEntity.createAttributes().build());
-
-        event.put(NECROMANCER_RENDER_TEST.get(), FrogNoMoreEntity.createAttributes().build());
-
     }
 
     @SubscribeEvent
@@ -176,9 +165,6 @@ public class ClinkerEntities {
 
         event.registerEntityRenderer(ClinkerEntities.COLLIDER.get(), NoopRenderer::new);
         event.registerEntityRenderer(ClinkerEntities.TEST_ROPE.get(), DebugRopeEntityRenderer::new);
-
-        event.registerEntityRenderer(ClinkerEntities.NECROMANCER_RENDER_TEST.get(), NecromancerEntityRenderer::new);
-
     }
 
     @SubscribeEvent

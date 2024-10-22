@@ -6,16 +6,23 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
+import java.util.function.Supplier;
+
 @OnlyIn(Dist.CLIENT)
 public class OrdnanceSoundInstance extends AbstractTickableSoundInstance {
-    private final OrdnanceEntity entity;
+    private final Entity entity;
+    private final float maxFuseTime;
+    private final Supplier<Float> fuseTimeSupplier;
 
-    public OrdnanceSoundInstance(OrdnanceEntity pEntity) {
+    public OrdnanceSoundInstance(Entity pEntity, float maxFuseTime, Supplier<Float> fuseTimeSupplier) {
         super(ClinkerSounds.ORDNANCE_SPARKLE_LOOP.get(),  SoundSource.BLOCKS, RandomSource.create(0));
+        this.maxFuseTime = maxFuseTime;
+        this.fuseTimeSupplier = fuseTimeSupplier;
         this.volume = 1;
         this.pitch = 1;
         this.entity = pEntity;
@@ -37,7 +44,7 @@ public class OrdnanceSoundInstance extends AbstractTickableSoundInstance {
             this.x = this.entity.getX();
             this.y = this.entity.getY();
             this.z = this.entity.getZ();
-            float factor = ((float)this.entity.getFuseTime() / (float)this.entity.getMaxFuseTime());
+            float factor = (fuseTimeSupplier.get() / maxFuseTime);
             this.pitch = (float) (0.8F + (Math.pow(factor, 16.0F) * 5));
             if (factor > 0.95) {
                 this.volume = 0;
@@ -46,5 +53,9 @@ public class OrdnanceSoundInstance extends AbstractTickableSoundInstance {
             float dist = (float) Minecraft.getInstance().cameraEntity.position().distanceTo(new Vec3(this.x, this.y, this.z));
             this.volume = (1.0F / (dist * dist)) * 3;
         }
+    }
+
+    public void stopPlaying() {
+        this.stop();
     }
 }

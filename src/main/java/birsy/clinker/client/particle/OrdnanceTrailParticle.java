@@ -20,7 +20,17 @@ public class OrdnanceTrailParticle extends DustColorTransitionParticle {
     @Override
     public void tick() {
         super.tick();
-        this.quadSize = Math.min(this.quadSize * 1.011F, 1.3F);
+        this.quadSize = Math.min(this.quadSize * 1.002F, 1.3F);
+    }
+
+    @Override
+    public void lerpColors(float pPartialTick) {
+        float factor = ((float)this.age + pPartialTick) / ((float)this.lifetime + 1.0F);
+        factor = (float) (Math.pow(factor, 0.4));
+        Vector3f color = new Vector3f(this.fromColor).lerp(this.toColor, factor);
+        this.rCol = color.x();
+        this.gCol = color.y();
+        this.bCol = color.z();
     }
 
     @OnlyIn(Dist.CLIENT)
