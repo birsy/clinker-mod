@@ -3,6 +3,7 @@ package birsy.clinker.common.world.item;
 import birsy.clinker.client.sound.OrdnanceSoundInstance;
 import birsy.clinker.common.world.entity.projectile.OrdnanceEffects;
 import birsy.clinker.common.world.entity.projectile.OrdnanceEntity;
+import birsy.clinker.core.Clinker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -15,8 +16,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 public class OrdnanceItem extends Item {
-    public static OrdnanceSoundInstance sound;
+    public static Map<UUID, OrdnanceSoundInstance> sounds = new HashMap<>();
 
     public OrdnanceItem(Properties pProperties) {
         super(pProperties);
@@ -27,15 +32,22 @@ public class OrdnanceItem extends Item {
         ItemStack itemstack = pPlayer.getItemInHand(pHand);
         pPlayer.startUsingItem(pHand);
 
+        pLevel.playSound(null,
+                pPlayer.getX(), pPlayer.getY(), pPlayer.getZ(),
+                SoundEvents.TNT_PRIMED, SoundSource.PLAYERS,
+                0.5F, 0.4F / (pLevel.getRandom().nextFloat() * 0.4F + 0.8F)
+        );
         if (!itemstack.getOrCreateTag().getBoolean("Lit")) {
             itemstack.getOrCreateTag().putBoolean("Lit", true);
             itemstack.getOrCreateTag().putInt("MaxFuseTime", OrdnanceEffects.DEFAULT_EFFECT_PARAMS.maxFuseTime());
             itemstack.getOrCreateTag().putInt("FuseTime", 0);
+//            itemstack.getOrCreateTag().putUUID("SoundID", UUID.randomUUID());
 
-            if (pLevel.isClientSide()) {
-                sound = new OrdnanceSoundInstance(pPlayer, itemstack.getOrCreateTag().getInt("MaxFuseTime"), () -> (float)itemstack.getOrCreateTag().getInt("FuseTime"));
-                Minecraft.getInstance().getSoundManager().play(sound);
-            }
+//            if (pLevel.isClientSide()) {
+//                OrdnanceSoundInstance sound = new OrdnanceSoundInstance(pPlayer, itemstack.getOrCreateTag().getInt("MaxFuseTime"), () -> (float)itemstack.getOrCreateTag().getInt("FuseTime"));
+//                sounds.put(itemstack.getOrCreateTag().getUUID("SoundID"), sound);
+//                Minecraft.getInstance().getSoundManager().play(sound);
+//            }
         }
 
         return InteractionResultHolder.consume(itemstack);
@@ -59,8 +71,25 @@ public class OrdnanceItem extends Item {
                 pLevel.addFreshEntity(entity);
             }
         } else {
-            sound.stopPlaying();
+//            if (pStack.getOrCreateTag().hasUUID("SoundID")) {
+//                UUID soundID = pStack.getOrCreateTag().getUUID("SoundID");
+//                if (sounds.containsKey(soundID)) {
+//                    sounds.get(soundID).stopPlaying();
+//                    sounds.remove(soundID);
+//                } else {
+//                    Clinker.LOGGER.info("a");
+//                }
+//            } else {
+//                Clinker.LOGGER.info("b");
+//            }
+//
+//            for (OrdnanceSoundInstance value : sounds.values()) {
+//                value.stopPlaying();
+//            }
+//            sounds.clear();
+
         }
+
         if (pEntityLiving instanceof Player player) {
             player.awardStat(Stats.ITEM_USED.get(this));
             if (!player.getAbilities().instabuild) {
@@ -85,6 +114,16 @@ public class OrdnanceItem extends Item {
     public void inventoryTick(ItemStack pStack, Level pLevel, Entity pEntity, int pSlotId, boolean pIsSelected) {
         super.inventoryTick(pStack, pLevel, pEntity, pSlotId, pIsSelected);
         if (!pStack.getOrCreateTag().getBoolean("Lit")) return;
+
+//        if (pLevel.isClientSide() && pStack.getOrCreateTag().hasUUID("SoundID")) {
+//            UUID soundID = pStack.getOrCreateTag().getUUID("SoundID");
+//            if (!sounds.containsKey(soundID)) {
+//                OrdnanceSoundInstance sound = new OrdnanceSoundInstance(pEntity, pStack.getOrCreateTag().getInt("MaxFuseTime"), () -> (float)pStack.getOrCreateTag().getInt("FuseTime"));
+//                sounds.put(soundID, sound);
+//                Minecraft.getInstance().getSoundManager().play(sound);
+//            }
+//
+//        }
 
         int fuseTime = pStack.getOrCreateTag().getInt("FuseTime") + 1;
         pStack.getOrCreateTag().putInt("FuseTime", fuseTime);

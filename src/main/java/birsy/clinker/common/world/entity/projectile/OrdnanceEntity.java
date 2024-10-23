@@ -46,6 +46,10 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
 
     protected OrdnanceEffects effects = OrdnanceEffects.DEFAULT_EFFECT_PARAMS;
 
+    boolean stuck = false;
+    Entity stuckEntity;
+    float stuckEntityAngleOffset, stuckEntityHeightOffset;
+
     @OnlyIn(Dist.CLIENT)
     private OrdnanceSoundInstance sound;
     @OnlyIn(Dist.CLIENT)
@@ -140,6 +144,19 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
         float drag = this.getDrag();
         float gravity = this.getGravity();
 
+        if (this.stuck) {
+            this.setDeltaMovement(0, 0, 0);
+            if (this.stuckEntity != null) {
+                position = stuckEntity.position();
+                position = position.add(0, this.stuckEntityHeightOffset, 0);
+                position = position.add(Mth.sin(stuckEntity.getYRot()))
+                this.setPos();
+            } else {
+
+            }
+            return;
+        }
+
         velocity = velocity.scale(drag);
         velocity = velocity.add(0, gravity, 0);
         this.setDeltaMovement(velocity);
@@ -172,7 +189,7 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
     protected void onHitEntity(EntityHitResult pResult) {
         super.onHitEntity(pResult);
 
-        pResult.getEntity().hurt(this.damageSources().mobProjectile(this, (LivingEntity) this.getOwner()), 3.0F);
+        if (!this.stuck) pResult.getEntity().hurt(this.damageSources().mobProjectile(this, (LivingEntity) this.getOwner()), 3.0F);
         this.level().gameEvent(GameEvent.PROJECTILE_LAND, pResult.getLocation(), GameEvent.Context.of(this, null));
         this.playCollisionSound(1, 0.4F);
 
@@ -181,6 +198,7 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
                 this.setDeltaMovement(this.getDeltaMovement().scale(-0.1F));
             case STICK:
                 this.setDeltaMovement(Vec3.ZERO);
+                this.stickToEntity(pResult.getEntity());
                 break;
             case BOUNCE:
                 this.setDeltaMovement(this.getDeltaMovement().scale(-0.95F));
@@ -209,6 +227,7 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
                 velocity = velocity.scale(0.5F);
                 break;
             case STICK:
+                this.stuck = true;
                 velocity = velocity.scale(0.0F);
                 break;
             case BOUNCE:
@@ -222,6 +241,21 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
         if (Math.abs(velocity.y) > 0.01) this.playCollisionSound(1, 0.6F);
 
         this.setDeltaMovement(velocity);
+    }
+
+    protected void stickToEntity(Entity entity) {
+        if (this.hurtMarked) return;
+
+        this.stuck = true;
+        this.stuckEntity = entity;
+        Vec3 posOffset = entity.position().subtract(this.position());
+        this.stuckEntityHeightOffset = (float) posOffset.y;
+
+        posOffset = posOffset.normalize();
+        float angleToEntity = (float) Mth.atan2(posOffset.z(), posOffset.x()) * Mth.RAD_TO_DEG;
+        float entityAngle = entity.getYRot();
+
+        this.stuckEntityAngleOffset = Mth.degreesDifference(angleToEntity, entityAngle);
     }
 
     protected float getGravity() {
@@ -305,6 +339,7 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
                 if (!this.level().isClientSide) {
                     Vec3 vec3 = entity.getLookAngle();
                     isDeflection = this.getDeltaMovement().length() > 0.1 && entity instanceof LivingEntity;
+                    this.stuck = false;
                     this.setDeltaMovement(this.getDeltaMovement().add(vec3.scale(isDeflection ? 0.8 : 0.5)));
                     this.setOwner(entity);
                     this.level().playSound(null, this.position().x(), this.position().y(), this.position().z(), SoundEvents.TRIDENT_HIT, SoundSource.BLOCKS, isDeflection ? 1.5F : 0.5F, isDeflection ? 0.5F : 1.0F);
