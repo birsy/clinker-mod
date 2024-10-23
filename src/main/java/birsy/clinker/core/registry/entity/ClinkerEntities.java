@@ -6,6 +6,7 @@ import birsy.clinker.common.world.entity.*;
 import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
 import birsy.clinker.common.world.entity.gnomad.GnomadSoldierEntity;
 import birsy.clinker.common.world.entity.mold.MoldEntity;
+import birsy.clinker.common.world.entity.projectile.FlechetteEntity;
 import birsy.clinker.common.world.entity.projectile.OrdnanceEntity;
 import birsy.clinker.common.world.entity.projectile.RerollFlaskEntity;
 import birsy.clinker.common.world.entity.projectile.WarhookEntity;
@@ -87,6 +88,11 @@ public class ClinkerEntities {
             EntityType.Builder.of(WarhookEntity::new, MobCategory.MISC)
                     .sized(0.5F, 0.5F)
                     .build(new ResourceLocation(Clinker.MOD_ID, "warhook").toString()));
+    public static final Supplier<EntityType<FlechetteEntity>> FLECHETTE = ENTITY_TYPES.register("flechette", () ->
+            EntityType.Builder.of(FlechetteEntity::new, MobCategory.MISC)
+                    .sized(0.2F, 0.2F)
+                    .build(new ResourceLocation(Clinker.MOD_ID, "flechette").toString()));
+
     public static final Supplier<EntityType<RerollFlaskEntity>> REROLL_FLASK = ENTITY_TYPES.register("transmogrifying_flask", () ->
             EntityType.Builder.of(RerollFlaskEntity::new, MobCategory.MISC)
                     .sized(0.25F, 0.25F)
@@ -153,6 +159,8 @@ public class ClinkerEntities {
         event.registerEntityRenderer(ClinkerEntities.FAE_URN.get(), UrnEntityRenderer::new);
 
         event.registerEntityRenderer(ClinkerEntities.ORDNANCE.get(), OrdnanceRenderer::new);
+        event.registerEntityRenderer(ClinkerEntities.FLECHETTE.get(), FlechetteRenderer::new);
+
         event.registerEntityRenderer(ClinkerEntities.WARHOOK.get(), WarhookRenderer::new);
         event.registerEntityRenderer(ClinkerEntities.REROLL_FLASK.get(), ThrownItemRenderer::new);
 

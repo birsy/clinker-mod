@@ -40,6 +40,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpawn {
+    private static final Vec3[] FLECHETTE_POINTS = MathUtils.generateSpherePoints(128);
     private static final Vec3[] PARTICLE_POINTS = MathUtils.generateSpherePoints(500);
 
     private static final EntityDataAccessor<Integer> DATA_FUSE_TIME = SynchedEntityData.defineId(OrdnanceEntity.class, EntityDataSerializers.INT);
@@ -49,6 +50,7 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
     boolean stuck = false;
     Entity stuckEntity;
     float stuckEntityAngleOffset, stuckEntityHeightOffset;
+    Vec3 stuckDirection;
 
     @OnlyIn(Dist.CLIENT)
     private OrdnanceSoundInstance sound;
@@ -59,7 +61,7 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
         super(pEntityType, pLevel);
         if (!pLevel.isClientSide()) {
             this.effects = new OrdnanceEffects (
-                OrdnanceEffects.DetonationType.NORMAL,
+                OrdnanceEffects.DetonationType.FLECHETTE,
                 OrdnanceEffects.TouchType.NORMAL,
                 Potions.EMPTY,
                 false,
@@ -131,13 +133,13 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
         super.tick();
 
         if (!this.noPhysics) this.tickPhysics();
-        if (this.level().isClientSide) tickClient();
+        if (this.level().isClientSide()) tickClient();
 
         this.incrementFuseTime();
         if (this.getFuseTime() > this.getMaxFuseTime() || this.isOnFire()) this.detonate();
     }
 
-    public void tickPhysics() {
+    protected void tickPhysics() {
         Vec3 position = this.position();
         Vec3 velocity = this.getDeltaMovement();
 
@@ -148,11 +150,12 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
             this.setDeltaMovement(0, 0, 0);
             if (this.stuckEntity != null) {
                 position = stuckEntity.position();
-                position = position.add(0, this.stuckEntityHeightOffset, 0);
-                position = position.add(Mth.sin(stuckEntity.getYRot()))
-                this.setPos();
-            } else {
-
+                position = position.add(Mth.sin(stuckEntity.getYRot()), this.stuckEntityHeightOffset, Mth.cos(stuckEntity.getYRot()));
+                this.setPos(position);
+            }
+            if (this.stuckDirection != null) {
+                BlockHitResult blockHitResult = this.level().clip(new ClipContext(position, position.add(this.stuckDirection), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
+                if (blockHitResult.getType() == HitResult.Type.MISS) this.unstuck();
             }
             return;
         }
@@ -228,6 +231,8 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
                 break;
             case STICK:
                 this.stuck = true;
+                double stuckDistance = this.position().distanceTo(pResult.getLocation());
+                this.stuckDirection = velocity.normalize().scale(stuckDistance + 0.01F);
                 velocity = velocity.scale(0.0F);
                 break;
             case BOUNCE:
@@ -256,6 +261,14 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
         float entityAngle = entity.getYRot();
 
         this.stuckEntityAngleOffset = Mth.degreesDifference(angleToEntity, entityAngle);
+    }
+
+    protected void unstuck() {
+        this.stuck = false;
+        this.stuckEntity = null;
+        this.stuckDirection = null;
+        this.stuckEntityAngleOffset = 0;
+        this.stuckEntityHeightOffset = 0;
     }
 
     protected float getGravity() {
@@ -339,10 +352,10 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
                 if (!this.level().isClientSide) {
                     Vec3 vec3 = entity.getLookAngle();
                     isDeflection = this.getDeltaMovement().length() > 0.1 && entity instanceof LivingEntity;
-                    this.stuck = false;
                     this.setDeltaMovement(this.getDeltaMovement().add(vec3.scale(isDeflection ? 0.8 : 0.5)));
                     this.setOwner(entity);
                     this.level().playSound(null, this.position().x(), this.position().y(), this.position().z(), SoundEvents.TRIDENT_HIT, SoundSource.BLOCKS, isDeflection ? 1.5F : 0.5F, isDeflection ? 0.5F : 1.0F);
+                    this.unstuck();
                 }
 
                 if (!isDeflection) {
@@ -364,14 +377,16 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
         float radius = 5F;
 
         if (level.isClientSide) {
-            for (Vec3 particlePoint : PARTICLE_POINTS) {
-                Vec3 velocity = particlePoint.normalize();
-                velocity = velocity.scale(radius + (level.random.nextGaussian() * 0.1F));
+            if (effects.detonationType() == OrdnanceEffects.DetonationType.NORMAL) {
+                for (Vec3 particlePoint : PARTICLE_POINTS) {
+                    Vec3 velocity = particlePoint.normalize();
+                    velocity = velocity.scale(radius + (level.random.nextGaussian() * 0.1F));
 
-                Vector3f baseColor = Vec3.fromRGB24(effects.color()).toVector3f();
-                Vector3f smokeColor =  new Vector3f(0.8f, 0.8f, 0.8f);
-                level.addParticle(new OrdnanceExplosionParticle.Options(baseColor, smokeColor, Mth.abs((float)  level.random.nextGaussian()) * 3.0F), location.x(), location.y(), location.z(),
-                        velocity.x(), velocity.y, velocity.z);
+                    Vector3f baseColor = Vec3.fromRGB24(effects.color()).toVector3f();
+                    Vector3f smokeColor = new Vector3f(0.8f, 0.8f, 0.8f);
+                    level.addParticle(new OrdnanceExplosionParticle.Options(baseColor, smokeColor, Mth.abs((float) level.random.nextGaussian()) * 3.0F), location.x(), location.y(), location.z(),
+                            velocity.x(), velocity.y, velocity.z);
+                }
             }
 
             level.addParticle(ParticleTypes.FLASH, true, location.x(), location.y(), location.z(), 0, 0, 0);
@@ -382,8 +397,22 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
             level.playLocalSound(location.x(), location.y(), location.z(), SoundEvents.FIREWORK_ROCKET_TWINKLE_FAR, SoundSource.BLOCKS, 0.1F, Mth.lerp(level.random.nextFloat(), 0.7F, 0.9F), false);
         } else {
             ClinkerPacketHandler.sendToClientsTrackingChunk(level.getChunkAt(BlockPos.containing(location)), new ClientboundOrdnanceExplosionPacket(location, effects));
+
+            if (effects.detonationType() == OrdnanceEffects.DetonationType.FLECHETTE) {
+                for (Vec3 particlePoint : FLECHETTE_POINTS) {
+                    Vec3 velocity = particlePoint.normalize();
+
+                    FlechetteEntity entity = new FlechetteEntity(ClinkerEntities.FLECHETTE.get(), level);
+                    entity.setOwner(thrower);
+                    entity.shoot(velocity.x, velocity.y, velocity.z,0.6F + (float)level.random.nextGaussian() * 0.1F, 1.0F);
+                    velocity = velocity.scale(0.25F);
+                    entity.setPos(location.x + velocity.x, location.y + velocity.y, location.z + velocity.z);
+                    level.addFreshEntity(entity);
+                }
+            }
         }
 
+        if (effects.detonationType() == OrdnanceEffects.DetonationType.FLECHETTE) return;
         for (Entity entity : level.getEntities(ordnance, new AABB(location.subtract(radius, radius, radius), location.add(radius, radius, radius)))) {
             // if you're outside its radius you're ok.
             if (entity.distanceToSqr(location) > radius * radius) {
