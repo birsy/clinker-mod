@@ -133,7 +133,11 @@ public interface ClinkerChunkGenerator {
                             }
                         }
 
-                        decorator.buildSurface(chunk, new BlockPos.MutableBlockPos().set(pos), this.getSeaLevel(), visibleToSun, depth, maxElevationIncrease, maxElevationDecrease, (dx, dy, dz) -> this.getNoiseField().getGradient(dx, dy, dz, derivative), );
+                        try {
+                            decorator.buildSurface(chunk, new BlockPos.MutableBlockPos().set(pos), this.getSeaLevel(), visibleToSun, depth, maxElevationIncrease, maxElevationDecrease, (dx, dy, dz) -> this.getNoiseField().getGradient(dx, dy, dz, derivative), );
+                        } catch (java.util.concurrent.ExecutionException e) {
+                            throw new RuntimeException(e);
+                        }
                         visibleToSun = false;
 
                         // move down to the next air block

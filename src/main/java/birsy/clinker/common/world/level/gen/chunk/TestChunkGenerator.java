@@ -185,60 +185,64 @@ public class TestChunkGenerator extends ChunkGenerator {
     private void applySurfaceDecorators(WorldGenLevel level, ChunkAccess chunk) {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         BlockPos.MutableBlockPos neighborPos = new BlockPos.MutableBlockPos().set(pos);
+        try {
+            for (int x = 0; x < 16; x++) {
+                for (int z = 0; z < 16; z++) {
+                    int startHeight = chunk.getHeight(Heightmap.Types.WORLD_SURFACE_WG, x, z);
+                    pos.set(x + chunk.getPos().getMinBlockX(), startHeight, z + chunk.getPos().getMinBlockZ());
 
-        for (int x = 0; x < 16; x++) {
-            for (int z = 0; z < 16; z++) {
-                int startHeight = chunk.getHeight(Heightmap.Types.WORLD_SURFACE_WG, x, z);
-                pos.set(x + chunk.getPos().getMinBlockX(), startHeight, z + chunk.getPos().getMinBlockZ());
+                    boolean visibleToSun = true;
+                    while (pos.getY() > chunk.getMinBuildHeight() + 1) {
+                        //when it encounters a new surface, check the biome and generate the corresponding surface.
+                        if (level.getBlockState(pos) == this.settings.defaultBlock()) {
+                            ResourceLocation biome = level.getBiome(pos).unwrapKey().get().location();
+                            SurfaceDecorator decorator = SurfaceDecorators.getSurfaceDecorator(biome);
+                            decorator.setSeed(this.seed);
 
-                boolean visibleToSun = true;
-                while (pos.getY() > chunk.getMinBuildHeight() + 1) {
-                    //when it encounters a new surface, check the biome and generate the corresponding surface.
-                    if (level.getBlockState(pos) == this.settings.defaultBlock()) {
-                        ResourceLocation biome = level.getBiome(pos).unwrapKey().get().location();
-                        SurfaceDecorator decorator = SurfaceDecorators.getSurfaceDecorator(biome);
-                        decorator.setSeed(this.seed);
+                            neighborPos.set(pos);
+                            int depth = 1;
+                            while (neighborPos.getY() > chunk.getMinBuildHeight() + 1) {
+                                neighborPos.move(Direction.DOWN);
+                                if (level.getBlockState(neighborPos) == this.settings.defaultBlock()) depth++;
+                                else break;
+                            }
 
-                        neighborPos.set(pos);
-                        int depth = 1;
-                        while (neighborPos.getY() > chunk.getMinBuildHeight() + 1) {
-                            neighborPos.move(Direction.DOWN);
-                            if (level.getBlockState(neighborPos) == this.settings.defaultBlock()) depth++;
-                            else break;
-                        }
+                            int maxElevationIncrease = 0;
+                            int maxElevationDecrease = 0;
+                            if (decorator.shouldCalculateElevationChange(visibleToSun, pos.getY())) {
+                                for (Direction direction : Direction.Plane.HORIZONTAL) {
+                                    neighborPos.set(pos).move(direction);
+                                    boolean movingUp = level.getBlockState(neighborPos).isCollisionShapeFullBlock(level, neighborPos);
+                                    Direction moveDirection = movingUp ? Direction.UP : Direction.DOWN;
 
-                        int maxElevationIncrease = 0;
-                        int maxElevationDecrease = 0;
-                        if (decorator.shouldCalculateElevationChange(visibleToSun, pos.getY())) {
-                            for (Direction direction : Direction.Plane.HORIZONTAL) {
-                                neighborPos.set(pos).move(direction);
-                                boolean movingUp = level.getBlockState(neighborPos).isCollisionShapeFullBlock(level, neighborPos);
-                                Direction moveDirection = movingUp ? Direction.UP : Direction.DOWN;
+                                    for (int i = 0; i < MAX_ELEVATION_DIFFERENCE + 1; i++) {
+                                        neighborPos.move(moveDirection);
 
-                                for (int i = 0; i < MAX_ELEVATION_DIFFERENCE + 1; i++) {
-                                    neighborPos.move(moveDirection);
+                                        if (movingUp) maxElevationIncrease = Math.max(maxElevationIncrease, i);
+                                        else maxElevationDecrease = Math.max(maxElevationDecrease, i + 1);
 
-                                    if (movingUp) maxElevationIncrease = Math.max(maxElevationIncrease, i);
-                                    else maxElevationDecrease = Math.max(maxElevationDecrease, i + 1);
+                                        if (neighborPos.getY() < chunk.getMinBuildHeight() + 1) break;
 
-                                    if (neighborPos.getY() < chunk.getMinBuildHeight() + 1) break;
-
-                                    boolean isTop = movingUp != level.getBlockState(neighborPos).isCollisionShapeFullBlock(level, neighborPos);
-                                    if (isTop) break;
+                                        boolean isTop = movingUp != level.getBlockState(neighborPos).isCollisionShapeFullBlock(level, neighborPos);
+                                        if (isTop) break;
+                                    }
                                 }
                             }
+
+                            decorator.buildSurface(chunk, new BlockPos.MutableBlockPos().set(pos), this.getSeaLevel(), visibleToSun, depth, maxElevationIncrease, maxElevationDecrease, (dx, dy, dz) -> ZERO, this.sampler);
+
+                            visibleToSun = false;
+
+                            // move down to the next air block
+                            pos.move(Direction.DOWN, depth - 1);
                         }
 
-                        decorator.buildSurface(chunk, new BlockPos.MutableBlockPos().set(pos), this.getSeaLevel(), visibleToSun, depth, maxElevationIncrease, maxElevationDecrease, (dx, dy, dz) -> ZERO, this.sampler);
-                        visibleToSun = false;
-
-                        // move down to the next air block
-                        pos.move(Direction.DOWN, depth - 1);
+                        pos.move(Direction.DOWN);
                     }
-
-                    pos.move(Direction.DOWN);
                 }
             }
+        } catch (java.util.concurrent.ExecutionException e) {
+            throw new RuntimeException(e);
         }
     }
 
