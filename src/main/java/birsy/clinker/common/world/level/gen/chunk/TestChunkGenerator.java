@@ -2,6 +2,7 @@ package birsy.clinker.common.world.level.gen.chunk;
 
 import birsy.clinker.common.world.level.gen.MetaChunk;
 import birsy.clinker.common.world.level.gen.MetaChunkTracker;
+import birsy.clinker.common.world.level.gen.NoiseSampler;
 import birsy.clinker.common.world.level.gen.chunk.biome.surfacedecorator.SurfaceDecorator;
 import birsy.clinker.common.world.level.gen.chunk.biome.SurfaceDecorators;
 import birsy.clinker.core.Clinker;
@@ -47,7 +48,7 @@ public class TestChunkGenerator extends ChunkGenerator {
     protected final Holder<NoiseGeneratorSettings> settingsHolder;
     protected final NoiseGeneratorSettings settings;
     private final Aquifer.FluidPicker globalFluidPicker;
-
+    private final NoiseSampler sampler = new NoiseSampler(0);
     private static final CachedFastNoise noise = Util.make(() -> {
         FastNoiseLite n = new FastNoiseLite();
         n.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2S);
@@ -108,6 +109,7 @@ public class TestChunkGenerator extends ChunkGenerator {
         if (seed != this.voronoi.getSeed()) {
             this.voronoi.setSeed(seed);
         }
+        this.sampler.setSeed(seed);
     }
 
     // earliest possible reference to a seed
@@ -227,7 +229,7 @@ public class TestChunkGenerator extends ChunkGenerator {
                             }
                         }
 
-                        decorator.buildSurface(chunk, new BlockPos.MutableBlockPos().set(pos), this.getSeaLevel(), visibleToSun, depth, maxElevationIncrease, maxElevationDecrease, (dx, dy, dz) -> ZERO);
+                        decorator.buildSurface(chunk, new BlockPos.MutableBlockPos().set(pos), this.getSeaLevel(), visibleToSun, depth, maxElevationIncrease, maxElevationDecrease, (dx, dy, dz) -> ZERO, this.sampler);
                         visibleToSun = false;
 
                         // move down to the next air block

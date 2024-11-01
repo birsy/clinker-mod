@@ -1,6 +1,7 @@
 package birsy.clinker.common.world.level.gen.chunk;
 
 import birsy.clinker.common.world.level.gen.NoiseField;
+import birsy.clinker.common.world.level.gen.NoiseSampler;
 import birsy.clinker.common.world.level.gen.chunk.biome.SurfaceDecorators;
 import birsy.clinker.common.world.level.gen.chunk.biome.surfacedecorator.SurfaceDecorator;
 import net.minecraft.core.BlockPos;
@@ -14,14 +15,16 @@ import org.joml.Vector3f;
 
 // constructs the surface layer for a chunk
 public class SurfaceBuilder {
-    private final int maxElevationDifference;
-    private final int seaLevel;
-    private final BlockState defaultBlock;
+    protected final int maxElevationDifference;
+    protected final int seaLevel;
+    protected final BlockState defaultBlock;
+    protected final NoiseSampler sampler;
 
-    public SurfaceBuilder(int maxElevationDifference, int seaLevel, BlockState defaultBlock) {
+    public SurfaceBuilder(int maxElevationDifference, int seaLevel, BlockState defaultBlock, NoiseSampler sampler) {
         this.maxElevationDifference = maxElevationDifference;
         this.seaLevel = seaLevel;
         this.defaultBlock = defaultBlock;
+        this.sampler = sampler;
     }
 
     void applySurfaceDecorators(WorldGenLevel level, ChunkAccess chunk, NoiseField noiseField) {
@@ -72,7 +75,7 @@ public class SurfaceBuilder {
                             }
                         }
 
-                        decorator.buildSurface(chunk, new BlockPos.MutableBlockPos().set(pos), seaLevel, visibleToSun, depth, maxElevationIncrease, maxElevationDecrease, (dx, dy, dz) -> noiseField.getGradient(dx, dy, dz, derivative));
+                        decorator.buildSurface(chunk, new BlockPos.MutableBlockPos().set(pos), seaLevel, visibleToSun, depth, maxElevationIncrease, maxElevationDecrease, (dx, dy, dz) -> noiseField.getGradient(dx, dy, dz, derivative), sampler);
                         visibleToSun = false;
 
                         // move down to the next air block

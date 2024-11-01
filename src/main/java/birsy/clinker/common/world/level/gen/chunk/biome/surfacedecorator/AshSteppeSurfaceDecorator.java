@@ -1,6 +1,7 @@
 package birsy.clinker.common.world.level.gen.chunk.biome.surfacedecorator;
 
 import birsy.clinker.common.world.block.AshLayerBlock;
+import birsy.clinker.common.world.level.gen.NoiseSampler;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.core.util.noise.FastNoiseLite;
@@ -23,7 +24,7 @@ public class AshSteppeSurfaceDecorator extends SurfaceDecorator {
     public AshSteppeSurfaceDecorator() {}
 
     @Override
-    public void buildSurface(ChunkAccess chunk, BlockPos.MutableBlockPos pos, int seaLevel, boolean canSeeSun, int depth, int maxElevationIncrease, int maxElevationDecrease, DerivativeProvider noiseDerivative) {
+    public void buildSurface(ChunkAccess chunk, BlockPos.MutableBlockPos pos, int seaLevel, boolean canSeeSun, int depth, int maxElevationIncrease, int maxElevationDecrease, DerivativeProvider noiseDerivative, NoiseSampler sampler) {
         if (!canSeeSun && pos.getY() < 130) return;
 
         float ditherRandom = (this.random.nextFloat() * 2) - 1;

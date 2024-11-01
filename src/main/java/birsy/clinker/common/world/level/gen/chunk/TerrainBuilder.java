@@ -2,6 +2,7 @@ package birsy.clinker.common.world.level.gen.chunk;
 
 import birsy.clinker.common.world.level.gen.NoiseField;
 import birsy.clinker.common.world.level.gen.NoiseFieldWithOffset;
+import birsy.clinker.common.world.level.gen.NoiseSampler;
 import birsy.clinker.common.world.level.gen.chunk.biome.TerrainProviders;
 import birsy.clinker.common.world.level.gen.chunk.biome.terrainprovider.TerrainProvider;
 import net.minecraft.core.Holder;
@@ -21,10 +22,12 @@ public class TerrainBuilder {
     protected final int blendRadius;
     protected final Map<Holder<Biome>, Float> biomeContributions;
     protected final Function<Float, Float> kernel;
+    protected final NoiseSampler sampler;
 
-    public TerrainBuilder(int blendRadius, Function<Float, Float> kernel) {
+    public TerrainBuilder(int blendRadius, Function<Float, Float> kernel, NoiseSampler sampler) {
         this.blendRadius = blendRadius;
         this.kernel = kernel;
+        this.sampler = sampler;
         this.biomeContributions = new HashMap<>(this.blendRadius * this.blendRadius);
     }
 
@@ -55,7 +58,7 @@ public class TerrainBuilder {
             ResourceLocation biomeLocation = holderFloatEntry.getKey().unwrapKey().get().location();
 
             TerrainProvider provider = TerrainProviders.getTerrainProvider(biomeLocation);
-            finalNoiseValue += provider.sample(level, chunk, seed, x, y, z) * contribution;
+            finalNoiseValue += provider.sample(level, chunk, seed, x, y, z, this.sampler) * contribution;
         }
 
         biomeContributions.clear();
