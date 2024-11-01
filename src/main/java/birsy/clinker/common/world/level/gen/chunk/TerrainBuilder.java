@@ -15,6 +15,7 @@ import net.minecraft.world.level.chunk.ChunkAccess;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 
 // blends the results from many terrain providers...
@@ -32,11 +33,18 @@ public class TerrainBuilder {
     }
 
     public NoiseField populateNoiseField(WorldGenLevel level, ChunkAccess chunk, long seed, NoiseFieldWithOffset noiseField) {
-        noiseField.fill((currentValue, x, y, z, params) -> calculateTerrainDensity(level, chunk, seed, x, y, z));
+        noiseField.fill((currentValue, x, y, z, params) -> {
+            // HATE. LET ME TELL YOU HOW MUCH I'VE COME TO HATE-
+            try {
+                return calculateTerrainDensity(level, chunk, seed, x, y, z);
+            } catch (ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+        });
         return noiseField;
     }
 
-    protected float calculateTerrainDensity(WorldGenLevel level, ChunkAccess chunk, long seed, double x, double y, double z) {
+    protected float calculateTerrainDensity(WorldGenLevel level, ChunkAccess chunk, long seed, double x, double y, double z) throws ExecutionException {
         int blockX = Mth.floor(x), blockY = Mth.floor(y), blockZ = Mth.floor(z);
         int biomeX = QuartPos.fromBlock(blockX), biomeY = QuartPos.fromBlock(blockY), biomeZ = QuartPos.fromBlock(blockZ);
 
