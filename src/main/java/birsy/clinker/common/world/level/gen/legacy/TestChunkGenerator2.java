@@ -1,11 +1,10 @@
-package birsy.clinker.common.world.level.gen.chunk;
+package birsy.clinker.common.world.level.gen.legacy;
 
 import birsy.clinker.common.world.level.gen.*;
 import birsy.clinker.core.util.noise.FastNoiseLite;
 import birsy.clinker.core.util.noise.VoronoiGenerator;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.SharedConstants;
 import net.minecraft.Util;
 import net.minecraft.core.*;
 import net.minecraft.server.level.WorldGenRegion;
@@ -18,7 +17,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.chunk.ChunkGeneratorStructureState;
-import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.levelgen.*;
 import net.minecraft.world.level.levelgen.blending.Blender;
 import net.minecraft.world.level.levelgen.structure.StructureSet;

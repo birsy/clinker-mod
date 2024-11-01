@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.level.gen.chunk;
+package birsy.clinker.common.world.level.gen.legacy;
 
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.util.MathUtils;

@@ -1,6 +1,6 @@
-package birsy.clinker.common.world.level.gen.chunk.noiseproviders;
+package birsy.clinker.common.world.level.gen.legacy.noiseproviders;
 
-import birsy.clinker.common.world.level.gen.chunk.OthershoreNoiseSampler;
+import birsy.clinker.common.world.level.gen.legacy.OthershoreNoiseSampler;
 import birsy.clinker.core.util.MathUtils;
 import net.minecraft.Util;
 import net.minecraft.util.Mth;

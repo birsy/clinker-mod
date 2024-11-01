@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.level.gen.chunk.densityfunction;
+package birsy.clinker.common.world.level.gen.legacy.densityfunction;
 
 import birsy.clinker.core.util.noise.FastNoiseLite;
 import net.minecraft.util.KeyDispatchDataCodec;

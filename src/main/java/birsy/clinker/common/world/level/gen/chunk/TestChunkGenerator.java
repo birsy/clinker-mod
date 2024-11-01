@@ -2,7 +2,7 @@ package birsy.clinker.common.world.level.gen.chunk;
 
 import birsy.clinker.common.world.level.gen.MetaChunk;
 import birsy.clinker.common.world.level.gen.MetaChunkTracker;
-import birsy.clinker.common.world.level.gen.chunk.biome.SurfaceDecorator;
+import birsy.clinker.common.world.level.gen.chunk.biome.surfacedecorator.SurfaceDecorator;
 import birsy.clinker.common.world.level.gen.chunk.biome.SurfaceDecorators;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;

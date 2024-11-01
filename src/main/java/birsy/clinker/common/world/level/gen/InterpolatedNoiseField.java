@@ -5,6 +5,7 @@ import org.joml.Vector3f;
 
 import java.util.function.BiFunction;
 
+// todo: cubic interpolation?
 public class InterpolatedNoiseField implements NoiseFieldWithOffset {
     int posOffsetX, posOffsetY, posOffsetZ;
     final int resolutionX, resolutionY, resolutionZ;

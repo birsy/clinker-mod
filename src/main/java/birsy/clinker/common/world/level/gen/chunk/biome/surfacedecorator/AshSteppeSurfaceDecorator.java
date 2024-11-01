@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.level.gen.chunk.biome;
+package birsy.clinker.common.world.level.gen.chunk.biome.surfacedecorator;
 
 import birsy.clinker.common.world.block.AshLayerBlock;
 import birsy.clinker.core.registry.ClinkerBlocks;

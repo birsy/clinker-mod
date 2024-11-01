@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.level.gen.chunk;
+package birsy.clinker.common.world.level.gen.legacy;
 
 import net.minecraft.world.phys.Vec2;
 

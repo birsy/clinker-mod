@@ -1,5 +1,9 @@
 package birsy.clinker.common.world.level.gen.chunk.biome;
 
+import birsy.clinker.common.world.level.gen.chunk.biome.surfacedecorator.AshSteppeSurfaceDecorator;
+import birsy.clinker.common.world.level.gen.chunk.biome.surfacedecorator.BasicSurfaceDecorator;
+import birsy.clinker.common.world.level.gen.chunk.biome.surfacedecorator.DefaultSurfaceDecorator;
+import birsy.clinker.common.world.level.gen.chunk.biome.surfacedecorator.SurfaceDecorator;
 import birsy.clinker.core.Clinker;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Blocks;

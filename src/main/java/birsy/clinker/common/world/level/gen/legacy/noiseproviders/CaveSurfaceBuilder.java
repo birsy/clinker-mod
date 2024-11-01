@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.level.gen.chunk.noiseproviders;
+package birsy.clinker.common.world.level.gen.legacy.noiseproviders;
 
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
