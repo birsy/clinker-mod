@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.level.gen.legacy;
+package birsy.clinker.common.world.level.gen.chunk;
 
 import birsy.clinker.common.world.level.gen.*;
 import birsy.clinker.core.util.noise.FastNoiseLite;

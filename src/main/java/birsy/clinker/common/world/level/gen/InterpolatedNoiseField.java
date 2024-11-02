@@ -9,12 +9,12 @@ import java.util.function.BiFunction;
 public class InterpolatedNoiseField implements NoiseFieldWithOffset {
     int posOffsetX, posOffsetY, posOffsetZ;
     final int resolutionX, resolutionY, resolutionZ;
-    final float unitToGridX, unitToGridY, unitToGridZ;
+    //final float unitToGridX, unitToGridY, unitToGridZ;
     final int sizeX, sizeY, sizeZ;
-    final float[] values;
+    final float[][][] values;
 
     public InterpolatedNoiseField(int sizeX, int sizeY, int sizeZ, int resolutionX, int resolutionY, int resolutionZ) {
-        this.values = new float[(resolutionX+1) * (resolutionY+1) * (resolutionZ+1)];
+        this.values = new float[resolutionX + 1][resolutionY + 1][resolutionZ + 1];
 
         this.resolutionX = resolutionX;
         this.resolutionY = resolutionY;
@@ -23,15 +23,19 @@ public class InterpolatedNoiseField implements NoiseFieldWithOffset {
         this.sizeX = sizeX;
         this.sizeY = sizeY;
         this.sizeZ = sizeZ;
-
-        this.unitToGridX = (float) this.sizeX / this.resolutionX;
-        this.unitToGridY = (float) this.sizeY / this.resolutionY;
-        this.unitToGridZ = (float) this.sizeZ / this.resolutionZ;
     }
 
-    protected int getIndex(int x, int y, int z) {
-        return y * ((resolutionX+1) * (resolutionZ+1)) + z * (resolutionX+1) + x;
-    }
+//    protected int getIndex(int x, int y, int z) {
+//        return y * ((resolutionX+2) * (resolutionZ+2)) + z * (resolutionX+2) + x;
+//    }
+
+    protected double localToWorldX(int localX) { return ((float) localX / resolutionX) * sizeX + posOffsetX; }
+    protected double localToWorldY(int localY) { return ((float) localY / resolutionY) * sizeY + posOffsetY; }
+    protected double localToWorldZ(int localZ) { return ((float) localZ / resolutionZ) * sizeZ + posOffsetZ; }
+
+    protected double worldToLocalX(double worldX) { return Mth.frac((worldX - posOffsetX) / sizeX) * resolutionX; }
+    protected double worldToLocalY(double worldY) { return Mth.frac((worldY - posOffsetY) / sizeY) * resolutionY; }
+    protected double worldToLocalZ(double worldZ) { return Mth.frac((worldZ - posOffsetZ) / sizeZ) * resolutionZ; }
 
     @Override
     public void setPosOffset(int posOffsetX, int posOffsetY, int posOffsetZ) {
@@ -45,11 +49,7 @@ public class InterpolatedNoiseField implements NoiseFieldWithOffset {
         for (int y = 0; y < this.resolutionY+1; y++) {
             for (int z = 0; z < this.resolutionZ+1; z++) {
                 for (int x = 0; x < this.resolutionX+1; x++) {
-                    int index = this.getIndex(x, y, z);
-                    double wX = x * this.unitToGridX + this.posOffsetX,
-                           wY = y * this.unitToGridY + this.posOffsetY,
-                           wZ = z * this.unitToGridZ + this.posOffsetZ;
-                    values[index] = fillFunction.apply(values[index], wX, wY, wZ, params);
+                    values[x][y][z] = fillFunction.apply(values[x][y][z], localToWorldX(x), localToWorldY(y), localToWorldZ(z), params);
                 }
             }
         }
@@ -57,9 +57,9 @@ public class InterpolatedNoiseField implements NoiseFieldWithOffset {
 
     @Override
     public void fillFrom(double fromX, double fromY, double fromZ, double toX, double toY, double toZ, NoiseFillFunction fillFunction, Object... params) {
-        int fX = Mth.floor((fromX - this.posOffsetX) / this.unitToGridX), tX = Math.min(Mth.ceil((toX - this.posOffsetX) / this.unitToGridX), this.resolutionX);
-        int fY = Mth.floor((fromY - this.posOffsetY) / this.unitToGridY), tY = Math.min(Mth.ceil((toY - this.posOffsetY) / this.unitToGridY), this.resolutionY);
-        int fZ = Mth.floor((fromZ - this.posOffsetZ) / this.unitToGridZ), tZ = Math.min(Mth.ceil((toZ - this.posOffsetZ) / this.unitToGridZ), this.resolutionZ);
+        int fX = Mth.floor(worldToLocalX(fromX)), tX = Mth.ceil(worldToLocalX(toX));
+        int fY = Mth.floor(worldToLocalY(fromY)), tY = Mth.ceil(worldToLocalY(toY));
+        int fZ = Mth.floor(worldToLocalZ(fromZ)), tZ = Mth.ceil(worldToLocalZ(toZ));
         this.fillFromLocal(fX, fY, fZ, tX, tY, tZ, fillFunction, params);
     }
 
@@ -68,11 +68,10 @@ public class InterpolatedNoiseField implements NoiseFieldWithOffset {
         for (int y = fromX; y < toY; y++) {
             for (int z = fromY; z < toZ; z++) {
                 for (int x = fromZ; x < toX; x++) {
-                    int index = this.getIndex(x, y, z);
-                    double wX = x * this.unitToGridX + this.posOffsetX,
-                           wY = y * this.unitToGridY + this.posOffsetY,
-                           wZ = z * this.unitToGridZ + this.posOffsetZ;
-                    values[index] = fillFunction.apply(values[index], wX, wY, wZ, params);
+                    double wX = localToWorldX(x),
+                           wY = localToWorldY(y),
+                           wZ = localToWorldZ(z);
+                    values[x][y][z] = fillFunction.apply(values[x][y][z], wX, wY, wZ, params);
                 }
             }
         }
@@ -80,14 +79,16 @@ public class InterpolatedNoiseField implements NoiseFieldWithOffset {
 
     @Override
     public float getValue(double x, double y, double z) {
-        double lX = (x - this.posOffsetX) / this.unitToGridX,
-               lY = (y - this.posOffsetY) / this.unitToGridY,
-               lZ = (z - this.posOffsetZ) / this.unitToGridZ;
+        double lX = worldToLocalX(x),
+               lY = worldToLocalY(y),
+               lZ = worldToLocalZ(z);
 
         int fX = Mth.floor(lX), cX = Mth.ceil(lX);
         float dX = (float) Mth.frac(lX);
+
         int fY = Mth.floor(lY), cY = Mth.ceil(lY);
         float dY = (float) Mth.frac(lY);
+
         int fZ = Mth.floor(lZ), cZ = Mth.ceil(lZ);
         float dZ = (float) Mth.frac(lZ);
 
@@ -112,22 +113,23 @@ public class InterpolatedNoiseField implements NoiseFieldWithOffset {
     private static final double EPSILON = 0.01;
     @Override
     public Vector3f getGradient(double x, double y, double z, Vector3f set) {
-        double lX = (x - this.posOffsetX) / this.unitToGridX,
-               lY = (y - this.posOffsetY) / this.unitToGridY,
-               lZ = (z - this.posOffsetZ) / this.unitToGridZ;
-
-        if (Mth.frac(lX) < EPSILON) lX = lX + 0.5 * (lX - this.resolutionX < EPSILON ? -1 : 1);
-        if (Mth.frac(lY) < EPSILON) lY = lY + 0.5 * (lY - this.resolutionY < EPSILON ? -1 : 1);
-        if (Mth.frac(lZ) < EPSILON) lZ = lZ + 0.5 * (lZ - this.resolutionZ < EPSILON ? -1 : 1);
-
-        int fX = Mth.floor(lX), cX = Mth.ceil(lX);
-        int fY = Mth.floor(lY), cY = Mth.ceil(lY);
-        int fZ = Mth.floor(lZ), cZ = Mth.ceil(lZ);
-
-        return set.set((getValueLocal(fX, fY, fZ) - getValueLocal(cX, fY, fZ)) / this.unitToGridX,
-                       (getValueLocal(fX, fY, fZ) - getValueLocal(fX, cY, fZ)) / this.unitToGridY,
-                       (getValueLocal(fX, fY, fZ) - getValueLocal(fX, fY, cZ)) / this.unitToGridZ
-        );
+        return set;
+//        double lX = worldToLocalX(x),
+//               lY = worldToLocalY(y),
+//               lZ = worldToLocalZ(z);
+//
+//        if (Mth.frac(lX) < EPSILON) lX = lX + 0.5 * (lX - this.resolutionX < EPSILON ? -1 : 1);
+//        if (Mth.frac(lY) < EPSILON) lY = lY + 0.5 * (lY - this.resolutionY < EPSILON ? -1 : 1);
+//        if (Mth.frac(lZ) < EPSILON) lZ = lZ + 0.5 * (lZ - this.resolutionZ < EPSILON ? -1 : 1);
+//
+//        int fX = Mth.floor(lX), cX = Mth.ceil(lX);
+//        int fY = Mth.floor(lY), cY = Mth.ceil(lY);
+//        int fZ = Mth.floor(lZ), cZ = Mth.ceil(lZ);
+//
+//        return set.set((getValueLocal(fX, fY, fZ) - getValueLocal(cX, fY, fZ)) / this.unitToGridX,
+//                       (getValueLocal(fX, fY, fZ) - getValueLocal(fX, cY, fZ)) / this.unitToGridY,
+//                       (getValueLocal(fX, fY, fZ) - getValueLocal(fX, fY, cZ)) / this.unitToGridZ
+//        );
     }
 
     @Override
@@ -135,8 +137,7 @@ public class InterpolatedNoiseField implements NoiseFieldWithOffset {
         for (int y = 0; y < this.resolutionY; y++) {
             for (int z = 0; z < this.resolutionZ; z++) {
                 for (int x = 0; x < this.resolutionX; x++) {
-                    int index = this.getIndex(x, y, z);
-                    values[index] = mixFunction.apply(values[index], otherField.getValue(x + this.posOffsetX, y + this.posOffsetY, z + this.posOffsetZ));
+                    values[x][y][z] = mixFunction.apply(values[x][y][z], otherField.getValue(localToWorldX(x), localToWorldY(y), localToWorldZ(z)));
                 }
             }
         }
@@ -144,6 +145,6 @@ public class InterpolatedNoiseField implements NoiseFieldWithOffset {
 
     @Override
     public float getValueLocal(int x, int y, int z) {
-        return values[this.getIndex(x, y, z)];
+        return values[x][y][z];
     }
 }

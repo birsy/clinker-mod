@@ -134,7 +134,7 @@ public interface ClinkerChunkGenerator {
                         }
 
                         try {
-                            decorator.buildSurface(chunk, new BlockPos.MutableBlockPos().set(pos), this.getSeaLevel(), visibleToSun, depth, maxElevationIncrease, maxElevationDecrease, (dx, dy, dz) -> this.getNoiseField().getGradient(dx, dy, dz, derivative), );
+                            decorator.buildSurface(chunk, new BlockPos.MutableBlockPos().set(pos), this.getSeaLevel(), visibleToSun, depth, maxElevationIncrease, maxElevationDecrease, (dx, dy, dz) -> this.getNoiseField().getGradient(dx, dy, dz, derivative), null);
                         } catch (java.util.concurrent.ExecutionException e) {
                             throw new RuntimeException(e);
                         }

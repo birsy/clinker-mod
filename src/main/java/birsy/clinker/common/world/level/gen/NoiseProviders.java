@@ -15,7 +15,7 @@ public class NoiseProviders {
         }
         @Override
         public float sample(double x, double y, double z) {
-            return fastNoiseLite.GetNoise(x / frequency, y / frequency, z / frequency);
+            return fastNoiseLite.GetNoise(x/ frequency*0.7, y / frequency * 0.1, z/ frequency*0.7) - ((float)y - 140)/30.0F;
         }
     };
 
@@ -27,7 +27,7 @@ public class NoiseProviders {
         }
         @Override
         public float sample(double x, double y, double z) {
-            return fastNoiseLite.GetNoise(x / frequency, y / frequency, z / frequency);
+            return fastNoiseLite.GetNoise(x/ frequency*0.7, y / frequency * 0.1, z/ frequency*0.7) - ((float)y - 140)/30.0F;
         }
     };
 
@@ -39,7 +39,7 @@ public class NoiseProviders {
         }
         @Override
         public float sample(double x, double y, double z) {
-            return fastNoiseLite.GetNoise(x / frequency, y / frequency, z / frequency);
+            return fastNoiseLite.GetNoise(x/ frequency*0.7, y / frequency * 0.1, z/ frequency*0.7) - ((float)y - 140)/30.0F;
         }
     };
 
@@ -51,7 +51,7 @@ public class NoiseProviders {
         }
         @Override
         public float sample(double x, double y, double z) {
-            return fastNoiseLite.GetNoise(x / frequency, y / frequency, z / frequency);
+            return fastNoiseLite.GetNoise(x/ frequency*0.7, y / frequency * 0.1, z/ frequency*0.7) - ((float)y - 140)/30.0F;
         }
     };
 }

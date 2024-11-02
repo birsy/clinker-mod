@@ -29,11 +29,11 @@ public class SurfaceBuilder {
         this.sampler = sampler;
     }
 
+    private final Vector3f derivative = new Vector3f();
     void applySurfaceDecorators(WorldGenLevel level, ChunkAccess chunk, NoiseField noiseField) {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         BlockPos.MutableBlockPos neighborPos = new BlockPos.MutableBlockPos().set(pos);
 
-        Vector3f derivative = new Vector3f();
         int offset = 0;
         try {
             for (int x = 0; x < 16; x++) {

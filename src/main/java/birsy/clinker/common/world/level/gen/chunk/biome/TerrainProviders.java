@@ -1,7 +1,8 @@
 package birsy.clinker.common.world.level.gen.chunk.biome;
 
-import birsy.clinker.common.world.level.gen.chunk.biome.terrainprovider.DefaultTerrainProvider;
-import birsy.clinker.common.world.level.gen.chunk.biome.terrainprovider.TerrainProvider;
+import birsy.clinker.common.world.level.gen.chunk.biome.surfacedecorator.AshSteppeSurfaceDecorator;
+import birsy.clinker.common.world.level.gen.chunk.biome.terrainprovider.*;
+import birsy.clinker.core.Clinker;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;
@@ -10,6 +11,14 @@ public class TerrainProviders {
     public static final HashMap<ResourceLocation, TerrainProvider> BIOME_TO_TERRAIN_PROVIDER = new HashMap<>();
     private static final TerrainProvider DEFAULT_PROVIDER = new DefaultTerrainProvider();
 
+    static {
+        register(new ResourceLocation(Clinker.MOD_ID, "test_biome_a"),
+                new TestTerrainProviderA());
+        register(new ResourceLocation(Clinker.MOD_ID, "test_biome_b"),
+                new TestTerrainProviderB());
+        register(new ResourceLocation(Clinker.MOD_ID, "test_biome_c"),
+                new TestTerrainProviderC());
+    }
     //new BasicSurfaceDecorator(ClinkerBlocks.ASH.get().defaultBlockState(), ClinkerBlocks.BRIMSTONE.get().defaultBlockState(), ClinkerBlocks.BRIMSTONE.get().defaultBlockState(), 0)
 
     public static void register(ResourceLocation biome, TerrainProvider provider) {
