@@ -42,6 +42,8 @@ import net.tslat.smartbrainlib.util.BrainUtils;
 
 import java.util.List;
 
+import static net.minecraft.world.entity.monster.Monster.createMonsterAttributes;
+
 public class GnomadRuntEntity extends GnomadEntity implements SmartBrainOwner<GnomadRuntEntity> {
     public GnomadRuntEntity(EntityType<? extends GnomadEntity> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);

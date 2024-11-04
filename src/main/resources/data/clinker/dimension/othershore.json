@@ -4,13 +4,8 @@
     "type": "clinker:terrain_builder_test_chunk_generator",
     "settings": "clinker:othershore",
     "biome_source": {
-      "type": "minecraft:checkerboard",
-      "biomes": [
-        "clinker:test_biome_a",
-        "clinker:test_biome_b",
-        "clinker:test_biome_c"
-      ],
-      "scale": 2.0
+      "type": "minecraft:fixed",
+      "biome": "clinker:ash_steppe"
     }
   }
 }

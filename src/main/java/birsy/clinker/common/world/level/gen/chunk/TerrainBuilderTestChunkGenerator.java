@@ -1,16 +1,20 @@
 package birsy.clinker.common.world.level.gen.chunk;
 
-import birsy.clinker.common.world.level.gen.*;
+import birsy.clinker.common.world.level.gen.BasicNoiseField;
+import birsy.clinker.common.world.level.gen.InterpolatedNoiseField;
+import birsy.clinker.common.world.level.gen.NoiseCache;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
+import birsy.clinker.core.util.noise.CachedFastNoise;
+import birsy.clinker.core.util.noise.FastNoiseLite;
 import birsy.clinker.core.util.noise.VoronoiGenerator;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.Util;
 import net.minecraft.core.*;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.WorldGenRegion;
-import net.minecraft.util.CubicSampler;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.*;
 import net.minecraft.world.level.biome.BiomeManager;
@@ -29,7 +33,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-public class TerrainBuilderTestChunkGenerator extends ChunkGenerator implements LevelNoiseProvidable<TerrainBuilderTestChunkGenerator> {
+public class TerrainBuilderTestChunkGenerator extends ChunkGenerator implements LevelNoiseProvidable {
     public static final Codec<TerrainBuilderTestChunkGenerator> CODEC = RecordCodecBuilder.create((codec) ->
             codec.group(BiomeSource.CODEC.fieldOf("biome_source").forGetter((generator) -> generator.biomeSource),
                             NoiseGeneratorSettings.CODEC.fieldOf("settings").forGetter((generator) -> generator.settingsHolder))
@@ -38,11 +42,18 @@ public class TerrainBuilderTestChunkGenerator extends ChunkGenerator implements 
     protected final Holder<NoiseGeneratorSettings> settingsHolder;
     protected final NoiseGeneratorSettings settings;
 
-    private final NoiseSampler sampler;
-    private NoiseFieldWithOffset noiseField;
-    private final TerrainBuilder terrainBuilder;
-    private final SurfaceBuilder surfaceBuilder;
-    private long seed;
+    private static final CachedFastNoise NOISE = Util.make(() -> {
+        FastNoiseLite n = new FastNoiseLite();
+        n.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2S);
+        n.SetFrequency(0.04F);
+        n.SetFractalType(FastNoiseLite.FractalType.FBm);
+        n.SetFractalOctaves(1);
+        n.SetFractalLacunarity(0.5F);
+        n.SetFractalGain(1.7F);
+        n.SetFractalWeightedStrength(0.0F);
+        return new CachedFastNoise(n);
+    });
+    private static final VoronoiGenerator VORONOI = new VoronoiGenerator(0);
 
     public TerrainBuilderTestChunkGenerator(BiomeSource pBiomeSource, Holder<NoiseGeneratorSettings> settings) {
         super(pBiomeSource);
@@ -50,33 +61,30 @@ public class TerrainBuilderTestChunkGenerator extends ChunkGenerator implements 
 
         this.settings = this.settingsHolder.value();
 
-        this.sampler = new NoiseSampler(0);
-        this.noiseField = new InterpolatedNoiseField(16, this.getGenDepth(), 16, 4, 4, 4);
-        this.terrainBuilder = new TerrainBuilder(4, (distance) -> (1.0F), sampler);
-        this.surfaceBuilder = new SurfaceBuilder(8, 150, this.settings.defaultBlock(), sampler);
-    }
-
-    @Override
-    public ChunkGeneratorStructureState createState(HolderLookup<StructureSet> pStructureSetLookup, RandomState pRandomState, long pSeed) {
-        seed = pSeed;
-        this.sampler.setSeed(seed);
-        return super.createState(pStructureSetLookup, pRandomState, pSeed);
+        //NOISEField = new InterpolatedNoiseField(16, 256, 16, 4, 256 / 4, 4);
+        //this.sampler = new NoiseCache(noiseField, 0);
+        //this.terrainBuilder = new TerrainBuilder(4, (distance) -> (1.0F), sampler);
+        //this.surfaceBuilder = new SurfaceBuilder(8, 150, this.settings.defaultBlock(), sampler);
     }
 
     private LevelAccessor noiseLevel;
+    private long seed;
     @Override
-    public TerrainBuilderTestChunkGenerator provideLevel(LevelAccessor level) {
-        noiseLevel = level;
-        return this;
+    public void provideLevelAndSeed(LevelAccessor level, long seed) {
+        this.noiseLevel = level;
+        this.seed = seed;
     }
     @Override
     public CompletableFuture<ChunkAccess> fillFromNoise(Executor executor, Blender densityBlender, RandomState random, StructureManager structureManager, ChunkAccess chunk) {
+
         ChunkPos chunkPos = chunk.getPos();
-        this.noiseField = new InterpolatedNoiseField(16, this.getGenDepth(), 16, 6, this.getGenDepth() / 4, 6);
+        InterpolatedNoiseField noiseField = new InterpolatedNoiseField(16, 256, 16, 6, 256 / 6, 6);
+        NoiseCache sampler = new NoiseCache(noiseField, 0);
+        TerrainBuilder terrainBuilder = new TerrainBuilder(4, (distance) -> (1.0F), sampler);
 
-        this.noiseField.setPosOffset(chunkPos.getMinBlockX(), chunk.getMinBuildHeight(), chunkPos.getMinBlockZ());
-
-        this.terrainBuilder.populateNoiseField(noiseLevel, chunk, this.seed, this.noiseField);
+        noiseField.setPosOffset(chunkPos.getMinBlockX(), chunk.getMinBuildHeight(), chunkPos.getMinBlockZ());
+        terrainBuilder.populateNoiseField(noiseLevel, chunk, this.seed, noiseField);
+        noiseField.fill((currentValue, x, y, z, params) -> (float) MathUtils.smoothMinExpo(sampleCaveNoise(x, y, z), currentValue, 0.05F));
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
 
         for (int x = 0; x < 16; x++) {
@@ -92,8 +100,7 @@ public class TerrainBuilderTestChunkGenerator extends ChunkGenerator implements 
                 }
             }
         }
-
-        //this.updateHeightmaps(chunk);
+        this.updateHeightmaps(chunk);
         return CompletableFuture.completedFuture(chunk);
     }
 
@@ -123,9 +130,73 @@ public class TerrainBuilderTestChunkGenerator extends ChunkGenerator implements 
         }
     }
 
+    public float sampleCaveNoise(double x, double y, double z) {
+        int maxHeight = 240;
+        int minHeight = 64;
+
+        double aHFreq = 1.0;
+        double aquiferMidHeight  = -40;
+        double aquiferUpperRange = aquiferMidHeight + MathUtils.mapRange(-1.0F, 1.0F, 10.0F, 45.0F, NOISE.get(x * aHFreq, z * aHFreq));
+        double aquiferLowerRange = aquiferMidHeight - 20;
+
+        double seaLevel = this.getSeaLevel();
+        double caveClamping = Mth.clamp(MathUtils.mapRange(aquiferUpperRange - 10, aquiferUpperRange + 15, 0, 1, y), 0, 1);
+        caveClamping *= Mth.clamp(MathUtils.mapRange(seaLevel - 20, seaLevel + 5, 1, 0.2, y), 0, 1);
+
+        //Stalagmite Noise;
+        double stalagHFreq = (1.0 / 16.0);
+        double stalagVFreq = (1.0 / 34.0);
+        VORONOI.setOffsetAmount(1.0F);
+        VoronoiGenerator.VoronoiInfo stalagInfo = VORONOI.get3(x * stalagHFreq, y * stalagVFreq, z * stalagHFreq);
+        Vec3 stalagVec = stalagInfo.localPos();
+        double yFac = ((Math.abs(stalagVec.y()) + 0.5));
+        yFac *= yFac;
+        double stalag = stalagVec.multiply(1, 0, 1).length() * yFac;
+        double stalagThreshold = MathUtils.map(0.5, 1.0, MathUtils.bias(stalagInfo.hash(), 0.8F)) * Mth.sqrt(3) * stalagHFreq;
+        stalag -= stalagThreshold;
+        stalag *= -1;
+
+        //Spaghetti Cave Noise
+        double sFreq = 0.4;
+        double sHFreq = sFreq * 0.5;
+        double sVFreq = sFreq * 1.3;
+
+        double sHFreq2 = 0.8;
+        double sCave1 = NOISE.get(x * sHFreq * sHFreq2, y * sVFreq, z * sHFreq * sHFreq2);
+        double sCave2 = NOISE.get(x * sHFreq, y * sVFreq + 3000.0, z * sHFreq);
+        double sCave = sCave1 * sCave1 + sCave2 * sCave2;
+        double threshold = 0.06 * caveClamping;
+
+        sCave -= threshold;
+
+        //Aquifer Cave Noise
+        double aCave = 1.0;
+        if (y < aquiferUpperRange + 10) {
+            double aFreq = 6.0;
+            double altNoise = NOISE.get(x * aFreq, z * aFreq);
+
+            double aTopThres = MathUtils.mapRange(aquiferLowerRange, aquiferMidHeight, 0.0F, 1.0F, y);
+            double aquiferSizeThrottling = y < aquiferMidHeight ?
+                    Mth.lerp(0.0, MathUtils.ease((float) aTopThres, MathUtils.EasingType.easeOutBounce), MathUtils.ease((float) aTopThres, MathUtils.EasingType.easeOutQuad)) :
+                    Mth.lerp(MathUtils.bias((altNoise + 1) / 2, 0.2), MathUtils.ease((float) MathUtils.mapRange(aquiferMidHeight, aquiferUpperRange, 1.0F, 0.0F, y), MathUtils.EasingType.easeOutQuad),
+                            MathUtils.ease((float) MathUtils.mapRange(aquiferMidHeight, aquiferUpperRange, 1.0F, 0.0F, y), MathUtils.EasingType.easeOutBounce));
+            double aquiferSizeThreshold = 0.5 * aquiferSizeThrottling;
+
+            double aquiferCaveNoiseValue = NOISE.get(x, z);
+            aCave = y > aquiferUpperRange ? 1 : y < aquiferLowerRange ? 1 : (aquiferCaveNoiseValue * aquiferCaveNoiseValue) - aquiferSizeThreshold;
+        }
+
+        //double[] bridgeCavern = sampleBridgeCaveNoise(x, y, z, seed);
+        double bCave = 1.0F;//bridgeCavern[0];
+        double bCaveShell = -1.0F;//bridgeCavern[1];
+
+        return (float) MathUtils.smoothMinExpo(MathUtils.smoothMinExpo(sCave, stalag, -0.05) + Math.max(bCaveShell * 0.8, 0), bCave, 0.06);//MathUtils.smoothMinExpo(stalag, sampleBridgeCaveNoise(x, y, z, seed), -0.05);//MathUtils.smoothMinExpo(aCave, MathUtils.smoothMinExpo(sCave, stalag, -0.1), 0.06);
+    }
+    
     @Override
     public void applyBiomeDecoration(WorldGenLevel level, ChunkAccess chunk, StructureManager structureManager) {
-        //this.surfaceBuilder.applySurfaceDecorators(level, chunk, this.noiseField);
+        SurfaceBuilder surfaceBuilder = new SurfaceBuilder(8, 150, this.settings.defaultBlock());
+        surfaceBuilder.applySurfaceDecorators(level, chunk, new BasicNoiseField(1,1,1));
         super.applyBiomeDecoration(level, chunk, structureManager);
     }
     @Override

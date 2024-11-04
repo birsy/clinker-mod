@@ -18,6 +18,10 @@ public class SurfaceDecorators {
     static {
         register(new ResourceLocation(Clinker.MOD_ID, "ash_steppe"),
                  new AshSteppeSurfaceDecorator());
+        register(new ResourceLocation(Clinker.MOD_ID, "test_biome_a"),
+                TEST_DECORATOR);
+        register(new ResourceLocation(Clinker.MOD_ID, "test_biome_c"),
+                new AshSteppeSurfaceDecorator());
     }
 
     //new BasicSurfaceDecorator(ClinkerBlocks.ASH.get().defaultBlockState(), ClinkerBlocks.BRIMSTONE.get().defaultBlockState(), ClinkerBlocks.BRIMSTONE.get().defaultBlockState(), 0)

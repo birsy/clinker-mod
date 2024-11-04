@@ -194,4 +194,11 @@ public class InterpolatedBone {
             case Z -> this.rotation.rotateZ(angle);
         }
     }
+    public void rotateDeg(float angle, Direction.Axis axis) {
+        switch (axis) {
+            case X -> this.rotation.rotateX(angle * Mth.DEG_TO_RAD);
+            case Y -> this.rotation.rotateY(angle * Mth.DEG_TO_RAD);
+            case Z -> this.rotation.rotateZ(angle * Mth.DEG_TO_RAD);
+        }
+    }
 }

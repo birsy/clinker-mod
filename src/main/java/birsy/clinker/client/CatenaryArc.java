@@ -2,14 +2,15 @@ package birsy.clinker.client;
 
 import net.minecraft.util.Mth;
 import org.joml.Vector3d;
+import org.joml.Vector3dc;
 
 public class CatenaryArc {
-    private Vector3d p1, p2;
+    private Vector3dc p1, p2;
     private double length;
     private boolean solved;
     private double a, p, q;
 
-    public CatenaryArc(Vector3d p1, Vector3d p2, double length) {
+    public CatenaryArc(Vector3dc p1, Vector3dc p2, double length) {
         this.p1 = p1;
         this.p2 = p2;
         this.length = length;

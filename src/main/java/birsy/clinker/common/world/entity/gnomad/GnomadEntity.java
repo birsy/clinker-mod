@@ -2,6 +2,7 @@ package birsy.clinker.common.world.entity.gnomad;
 
 import birsy.clinker.client.model.base.InterpolatedSkeleton;
 import birsy.clinker.client.model.base.InterpolatedSkeletonParent;
+import birsy.clinker.common.world.entity.GroundLocomoteEntity;
 import birsy.clinker.common.world.entity.gnomad.squad.GnomadSquad;
 import birsy.clinker.common.world.entity.gnomad.squad.GnomadSquadTask;
 import birsy.clinker.common.world.entity.gnomad.squad.GnomadSquads;
@@ -16,6 +17,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.SmoothSwimmingMoveControl;
+import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.level.Level;
@@ -27,19 +29,20 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-public abstract class GnomadEntity extends Monster implements InterpolatedSkeletonParent {
+import static net.minecraft.world.entity.monster.Monster.createMonsterAttributes;
+
+public abstract class GnomadEntity extends GroundLocomoteEntity implements Enemy, InterpolatedSkeletonParent {
     public GnomadSquad squad;
     public GnomadSquadTask currentTask;
 
     @OnlyIn(Dist.CLIENT)
     public Vec3 acceleration = Vec3.ZERO;
-    private Vec3 deltaPosition = Vec3.ZERO, pDeltaPosition = Vec3.ZERO;
+    private Vec3 deltaPosition = Vec3.ZERO;
     private static final EntityDataAccessor<Byte> DATA_ANIMATION_FLAGS_ID = SynchedEntityData.defineId(GnomadEntity.class, EntityDataSerializers.BYTE);
 
     public GnomadEntity(EntityType<? extends GnomadEntity> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         this.setCanPickUpLoot(true);
-        this.moveControl = new SmoothSwimmingMoveControl(this, 365, 25, 1000.0F, 1.0F, false);
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -83,9 +86,9 @@ public abstract class GnomadEntity extends Monster implements InterpolatedSkelet
 
     @OnlyIn(Dist.CLIENT)
     public void updateAcceleration() {
-        this.pDeltaPosition = new Vec3(this.deltaPosition.x, this.deltaPosition.y, this.deltaPosition.z);
+        Vec3 pDeltaPosition = new Vec3(this.deltaPosition.x, this.deltaPosition.y, this.deltaPosition.z);
         this.deltaPosition = this.getDeltaMovement();
-        this.acceleration = this.pDeltaPosition.subtract(this.deltaPosition);
+        this.acceleration = pDeltaPosition.subtract(this.deltaPosition);
     }
 
     public void setSitting(boolean sitting) {

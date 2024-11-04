@@ -15,6 +15,14 @@ public interface NoiseField {
 
     void mix(NoiseField otherField, BiFunction<Float, Float, Float> mixFunction);
 
+    int xResolution();
+    int yResolution();
+    int zResolution();
+
+    default int index(int x, int y, int z) {
+        return x + z * xResolution() + y * xResolution() * zResolution();
+    }
+
     interface NoiseFillFunction {
         float apply(float currentValue, double x, double y, double z, Object... params);
     }

@@ -20,6 +20,10 @@ import org.joml.Vector3fc;
 
 @OnlyIn(Dist.CLIENT)
 public class OthershoreCloudRenderer {
+    public static final float CLOUDS_START = 250.0F;
+    public static final float CLOUDS_END = 450.0F;
+    public static final float CLOUD_LAYER_THICKNESS = 48.0F;
+
     private static final ResourceLocation NOISE_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/environment/noise.png");
 
     private VertexBuffer cloudLayerDownBuffer;
@@ -55,20 +59,17 @@ public class OthershoreCloudRenderer {
 
         ShaderInstance shader = RenderSystem.getShader();
 
-        float thickness = 48.0F;
-        float cloudsStart = 250;
-        float cloudsEnd = 450;
         float transitionLerp = Mth.clamp(
-                MathUtils.mapRange(cloudsStart, cloudsStart + thickness, 0.0F, 1.0F, (float)camY),
+                MathUtils.mapRange(CLOUDS_START, CLOUDS_START + CLOUD_LAYER_THICKNESS, 0.0F, 1.0F, (float)camY),
                 0.0F, 1.0F);
 
         // render ordering magic
-        if (Math.abs(camY - cloudsStart) < Math.abs(camY - cloudsEnd)) {
-            if (camY > cloudsStart) drawCloudLayer(cloudsEnd, radius, thickness * 0.5F, false, skyColor, transitionLerp, camX, camY, camZ, poseStack, projectionMatrix, shader);
-            if (camY < cloudsEnd + thickness) drawCloudLayer(cloudsStart, radius, thickness, true, skyColor, transitionLerp, camX, camY, camZ, poseStack, projectionMatrix, shader);
+        if (Math.abs(camY - CLOUDS_START) < Math.abs(camY - CLOUDS_END)) {
+            if (camY > CLOUDS_START) drawCloudLayer(CLOUDS_END, radius, CLOUD_LAYER_THICKNESS * 0.5F, false, skyColor, transitionLerp, camX, camY, camZ, poseStack, projectionMatrix, shader);
+            if (camY < CLOUDS_END + CLOUD_LAYER_THICKNESS) drawCloudLayer(CLOUDS_START, radius, CLOUD_LAYER_THICKNESS, true, skyColor, transitionLerp, camX, camY, camZ, poseStack, projectionMatrix, shader);
         } else {
-            if (camY < cloudsEnd + thickness) drawCloudLayer(cloudsStart, radius, thickness, true, skyColor, transitionLerp, camX, camY, camZ, poseStack, projectionMatrix, shader);
-            if (camY > cloudsStart) drawCloudLayer(cloudsEnd, radius, thickness * 0.5F, false, skyColor, transitionLerp, camX, camY, camZ, poseStack, projectionMatrix, shader);
+            if (camY < CLOUDS_END + CLOUD_LAYER_THICKNESS) drawCloudLayer(CLOUDS_START, radius, CLOUD_LAYER_THICKNESS, true, skyColor, transitionLerp, camX, camY, camZ, poseStack, projectionMatrix, shader);
+            if (camY > CLOUDS_START) drawCloudLayer(CLOUDS_END, radius, CLOUD_LAYER_THICKNESS * 0.5F, false, skyColor, transitionLerp, camX, camY, camZ, poseStack, projectionMatrix, shader);
         }
 
         // todo:

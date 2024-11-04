@@ -1,7 +1,6 @@
 package birsy.clinker.mixin.common;
 
 import birsy.clinker.common.world.level.gen.chunk.LevelNoiseProvidable;
-import birsy.clinker.core.Clinker;
 import com.mojang.datafixers.util.Either;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.world.level.chunk.ChunkStatus;
@@ -29,7 +28,7 @@ public class ChunkStatusMixin {
             cir.setReturnValue(ChunkStatus.register(pKey, pParent, pTaskRange, false, pHeightmaps, pType,
                     (pStatus, pExecutor, pLevel, pChunkGenerator, pStructureTemplateManager, pLightEngine, pTask, pCache, pLoadingChunk) -> {
                         WorldGenRegion worldgenregion = new WorldGenRegion(pLevel, pCache, pStatus, 0);
-                        if (pChunkGenerator instanceof LevelNoiseProvidable providable) providable.provideLevel(worldgenregion);
+                        if (pChunkGenerator instanceof LevelNoiseProvidable providable) providable.provideLevelAndSeed(worldgenregion, pLevel.getSeed());
                         return pChunkGenerator.fillFromNoise(
                                 pExecutor,
                                 Blender.of(worldgenregion),

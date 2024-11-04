@@ -6,4 +6,16 @@ public interface NoiseFieldWithOffset extends NoiseField {
     float getValueLocal(int x, int y, int z);
 
     void setPosOffset(int xPosOffset, int yPosOffset, int zPosOffset);
+
+    int offsetX();
+    int offsetY();
+    int offsetZ();
+
+    default double localToWorldX(int localX) { return localX + offsetX(); }
+    default double localToWorldY(int localY) { return localY + offsetY(); }
+    default double localToWorldZ(int localZ) { return localZ + offsetZ(); }
+
+    default double worldToLocalX(double worldX) { return worldX - offsetX(); }
+    default double worldToLocalY(double worldY) { return worldY - offsetY(); }
+    default double worldToLocalZ(double worldZ) { return worldZ - offsetZ(); }
 }

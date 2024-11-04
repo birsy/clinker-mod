@@ -1,6 +1,7 @@
 package birsy.clinker.common.world.level.gen;
 
 import birsy.clinker.common.world.level.gen.noiseproviders.NoiseProvider;
+import birsy.clinker.core.Clinker;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
@@ -32,7 +33,6 @@ public class NoiseSampler {
             Cache<Position, Float> cache = CacheBuilder.newBuilder().maximumSize(16 * 16 * 384).build();
             noiseProviderCacheMap.put(provider, cache);
         }
-
         Cache<Position, Float> cache = noiseProviderCacheMap.get(provider);
         return cache.get(pos, () -> sampleUncached(x, y, z, provider));
     }

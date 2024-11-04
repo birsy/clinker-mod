@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.core.Direction;
+import net.minecraft.util.Mth;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -60,14 +61,14 @@ public class StaticMesh extends ModelMesh {
         Vertex xyz = new Vertex(maxX, maxY, maxZ);
 
         float u0 = uOffset;
-        float u1 = uOffset + zSize;
-        float u2 = uOffset + zSize + xSize;
-        float u3 = uOffset + zSize + xSize + xSize;
-        float u4 = uOffset + zSize + xSize + zSize;
-        float u5 = uOffset + zSize + xSize + zSize + xSize;
+        float u1 = uOffset + Mth.floor(zSize);
+        float u2 = uOffset + Mth.floor(zSize) + Mth.floor(xSize);
+        float u3 = uOffset + Mth.floor(zSize) + Mth.floor(xSize) + Mth.floor(xSize);
+        float u4 = uOffset + Mth.floor(zSize) + Mth.floor(xSize) + Mth.floor(zSize);
+        float u5 = uOffset + Mth.floor(zSize) + Mth.floor(xSize) + Mth.floor(zSize) + Mth.floor(xSize);
         float v0 = vOffset;
-        float v1 = vOffset + zSize;
-        float v2 = vOffset + zSize + ySize;
+        float v1 = vOffset + Mth.floor(zSize);
+        float v2 = vOffset + Mth.floor(zSize) + Mth.floor(ySize);
 
         Face[] cubeFaces = {new Face(xoz, ooz, ooo, xoo, u3, v0, u2, v1, textureWidth, textureHeight, mirrored, Direction.UP),
                 new Face(xyo, oyo, oyz, xyz, u2, v1, u1, v0, textureWidth, textureHeight, mirrored, Direction.DOWN),

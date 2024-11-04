@@ -30,7 +30,7 @@ public class GnomadItemBeltLayer<T extends OldGnomadAxemanEntity, M extends Gnom
         slots 6 - 7 : misc.
         */
 
-        pMatrixStack.pushPose();
+        /*pMatrixStack.pushPose();
         AnimFunctions.getGlobalTransForm(this.getParentModel().gnomadBody, pMatrixStack);
 
         //Renders the sheathed tools on the side.
@@ -63,7 +63,7 @@ public class GnomadItemBeltLayer<T extends OldGnomadAxemanEntity, M extends Gnom
             pMatrixStack.popPose();
         }
 
-        pMatrixStack.popPose();
+        pMatrixStack.popPose();*/
     }
 
     public float getSwing(float pLimbSwing, float pLimbSwingAmount, float offset) {

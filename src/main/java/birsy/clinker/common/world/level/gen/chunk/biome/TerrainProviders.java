@@ -12,6 +12,8 @@ public class TerrainProviders {
     private static final TerrainProvider DEFAULT_PROVIDER = new DefaultTerrainProvider();
 
     static {
+        register(new ResourceLocation(Clinker.MOD_ID, "ash_steppe"),
+                new AshSteppeTerrainProvider());
         register(new ResourceLocation(Clinker.MOD_ID, "test_biome_a"),
                 new TestTerrainProviderA());
         register(new ResourceLocation(Clinker.MOD_ID, "test_biome_b"),
@@ -19,7 +21,6 @@ public class TerrainProviders {
         register(new ResourceLocation(Clinker.MOD_ID, "test_biome_c"),
                 new TestTerrainProviderC());
     }
-    //new BasicSurfaceDecorator(ClinkerBlocks.ASH.get().defaultBlockState(), ClinkerBlocks.BRIMSTONE.get().defaultBlockState(), ClinkerBlocks.BRIMSTONE.get().defaultBlockState(), 0)
 
     public static void register(ResourceLocation biome, TerrainProvider provider) {
         BIOME_TO_TERRAIN_PROVIDER.put(biome, provider);

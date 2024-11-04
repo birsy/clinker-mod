@@ -1,16 +1,12 @@
 package birsy.clinker.common.world.level.gen.chunk.biome.surfacedecorator;
 
 import birsy.clinker.common.world.block.AshLayerBlock;
-import birsy.clinker.common.world.level.gen.NoiseProviders;
-import birsy.clinker.common.world.level.gen.NoiseSampler;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.core.util.noise.FastNoiseLite;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.chunk.ChunkAccess;
-
-import java.util.concurrent.ExecutionException;
 
 public class AshSteppeSurfaceDecorator extends SurfaceDecorator {
     private static FastNoiseLite noise = Util.make(() -> {
@@ -27,14 +23,14 @@ public class AshSteppeSurfaceDecorator extends SurfaceDecorator {
     public AshSteppeSurfaceDecorator() {}
 
     @Override
-    public void buildSurface(ChunkAccess chunk, BlockPos.MutableBlockPos pos, int seaLevel, boolean canSeeSun, int depth, int maxElevationIncrease, int maxElevationDecrease, DerivativeProvider noiseDerivative, NoiseSampler sampler) throws ExecutionException {
+    public void buildSurface(ChunkAccess chunk, BlockPos.MutableBlockPos pos, int seaLevel, boolean canSeeSun, int depth, int maxElevationIncrease, int maxElevationDecrease, DerivativeProvider noiseDerivative) {
         if (!canSeeSun && pos.getY() < 130) return;
 
         float ditherRandom = (this.random.nextFloat() * 2) - 1;
         ditherRandom *= 0.3F;
 
 
-        boolean shouldPlaceAsh = sampler.sample(pos.getX(), pos.getY(), pos.getZ(), NoiseProviders.NOISE_FREQ_32) + ditherRandom > -0.5;
+        boolean shouldPlaceAsh = noise.GetNoise(pos.getX(), pos.getZ()) + ditherRandom > -0.5;
 
         if (maxElevationDecrease == 1) {
             if (noise.GetNoise(pos.getX(), 1000, pos.getZ()) > 0 && shouldPlaceAsh) {

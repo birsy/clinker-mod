@@ -4,6 +4,7 @@ import birsy.clinker.client.render.entity.*;
 import birsy.clinker.client.render.entity.model.*;
 import birsy.clinker.common.world.entity.*;
 import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
+import birsy.clinker.common.world.entity.gnomad.GnomadMogulEntity;
 import birsy.clinker.common.world.entity.gnomad.GnomadSoldierEntity;
 import birsy.clinker.common.world.entity.mold.MoldEntity;
 import birsy.clinker.common.world.entity.projectile.FlechetteEntity;
@@ -70,6 +71,11 @@ public class ClinkerEntities {
                     .sized(1.0f, 1.5f)
                     .build(new ResourceLocation(Clinker.MOD_ID, "gnomad").toString()));
 
+    public static final Supplier<EntityType<GnomadMogulEntity>> GNOMAD_MOGUL = ENTITY_TYPES.register("gnomad_mogul", () ->
+            EntityType.Builder.of(GnomadMogulEntity::new, MobCategory.MONSTER)
+                    .sized(3.25f, 3.75f)
+                    .build(new ResourceLocation(Clinker.MOD_ID, "gnomad_mogul").toString()));
+
     public static final Supplier<EntityType<LumberingAspenEntity>> LUMBERING_ASPEN = ENTITY_TYPES.register("lumbering_aspen", () ->
             EntityType.Builder.of(LumberingAspenEntity::new, MobCategory.AMBIENT)
                     .sized(1.0f, 1.0f)
@@ -133,6 +139,7 @@ public class ClinkerEntities {
         event.put(GNOMAD_AXEMAN.get(), OldGnomadAxemanEntity.createAttributes().build());
 
         event.put(GNOMAD_SOLDIER.get(), GnomadEntity.createAttributes().build());
+        event.put(GNOMAD_MOGUL.get(), GnomadEntity.createAttributes().build());
 
         event.put(LUMBERING_ASPEN.get(), LumberingAspenEntity.createAttributes().build());
         event.put(FAE_URN.get(), UrnEntity.createAttributes().build());
@@ -165,6 +172,7 @@ public class ClinkerEntities {
         event.registerEntityRenderer(ClinkerEntities.REROLL_FLASK.get(), ThrownItemRenderer::new);
 
         event.registerEntityRenderer(ClinkerEntities.GNOMAD_SOLDIER.get(), NewGnomadRenderer::new);
+        event.registerEntityRenderer(ClinkerEntities.GNOMAD_MOGUL.get(), GnomadMogulRenderer::new);
 
         event.registerEntityRenderer(ClinkerEntities.MOLD.get(), MoldRenderer::new);
 

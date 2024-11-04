@@ -59,6 +59,9 @@ public class OthershoreSkyRenderer {
 
     public void render(ClientLevel level, int ticks, float partialTick, PoseStack poseStack, Camera camera, Matrix4f projectionMatrix, Vector3fc skyColor) {
         Minecraft mc = Minecraft.getInstance();
+        Vec3 cameraPos = camera.getPosition();
+
+
 
         Matrix4f projMatrix = new Matrix4f(projectionMatrix);
         RenderSystem.setProjectionMatrix(projMatrix.setPerspective(
@@ -71,7 +74,6 @@ public class OthershoreSkyRenderer {
         // runs only if the render distance changes
         buildStarVBOs();
 
-        Vec3 cameraPos = camera.getPosition();
         float[] fogColor = RenderSystem.getShaderFogColor();
 
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -109,10 +111,12 @@ public class OthershoreSkyRenderer {
         float scale = 4990.0F;
         poseStack.scale(scale, scale, scale);
 
-        drawOuterSky(level, ticks, partialTick, projMatrix, poseStack,
-                (float) cameraPos.x / scale, (float) cameraPos.z / scale,
-                fogColor[0], fogColor[1], fogColor[2],
-                skyColor.x(), skyColor.y(), skyColor.z());
+        if (cameraPos.y > OthershoreCloudRenderer.CLOUDS_START + OthershoreCloudRenderer.CLOUD_LAYER_THICKNESS) {
+            drawOuterSky(level, ticks, partialTick, projMatrix, poseStack,
+                    (float) cameraPos.x / scale, (float) cameraPos.z / scale,
+                    fogColor[0], fogColor[1], fogColor[2],
+                    skyColor.x(), skyColor.y(), skyColor.z());
+        }
         poseStack.popPose();
 
         drawCloudRings(level, ticks, partialTick, projMatrix, poseStack,
@@ -227,8 +231,8 @@ public class OthershoreSkyRenderer {
 
             float smoothRingDist = MathUtils.ease(ringDist, MathUtils.EasingType.easeOutCirc);
             float ringR = fogR, ringG = fogG, ringB = fogB;
-            delta = smoothRingDist * 0.7F;
-            ringR = Mth.lerp(delta, ringR, cloudR); ringG = Mth.lerp(delta, ringG, cloudG); ringB = Mth.lerp(delta, ringB, cloudB);
+            //delta = smoothRingDist * 0.7F;
+            //ringR = Mth.lerp(delta, ringR, cloudR); ringG = Mth.lerp(delta, ringG, cloudG); ringB = Mth.lerp(delta, ringB, cloudB);
             delta = smoothRingDist;
             ringR = Mth.lerp(delta, ringR, skyR*skyColMult); ringG = Mth.lerp(delta, ringG, skyG*skyColMult); ringB = Mth.lerp(delta, ringB, skyB*skyColMult);
             delta = (1 - aboveCloudAlphaOffset);

@@ -28,6 +28,8 @@ public class BasicNoiseField implements NoiseFieldWithOffset {
         this.posOffsetZ = posOffsetZ;
     }
 
+
+
     @Override
     public void fill(NoiseFillFunction fillFunction, Object... params) {
         for (int y = 0; y < this.sizeY; y++) {
@@ -100,6 +102,20 @@ public class BasicNoiseField implements NoiseFieldWithOffset {
             }
         }
     }
+
+    @Override
+    public int xResolution() { return sizeX; }
+    @Override
+    public int yResolution() { return sizeY; }
+    @Override
+    public int zResolution() { return sizeZ; }
+
+    @Override
+    public int offsetX() { return posOffsetX; }
+    @Override
+    public int offsetY() { return posOffsetY; }
+    @Override
+    public int offsetZ() { return posOffsetZ; }
 
     @Override
     public float getValueLocal(int x, int y, int z) {

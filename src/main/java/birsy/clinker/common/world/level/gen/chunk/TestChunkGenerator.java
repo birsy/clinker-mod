@@ -1,8 +1,9 @@
 package birsy.clinker.common.world.level.gen.chunk;
 
+import birsy.clinker.common.world.level.gen.BasicNoiseField;
 import birsy.clinker.common.world.level.gen.MetaChunk;
 import birsy.clinker.common.world.level.gen.MetaChunkTracker;
-import birsy.clinker.common.world.level.gen.NoiseSampler;
+import birsy.clinker.common.world.level.gen.NoiseCache;
 import birsy.clinker.common.world.level.gen.chunk.biome.surfacedecorator.SurfaceDecorator;
 import birsy.clinker.common.world.level.gen.chunk.biome.SurfaceDecorators;
 import birsy.clinker.core.Clinker;
@@ -48,7 +49,7 @@ public class TestChunkGenerator extends ChunkGenerator {
     protected final Holder<NoiseGeneratorSettings> settingsHolder;
     protected final NoiseGeneratorSettings settings;
     private final Aquifer.FluidPicker globalFluidPicker;
-    private final NoiseSampler sampler = new NoiseSampler(0);
+    private final NoiseCache sampler = new NoiseCache(new BasicNoiseField(16, this.getGenDepth(), 16), 0);
     private static final CachedFastNoise noise = Util.make(() -> {
         FastNoiseLite n = new FastNoiseLite();
         n.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2S);
@@ -70,36 +71,11 @@ public class TestChunkGenerator extends ChunkGenerator {
     private List<MetaChunk.TerrainFeature> terrainFeatures;
 
     public TestChunkGenerator(BiomeSource pBiomeSource, Holder<NoiseGeneratorSettings> settings) {
-        super(pBiomeSource);//Util.make(() -> {
-//            // this is just to get biomes from the dynamic registry in a way that vanilla BiomeSources understand.
-//            // this fucking sucks, but i do what i must...
-//            HolderLookup.Provider holderGetterProvider = VanillaRegistries.createLookup();
-//            HolderGetter<Biome> holderGetter = holderGetterProvider.lookupOrThrow(Registries.BIOME);
-//
-//            return new FixedBiomeSource(holderGetter.getOrThrow(Biomes.PLAINS));
-
-//            return new MultiDimensionalBiomeSource(
-//                    new SingleBiomeProvider(holderGetter.getOrThrow(Biomes.WINDSWEPT_FOREST)), MultiDimensionalBiomeSource.OverlapResolutionMethod.FIRST_COME_FIRST_SERVE)
-//
-//                        .defineDimension("temperature", (x, y, z) -> noise.get(x * 0.5, y * 0.5, z * 0.5), -1.0F, 1.0F)
-//                        .defineDimension("humidity", (x, y, z) -> noise.get(x * 0.2, y * 0.2 + 1000.0F, z * 0.2), -1.0F, 1.0F)
-//
-//                        .addBiome(new MultiDimensionalBiomeSource.BiomeSelector(holderGetter.getOrThrow(Biomes.PLAINS))
-//                                .defineRange("temperature", 0.0F, 0.5F)
-//                                .defineRange("humidity", -0.5F, 0.5F))
-//                        .addBiome(new MultiDimensionalBiomeSource.BiomeSelector(holderGetter.getOrThrow(Biomes.DESERT))
-//                                .defineRange("temperature", 0.5F, 1.0F)
-//                                .defineRange("humidity", -1.0F, -0.5F))
-//                        .addBiome(new MultiDimensionalBiomeSource.BiomeSelector(holderGetter.getOrThrow(Biomes.SWAMP))
-//                                .defineRange("temperature", 0.5F, 1.0F)
-//                                .defineRange("humidity", 0.0F, 1.0F));
-        //}));
+        super(pBiomeSource);
         this.settingsHolder = settings;
         this.settings = this.settingsHolder.value();
         this.globalFluidPicker = (a, b, c) -> new Aquifer.FluidStatus(this.settings.seaLevel(), this.settings.defaultFluid());
     }
-
-
 
     private void setNoiseSeed(long seed) {
         if (seed != this.noise.getNoise().GetSeed()) {
@@ -185,64 +161,60 @@ public class TestChunkGenerator extends ChunkGenerator {
     private void applySurfaceDecorators(WorldGenLevel level, ChunkAccess chunk) {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         BlockPos.MutableBlockPos neighborPos = new BlockPos.MutableBlockPos().set(pos);
-        try {
-            for (int x = 0; x < 16; x++) {
-                for (int z = 0; z < 16; z++) {
-                    int startHeight = chunk.getHeight(Heightmap.Types.WORLD_SURFACE_WG, x, z);
-                    pos.set(x + chunk.getPos().getMinBlockX(), startHeight, z + chunk.getPos().getMinBlockZ());
+        for (int x = 0; x < 16; x++) {
+            for (int z = 0; z < 16; z++) {
+                int startHeight = chunk.getHeight(Heightmap.Types.WORLD_SURFACE_WG, x, z);
+                pos.set(x + chunk.getPos().getMinBlockX(), startHeight, z + chunk.getPos().getMinBlockZ());
 
-                    boolean visibleToSun = true;
-                    while (pos.getY() > chunk.getMinBuildHeight() + 1) {
-                        //when it encounters a new surface, check the biome and generate the corresponding surface.
-                        if (level.getBlockState(pos) == this.settings.defaultBlock()) {
-                            ResourceLocation biome = level.getBiome(pos).unwrapKey().get().location();
-                            SurfaceDecorator decorator = SurfaceDecorators.getSurfaceDecorator(biome);
-                            decorator.setSeed(this.seed);
+                boolean visibleToSun = true;
+                while (pos.getY() > chunk.getMinBuildHeight() + 1) {
+                    //when it encounters a new surface, check the biome and generate the corresponding surface.
+                    if (level.getBlockState(pos) == this.settings.defaultBlock()) {
+                        ResourceLocation biome = level.getBiome(pos).unwrapKey().get().location();
+                        SurfaceDecorator decorator = SurfaceDecorators.getSurfaceDecorator(biome);
+                        decorator.setSeed(this.seed);
 
-                            neighborPos.set(pos);
-                            int depth = 1;
-                            while (neighborPos.getY() > chunk.getMinBuildHeight() + 1) {
-                                neighborPos.move(Direction.DOWN);
-                                if (level.getBlockState(neighborPos) == this.settings.defaultBlock()) depth++;
-                                else break;
-                            }
-
-                            int maxElevationIncrease = 0;
-                            int maxElevationDecrease = 0;
-                            if (decorator.shouldCalculateElevationChange(visibleToSun, pos.getY())) {
-                                for (Direction direction : Direction.Plane.HORIZONTAL) {
-                                    neighborPos.set(pos).move(direction);
-                                    boolean movingUp = level.getBlockState(neighborPos).isCollisionShapeFullBlock(level, neighborPos);
-                                    Direction moveDirection = movingUp ? Direction.UP : Direction.DOWN;
-
-                                    for (int i = 0; i < MAX_ELEVATION_DIFFERENCE + 1; i++) {
-                                        neighborPos.move(moveDirection);
-
-                                        if (movingUp) maxElevationIncrease = Math.max(maxElevationIncrease, i);
-                                        else maxElevationDecrease = Math.max(maxElevationDecrease, i + 1);
-
-                                        if (neighborPos.getY() < chunk.getMinBuildHeight() + 1) break;
-
-                                        boolean isTop = movingUp != level.getBlockState(neighborPos).isCollisionShapeFullBlock(level, neighborPos);
-                                        if (isTop) break;
-                                    }
-                                }
-                            }
-
-                            decorator.buildSurface(chunk, new BlockPos.MutableBlockPos().set(pos), this.getSeaLevel(), visibleToSun, depth, maxElevationIncrease, maxElevationDecrease, (dx, dy, dz) -> ZERO, this.sampler);
-
-                            visibleToSun = false;
-
-                            // move down to the next air block
-                            pos.move(Direction.DOWN, depth - 1);
+                        neighborPos.set(pos);
+                        int depth = 1;
+                        while (neighborPos.getY() > chunk.getMinBuildHeight() + 1) {
+                            neighborPos.move(Direction.DOWN);
+                            if (level.getBlockState(neighborPos) == this.settings.defaultBlock()) depth++;
+                            else break;
                         }
 
-                        pos.move(Direction.DOWN);
+                        int maxElevationIncrease = 0;
+                        int maxElevationDecrease = 0;
+                        if (decorator.shouldCalculateElevationChange(visibleToSun, pos.getY())) {
+                            for (Direction direction : Direction.Plane.HORIZONTAL) {
+                                neighborPos.set(pos).move(direction);
+                                boolean movingUp = level.getBlockState(neighborPos).isCollisionShapeFullBlock(level, neighborPos);
+                                Direction moveDirection = movingUp ? Direction.UP : Direction.DOWN;
+
+                                for (int i = 0; i < MAX_ELEVATION_DIFFERENCE + 1; i++) {
+                                    neighborPos.move(moveDirection);
+
+                                    if (movingUp) maxElevationIncrease = Math.max(maxElevationIncrease, i);
+                                    else maxElevationDecrease = Math.max(maxElevationDecrease, i + 1);
+
+                                    if (neighborPos.getY() < chunk.getMinBuildHeight() + 1) break;
+
+                                    boolean isTop = movingUp != level.getBlockState(neighborPos).isCollisionShapeFullBlock(level, neighborPos);
+                                    if (isTop) break;
+                                }
+                            }
+                        }
+
+                        decorator.buildSurface(chunk, new BlockPos.MutableBlockPos().set(pos), this.getSeaLevel(), visibleToSun, depth, maxElevationIncrease, maxElevationDecrease, (dx, dy, dz) -> ZERO);
+
+                        visibleToSun = false;
+
+                        // move down to the next air block
+                        pos.move(Direction.DOWN, depth - 1);
                     }
+
+                    pos.move(Direction.DOWN);
                 }
             }
-        } catch (java.util.concurrent.ExecutionException e) {
-            throw new RuntimeException(e);
         }
     }
 
