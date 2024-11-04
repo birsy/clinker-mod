@@ -23,6 +23,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.tslat.smartbrainlib.util.EntityRetrievalUtil;
 import org.joml.Vector3d;
 import org.joml.Vector3f;
@@ -30,6 +32,9 @@ import org.joml.Vector3fc;
 
 public class GroundLocomoteEntity extends PathfinderMob {
     public final Vector3f walk = new Vector3f(), previousWalk = new Vector3f();
+    @OnlyIn(Dist.CLIENT)
+    Vector3f smoothedWalk = new Vector3f();
+
     private static final EntityDataAccessor<Vector3f> DATA_WALK_ID = SynchedEntityData.defineId(GroundLocomoteEntity.class, EntityDataSerializers.VECTOR3);
 
     float cumulativeWalk = 0;
@@ -47,9 +52,12 @@ public class GroundLocomoteEntity extends PathfinderMob {
 
     @Override
     public void tick() {
-        super.tick();
         this.previousWalk.set(walk);
-        if (this.level().isClientSide()) this.walk.set(this.entityData.get(DATA_WALK_ID));
+        super.tick();
+        if (this.level().isClientSide()) {
+            this.walk.set(this.entityData.get(DATA_WALK_ID));
+            this.smoothedWalk.lerp(this.walk,0.1F);
+        }
         if (this.onGround()) cumulativeWalk += this.walk.length();
     }
 
@@ -71,7 +79,7 @@ public class GroundLocomoteEntity extends PathfinderMob {
 
     private final Vector3f returnWalkVector = new Vector3f();
     public Vector3fc getWalkVector(float partialTicks) {
-        return previousWalk.lerp(walk, partialTicks, returnWalkVector);
+        return this.smoothedWalk;
     }
 
     private final Vector3f returnFacingVector = new Vector3f();
@@ -101,6 +109,7 @@ public class GroundLocomoteEntity extends PathfinderMob {
         // approach player
         if (target.getMainHandItem().is(Items.CARROT_ON_A_STICK)) {
             this.moveTowardsPosition(target.getX(), target.getY() + target.getEyeHeight(), target.getZ(), maxSpeed, 4);
+            this.getLookControl().setLookAt(target);
             return;
         }
         // approach point
@@ -122,6 +131,7 @@ public class GroundLocomoteEntity extends PathfinderMob {
         if (target.getMainHandItem().is(Items.STRING)) {
             Vec3 targetPos = target.getEyePosition();
             this.lookAt(EntityAnchorArgument.Anchor.EYES, targetPos);
+            this.getLookControl().setLookAt(target);
             this.getMoveControl().strafe(0.0F, Mth.clamp(Mth.sin(this.tickCount * 0.008F) * 10, -1, 1) * 1.5F);
         } else {
             this.moveTowardsPosition(this.getX(), this.getY(), this.getZ(), maxSpeed, 1.0);
@@ -130,6 +140,7 @@ public class GroundLocomoteEntity extends PathfinderMob {
     }
     private void moveTowardsPosition(double x, double y, double z, double maxSpeed, double completionRadius) {
         this.lookAt(EntityAnchorArgument.Anchor.EYES, new Vec3(x, y, z));
+        this.lookControl.setLookAt(x, y, z);
         if (this.position().distanceToSqr(x, y, z) > completionRadius*completionRadius) {
             this.getMoveControl().setWantedPosition(x, y, z, maxSpeed);
         } else {

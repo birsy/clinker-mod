@@ -302,18 +302,13 @@ public class GnomadMogulSkeletonFactory implements SkeletonFactory {
 
 			MogulRoot.rotateDeg(bodyYaw, Direction.Axis.Y);
 
-			MogulFrontRobe.shouldRender = true;
-			MogulRightRobe.shouldRender = true;
-			MogulBackRobe.shouldRender  = true;
-			MogulLeftRobe.shouldRender  = true;
-
 			float legBobAmountH = 12;
 			float legBobAmountV = 12;
 			float timeOffset = Mth.PI * 0.5F;
 			float verticalOffset = 0F;
 
 			Vector3fc walkVector = entity.getWalkVector(1.0F);
-			float f = entity.getCumulativeWalk() * 2.0F;
+			float f = entity.getCumulativeWalk() * 2.2F;
 			float f1 = walkVector.length() * 5.0F;
 
 			float walkDirZ = entity.getWalkAmount(1.0F);

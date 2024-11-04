@@ -36,7 +36,7 @@ public class GroundMoveControl extends MoveControl {
         if (this.operation == Operation.MOVE_TO) {
             // if we've already reached out destination, then stop
             if (me.getPosition(1.0F).distanceToSqr(this.wantedX, this.wantedY, this.wantedZ) < me.getBbWidth()*2) this.operation = Operation.WAIT;
-            walkVector.set(desiredDirection).mul(speed);
+            walkVector.set(desiredDirection).mul(speed * 1.5F);
 
             me.walk(
                     (float) MathUtils.approach(me.previousWalk.x, walkVector.x, acceleration),
