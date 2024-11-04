@@ -36,6 +36,7 @@ public class GroundLocomoteEntity extends PathfinderMob {
     Vector3f smoothedWalk = new Vector3f();
 
     private static final EntityDataAccessor<Vector3f> DATA_WALK_ID = SynchedEntityData.defineId(GroundLocomoteEntity.class, EntityDataSerializers.VECTOR3);
+    private static final EntityDataAccessor<Float> DATA_DISTANCED_WALKED_ID = SynchedEntityData.defineId(GroundLocomoteEntity.class, EntityDataSerializers.FLOAT);
 
     float cumulativeWalk = 0;
 
@@ -48,6 +49,7 @@ public class GroundLocomoteEntity extends PathfinderMob {
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(DATA_WALK_ID, new Vector3f());
+        this.entityData.define(DATA_DISTANCED_WALKED_ID, 0.0F);
     }
 
     @Override
@@ -57,16 +59,21 @@ public class GroundLocomoteEntity extends PathfinderMob {
         if (this.level().isClientSide()) {
             this.walk.set(this.entityData.get(DATA_WALK_ID));
             this.smoothedWalk.lerp(this.walk,0.1F);
+
+            this.cumulativeWalk = this.entityData.get(DATA_DISTANCED_WALKED_ID);
         }
-        if (this.onGround()) cumulativeWalk += this.walk.length();
     }
 
     @Override
     protected void customServerAiStep() {
         this.debugMove();
         super.customServerAiStep();
+        Vec3 positionPriorToWalking = this.position();
         this.move(MoverType.SELF, new Vec3(walk.x, walk.y, walk.z));
+        float distancedActuallyWalked = (float) positionPriorToWalking.distanceTo(this.position());
         this.entityData.set(DATA_WALK_ID, this.walk);
+        this.cumulativeWalk += distancedActuallyWalked;
+        this.entityData.set(DATA_DISTANCED_WALKED_ID, this.cumulativeWalk);
     }
 
     public void walk(float x, float y, float z) {
@@ -108,7 +115,7 @@ public class GroundLocomoteEntity extends PathfinderMob {
 
         // approach player
         if (target.getMainHandItem().is(Items.CARROT_ON_A_STICK)) {
-            this.moveTowardsPosition(target.getX(), target.getY() + target.getEyeHeight(), target.getZ(), maxSpeed, 4);
+            this.moveTowardsPosition(target.getX(), target.getY() + target.getEyeHeight(), target.getZ(), maxSpeed, this.getBbWidth() * 1.8F);
             this.getLookControl().setLookAt(target);
             return;
         }

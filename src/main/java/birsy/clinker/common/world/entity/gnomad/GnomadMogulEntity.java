@@ -7,7 +7,6 @@ import net.minecraft.world.level.Level;
 public class GnomadMogulEntity extends GnomadEntity implements InterpolatedSkeletonParent {
     public GnomadMogulEntity(EntityType<? extends GnomadEntity> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
+        this.setMaxUpStep(1.0F);
     }
-
-
 }

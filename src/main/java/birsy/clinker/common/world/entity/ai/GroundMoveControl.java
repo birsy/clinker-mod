@@ -29,7 +29,7 @@ public class GroundMoveControl extends MoveControl {
         me.setSpeed((float)(this.speedModifier * this.mob.getAttributeValue(Attributes.MOVEMENT_SPEED)));
         float speed = 0.1F;
 
-        float acceleration = 100;
+        float acceleration = 0.1F / 20.0F;
         me.walk(0, 0, 0);
         desiredDirection.set(this.wantedX, this.wantedY, this.wantedZ).sub(me.position().x, me.position().y, me.position().z).normalize();
 
@@ -38,26 +38,17 @@ public class GroundMoveControl extends MoveControl {
             if (me.getPosition(1.0F).distanceToSqr(this.wantedX, this.wantedY, this.wantedZ) < me.getBbWidth()*2) this.operation = Operation.WAIT;
             walkVector.set(desiredDirection).mul(speed * 1.5F);
 
-            me.walk(
-                    (float) MathUtils.approach(me.previousWalk.x, walkVector.x, acceleration),
-                    (float) 0,
-                    (float) MathUtils.approach(me.previousWalk.z, walkVector.z, acceleration)
-            );
-
-            if (me.horizontalCollision) {
-                me.setJumping(true);
-            }
+            if (me.horizontalCollision) me.setJumping(true);
         }
 
         if (this.operation == Operation.STRAFE) {
             Vec3 forwardDirection = me.getLookAngle().multiply(1,0,1).normalize();
             Vec3 perpendicularDirection = forwardDirection.cross(new Vec3(0, 1, 0)).normalize();
-
-            me.walk(
-                    (float) MathUtils.approach(me.previousWalk.x, me.walk.x() + (perpendicularDirection.x * Mth.abs(this.strafeRight) + forwardDirection.x * this.strafeForwards) * speed, acceleration),
-                    (float) 0,
-                    (float) MathUtils.approach(me.previousWalk.x, me.walk.z() + (perpendicularDirection.z * Mth.abs(this.strafeRight) + forwardDirection.z * this.strafeForwards) * speed, acceleration)
+            walkVector.set(
+                    (perpendicularDirection.x * Mth.abs(this.strafeRight) + forwardDirection.x * this.strafeForwards) * speed, 0,
+                    (perpendicularDirection.z * Mth.abs(this.strafeRight) + forwardDirection.z * this.strafeForwards) * speed
             );
+            if (me.horizontalCollision) me.setJumping(true);
         }
 
         if (this.operation == Operation.JUMPING) {
@@ -67,11 +58,13 @@ public class GroundMoveControl extends MoveControl {
 
         if (this.operation == Operation.WAIT) {
             acceleration = 0.05F;
-            me.walk(
-                    MathUtils.approach(me.previousWalk.x, 0, acceleration),
-                    0,
-                    MathUtils.approach(me.previousWalk.z, 0, acceleration)
-            );
+            walkVector.set(0, 0, 0);
         }
+
+        me.walk(
+                (float) MathUtils.approach(me.previousWalk.x, walkVector.x, acceleration),
+                (float) 0,
+                (float) MathUtils.approach(me.previousWalk.z, walkVector.z, acceleration)
+        );
     }
 }

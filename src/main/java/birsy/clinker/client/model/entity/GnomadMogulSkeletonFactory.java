@@ -357,7 +357,7 @@ public class GnomadMogulSkeletonFactory implements SkeletonFactory {
 				MogulRightArm.z += Mth.sin(armCircleTime) * f1 * globalDegree * 5 * sign - 1 * f1 * globalDegree;
 
 				MogulRoot.y += Mth.sin(f * 2) * f1 * globalDegree;
-				MogulRoot.z += Mth.sin(f * 2 - 1F) * f1 * globalDegree * 2 * sign;
+				MogulRoot.z += Mth.sin(f * 2 - 1F) * f1 * globalDegree * 0.5F * sign;
 				MogulRoot.rotateDeg(-10 * f1 * globalDegree * sign, Direction.Axis.X);
 
 				MogulFrontRobe.rotateDeg(Mth.lerp((sign + 1.0F) * 0.5F, -30, -10) * f1 * globalDegree * sign, Direction.Axis.X);
