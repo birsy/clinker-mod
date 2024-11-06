@@ -6,9 +6,6 @@ import birsy.clinker.common.world.entity.GroundLocomoteEntity;
 import birsy.clinker.common.world.entity.gnomad.squad.GnomadSquad;
 import birsy.clinker.common.world.entity.gnomad.squad.GnomadSquadTask;
 import birsy.clinker.common.world.entity.gnomad.squad.GnomadSquads;
-import birsy.clinker.common.world.entity.gnomad.squad.ResupplyTask;
-import birsy.clinker.core.Clinker;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -16,18 +13,13 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.control.SmoothSwimmingMoveControl;
 import net.minecraft.world.entity.monster.Enemy;
-import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 import static net.minecraft.world.entity.monster.Monster.createMonsterAttributes;
 

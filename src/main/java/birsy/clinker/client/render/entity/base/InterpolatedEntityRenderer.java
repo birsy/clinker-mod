@@ -5,7 +5,6 @@ import birsy.clinker.client.model.base.InterpolatedSkeleton;
 import birsy.clinker.client.model.base.InterpolatedSkeletonParent;
 import birsy.clinker.client.model.base.SkeletonFactory;
 import birsy.clinker.client.model.base.constraint.Constraint;
-import birsy.clinker.core.Clinker;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -21,9 +20,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 public abstract class InterpolatedEntityRenderer<T extends LivingEntity & InterpolatedSkeletonParent, M extends InterpolatedSkeleton> extends EntityRenderer<T> {
     protected final SkeletonFactory modelFactory;
@@ -79,10 +75,9 @@ public abstract class InterpolatedEntityRenderer<T extends LivingEntity & Interp
         super.render(pEntity, pEntityYaw, pPartialTicks, poseStack, pBuffer, pPackedLight);
     }
 
-    public void renderModel(T pEntity, float pPartialTicks, PoseStack poseStack, MultiBufferSource pBuffer, int pPackedLight) {
-        VertexConsumer vertexconsumer = pBuffer.getBuffer(this.getRenderType(pEntity));
+    public void renderModel(T pEntity, float pPartialTicks, PoseStack poseStack,  MultiBufferSource pBuffer, int pPackedLight) {
         int packedOverlay = LivingEntityRenderer.getOverlayCoords(pEntity, 0);
-
+        VertexConsumer vertexconsumer = pBuffer.getBuffer(this.getRenderType(pEntity));
         if (pEntity.getSkeleton() != null) pEntity.getSkeleton().render(pPartialTicks, poseStack, vertexconsumer, pPackedLight, packedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
     }
 
@@ -131,18 +126,7 @@ public abstract class InterpolatedEntityRenderer<T extends LivingEntity & Interp
             interpolatedSkeletonParent.getSkeleton().addAnimationProperties(properties, interpolatedSkeletonParent);
             interpolatedSkeletonParent.getSkeleton().tick(properties);
         }
-//        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
-//        for (InterpolatedSkeletonParent interpolatedSkeletonParent : entitiesToRender) {
-//            executor.submit(new UpdateEntityTask(interpolatedSkeletonParent));
-//        }
-//
-//        //maximum time of 1 tick
-//        try {
-//            executor.awaitTermination(50, TimeUnit.MILLISECONDS);
-//        } catch (InterruptedException e) {
-//            Clinker.LOGGER.warn("! Abandoned animation task early !");
-//            Clinker.LOGGER.warn(e.getLocalizedMessage());
-//        }
+
     }
 
     private record UpdateEntityTask(InterpolatedSkeletonParent animator) implements Runnable {

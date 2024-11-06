@@ -158,7 +158,6 @@ public class InterpolatedBone {
             }
         }
 
-
         pPoseStack.popPose();
     }
 

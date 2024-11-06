@@ -29,7 +29,7 @@ public class GroundMoveControl extends MoveControl {
         me.setSpeed((float)(this.speedModifier * this.mob.getAttributeValue(Attributes.MOVEMENT_SPEED)));
         float speed = 0.1F;
 
-        float acceleration = 0.1F / 20.0F;
+        float acceleration = 0.1F / 10.0F;
         me.walk(0, 0, 0);
         desiredDirection.set(this.wantedX, this.wantedY, this.wantedZ).sub(me.position().x, me.position().y, me.position().z).normalize();
 
@@ -45,8 +45,8 @@ public class GroundMoveControl extends MoveControl {
             Vec3 forwardDirection = me.getLookAngle().multiply(1,0,1).normalize();
             Vec3 perpendicularDirection = forwardDirection.cross(new Vec3(0, 1, 0)).normalize();
             walkVector.set(
-                    (perpendicularDirection.x * Mth.abs(this.strafeRight) + forwardDirection.x * this.strafeForwards) * speed, 0,
-                    (perpendicularDirection.z * Mth.abs(this.strafeRight) + forwardDirection.z * this.strafeForwards) * speed
+                    (perpendicularDirection.x * this.strafeRight + forwardDirection.x * this.strafeForwards) * speed, 0,
+                    (perpendicularDirection.z * this.strafeRight + forwardDirection.z * this.strafeForwards) * speed
             );
             if (me.horizontalCollision) me.setJumping(true);
         }

@@ -6,16 +6,16 @@ import birsy.clinker.client.model.base.InterpolatedSkeleton;
 import birsy.clinker.client.model.base.SkeletonFactory;
 import birsy.clinker.client.model.base.mesh.ModelMesh;
 import birsy.clinker.client.model.base.mesh.StaticMesh;
-import birsy.clinker.client.render.entity.model.base.AnimFunctions;
 import birsy.clinker.common.world.entity.gnomad.GnomadMogulEntity;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
-import net.minecraft.client.model.AnimationUtils;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
-import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
 public class GnomadMogulSkeletonFactory implements SkeletonFactory {
@@ -41,11 +41,11 @@ public class GnomadMogulSkeletonFactory implements SkeletonFactory {
         meshes[3] = mesh3;
         
         StaticMesh mesh4 = new StaticMesh(texWidth, texHeight);
-        mesh4.addCube(42F, 25F, 2F, -21F, -24F, 0F, 0F, 0F, -0.1F, 168F, 104F, false);
+        mesh4.addCube(42F, 25F, 2F, -21F, -24F, 0F, -0.1F, 0F, 0F, 168F, 104F, false);
         meshes[4] = mesh4;
         
         StaticMesh mesh5 = new StaticMesh(texWidth, texHeight);
-        mesh5.addCube(42F, 25F, 2F, -21F, -24F, 0F, 0F, 0F, -0.1F, 80F, 104F, false);
+        mesh5.addCube(42F, 25F, 2F, -21F, -24F, 0F, -0.1F, 0F, 0F, 80F, 104F, false);
         meshes[5] = mesh5;
         
         StaticMesh mesh6 = new StaticMesh(texWidth, texHeight);
@@ -263,7 +263,7 @@ public class GnomadMogulSkeletonFactory implements SkeletonFactory {
         return skeleton;
     }
     
-    public static class GnomadMogulSkeleton extends InterpolatedSkeleton {
+    public static class GnomadMogulSkeleton extends GnomadSkeleton {
         protected InterpolatedBone MogulRoot;
         protected InterpolatedBone MogulBody;
         protected InterpolatedBone MogulFrontRobe;
@@ -287,8 +287,30 @@ public class GnomadMogulSkeletonFactory implements SkeletonFactory {
         protected InterpolatedBone MogulRightHelmetFlap;
 
         @Override
+        protected float maskShakeSpeed() {
+            return super.maskShakeSpeed() * 0.5F;
+        }
+
+        @Override
+        protected int getNewMaskShakeDuration() {
+            return super.getNewMaskShakeDuration() * 3;
+        }
+
+        @Override
+        protected void applyMaskShake(float headRotation, float maskRotation) {
+            headRotation *= 0.5F; maskRotation *= 0.5F;
+
+            MogulHead.rotateDeg(headRotation, Direction.Axis.Z);
+            MogulHelmetBase.rotateDeg(maskRotation * -0.1F, Direction.Axis.Z);
+            MogulRightHelmetFlap.rotateDeg(-maskRotation * 0.25F, Direction.Axis.X);
+            MogulLeftHelmetFlap .rotateDeg( maskRotation * 0.25F, Direction.Axis.X);
+
+            MogulFace.rotateDeg(maskRotation, Direction.Axis.Z);
+        }
+
+        @Override
         public void animate(AnimationProperties properties) {
-            for (Object value : this.parts.values()) if (value instanceof InterpolatedBone bone) bone.reset();
+            super.animate(properties);
 
             GnomadMogulEntity entity = (GnomadMogulEntity) properties.getProperty("entity");
             float ageInTicks = properties.getNumProperty("ageInTicks");
@@ -308,8 +330,8 @@ public class GnomadMogulSkeletonFactory implements SkeletonFactory {
             float verticalOffset = 0F;
 
             Vector3fc walkVector = entity.getWalkVector(1.0F);
-            float f = entity.getCumulativeWalk() * 2.2F;
-            float f1 = walkVector.length() * 5.0F;
+            float f = entity.getCumulativeWalk() * 2.3F;
+            float f1 = Mth.clamp(walkVector.length() * 5.0F, 0.0F, 1.0F);
 
             float walkDirZ = entity.getWalkAmount(1.0F);
             float walkDirX = -entity.getStrafeAmount(1.0F);
@@ -403,8 +425,7 @@ public class GnomadMogulSkeletonFactory implements SkeletonFactory {
                 MogulRightArm.rotateDeg(Mth.lerp((sign + 1.0F) * 0.5F, 10, 20) * f1 * globalDegree, Direction.Axis.Z);
 
                 MogulNeck.rotateDeg(10 * f1 * globalDegree * sign, Direction.Axis.Z);
-                }
-            f1 = previousFAmount;
+            }
 
             // IDLE
             MogulRightArm.y += Mth.sin(ageInTicks * globalSpeed * 0.02F) * globalDegree * 0.5F;
@@ -430,6 +451,8 @@ public class GnomadMogulSkeletonFactory implements SkeletonFactory {
             MogulHead.rotateDeg(netHeadYaw * 0.5F, Direction.Axis.Y);
             MogulNeck.rotateDeg(headPitch * 0.5F, Direction.Axis.X);
             MogulHead.rotateDeg(headPitch * 0.5F, Direction.Axis.X);
+
+            MogulBackHelmetFlap.rotateDeg(-headPitch, Direction.Axis.X);
         }
     }
 }

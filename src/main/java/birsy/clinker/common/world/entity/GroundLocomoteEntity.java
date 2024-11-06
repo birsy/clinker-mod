@@ -1,5 +1,6 @@
 package birsy.clinker.common.world.entity;
 
+import birsy.clinker.common.world.entity.ai.GroundBodyRotationControl;
 import birsy.clinker.common.world.entity.ai.GroundMoveControl;
 import birsy.clinker.common.world.entity.gnomad.OldGnomadAxemanEntity;
 import birsy.clinker.core.Clinker;
@@ -15,6 +16,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.ai.control.BodyRotationControl;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ClipContext;
@@ -46,6 +48,11 @@ public class GroundLocomoteEntity extends PathfinderMob {
     }
 
     @Override
+    protected BodyRotationControl createBodyControl() {
+        return new GroundBodyRotationControl(this);
+    }
+
+    @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(DATA_WALK_ID, new Vector3f());
@@ -60,7 +67,7 @@ public class GroundLocomoteEntity extends PathfinderMob {
             this.walk.set(this.entityData.get(DATA_WALK_ID));
             this.smoothedWalk.lerp(this.walk,0.1F);
 
-            this.cumulativeWalk = this.entityData.get(DATA_DISTANCED_WALKED_ID);
+            this.cumulativeWalk = Mth.lerp(0.5F, this.cumulativeWalk, this.entityData.get(DATA_DISTANCED_WALKED_ID));
         }
     }
 
@@ -115,7 +122,7 @@ public class GroundLocomoteEntity extends PathfinderMob {
 
         // approach player
         if (target.getMainHandItem().is(Items.CARROT_ON_A_STICK)) {
-            this.moveTowardsPosition(target.getX(), target.getY() + target.getEyeHeight(), target.getZ(), maxSpeed, this.getBbWidth() * 1.8F);
+            this.moveTowardsPosition(target.getX(), this.getY(), target.getZ(), maxSpeed, this.getBbWidth() * 1.8F);
             this.getLookControl().setLookAt(target);
             return;
         }
@@ -139,7 +146,16 @@ public class GroundLocomoteEntity extends PathfinderMob {
             Vec3 targetPos = target.getEyePosition();
             this.lookAt(EntityAnchorArgument.Anchor.EYES, targetPos);
             this.getLookControl().setLookAt(target);
-            this.getMoveControl().strafe(0.0F, Mth.clamp(Mth.sin(this.tickCount * 0.008F) * 10, -1, 1) * 1.5F);
+
+            float desiredDistance = this.getBbWidth() * 2.2F;
+            float tolerance = this.getBbWidth() * 0.25F;
+            float difference = (float)this.position().subtract(targetPos).horizontalDistance() - desiredDistance;
+            float forwardbackwardAmount = 0;
+            if (Math.abs(difference) > tolerance) forwardbackwardAmount = Mth.clamp(Mth.abs(difference / tolerance), 0, 3) * Mth.sign(difference);
+
+            float sideToSideAmount = Mth.clamp(Mth.sin(this.tickCount * 0.008F) * 10, -1, 1) * 1.5F;
+
+            this.getMoveControl().strafe(forwardbackwardAmount, sideToSideAmount);
         } else {
             this.moveTowardsPosition(this.getX(), this.getY(), this.getZ(), maxSpeed, 1.0);
         }

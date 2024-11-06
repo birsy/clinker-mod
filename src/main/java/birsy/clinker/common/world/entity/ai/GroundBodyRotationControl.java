@@ -3,14 +3,42 @@ package birsy.clinker.common.world.entity.ai;
 import birsy.clinker.common.world.entity.GroundLocomoteEntity;
 import birsy.clinker.core.util.MathUtils;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
 import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.phys.Vec3;
+import net.tslat.smartbrainlib.util.RandomUtil;
 import org.joml.Vector3d;
 
 public class GroundBodyRotationControl extends BodyRotationControl {
+    protected final GroundLocomoteEntity me;
+    protected float desiredBodyRot = 0.0F;
     public GroundBodyRotationControl(GroundLocomoteEntity pMob) {
         super(pMob);
+        this.me = pMob;
+        desiredBodyRot = me.yBodyRot;
+    }
+
+    @Override
+    public void clientTick() {
+        float bodyRotLerpFactor = 0.2F;
+        if (this.isMoving()) {
+            desiredBodyRot = me.getYRot();
+        } else {
+            // occasionally do a big correction...
+            if (RandomUtil.oneInNChance(50)) {
+                desiredBodyRot = me.yHeadRot;
+            } else {
+                desiredBodyRot= Mth.rotateIfNecessary(desiredBodyRot, me.yHeadRot, (float)me.getMaxHeadYRot());
+            }
+            bodyRotLerpFactor = Mth.lerp(Mth.sin(me.tickCount * 0.5F)*0.5F+0.5F, 0.05F, 0.1F);
+        }
+        me.yHeadRot = Mth.rotateIfNecessary(me.yHeadRot, me.yBodyRot, (float)me.getMaxHeadYRot());
+        me.yBodyRot = Mth.rotLerp(bodyRotLerpFactor, me.yBodyRot, desiredBodyRot);
+    }
+
+    protected boolean isMoving() {
+        return me.walk.length() > 0.01;
     }
 }

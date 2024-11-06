@@ -72,6 +72,18 @@ public class MathUtils {
         return (a > b) ? a - amount : a + amount;
     }
 
+    public static double clampDifference(double a, double b, double maxDifference) {
+        if (a - b > maxDifference)  return b + maxDifference;
+        if (a - b < -maxDifference) return b - maxDifference;
+        return a;
+    }
+
+    public static float clampDifference(float a, float b, float maxDifference) {
+        if (a - b > maxDifference)  return b + maxDifference;
+        if (a - b < -maxDifference) return b - maxDifference;
+        return a;
+    }
+
     public static double min(double... nums) {
         double min = nums[0];
         for (double num : nums) {
