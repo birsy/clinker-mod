@@ -74,7 +74,7 @@ public abstract class DebugRendererMixin {
 //        this.worldGenAttemptRenderer.render(poseStack, bufferSource, a, b, c);
 //        this.solidFaceRenderer.render(poseStack, bufferSource, a, b, c);
 //        this.chunkRenderer.render(poseStack, bufferSource, a, b, c);
-//        this.brainDebugRenderer.render(poseStack, bufferSource, a, b, c);
+        this.brainDebugRenderer.render(poseStack, bufferSource, a, b, c);
 //        this.villageSectionsDebugRenderer.render(poseStack, bufferSource, a, b, c);
 //        this.beeDebugRenderer.render(poseStack, bufferSource, a, b, c);
 //        this.raidDebugRenderer.render(poseStack, bufferSource, a, b, c);

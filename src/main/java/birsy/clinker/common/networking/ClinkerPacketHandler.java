@@ -61,6 +61,7 @@ public class ClinkerPacketHandler {
         registrar.play(createId(ClientboundRopeEntitySegmentAddPacket.class), ClientboundRopeEntitySegmentAddPacket::new, ClientboundRopeEntitySegmentAddPacket::handle);
         registrar.play(createId(ClientboundRopeEntitySyncPacket.class), ClientboundRopeEntitySyncPacket::new, ClientboundRopeEntitySyncPacket::handle);
 
+        registrar.play(createId(ClientboundBrainDebugPacket.class), ClientboundBrainDebugPacket::new, ClientboundBrainDebugPacket::handle);
 
         Clinker.LOGGER.info("REGISTERED CLINKER PACKETS!");
     }

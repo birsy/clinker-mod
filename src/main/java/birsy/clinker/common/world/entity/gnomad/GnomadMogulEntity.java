@@ -2,13 +2,17 @@ package birsy.clinker.common.world.entity.gnomad;
 
 import birsy.clinker.client.model.base.InterpolatedSkeleton;
 import birsy.clinker.client.model.base.InterpolatedSkeletonParent;
+import birsy.clinker.common.networking.ClinkerPacketHandler;
+import birsy.clinker.common.networking.packet.ClientboundBrainDebugPacket;
 import birsy.clinker.common.world.entity.ai.behaviors.LookAtNearestEntity;
 import birsy.clinker.common.world.entity.ai.behaviors.SetRandomLookTargetImproved;
 import birsy.clinker.core.registry.ClinkerTags;
 import birsy.clinker.core.util.MathUtils;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.common.custom.BeeDebugPayload;
 import net.minecraft.network.protocol.common.custom.BrainDebugPayload;
+import net.minecraft.network.protocol.game.DebugEntityNameGenerator;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -106,7 +110,8 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
     protected void customServerAiStep() {
         tickBrain(this);
         super.customServerAiStep();
-       // if (this.navigation.getPath() != null) ClinkerPacketHandler.sendToClientsTrackingEntity(this, new ClientboundPathfindingDebugPacket(this, this.navigation.getPath()));
+        ClinkerPacketHandler.sendToClientsTrackingEntity(this, new ClientboundBrainDebugPacket(this));
+       // if (this.navigation.getPath() != null)
     }
 
     @Override
