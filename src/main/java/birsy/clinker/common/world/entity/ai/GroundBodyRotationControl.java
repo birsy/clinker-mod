@@ -24,7 +24,9 @@ public class GroundBodyRotationControl extends BodyRotationControl {
     public void clientTick() {
         float bodyRotLerpFactor = 0.2F;
         if (this.isMoving()) {
-            desiredBodyRot = me.getYRot();
+            float dX = me.walk.x;
+            float dZ = me.walk.z;
+            desiredBodyRot = ((float) Mth.atan2(dZ, dX) * Mth.RAD_TO_DEG) - 90;
         } else {
             // occasionally do a big correction...
             if (RandomUtil.oneInNChance(50)) {
@@ -39,6 +41,6 @@ public class GroundBodyRotationControl extends BodyRotationControl {
     }
 
     protected boolean isMoving() {
-        return me.walk.length() > 0.01;
+        return me.walk.length() > 0.01 || me.getMoveControl().hasWanted();
     }
 }

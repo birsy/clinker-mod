@@ -3,9 +3,7 @@ package birsy.clinker.core.registry.entity;
 import birsy.clinker.client.render.entity.*;
 import birsy.clinker.client.render.entity.model.*;
 import birsy.clinker.common.world.entity.*;
-import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
-import birsy.clinker.common.world.entity.gnomad.GnomadMogulEntity;
-import birsy.clinker.common.world.entity.gnomad.GnomadSoldierEntity;
+import birsy.clinker.common.world.entity.gnomad.*;
 import birsy.clinker.common.world.entity.mold.MoldEntity;
 import birsy.clinker.common.world.entity.projectile.FlechetteEntity;
 import birsy.clinker.common.world.entity.projectile.OrdnanceEntity;
@@ -14,7 +12,6 @@ import birsy.clinker.common.world.entity.projectile.WarhookEntity;
 import birsy.clinker.common.world.entity.salamander.NewSalamanderEntity;
 import birsy.clinker.common.world.entity.salamanderOLD.SalamanderBodyEntity;
 import birsy.clinker.common.world.entity.salamanderOLD.SalamanderHeadEntity;
-import birsy.clinker.common.world.entity.gnomad.OldGnomadAxemanEntity;
 import birsy.clinker.core.Clinker;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
@@ -23,6 +20,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 
+import net.minecraft.world.entity.monster.Zombie;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
@@ -73,7 +71,7 @@ public class ClinkerEntities {
 
     public static final Supplier<EntityType<GnomadMogulEntity>> GNOMAD_MOGUL = ENTITY_TYPES.register("gnomad_mogul", () ->
             EntityType.Builder.of(GnomadMogulEntity::new, MobCategory.MONSTER)
-                    .sized(3.25f, 3.75f)
+                    .sized(1.5f, 3.5f)
                     .build(new ResourceLocation(Clinker.MOD_ID, "gnomad_mogul").toString()));
 
     public static final Supplier<EntityType<LumberingAspenEntity>> LUMBERING_ASPEN = ENTITY_TYPES.register("lumbering_aspen", () ->
@@ -138,8 +136,8 @@ public class ClinkerEntities {
         event.put(SEA_HAG.get(), SeaHagEntity.createAttributes().build());
         event.put(GNOMAD_AXEMAN.get(), OldGnomadAxemanEntity.createAttributes().build());
 
-        event.put(GNOMAD_SOLDIER.get(), GnomadEntity.createAttributes().build());
-        event.put(GNOMAD_MOGUL.get(), GnomadEntity.createAttributes().build());
+        event.put(GNOMAD_SOLDIER.get(), Zombie.createAttributes().build());
+        event.put(GNOMAD_MOGUL.get(), Zombie.createAttributes().build());
 
         event.put(LUMBERING_ASPEN.get(), LumberingAspenEntity.createAttributes().build());
         event.put(FAE_URN.get(), UrnEntity.createAttributes().build());

@@ -23,6 +23,8 @@ public class GnomadMogulRenderer extends InterpolatedEntityRenderer<GnomadMogulE
     public void render(GnomadMogulEntity pEntity, float pEntityYaw, float pPartialTicks, PoseStack poseStack, MultiBufferSource pBuffer, int pPackedLight) {
         poseStack.pushPose();
         poseStack.scale(0.95F, 0.95F, 0.95F);
+        //poseStack.scale(1, 0.1F, 1);
+
         super.render(pEntity, pEntityYaw, pPartialTicks, poseStack, pBuffer, pPackedLight);
         poseStack.popPose();
     }

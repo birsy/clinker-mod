@@ -1,13 +1,15 @@
 package birsy.clinker.common.world.entity;
 
-import birsy.clinker.common.world.entity.ai.GroundBodyRotationControl;
-import birsy.clinker.common.world.entity.ai.GroundMoveControl;
+import birsy.clinker.common.networking.ClinkerPacketHandler;
+import birsy.clinker.common.networking.packet.ClientboundPathfindingDebugPacket;
+import birsy.clinker.common.world.entity.ai.*;
 import birsy.clinker.common.world.entity.gnomad.OldGnomadAxemanEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.math.Constants;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -17,10 +19,12 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -41,10 +45,17 @@ public class GroundLocomoteEntity extends PathfinderMob {
     private static final EntityDataAccessor<Float> DATA_DISTANCED_WALKED_ID = SynchedEntityData.defineId(GroundLocomoteEntity.class, EntityDataSerializers.FLOAT);
 
     float cumulativeWalk = 0;
+    protected final Scheduler scheduler = new Scheduler();
 
     protected GroundLocomoteEntity(EntityType<? extends PathfinderMob> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         this.moveControl = new GroundMoveControl(this);
+        this.lookControl = new GroundLookControl(this);
+    }
+
+    @Override
+    protected PathNavigation createNavigation(Level pLevel) {
+        return new ClinkerSmoothGroundNavigation(this, pLevel, 0.5F);
     }
 
     @Override
@@ -62,19 +73,18 @@ public class GroundLocomoteEntity extends PathfinderMob {
     @Override
     public void tick() {
         this.previousWalk.set(walk);
+        this.scheduler.tick();
         super.tick();
         if (this.level().isClientSide()) {
             this.walk.set(this.entityData.get(DATA_WALK_ID));
             this.smoothedWalk.lerp(this.walk,0.1F);
-
             this.cumulativeWalk = Mth.lerp(0.5F, this.cumulativeWalk, this.entityData.get(DATA_DISTANCED_WALKED_ID));
         }
     }
 
     @Override
     protected void customServerAiStep() {
-        this.debugMove();
-        super.customServerAiStep();
+        //this.debugMove();
         Vec3 positionPriorToWalking = this.position();
         this.move(MoverType.SELF, new Vec3(walk.x, walk.y, walk.z));
         float distancedActuallyWalked = (float) positionPriorToWalking.distanceTo(this.position());
@@ -112,7 +122,7 @@ public class GroundLocomoteEntity extends PathfinderMob {
     }
 
     private void debugMove() {
-        float maxSpeed = 2.0F;
+        float maxSpeed = 1.0F;
         Player target = EntityRetrievalUtil.getNearestEntity(this, 40.0F, (entity -> entity instanceof Player));
 
         if (target == null) {
@@ -165,9 +175,12 @@ public class GroundLocomoteEntity extends PathfinderMob {
         this.lookAt(EntityAnchorArgument.Anchor.EYES, new Vec3(x, y, z));
         this.lookControl.setLookAt(x, y, z);
         if (this.position().distanceToSqr(x, y, z) > completionRadius*completionRadius) {
-            this.getMoveControl().setWantedPosition(x, y, z, maxSpeed);
+            //this.getMoveControl().setWantedPosition(x, y, z, maxSpeed);
+            Path path = this.getNavigation().createPath(new BlockPos((int) x, (int) y, (int) z), 0);
+            if (path != null) this.getNavigation().moveTo(path, maxSpeed);
         } else {
-            this.getMoveControl().setWantedPosition(this.getX(), this.getY(), this.getZ(), 0);
+            //this.getMoveControl().setWantedPosition(this.getX(), this.getY(), this.getZ(), 0);
+           // this.getNavigation().stop();
         }
     }
 }

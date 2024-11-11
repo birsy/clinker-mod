@@ -47,7 +47,7 @@ public class ClinkerBlocks
 	
 	//Soils
 	public static final DeferredBlock<Block> ASH = createBlock("ash", () -> new AshBlock(Block.Properties.of().mapColor(MapColor.COLOR_GRAY).strength(0.5F).sound(SoundType.SNOW)));
-	public static final DeferredBlock<Block> ASH_LAYER = createBlock("ash_layers", AshLayerBlock::new);
+	public static final DeferredBlock<Block> ASH_LAYER = createBlock("ash_layers", () -> new AshLayerBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SNOW).mapColor(MapColor.COLOR_GRAY)));
 
 	public static final DeferredBlock<Block> ASHEN_REGOLITH = createBlock("ashen_regolith", () -> new MudBlock(Block.Properties.of().mapColor(MapColor.COLOR_GRAY).strength(0.5F).sound(SoundType.NYLIUM)));
 
@@ -209,16 +209,16 @@ public class ClinkerBlocks
 	public static final DeferredBlock<Block> STRIPPED_SWAMP_ASPEN_LOG = createBlock("stripped_swamp_aspen_log", () -> new SwampAspenLogBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(2.0F).sound(SoundType.STEM).noOcclusion()));
 
 	//Plants
-	public static final DeferredBlock<Block> TALL_MUD_REEDS = createBlock("tall_mud_reeds", () -> new DoubleMudReedsBlock(BlockBehaviour.Properties.of().noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS).offsetType(BlockBehaviour.OffsetType.XZ).replaceable()));
-	public static final DeferredBlock<Block> SHORT_MUD_REEDS = createBlock("short_mud_reeds", () -> new MudReedsBlock(BlockBehaviour.Properties.of().noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS).offsetType(BlockBehaviour.OffsetType.XZ).replaceable()));
-	public static final DeferredBlock<Block> MUD_REEDS = createBlock("mud_reeds", () -> new MudReedsBlock(BlockBehaviour.Properties.of().noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS).offsetType(BlockBehaviour.OffsetType.XZ).replaceable()));
+	public static final DeferredBlock<Block> TALL_MUD_REEDS = createBlock("tall_mud_reeds", () -> new DoubleMudReedsBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.TALL_GRASS).mapColor(MapColor.COLOR_BROWN).sound(SoundType.HANGING_ROOTS)));
+	public static final DeferredBlock<Block> SHORT_MUD_REEDS = createBlock("short_mud_reeds", () -> new MudReedsBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SHORT_GRASS).mapColor(MapColor.COLOR_BROWN).sound(SoundType.HANGING_ROOTS)));
+	public static final DeferredBlock<Block> MUD_REEDS = createBlock("mud_reeds", () -> new MudReedsBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SHORT_GRASS).mapColor(MapColor.COLOR_BROWN).sound(SoundType.HANGING_ROOTS)));
 
 	public static final DeferredBlock<Block> CAVE_FIG_STEM = createBlock("cave_fig_stem", () -> new HugeMushroomBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY).sound(SoundType.CALCITE)));
 	public static final DeferredBlock<Block> CAVE_FIG_ROOTS = createBlock("cave_fig_roots", () -> new CaveFigRootsBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY).noOcclusion().sound(SoundType.CALCITE)));
 
 	public static final DeferredBlock<Block> FAIRY_FRUIT_BLOCK = createBlockNoItem("fairy_fruit_block", () -> new FairyFruitBlock(BlockBehaviour.Properties.of().noCollission().instabreak().noOcclusion().sound(SoundType.HANGING_ROOTS).offsetType(BlockBehaviour.OffsetType.XZ).lightLevel((state) -> 10)));
 
-	public static final DeferredBlock<Block> DRIED_CLOVERS = createBlock("dried_clovers", () -> new DriedCloversBlock(BlockBehaviour.Properties.of().noOcclusion().mapColor(MapColor.COLOR_GREEN).strength(0.1F).sound(SoundType.HANGING_ROOTS).replaceable().pushReaction(PushReaction.DESTROY)));
+	public static final DeferredBlock<Block> DRIED_CLOVERS = createBlock("dried_clovers", () -> new DriedCloversBlock(BlockBehaviour.Properties.of().noOcclusion().mapColor(MapColor.COLOR_ORANGE).ignitedByLava().strength(0.1F).sound(SoundType.HANGING_ROOTS).replaceable().pushReaction(PushReaction.DESTROY).noCollission()));
 
 	public static final DeferredBlock<Block> FULMINA_FLOWER = createBlock("fulmina_flower", () -> new FulminaFlowerBlock(BlockBehaviour.Properties.of().noOcclusion().mapColor(MapColor.COLOR_GRAY).strength(0.1F).sound(SoundType.HANGING_ROOTS).pushReaction(PushReaction.DESTROY).offsetType(BlockBehaviour.OffsetType.XZ).dynamicShape()));
 

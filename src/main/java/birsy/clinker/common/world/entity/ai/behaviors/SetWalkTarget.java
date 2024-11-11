@@ -1,18 +1,12 @@
-package birsy.clinker.common.world.entity.ai;
+package birsy.clinker.common.world.entity.ai.behaviors;
 
-import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
-import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
-import com.mojang.datafixers.util.Pair;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
-import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.memory.WalkTarget;
 import net.minecraft.world.phys.Vec3;
 import net.tslat.smartbrainlib.api.core.behaviour.ExtendedBehaviour;
 import net.tslat.smartbrainlib.util.BrainUtils;
 
-import java.util.List;
 import java.util.function.Function;
 
 public abstract class SetWalkTarget<E extends PathfinderMob> extends ExtendedBehaviour<E> {

@@ -40,7 +40,7 @@ public abstract class GnomadEntity extends GroundLocomoteEntity implements Enemy
     public static AttributeSupplier.Builder createAttributes() {
         return createMonsterAttributes()
                 .add(Attributes.MAX_HEALTH, 20.0D)
-                .add(Attributes.MOVEMENT_SPEED, 0.03D)
+                .add(Attributes.MOVEMENT_SPEED, 0.7D)
                 .add(Attributes.ATTACK_DAMAGE, 2.0D);
     }
 

@@ -331,7 +331,7 @@ public class GnomadMogulSkeletonFactory implements SkeletonFactory {
 
             Vector3fc walkVector = entity.getWalkVector(1.0F);
             float f = entity.getCumulativeWalk() * 2.3F;
-            float f1 = Mth.clamp(walkVector.length() * 5.0F, 0.0F, 1.0F);
+            float f1 = Mth.clamp(walkVector.length() * 5.0F, 0.0F, 0.8F);
 
             float walkDirZ = entity.getWalkAmount(1.0F);
             float walkDirX = -entity.getStrafeAmount(1.0F);
@@ -378,7 +378,7 @@ public class GnomadMogulSkeletonFactory implements SkeletonFactory {
                 MogulRightArm.rotateDeg(Mth.cos(f) * f1 * globalDegree * -20 * sign, Direction.Axis.X);
                 MogulRightArm.z += Mth.sin(armCircleTime) * f1 * globalDegree * 5 * sign - 1 * f1 * globalDegree;
 
-                MogulRoot.y += Mth.sin(f * 2) * f1 * globalDegree;
+                MogulRoot.y += Mth.sin(f * 2) * f1 * globalDegree * 2;
                 MogulRoot.z += Mth.sin(f * 2 - 1F) * f1 * globalDegree * 0.5F * sign;
                 MogulRoot.rotateDeg(-10 * f1 * globalDegree * sign, Direction.Axis.X);
 

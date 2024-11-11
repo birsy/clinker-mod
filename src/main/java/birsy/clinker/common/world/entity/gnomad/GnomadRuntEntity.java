@@ -1,7 +1,7 @@
 package birsy.clinker.common.world.entity.gnomad;
 
-import birsy.clinker.common.world.entity.ai.SetRandomEntityLookTarget;
-import birsy.clinker.common.world.entity.ai.SetWalkTarget;
+import birsy.clinker.common.world.entity.ai.behaviors.LookAtNearestEntity;
+import birsy.clinker.common.world.entity.ai.behaviors.SetWalkTarget;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.*;
 import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.GnomadSquadSensor;
 import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.SupplyDepotSensor;
@@ -85,7 +85,6 @@ public class GnomadRuntEntity extends GnomadEntity implements SmartBrainOwner<Gn
                         && !entity.isDeadOrDying()
                         &&  entity.attackable())
                 .startCondition((runt) -> true) // avoid anything that isnt a gnomad, unless we have a bomb.
-
         );
     }
 
@@ -109,7 +108,7 @@ public class GnomadRuntEntity extends GnomadEntity implements SmartBrainOwner<Gn
                                         .cooldownFor((entity) -> 10 * 20)
                         ).startCondition((entity -> BrainUtils.hasMemory(entity, ClinkerMemoryModules.RELAXATION_SPOT.get()))), //... but only if we have a relaxation spot currently.
                         new SetPlayerLookTarget<>(),
-                        new SetRandomEntityLookTarget<>().predicate((entity) -> entity instanceof GnomadEntity).probabilityPerEntity(0.5F),
+                        new LookAtNearestEntity<>().predicate((entity, me) -> entity instanceof GnomadEntity),
                         new SetRandomLookTarget<>()
                 ),
                 new OneRandomBehaviour<>(

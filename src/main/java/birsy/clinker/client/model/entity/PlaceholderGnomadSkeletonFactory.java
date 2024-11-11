@@ -8,6 +8,7 @@ import birsy.clinker.client.model.base.mesh.ModelMesh;
 import birsy.clinker.client.model.base.mesh.StaticMesh;
 import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
 import birsy.clinker.core.Clinker;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.phys.Vec3;
 import org.joml.AxisAngle4f;
 import org.joml.Quaternionf;
@@ -42,16 +43,16 @@ public class PlaceholderGnomadSkeletonFactory implements SkeletonFactory {
 
         @Override
         public void animate(AnimationProperties properties) {
-            GnomadEntity entity = (GnomadEntity) properties.getProperty("entity");
+            Mob entity = (Mob) properties.getProperty("entity");
             body.reset();
-            body.rotation.mul(this.getVelocityTilt(entity));
+//            body.rotation.mul(this.getVelocityTilt(entity));
             body.rotation.mul(new Quaternionf().rotateTo(new Vector3f(0, 0, -1), entity.getViewVector(1.0F).toVector3f()));
-            
-            if (entity.isSitting()) {
-                body.ySize = 0.8f;
-            } else {
-                body.ySize = 1.0f;
-            }
+//
+//            if (entity.isSitting()) {
+//                body.ySize = 0.8f;
+//            } else {
+//                body.ySize = 1.0f;
+//            }
         }
 
         public Quaternionf getAccelerationTilt(GnomadEntity entity) {

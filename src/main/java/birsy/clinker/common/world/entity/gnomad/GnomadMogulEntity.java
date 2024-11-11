@@ -1,47 +1,81 @@
 package birsy.clinker.common.world.entity.gnomad;
 
+import birsy.clinker.client.model.base.InterpolatedSkeleton;
 import birsy.clinker.client.model.base.InterpolatedSkeletonParent;
-import birsy.clinker.common.world.entity.GroundLocomoteEntity;
+import birsy.clinker.common.world.entity.ai.behaviors.LookAtNearestEntity;
+import birsy.clinker.common.world.entity.ai.behaviors.SetRandomLookTargetImproved;
+import birsy.clinker.core.registry.ClinkerTags;
 import birsy.clinker.core.util.MathUtils;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.network.protocol.common.custom.BrainDebugPayload;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.util.ColorRGBA;
 import net.minecraft.util.Mth;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.SpawnGroupData;
-import net.minecraft.world.entity.animal.Wolf;
-import net.minecraft.world.entity.animal.frog.Frog;
-import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.entity.ai.Brain;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.level.block.IceBlock;
-import net.minecraft.world.level.block.SoulSandBlock;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.tslat.smartbrainlib.api.SmartBrainOwner;
+import net.tslat.smartbrainlib.api.core.BrainActivityGroup;
+import net.tslat.smartbrainlib.api.core.SmartBrainProvider;
+import net.tslat.smartbrainlib.api.core.behaviour.FirstApplicableBehaviour;
+import net.tslat.smartbrainlib.api.core.behaviour.OneRandomBehaviour;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.look.LookAtTarget;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.misc.Idle;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.move.FloatToSurfaceOfFluid;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.move.MoveToWalkTarget;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.path.SetRandomWalkTarget;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.target.SetPlayerLookTarget;
+import net.tslat.smartbrainlib.api.core.navigation.SmoothGroundNavigation;
+import net.tslat.smartbrainlib.api.core.sensor.ExtendedSensor;
+import net.tslat.smartbrainlib.api.core.sensor.custom.GenericAttackTargetSensor;
+import net.tslat.smartbrainlib.api.core.sensor.vanilla.HurtBySensor;
+import net.tslat.smartbrainlib.api.core.sensor.vanilla.InWaterSensor;
+import net.tslat.smartbrainlib.api.core.sensor.vanilla.NearbyLivingEntitySensor;
+import net.tslat.smartbrainlib.api.core.sensor.vanilla.NearbyPlayersSensor;
+import net.tslat.smartbrainlib.util.SensoryUtils;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
 
-public class GnomadMogulEntity extends GnomadEntity implements InterpolatedSkeletonParent {
+import java.util.List;
+
+import static net.minecraft.world.entity.monster.Monster.createMonsterAttributes;
+
+public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<GnomadMogulEntity>, InterpolatedSkeletonParent {
     private static final int[] ROBE_COLORS = new int[]{0x4d423c, 0x513337, 0x4a4751, 0x505049, 0x4f4c4b};
     private static final EntityDataAccessor<Integer> DATA_ROBE_COLOR = SynchedEntityData.defineId(GnomadMogulEntity.class, EntityDataSerializers.INT);
 
     public GnomadMogulEntity(EntityType<? extends GnomadEntity> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
-        this.setMaxUpStep(1.0F);
+        this.setMaxUpStep(1.1F);
     }
 
+    public static AttributeSupplier.Builder createAttributes() {
+        return createMonsterAttributes()
+                .add(Attributes.MAX_HEALTH, 20.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.5D)
+                //.add(NeoForgeMod.STEP_HEIGHT.value(), 1.1D)
+                .add(Attributes.ATTACK_DAMAGE, 2.0D);
+    }
+
+    // data
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
-        this.entityData.define(DATA_ROBE_COLOR, 0x4d423c);
+        this.entityData.define(DATA_ROBE_COLOR, ROBE_COLORS[0]);
     }
 
     @Override
@@ -58,12 +92,71 @@ public class GnomadMogulEntity extends GnomadEntity implements InterpolatedSkele
         }
     }
 
+    // ai
+    @Override
+    protected Brain.Provider<?> brainProvider() {
+        return new SmartBrainProvider<>(this);
+    }
+    @Override
+    protected PathNavigation createNavigation(Level pLevel) {
+        return new SmoothGroundNavigation(this, pLevel);
+    }
+
+    @Override
+    protected void customServerAiStep() {
+        tickBrain(this);
+        super.customServerAiStep();
+       // if (this.navigation.getPath() != null) ClinkerPacketHandler.sendToClientsTrackingEntity(this, new ClientboundPathfindingDebugPacket(this, this.navigation.getPath()));
+    }
+
     @Override
     public void tick() {
         super.tick();
-        if (this.level().isClientSide()) {
-            this.computeHeightOffset();
-        }
+        if (this.level().isClientSide()) this.computeHeightOffset();
+    }
+
+    @Override
+    public List<ExtendedSensor<GnomadMogulEntity>> getSensors() {
+        return ObjectArrayList.of(
+                new NearbyLivingEntitySensor<GnomadMogulEntity>()
+                        .setRadius(28.0F),
+                new NearbyPlayersSensor<GnomadMogulEntity>()
+                        .setRadius(28.0F),
+                new GenericAttackTargetSensor<GnomadMogulEntity>()
+                        .setPredicate((other, me) -> other instanceof Player),
+                new HurtBySensor<>(),
+                new InWaterSensor<>()
+        );
+    }
+
+    @Override
+    public BrainActivityGroup<GnomadMogulEntity> getCoreTasks() {
+        return BrainActivityGroup.coreTasks(
+                new LookAtTarget<>(),
+                new MoveToWalkTarget<>(),
+                new FloatToSurfaceOfFluid<>()
+        );
+    }
+
+    @Override
+    public BrainActivityGroup<GnomadMogulEntity> getIdleTasks() {
+        return BrainActivityGroup.idleTasks(
+                new FirstApplicableBehaviour<>(
+                        new SetPlayerLookTarget<>()
+                                .cooldownFor((mob) -> mob.getRandom().nextInt(0, 8 * 20)),
+                        new LookAtNearestEntity<>()
+                                .predicate((entity, mob) -> entity.getType().is(ClinkerTags.GNOMADS) && SensoryUtils.hasLineOfSight(mob, entity))
+                                .cooldownFor((mob) -> mob.getRandom().nextInt(0, 8 * 20)),
+                        new SetRandomLookTargetImproved<>()
+                                .lookTime(mob -> mob.getRandom().nextInt(20, 500))
+                ),
+                new OneRandomBehaviour<>(
+                        new SetRandomWalkTarget<>()
+                                .speedModifier(0.7F),
+                        new Idle<>()
+                                .runFor(entity -> entity.getRandom().nextInt(30, 120))
+                )
+        );
     }
 
     @Override
@@ -93,12 +186,10 @@ public class GnomadMogulEntity extends GnomadEntity implements InterpolatedSkele
     @OnlyIn(Dist.CLIENT)
     protected void computeHeightOffset() {
         this.prevSmoothedHeight = this.smoothedHeight;
-
         Vec3 samplePosition = this.getPosition(1.0F).add(0, 0.1F, 0);
         Vec3 to = samplePosition.add(0, -this.getStepHeight() - 0.1F, 0);
         HitResult result = this.level().clip(new ClipContext(samplePosition, to, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, this));
         double height = (result.getLocation().y + this.getY()) / 2.0F;
-
         this.smoothedHeight = Mth.lerp(0.3F, this.smoothedHeight, height);
         if (this.smoothedHeight > this.getY()) this.smoothedHeight = this.getY();
         this.smoothedHeight = MathUtils.clampDifference(this.smoothedHeight, this.getY(), this.getStepHeight());
@@ -106,5 +197,16 @@ public class GnomadMogulEntity extends GnomadEntity implements InterpolatedSkele
     @OnlyIn(Dist.CLIENT)
     public float getHeightOffset(float partialTick) {
         return (float) (Mth.lerp(partialTick, prevSmoothedHeight, smoothedHeight) - this.getPosition(partialTick).y);
+    }
+
+    InterpolatedSkeleton<?> skeleton;
+    @Override
+    public void setSkeleton(InterpolatedSkeleton skeleton) {
+        this.skeleton = skeleton;
+    }
+
+    @Override
+    public InterpolatedSkeleton getSkeleton() {
+        return skeleton;
     }
 }

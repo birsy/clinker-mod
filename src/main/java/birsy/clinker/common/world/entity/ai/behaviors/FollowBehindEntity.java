@@ -1,12 +1,9 @@
-package birsy.clinker.common.world.entity.ai;
+package birsy.clinker.common.world.entity.ai.behaviors;
 
-import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.GatherSupplies;
-import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.behavior.EntityTracker;

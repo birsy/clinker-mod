@@ -1,6 +1,7 @@
 package birsy.clinker.client.render.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -23,7 +24,12 @@ public class DebugEntityRenderer extends EntityRenderer<Entity> {
     public void render(Entity pEntity, float pEntityYaw, float pPartialTick, PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight) {
         super.render(pEntity, pEntityYaw, pPartialTick, pPoseStack, pBuffer, pPackedLight);
         pPoseStack.pushPose();
-        pPoseStack.translate(-0.5, 0, -0.5);
+        pPoseStack.mulPose(Axis.YN.rotationDegrees(180 + pEntity.getViewYRot(pPartialTick)));
+        pPoseStack.mulPose(Axis.XP.rotationDegrees(pEntity.getViewXRot(pPartialTick)));
+        pPoseStack.scale(pEntity.getBbWidth(), pEntity.getBbHeight(), pEntity.getBbWidth());
+        pPoseStack.translate(pEntity.getBbWidth() * -0.5F, 0, pEntity.getBbWidth() * -0.5F);
+
+
         this.dispatcher.renderSingleBlock(Blocks.DISPENSER.defaultBlockState(), pPoseStack, pBuffer, pPackedLight, OverlayTexture.NO_OVERLAY);
         pPoseStack.popPose();
     }

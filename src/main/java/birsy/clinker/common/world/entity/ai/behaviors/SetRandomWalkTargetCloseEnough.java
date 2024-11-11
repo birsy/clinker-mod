@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.entity.ai;
+package birsy.clinker.common.world.entity.ai.behaviors;
 
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;

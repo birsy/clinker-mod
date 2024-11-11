@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.entity.ai;
+package birsy.clinker.common.world.entity.ai.behaviors;
 
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -7,25 +7,21 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.behavior.EntityTracker;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
+import net.minecraft.world.entity.ai.memory.NearestVisibleLivingEntities;
+import net.minecraft.world.entity.animal.Panda;
 import net.tslat.smartbrainlib.api.core.behaviour.ExtendedBehaviour;
 import net.tslat.smartbrainlib.util.BrainUtils;
 
 import java.util.List;
-import java.util.function.Predicate;
+import java.util.function.BiPredicate;
 
-public class SetRandomEntityLookTarget<E extends LivingEntity> extends ExtendedBehaviour<E> {
+public class LookAtNearestEntity<E extends LivingEntity> extends ExtendedBehaviour<E> {
     private static final List<Pair<MemoryModuleType<?>, MemoryStatus>> MEMORY_REQUIREMENTS = ObjectArrayList.of(Pair.of(MemoryModuleType.LOOK_TARGET, MemoryStatus.VALUE_ABSENT), Pair.of(MemoryModuleType.NEAREST_LIVING_ENTITIES, MemoryStatus.VALUE_PRESENT));
-    protected Predicate<LivingEntity> predicate = pl -> true;
-    protected float probability = 1.0F;
+    protected BiPredicate<LivingEntity, E> predicate = (other, me) -> true;
     protected LivingEntity target = null;
 
-    public SetRandomEntityLookTarget<E> predicate(Predicate<LivingEntity> predicate) {
+    public LookAtNearestEntity<E> predicate(BiPredicate<LivingEntity, E> predicate) {
         this.predicate = predicate;
-        return this;
-    }
-
-    public SetRandomEntityLookTarget<E> probabilityPerEntity(float probability) {
-        this.probability = probability;
         return this;
     }
 
@@ -36,13 +32,8 @@ public class SetRandomEntityLookTarget<E extends LivingEntity> extends ExtendedB
 
     @Override
     protected boolean checkExtraStartConditions(ServerLevel level, E entity) {
-        for (LivingEntity potentialTargets : BrainUtils.getMemory(entity, MemoryModuleType.NEAREST_LIVING_ENTITIES)) {
-            if (this.predicate.test(potentialTargets) && entity.getRandom().nextFloat() < this.probability) {
-                this.target = potentialTargets;
-                break;
-            }
-        }
-
+        NearestVisibleLivingEntities potentialTargets = BrainUtils.getMemory(entity, MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES);
+        this.target = potentialTargets.findClosest((other) -> predicate.test(other, entity)).orElse(null);
         return this.target != null;
     }
 

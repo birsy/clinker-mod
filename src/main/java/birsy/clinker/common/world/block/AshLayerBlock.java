@@ -12,6 +12,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -42,11 +43,9 @@ public class AshLayerBlock extends AshBlock implements SimpleWaterloggedBlock
 			box(0.0D, 0.0D, 0.0D, 16.0D, 14.0D, 16.0D),
 			box(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D)};
 	
-	public AshLayerBlock()
+	public AshLayerBlock(BlockBehaviour.Properties properties)
 	{
-		super(Block.Properties.of().mapColor(MapColor.COLOR_GRAY)
-				.strength(0.5F)
-				.sound(SoundType.SNOW));
+		super(properties);
 		this.registerDefaultState(this.stateDefinition.any().setValue(LAYERS, Integer.valueOf(1)).setValue(WATERLOGGED, Boolean.valueOf(false)));
 	}
 
