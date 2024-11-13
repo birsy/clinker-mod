@@ -5,6 +5,7 @@ import birsy.clinker.common.networking.packet.debug.GnomadSquadRemovalDebugPacke
 import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
 import birsy.clinker.core.Clinker;
 import com.google.common.collect.Maps;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.datafix.DataFixTypes;
@@ -19,47 +20,38 @@ import java.util.*;
 // not actually saved data - squads are ephemeral. just wanted an easy way to attach it to a serverlevel
 @Mod.EventBusSubscriber(modid = Clinker.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class GnomadSquads extends SavedData {
-    private final HashMap<Integer, GnomadSquad> squadMap = Maps.newHashMap();
+    private final HashMap<UUID, GnomadSquad> squadMap = Maps.newHashMap();
     private final ServerLevel level;
-    private int nextAvailableID;
 
     public GnomadSquads(ServerLevel pLevel) {
         this.level = pLevel;
-        this.nextAvailableID = 1;
         this.setDirty();
     }
     public static SavedData.Factory<GnomadSquads> factory(ServerLevel pLevel) {
-        return new SavedData.Factory<>(() -> new GnomadSquads(pLevel), p_294039_ -> load(pLevel, p_294039_), DataFixTypes.SAVED_DATA_RAIDS);
+        return new SavedData.Factory<>(() -> new GnomadSquads(pLevel), data -> load(pLevel, data), DataFixTypes.SAVED_DATA_RAIDS);
     }
 
     public void tick() {
-        Iterator<Map.Entry<Integer, GnomadSquad>> iterator = squadMap.entrySet().iterator();
+        Iterator<Map.Entry<UUID, GnomadSquad>> iterator = squadMap.entrySet().iterator();
         while (iterator.hasNext()) {
-            Map.Entry<Integer, GnomadSquad> entry = iterator.next();
+            Map.Entry<UUID, GnomadSquad> entry = iterator.next();
             GnomadSquad squad = entry.getValue();
-
             if (squad.markedForRemoval) {
                 ClinkerPacketHandler.sendToAllClients(new GnomadSquadRemovalDebugPacket(squad));
                 iterator.remove();
-                break;
+                continue;
             }
             squad.tick();
         }
     }
 
     public void createSquad(GnomadEntity... members) {
-        GnomadSquad squad = new GnomadSquad(nextAvailableID++, level);
-        for (GnomadEntity member : members) {
-            squad.addMember(member);
-        }
+        this.createSquad(List.of(members));
     }
 
     public void createSquad(Collection<GnomadEntity> members) {
-        GnomadSquad squad = new GnomadSquad(nextAvailableID++, level);
-        for (GnomadEntity member : members) {
-            squad.addMember(member);
-        }
-
+        GnomadSquad squad = new GnomadSquad(UUID.randomUUID(), level);
+        for (GnomadEntity member : members) squad.addMember(member);
         squadMap.put(squad.id, squad);
     }
 
@@ -74,11 +66,16 @@ public class GnomadSquads extends SavedData {
         return pCompoundTag;
     }
 
-
     @SubscribeEvent
     public static void tick(TickEvent.LevelTickEvent event) {
+        Minecraft.getInstance().getProfiler().push("tickGnomadSquads");
         if (event.level instanceof ServerLevel level) {
-            level.getDataStorage().computeIfAbsent(factory(level), "GnomadSquads").tick();
+            getInstance(level).tick();
         }
+        Minecraft.getInstance().getProfiler().pop();
+    }
+
+    public static GnomadSquads getInstance(ServerLevel level) {
+        return level.getDataStorage().computeIfAbsent(factory(level), "GnomadSquads");
     }
 }

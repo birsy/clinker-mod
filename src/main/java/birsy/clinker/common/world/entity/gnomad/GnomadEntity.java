@@ -6,6 +6,8 @@ import birsy.clinker.common.world.entity.GroundLocomoteEntity;
 import birsy.clinker.common.world.entity.gnomad.squad.GnomadSquad;
 import birsy.clinker.common.world.entity.gnomad.squad.GnomadSquadTask;
 import birsy.clinker.common.world.entity.gnomad.squad.GnomadSquads;
+import birsy.clinker.common.world.entity.gnomad.squad.RestWithFriendsTask;
+import birsy.clinker.core.Clinker;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -18,14 +20,17 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.tslat.smartbrainlib.api.SmartBrainOwner;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import static net.minecraft.world.entity.monster.Monster.createMonsterAttributes;
 
 public abstract class GnomadEntity extends GroundLocomoteEntity implements Enemy, InterpolatedSkeletonParent {
     public GnomadSquad squad;
-    public GnomadSquadTask currentTask;
+    public List<GnomadSquadTask> activeTasks = new ArrayList<>();
 
     @OnlyIn(Dist.CLIENT)
     public Vec3 acceleration = Vec3.ZERO;
@@ -51,30 +56,19 @@ public abstract class GnomadEntity extends GroundLocomoteEntity implements Enemy
     }
 
     @Override
+    public void onAddedToWorld() {
+        super.onAddedToWorld();
+        if (this.level() instanceof ServerLevel level) GnomadSquads.getInstance(level).createSquad(this);
+    }
+
+    @Override
     public void tick() {
         super.tick();
 
         if (this.level().isClientSide()) {
             updateAcceleration();
         }
-
-        this.lookForSquadmatesAndCreateSquad();
-        if (this.squad != null && this.tickCount % 80 == 0) {
-            //this.squad.postTask(new ResupplyTask(this));
-        }
     }
-
-    public void lookForSquadmatesAndCreateSquad() {
-        if (this.squad != null) return;
-        if (this.level() instanceof ServerLevel level) {
-            List<GnomadEntity> nearbyGnomads = GnomadSquad.getNearbyGnomads(this, GnomadSquad.SQUAD_SEARCH_RADIUS, (gnomad) -> gnomad.squad == null);
-            if (nearbyGnomads.size() <= 0) return;
-
-            nearbyGnomads.add(this);
-            level.getDataStorage().computeIfAbsent(GnomadSquads.factory(level), "GnomadSquads").createSquad(nearbyGnomads);
-        }
-    }
-
 
     @OnlyIn(Dist.CLIENT)
     public void updateAcceleration() {
@@ -85,6 +79,7 @@ public abstract class GnomadEntity extends GroundLocomoteEntity implements Enemy
 
     public void setSitting(boolean sitting) {
         if (sitting) {
+            Clinker.LOGGER.info("sit!");
             this.entityData.set(DATA_ANIMATION_FLAGS_ID, (byte) (this.entityData.get(DATA_ANIMATION_FLAGS_ID) | 0b1));
         } else {
             this.entityData.set(DATA_ANIMATION_FLAGS_ID, (byte) (this.entityData.get(DATA_ANIMATION_FLAGS_ID) & 0b11111110));
@@ -93,6 +88,22 @@ public abstract class GnomadEntity extends GroundLocomoteEntity implements Enemy
 
     public boolean isSitting() {
         return (this.entityData.get(DATA_ANIMATION_FLAGS_ID) & 0b1) > 0;
+    }
+
+    public void ceaseTaskOfType(Class<GnomadSquadTask> taskType) {
+        Iterator<GnomadSquadTask> taskIterator = this.activeTasks.iterator();
+        while (taskIterator.hasNext()) {
+            GnomadSquadTask task = taskIterator.next();
+            if (taskType.isInstance(task)) {
+                task.leave(this);
+                taskIterator.remove();
+            }
+        }
+    }
+
+    public void ceaseTask(GnomadSquadTask task) {
+        task.leave(this);
+        this.activeTasks.remove(task);
     }
 
     InterpolatedSkeleton skeleton;
@@ -106,5 +117,4 @@ public abstract class GnomadEntity extends GroundLocomoteEntity implements Enemy
     public InterpolatedSkeleton getSkeleton() {
         return this.skeleton;
     }
-
 }

@@ -39,8 +39,8 @@ public class DeliverSupplies {} /*<E extends GnomadEntity & GnomadSupplyDelivere
     }
 
     @Override
-    protected void start(E entity) {
-        super.start(entity);
+    protected void begin(E entity) {
+        super.begin(entity);
         BrainUtils.setMemory(entity, MemoryModuleType.LOOK_TARGET, new EntityTracker(BrainUtils.getMemory(entity, ClinkerMemoryModules.SUPPLY_TARGET.get()), true));
     }
 

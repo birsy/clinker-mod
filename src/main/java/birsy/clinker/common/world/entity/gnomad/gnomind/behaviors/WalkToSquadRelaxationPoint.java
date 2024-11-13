@@ -4,9 +4,11 @@ import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.memory.WalkTarget;
+import net.minecraft.world.phys.Vec3;
 import net.tslat.smartbrainlib.api.core.behaviour.ExtendedBehaviour;
 import net.tslat.smartbrainlib.util.BrainUtils;
 
@@ -36,8 +38,21 @@ public class WalkToSquadRelaxationPoint<E extends GnomadEntity> extends Extended
     }
 
     @Override
+    protected boolean checkExtraStartConditions(ServerLevel level, E entity) {
+        Vec3 pos = BrainUtils.getMemory(entity, ClinkerMemoryModules.RELAXATION_SPOT.get()).pos().getCenter();
+        return entity.position().distanceTo(pos) > sitRadius.apply(entity);
+    }
+
+    @Override
     protected void start(E entity) {
         super.start(entity);
-        BrainUtils.setMemory(entity, MemoryModuleType.WALK_TARGET, new WalkTarget(BrainUtils.getMemory(entity, ClinkerMemoryModules.RELAXATION_SPOT.get()).pos().getCenter(), this.speedMod.apply(entity), this.sitRadius.apply(entity)));
+        BrainUtils.setMemory(entity,
+                MemoryModuleType.WALK_TARGET,
+                new WalkTarget(
+                        BrainUtils.getMemory(entity, ClinkerMemoryModules.RELAXATION_SPOT.get()).pos().getCenter(),
+                        this.speedMod.apply(entity),
+                        this.sitRadius.apply(entity)
+                )
+        );
     }
 }

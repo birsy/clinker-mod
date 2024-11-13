@@ -1,46 +1,69 @@
 package birsy.clinker.common.world.entity.gnomad.squad;
 
 import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
-import org.jetbrains.annotations.Nullable;
+import birsy.clinker.core.Clinker;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public abstract class GnomadSquadTask {
-    protected int ticksSinceLastUpdate;
-    protected int tickRate = 0;
+    int ticksSinceLastUpdate;
+    int ticksPerUpdate = 1;
 
-    protected int ticksExisted;
-    protected int timeOutTime;
+    int ticksExisted;
+    int timeOutTime;
 
+    boolean active = false;
     boolean shouldRemove = false;
 
-    private boolean initialized = false;
-    private boolean assigned = false;
-    protected GnomadEntity assignee;
+    public final int minVolunteers;
+    public final int maxVolunteers;
+    public final List<GnomadEntity> volunteers;
+    public final GnomadEntity taskmaster;
 
-    protected GnomadSquadTask(int timeOutTime) {
+    protected GnomadSquadTask(int minVolunteers, int maxVolunteers, int timeOutTime, GnomadEntity taskmaster) {
         this.timeOutTime = timeOutTime;
+        this.minVolunteers = Math.max(0, minVolunteers);
+        this.maxVolunteers = Math.max(0, maxVolunteers);
+        this.taskmaster = taskmaster;
+        this.volunteers = new ArrayList<>();
     }
 
-    public final boolean isInitialized() {
-        return initialized;
+    protected GnomadSquadTask(int volunteers, int timeOutTime, GnomadEntity taskmaster) {
+        this.timeOutTime = timeOutTime;
+        this.minVolunteers = Math.max(0, volunteers);
+        this.maxVolunteers = Math.max(0, volunteers);
+        this.taskmaster = taskmaster;
+        this.volunteers = new ArrayList<>();
     }
 
-    public final void initialize() {
-        this.initialized = true;
-        this.start();
+    protected boolean shouldRemoveVolunteer(GnomadEntity volunteer) {
+        return volunteer == null || volunteer.isDeadOrDying() || volunteer.isRemoved();
     }
 
-    protected void attemptInvalidate() {
-        if (this.ticksExisted > this.timeOutTime) {
-            this.fail(GnomadSquadTask.FailureType.TIMED_OUT);
-        }
-        if (this.assigned && (this.assignee == null || this.assignee.isDeadOrDying() || this.assignee.isRemoved())) {
-            this.fail(GnomadSquadTask.FailureType.ASSIGNEE_DIED);
-        }
+    protected boolean shouldBegin() {
+        return this.volunteers.size() > minVolunteers;
     }
 
-    protected void start() {}
+    protected boolean canVolunteer(GnomadEntity volunteer) {
+        return volunteer != taskmaster;
+    }
 
-    protected void tick() {}
+    protected boolean shouldSucceed() {
+        return true;
+    }
+
+    protected Optional<FailureType> shouldFail() {
+        if (taskmaster == null || taskmaster.isDeadOrDying() || taskmaster.isRemoved()) return Optional.of(FailureType.TASKMASTER_DIED);
+        if (this.volunteers.size() > minVolunteers && this.active) return Optional.of(FailureType.NO_VOLUNTEERS);
+        if (this.remainingTime() <= 0) return Optional.of(FailureType.TIMED_OUT);
+        return Optional.empty();
+    }
+
+    protected void begin() {}
+
+    protected void update(boolean isActive) {}
 
     protected void fail(FailureType failureType) {
         this.shouldRemove = true;
@@ -50,17 +73,16 @@ public abstract class GnomadSquadTask {
         this.shouldRemove = true;
     }
 
-    public void assign(GnomadEntity assignee) {
-        this.assignee = assignee;
-        this.assigned = true;
+    public boolean volunteer(GnomadEntity volunteer) {
+        if (maxVolunteers != 0 && volunteers.size() > maxVolunteers) return false;
+        if (!canVolunteer(volunteer)) return false;
+        if (volunteer.activeTasks.contains(this)) return false;
+        volunteer.activeTasks.add(this);
+        return volunteers.add(volunteer);
     }
 
-    public GnomadEntity getAssignee() {
-        return this.assignee;
-    }
-
-    public boolean isAssigned() {
-        return this.assignee != null;
+    public boolean leave(GnomadEntity volunteer) {
+        return volunteers.remove(volunteer);
     }
 
     public int remainingTime() {
@@ -68,6 +90,6 @@ public abstract class GnomadSquadTask {
     }
 
     public enum FailureType {
-        TIMED_OUT, SQUAD_DISBANDED, ASSIGNEE_DIED, ASSIGNER_DIED;
+        TIMED_OUT, SQUAD_DISBANDED, NO_VOLUNTEERS, TASKMASTER_DIED;
     }
 }

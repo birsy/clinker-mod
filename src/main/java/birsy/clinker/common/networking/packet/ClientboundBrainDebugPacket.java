@@ -1,8 +1,10 @@
 package birsy.clinker.common.networking.packet;
 
+import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.BrainDebugPayload;
 import net.minecraft.network.protocol.game.DebugEntityNameGenerator;
@@ -14,8 +16,10 @@ import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.Path;
 import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.tslat.smartbrainlib.util.BrainUtils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -32,6 +36,11 @@ public class ClientboundBrainDebugPacket extends ClientboundPacket {
         List<String> memories = new ArrayList<>();
         for (MemoryModuleType<?> memoryModuleType : entity.getBrain().getMemories().keySet()) memories.add(memoryModuleType.toString());
 
+        Set<BlockPos> POIs = new HashSet<>();
+        if (BrainUtils.hasMemory(entity, ClinkerMemoryModules.RELAXATION_SPOT.get())) {
+            POIs.add(BrainUtils.getMemory(entity, ClinkerMemoryModules.RELAXATION_SPOT.get()).pos());
+        }
+
         this.dump = new BrainDebugPayload.BrainDump(
                 entity.getUUID(),
                 entity.getId(),
@@ -47,7 +56,7 @@ public class ClientboundBrainDebugPacket extends ClientboundPacket {
                 behaviors,
                 memories,
                 List.of(),
-                Set.of(), Set.of());
+                POIs, Set.of());
     }
 
     public ClientboundBrainDebugPacket(FriendlyByteBuf buffer) {

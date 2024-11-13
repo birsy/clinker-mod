@@ -32,27 +32,13 @@ public class SitAndRelaxWithSquad<E extends GnomadEntity> extends ExtendedBehavi
     protected boolean checkExtraStartConditions(ServerLevel level, E entity) {
         if (entity.isSitting()) return false;
         float sitRadius = this.sitRadius.apply(entity);
-        if (entity.distanceToSqr(BrainUtils.getMemory(entity, ClinkerMemoryModules.RELAXATION_SPOT.get()).pos().getCenter()) <= sitRadius * sitRadius) {
-            return true;
-        }
-        return false;
+        return entity.position().distanceTo(BrainUtils.getMemory(entity, ClinkerMemoryModules.RELAXATION_SPOT.get()).pos().getCenter())
+                <= sitRadius;
     }
 
     @Override
     protected void start(E entity) {
         super.start(entity);
         entity.setSitting(true);
-    }
-
-    @Override
-    protected boolean shouldKeepRunning(E entity) {
-        if (BrainUtils.hasMemory(entity, MemoryModuleType.PATH)) return false;
-        return true;
-    }
-
-    @Override
-    protected void stop(E entity) {
-        super.stop(entity);
-        entity.setSitting(false);
     }
 }

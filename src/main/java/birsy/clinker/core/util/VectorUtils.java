@@ -42,7 +42,7 @@ public class VectorUtils {
         // Calculate the direction vector of the line segment
         Vector3f lineDirection = lineEnd.sub(lineStart, new Vector3f());
 
-        // Calculate the vector from the line start to the point
+        // Calculate the vector from the line begin to the point
         Vector3f fromLineStartToPoint = point.sub(lineStart, new Vector3f());
 
         // Calculate the projection of the point onto the line

@@ -296,7 +296,7 @@ public class GJKEPA {
     }
 
     /**
-     * An edge with a start and end index
+     * An edge with a begin and end index
      */
     private static class Edge {
         public final int start, end;

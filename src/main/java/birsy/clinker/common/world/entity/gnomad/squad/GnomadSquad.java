@@ -13,21 +13,19 @@ import java.util.*;
 import java.util.function.Predicate;
 
 public class GnomadSquad {
-    public final int id;
+    public final UUID id;
     private final Level level;
     public boolean markedForRemoval = false;
     List<GnomadEntity> members;
-    List<GnomadSquadTask> tasks;
-    List<GnomadSquadTask> pendingTasks;
+    List<GnomadSquadTask> taskboard;
 
     public static final float SQUAD_SEARCH_RADIUS = 10.0F;
 
-    public GnomadSquad(int id, ServerLevel level) {
+    public GnomadSquad(UUID id, ServerLevel level) {
         this.id = id;
         this.level = level;
         this.members = new ArrayList<>();
-        this.tasks = new ArrayList<>();
-        this.pendingTasks = new ArrayList<>();
+        this.taskboard = new ArrayList<>();
     }
 
     public void tick() {
@@ -39,49 +37,57 @@ public class GnomadSquad {
     }
 
     private void cullDeadOrRemovedMembers() {
-        Iterator<GnomadEntity> memberIterator = this.members.iterator();
-        while (memberIterator.hasNext()) {
-            GnomadEntity member = memberIterator.next();
-            if (member == null || member.isRemoved() || member.isDeadOrDying() ) memberIterator.remove();
-        }
-
-        if (this.members.size() <= 1) this.markedForRemoval = true;
+        this.members.removeIf(member ->
+                member == null ||
+                member.isRemoved() ||
+                member.isDeadOrDying() ||
+                member.squad != this ||
+                member.level() != this.level);
+        if (this.members.isEmpty()) this.markedForRemoval = true;
     }
 
     private void updateTasks() {
-        Iterator<GnomadSquadTask> taskIterator = this.tasks.iterator();
+        if (this.markedForRemoval) return;
+        Iterator<GnomadSquadTask> taskIterator = this.taskboard.iterator();
         while (taskIterator.hasNext()) {
             GnomadSquadTask task = taskIterator.next();
 
-            if (!task.isInitialized()) task.initialize();
-
             task.ticksExisted++;
-            task.attemptInvalidate();
-
-            if (task.shouldRemove) {
-                if (pendingTasks.contains(task)) {
-                    pendingTasks.remove(task);
-                }
-                taskIterator.remove();
-                continue;
-            }
 
             // check if this task should be updated this tick
             task.ticksSinceLastUpdate++;
-            if (task.ticksSinceLastUpdate > task.tickRate) {
+            if (task.ticksSinceLastUpdate >= task.ticksPerUpdate) {
                 task.ticksSinceLastUpdate = 0;
-                task.tick();
+
+                task.volunteers.removeIf(task::shouldRemoveVolunteer);
+                Optional<GnomadSquadTask.FailureType> failureType = task.shouldFail();
+                if (failureType.isPresent()) {
+                    task.fail(failureType.get());
+                    taskIterator.remove();
+                    continue;
+                }
+
+                if (!task.active) {
+                    if (task.shouldBegin()) {
+                        task.active = true;
+                        task.begin();
+                    }
+                }
+                if (task.shouldSucceed() && task.active) task.succeed();
+
+                task.update(task.active);
             }
         }
 
-        this.pendingTasks.sort(Comparator.comparingInt((GnomadSquadTask) -> GnomadSquadTask.remainingTime()));
+        this.taskboard.sort(Comparator.comparingInt(GnomadSquadTask::remainingTime));
     }
 
     private int searchIndex = 0;
     private void searchForNewMembers(double searchRadius) {
         if (this.markedForRemoval) return;
+        if (this.members.isEmpty()) return;
 
-        this.searchIndex = (this.searchIndex + 1) % (this.members.size() - 1);
+        this.searchIndex = (this.searchIndex + 1) % this.members.size();
         this.searchForNewMembersAroundGnomad(this.members.get(this.searchIndex), searchRadius);
     }
 
@@ -97,7 +103,7 @@ public class GnomadSquad {
         List<GnomadEntity> entities = getNearbyGnomads(member, searchRadius);
         for (GnomadEntity entity : entities) {
             if (entity.squad == this) continue;
-            if (entity.squad == null) {
+            if (entity.squad.size() <= 1) {
                 this.addMember(entity);
                 continue;
             }
@@ -118,17 +124,13 @@ public class GnomadSquad {
             member.squad = this;
         }
         // transfer all the tasks over too
-        for (GnomadSquadTask task : squad.tasks) {
-            this.tasks.add(task);
-        }
+        this.taskboard.addAll(squad.taskboard);
         squad.members.clear();
         squad.markedForRemoval = true;
     }
 
     public void addMember(GnomadEntity entity) {
-        if (entity.squad != null) {
-            entity.squad.removeMember(entity);
-        }
+        if (entity.squad != null) entity.squad.removeMember(entity);
         this.members.add(entity);
         entity.squad = this;
     }
@@ -148,16 +150,14 @@ public class GnomadSquad {
 
 
     public void postTask(GnomadSquadTask task) {
-        this.tasks.add(task);
+        this.taskboard.add(task);
     }
 
-    public void assignTask(GnomadEntity entity, GnomadSquadTask task) {
-        entity.currentTask = task;
-        task.assign(entity);
-        this.pendingTasks.remove(task);
+    public void volunteerForTask(GnomadEntity entity, GnomadSquadTask task) {
+        task.volunteer(entity);
     }
 
     public List<GnomadSquadTask> getTasksImmutable() {
-        return Collections.unmodifiableList(this.tasks);
+        return Collections.unmodifiableList(this.taskboard);
     }
 }

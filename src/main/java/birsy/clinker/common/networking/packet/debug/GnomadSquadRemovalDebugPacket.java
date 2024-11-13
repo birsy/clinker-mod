@@ -11,21 +11,22 @@ import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class GnomadSquadRemovalDebugPacket extends ClientboundPacket {
-    public final int squadID;
+    public final UUID squadID;
 
     public GnomadSquadRemovalDebugPacket(GnomadSquad squad) {
         this.squadID = squad.id;
     }
 
     public GnomadSquadRemovalDebugPacket(FriendlyByteBuf buffer) {
-        this.squadID = buffer.readInt();
+        this.squadID = buffer.readUUID();
     }
 
     @Override
     public void write(FriendlyByteBuf buffer) {
-        buffer.writeInt(this.squadID);
+        buffer.writeUUID(this.squadID);
     }
 
     @Override
