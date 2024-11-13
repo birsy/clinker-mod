@@ -3,6 +3,7 @@ package birsy.clinker.client.render.entity;
 import birsy.clinker.client.model.entity.GnomadMogulSkeletonFactory;
 import birsy.clinker.client.render.entity.base.InterpolatedEntityRenderer;
 import birsy.clinker.client.render.entity.layer.GnomadMogulRobesLayer;
+import birsy.clinker.client.render.entity.layer.GnomadMogulWeaponLayer;
 import birsy.clinker.common.world.entity.gnomad.GnomadMogulEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -17,6 +18,7 @@ public class GnomadMogulRenderer extends InterpolatedEntityRenderer<GnomadMogulE
     public GnomadMogulRenderer(EntityRendererProvider.Context context) {
         super(context, new GnomadMogulSkeletonFactory(), 2.0F);
         this.addLayer(new GnomadMogulRobesLayer(this));
+        this.addLayer(new GnomadMogulWeaponLayer(this));
     }
 
     @Override

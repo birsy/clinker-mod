@@ -14,14 +14,22 @@ import net.tslat.smartbrainlib.util.BrainUtils;
 
 import java.util.List;
 import java.util.function.BiPredicate;
+import java.util.function.Function;
 
 public class LookAtNearestEntity<E extends LivingEntity> extends ExtendedBehaviour<E> {
     private static final List<Pair<MemoryModuleType<?>, MemoryStatus>> MEMORY_REQUIREMENTS = ObjectArrayList.of(Pair.of(MemoryModuleType.LOOK_TARGET, MemoryStatus.VALUE_ABSENT), Pair.of(MemoryModuleType.NEAREST_LIVING_ENTITIES, MemoryStatus.VALUE_PRESENT));
     protected BiPredicate<LivingEntity, E> predicate = (other, me) -> true;
+    protected Function<E, Integer> expirationTime = (me) -> 80;
+
     protected LivingEntity target = null;
 
     public LookAtNearestEntity<E> predicate(BiPredicate<LivingEntity, E> predicate) {
         this.predicate = predicate;
+        return this;
+    }
+
+    public LookAtNearestEntity<E> expirationTime(Function<E, Integer> expirationTime) {
+        this.expirationTime = expirationTime;
         return this;
     }
 
@@ -39,7 +47,7 @@ public class LookAtNearestEntity<E extends LivingEntity> extends ExtendedBehavio
 
     @Override
     protected void start(E entity) {
-        BrainUtils.setMemory(entity, MemoryModuleType.LOOK_TARGET, new EntityTracker(this.target, true));
+        BrainUtils.setForgettableMemory(entity, MemoryModuleType.LOOK_TARGET, new EntityTracker(this.target, true), expirationTime.apply(entity));
     }
 
     @Override

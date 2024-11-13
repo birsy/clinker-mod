@@ -7,14 +7,8 @@ import birsy.clinker.client.model.base.SkeletonFactory;
 import birsy.clinker.client.model.base.mesh.ModelMesh;
 import birsy.clinker.client.model.base.mesh.StaticMesh;
 import birsy.clinker.common.world.entity.gnomad.GnomadMogulEntity;
-import birsy.clinker.core.Clinker;
-import birsy.clinker.core.util.MathUtils;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
-import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
 import org.joml.Vector3fc;
 
@@ -53,23 +47,7 @@ public class GnomadMogulSkeletonFactory implements SkeletonFactory {
         mesh6.addCube(4F, 19F, 4F, -2.5F, -32.5F, -1.5F, 0F, 0F, 0F, 0F, 132F, false);
         mesh6.addCube(4F, 10.5F, 4F, -2.5F, -24.5F, -1.5F, 0.4F, 0.4F, 0.4F, 16F, 133F, false);
         meshes[6] = mesh6;
-        
-        StaticMesh mesh7 = new StaticMesh(texWidth, texHeight);
-        mesh7.addCube(1F, 4F, 2F, 0F, 16.5F, -6F, 0F, 0F, 0F, 6F, 23F, false);
-        mesh7.addCube(2F, 14F, 3F, -0.5F, -9.5F, -1.5F, -0.2F, -0.2F, -0.2F, 6F, 0F, false);
-        mesh7.addCube(1F, 29F, 2F, 0F, -17.5F, -1F, 0F, 0F, 0F, 0F, 0F, false);
-        mesh7.addCube(1F, 1F, 4F, 0F, -18.5F, -2F, 0F, 0F, 0F, 16F, 23F, false);
-        mesh7.addCube(1F, 1F, 4F, 0F, -21.5F, -2F, 0F, 0F, 0F, 22F, 24F, false);
-        mesh7.addCube(1F, 2F, 1F, 0F, -20.5F, -2F, 0F, 0F, 0F, 16F, 4F, false);
-        mesh7.addCube(1F, 2F, 1F, 0F, -20.5F, 1F, 0F, 0F, 0F, 25F, 4F, false);
-        mesh7.addCube(2F, 1F, 6F, -0.5F, -15.5F, -3F, 0F, 0F, 0F, 6F, 23F, false);
-        mesh7.addCube(1F, 2F, 7F, 0F, 9.5F, 1F, 0F, 0F, 0F, 16F, 0F, false);
-        mesh7.addCube(1F, 9F, 2F, 0F, 11.5F, 6F, 0F, 0F, 0F, 18F, 9F, false);
-        mesh7.addCube(1F, 2F, 2F, 0F, 18.5F, 4F, 0F, 0F, 0F, 16F, 0F, false);
-        mesh7.addCube(1F, 2F, 2F, 0F, 18.5F, -4F, 0F, 0F, 0F, 25F, 0F, false);
-        mesh7.addCube(1F, 2F, 10F, 0F, 20.5F, -4F, 0F, 0F, 0F, 6F, 11F, false);
-        meshes[7] = mesh7;
-        
+
         StaticMesh mesh8 = new StaticMesh(texWidth, texHeight);
         mesh8.addCube(5F, 24F, 6F, -2.5F, -24F, -3F, 0F, 0F, 0F, 32F, 113F, false);
         mesh8.addCube(5F, 9.5F, 6F, -2.5F, -24F, -3F, 0.25F, 0.25F, 0.25F, 54F, 128F, false);
@@ -169,11 +147,6 @@ public class GnomadMogulSkeletonFactory implements SkeletonFactory {
         skeleton.addBone(MogulRightArmBone, meshes[6]);
         skeleton.MogulRightArm = MogulRightArmBone;
         
-        InterpolatedBone MogulWarhookBone = new InterpolatedBone("MogulWarhook");
-        MogulWarhookBone.setInitialTransform(-0.5F, -30F, -4F, new Quaternionf().rotationZYX(0F, 0F, -1.5707963258999997F));
-        skeleton.addBone(MogulWarhookBone, meshes[7]);
-        skeleton.MogulWarhook = MogulWarhookBone;
-        
         InterpolatedBone MogulRightLegBone = new InterpolatedBone("MogulRightLeg");
         MogulRightLegBone.setInitialTransform(10.5F, 0F, 1.5F, new Quaternionf().rotationZYX(0F, 0F, 0F));
         skeleton.addBone(MogulRightLegBone, meshes[8]);
@@ -238,7 +211,16 @@ public class GnomadMogulSkeletonFactory implements SkeletonFactory {
         MogulRightHelmetFlapBone.setInitialTransform(10F, -1.25F, 0.5F, new Quaternionf().rotationZYX(0.6981317003999999F, -1.5707963259F, 0F));
         skeleton.addBone(MogulRightHelmetFlapBone, meshes[20]);
         skeleton.MogulRightHelmetFlap = MogulRightHelmetFlapBone;
-        
+
+        InterpolatedBone MogulRightArmGraspBone = new InterpolatedBone("MogulRightArmGrasp");
+        MogulRightArmGraspBone.setInitialTransform(-0.5F, -30.5F, -1.5F, new Quaternionf().rotationZYX(0F, 0F, -1.5707963258999997F));
+        skeleton.addBone(MogulRightArmGraspBone, new StaticMesh(256, 256));
+        skeleton.MogulRightArmGrasp = MogulRightArmGraspBone;
+        InterpolatedBone MogulLeftArmGraspBone = new InterpolatedBone("MogulLeftArmGrasp");
+        MogulLeftArmGraspBone.setInitialTransform(-0.5F, -30.5F, -1.5F, new Quaternionf().rotationZYX(0F, 0F, -1.5707963258999997F));
+        skeleton.addBone(MogulLeftArmGraspBone, new StaticMesh(256, 256));
+        skeleton.MogulLeftArmGrasp = MogulLeftArmGraspBone;
+
         MogulRootBone.addChild(MogulBodyBone);
         MogulBodyBone.addChild(MogulFrontRobeBone);
         MogulBodyBone.addChild(MogulBackRobeBone);
@@ -249,7 +231,6 @@ public class GnomadMogulSkeletonFactory implements SkeletonFactory {
         MogulBodyBone.addChild(MogulLeftLegBone);
         MogulBodyBone.addChild(MogulLeftArmBone);
         MogulBodyBone.addChild(MogulNeckBone);
-        MogulRightArmBone.addChild(MogulWarhookBone);
         MogulNeckBone.addChild(MogulHeadBone);
         MogulHeadBone.addChild(MogulFaceBone);
         MogulHeadBone.addChild(MogulHelmetBaseBone);
@@ -259,6 +240,10 @@ public class GnomadMogulSkeletonFactory implements SkeletonFactory {
         MogulHelmetBaseBone.addChild(MogulLeftHelmetFlapBone);
         MogulHelmetBaseBone.addChild(MogulRightHelmetFlapBone);
         MogulHelmetUpperBone.addChild(MogulHelmetOrnamentBone);
+
+        MogulRightArmBone.addChild(MogulRightArmGraspBone);
+        MogulLeftArmBone.addChild(MogulLeftArmGraspBone);
+
         skeleton.buildRoots();
         return skeleton;
     }
@@ -271,7 +256,6 @@ public class GnomadMogulSkeletonFactory implements SkeletonFactory {
         protected InterpolatedBone MogulLeftRobe;
         protected InterpolatedBone MogulRightRobe;
         protected InterpolatedBone MogulRightArm;
-        protected InterpolatedBone MogulWarhook;
         protected InterpolatedBone MogulRightLeg;
         protected InterpolatedBone MogulLeftLeg;
         protected InterpolatedBone MogulLeftArm;
@@ -285,6 +269,10 @@ public class GnomadMogulSkeletonFactory implements SkeletonFactory {
         protected InterpolatedBone MogulBackHelmetFlap;
         protected InterpolatedBone MogulLeftHelmetFlap;
         protected InterpolatedBone MogulRightHelmetFlap;
+
+        public InterpolatedBone MogulRightArmGrasp;
+        public InterpolatedBone MogulLeftArmGrasp;
+
 
         @Override
         protected float maskShakeSpeed() {

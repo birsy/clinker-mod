@@ -10,6 +10,10 @@ public class GroundLookControl extends LookControl {
         super(pMob);
     }
 
+    public GroundLocomoteEntity getEntity() {
+        return (GroundLocomoteEntity) this.mob;
+    }
+
     @Override
     protected boolean resetXRotOnTick() {
         return false;
@@ -17,19 +21,16 @@ public class GroundLookControl extends LookControl {
 
     @Override
     public void tick() {
-        float desiredYAngle = this.getYRotD().orElse(this.mob.yBodyRot);
+        GroundLocomoteEntity me = this.getEntity();
+
+        float desiredYAngle = this.getYRotD().orElse(me.yBodyRot);
         float desiredXAngle = this.getXRotD().orElse(0.0F);
 
-        if (this.mob.getMoveControl().hasWanted()) {
-            float dX = (float) (this.mob.getMoveControl().getWantedX() - this.mob.getX());
-            float dZ = (float) (this.mob.getMoveControl().getWantedZ() - this.mob.getZ());
-            //desiredYAngle = ((float) Mth.atan2(dZ, dX) * Mth.RAD_TO_DEG) - 90;
-        }
+        float lerpFactor = 0.05F;
+        if (me.isWatchingEntity()) lerpFactor = 0.8F;
 
-        float lerpFactor = 0.2F;
-        this.mob.yHeadRot = Mth.rotLerp(lerpFactor, this.mob.yHeadRot, desiredYAngle);
-        this.mob.setXRot(Mth.rotLerp(lerpFactor, this.mob.getXRot(), desiredXAngle));
-
+        me.yHeadRot = rotateTowards(me.yHeadRot, Mth.rotLerp(lerpFactor, me.yHeadRot, desiredYAngle), 5);
+        me.setXRot(   rotateTowards(me.getXRot(), Mth.rotLerp(lerpFactor, me.getXRot(), desiredXAngle), 5));
 
         this.clampHeadRotationToBody();
     }

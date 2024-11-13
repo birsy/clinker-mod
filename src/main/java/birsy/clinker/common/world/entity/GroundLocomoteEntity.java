@@ -43,6 +43,7 @@ public class GroundLocomoteEntity extends PathfinderMob {
 
     private static final EntityDataAccessor<Vector3f> DATA_WALK_ID = SynchedEntityData.defineId(GroundLocomoteEntity.class, EntityDataSerializers.VECTOR3);
     private static final EntityDataAccessor<Float> DATA_DISTANCED_WALKED_ID = SynchedEntityData.defineId(GroundLocomoteEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Boolean> DATA_WATCHING_ENTITY = SynchedEntityData.defineId(GroundLocomoteEntity.class, EntityDataSerializers.BOOLEAN);
 
     float cumulativeWalk = 0;
     protected final Scheduler scheduler = new Scheduler();
@@ -68,6 +69,7 @@ public class GroundLocomoteEntity extends PathfinderMob {
         super.defineSynchedData();
         this.entityData.define(DATA_WALK_ID, new Vector3f());
         this.entityData.define(DATA_DISTANCED_WALKED_ID, 0.0F);
+        this.entityData.define(DATA_WATCHING_ENTITY, false);
     }
 
     @Override
@@ -119,6 +121,14 @@ public class GroundLocomoteEntity extends PathfinderMob {
 
     public float getCumulativeWalk() {
         return cumulativeWalk;
+    }
+
+    public void setWatchingEntity(boolean watchingEntity) {
+        entityData.set(DATA_WATCHING_ENTITY, watchingEntity);
+    }
+
+    public boolean isWatchingEntity() {
+        return entityData.get(DATA_WATCHING_ENTITY);
     }
 
     private void debugMove() {

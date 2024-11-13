@@ -4,6 +4,7 @@ import birsy.clinker.client.model.base.InterpolatedSkeleton;
 import birsy.clinker.client.model.base.InterpolatedSkeletonParent;
 import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.ClientboundBrainDebugPacket;
+import birsy.clinker.common.world.entity.ai.behaviors.*;
 import birsy.clinker.common.world.entity.ai.behaviors.LookAtNearestEntity;
 import birsy.clinker.common.world.entity.ai.behaviors.SetRandomLookTargetImproved;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.InitiateRelaxWithSquad;
@@ -11,19 +12,16 @@ import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.SitAndRelaxWit
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.WalkToSquadRelaxationPoint;
 import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.GnomadSquadSensor;
 import birsy.clinker.common.world.entity.gnomad.squad.GnomadSquadTask;
-import birsy.clinker.common.world.entity.gnomad.squad.RestWithFriendsTask;
 import birsy.clinker.core.registry.ClinkerTags;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import birsy.clinker.core.util.MathUtils;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.common.custom.BeeDebugPayload;
-import net.minecraft.network.protocol.common.custom.BrainDebugPayload;
-import net.minecraft.network.protocol.game.DebugEntityNameGenerator;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.util.Mth;
+import net.minecraft.util.valueproviders.ConstantFloat;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
@@ -31,10 +29,8 @@ import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -53,7 +49,6 @@ import net.tslat.smartbrainlib.api.core.behaviour.custom.misc.Idle;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.move.FloatToSurfaceOfFluid;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.move.MoveToWalkTarget;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.path.SetRandomWalkTarget;
-import net.tslat.smartbrainlib.api.core.behaviour.custom.target.SetPlayerLookTarget;
 import net.tslat.smartbrainlib.api.core.navigation.SmoothGroundNavigation;
 import net.tslat.smartbrainlib.api.core.sensor.ExtendedSensor;
 import net.tslat.smartbrainlib.api.core.sensor.custom.GenericAttackTargetSensor;
@@ -63,13 +58,9 @@ import net.tslat.smartbrainlib.api.core.sensor.vanilla.NearbyLivingEntitySensor;
 import net.tslat.smartbrainlib.api.core.sensor.vanilla.NearbyPlayersSensor;
 import net.tslat.smartbrainlib.util.BrainUtils;
 import net.tslat.smartbrainlib.util.RandomUtil;
-import net.tslat.smartbrainlib.util.SensoryUtils;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import static net.minecraft.world.entity.monster.Monster.createMonsterAttributes;
 
@@ -154,6 +145,8 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
     public BrainActivityGroup<GnomadMogulEntity> getCoreTasks() {
         return BrainActivityGroup.coreTasks(
                 new LookAtTarget<>(),
+                new SetWatchingEntity<>(),
+                new InvalidateLookAtTarget<>(),
                 new MoveToWalkTarget<>(),
                 new FloatToSurfaceOfFluid<>()
         );
@@ -162,14 +155,17 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
     @Override
     public BrainActivityGroup<GnomadMogulEntity> getIdleTasks() {
         return BrainActivityGroup.<GnomadMogulEntity>idleTasks(
-                new FirstApplicableBehaviour<>(
-                        new SetPlayerLookTarget<>()
-                                .cooldownFor((mob) -> mob.getRandom().nextInt(0, 8 * 20)),
-                        new LookAtNearestEntity<>()
-                                .predicate((entity, mob) -> entity.getType().is(ClinkerTags.GNOMADS) && SensoryUtils.hasLineOfSight(mob, entity))
-                                .cooldownFor((mob) -> mob.getRandom().nextInt(0, 8 * 20)),
+                // look tasks
+                new FirstApplicableBehaviour(
                         new SetRandomLookTargetImproved<>()
-                                .lookTime(mob -> mob.getRandom().nextInt(20, 500))
+                                .lookTime(mob -> RandomUtil.randomNumberBetween(0, 16 * 20))
+                                .lookChance(ConstantFloat.of(0.2F)),
+                        new LookAtNearestPlayerExpiring<>()
+                                .expirationTime(mob -> RandomUtil.randomNumberBetween(0, 8 * 20))
+                                .startCondition(mob -> RandomUtil.fiftyFifty()), // 50/50 chance of looking at player or a friend.
+                        new LookAtNearestEntity<>()
+                                .expirationTime(mob -> RandomUtil.randomNumberBetween(0, 8 * 20))
+                                .predicate((entity, mob) -> entity.getType().is(ClinkerTags.GNOMADS))
                 ),
                 // walking behaviors
                 new FirstApplicableBehaviour<>(
@@ -207,11 +203,6 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
 
     public int getRobeColor() {
         return this.entityData.get(DATA_ROBE_COLOR);
-    }
-
-    public void setRobeColor(double r, double g, double b) {
-        int ir = (int) (r * 255), ig = (int) (g * 255), ib = (int) (b * 255);
-        this.setRobeColor(ir<<16 + ig<<8 + ib);
     }
 
     public void setRobeColor(int robeColor) {

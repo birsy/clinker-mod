@@ -72,6 +72,10 @@ public class ClientboundBrainDebugPacket extends ClientboundPacket {
     public void run(PlayPayloadContext context) {
         if (!SharedConstants.IS_RUNNING_IN_IDE) return;
         Minecraft mc = Minecraft.getInstance();
+        if (!mc.getEntityRenderDispatcher().shouldRenderHitBoxes()) {
+            mc.debugRenderer.brainDebugRenderer.clear();
+            return;
+        }
         mc.debugRenderer.brainDebugRenderer.addOrUpdateBrainDump(this.dump);
     }
 }
