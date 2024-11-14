@@ -25,6 +25,7 @@ public class GnomadMogulRobesLayer extends EntityRenderLayer<GnomadMogulEntity, 
         Vec3 robeColor = Vec3.fromRGB24(pLivingEntity.getRobeColor());
         pPoseStack.pushPose();
         pPoseStack.translate(0, 16 * pLivingEntity.getHeightOffset(pPartialTicks), 0);
+        if (pLivingEntity.isSitting()) pPoseStack.scale(1, 0.5F, 1);
         if (pSkeleton != null) pSkeleton.render(pPartialTicks, pPoseStack, pBuffer.getBuffer(RenderType.entityCutoutNoCullZOffset(MOGUL_ROBES_LOCATION)), pPackedLight, packedOverlay,
                 (float) robeColor.x, (float) robeColor.y, (float) robeColor.z, 1.0F);
         pPoseStack.popPose();

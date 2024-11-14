@@ -1,7 +1,7 @@
 package birsy.clinker.common.world.entity.gnomad.gnomind.behaviors;
 
 import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
-import birsy.clinker.common.world.entity.gnomad.squad.RestWithFriendsTask;
+import birsy.clinker.common.world.entity.gnomad.gnomind.squad.squadtasks.RestWithFriendsTask;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import com.mojang.datafixers.util.Pair;
@@ -23,8 +23,11 @@ import java.util.List;
 // sets up a relaxation point for members of our squad!
 // TODO: use POIs to find better spots to relax. try to relax around light sources?
 public class InitiateRelaxWithSquad<E extends GnomadEntity> extends ExtendedBehaviour<E> {
-    private static final List<Pair<MemoryModuleType<?>, MemoryStatus>> MEMORY_REQUIREMENTS = ObjectArrayList.of(Pair.of(ClinkerMemoryModules.RELAXATION_SPOT.get(), MemoryStatus.VALUE_ABSENT),
-                                                                                                                Pair.of(ClinkerMemoryModules.GNOMADS_IN_SQUAD.get(), MemoryStatus.VALUE_PRESENT));
+    private static final List<Pair<MemoryModuleType<?>, MemoryStatus>> MEMORY_REQUIREMENTS = ObjectArrayList.of(
+            Pair.of(ClinkerMemoryModules.RELAXATION_SPOT.get(), MemoryStatus.VALUE_ABSENT),
+            Pair.of(ClinkerMemoryModules.ACTIVE_SQUAD_TASK.get(), MemoryStatus.VALUE_ABSENT),
+            Pair.of(ClinkerMemoryModules.GNOMADS_IN_SQUAD.get(), MemoryStatus.VALUE_PRESENT)
+    );
     protected SquareRadius radius = new SquareRadius(10, 7);
     private BlockPos relaxationSpot;
 

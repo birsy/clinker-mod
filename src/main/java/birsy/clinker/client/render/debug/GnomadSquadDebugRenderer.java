@@ -52,7 +52,7 @@ public class GnomadSquadDebugRenderer implements DebugRenderer.SimpleDebugRender
         }
         poseStack.popPose();
 
-        double squadY = squadDump.squadCenter.y() + 2.5F;
+        double squadY = squadDump.squadCenter.y() + 8.5F;
         double yOffset = 0;
         DebugRenderer.renderFloatingText(poseStack, bufferSource, "Squad " + squadDump.squadID.toString(), squadDump.squadCenter.x(), squadY - yOffset, squadDump.squadCenter.z(), -16711936);
         yOffset += 0.3;

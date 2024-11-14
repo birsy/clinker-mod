@@ -1,11 +1,16 @@
-package birsy.clinker.common.world.entity.gnomad.squad;
+package birsy.clinker.common.world.entity.gnomad.gnomind.squad;
 
 import birsy.clinker.client.render.debug.ClinkerDebugRenderers;
 import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.debug.GnomadSquadDebugPacket;
 import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
+import birsy.clinker.common.world.entity.gnomad.gnomind.squad.squadtasks.GnomadSquadTask;
+import birsy.clinker.core.Clinker;
+import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+import net.tslat.smartbrainlib.util.BrainUtils;
 import net.tslat.smartbrainlib.util.EntityRetrievalUtil;
 import net.tslat.smartbrainlib.util.SensoryUtils;
 
@@ -29,6 +34,7 @@ public class GnomadSquad {
     }
 
     public void tick() {
+        if (this.markedForRemoval) return;
         this.updateTasks();
         this.searchForNewMembers(10.0F);
         this.cullDeadOrRemovedMembers();
@@ -47,10 +53,13 @@ public class GnomadSquad {
     }
 
     private void updateTasks() {
-        if (this.markedForRemoval) return;
         Iterator<GnomadSquadTask> taskIterator = this.taskboard.iterator();
         while (taskIterator.hasNext()) {
             GnomadSquadTask task = taskIterator.next();
+            if (task.markedForRemoval) {
+                taskIterator.remove();
+                continue;
+            }
 
             task.ticksExisted++;
 
@@ -59,34 +68,40 @@ public class GnomadSquad {
             if (task.ticksSinceLastUpdate >= task.ticksPerUpdate) {
                 task.ticksSinceLastUpdate = 0;
 
-                task.volunteers.removeIf(task::shouldRemoveVolunteer);
+                // check for failures
                 Optional<GnomadSquadTask.FailureType> failureType = task.shouldFail();
                 if (failureType.isPresent()) {
                     task.fail(failureType.get());
-                    taskIterator.remove();
+                    task.markedForRemoval = true;
+                    continue;
+                }
+                // check if we should begin
+                if (!task.hasBegun) {
+                    if (task.shouldBegin()) {
+                        task.begin();
+                        task.hasBegun = true;
+                    }
+                }
+                // check for successes
+                if (task.shouldSucceed() && task.hasBegun) {
+                    task.succeed();
+                    task.markedForRemoval = true;
                     continue;
                 }
 
-                if (!task.active) {
-                    if (task.shouldBegin()) {
-                        task.active = true;
-                        task.begin();
-                    }
-                }
-                if (task.shouldSucceed() && task.active) task.succeed();
-
-                task.update(task.active);
+                // cull any invalid members
+                task.volunteers.values().removeIf(task::shouldRemoveVolunteer);
+                // set the current task for the rest
+                for (GnomadEntity entity : task.volunteers.values()) BrainUtils.setForgettableMemory(entity, ClinkerMemoryModules.ACTIVE_SQUAD_TASK.get(), task, task.remainingTime());
+                // update the task
+                task.update(task.hasBegun);
             }
         }
-
-        this.taskboard.sort(Comparator.comparingInt(GnomadSquadTask::remainingTime));
     }
 
     private int searchIndex = 0;
     private void searchForNewMembers(double searchRadius) {
-        if (this.markedForRemoval) return;
         if (this.members.isEmpty()) return;
-
         this.searchIndex = (this.searchIndex + 1) % this.members.size();
         this.searchForNewMembersAroundGnomad(this.members.get(this.searchIndex), searchRadius);
     }
@@ -148,7 +163,6 @@ public class GnomadSquad {
         return members.size();
     }
 
-
     public void postTask(GnomadSquadTask task) {
         this.taskboard.add(task);
     }
@@ -159,5 +173,11 @@ public class GnomadSquad {
 
     public List<GnomadSquadTask> getTasksImmutable() {
         return Collections.unmodifiableList(this.taskboard);
+    }
+
+    public Vec3 getCenter() {
+        Vec3 average = new Vec3(0, 0, 0);
+        for (GnomadEntity member : members) average = average.add(member.position());
+        return average.scale(1.0 / this.size());
     }
 }

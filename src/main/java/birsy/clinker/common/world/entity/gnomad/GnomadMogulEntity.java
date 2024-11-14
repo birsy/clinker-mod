@@ -7,13 +7,10 @@ import birsy.clinker.common.networking.packet.ClientboundBrainDebugPacket;
 import birsy.clinker.common.world.entity.ai.behaviors.*;
 import birsy.clinker.common.world.entity.ai.behaviors.LookAtNearestEntity;
 import birsy.clinker.common.world.entity.ai.behaviors.SetRandomLookTargetImproved;
-import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.InitiateRelaxWithSquad;
-import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.SitAndRelaxWithSquad;
-import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.WalkToSquadRelaxationPoint;
+import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.*;
 import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.GnomadSquadSensor;
-import birsy.clinker.common.world.entity.gnomad.squad.GnomadSquadTask;
+import birsy.clinker.common.world.entity.gnomad.gnomind.squad.squadtasks.RestWithFriendsTask;
 import birsy.clinker.core.registry.ClinkerTags;
-import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import birsy.clinker.core.util.MathUtils;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.nbt.CompoundTag;
@@ -56,7 +53,6 @@ import net.tslat.smartbrainlib.api.core.sensor.vanilla.HurtBySensor;
 import net.tslat.smartbrainlib.api.core.sensor.vanilla.InWaterSensor;
 import net.tslat.smartbrainlib.api.core.sensor.vanilla.NearbyLivingEntitySensor;
 import net.tslat.smartbrainlib.api.core.sensor.vanilla.NearbyPlayersSensor;
-import net.tslat.smartbrainlib.util.BrainUtils;
 import net.tslat.smartbrainlib.util.RandomUtil;
 import org.jetbrains.annotations.Nullable;
 
@@ -147,15 +143,16 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
                 new LookAtTarget<>(),
                 new SetWatchingEntity<>(),
                 new InvalidateLookAtTarget<>(),
-                new MoveToWalkTarget<>(),
+                new InvalidateCurrentSquadTask<>(),
+                new MoveToWalkTarget<GnomadMogulEntity>().startCondition(mob -> !mob.isSitting()),
                 new FloatToSurfaceOfFluid<>()
         );
     }
 
     @Override
     public BrainActivityGroup<GnomadMogulEntity> getIdleTasks() {
-        return BrainActivityGroup.<GnomadMogulEntity>idleTasks(
-                // look tasks
+        return BrainActivityGroup.idleTasks(
+                // look behaviors
                 new FirstApplicableBehaviour(
                         new SetRandomLookTargetImproved<>()
                                 .lookTime(mob -> RandomUtil.randomNumberBetween(0, 16 * 20))
@@ -168,30 +165,21 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
                                 .predicate((entity, mob) -> entity.getType().is(ClinkerTags.GNOMADS))
                 ),
                 // walking behaviors
-                new FirstApplicableBehaviour<>(
-                        // walk to spot and sit
-                        new WalkToSquadRelaxationPoint<>(),
-                        new SitAndRelaxWithSquad<>(),
-                        // decide to stand up and leave
-                        new CustomBehaviour<GnomadMogulEntity>((mob) -> {
-                            mob.setSitting(false);
-                            BrainUtils.clearMemory(mob, ClinkerMemoryModules.RELAXATION_SPOT.get());
-                            this.ceaseTaskOfType(GnomadSquadTask.class);
-                            // reset the activity...
-                            mob.getBrain().setActiveActivityToFirstValid(mob.getActivityPriorities());
-                        }).startCondition((mob) ->
-                                false
-                        ),
-                        // otherwise, walk around randomly.
-                        new OneRandomBehaviour<>(
-                                new SetRandomWalkTarget<>()
-                                        .speedModifier(0.7F),
-                                new Idle<>()
-                                        .runFor(entity -> entity.getRandom().nextInt(30, 120))
-                        ).startCondition((mob) -> !BrainUtils.hasMemory(mob, ClinkerMemoryModules.RELAXATION_SPOT.get()))
+                new FirstApplicableBehaviour(
+                        // if we have a rest task, run that!
+                        RestWithFriendsTask.createBehavior(),
+                        new CustomBehaviour<GnomadMogulEntity>(mob -> mob.setSitting(false)).startCondition(GnomadEntity::isSitting),
+                        new StayNearSquad().radius(16, 16),
+                        new OneRandomBehaviour(
+                                new SetRandomWalkTarget<>().speedModifier(0.7F),
+                                new Idle<>().runFor(mob -> RandomUtil.randomNumberBetween(30, 120))
+                        )
                 ),
-                new InitiateRelaxWithSquad<>().startCondition((mob) -> RandomUtil.oneInNChance(20 * 20))
-        ).priority(12);
+                new VolunteerForSquadTask<>()
+                        .shouldVolunteer((mob, task) -> task instanceof RestWithFriendsTask)
+                        .startCondition((mob) -> RandomUtil.oneInNChance(15 * 20)),
+                new InitiateRelaxWithSquad<>().startCondition((mob) -> RandomUtil.oneInNChance(60 * 20))
+        );
     }
 
     @Override

@@ -3,11 +3,12 @@ package birsy.clinker.common.world.entity.gnomad;
 import birsy.clinker.client.model.base.InterpolatedSkeleton;
 import birsy.clinker.client.model.base.InterpolatedSkeletonParent;
 import birsy.clinker.common.world.entity.GroundLocomoteEntity;
-import birsy.clinker.common.world.entity.gnomad.squad.GnomadSquad;
-import birsy.clinker.common.world.entity.gnomad.squad.GnomadSquadTask;
-import birsy.clinker.common.world.entity.gnomad.squad.GnomadSquads;
-import birsy.clinker.common.world.entity.gnomad.squad.RestWithFriendsTask;
+import birsy.clinker.common.world.entity.gnomad.gnomind.squad.GnomadSquad;
+import birsy.clinker.common.world.entity.gnomad.gnomind.squad.squadtasks.GnomadSquadTask;
+import birsy.clinker.common.world.entity.gnomad.gnomind.squad.GnomadSquads;
 import birsy.clinker.core.Clinker;
+import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
+import net.minecraft.network.protocol.game.DebugEntityNameGenerator;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -20,17 +21,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.tslat.smartbrainlib.api.SmartBrainOwner;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import net.tslat.smartbrainlib.util.BrainUtils;
 
 import static net.minecraft.world.entity.monster.Monster.createMonsterAttributes;
 
 public abstract class GnomadEntity extends GroundLocomoteEntity implements Enemy, InterpolatedSkeletonParent {
     public GnomadSquad squad;
-    public List<GnomadSquadTask> activeTasks = new ArrayList<>();
 
     @OnlyIn(Dist.CLIENT)
     public Vec3 acceleration = Vec3.ZERO;
@@ -79,7 +75,7 @@ public abstract class GnomadEntity extends GroundLocomoteEntity implements Enemy
 
     public void setSitting(boolean sitting) {
         if (sitting) {
-            Clinker.LOGGER.info("sit!");
+            Clinker.LOGGER.info("{} sits!", DebugEntityNameGenerator.getEntityName(this));
             this.entityData.set(DATA_ANIMATION_FLAGS_ID, (byte) (this.entityData.get(DATA_ANIMATION_FLAGS_ID) | 0b1));
         } else {
             this.entityData.set(DATA_ANIMATION_FLAGS_ID, (byte) (this.entityData.get(DATA_ANIMATION_FLAGS_ID) & 0b11111110));
@@ -88,22 +84,6 @@ public abstract class GnomadEntity extends GroundLocomoteEntity implements Enemy
 
     public boolean isSitting() {
         return (this.entityData.get(DATA_ANIMATION_FLAGS_ID) & 0b1) > 0;
-    }
-
-    public void ceaseTaskOfType(Class<GnomadSquadTask> taskType) {
-        Iterator<GnomadSquadTask> taskIterator = this.activeTasks.iterator();
-        while (taskIterator.hasNext()) {
-            GnomadSquadTask task = taskIterator.next();
-            if (taskType.isInstance(task)) {
-                task.leave(this);
-                taskIterator.remove();
-            }
-        }
-    }
-
-    public void ceaseTask(GnomadSquadTask task) {
-        task.leave(this);
-        this.activeTasks.remove(task);
     }
 
     InterpolatedSkeleton skeleton;

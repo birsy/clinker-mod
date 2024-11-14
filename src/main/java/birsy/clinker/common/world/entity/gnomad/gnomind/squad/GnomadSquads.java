@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.entity.gnomad.squad;
+package birsy.clinker.common.world.entity.gnomad.gnomind.squad;
 
 import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.debug.GnomadSquadRemovalDebugPacket;

@@ -2,15 +2,10 @@ package birsy.clinker.common.networking.packet.debug;
 
 import birsy.clinker.client.render.debug.ClinkerDebugRenderers;
 import birsy.clinker.common.networking.packet.ClientboundPacket;
-import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
-import birsy.clinker.common.world.entity.gnomad.squad.GnomadSquad;
-import birsy.clinker.common.world.entity.gnomad.squad.GnomadSquadTask;
+import birsy.clinker.common.world.entity.gnomad.gnomind.squad.GnomadSquad;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 public class GnomadSquadRemovalDebugPacket extends ClientboundPacket {

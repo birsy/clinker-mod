@@ -3,8 +3,8 @@ package birsy.clinker.common.networking.packet.debug;
 import birsy.clinker.client.render.debug.ClinkerDebugRenderers;
 import birsy.clinker.common.networking.packet.ClientboundPacket;
 import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
-import birsy.clinker.common.world.entity.gnomad.squad.GnomadSquad;
-import birsy.clinker.common.world.entity.gnomad.squad.GnomadSquadTask;
+import birsy.clinker.common.world.entity.gnomad.gnomind.squad.GnomadSquad;
+import birsy.clinker.common.world.entity.gnomad.gnomind.squad.squadtasks.GnomadSquadTask;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.DebugEntityNameGenerator;
 import net.minecraft.world.phys.Vec3;
@@ -25,10 +25,7 @@ public class GnomadSquadDebugPacket extends ClientboundPacket {
 
         List<GnomadEntity> members = squad.getMembersImmutable();
 
-        Vec3 average = new Vec3(0, 0, 0);
-        for (GnomadEntity member : members) average = average.add(member.getEyePosition());
-        average = average.scale(1.0 / squad.size());
-        squadCenter = average;
+        squadCenter = squad.getCenter();
 
         this.squadMemberIDs = new ArrayList<>(squad.size());
         for (int i = 0; i < squad.size(); i++) {
@@ -43,15 +40,20 @@ public class GnomadSquadDebugPacket extends ClientboundPacket {
             taskName.append("\nTime Remaining: ").append(task.remainingTime());
             taskName.append("\nTaskmaster: ").append(DebugEntityNameGenerator.getEntityName(task.taskmaster));
             taskName.append("\nVolunteers: ");
-            for (int j = 0; j < Math.max(Math.max(task.volunteers.size(), task.minVolunteers), task.maxVolunteers); j++) {
+            for (GnomadEntity volunteer : task.volunteers.values()) {
                 taskName.append("\n");
-                if (j > task.volunteers.size() - 1 || task.volunteers.get(j) == null) {
-                    taskName.append(j < task.minVolunteers ? "[AWAITING...]" : "[EMPTY]");
-                } else {
-                    taskName.append(DebugEntityNameGenerator.getEntityName(task.volunteers.get(j)));
-                }
+                taskName.append(DebugEntityNameGenerator.getEntityName(volunteer));
                 taskName.append(",");
             }
+            int remainder = task.maxVolunteers - task.volunteers.size();
+            if (remainder > 0) {
+                for (int j = 0; j < remainder; j++) {
+                    taskName.append("\n");
+                    taskName.append(j + task.volunteers.size() < task.minVolunteers ? "[AWAITING...]" : "[EMPTY]");
+                    taskName.append(",");
+                }
+            }
+
             this.taskNames.add(taskName.toString());
         }
     }
