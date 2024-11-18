@@ -34,6 +34,7 @@ public class OthershoreSkyRenderer {
     private static final ResourceLocation OUTER_CLOUD_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/environment/outer_clouds.png");
     private static final ResourceLocation STAR_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/environment/star.png");
     private static final ResourceLocation STAR_COLOR_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/environment/star_color.png");
+    private static final ResourceLocation MATURE_STAR_COLOR_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/environment/star_color_mature.png");
 
     private VertexBuffer outerSkyBuffer;
     private VertexBuffer outerCloudsBuffer;
@@ -60,8 +61,6 @@ public class OthershoreSkyRenderer {
     public void render(ClientLevel level, int ticks, float partialTick, PoseStack poseStack, Camera camera, Matrix4f projectionMatrix, Vector3fc skyColor) {
         Minecraft mc = Minecraft.getInstance();
         Vec3 cameraPos = camera.getPosition();
-
-
 
         Matrix4f projMatrix = new Matrix4f(projectionMatrix);
         RenderSystem.setProjectionMatrix(projMatrix.setPerspective(
@@ -110,13 +109,22 @@ public class OthershoreSkyRenderer {
         poseStack.pushPose();
         float scale = 4990.0F;
         poseStack.scale(scale, scale, scale);
-
+        float aboveCloudsDarken = 0.7F;
+        aboveCloudsDarken = Mth.lerp(
+                Mth.clamp(MathUtils.mapRange(OthershoreCloudRenderer.CLOUDS_END - OthershoreCloudRenderer.CLOUD_LAYER_THICKNESS*0.5F, OthershoreCloudRenderer.CLOUDS_END, 0F, 1F, (float)cameraPos.y), 0, 1),
+                1.0F,
+                aboveCloudsDarken
+        );
+        RenderSystem.setShaderFogColor(fogColor[0] * aboveCloudsDarken, fogColor[1] * aboveCloudsDarken, fogColor[2] * aboveCloudsDarken);
         if (cameraPos.y > OthershoreCloudRenderer.CLOUDS_START + OthershoreCloudRenderer.CLOUD_LAYER_THICKNESS) {
             drawOuterSky(level, ticks, partialTick, projMatrix, poseStack,
                     (float) cameraPos.x / scale, (float) cameraPos.z / scale,
-                    fogColor[0], fogColor[1], fogColor[2],
-                    skyColor.x(), skyColor.y(), skyColor.z());
+                    //fogColor[0], fogColor[1], fogColor[2],
+                    32/255.0F, 28/255.0F, 35/255.0F,
+                    //skyColor.x(), skyColor.y(), skyColor.z()
+                    19/255.0F, 13/255.0F, 17/255.0F);
         }
+
         poseStack.popPose();
 
         drawCloudRings(level, ticks, partialTick, projMatrix, poseStack,
@@ -137,15 +145,14 @@ public class OthershoreSkyRenderer {
                               float skyR, float skyG, float skyB) {
         float time = (ticks + partialTick);
 
-
         // outer sky
         RenderSystem.setShader(ClinkerShaders::getSkyOuterShader);
         RenderSystem.setShaderTexture(0,SKY_TEXTURE);
 
         ShaderInstance outerSkyShader = RenderSystem.getShader();
         setShaderUniform(outerSkyShader, "WiggleTime", time * 0.01F);
-        setShaderUniform(outerSkyShader, "SkyColor", skyR * 0.8F, skyG * 0.8F, skyB * 0.8F, 1.0F);
-        setShaderUniform(outerSkyShader, "FogColor", fogR, fogG, fogB, 1.0F);
+        setShaderUniform(outerSkyShader, "SkyColor1", skyR, skyG, skyB, 1.0F);
+        setShaderUniform(outerSkyShader, "SkyColor2", fogR, fogG, fogB, 1.0F);
 
         outerSkyBuffer.bind();
         outerSkyBuffer.drawWithShader(poseStack.last().pose(), projMatrix, RenderSystem.getShader());
@@ -157,7 +164,7 @@ public class OthershoreSkyRenderer {
         poseStack.mulPose(Axis.XP.rotationDegrees((level.getGameTime() + partialTick) * 0.01F));
         RenderSystem.setShader(ClinkerShaders::getSkyOuterStarShader);
         RenderSystem.setShaderTexture(0, STAR_TEXTURE);
-        RenderSystem.setShaderTexture(1, STAR_COLOR_TEXTURE);
+        RenderSystem.setShaderTexture(1, MATURE_STAR_COLOR_TEXTURE);
 
         ShaderInstance outerStarShader = RenderSystem.getShader();
         setShaderUniform(outerStarShader, "TwinkleTime", time * 0.1F);
@@ -173,8 +180,8 @@ public class OthershoreSkyRenderer {
         RenderSystem.setShaderTexture(0,OUTER_CLOUD_TEXTURE);
 
         ShaderInstance outerCloudShader = RenderSystem.getShader();
-        setShaderUniform(outerCloudShader, "SkyColor", skyR, skyG, skyB, 1.0F);
-        setShaderUniform(outerSkyShader, "FogColor", fogR, fogG, fogB, 1.0F);
+        setShaderUniform(outerCloudShader, "SkyColor1", skyR, skyG, skyB, 1.0F);
+        setShaderUniform(outerCloudShader, "SkyColor2", fogR, fogG, fogB, 1.0F);
         setShaderUniform(outerCloudShader, "WindOffset", 0.5F * time * 0.00002F + camX, time * 0.00002F + camZ);
 
         outerCloudsBuffer.bind();
@@ -447,7 +454,7 @@ public class OthershoreSkyRenderer {
             float factor = (float) i / layerCount;
             float height = Mth.lerp(factor, 0.7F, 0.5F);
             buildCone(bufferBuilder, resolution, 1.0F, height/5.0F, (height - 0.5F)/5.0F,
-                    0.0F,1.0F,1.0F, factor,
+                    0.0F,1.0F,0.0F, factor,
                      0.02F, 1.0F, 1.0F, factor);
         }
 

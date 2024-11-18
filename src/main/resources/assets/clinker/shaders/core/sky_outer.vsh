@@ -4,8 +4,6 @@ in vec3 Position;
 in vec2 UV0;
 in vec4 Color;
 
-uniform vec4 FogColor;
-uniform vec4 SkyColor;
 uniform mat4 ModelViewMat;
 uniform mat4 ProjMat;
 
