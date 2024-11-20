@@ -1,11 +1,11 @@
-package birsy.clinker.client.model.entity;
+package birsy.clinker.client.model;
 
-import birsy.clinker.client.model.base.AnimationProperties;
-import birsy.clinker.client.model.base.InterpolatedBone;
-import birsy.clinker.client.model.base.InterpolatedSkeleton;
-import birsy.clinker.client.model.base.SkeletonFactory;
-import birsy.clinker.client.model.base.mesh.ModelMesh;
-import birsy.clinker.client.model.base.mesh.StaticMesh;
+import birsy.clinker.client.necromancer.Skeleton;
+import birsy.clinker.client.necromancer.animation.AnimationProperties;
+import birsy.clinker.client.necromancer.Bone;
+import birsy.clinker.client.necromancer.RenderFactory;
+import birsy.clinker.client.necromancer.render.mesh.Mesh;
+import birsy.clinker.client.necromancer.render.mesh.StaticMesh;
 import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
 import birsy.clinker.core.Clinker;
 import net.minecraft.world.entity.Mob;
@@ -14,8 +14,8 @@ import org.joml.AxisAngle4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-public class PlaceholderGnomadSkeletonFactory implements SkeletonFactory {
-    private final ModelMesh[] meshes = new ModelMesh[7];
+public class PlaceholderGnomadSkeletonFactory implements RenderFactory {
+    private final Mesh[] meshes = new Mesh[7];
 
     public PlaceholderGnomadSkeletonFactory() {
         int texWidth = 64;
@@ -25,9 +25,9 @@ public class PlaceholderGnomadSkeletonFactory implements SkeletonFactory {
         meshes[0] = mesh;
     }
     
-    public InterpolatedSkeleton create() {
+    public Skeleton create() {
         PlaceholderGnomadSkeleton skeleton = new PlaceholderGnomadSkeleton();
-        InterpolatedBone bodyBone = new InterpolatedBone("body");
+        Bone bodyBone = new Bone("body");
         bodyBone.setInitialTransform(0F, 5F, 0F, new Quaternionf());
         skeleton.addBone(bodyBone, meshes[0]);
         skeleton.body = bodyBone;
@@ -36,8 +36,8 @@ public class PlaceholderGnomadSkeletonFactory implements SkeletonFactory {
         return skeleton;
     }
     
-    public static class PlaceholderGnomadSkeleton extends InterpolatedSkeleton {
-        protected InterpolatedBone body;
+    public static class PlaceholderGnomadSkeleton extends Skeleton {
+        protected Bone body;
         private Vec3 smoothedAcceleration = Vec3.ZERO;
         private Vec3 smoothedVelocity = Vec3.ZERO;
 

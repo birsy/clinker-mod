@@ -1,7 +1,7 @@
-package birsy.clinker.client.model.base.mesh;
+package birsy.clinker.client.necromancer.render.mesh;
 
-import birsy.clinker.client.model.base.InterpolatedSkeleton;
-import birsy.clinker.client.model.base.InterpolatedBone;
+import birsy.clinker.client.necromancer.Skeleton;
+import birsy.clinker.client.necromancer.Bone;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.core.Direction;
@@ -9,21 +9,20 @@ import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
 
-public abstract class ModelMesh {
+public abstract class Mesh {
     public final boolean isStatic;
-    public static final ModelMesh EMPTY = new ModelMesh(true) {
+    public static final Mesh EMPTY = new Mesh(true) {
         @Override
-        public void render(InterpolatedBone part, PoseStack pPoseStack, VertexConsumer pVertexConsumer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha) {
-            return;
+        public void render(Bone part, PoseStack pPoseStack, VertexConsumer pVertexConsumer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha) {
         }
     };
 
-    protected ModelMesh(boolean isStatic) {
+    protected Mesh(boolean isStatic) {
         this.isStatic = isStatic;
     }
 
-    public void update(@Nullable InterpolatedBone part, InterpolatedSkeleton model, int ticks, float partialTick) {}
-    public abstract void render(@Nullable InterpolatedBone part, PoseStack pPoseStack, VertexConsumer pVertexConsumer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha);
+    public void update(@Nullable Bone part, Skeleton model, float time) {}
+    public abstract void render(@Nullable Bone part, PoseStack pPoseStack, VertexConsumer pVertexConsumer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha);
     public void render(PoseStack pPoseStack, VertexConsumer pVertexConsumer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha) {
         this.render(null, pPoseStack, pVertexConsumer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
     }

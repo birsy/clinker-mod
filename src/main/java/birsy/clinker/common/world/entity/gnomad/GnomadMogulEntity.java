@@ -1,7 +1,7 @@
 package birsy.clinker.common.world.entity.gnomad;
 
-import birsy.clinker.client.model.base.InterpolatedSkeleton;
-import birsy.clinker.client.model.base.InterpolatedSkeletonParent;
+import birsy.clinker.client.necromancer.Skeleton;
+import birsy.clinker.client.necromancer.SkeletonParent;
 import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.ClientboundBrainDebugPacket;
 import birsy.clinker.common.world.entity.ai.behaviors.*;
@@ -60,7 +60,7 @@ import java.util.List;
 
 import static net.minecraft.world.entity.monster.Monster.createMonsterAttributes;
 
-public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<GnomadMogulEntity>, InterpolatedSkeletonParent {
+public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<GnomadMogulEntity>, SkeletonParent {
     private static final int[] ROBE_COLORS = new int[]{0x4d423c, 0x513337, 0x4a4751, 0x505049, 0x4f4c4b};
     private static final EntityDataAccessor<Integer> DATA_ROBE_COLOR = SynchedEntityData.defineId(GnomadMogulEntity.class, EntityDataSerializers.INT);
 
@@ -217,14 +217,14 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
         return (float) (Mth.lerp(partialTick, prevSmoothedHeight, smoothedHeight) - this.getPosition(partialTick).y);
     }
 
-    InterpolatedSkeleton<?> skeleton;
+    Skeleton<?> skeleton;
     @Override
-    public void setSkeleton(InterpolatedSkeleton skeleton) {
+    public void setSkeleton(Skeleton skeleton) {
         this.skeleton = skeleton;
     }
 
     @Override
-    public InterpolatedSkeleton getSkeleton() {
+    public Skeleton getSkeleton() {
         return skeleton;
     }
 }

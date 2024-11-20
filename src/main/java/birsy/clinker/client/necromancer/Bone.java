@@ -1,8 +1,7 @@
-package birsy.clinker.client.model.base;
+package birsy.clinker.client.necromancer;
 
-import birsy.clinker.client.model.base.mesh.ModelMesh;
-import birsy.clinker.client.render.DebugRenderUtil;
-import birsy.clinker.core.Clinker;
+import birsy.clinker.client.necromancer.render.Skin;
+import birsy.clinker.client.necromancer.render.mesh.Mesh;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
@@ -15,9 +14,8 @@ import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-public class InterpolatedBone {
+public class Bone {
     public float x, y, z, pX, pY, pZ;
     public Quaternionf rotation, pRotation;
     protected Quaternionf currentRotation;
@@ -28,16 +26,16 @@ public class InterpolatedBone {
     public float initialXSize, initialYSize, initialZSize;
 
     @Nullable
-    public InterpolatedBone parent;
-    public List<InterpolatedBone> children;
+    public Bone parent;
+    public List<Bone> children;
 
     public final String identifier;
     public boolean shouldRender = true;
 
     // list of all parents, starting from the root and going down
-    public List<InterpolatedBone> parentChain;
+    public List<Bone> parentChain;
 
-    public InterpolatedBone(String identifier) {
+    public Bone(String identifier) {
         this.identifier = identifier;
 
         this.rotation = new Quaternionf();
@@ -99,7 +97,7 @@ public class InterpolatedBone {
         Quaternionf parentRotation = new Quaternionf();
 
         //add together the rotations of all parents.
-        for (InterpolatedBone bone : this.parentChain) {
+        for (Bone bone : this.parentChain) {
             parentRotation.mul(bone.rotation);
         }
 
@@ -111,7 +109,7 @@ public class InterpolatedBone {
     public void setModelSpaceTransform(Vector3f position, Quaternionf rotation) {
         Matrix4f parentTransform = new Matrix4f();
 
-        for (InterpolatedBone bone : this.parentChain) {
+        for (Bone bone : this.parentChain) {
             parentTransform.translate(bone.x, bone.y, bone.z);
             parentTransform.rotate(bone.rotation);
             parentTransform.scale(bone.xSize, bone.ySize, bone.zSize);
@@ -143,9 +141,9 @@ public class InterpolatedBone {
         matrix4f.scale(Mth.lerp(partialTick, pXSize, xSize), Mth.lerp(partialTick, pYSize, ySize), Mth.lerp(partialTick, pZSize, zSize));
     }
 
-    public void render(Map<String, ModelMesh> meshes, float partialTick, PoseStack pPoseStack, VertexConsumer pVertexConsumer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha, boolean drawChildren) {
+    public void render(Skin skin, float partialTick, PoseStack pPoseStack, VertexConsumer pVertexConsumer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha, boolean drawChildren) {
         if (!shouldRender) return;
-        ModelMesh mesh = meshes.getOrDefault(this.identifier, ModelMesh.EMPTY);
+        Mesh mesh = skin.getMesh(this);
 
         pPoseStack.pushPose();
 
@@ -153,15 +151,15 @@ public class InterpolatedBone {
         mesh.render(this, pPoseStack, pVertexConsumer,pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
 
         if (drawChildren) {
-            for (InterpolatedBone child : this.children) {
-                child.render(meshes, partialTick, pPoseStack, pVertexConsumer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha, true);
+            for (Bone child : this.children) {
+                child.render(skin, partialTick, pPoseStack, pVertexConsumer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha, true);
             }
         }
 
         pPoseStack.popPose();
     }
 
-    public void addChild(InterpolatedBone children) {
+    public void addChild(Bone children) {
         if (children.parent != null) {
             children.parent.children.remove(children);
         }
@@ -170,13 +168,13 @@ public class InterpolatedBone {
         children.parent = this;
     }
 
-    public void setParent(InterpolatedBone parent) {
+    public void setParent(Bone parent) {
         this.parent = parent;
         parent.children.add(this);
     }
 
     public Matrix4f getModelSpaceTransformMatrix(PoseStack pPoseStack, float partialTick) {
-        InterpolatedBone parent = this.parent;
+        Bone parent = this.parent;
         if (parent != null) {
             parent.getModelSpaceTransformMatrix(pPoseStack, partialTick);
         }

@@ -1,15 +1,14 @@
 package birsy.clinker.client.model.entity;
 
-import birsy.clinker.client.model.base.InterpolatedSkeleton;
-import birsy.clinker.client.model.base.InterpolatedBone;
-import birsy.clinker.client.model.base.mesh.ModelMesh;
-import birsy.clinker.client.model.base.mesh.PointUVStaticMesh;
-import birsy.clinker.client.model.base.mesh.StaticMesh;
-import birsy.clinker.client.model.base.AnimationProperties;
+import birsy.clinker.client.necromancer.Skeleton;
+import birsy.clinker.client.necromancer.Bone;
+import birsy.clinker.client.necromancer.render.mesh.Mesh;
+import birsy.clinker.client.necromancer.render.mesh.StaticMesh;
+import birsy.clinker.client.necromancer.animation.AnimationProperties;
 import org.joml.Quaternionf;
 
 public class MogulWarhookModel {
-	private static final ModelMesh[] meshes = new ModelMesh[1];
+	private static final Mesh[] meshes = new Mesh[1];
 	public static final MogulWarhookSkeleton skeleton;
 
 	static {
@@ -35,9 +34,9 @@ public class MogulWarhookModel {
 		skeleton = (MogulWarhookSkeleton) create();
 	}
 	
-	public static InterpolatedSkeleton create() {
+	public static Skeleton create() {
 		MogulWarhookSkeleton skeleton = new MogulWarhookSkeleton();
-		InterpolatedBone MogulWarhookBone = new InterpolatedBone("MogulWarhook");
+		Bone MogulWarhookBone = new Bone("MogulWarhook");
 		MogulWarhookBone.setInitialTransform(0F, 0F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		skeleton.addBone(MogulWarhookBone, meshes[0]);
 		skeleton.MogulWarhook = MogulWarhookBone;
@@ -46,8 +45,8 @@ public class MogulWarhookModel {
 		return skeleton;
 	}
 	
-	public static class MogulWarhookSkeleton extends InterpolatedSkeleton {
-		protected InterpolatedBone MogulWarhook;
+	public static class MogulWarhookSkeleton extends Skeleton {
+		protected Bone MogulWarhook;
 		
 		@Override
 		public void animate(AnimationProperties properties) {

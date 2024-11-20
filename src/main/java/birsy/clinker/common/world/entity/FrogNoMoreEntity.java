@@ -1,13 +1,12 @@
 package birsy.clinker.common.world.entity;
 
-import birsy.clinker.client.model.base.InterpolatedSkeleton;
-import birsy.clinker.client.model.base.InterpolatedSkeletonParent;
+import birsy.clinker.client.necromancer.Skeleton;
+import birsy.clinker.client.necromancer.SkeletonParent;
 import birsy.clinker.common.world.entity.proceduralanimation.IKLegSystem;
 import birsy.clinker.common.world.entity.proceduralanimation.IKLocomotionEntity;
 import birsy.clinker.common.world.physics.particle.CollidingParticle;
 import birsy.clinker.common.world.physics.particle.Constraint;
 import birsy.clinker.common.world.physics.particle.ParticleParent;
-import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
@@ -31,12 +30,11 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-public class FrogNoMoreEntity extends Monster implements IKLocomotionEntity, InterpolatedSkeletonParent, ParticleParent {
+public class FrogNoMoreEntity extends Monster implements IKLocomotionEntity, SkeletonParent, ParticleParent {
     @OnlyIn(Dist.CLIENT)
-    InterpolatedSkeleton skeleton;
+    Skeleton skeleton;
     private final IKLegSystem ikSystem;
 
     private final Vector3d terrainNormal = new Vector3d();
@@ -155,9 +153,9 @@ public class FrogNoMoreEntity extends Monster implements IKLocomotionEntity, Int
     @Override
     public IKLegSystem getLegSystem() { return this.ikSystem; }
     @Override
-    public void setSkeleton(InterpolatedSkeleton skeleton) { this.skeleton = skeleton; }
+    public void setSkeleton(Skeleton skeleton) { this.skeleton = skeleton; }
     @Override
-    public InterpolatedSkeleton getSkeleton() { return this.skeleton; }
+    public Skeleton getSkeleton() { return this.skeleton; }
 
     @Nullable
     @Override

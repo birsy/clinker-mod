@@ -1,19 +1,15 @@
 package birsy.clinker.client.model.entity;
 
-import birsy.clinker.client.model.base.AnimationProperties;
-import birsy.clinker.client.model.base.InterpolatedBone;
-import birsy.clinker.client.model.base.InterpolatedSkeleton;
-import birsy.clinker.client.model.base.SkeletonFactory;
-import birsy.clinker.client.model.base.mesh.ModelMesh;
-import birsy.clinker.client.model.base.mesh.StaticMesh;
-import birsy.clinker.common.world.entity.UrnEntity;
-import birsy.clinker.common.world.entity.salamander.NewSalamanderEntity;
-import birsy.clinker.core.util.MathUtils;
-import net.minecraft.util.Mth;
+import birsy.clinker.client.necromancer.Skeleton;
+import birsy.clinker.client.necromancer.animation.AnimationProperties;
+import birsy.clinker.client.necromancer.Bone;
+import birsy.clinker.client.necromancer.RenderFactory;
+import birsy.clinker.client.necromancer.render.mesh.Mesh;
+import birsy.clinker.client.necromancer.render.mesh.StaticMesh;
 import org.joml.Quaternionf;
 
-public class PresentSkeletonFactory implements SkeletonFactory {
-	private final ModelMesh[] meshes = new ModelMesh[3];
+public class PresentSkeletonFactory implements RenderFactory {
+	private final Mesh[] meshes = new Mesh[3];
 	
 	public PresentSkeletonFactory() {
 		int texWidth = 64;
@@ -32,19 +28,19 @@ public class PresentSkeletonFactory implements SkeletonFactory {
 		meshes[2] = mesh2;
 	}
 	
-	public InterpolatedSkeleton create() {
+	public Skeleton create() {
 		PresentSkeleton skeleton = new PresentSkeleton();
-		InterpolatedBone bowBone = new InterpolatedBone("bow");
+		Bone bowBone = new Bone("bow");
 		bowBone.setInitialTransform(0F, 6F, -7F, new Quaternionf().rotationZYX(0F, 0.78539816295F, 0F));
 		skeleton.addBone(bowBone, meshes[0]);
 		skeleton.bow = bowBone;
 		
-		InterpolatedBone lidBone = new InterpolatedBone("lid");
+		Bone lidBone = new Bone("lid");
 		lidBone.setInitialTransform(0F, 8.5F, 7F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		skeleton.addBone(lidBone, meshes[1]);
 		skeleton.lid = lidBone;
 		
-		InterpolatedBone presentBone = new InterpolatedBone("present");
+		Bone presentBone = new Bone("present");
 		presentBone.setInitialTransform(0F, 0F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		skeleton.addBone(presentBone, meshes[2]);
 		skeleton.present = presentBone;
@@ -55,15 +51,15 @@ public class PresentSkeletonFactory implements SkeletonFactory {
 		return skeleton;
 	}
 	
-	public static class PresentSkeleton extends InterpolatedSkeleton {
-		protected InterpolatedBone bow;
-		protected InterpolatedBone lid;
-		protected InterpolatedBone present;
+	public static class PresentSkeleton extends Skeleton {
+		protected Bone bow;
+		protected Bone lid;
+		protected Bone present;
 		
 		@Override
 		public void animate(AnimationProperties properties) {
-			for (Object value : this.parts.values()) {
-				if (value instanceof InterpolatedBone bone) {
+			for (Object value : this.bones.values()) {
+				if (value instanceof Bone bone) {
 					bone.reset();
 				}
 			}

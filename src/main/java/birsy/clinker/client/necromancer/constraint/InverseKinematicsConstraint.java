@@ -1,8 +1,8 @@
-package birsy.clinker.client.model.base.constraint;
+package birsy.clinker.client.necromancer.constraint;
 
-import birsy.clinker.client.model.base.InterpolatedBone;
-import birsy.clinker.client.model.base.InterpolatedSkeleton;
-import birsy.clinker.client.model.base.InterpolatedSkeletonParent;
+import birsy.clinker.client.necromancer.Bone;
+import birsy.clinker.client.necromancer.Skeleton;
+import birsy.clinker.client.necromancer.SkeletonParent;
 import birsy.clinker.client.render.DebugRenderUtil;
 import birsy.clinker.core.util.VectorUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -19,7 +19,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class InverseKinematicsConstraint implements Constraint {
-    public List<InterpolatedBone> bones;
+    public List<Bone> bones;
     public List<Vector3f> points;
     public boolean[] jointDirections;
     List<Float> segmentLengths;
@@ -29,11 +29,11 @@ public class InverseKinematicsConstraint implements Constraint {
     InverseKinematicDirection forwardDirection;
     private final float minimumAcceptableDistance;
 
-    public InverseKinematicsConstraint(InterpolatedBone chainEnd, int depth, float endX, float endY, float endZ, float minimumAcceptableDistance) {
+    public InverseKinematicsConstraint(Bone chainEnd, int depth, float endX, float endY, float endZ, float minimumAcceptableDistance) {
         this(InverseKinematicDirection.NEGATIVE_Y, chainEnd, depth, endX, endY, endZ, minimumAcceptableDistance);
     }
 
-    public InverseKinematicsConstraint(InverseKinematicDirection forwardDirection, InterpolatedBone chainEnd, int depth, float endX, float endY, float endZ, float minimumAcceptableDistance) {
+    public InverseKinematicsConstraint(InverseKinematicDirection forwardDirection, Bone chainEnd, int depth, float endX, float endY, float endZ, float minimumAcceptableDistance) {
         this.forwardDirection = forwardDirection;
         this.minimumAcceptableDistance = minimumAcceptableDistance;
         this.bones = new ArrayList<>(depth);
@@ -152,7 +152,7 @@ public class InverseKinematicsConstraint implements Constraint {
         // hopefully correcting the weird rotation garbage
         if (this.bones.get(0).parent != null) {
             Quaternionf rotation = new Quaternionf();
-            for (InterpolatedBone bone : this.bones.get(0).parent.parentChain) {
+            for (Bone bone : this.bones.get(0).parent.parentChain) {
                 rotation.mul(bone.rotation);
             }
             rotation.mul(this.bones.get(0).parent.rotation);
@@ -190,7 +190,7 @@ public class InverseKinematicsConstraint implements Constraint {
         PoseStack stack = new PoseStack();
         for (int i = 0; i < this.points.size() - 1; i++) {
             stack.pushPose();
-            InterpolatedBone bone = bones.get(i);
+            Bone bone = bones.get(i);
             bone.getModelSpaceTransformMatrix(stack, 1);
 
             Vector4f point4 = new Vector4f(0, 0, 0, 1);
@@ -200,7 +200,7 @@ public class InverseKinematicsConstraint implements Constraint {
         }
 
         stack.pushPose();
-        InterpolatedBone bone = bones.get(bones.size() - 1);
+        Bone bone = bones.get(bones.size() - 1);
         bone.getModelSpaceTransformMatrix(stack, 1);
         Vector4f point4 = new Vector4f(endPlacement.x(), endPlacement.y(), endPlacement.z(), 1);
         stack.last().pose().transform(point4);
@@ -226,7 +226,7 @@ public class InverseKinematicsConstraint implements Constraint {
         Vector3f point;
 
         for (int i = 0; i < bones.size(); i++) {
-            InterpolatedBone bone = bones.get(i);
+            Bone bone = bones.get(i);
 
             point = points.get(i);
             nextPoint = this.points.get(i + 1);
@@ -258,7 +258,7 @@ public class InverseKinematicsConstraint implements Constraint {
     }
 
     @Override
-    public void renderDebugInfo(InterpolatedSkeleton skeleton, InterpolatedSkeletonParent parent, float pPartialTicks, PoseStack poseStack, MultiBufferSource pBuffer) {
+    public void renderDebugInfo(Skeleton skeleton, SkeletonParent parent, float pPartialTicks, PoseStack poseStack, MultiBufferSource pBuffer) {
         VertexConsumer vertexconsumer = pBuffer.getBuffer(RenderType.LINES);
 
         Vector3f x = new Vector3f(this.points.get(this.points.size() - 1));

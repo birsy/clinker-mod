@@ -1,9 +1,8 @@
 package birsy.clinker.client.render.entity;
 
-import birsy.clinker.client.model.base.InterpolatedSkeletonParent;
-import birsy.clinker.client.model.entity.PlaceholderGnomadSkeletonFactory;
+import birsy.clinker.client.necromancer.SkeletonParent;
+import birsy.clinker.client.model.PlaceholderGnomadSkeletonFactory;
 import birsy.clinker.client.render.entity.base.InterpolatedEntityRenderer;
-import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -14,7 +13,7 @@ import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Mob;
 
-public class NewGnomadRenderer<M extends Mob & InterpolatedSkeletonParent> extends InterpolatedEntityRenderer<M, PlaceholderGnomadSkeletonFactory.PlaceholderGnomadSkeleton> {
+public class NewGnomadRenderer<M extends Mob & SkeletonParent> extends InterpolatedEntityRenderer<M, PlaceholderGnomadSkeletonFactory.PlaceholderGnomadSkeleton> {
     private static final ResourceLocation PLACEHOLDER_GNOMAD_LOCATION = new ResourceLocation(Clinker.MOD_ID, "textures/entity/gnomad/gnomad_placeholder.png");
 
     public NewGnomadRenderer(EntityRendererProvider.Context context) {

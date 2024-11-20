@@ -1,8 +1,7 @@
 package birsy.clinker.mixin.client;
 
-import birsy.clinker.client.render.entity.base.InterpolatedEntityRenderer;
+import birsy.clinker.client.necromancer.render.NecromancerEntityRenderer;
 import birsy.clinker.common.world.alchemy.workstation.WorkstationManager;
-import birsy.clinker.common.world.level.interactable.InteractableLevelAttachment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -10,7 +9,6 @@ import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -34,8 +32,8 @@ public final class ClientLevelMixin {
 
     @Inject(method = "addEntity(Lnet/minecraft/world/entity/Entity;)V", at = @At("TAIL"))
     private void clinker$addEntity(Entity entity, CallbackInfo ci) {
-        if (this.minecraft.getEntityRenderDispatcher().getRenderer(entity) instanceof InterpolatedEntityRenderer renderer) {
-            renderer.createSkeleton((LivingEntity) entity);
+        if (this.minecraft.getEntityRenderDispatcher().getRenderer(entity) instanceof NecromancerEntityRenderer renderer) {
+            renderer.setupEntity(entity);
         }
     }
 

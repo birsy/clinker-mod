@@ -1,19 +1,19 @@
 package birsy.clinker.client.model.entity;
 
-import birsy.clinker.client.model.base.AnimationProperties;
-import birsy.clinker.client.model.base.InterpolatedBone;
-import birsy.clinker.client.model.base.InterpolatedSkeleton;
-import birsy.clinker.client.model.base.SkeletonFactory;
-import birsy.clinker.client.model.base.mesh.ModelMesh;
-import birsy.clinker.client.model.base.mesh.StaticMesh;
+import birsy.clinker.client.necromancer.Skeleton;
+import birsy.clinker.client.necromancer.animation.AnimationProperties;
+import birsy.clinker.client.necromancer.Bone;
+import birsy.clinker.client.necromancer.RenderFactory;
+import birsy.clinker.client.necromancer.render.mesh.Mesh;
+import birsy.clinker.client.necromancer.render.mesh.StaticMesh;
 import birsy.clinker.common.world.entity.gnomad.GnomadMogulEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import org.joml.Quaternionf;
 import org.joml.Vector3fc;
 
-public class GnomadMogulSkeletonFactory implements SkeletonFactory {
-    private final ModelMesh[] meshes = new ModelMesh[21];
+public class GnomadMogulSkeletonFactory implements RenderFactory {
+    private final Mesh[] meshes = new Mesh[21];
     
     public GnomadMogulSkeletonFactory() {
         int texWidth = 256;
@@ -110,113 +110,113 @@ public class GnomadMogulSkeletonFactory implements SkeletonFactory {
         
     }
     
-    public InterpolatedSkeleton create() {
+    public Skeleton create() {
         GnomadMogulSkeleton skeleton = new GnomadMogulSkeleton();
-        InterpolatedBone MogulRootBone = new InterpolatedBone("MogulRoot");
+        Bone MogulRootBone = new Bone("MogulRoot");
         MogulRootBone.setInitialTransform(0F, 0F, -1.5F, new Quaternionf().rotationZYX(0F, 0F, 0F));
         skeleton.addBone(MogulRootBone, meshes[0]);
         skeleton.MogulRoot = MogulRootBone;
         
-        InterpolatedBone MogulBodyBone = new InterpolatedBone("MogulBody");
+        Bone MogulBodyBone = new Bone("MogulBody");
         MogulBodyBone.setInitialTransform(0F, 24F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
         skeleton.addBone(MogulBodyBone, meshes[1]);
         skeleton.MogulBody = MogulBodyBone;
         
-        InterpolatedBone MogulFrontRobeBone = new InterpolatedBone("MogulFrontRobe");
+        Bone MogulFrontRobeBone = new Bone("MogulFrontRobe");
         MogulFrontRobeBone.setInitialTransform(0F, 0F, -19.5F, new Quaternionf().rotationZYX(0F, 0F, 0F));
         skeleton.addBone(MogulFrontRobeBone, meshes[2]);
         skeleton.MogulFrontRobe = MogulFrontRobeBone;
         
-        InterpolatedBone MogulBackRobeBone = new InterpolatedBone("MogulBackRobe");
+        Bone MogulBackRobeBone = new Bone("MogulBackRobe");
         MogulBackRobeBone.setInitialTransform(0F, 0F, 22.5F, new Quaternionf().rotationZYX(0F, 0F, 0F));
         skeleton.addBone(MogulBackRobeBone, meshes[3]);
         skeleton.MogulBackRobe = MogulBackRobeBone;
         
-        InterpolatedBone MogulLeftRobeBone = new InterpolatedBone("MogulLeftRobe");
+        Bone MogulLeftRobeBone = new Bone("MogulLeftRobe");
         MogulLeftRobeBone.setInitialTransform(-18F, 0F, 1.5F, new Quaternionf().rotationZYX(-0.17453292509999999F, 1.5707963259F, 0F));
         skeleton.addBone(MogulLeftRobeBone, meshes[4]);
         skeleton.MogulLeftRobe = MogulLeftRobeBone;
         
-        InterpolatedBone MogulRightRobeBone = new InterpolatedBone("MogulRightRobe");
+        Bone MogulRightRobeBone = new Bone("MogulRightRobe");
         MogulRightRobeBone.setInitialTransform(18F, 0F, 1.5F, new Quaternionf().rotationZYX(0.17453292509999999F, -1.5707963259F, 0F));
         skeleton.addBone(MogulRightRobeBone, meshes[5]);
         skeleton.MogulRightRobe = MogulRightRobeBone;
         
-        InterpolatedBone MogulRightArmBone = new InterpolatedBone("MogulRightArm");
+        Bone MogulRightArmBone = new Bone("MogulRightArm");
         MogulRightArmBone.setInitialTransform(19F, 16F, -8F, new Quaternionf().rotationZYX(0.15514701159461386F, 0F, 0.34906585019999997F));
         skeleton.addBone(MogulRightArmBone, meshes[6]);
         skeleton.MogulRightArm = MogulRightArmBone;
         
-        InterpolatedBone MogulRightLegBone = new InterpolatedBone("MogulRightLeg");
+        Bone MogulRightLegBone = new Bone("MogulRightLeg");
         MogulRightLegBone.setInitialTransform(10.5F, 0F, 1.5F, new Quaternionf().rotationZYX(0F, 0F, 0F));
         skeleton.addBone(MogulRightLegBone, meshes[8]);
         skeleton.MogulRightLeg = MogulRightLegBone;
         
-        InterpolatedBone MogulLeftLegBone = new InterpolatedBone("MogulLeftLeg");
+        Bone MogulLeftLegBone = new Bone("MogulLeftLeg");
         MogulLeftLegBone.setInitialTransform(-10.5F, 0F, 1.5F, new Quaternionf().rotationZYX(0F, 0F, 0F));
         skeleton.addBone(MogulLeftLegBone, meshes[9]);
         skeleton.MogulLeftLeg = MogulLeftLegBone;
         
-        InterpolatedBone MogulLeftArmBone = new InterpolatedBone("MogulLeftArm");
+        Bone MogulLeftArmBone = new Bone("MogulLeftArm");
         MogulLeftArmBone.setInitialTransform(-18F, 16F, -8F, new Quaternionf().rotationZYX(-0.11875624137966828F, 0.05519076687280652F, 0.43305050170380455F));
         skeleton.addBone(MogulLeftArmBone, meshes[10]);
         skeleton.MogulLeftArm = MogulLeftArmBone;
         
-        InterpolatedBone MogulNeckBone = new InterpolatedBone("MogulNeck");
+        Bone MogulNeckBone = new Bone("MogulNeck");
         MogulNeckBone.setInitialTransform(0F, 18.25F, -19F, new Quaternionf().rotationZYX(0F, 0F, 0F));
         skeleton.addBone(MogulNeckBone, meshes[11]);
         skeleton.MogulNeck = MogulNeckBone;
         
-        InterpolatedBone MogulHeadBone = new InterpolatedBone("MogulHead");
+        Bone MogulHeadBone = new Bone("MogulHead");
         MogulHeadBone.setInitialTransform(0F, 4.25F, -9.5F, new Quaternionf().rotationZYX(0F, 0F, 0F));
         skeleton.addBone(MogulHeadBone, meshes[12]);
         skeleton.MogulHead = MogulHeadBone;
         
-        InterpolatedBone MogulFaceBone = new InterpolatedBone("MogulFace");
+        Bone MogulFaceBone = new Bone("MogulFace");
         MogulFaceBone.setInitialTransform(0F, 2.6666666666666643F, -10.5F, new Quaternionf().rotationZYX(0F, 0F, 0F));
         skeleton.addBone(MogulFaceBone, meshes[13]);
         skeleton.MogulFace = MogulFaceBone;
         
-        InterpolatedBone MogulNoseBone = new InterpolatedBone("MogulNose");
+        Bone MogulNoseBone = new Bone("MogulNose");
         MogulNoseBone.setInitialTransform(0F, 5.333333333333336F, -3.5F, new Quaternionf().rotationZYX(0F, 0F, 0.5235987752999999F));
         skeleton.addBone(MogulNoseBone, meshes[14]);
         skeleton.MogulNose = MogulNoseBone;
         
-        InterpolatedBone MogulHelmetBaseBone = new InterpolatedBone("MogulHelmetBase");
+        Bone MogulHelmetBaseBone = new Bone("MogulHelmetBase");
         MogulHelmetBaseBone.setInitialTransform(0F, 10.25F, -3F, new Quaternionf().rotationZYX(0F, 0F, 0F));
         skeleton.addBone(MogulHelmetBaseBone, meshes[15]);
         skeleton.MogulHelmetBase = MogulHelmetBaseBone;
         
-        InterpolatedBone MogulHelmetUpperBone = new InterpolatedBone("MogulHelmetUpper");
+        Bone MogulHelmetUpperBone = new Bone("MogulHelmetUpper");
         MogulHelmetUpperBone.setInitialTransform(0F, 6F, -6F, new Quaternionf().rotationZYX(0F, 0F, 0.08726646254999999F));
         skeleton.addBone(MogulHelmetUpperBone, meshes[16]);
         skeleton.MogulHelmetUpper = MogulHelmetUpperBone;
         
-        InterpolatedBone MogulHelmetOrnamentBone = new InterpolatedBone("MogulHelmetOrnament");
+        Bone MogulHelmetOrnamentBone = new Bone("MogulHelmetOrnament");
         MogulHelmetOrnamentBone.setInitialTransform(0F, 10.75F, 6.000000000000007F, new Quaternionf().rotationZYX(0.08726646255000002F, -4.3368086874712995e-19F, 0.08726646254999999F));
         skeleton.addBone(MogulHelmetOrnamentBone, meshes[17]);
         skeleton.MogulHelmetOrnament = MogulHelmetOrnamentBone;
         
-        InterpolatedBone MogulBackHelmetFlapBone = new InterpolatedBone("MogulBackHelmetFlap");
+        Bone MogulBackHelmetFlapBone = new Bone("MogulBackHelmetFlap");
         MogulBackHelmetFlapBone.setInitialTransform(0F, -1.25F, 8F, new Quaternionf().rotationZYX(0F, 0F, -1.1344640131500001F));
         skeleton.addBone(MogulBackHelmetFlapBone, meshes[18]);
         skeleton.MogulBackHelmetFlap = MogulBackHelmetFlapBone;
         
-        InterpolatedBone MogulLeftHelmetFlapBone = new InterpolatedBone("MogulLeftHelmetFlap");
+        Bone MogulLeftHelmetFlapBone = new Bone("MogulLeftHelmetFlap");
         MogulLeftHelmetFlapBone.setInitialTransform(-10F, -1.25F, 0.5F, new Quaternionf().rotationZYX(-0.6981317003999999F, 1.5707963259F, 0F));
         skeleton.addBone(MogulLeftHelmetFlapBone, meshes[19]);
         skeleton.MogulLeftHelmetFlap = MogulLeftHelmetFlapBone;
         
-        InterpolatedBone MogulRightHelmetFlapBone = new InterpolatedBone("MogulRightHelmetFlap");
+        Bone MogulRightHelmetFlapBone = new Bone("MogulRightHelmetFlap");
         MogulRightHelmetFlapBone.setInitialTransform(10F, -1.25F, 0.5F, new Quaternionf().rotationZYX(0.6981317003999999F, -1.5707963259F, 0F));
         skeleton.addBone(MogulRightHelmetFlapBone, meshes[20]);
         skeleton.MogulRightHelmetFlap = MogulRightHelmetFlapBone;
 
-        InterpolatedBone MogulRightArmGraspBone = new InterpolatedBone("MogulRightArmGrasp");
+        Bone MogulRightArmGraspBone = new Bone("MogulRightArmGrasp");
         MogulRightArmGraspBone.setInitialTransform(-0.5F, -30.5F, -1.5F, new Quaternionf().rotationZYX(0F, 0F, -1.5707963258999997F));
         skeleton.addBone(MogulRightArmGraspBone, new StaticMesh(256, 256));
         skeleton.MogulRightArmGrasp = MogulRightArmGraspBone;
-        InterpolatedBone MogulLeftArmGraspBone = new InterpolatedBone("MogulLeftArmGrasp");
+        Bone MogulLeftArmGraspBone = new Bone("MogulLeftArmGrasp");
         MogulLeftArmGraspBone.setInitialTransform(-0.5F, -30.5F, -1.5F, new Quaternionf().rotationZYX(0F, 0F, -1.5707963258999997F));
         skeleton.addBone(MogulLeftArmGraspBone, new StaticMesh(256, 256));
         skeleton.MogulLeftArmGrasp = MogulLeftArmGraspBone;
@@ -249,29 +249,29 @@ public class GnomadMogulSkeletonFactory implements SkeletonFactory {
     }
     
     public static class GnomadMogulSkeleton extends GnomadSkeleton {
-        protected InterpolatedBone MogulRoot;
-        protected InterpolatedBone MogulBody;
-        protected InterpolatedBone MogulFrontRobe;
-        protected InterpolatedBone MogulBackRobe;
-        protected InterpolatedBone MogulLeftRobe;
-        protected InterpolatedBone MogulRightRobe;
-        protected InterpolatedBone MogulRightArm;
-        protected InterpolatedBone MogulRightLeg;
-        protected InterpolatedBone MogulLeftLeg;
-        protected InterpolatedBone MogulLeftArm;
-        protected InterpolatedBone MogulNeck;
-        protected InterpolatedBone MogulHead;
-        protected InterpolatedBone MogulFace;
-        protected InterpolatedBone MogulNose;
-        protected InterpolatedBone MogulHelmetBase;
-        protected InterpolatedBone MogulHelmetUpper;
-        protected InterpolatedBone MogulHelmetOrnament;
-        protected InterpolatedBone MogulBackHelmetFlap;
-        protected InterpolatedBone MogulLeftHelmetFlap;
-        protected InterpolatedBone MogulRightHelmetFlap;
+        protected Bone MogulRoot;
+        protected Bone MogulBody;
+        protected Bone MogulFrontRobe;
+        protected Bone MogulBackRobe;
+        protected Bone MogulLeftRobe;
+        protected Bone MogulRightRobe;
+        protected Bone MogulRightArm;
+        protected Bone MogulRightLeg;
+        protected Bone MogulLeftLeg;
+        protected Bone MogulLeftArm;
+        protected Bone MogulNeck;
+        protected Bone MogulHead;
+        protected Bone MogulFace;
+        protected Bone MogulNose;
+        protected Bone MogulHelmetBase;
+        protected Bone MogulHelmetUpper;
+        protected Bone MogulHelmetOrnament;
+        protected Bone MogulBackHelmetFlap;
+        protected Bone MogulLeftHelmetFlap;
+        protected Bone MogulRightHelmetFlap;
 
-        public InterpolatedBone MogulRightArmGrasp;
-        public InterpolatedBone MogulLeftArmGrasp;
+        public Bone MogulRightArmGrasp;
+        public Bone MogulLeftArmGrasp;
 
 
         @Override

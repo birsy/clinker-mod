@@ -1,17 +1,16 @@
 package birsy.clinker.client.model.entity;
 
-import birsy.clinker.client.model.base.InterpolatedSkeleton;
-import birsy.clinker.client.model.base.InterpolatedBone;
-import birsy.clinker.client.model.base.SkeletonFactory;
-import birsy.clinker.client.model.base.constraint.Constraint;
-import birsy.clinker.client.model.base.constraint.InverseKinematicsConstraint;
-import birsy.clinker.client.model.base.mesh.ModelMesh;
-import birsy.clinker.client.model.base.mesh.StaticMesh;
-import birsy.clinker.client.model.base.AnimationProperties;
+import birsy.clinker.client.necromancer.Skeleton;
+import birsy.clinker.client.necromancer.Bone;
+import birsy.clinker.client.necromancer.RenderFactory;
+import birsy.clinker.client.necromancer.constraint.Constraint;
+import birsy.clinker.client.necromancer.constraint.InverseKinematicsConstraint;
+import birsy.clinker.client.necromancer.render.mesh.Mesh;
+import birsy.clinker.client.necromancer.render.mesh.StaticMesh;
+import birsy.clinker.client.necromancer.animation.AnimationProperties;
 import birsy.clinker.client.render.entity.model.base.AnimFunctions;
 import birsy.clinker.common.world.entity.FrogNoMoreEntity;
 import birsy.clinker.common.world.entity.proceduralanimation.IKLegSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import org.joml.Quaternionf;
@@ -19,8 +18,8 @@ import org.joml.Vector3f;
 
 import java.util.Collections;
 
-public class FrogNoMoreSkeletonFactory implements SkeletonFactory {
-	private final ModelMesh[] meshes = new ModelMesh[39];
+public class FrogNoMoreSkeletonFactory implements RenderFactory {
+	private final Mesh[] meshes = new Mesh[39];
 
 	public FrogNoMoreSkeletonFactory() {
 		int texWidth = 256;
@@ -182,199 +181,199 @@ public class FrogNoMoreSkeletonFactory implements SkeletonFactory {
 
 	}
 
-	public InterpolatedSkeleton create() {
+	public Skeleton create() {
 		FrogNoMoreModel model = new FrogNoMoreModel();
-		InterpolatedBone BodyBone = new InterpolatedBone("Body");
+		Bone BodyBone = new Bone("Body");
 		BodyBone.setInitialTransform(0F, 6F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		model.addBone(BodyBone, meshes[0]);
 		model.Body = BodyBone;
 
-		InterpolatedBone NeckBone = new InterpolatedBone("Neck");
+		Bone NeckBone = new Bone("Neck");
 		NeckBone.setInitialTransform(0F, 0.5F, -11F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		model.addBone(NeckBone, meshes[1]);
 		model.Neck = NeckBone;
 
-		InterpolatedBone HeadBone = new InterpolatedBone("Head");
+		Bone HeadBone = new Bone("Head");
 		HeadBone.setInitialTransform(0F, -0.5F, -8F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		model.addBone(HeadBone, meshes[2]);
 		model.Head = HeadBone;
 
-		InterpolatedBone UpperHeadBone = new InterpolatedBone("UpperHead");
+		Bone UpperHeadBone = new Bone("UpperHead");
 		UpperHeadBone.setInitialTransform(0F, 5F, -8F, new Quaternionf().rotationZYX(0F, 0F, -0.26179938765F));
 		model.addBone(UpperHeadBone, meshes[3]);
 		model.UpperHead = UpperHeadBone;
 
-		InterpolatedBone JawBone = new InterpolatedBone("Jaw");
+		Bone JawBone = new Bone("Jaw");
 		JawBone.setInitialTransform(0F, 0F, -3F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		model.addBone(JawBone, meshes[4]);
 		model.Jaw = JawBone;
 
-		InterpolatedBone NeckFrillsBone = new InterpolatedBone("NeckFrills");
+		Bone NeckFrillsBone = new Bone("NeckFrills");
 		NeckFrillsBone.setInitialTransform(0F, 5F, -3.5F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		model.addBone(NeckFrillsBone, meshes[5]);
 		model.NeckFrills = NeckFrillsBone;
 
-		InterpolatedBone TailBone = new InterpolatedBone("Tail");
+		Bone TailBone = new Bone("Tail");
 		TailBone.setInitialTransform(0F, 0F, 11F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		model.addBone(TailBone, meshes[6]);
 		model.Tail = TailBone;
 
-		InterpolatedBone TailFrillsBone = new InterpolatedBone("TailFrills");
+		Bone TailFrillsBone = new Bone("TailFrills");
 		TailFrillsBone.setInitialTransform(0F, 5.5F, 17F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		model.addBone(TailFrillsBone, meshes[7]);
 		model.TailFrills = TailFrillsBone;
 
-		InterpolatedBone TailFrillsABone = new InterpolatedBone("TailFrillsA");
+		Bone TailFrillsABone = new Bone("TailFrillsA");
 		TailFrillsABone.setInitialTransform(0F, 1.5F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		model.addBone(TailFrillsABone, meshes[8]);
 		model.TailFrillsA = TailFrillsABone;
 
-		InterpolatedBone TailFrillsBBone = new InterpolatedBone("TailFrillsB");
+		Bone TailFrillsBBone = new Bone("TailFrillsB");
 		TailFrillsBBone.setInitialTransform(0F, 1.5F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		model.addBone(TailFrillsBBone, meshes[9]);
 		model.TailFrillsB = TailFrillsBBone;
 
-		InterpolatedBone BodyFrillsBone = new InterpolatedBone("BodyFrills");
+		Bone BodyFrillsBone = new Bone("BodyFrills");
 		BodyFrillsBone.setInitialTransform(0F, 5.5F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		model.addBone(BodyFrillsBone, meshes[10]);
 		model.BodyFrills = BodyFrillsBone;
 
-		InterpolatedBone BodyFrillsABone = new InterpolatedBone("BodyFrillsA");
+		Bone BodyFrillsABone = new Bone("BodyFrillsA");
 		BodyFrillsABone.setInitialTransform(0F, 0.5F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		model.addBone(BodyFrillsABone, meshes[11]);
 		model.BodyFrillsA = BodyFrillsABone;
 
-		InterpolatedBone BodyFillsBBone = new InterpolatedBone("BodyFillsB");
+		Bone BodyFillsBBone = new Bone("BodyFillsB");
 		BodyFillsBBone.setInitialTransform(0F, 0.5F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		model.addBone(BodyFillsBBone, meshes[12]);
 		model.BodyFillsB = BodyFillsBBone;
 
-		InterpolatedBone UpperLeftArmBone = new InterpolatedBone("UpperLeftArm");
+		Bone UpperLeftArmBone = new Bone("UpperLeftArm");
 		UpperLeftArmBone.setInitialTransform(-9F, -4.5F, -6.5F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		model.addBone(UpperLeftArmBone, meshes[13]);
 		model.UpperLeftArm = UpperLeftArmBone;
 
-		InterpolatedBone LowerLeftArmBone = new InterpolatedBone("LowerLeftArm");
+		Bone LowerLeftArmBone = new Bone("LowerLeftArm");
 		LowerLeftArmBone.setInitialTransform(-1F, -5.5F, 0.5F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		model.addBone(LowerLeftArmBone, meshes[14]);
 		model.LowerLeftArm = LowerLeftArmBone;
 
-		InterpolatedBone LeftArmFinger1Bone = new InterpolatedBone("LeftArmFinger1");
+		Bone LeftArmFinger1Bone = new Bone("LeftArmFinger1");
 		LeftArmFinger1Bone.setInitialTransform(-0.5F, 0F, 0F, new Quaternionf().rotationZYX(-0.26179938765F, 0F, 0F));
 		model.addBone(LeftArmFinger1Bone, meshes[15]);
 		model.LeftArmFinger1 = LeftArmFinger1Bone;
 
-		InterpolatedBone LeftArmFinger2Bone = new InterpolatedBone("LeftArmFinger2");
+		Bone LeftArmFinger2Bone = new Bone("LeftArmFinger2");
 		LeftArmFinger2Bone.setInitialTransform(0.5F, 0F, 0F, new Quaternionf().rotationZYX(0.26179938765F, 0F, 0F));
 		model.addBone(LeftArmFinger2Bone, meshes[16]);
 		model.LeftArmFinger2 = LeftArmFinger2Bone;
 
-		InterpolatedBone LeftArmFinger3Bone = new InterpolatedBone("LeftArmFinger3");
+		Bone LeftArmFinger3Bone = new Bone("LeftArmFinger3");
 		LeftArmFinger3Bone.setInitialTransform(0F, 0F, 1F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		model.addBone(LeftArmFinger3Bone, meshes[17]);
 		model.LeftArmFinger3 = LeftArmFinger3Bone;
 
-		InterpolatedBone UpperRightArmBone = new InterpolatedBone("UpperRightArm");
+		Bone UpperRightArmBone = new Bone("UpperRightArm");
 		UpperRightArmBone.setInitialTransform(9F, -4.5F, -6.5F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		model.addBone(UpperRightArmBone, meshes[18]);
 		model.UpperRightArm = UpperRightArmBone;
 
-		InterpolatedBone LowerRightArmBone = new InterpolatedBone("LowerRightArm");
+		Bone LowerRightArmBone = new Bone("LowerRightArm");
 		LowerRightArmBone.setInitialTransform(1F, -5.5F, 0.5F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		model.addBone(LowerRightArmBone, meshes[19]);
 		model.LowerRightArm = LowerRightArmBone;
 
-		InterpolatedBone RightHandBone = new InterpolatedBone("RightHand");
+		Bone RightHandBone = new Bone("RightHand");
 		RightHandBone.setInitialTransform(0F, -11F, 1F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		model.addBone(RightHandBone, meshes[20]);
 		model.RightHand = RightHandBone;
 
-		InterpolatedBone RightArmFinger3Bone = new InterpolatedBone("RightArmFinger3");
+		Bone RightArmFinger3Bone = new Bone("RightArmFinger3");
 		RightArmFinger3Bone.setInitialTransform(-1F, 0F, -1F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		model.addBone(RightArmFinger3Bone, meshes[21]);
 		model.RightArmFinger3 = RightArmFinger3Bone;
 
-		InterpolatedBone RightArmFinger2Bone = new InterpolatedBone("RightArmFinger2");
+		Bone RightArmFinger2Bone = new Bone("RightArmFinger2");
 		RightArmFinger2Bone.setInitialTransform(-1F, 0F, -1F, new Quaternionf().rotationZYX(-0.26179938765F, 0F, 0F));
 		model.addBone(RightArmFinger2Bone, meshes[22]);
 		model.RightArmFinger2 = RightArmFinger2Bone;
 
-		InterpolatedBone RightArmFinger1Bone = new InterpolatedBone("RightArmFinger1");
+		Bone RightArmFinger1Bone = new Bone("RightArmFinger1");
 		RightArmFinger1Bone.setInitialTransform(1F, 0F, -1F, new Quaternionf().rotationZYX(0.26179938765F, 0F, 0F));
 		model.addBone(RightArmFinger1Bone, meshes[23]);
 		model.RightArmFinger1 = RightArmFinger1Bone;
 
-		InterpolatedBone UpperLeftLegBone = new InterpolatedBone("UpperLeftLeg");
+		Bone UpperLeftLegBone = new Bone("UpperLeftLeg");
 		UpperLeftLegBone.setInitialTransform(-9F, -4.5F, 7.5F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		model.addBone(UpperLeftLegBone, meshes[24]);
 		model.UpperLeftLeg = UpperLeftLegBone;
 
-		InterpolatedBone LowerLeftLegBone = new InterpolatedBone("LowerLeftLeg");
+		Bone LowerLeftLegBone = new Bone("LowerLeftLeg");
 		LowerLeftLegBone.setInitialTransform(-1F, -5.5F, 0.5F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		model.addBone(LowerLeftLegBone, meshes[25]);
 		model.LowerLeftLeg = LowerLeftLegBone;
 
-		InterpolatedBone LeftLegFinger1Bone = new InterpolatedBone("LeftLegFinger1");
+		Bone LeftLegFinger1Bone = new Bone("LeftLegFinger1");
 		LeftLegFinger1Bone.setInitialTransform(-1F, 0F, 0.5F, new Quaternionf().rotationZYX(-2.0114280404442795e-16F, -0.26179938765F, -1.5707963258999984F));
 		model.addBone(LeftLegFinger1Bone, meshes[26]);
 		model.LeftLegFinger1 = LeftLegFinger1Bone;
 
-		InterpolatedBone LeftLegFinger2Bone = new InterpolatedBone("LeftLegFinger2");
+		Bone LeftLegFinger2Bone = new Bone("LeftLegFinger2");
 		LeftLegFinger2Bone.setInitialTransform(1F, 0F, 0.5F, new Quaternionf().rotationZYX(1.1273500036904057e-16F, 0.17453292509999999F, -1.5707963258999984F));
 		model.addBone(LeftLegFinger2Bone, meshes[27]);
 		model.LeftLegFinger2 = LeftLegFinger2Bone;
 
-		InterpolatedBone LeftLegFinger3Bone = new InterpolatedBone("LeftLegFinger3");
+		Bone LeftLegFinger3Bone = new Bone("LeftLegFinger3");
 		LeftLegFinger3Bone.setInitialTransform(0F, 0.5F, 1F, new Quaternionf().rotationZYX(0F, 0F, -1.5707963259F));
 		model.addBone(LeftLegFinger3Bone, meshes[28]);
 		model.LeftLegFinger3 = LeftLegFinger3Bone;
 
-		InterpolatedBone UpperRightLegBone = new InterpolatedBone("UpperRightLeg");
+		Bone UpperRightLegBone = new Bone("UpperRightLeg");
 		UpperRightLegBone.setInitialTransform(9F, -4.5F, 7.5F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		model.addBone(UpperRightLegBone, meshes[29]);
 		model.UpperRightLeg = UpperRightLegBone;
 
-		InterpolatedBone LowerRightLegBone = new InterpolatedBone("LowerRightLeg");
+		Bone LowerRightLegBone = new Bone("LowerRightLeg");
 		LowerRightLegBone.setInitialTransform(1F, -5.5F, 0.5F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		model.addBone(LowerRightLegBone, meshes[30]);
 		model.LowerRightLeg = LowerRightLegBone;
 
-		InterpolatedBone RightLegFinger2Bone = new InterpolatedBone("RightLegFinger2");
+		Bone RightLegFinger2Bone = new Bone("RightLegFinger2");
 		RightLegFinger2Bone.setInitialTransform(-1F, 0F, 0.5F, new Quaternionf().rotationZYX(-2.0114280404442795e-16F, -0.26179938765F, -1.5707963258999984F));
 		model.addBone(RightLegFinger2Bone, meshes[31]);
 		model.RightLegFinger2 = RightLegFinger2Bone;
 
-		InterpolatedBone RightLegFinger1Bone = new InterpolatedBone("RightLegFinger1");
+		Bone RightLegFinger1Bone = new Bone("RightLegFinger1");
 		RightLegFinger1Bone.setInitialTransform(1F, 0F, 0.5F, new Quaternionf().rotationZYX(1.1273500036904057e-16F, 0.17453292509999999F, -1.5707963258999984F));
 		model.addBone(RightLegFinger1Bone, meshes[32]);
 		model.RightLegFinger1 = RightLegFinger1Bone;
 
-		InterpolatedBone RightLegFinger3Bone = new InterpolatedBone("RightLegFinger3");
+		Bone RightLegFinger3Bone = new Bone("RightLegFinger3");
 		RightLegFinger3Bone.setInitialTransform(0F, 0.5F, 1F, new Quaternionf().rotationZYX(0F, 0F, -1.5707963259F));
 		model.addBone(RightLegFinger3Bone, meshes[33]);
 		model.RightLegFinger3 = RightLegFinger3Bone;
 
-		InterpolatedBone LeftHandBone = new InterpolatedBone("LeftHand");
+		Bone LeftHandBone = new Bone("LeftHand");
 		LeftHandBone.setInitialTransform(0F, -11F, 1F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		model.addBone(LeftHandBone, meshes[34]);
 		model.LeftHand = LeftHandBone;
 
-		InterpolatedBone RightFootBone = new InterpolatedBone("RightFoot");
+		Bone RightFootBone = new Bone("RightFoot");
 		RightFootBone.setInitialTransform(0F, -11F, 1F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		model.addBone(RightFootBone, meshes[35]);
 		model.RightFoot = RightFootBone;
 
-		InterpolatedBone LeftFootBone = new InterpolatedBone("LeftFoot");
+		Bone LeftFootBone = new Bone("LeftFoot");
 		LeftFootBone.setInitialTransform(0F, -11F, 1F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		model.addBone(LeftFootBone, meshes[36]);
 		model.LeftFoot = LeftFootBone;
 
-		InterpolatedBone LeftEyeBone = new InterpolatedBone("LeftEye");
+		Bone LeftEyeBone = new Bone("LeftEye");
 		LeftEyeBone.setInitialTransform(-2.4999999999999996F, 0.5F, 6.5F, new Quaternionf().rotationZYX(0F, 0F, 1.5707963259F));
 		model.addBone(LeftEyeBone, meshes[37]);
 		model.LeftEye = LeftEyeBone;
 
-		InterpolatedBone RightEyeBone = new InterpolatedBone("RightEye");
+		Bone RightEyeBone = new Bone("RightEye");
 		RightEyeBone.setInitialTransform(2.4999999999999996F, 0.5F, 7.5000000000000036F, new Quaternionf().rotationZYX(0F, 0F, 1.5707963259F));
 		model.addBone(RightEyeBone, meshes[38]);
 		model.RightEye = RightEyeBone;
@@ -438,46 +437,46 @@ public class FrogNoMoreSkeletonFactory implements SkeletonFactory {
 		return model;
 	}
 	
-	public static class FrogNoMoreModel extends InterpolatedSkeleton {
-		protected InterpolatedBone Body;
-		protected InterpolatedBone Neck;
-		protected InterpolatedBone Head;
-		protected InterpolatedBone UpperHead;
-		protected InterpolatedBone Jaw;
-		protected InterpolatedBone NeckFrills;
-		protected InterpolatedBone Tail;
-		protected InterpolatedBone TailFrills;
-		protected InterpolatedBone TailFrillsA;
-		protected InterpolatedBone TailFrillsB;
-		protected InterpolatedBone BodyFrills;
-		protected InterpolatedBone BodyFrillsA;
-		protected InterpolatedBone BodyFillsB;
-		protected InterpolatedBone UpperLeftArm;
-		protected InterpolatedBone LowerLeftArm;
-		protected InterpolatedBone LeftArmFinger1;
-		protected InterpolatedBone LeftArmFinger2;
-		protected InterpolatedBone LeftArmFinger3;
-		protected InterpolatedBone UpperRightArm;
-		protected InterpolatedBone LowerRightArm;
-		protected InterpolatedBone RightHand;
-		protected InterpolatedBone RightArmFinger3;
-		protected InterpolatedBone RightArmFinger2;
-		protected InterpolatedBone RightArmFinger1;
-		protected InterpolatedBone UpperLeftLeg;
-		protected InterpolatedBone LowerLeftLeg;
-		protected InterpolatedBone LeftLegFinger1;
-		protected InterpolatedBone LeftLegFinger2;
-		protected InterpolatedBone LeftLegFinger3;
-		protected InterpolatedBone UpperRightLeg;
-		protected InterpolatedBone LowerRightLeg;
-		protected InterpolatedBone RightLegFinger2;
-		protected InterpolatedBone RightLegFinger1;
-		protected InterpolatedBone RightLegFinger3;
-		protected InterpolatedBone LeftHand;
-		protected InterpolatedBone RightFoot;
-		protected InterpolatedBone LeftFoot;
-		protected InterpolatedBone LeftEye;
-		protected InterpolatedBone RightEye;
+	public static class FrogNoMoreModel extends Skeleton {
+		protected Bone Body;
+		protected Bone Neck;
+		protected Bone Head;
+		protected Bone UpperHead;
+		protected Bone Jaw;
+		protected Bone NeckFrills;
+		protected Bone Tail;
+		protected Bone TailFrills;
+		protected Bone TailFrillsA;
+		protected Bone TailFrillsB;
+		protected Bone BodyFrills;
+		protected Bone BodyFrillsA;
+		protected Bone BodyFillsB;
+		protected Bone UpperLeftArm;
+		protected Bone LowerLeftArm;
+		protected Bone LeftArmFinger1;
+		protected Bone LeftArmFinger2;
+		protected Bone LeftArmFinger3;
+		protected Bone UpperRightArm;
+		protected Bone LowerRightArm;
+		protected Bone RightHand;
+		protected Bone RightArmFinger3;
+		protected Bone RightArmFinger2;
+		protected Bone RightArmFinger1;
+		protected Bone UpperLeftLeg;
+		protected Bone LowerLeftLeg;
+		protected Bone LeftLegFinger1;
+		protected Bone LeftLegFinger2;
+		protected Bone LeftLegFinger3;
+		protected Bone UpperRightLeg;
+		protected Bone LowerRightLeg;
+		protected Bone RightLegFinger2;
+		protected Bone RightLegFinger1;
+		protected Bone RightLegFinger3;
+		protected Bone LeftHand;
+		protected Bone RightFoot;
+		protected Bone LeftFoot;
+		protected Bone LeftEye;
+		protected Bone RightEye;
 
 		protected InverseKinematicsConstraint LeftLegIK;
 		protected InverseKinematicsConstraint LeftArmIK;
@@ -490,8 +489,8 @@ public class FrogNoMoreSkeletonFactory implements SkeletonFactory {
 
 		@Override
 		public void animate(AnimationProperties properties) {
-			for (Object value : this.parts.values()) {
-				if (value instanceof InterpolatedBone bone) {
+			for (Object value : this.bones.values()) {
+				if (value instanceof Bone bone) {
 					bone.reset();
 				}
 			}

@@ -1,7 +1,7 @@
 package birsy.clinker.common.world.entity;
 
-import birsy.clinker.client.model.base.InterpolatedSkeleton;
-import birsy.clinker.client.model.base.InterpolatedSkeletonParent;
+import birsy.clinker.client.necromancer.Skeleton;
+import birsy.clinker.client.necromancer.SkeletonParent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -32,13 +32,13 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
-public class MudScarabEntity extends AbstractBugEntity implements InterpolatedSkeletonParent {
+public class MudScarabEntity extends AbstractBugEntity implements SkeletonParent {
     private float pHeight = 0;
     private float height = 0;
     private Vec3 pNormal = new Vec3(0, 1, 0);
     private Vec3 normal = new Vec3(0, 1, 0);
     @OnlyIn(Dist.CLIENT)
-    InterpolatedSkeleton skeleton;
+    Skeleton skeleton;
 
     public MudScarabEntity(EntityType<? extends MudScarabEntity> entityType, Level world) {
         super(entityType, world);
@@ -200,12 +200,12 @@ public class MudScarabEntity extends AbstractBugEntity implements InterpolatedSk
     }
 
     @Override
-    public void setSkeleton(InterpolatedSkeleton skeleton) {
+    public void setSkeleton(Skeleton skeleton) {
         this.skeleton = skeleton;
     }
 
     @Override
-    public InterpolatedSkeleton getSkeleton() {
+    public Skeleton getSkeleton() {
         return this.skeleton;
     }
 

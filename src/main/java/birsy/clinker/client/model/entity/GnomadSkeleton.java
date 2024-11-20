@@ -1,12 +1,12 @@
 package birsy.clinker.client.model.entity;
 
-import birsy.clinker.client.model.base.AnimationProperties;
-import birsy.clinker.client.model.base.InterpolatedBone;
-import birsy.clinker.client.model.base.InterpolatedSkeleton;
+import birsy.clinker.client.necromancer.Skeleton;
+import birsy.clinker.client.necromancer.animation.AnimationProperties;
+import birsy.clinker.client.necromancer.Bone;
 import net.minecraft.util.Mth;
 import net.tslat.smartbrainlib.util.RandomUtil;
 
-public abstract class GnomadSkeleton extends InterpolatedSkeleton {
+public abstract class GnomadSkeleton extends Skeleton {
     boolean maskShaking = false;
     int maskShakeTime = 0, maskShakeDuration = 1;
 
@@ -22,7 +22,7 @@ public abstract class GnomadSkeleton extends InterpolatedSkeleton {
 
     @Override
     public void animate(AnimationProperties properties) {
-        for (Object value : this.parts.values()) if (value instanceof InterpolatedBone bone) bone.reset();
+        for (Object value : this.bones.values()) if (value instanceof Bone bone) bone.reset();
         float ageInTicks = properties.getNumProperty("ageInTicks");
 
         if (maskShaking) {

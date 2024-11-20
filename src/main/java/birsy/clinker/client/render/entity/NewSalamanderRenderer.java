@@ -1,6 +1,6 @@
 package birsy.clinker.client.render.entity;
 
-import birsy.clinker.client.model.base.constraint.Constraint;
+import birsy.clinker.client.necromancer.constraint.Constraint;
 import birsy.clinker.client.model.entity.SalamanderSkeletonFactory;
 import birsy.clinker.client.render.DebugRenderUtil;
 import birsy.clinker.client.render.entity.base.InterpolatedEntityRenderer;

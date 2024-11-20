@@ -1,15 +1,15 @@
-package birsy.clinker.client.model.entity;
+package birsy.clinker.client.model;
 
-import birsy.clinker.client.model.base.AnimationProperties;
-import birsy.clinker.client.model.base.InterpolatedBone;
-import birsy.clinker.client.model.base.InterpolatedSkeleton;
-import birsy.clinker.client.model.base.SkeletonFactory;
-import birsy.clinker.client.model.base.mesh.ModelMesh;
-import birsy.clinker.client.model.base.mesh.StaticMesh;
+import birsy.clinker.client.necromancer.Skeleton;
+import birsy.clinker.client.necromancer.animation.AnimationProperties;
+import birsy.clinker.client.necromancer.Bone;
+import birsy.clinker.client.necromancer.RenderFactory;
+import birsy.clinker.client.necromancer.render.mesh.Mesh;
+import birsy.clinker.client.necromancer.render.mesh.StaticMesh;
 import org.joml.Quaternionf;
 
-public class CauldronModelSkeletonFactory implements SkeletonFactory {
-	private final ModelMesh[] meshes = new ModelMesh[2];
+public class CauldronModelSkeletonFactory implements RenderFactory {
+	private final Mesh[] meshes = new Mesh[2];
 	
 	public CauldronModelSkeletonFactory() {
 		int texWidth = 64;
@@ -30,14 +30,14 @@ public class CauldronModelSkeletonFactory implements SkeletonFactory {
 		meshes[1] = mesh1;
 	}
 	
-	public InterpolatedSkeleton create() {
+	public Skeleton create() {
 		CauldronModelSkeleton skeleton = new CauldronModelSkeleton();
-		InterpolatedBone centerOfMassBone = new InterpolatedBone("centerOfMass");
+		Bone centerOfMassBone = new Bone("centerOfMass");
 		centerOfMassBone.setInitialTransform(0F, 4.444444444444445F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		skeleton.addBone(centerOfMassBone, meshes[0]);
 		skeleton.centerOfMass = centerOfMassBone;
 
-		InterpolatedBone bottomBone = new InterpolatedBone("bottom");
+		Bone bottomBone = new Bone("bottom");
 		bottomBone.setInitialTransform(0F, 0F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		skeleton.addBone(bottomBone, meshes[1]);
 		skeleton.bottom = bottomBone;
@@ -47,9 +47,9 @@ public class CauldronModelSkeletonFactory implements SkeletonFactory {
 		return skeleton;
 	}
 	
-	public static class CauldronModelSkeleton extends InterpolatedSkeleton {
-		protected InterpolatedBone centerOfMass;
-		protected InterpolatedBone bottom;
+	public static class CauldronModelSkeleton extends Skeleton {
+		protected Bone centerOfMass;
+		protected Bone bottom;
 		
 		@Override
 		public void animate(AnimationProperties properties) {

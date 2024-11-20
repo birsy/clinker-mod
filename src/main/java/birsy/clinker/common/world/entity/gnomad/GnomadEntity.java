@@ -1,13 +1,11 @@
 package birsy.clinker.common.world.entity.gnomad;
 
-import birsy.clinker.client.model.base.InterpolatedSkeleton;
-import birsy.clinker.client.model.base.InterpolatedSkeletonParent;
+import birsy.clinker.client.necromancer.Skeleton;
+import birsy.clinker.client.necromancer.SkeletonParent;
 import birsy.clinker.common.world.entity.GroundLocomoteEntity;
 import birsy.clinker.common.world.entity.gnomad.gnomind.squad.GnomadSquad;
-import birsy.clinker.common.world.entity.gnomad.gnomind.squad.squadtasks.GnomadSquadTask;
 import birsy.clinker.common.world.entity.gnomad.gnomind.squad.GnomadSquads;
 import birsy.clinker.core.Clinker;
-import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import net.minecraft.network.protocol.game.DebugEntityNameGenerator;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -21,11 +19,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.tslat.smartbrainlib.util.BrainUtils;
 
 import static net.minecraft.world.entity.monster.Monster.createMonsterAttributes;
 
-public abstract class GnomadEntity extends GroundLocomoteEntity implements Enemy, InterpolatedSkeletonParent {
+public abstract class GnomadEntity extends GroundLocomoteEntity implements Enemy, SkeletonParent {
     public GnomadSquad squad;
 
     @OnlyIn(Dist.CLIENT)
@@ -86,15 +83,15 @@ public abstract class GnomadEntity extends GroundLocomoteEntity implements Enemy
         return (this.entityData.get(DATA_ANIMATION_FLAGS_ID) & 0b1) > 0;
     }
 
-    InterpolatedSkeleton skeleton;
+    Skeleton skeleton;
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void setSkeleton(InterpolatedSkeleton skeleton) {
+    public void setSkeleton(Skeleton skeleton) {
         this.skeleton = skeleton;
     }
     @Override
     @OnlyIn(Dist.CLIENT)
-    public InterpolatedSkeleton getSkeleton() {
+    public Skeleton getSkeleton() {
         return this.skeleton;
     }
 }

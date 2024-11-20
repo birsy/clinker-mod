@@ -1,15 +1,15 @@
-package birsy.clinker.client.model.entity;
+package birsy.clinker.client.model;
 
-import birsy.clinker.client.model.base.AnimationProperties;
-import birsy.clinker.client.model.base.InterpolatedBone;
-import birsy.clinker.client.model.base.InterpolatedSkeleton;
-import birsy.clinker.client.model.base.SkeletonFactory;
-import birsy.clinker.client.model.base.mesh.ModelMesh;
-import birsy.clinker.client.model.base.mesh.StaticMesh;
+import birsy.clinker.client.necromancer.animation.AnimationProperties;
+import birsy.clinker.client.necromancer.Bone;
+import birsy.clinker.client.necromancer.Skeleton;
+import birsy.clinker.client.necromancer.RenderFactory;
+import birsy.clinker.client.necromancer.render.mesh.Mesh;
+import birsy.clinker.client.necromancer.render.mesh.StaticMesh;
 import org.joml.Quaternionf;
 
-public class GnomadBannerSkeletonFactory implements SkeletonFactory {
-	private final ModelMesh[] meshes = new ModelMesh[4];
+public class GnomadBannerSkeletonFactory implements RenderFactory {
+	private final Mesh[] meshes = new Mesh[4];
 	
 	public GnomadBannerSkeletonFactory() {
 		int texWidth = 128;
@@ -40,24 +40,24 @@ public class GnomadBannerSkeletonFactory implements SkeletonFactory {
 		
 	}
 	
-	public InterpolatedSkeleton create() {
+	public Skeleton create() {
 		GnomadBannerSkeleton skeleton = new GnomadBannerSkeleton();
-		InterpolatedBone ClothBone = new InterpolatedBone("Cloth");
+		Bone ClothBone = new Bone("Cloth");
 		ClothBone.setInitialTransform(0F, 73.5F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		skeleton.addBone(ClothBone, meshes[0]);
 		skeleton.Cloth = ClothBone;
 		
-		InterpolatedBone ClothFrontBone = new InterpolatedBone("ClothFront");
+		Bone ClothFrontBone = new Bone("ClothFront");
 		ClothFrontBone.setInitialTransform(0F, 0.5F, -1F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		skeleton.addBone(ClothFrontBone, meshes[1]);
 		skeleton.ClothFront = ClothFrontBone;
 		
-		InterpolatedBone ClothBackBone = new InterpolatedBone("ClothBack");
+		Bone ClothBackBone = new Bone("ClothBack");
 		ClothBackBone.setInitialTransform(0F, 0.5F, 2F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		skeleton.addBone(ClothBackBone, meshes[2]);
 		skeleton.ClothBack = ClothBackBone;
 		
-		InterpolatedBone BannerBone = new InterpolatedBone("Banner");
+		Bone BannerBone = new Bone("Banner");
 		BannerBone.setInitialTransform(0F, 0F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		skeleton.addBone(BannerBone, meshes[3]);
 		skeleton.Banner = BannerBone;
@@ -69,11 +69,11 @@ public class GnomadBannerSkeletonFactory implements SkeletonFactory {
 		return skeleton;
 	}
 	
-	public static class GnomadBannerSkeleton extends InterpolatedSkeleton {
-		protected InterpolatedBone Cloth;
-		protected InterpolatedBone ClothFront;
-		protected InterpolatedBone ClothBack;
-		protected InterpolatedBone Banner;
+	public static class GnomadBannerSkeleton extends Skeleton {
+		protected Bone Cloth;
+		protected Bone ClothFront;
+		protected Bone ClothBack;
+		protected Bone Banner;
 		
 		@Override
 		public void animate(AnimationProperties properties) {

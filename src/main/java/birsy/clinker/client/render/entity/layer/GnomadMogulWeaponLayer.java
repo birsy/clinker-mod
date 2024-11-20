@@ -1,6 +1,6 @@
 package birsy.clinker.client.render.entity.layer;
 
-import birsy.clinker.client.model.base.InterpolatedBone;
+import birsy.clinker.client.necromancer.Bone;
 import birsy.clinker.client.model.entity.GnomadMogulSkeletonFactory;
 import birsy.clinker.client.model.entity.MogulWarhookModel;
 import birsy.clinker.client.render.entity.base.EntityRenderLayer;
@@ -12,10 +12,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
-import net.minecraft.world.phys.Vec3;
-import org.joml.Matrix4f;
-import org.joml.Quaternionf;
 
 public class GnomadMogulWeaponLayer extends EntityRenderLayer<GnomadMogulEntity, GnomadMogulSkeletonFactory.GnomadMogulSkeleton> {
     private static final ResourceLocation WARHOOK_LOCATION = new ResourceLocation(Clinker.MOD_ID, "textures/entity/mogul_warhook.png");
@@ -32,8 +28,8 @@ public class GnomadMogulWeaponLayer extends EntityRenderLayer<GnomadMogulEntity,
         pPoseStack.pushPose();
         pPoseStack.translate(0, 16 * pLivingEntity.getHeightOffset(pPartialTicks), 0);
         if (pSkeleton != null) {
-            for (InterpolatedBone interpolatedBone : pSkeleton.MogulRightArmGrasp.parentChain) {
-                interpolatedBone.transform(pPoseStack, pPartialTicks);
+            for (Bone bone : pSkeleton.MogulRightArmGrasp.parentChain) {
+                bone.transform(pPoseStack, pPartialTicks);
             }
             pSkeleton.MogulRightArmGrasp.transform(pPoseStack, pPartialTicks);
             pPoseStack.translate(-0.6, 0, 1);

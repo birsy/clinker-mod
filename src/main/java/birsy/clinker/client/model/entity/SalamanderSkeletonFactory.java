@@ -1,15 +1,14 @@
 package birsy.clinker.client.model.entity;
 
-import birsy.clinker.client.model.base.InterpolatedSkeleton;
-import birsy.clinker.client.model.base.InterpolatedBone;
-import birsy.clinker.client.model.base.SkeletonFactory;
-import birsy.clinker.client.model.base.constraint.InverseKinematicsConstraint;
-import birsy.clinker.client.model.base.mesh.ModelMesh;
-import birsy.clinker.client.model.base.mesh.SalamanderHairMesh;
-import birsy.clinker.client.model.base.mesh.StaticMesh;
-import birsy.clinker.client.model.base.AnimationProperties;
+import birsy.clinker.client.necromancer.Skeleton;
+import birsy.clinker.client.necromancer.Bone;
+import birsy.clinker.client.necromancer.RenderFactory;
+import birsy.clinker.client.necromancer.constraint.InverseKinematicsConstraint;
+import birsy.clinker.client.necromancer.render.mesh.Mesh;
+import birsy.clinker.client.necromancer.render.mesh.SalamanderHairMesh;
+import birsy.clinker.client.necromancer.render.mesh.StaticMesh;
+import birsy.clinker.client.necromancer.animation.AnimationProperties;
 import birsy.clinker.common.world.entity.salamander.NewSalamanderEntity;
-import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.JomlConversions;
 import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -27,10 +26,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public class SalamanderSkeletonFactory implements SkeletonFactory {
-	private final ModelMesh[] headMeshes = new ModelMesh[14];
-	private final ModelMesh[] bodyMeshes = new ModelMesh[26];
-	private final ModelMesh[] hairMeshes = new ModelMesh[14];
+public class SalamanderSkeletonFactory implements RenderFactory {
+	private final Mesh[] headMeshes = new Mesh[14];
+	private final Mesh[] bodyMeshes = new Mesh[26];
+	private final Mesh[] hairMeshes = new Mesh[14];
 	private final Random random = new Random();
 	public SalamanderSkeletonFactory() {
 		int texWidth = 128;
@@ -251,7 +250,7 @@ public class SalamanderSkeletonFactory implements SkeletonFactory {
 		hairMesh13.createFace(3F, 4F, -1.5F, 0F, 0F, 0F, 0F, 122F, 24F, true);
 		hairMeshes[13] = hairMesh13;
 
-		for (ModelMesh hairMesh : hairMeshes) {
+		for (Mesh hairMesh : hairMeshes) {
 			if (hairMesh instanceof SalamanderHairMesh mesh) {
 				mesh.wiggleAmount = 0.8F;
 				mesh.wiggleSpeed = 0.02F;
@@ -261,7 +260,7 @@ public class SalamanderSkeletonFactory implements SkeletonFactory {
 
 	public NewSalamanderEntity entity;
 	@Override
-	public InterpolatedSkeleton create() {
+	public Skeleton create() {
 		int segments = entity.segments.size();
 		SalamanderSkeleton skeleton = new SalamanderSkeleton();
 		random.setSeed(entity.getUUID().getMostSignificantBits());
@@ -282,74 +281,74 @@ public class SalamanderSkeletonFactory implements SkeletonFactory {
 
 
 
-	public InterpolatedSkeleton createHead(int index, int totalSegments) {
+	public Skeleton createHead(int index, int totalSegments) {
 		SalamanderHeadSkeleton skeleton = new SalamanderHeadSkeleton(index);
-		InterpolatedBone RootBoneBone = new InterpolatedBone("RootBone");
+		Bone RootBoneBone = new Bone("RootBone");
 		RootBoneBone.setInitialTransform(0F, 0F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		skeleton.addBone(RootBoneBone, headMeshes[0]);
 		skeleton.RootBone = RootBoneBone;
 
-		InterpolatedBone salamanderHeadRootBone = new InterpolatedBone("salamanderHeadRoot");
+		Bone salamanderHeadRootBone = new Bone("salamanderHeadRoot");
 		salamanderHeadRootBone.setInitialTransform(0F, -0.5F, -8F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		skeleton.addBone(salamanderHeadRootBone, headMeshes[1]);
 		skeleton.salamanderHeadRoot = salamanderHeadRootBone;
 
-		InterpolatedBone salamanderHeadBone = new InterpolatedBone("salamanderHead");
+		Bone salamanderHeadBone = new Bone("salamanderHead");
 		salamanderHeadBone.setInitialTransform(0F, 0F, 6F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		skeleton.addBone(salamanderHeadBone, headMeshes[2]);
 		skeleton.salamanderHead = salamanderHeadBone;
 
-		InterpolatedBone salamanderForeheadBone = new InterpolatedBone("salamanderForehead");
+		Bone salamanderForeheadBone = new Bone("salamanderForehead");
 		salamanderForeheadBone.setInitialTransform(0F, 2.5F, -6F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		skeleton.addBone(salamanderForeheadBone, headMeshes[3]);
 		skeleton.salamanderForehead = salamanderForeheadBone;
 
-		InterpolatedBone salamanderLeftFrillBone = new InterpolatedBone("salamanderLeftFrill");
+		Bone salamanderLeftFrillBone = new Bone("salamanderLeftFrill");
 		salamanderLeftFrillBone.setInitialTransform(4F, 2F, 8F, new Quaternionf().rotationZYX(0F, 0.78539816295F, 0F));
 		skeleton.addBone(salamanderLeftFrillBone, headMeshes[4]);
 		skeleton.salamanderLeftFrill = salamanderLeftFrillBone;
 
-		InterpolatedBone salamanderRightFrillBone = new InterpolatedBone("salamanderRightFrill");
+		Bone salamanderRightFrillBone = new Bone("salamanderRightFrill");
 		salamanderRightFrillBone.setInitialTransform(-4F, 2F, 8F, new Quaternionf().rotationZYX(0F, -0.78539816295F, 0F));
 		skeleton.addBone(salamanderRightFrillBone, headMeshes[5]);
 		skeleton.salamanderRightFrill = salamanderRightFrillBone;
 
-		InterpolatedBone salamanderTopFrillBone = new InterpolatedBone("salamanderTopFrill");
+		Bone salamanderTopFrillBone = new Bone("salamanderTopFrill");
 		salamanderTopFrillBone.setInitialTransform(0F, 1F, 8F, new Quaternionf().rotationZYX(0F, 0F, -0.78539816295F));
 		skeleton.addBone(salamanderTopFrillBone, headMeshes[6]);
 		skeleton.salamanderTopFrill = salamanderTopFrillBone;
 
-		InterpolatedBone salamanderRightEyeSocketBone = new InterpolatedBone("salamanderRightEyeSocket");
+		Bone salamanderRightEyeSocketBone = new Bone("salamanderRightEyeSocket");
 		salamanderRightEyeSocketBone.setInitialTransform(-6F, 2.5F, -3.5F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		skeleton.addBone(salamanderRightEyeSocketBone, headMeshes[7]);
 		skeleton.salamanderRightEyeSocket = salamanderRightEyeSocketBone;
 
-		InterpolatedBone salamanderRightEyeBone = new InterpolatedBone("salamanderRightEye");
+		Bone salamanderRightEyeBone = new Bone("salamanderRightEye");
 		salamanderRightEyeBone.setInitialTransform(2F, 1F, 0F, new Quaternionf().rotationZYX(0F, -1.5707963259F, -0.5880014246619F));
 		skeleton.addBone(salamanderRightEyeBone, headMeshes[8]);
 		skeleton.salamanderRightEye = salamanderRightEyeBone;
 
-		InterpolatedBone salamanderHeadInsideBone = new InterpolatedBone("salamanderHeadInside");
+		Bone salamanderHeadInsideBone = new Bone("salamanderHeadInside");
 		salamanderHeadInsideBone.setInitialTransform(0F, 0.0600000000000005F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		skeleton.addBone(salamanderHeadInsideBone, headMeshes[9]);
 		skeleton.salamanderHeadInside = salamanderHeadInsideBone;
 
-		InterpolatedBone salamanderJawBone = new InterpolatedBone("salamanderJaw");
+		Bone salamanderJawBone = new Bone("salamanderJaw");
 		salamanderJawBone.setInitialTransform(0F, -0.5F, -3F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		skeleton.addBone(salamanderJawBone, headMeshes[10]);
 		skeleton.salamanderJaw = salamanderJawBone;
 
-		InterpolatedBone salamanderJawInsideBone = new InterpolatedBone("salamanderJawInside");
+		Bone salamanderJawInsideBone = new Bone("salamanderJawInside");
 		salamanderJawInsideBone.setInitialTransform(0F, -2F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		skeleton.addBone(salamanderJawInsideBone, headMeshes[11]);
 		skeleton.salamanderJawInside = salamanderJawInsideBone;
 
-		InterpolatedBone salamanderLeftEyeSocketBone = new InterpolatedBone("salamanderLeftEyeSocket");
+		Bone salamanderLeftEyeSocketBone = new Bone("salamanderLeftEyeSocket");
 		salamanderLeftEyeSocketBone.setInitialTransform(6F, 2.5F, -3.5F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		skeleton.addBone(salamanderLeftEyeSocketBone, headMeshes[12]);
 		skeleton.salamanderLeftEyeSocket = salamanderLeftEyeSocketBone;
 
-		InterpolatedBone salamanderLeftEyeBone = new InterpolatedBone("salamanderLeftEye");
+		Bone salamanderLeftEyeBone = new Bone("salamanderLeftEye");
 		salamanderLeftEyeBone.setInitialTransform(-2F, 1F, 0F, new Quaternionf().rotationZYX(0F, -1.5707963259F, 0.5880014246619F));
 		skeleton.addBone(salamanderLeftEyeBone, headMeshes[13]);
 		skeleton.salamanderLeftEye = salamanderLeftEyeBone;
@@ -371,20 +370,20 @@ public class SalamanderSkeletonFactory implements SkeletonFactory {
 		return skeleton;
 	}
 	public static class SalamanderHeadSkeleton extends SalamanderSegmentSkeleton {
-		protected InterpolatedBone RootBone;
-		protected InterpolatedBone salamanderHeadRoot;
-		protected InterpolatedBone salamanderHead;
-		protected InterpolatedBone salamanderForehead;
-		protected InterpolatedBone salamanderLeftFrill;
-		protected InterpolatedBone salamanderRightFrill;
-		protected InterpolatedBone salamanderTopFrill;
-		protected InterpolatedBone salamanderRightEyeSocket;
-		protected InterpolatedBone salamanderRightEye;
-		protected InterpolatedBone salamanderHeadInside;
-		protected InterpolatedBone salamanderJaw;
-		protected InterpolatedBone salamanderJawInside;
-		protected InterpolatedBone salamanderLeftEyeSocket;
-		protected InterpolatedBone salamanderLeftEye;
+		protected Bone RootBone;
+		protected Bone salamanderHeadRoot;
+		protected Bone salamanderHead;
+		protected Bone salamanderForehead;
+		protected Bone salamanderLeftFrill;
+		protected Bone salamanderRightFrill;
+		protected Bone salamanderTopFrill;
+		protected Bone salamanderRightEyeSocket;
+		protected Bone salamanderRightEye;
+		protected Bone salamanderHeadInside;
+		protected Bone salamanderJaw;
+		protected Bone salamanderJawInside;
+		protected Bone salamanderLeftEyeSocket;
+		protected Bone salamanderLeftEye;
 		private Random random = new Random();
 		public boolean blink = false;
 		private int blinkTime = 0;
@@ -405,8 +404,8 @@ public class SalamanderSkeletonFactory implements SkeletonFactory {
 				blinkTime++;
 			}
 
-			for (Object value : this.parts.values()) {
-				if (value instanceof InterpolatedBone bone) {
+			for (Object value : this.bones.values()) {
+				if (value instanceof Bone bone) {
 					bone.reset();
 				}
 			}
@@ -417,7 +416,7 @@ public class SalamanderSkeletonFactory implements SkeletonFactory {
 			Vec3 position = segment.joint2.getPosition(1.0F).subtract(entity.getPosition(1.0F)).scale(16);
 
 			for (Object r : this.roots) {
-				if (r instanceof InterpolatedBone root) {
+				if (r instanceof Bone root) {
 					root.x = (float) position.x();
 					root.y = (float) position.y() + 4;
 					root.z = (float) position.z() - 1.5F;
@@ -430,10 +429,10 @@ public class SalamanderSkeletonFactory implements SkeletonFactory {
 		}
 	}
 
-	public InterpolatedSkeleton createBody(int index, int totalSegments, boolean legs, boolean isTailStart) {
+	public Skeleton createBody(int index, int totalSegments, boolean legs, boolean isTailStart) {
 		SalamanderBodySkeleton skeleton = new SalamanderBodySkeleton(index);
 		skeleton.hasLegs = legs;
-		InterpolatedBone bodyRootBone = new InterpolatedBone("bodyRoot");
+		Bone bodyRootBone = new Bone("bodyRoot");
 		bodyRootBone.setInitialTransform(0F, 0F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		if (isTailStart) {
 			bodyRootBone.initialXSize = 0.85F;
@@ -442,58 +441,58 @@ public class SalamanderSkeletonFactory implements SkeletonFactory {
 		skeleton.addBone(bodyRootBone, bodyMeshes[0]);
 		skeleton.bodyRoot = bodyRootBone;
 		
-		InterpolatedBone salamanderBodyTopBone = new InterpolatedBone("salamanderBodyTop");
+		Bone salamanderBodyTopBone = new Bone("salamanderBodyTop");
 		salamanderBodyTopBone.setInitialTransform(0F, 4.5F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		skeleton.addBone(salamanderBodyTopBone, bodyMeshes[1]);
 		skeleton.salamanderBodyTop = salamanderBodyTopBone;
 		
-		InterpolatedBone salamanderBodyBottomBone = new InterpolatedBone("salamanderBodyBottom");
+		Bone salamanderBodyBottomBone = new Bone("salamanderBodyBottom");
 		salamanderBodyBottomBone.setInitialTransform(0F, -3.5F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		skeleton.addBone(salamanderBodyBottomBone, bodyMeshes[2]);
 		skeleton.salamanderBodyBottom = salamanderBodyBottomBone;
 		
-		InterpolatedBone danglyBitsParentBone = new InterpolatedBone("danglyBitsParent");
+		Bone danglyBitsParentBone = new Bone("danglyBitsParent");
 		danglyBitsParentBone.setInitialTransform(0F, -1F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		skeleton.addBone(danglyBitsParentBone, bodyMeshes[3]);
 		skeleton.danglyBitsParent = danglyBitsParentBone;
 		
-		InterpolatedBone salamanderBodyLeftBone = new InterpolatedBone("salamanderBodyLeft");
+		Bone salamanderBodyLeftBone = new Bone("salamanderBodyLeft");
 		salamanderBodyLeftBone.setInitialTransform(4.5F, 0F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		skeleton.addBone(salamanderBodyLeftBone, bodyMeshes[4]);
 		skeleton.salamanderBodyLeft = salamanderBodyLeftBone;
 		
-		InterpolatedBone salamanderBodyRightBone = new InterpolatedBone("salamanderBodyRight");
+		Bone salamanderBodyRightBone = new Bone("salamanderBodyRight");
 		salamanderBodyRightBone.setInitialTransform(-4.5F, 0F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		skeleton.addBone(salamanderBodyRightBone, bodyMeshes[5]);
 		skeleton.salamanderBodyRight = salamanderBodyRightBone;
 		
-		InterpolatedBone salamanderBoneBone = new InterpolatedBone("salamanderBone");
+		Bone salamanderBoneBone = new Bone("salamanderBone");
 		salamanderBoneBone.setInitialTransform(0F, 0F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		skeleton.addBone(salamanderBoneBone, bodyMeshes[6]);
 		skeleton.salamanderBone = salamanderBoneBone;
 		
-		InterpolatedBone salamanderBoneFrontBone = new InterpolatedBone("salamanderBoneFront");
+		Bone salamanderBoneFrontBone = new Bone("salamanderBoneFront");
 		salamanderBoneFrontBone.setInitialTransform(0F, 0F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		skeleton.addBone(salamanderBoneFrontBone, bodyMeshes[7]);
 		skeleton.salamanderBoneFront = salamanderBoneFrontBone;
 		
-		InterpolatedBone salamanderBoneBackBone = new InterpolatedBone("salamanderBoneBack");
+		Bone salamanderBoneBackBone = new Bone("salamanderBoneBack");
 		salamanderBoneBackBone.setInitialTransform(0F, 0F, 0F, new Quaternionf().rotationZYX(0F, 3.1415926518F, 0F));
 		skeleton.addBone(salamanderBoneBackBone, bodyMeshes[8]);
 		skeleton.salamanderBoneBack = salamanderBoneBackBone;
 		
-		InterpolatedBone salamanderInnardsFrontBone = new InterpolatedBone("salamanderInnardsFront");
+		Bone salamanderInnardsFrontBone = new Bone("salamanderInnardsFront");
 		salamanderInnardsFrontBone.setInitialTransform(0F, 0.5F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		skeleton.addBone(salamanderInnardsFrontBone, bodyMeshes[9]);
 		skeleton.salamanderInnardsFront = salamanderInnardsFrontBone;
 		
-		InterpolatedBone salamanderInnardsBackBone = new InterpolatedBone("salamanderInnardsBack");
+		Bone salamanderInnardsBackBone = new Bone("salamanderInnardsBack");
 		salamanderInnardsBackBone.setInitialTransform(0F, 0.5F, 0F, new Quaternionf().rotationZYX(0F, 3.1415926518F, 0F));
 		skeleton.addBone(salamanderInnardsBackBone, bodyMeshes[10]);
 		skeleton.salamanderInnardsBack = salamanderInnardsBackBone;
 
 		if (legs) {
-			InterpolatedBone legsRootBone = new InterpolatedBone("legsRoot");
+			Bone legsRootBone = new Bone("legsRoot");
 			legsRootBone.setInitialTransform(0F, 0F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 			if (isTailStart) {
 				legsRootBone.initialXSize = 1.17647059F;
@@ -502,62 +501,62 @@ public class SalamanderSkeletonFactory implements SkeletonFactory {
 			skeleton.addBone(legsRootBone, bodyMeshes[11]);
 			skeleton.legsRoot = legsRootBone;
 
-			InterpolatedBone salamanderRightUpperLegBone = new InterpolatedBone("salamanderRightUpperLeg");
+			Bone salamanderRightUpperLegBone = new Bone("salamanderRightUpperLeg");
 			salamanderRightUpperLegBone.setInitialTransform(-6.5F, 0F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 			skeleton.addBone(salamanderRightUpperLegBone, bodyMeshes[12]);
 			skeleton.salamanderRightUpperLeg = salamanderRightUpperLegBone;
 
-			InterpolatedBone salamanderRightLowerLegBone = new InterpolatedBone("salamanderRightLowerLeg");
+			Bone salamanderRightLowerLegBone = new Bone("salamanderRightLowerLeg");
 			salamanderRightLowerLegBone.setInitialTransform(-1F, -9F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 			skeleton.addBone(salamanderRightLowerLegBone, bodyMeshes[13]);
 			skeleton.salamanderRightLowerLeg = salamanderRightLowerLegBone;
 
-			InterpolatedBone salamanderRightFootBone = new InterpolatedBone("salamanderRightFoot");
+			Bone salamanderRightFootBone = new Bone("salamanderRightFoot");
 			salamanderRightFootBone.setInitialTransform(0F, -10F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 			skeleton.addBone(salamanderRightFootBone, bodyMeshes[14]);
 			skeleton.salamanderRightFoot = salamanderRightFootBone;
 
-			InterpolatedBone salamanderRightRightClawBone = new InterpolatedBone("salamanderRightRightClaw");
+			Bone salamanderRightRightClawBone = new Bone("salamanderRightRightClaw");
 			salamanderRightRightClawBone.setInitialTransform(0F, -1F, 0F, new Quaternionf().rotationZYX(0F, 0.392699081475F, 0F));
 			skeleton.addBone(salamanderRightRightClawBone, bodyMeshes[15]);
 			skeleton.salamanderRightRightClaw = salamanderRightRightClawBone;
 
-			InterpolatedBone salamanderRightLeftClawBone = new InterpolatedBone("salamanderRightLeftClaw");
+			Bone salamanderRightLeftClawBone = new Bone("salamanderRightLeftClaw");
 			salamanderRightLeftClawBone.setInitialTransform(0F, -1F, 0F, new Quaternionf().rotationZYX(0F, -0.392699081475F, 0F));
 			skeleton.addBone(salamanderRightLeftClawBone, bodyMeshes[16]);
 			skeleton.salamanderRightLeftClaw = salamanderRightLeftClawBone;
 
-			InterpolatedBone salamanderRightBackClawBone = new InterpolatedBone("salamanderRightBackClaw");
+			Bone salamanderRightBackClawBone = new Bone("salamanderRightBackClaw");
 			salamanderRightBackClawBone.setInitialTransform(0F, -1F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 			skeleton.addBone(salamanderRightBackClawBone, bodyMeshes[17]);
 			skeleton.salamanderRightBackClaw = salamanderRightBackClawBone;
 
-			InterpolatedBone salamanderLeftUpperLegBone = new InterpolatedBone("salamanderLeftUpperLeg");
+			Bone salamanderLeftUpperLegBone = new Bone("salamanderLeftUpperLeg");
 			salamanderLeftUpperLegBone.setInitialTransform(6.5F, 0F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 			skeleton.addBone(salamanderLeftUpperLegBone, bodyMeshes[18]);
 			skeleton.salamanderLeftUpperLeg = salamanderLeftUpperLegBone;
 
-			InterpolatedBone salamanderLeftLowerLegBone = new InterpolatedBone("salamanderLeftLowerLeg");
+			Bone salamanderLeftLowerLegBone = new Bone("salamanderLeftLowerLeg");
 			salamanderLeftLowerLegBone.setInitialTransform(1F, -9F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 			skeleton.addBone(salamanderLeftLowerLegBone, bodyMeshes[19]);
 			skeleton.salamanderLeftLowerLeg = salamanderLeftLowerLegBone;
 
-			InterpolatedBone salamanderLeftFootBone = new InterpolatedBone("salamanderLeftFoot");
+			Bone salamanderLeftFootBone = new Bone("salamanderLeftFoot");
 			salamanderLeftFootBone.setInitialTransform(0F, -10F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 			skeleton.addBone(salamanderLeftFootBone, bodyMeshes[20]);
 			skeleton.salamanderLeftFoot = salamanderLeftFootBone;
 
-			InterpolatedBone salamanderLeftRightClawBone = new InterpolatedBone("salamanderLeftRightClaw");
+			Bone salamanderLeftRightClawBone = new Bone("salamanderLeftRightClaw");
 			salamanderLeftRightClawBone.setInitialTransform(0F, -1F, 0F, new Quaternionf().rotationZYX(0F, 0.392699081475F, 0F));
 			skeleton.addBone(salamanderLeftRightClawBone, bodyMeshes[21]);
 			skeleton.salamanderLeftRightClaw = salamanderLeftRightClawBone;
 
-			InterpolatedBone salamanderLeftLeftClawBone = new InterpolatedBone("salamanderLeftLeftClaw");
+			Bone salamanderLeftLeftClawBone = new Bone("salamanderLeftLeftClaw");
 			salamanderLeftLeftClawBone.setInitialTransform(0F, -1F, 0F, new Quaternionf().rotationZYX(0F, -0.392699081475F, 0F));
 			skeleton.addBone(salamanderLeftLeftClawBone, bodyMeshes[22]);
 			skeleton.salamanderLeftLeftClaw = salamanderLeftLeftClawBone;
 
-			InterpolatedBone salamanderLeftBackClawBone = new InterpolatedBone("salamanderLeftBackClaw");
+			Bone salamanderLeftBackClawBone = new Bone("salamanderLeftBackClaw");
 			salamanderLeftBackClawBone.setInitialTransform(0F, -1F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 			skeleton.addBone(salamanderLeftBackClawBone, bodyMeshes[23]);
 			skeleton.salamanderLeftBackClaw = salamanderLeftBackClawBone;
@@ -617,32 +616,32 @@ public class SalamanderSkeletonFactory implements SkeletonFactory {
 		return skeleton;
 	}
 	public static class SalamanderBodySkeleton extends SalamanderSegmentSkeleton {
-		protected InterpolatedBone bodyRoot;
-		protected InterpolatedBone salamanderBodyTop;
-		protected InterpolatedBone salamanderBodyBottom;
-		protected InterpolatedBone danglyBitsParent;
-		protected InterpolatedBone salamanderBodyLeft;
-		protected InterpolatedBone salamanderBodyRight;
-		protected InterpolatedBone salamanderBone;
-		protected InterpolatedBone salamanderBoneFront;
-		protected InterpolatedBone salamanderBoneBack;
-		protected InterpolatedBone salamanderInnardsFront;
-		protected InterpolatedBone salamanderInnardsBack;
+		protected Bone bodyRoot;
+		protected Bone salamanderBodyTop;
+		protected Bone salamanderBodyBottom;
+		protected Bone danglyBitsParent;
+		protected Bone salamanderBodyLeft;
+		protected Bone salamanderBodyRight;
+		protected Bone salamanderBone;
+		protected Bone salamanderBoneFront;
+		protected Bone salamanderBoneBack;
+		protected Bone salamanderInnardsFront;
+		protected Bone salamanderInnardsBack;
 
 		protected boolean hasLegs;
-		protected InterpolatedBone legsRoot;
-		protected InterpolatedBone salamanderRightUpperLeg;
-		protected InterpolatedBone salamanderRightLowerLeg;
-		protected InterpolatedBone salamanderRightFoot;
-		protected InterpolatedBone salamanderRightRightClaw;
-		protected InterpolatedBone salamanderRightLeftClaw;
-		protected InterpolatedBone salamanderRightBackClaw;
-		protected InterpolatedBone salamanderLeftUpperLeg;
-		protected InterpolatedBone salamanderLeftLowerLeg;
-		protected InterpolatedBone salamanderLeftFoot;
-		protected InterpolatedBone salamanderLeftRightClaw;
-		protected InterpolatedBone salamanderLeftLeftClaw;
-		protected InterpolatedBone salamanderLeftBackClaw;
+		protected Bone legsRoot;
+		protected Bone salamanderRightUpperLeg;
+		protected Bone salamanderRightLowerLeg;
+		protected Bone salamanderRightFoot;
+		protected Bone salamanderRightRightClaw;
+		protected Bone salamanderRightLeftClaw;
+		protected Bone salamanderRightBackClaw;
+		protected Bone salamanderLeftUpperLeg;
+		protected Bone salamanderLeftLowerLeg;
+		protected Bone salamanderLeftFoot;
+		protected Bone salamanderLeftRightClaw;
+		protected Bone salamanderLeftLeftClaw;
+		protected Bone salamanderLeftBackClaw;
 
 		protected InverseKinematicsConstraint leftLegIK;
 		protected InverseKinematicsConstraint rightLegIK;
@@ -654,8 +653,8 @@ public class SalamanderSkeletonFactory implements SkeletonFactory {
 
 		@Override
 		public void animate(AnimationProperties properties) {
-			for (Object value : this.parts.values()) {
-				if (value instanceof InterpolatedBone bone) {
+			for (Object value : this.bones.values()) {
+				if (value instanceof Bone bone) {
 					bone.reset();
 				}
 			}
@@ -704,7 +703,7 @@ public class SalamanderSkeletonFactory implements SkeletonFactory {
 		}
 	}
 
-	private void addHair(AABB aabb, float sizeFront, float sizeBack, float minimumScale, float sizeUnderside, float frontRotation, float backRotation, SalamanderSegmentSkeleton skeleton, InterpolatedBone parent) {
+	private void addHair(AABB aabb, float sizeFront, float sizeBack, float minimumScale, float sizeUnderside, float frontRotation, float backRotation, SalamanderSegmentSkeleton skeleton, Bone parent) {
 		Direction[] sides = {Direction.UP, Direction.DOWN, Direction.EAST, Direction.WEST};
 		for (int i = 0; i < 150; i++) {
 			Direction face = sides[random.nextInt(sides.length)];
@@ -774,10 +773,10 @@ public class SalamanderSkeletonFactory implements SkeletonFactory {
 
 	}
 
-	public InterpolatedSkeleton createTail(int index, int totalSegments, boolean small) {
+	public Skeleton createTail(int index, int totalSegments, boolean small) {
 		SalamanderTailSkeleton skeleton = new SalamanderTailSkeleton(index);
 
-		InterpolatedBone tailBone = new InterpolatedBone("tail");
+		Bone tailBone = new Bone("tail");
 		tailBone.setInitialTransform(0F, 0F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 
 		float factor = 1 - ((float)index / (float)totalSegments), nextFactor = 1 - ((float)(index + 1) / (float)totalSegments);
@@ -804,7 +803,7 @@ public class SalamanderSkeletonFactory implements SkeletonFactory {
 		return skeleton;
 	}
 	public static class SalamanderTailSkeleton extends SalamanderSegmentSkeleton {
-		protected InterpolatedBone tail;
+		protected Bone tail;
 
 		public SalamanderTailSkeleton(int index) {
 			super(index);
@@ -819,9 +818,9 @@ public class SalamanderSkeletonFactory implements SkeletonFactory {
 		}
 	}
 
-	public static class SalamanderSegmentSkeleton extends InterpolatedSkeleton {
+	public static class SalamanderSegmentSkeleton extends Skeleton {
 		public int index;
-		protected List<InterpolatedBone> furTufts = new ArrayList<>();
+		protected List<Bone> furTufts = new ArrayList<>();
 
 		public SalamanderSegmentSkeleton(int index) {
 			this.index = index;
@@ -829,8 +828,8 @@ public class SalamanderSkeletonFactory implements SkeletonFactory {
 
 		@Override
 		public void animate(AnimationProperties properties) {
-			for (Object value : this.parts.values()) {
-				if (value instanceof InterpolatedBone bone) {
+			for (Object value : this.bones.values()) {
+				if (value instanceof Bone bone) {
 					bone.reset();
 				}
 			}
@@ -840,7 +839,7 @@ public class SalamanderSkeletonFactory implements SkeletonFactory {
 			Vec3 position = segment.getCenter(1.0F).subtract(entity.getPosition(1.0F)).scale(16);
 
 			for (Object r : this.roots) {
-				if (r instanceof InterpolatedBone root) {
+				if (r instanceof Bone root) {
 					root.x = (float) position.x();
 					root.y = (float) position.y();
 					root.z = (float) position.z();
@@ -850,7 +849,7 @@ public class SalamanderSkeletonFactory implements SkeletonFactory {
 		}
 	}
 
-	public static class SalamanderSkeleton extends InterpolatedSkeleton {
+	public static class SalamanderSkeleton extends Skeleton {
 		public List<SalamanderSegmentSkeleton> segments = new ArrayList<>();
 
 		public SalamanderSkeleton() {
@@ -886,7 +885,7 @@ public class SalamanderSkeletonFactory implements SkeletonFactory {
 		}
 	}
 
-	public static class SalamanderFurBone extends InterpolatedBone {
+	public static class SalamanderFurBone extends Bone {
 		public Vector3f normal;
         public Quaternionf rot = new Quaternionf();
 		public float brightness = 1.0F;

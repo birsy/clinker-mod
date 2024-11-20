@@ -2,10 +2,10 @@ package birsy.clinker.mixin.client;
 
 import birsy.clinker.client.ClinkerCursor;
 import birsy.clinker.client.gui.AlchemicalWorkstationScreen;
-import birsy.clinker.client.model.base.AnimationProperties;
+import birsy.clinker.client.necromancer.render.NecromancerEntityRenderer;
 import birsy.clinker.client.render.entity.base.InterpolatedEntityRenderer;
 import birsy.clinker.client.render.world.VolumetricRenderer;
-import birsy.clinker.client.model.base.InterpolatedSkeletonParent;
+import birsy.clinker.client.necromancer.SkeletonParent;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -32,16 +32,12 @@ import java.util.List;
 public abstract class LevelRendererMixin {
     @Inject(method = "tick()V", at = @At("HEAD"))
     private void clinker$tick(CallbackInfo ci) {
-        List<InterpolatedSkeletonParent> list = new ArrayList<>();
         for (Entity entity : this.level.entitiesForRendering()) {
-            if (entity instanceof InterpolatedSkeletonParent animator) {
-                if (animator.getSkeleton() != null) {
-                    list.add(animator);
-                }
+            if (entity instanceof SkeletonParent<?> parent) {
+                if (parent.getAnimator() != null) parent.getAnimator().tick();
             }
         }
 
-        InterpolatedEntityRenderer.tick(list);
     }
 
     @Shadow public abstract void initOutline();

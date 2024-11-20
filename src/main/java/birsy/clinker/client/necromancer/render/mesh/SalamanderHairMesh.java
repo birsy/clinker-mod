@@ -1,7 +1,7 @@
-package birsy.clinker.client.model.base.mesh;
+package birsy.clinker.client.necromancer.render.mesh;
 
-import birsy.clinker.client.model.base.InterpolatedBone;
-import birsy.clinker.client.model.base.InterpolatedSkeleton;
+import birsy.clinker.client.necromancer.Bone;
+import birsy.clinker.client.necromancer.Skeleton;
 import birsy.clinker.client.model.entity.SalamanderSkeletonFactory;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -14,7 +14,7 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 // TODO: add support for arbitrary meshes;
-public class SalamanderHairMesh extends ModelMesh {
+public class SalamanderHairMesh extends Mesh {
     private static int IDS = 0;
 
     private Face initialFace;
@@ -69,9 +69,8 @@ public class SalamanderHairMesh extends ModelMesh {
     }
 
     @Override
-    public void update(@Nullable InterpolatedBone part, InterpolatedSkeleton model, int ticks, float partialTick) {
-        super.update(part, model, ticks, partialTick);
-        float time = ticks + partialTick;
+    public void update(@Nullable Bone part, Skeleton model, float time) {
+        super.update(part, model, time);
         if (mirrored) {
             wiggleVertex(0, time);
             wiggleVertex(1, time);
@@ -93,7 +92,7 @@ public class SalamanderHairMesh extends ModelMesh {
     }
 
     @Override
-    public void render(InterpolatedBone part, PoseStack pPoseStack, VertexConsumer pVertexConsumer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha) {
+    public void render(Bone part, PoseStack pPoseStack, VertexConsumer pVertexConsumer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha) {
         Matrix4f matrix4f;
         Matrix3f matrix3f = pPoseStack.last().normal();
         Vector4f position = new Vector4f();

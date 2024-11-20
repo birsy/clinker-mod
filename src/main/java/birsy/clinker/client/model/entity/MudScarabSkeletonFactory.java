@@ -1,20 +1,20 @@
 package birsy.clinker.client.model.entity;
 
-import birsy.clinker.client.model.base.InterpolatedSkeleton;
-import birsy.clinker.client.model.base.InterpolatedBone;
-import birsy.clinker.client.model.base.SkeletonFactory;
-import birsy.clinker.client.model.base.constraint.InverseKinematicsConstraint;
-import birsy.clinker.client.model.base.mesh.ModelMesh;
-import birsy.clinker.client.model.base.mesh.StaticMesh;
-import birsy.clinker.client.model.base.AnimationProperties;
+import birsy.clinker.client.necromancer.Skeleton;
+import birsy.clinker.client.necromancer.Bone;
+import birsy.clinker.client.necromancer.RenderFactory;
+import birsy.clinker.client.necromancer.constraint.InverseKinematicsConstraint;
+import birsy.clinker.client.necromancer.render.mesh.Mesh;
+import birsy.clinker.client.necromancer.render.mesh.StaticMesh;
+import birsy.clinker.client.necromancer.animation.AnimationProperties;
 import birsy.clinker.client.render.entity.model.base.AnimFunctions;
 import net.minecraft.core.Direction;
 import org.joml.Quaternionf;
 
 import java.util.Collections;
 
-public class MudScarabSkeletonFactory implements SkeletonFactory {
-	private final ModelMesh[] meshes = new ModelMesh[25];
+public class MudScarabSkeletonFactory implements RenderFactory {
+	private final Mesh[] meshes = new Mesh[25];
 	
 	public MudScarabSkeletonFactory() {
 		int texWidth = 128;
@@ -117,178 +117,178 @@ public class MudScarabSkeletonFactory implements SkeletonFactory {
 		
 	}
 	
-	public InterpolatedSkeleton create() {
+	public Skeleton create() {
 		MudScarabModel model = new MudScarabModel();
 		//0, 0, 0
-		InterpolatedBone rootJointBone = new InterpolatedBone("rootJoint");
+		Bone rootJointBone = new Bone("rootJoint");
 		rootJointBone.setInitialTransform(0F, 0F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		model.addBone(rootJointBone, meshes[0]);
 		model.rootJoint = rootJointBone;
 		
 		//0, 6.5, 0
 		//0 - 0 = 0   |   6.5 - 0 = 6.5   |   0 - 0 = 0
-		InterpolatedBone bodyJointBone = new InterpolatedBone("bodyJoint");
+		Bone bodyJointBone = new Bone("bodyJoint");
 		bodyJointBone.setInitialTransform(0F, 6.5F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		model.addBone(bodyJointBone, meshes[1]);
 		model.bodyJoint = bodyJointBone;
 		
 		//0, 7.5, 1
 		//0 - 0 = 0   |   7.5 - 6.5 = 1   |   1 - 0 = 1
-		InterpolatedBone shellJointBone = new InterpolatedBone("shellJoint");
+		Bone shellJointBone = new Bone("shellJoint");
 		shellJointBone.setInitialTransform(0F, 1F, 1F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		model.addBone(shellJointBone, meshes[2]);
 		model.shellJoint = shellJointBone;
 		
 		//0, 7.5, 1
 		//0 - 0 = 0   |   7.5 - 7.5 = 0   |   1 - 1 = 0
-		InterpolatedBone middleShellBone = new InterpolatedBone("middleShell");
+		Bone middleShellBone = new Bone("middleShell");
 		middleShellBone.setInitialTransform(0F, 0F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		model.addBone(middleShellBone, meshes[3]);
 		model.middleShell = middleShellBone;
 		
 		//0, 19.5, -11.5
 		//0 - 0 = 0   |   19.5 - 7.5 = 12   |   -11.5 - 1 = -12.5
-		InterpolatedBone frontShellBone = new InterpolatedBone("frontShell");
+		Bone frontShellBone = new Bone("frontShell");
 		frontShellBone.setInitialTransform(0F, 12F, -12.5F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		model.addBone(frontShellBone, meshes[4]);
 		model.frontShell = frontShellBone;
 		
 		//0, 12.5, 13.5
 		//0 - 0 = 0   |   12.5 - 7.5 = 5   |   13.5 - 1 = 12.5
-		InterpolatedBone backShellBone = new InterpolatedBone("backShell");
+		Bone backShellBone = new Bone("backShell");
 		backShellBone.setInitialTransform(0F, 5F, 12.5F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		model.addBone(backShellBone, meshes[5]);
 		model.backShell = backShellBone;
 		
 		//0, 10, -16.5
 		//0 - 0 = 0   |   10 - 6.5 = 3.5   |   -16.5 - 0 = -16.5
-		InterpolatedBone scarabHeadBone = new InterpolatedBone("scarabHead");
+		Bone scarabHeadBone = new Bone("scarabHead");
 		scarabHeadBone.setInitialTransform(0F, 3.5F, -16.5F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		model.addBone(scarabHeadBone, meshes[6]);
 		model.scarabHead = scarabHeadBone;
 		
 		//-5, 13, -25.5
 		//-5 - 0 = -5   |   13 - 10 = 3   |   -25.5 - -16.5 = -9
-		InterpolatedBone scarabLeftAntennaeBone = new InterpolatedBone("scarabLeftAntennae");
+		Bone scarabLeftAntennaeBone = new Bone("scarabLeftAntennae");
 		scarabLeftAntennaeBone.setInitialTransform(-5F, 3F, -9F, new Quaternionf().rotationZYX(0F, 0.392699081475F, 0F));
 		model.addBone(scarabLeftAntennaeBone, meshes[7]);
 		model.scarabLeftAntennae = scarabLeftAntennaeBone;
 		
 		//5, 13, -25.5
 		//5 - 0 = 5   |   13 - 10 = 3   |   -25.5 - -16.5 = -9
-		InterpolatedBone scarabRightAntennaeBone = new InterpolatedBone("scarabRightAntennae");
+		Bone scarabRightAntennaeBone = new Bone("scarabRightAntennae");
 		scarabRightAntennaeBone.setInitialTransform(5F, 3F, -9F, new Quaternionf().rotationZYX(0F, -0.392699081475F, 0F));
 		model.addBone(scarabRightAntennaeBone, meshes[8]);
 		model.scarabRightAntennae = scarabRightAntennaeBone;
 		
 		//5.5, 7.5, -23.5
 		//5.5 - 0 = 5.5   |   7.5 - 10 = -2.5   |   -23.5 - -16.5 = -7
-		InterpolatedBone scarabRightJawBone = new InterpolatedBone("scarabRightJaw");
+		Bone scarabRightJawBone = new Bone("scarabRightJaw");
 		scarabRightJawBone.setInitialTransform(5.5F, -2.5F, -7F, new Quaternionf().rotationZYX(0F, 0.392699081475F, 0F));
 		model.addBone(scarabRightJawBone, meshes[9]);
 		model.scarabRightJaw = scarabRightJawBone;
 		
 		//-5.5, 7.5, -23.5
 		//-5.5 - 0 = -5.5   |   7.5 - 10 = -2.5   |   -23.5 - -16.5 = -7
-		InterpolatedBone scarabLeftJawBone = new InterpolatedBone("scarabLeftJaw");
+		Bone scarabLeftJawBone = new Bone("scarabLeftJaw");
 		scarabLeftJawBone.setInitialTransform(-5.5F, -2.5F, -7F, new Quaternionf().rotationZYX(0F, -0.392699081475F, 0F));
 		model.addBone(scarabLeftJawBone, meshes[10]);
 		model.scarabLeftJaw = scarabLeftJawBone;
 		
 		//0, 6.5, 0
 		//0 - 0 = 0   |   6.5 - 6.5 = 0   |   0 - 0 = 0
-		InterpolatedBone legsJointBone = new InterpolatedBone("legsJoint");
+		Bone legsJointBone = new Bone("legsJoint");
 		legsJointBone.setInitialTransform(0F, 0F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		model.addBone(legsJointBone, meshes[11]);
 		model.legsJoint = legsJointBone;
 		
 		//7, 8.5, 0
 		//7 - 0 = 7   |   8.5 - 6.5 = 2   |   0 - 0 = 0
-		InterpolatedBone scarabMiddleRightUpperLegBone = new InterpolatedBone("scarabMiddleRightUpperLeg");
+		Bone scarabMiddleRightUpperLegBone = new Bone("scarabMiddleRightUpperLeg");
 		scarabMiddleRightUpperLegBone.setInitialTransform(7F, 2F, 0F, new Quaternionf().rotationZYX(0F, -1.745329251F, 1.0471975506F));
 		model.addBone(scarabMiddleRightUpperLegBone, meshes[12]);
 		model.scarabMiddleRightUpperLeg = scarabMiddleRightUpperLegBone;
 		
 		//7, -3.5, 1.5
 		//7 - 7 = 0   |   -3.5 - 8.5 = -12   |   1.5 - 0 = 1.5
-		InterpolatedBone scarabMiddleRightLowerLegBone = new InterpolatedBone("scarabMiddleRightLowerLeg");
+		Bone scarabMiddleRightLowerLegBone = new Bone("scarabMiddleRightLowerLeg");
 		scarabMiddleRightLowerLegBone.setInitialTransform(0F, -12F, 1.5F, new Quaternionf().rotationZYX(0F, 0F, 0.4300491274464F));
 		model.addBone(scarabMiddleRightLowerLegBone, meshes[13]);
 		model.scarabMiddleRightLowerLeg = scarabMiddleRightLowerLegBone;
 		
 		//7, 8.5, 9.5
 		//7 - 0 = 7   |   8.5 - 6.5 = 2   |   9.5 - 0 = 9.5
-		InterpolatedBone scarabBackRightUpperLegBone = new InterpolatedBone("scarabBackRightUpperLeg");
+		Bone scarabBackRightUpperLegBone = new Bone("scarabBackRightUpperLeg");
 		scarabBackRightUpperLegBone.setInitialTransform(7F, 2F, 9.5F, new Quaternionf().rotationZYX(0F, -2.7925268015999998F, 1.0471975506F));
 		model.addBone(scarabBackRightUpperLegBone, meshes[14]);
 		model.scarabBackRightUpperLeg = scarabBackRightUpperLegBone;
 		
 		//7, -3.5, 11
 		//7 - 7 = 0   |   -3.5 - 8.5 = -12   |   11 - 9.5 = 1.5
-		InterpolatedBone scarabBackRightLowerLegBone = new InterpolatedBone("scarabBackRightLowerLeg");
+		Bone scarabBackRightLowerLegBone = new Bone("scarabBackRightLowerLeg");
 		scarabBackRightLowerLegBone.setInitialTransform(0F, -12F, 1.5F, new Quaternionf().rotationZYX(0F, 0F, 0.4300491274464F));
 		model.addBone(scarabBackRightLowerLegBone, meshes[15]);
 		model.scarabBackRightLowerLeg = scarabBackRightLowerLegBone;
 		
 		//7, 8.5, -9.5
 		//7 - 0 = 7   |   8.5 - 6.5 = 2   |   -9.5 - 0 = -9.5
-		InterpolatedBone scarabFrontRightUpperLegBone = new InterpolatedBone("scarabFrontRightUpperLeg");
+		Bone scarabFrontRightUpperLegBone = new Bone("scarabFrontRightUpperLeg");
 		scarabFrontRightUpperLegBone.setInitialTransform(7F, 2F, -9.5F, new Quaternionf().rotationZYX(0F, -0.6981317003999999F, 1.0471975506F));
 		model.addBone(scarabFrontRightUpperLegBone, meshes[16]);
 		model.scarabFrontRightUpperLeg = scarabFrontRightUpperLegBone;
 		
 		//7, -3.5, -8
 		//7 - 7 = 0   |   -3.5 - 8.5 = -12   |   -8 - -9.5 = 1.5
-		InterpolatedBone scarabFrontRightLowerLegBone = new InterpolatedBone("scarabFrontRightLowerLeg");
+		Bone scarabFrontRightLowerLegBone = new Bone("scarabFrontRightLowerLeg");
 		scarabFrontRightLowerLegBone.setInitialTransform(0F, -12F, 1.5F, new Quaternionf().rotationZYX(-0.6981317003999999F, 0F, 0F));
 		model.addBone(scarabFrontRightLowerLegBone, meshes[17]);
 		model.scarabFrontRightLowerLeg = scarabFrontRightLowerLegBone;
 		
 		//-7, 8.5, 0
 		//-7 - 0 = -7   |   8.5 - 6.5 = 2   |   0 - 0 = 0
-		InterpolatedBone scarabMiddleLeftUpperLegBone = new InterpolatedBone("scarabMiddleLeftUpperLeg");
+		Bone scarabMiddleLeftUpperLegBone = new Bone("scarabMiddleLeftUpperLeg");
 		scarabMiddleLeftUpperLegBone.setInitialTransform(-7F, 2F, 0F, new Quaternionf().rotationZYX(0F, 1.745329251F, 1.0471975506F));
 		model.addBone(scarabMiddleLeftUpperLegBone, meshes[18]);
 		model.scarabMiddleLeftUpperLeg = scarabMiddleLeftUpperLegBone;
 		
 		//-7, -3.5, 1.5
 		//-7 - -7 = 0   |   -3.5 - 8.5 = -12   |   1.5 - 0 = 1.5
-		InterpolatedBone scarabMiddleLeftLowerLegBone = new InterpolatedBone("scarabMiddleLeftLowerLeg");
+		Bone scarabMiddleLeftLowerLegBone = new Bone("scarabMiddleLeftLowerLeg");
 		scarabMiddleLeftLowerLegBone.setInitialTransform(0F, -12F, 1.5F, new Quaternionf().rotationZYX(0F, 0F, 0.4300491274464F));
 		model.addBone(scarabMiddleLeftLowerLegBone, meshes[19]);
 		model.scarabMiddleLeftLowerLeg = scarabMiddleLeftLowerLegBone;
 		
 		//-7, 8.5, -9.5
 		//-7 - 0 = -7   |   8.5 - 6.5 = 2   |   -9.5 - 0 = -9.5
-		InterpolatedBone scarabFrontLeftUpperLegBone = new InterpolatedBone("scarabFrontLeftUpperLeg");
+		Bone scarabFrontLeftUpperLegBone = new Bone("scarabFrontLeftUpperLeg");
 		scarabFrontLeftUpperLegBone.setInitialTransform(-7F, 2F, -9.5F, new Quaternionf().rotationZYX(0F, 0.6981317003999999F, 1.0471975506F));
 		model.addBone(scarabFrontLeftUpperLegBone, meshes[20]);
 		model.scarabFrontLeftUpperLeg = scarabFrontLeftUpperLegBone;
 		
 		//-7, -3.5, -8
 		//-7 - -7 = 0   |   -3.5 - 8.5 = -12   |   -8 - -9.5 = 1.5
-		InterpolatedBone scarabFrontLeftLowerLegBone = new InterpolatedBone("scarabFrontLeftLowerLeg");
+		Bone scarabFrontLeftLowerLegBone = new Bone("scarabFrontLeftLowerLeg");
 		scarabFrontLeftLowerLegBone.setInitialTransform(0F, -12F, 1.5F, new Quaternionf().rotationZYX(0.6981317003999999F, 0F, 0F));
 		model.addBone(scarabFrontLeftLowerLegBone, meshes[21]);
 		model.scarabFrontLeftLowerLeg = scarabFrontLeftLowerLegBone;
 		
 		//-7, 8.5, 9.5
 		//-7 - 0 = -7   |   8.5 - 6.5 = 2   |   9.5 - 0 = 9.5
-		InterpolatedBone scarabBackLeftUpperLegBone = new InterpolatedBone("scarabBackLeftUpperLeg");
+		Bone scarabBackLeftUpperLegBone = new Bone("scarabBackLeftUpperLeg");
 		scarabBackLeftUpperLegBone.setInitialTransform(-7F, 2F, 9.5F, new Quaternionf().rotationZYX(0F, 2.7925268015999998F, 1.0471975506F));
 		model.addBone(scarabBackLeftUpperLegBone, meshes[22]);
 		model.scarabBackLeftUpperLeg = scarabBackLeftUpperLegBone;
 		
 		//-7, -3.5, 11
 		//-7 - -7 = 0   |   -3.5 - 8.5 = -12   |   11 - 9.5 = 1.5
-		InterpolatedBone scarabBackLeftLowerLegBone = new InterpolatedBone("scarabBackLeftLowerLeg");
+		Bone scarabBackLeftLowerLegBone = new Bone("scarabBackLeftLowerLeg");
 		scarabBackLeftLowerLegBone.setInitialTransform(0F, -12F, 1.5F, new Quaternionf().rotationZYX(0F, 0F, 0.4300491274464F));
 		model.addBone(scarabBackLeftLowerLegBone, meshes[23]);
 		model.scarabBackLeftLowerLeg = scarabBackLeftLowerLegBone;
 		
 		//0, 6.5, 0
 		//0 - 0 = 0   |   6.5 - 6.5 = 0   |   0 - 0 = 0
-		InterpolatedBone scarabBodyBone = new InterpolatedBone("scarabBody");
+		Bone scarabBodyBone = new Bone("scarabBody");
 		scarabBodyBone.setInitialTransform(0F, 0F, 0F, new Quaternionf().rotationZYX(0F, 0F, -1.5707963259F));
 		model.addBone(scarabBodyBone, meshes[24]);
 		model.scarabBody = scarabBodyBone;
@@ -349,37 +349,37 @@ public class MudScarabSkeletonFactory implements SkeletonFactory {
 		return model;
 	}
 	
-	public static class MudScarabModel extends InterpolatedSkeleton {
-		protected InterpolatedBone rootJoint;
-		protected InterpolatedBone bodyJoint;
-		protected InterpolatedBone shellJoint;
-		protected InterpolatedBone middleShell;
-		protected InterpolatedBone frontShell;
-		protected InterpolatedBone backShell;
-		protected InterpolatedBone scarabHead;
-		protected InterpolatedBone scarabLeftAntennae;
-		protected InterpolatedBone scarabRightAntennae;
-		protected InterpolatedBone scarabRightJaw;
-		protected InterpolatedBone scarabLeftJaw;
-		protected InterpolatedBone legsJoint;
-		protected InterpolatedBone scarabMiddleRightUpperLeg;
-		protected InterpolatedBone scarabMiddleRightLowerLeg;
-		protected InterpolatedBone scarabBackRightUpperLeg;
-		protected InterpolatedBone scarabBackRightLowerLeg;
-		protected InterpolatedBone scarabFrontRightUpperLeg;
-		protected InterpolatedBone scarabFrontRightLowerLeg;
-		protected InterpolatedBone scarabMiddleLeftUpperLeg;
-		protected InterpolatedBone scarabMiddleLeftLowerLeg;
-		protected InterpolatedBone scarabFrontLeftUpperLeg;
-		protected InterpolatedBone scarabFrontLeftLowerLeg;
-		protected InterpolatedBone scarabBackLeftUpperLeg;
-		protected InterpolatedBone scarabBackLeftLowerLeg;
-		protected InterpolatedBone scarabBody;
+	public static class MudScarabModel extends Skeleton {
+		protected Bone rootJoint;
+		protected Bone bodyJoint;
+		protected Bone shellJoint;
+		protected Bone middleShell;
+		protected Bone frontShell;
+		protected Bone backShell;
+		protected Bone scarabHead;
+		protected Bone scarabLeftAntennae;
+		protected Bone scarabRightAntennae;
+		protected Bone scarabRightJaw;
+		protected Bone scarabLeftJaw;
+		protected Bone legsJoint;
+		protected Bone scarabMiddleRightUpperLeg;
+		protected Bone scarabMiddleRightLowerLeg;
+		protected Bone scarabBackRightUpperLeg;
+		protected Bone scarabBackRightLowerLeg;
+		protected Bone scarabFrontRightUpperLeg;
+		protected Bone scarabFrontRightLowerLeg;
+		protected Bone scarabMiddleLeftUpperLeg;
+		protected Bone scarabMiddleLeftLowerLeg;
+		protected Bone scarabFrontLeftUpperLeg;
+		protected Bone scarabFrontLeftLowerLeg;
+		protected Bone scarabBackLeftUpperLeg;
+		protected Bone scarabBackLeftLowerLeg;
+		protected Bone scarabBody;
 		
 		@Override
 		public void animate(AnimationProperties properties) {
-			for (Object value : this.parts.values()) {
-				if (value instanceof InterpolatedBone bone) {
+			for (Object value : this.bones.values()) {
+				if (value instanceof Bone bone) {
 					bone.reset();
 				}
 			}

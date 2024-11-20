@@ -1,15 +1,15 @@
 package birsy.clinker.client.model.entity;
 
-import birsy.clinker.client.model.base.InterpolatedSkeleton;
-import birsy.clinker.client.model.base.InterpolatedBone;
-import birsy.clinker.client.model.base.SkeletonFactory;
-import birsy.clinker.client.model.base.mesh.ModelMesh;
-import birsy.clinker.client.model.base.mesh.StaticMesh;
-import birsy.clinker.client.model.base.AnimationProperties;
+import birsy.clinker.client.necromancer.Skeleton;
+import birsy.clinker.client.necromancer.Bone;
+import birsy.clinker.client.necromancer.RenderFactory;
+import birsy.clinker.client.necromancer.render.mesh.Mesh;
+import birsy.clinker.client.necromancer.render.mesh.StaticMesh;
+import birsy.clinker.client.necromancer.animation.AnimationProperties;
 import org.joml.Quaternionf;
 
-public class DebugSkeletonFactory implements SkeletonFactory {
-	private final ModelMesh[] meshes = new ModelMesh[3];
+public class DebugSkeletonFactory implements RenderFactory {
+	private final Mesh[] meshes = new Mesh[3];
 	
 	public DebugSkeletonFactory() {
 		int texWidth = 64;
@@ -28,19 +28,19 @@ public class DebugSkeletonFactory implements SkeletonFactory {
 		
 	}
 	
-	public InterpolatedSkeleton create() {
+	public Skeleton create() {
 		DebugModel model = new DebugModel();
-		InterpolatedBone boneBone = new InterpolatedBone("bone");
+		Bone boneBone = new Bone("bone");
 		boneBone.setInitialTransform(0F, 0F, 0F, new Quaternionf().rotationZYX(0F, 0F, 0F));
 		model.addBone(boneBone, meshes[0]);
 		model.bone = boneBone;
 		
-		InterpolatedBone bone2Bone = new InterpolatedBone("bone2");
+		Bone bone2Bone = new Bone("bone2");
 		bone2Bone.setInitialTransform(2F, 15.999999999999996F, 0F, new Quaternionf().rotationZYX(-0.305432618925F, 1.0035643193249997F, -1.0331507847256883e-16F));
 		model.addBone(bone2Bone, meshes[1]);
 		model.bone2 = bone2Bone;
 		
-		InterpolatedBone bone3Bone = new InterpolatedBone("bone3");
+		Bone bone3Bone = new Bone("bone3");
 		bone3Bone.setInitialTransform(-2.9999999999999996F, 16.000000000000004F, 2.220446049250313e-16F, new Quaternionf().rotationZYX(-0.4565252416371948F, 0.5194469456676657F, -0.2391313556367249F));
 		model.addBone(bone3Bone, meshes[2]);
 		model.bone3 = bone3Bone;
@@ -51,10 +51,10 @@ public class DebugSkeletonFactory implements SkeletonFactory {
 		return model;
 	}
 	
-	public static class DebugModel extends InterpolatedSkeleton {
-		protected InterpolatedBone bone;
-		protected InterpolatedBone bone2;
-		protected InterpolatedBone bone3;
+	public static class DebugModel extends Skeleton {
+		protected Bone bone;
+		protected Bone bone2;
+		protected Bone bone3;
 		
 		@Override
 		public void animate(AnimationProperties properties) {

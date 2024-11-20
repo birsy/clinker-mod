@@ -1,10 +1,10 @@
 package birsy.clinker.client.render.entity.base;
 
-import birsy.clinker.client.model.base.AnimationProperties;
-import birsy.clinker.client.model.base.InterpolatedSkeleton;
-import birsy.clinker.client.model.base.InterpolatedSkeletonParent;
-import birsy.clinker.client.model.base.SkeletonFactory;
-import birsy.clinker.client.model.base.constraint.Constraint;
+import birsy.clinker.client.necromancer.Skeleton;
+import birsy.clinker.client.necromancer.animation.AnimationProperties;
+import birsy.clinker.client.necromancer.SkeletonParent;
+import birsy.clinker.client.necromancer.RenderFactory;
+import birsy.clinker.client.necromancer.constraint.Constraint;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -21,11 +21,11 @@ import net.minecraft.world.entity.LivingEntity;
 
 import java.util.List;
 
-public abstract class InterpolatedEntityRenderer<T extends LivingEntity & InterpolatedSkeletonParent, M extends InterpolatedSkeleton> extends EntityRenderer<T> {
-    protected final SkeletonFactory modelFactory;
+public abstract class InterpolatedEntityRenderer<T extends LivingEntity & SkeletonParent, M extends Skeleton> extends EntityRenderer<T> {
+    protected final RenderFactory modelFactory;
     List<EntityRenderLayer<T, M>> layers = Lists.newArrayList();
 
-    protected InterpolatedEntityRenderer(EntityRendererProvider.Context pContext, SkeletonFactory modelFactory, float shadowRadius) {
+    protected InterpolatedEntityRenderer(EntityRendererProvider.Context pContext, RenderFactory modelFactory, float shadowRadius) {
         super(pContext);
         this.modelFactory = modelFactory;
         this.shadowRadius = shadowRadius;
@@ -120,16 +120,16 @@ public abstract class InterpolatedEntityRenderer<T extends LivingEntity & Interp
         return 90.0F;
     }
 
-    public static <M extends InterpolatedSkeleton, T extends LivingEntity & InterpolatedSkeletonParent> void tick(List<InterpolatedSkeletonParent> entitiesToRender) {
-        for (InterpolatedSkeletonParent interpolatedSkeletonParent : entitiesToRender) {
+    public static <M extends Skeleton, T extends LivingEntity & SkeletonParent> void tick(List<SkeletonParent> entitiesToRender) {
+        for (SkeletonParent skeletonParent : entitiesToRender) {
             AnimationProperties properties = new AnimationProperties();
-            interpolatedSkeletonParent.getSkeleton().addAnimationProperties(properties, interpolatedSkeletonParent);
-            interpolatedSkeletonParent.getSkeleton().tick(properties);
+            skeletonParent.getSkeleton().addAnimationProperties(properties, skeletonParent);
+            skeletonParent.getSkeleton().tick(properties);
         }
 
     }
 
-    private record UpdateEntityTask(InterpolatedSkeletonParent animator) implements Runnable {
+    private record UpdateEntityTask(SkeletonParent animator) implements Runnable {
         @Override
         public void run() {
             AnimationProperties properties = new AnimationProperties();

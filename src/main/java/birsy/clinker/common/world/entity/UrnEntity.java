@@ -1,7 +1,7 @@
 package birsy.clinker.common.world.entity;
 
-import birsy.clinker.client.model.base.InterpolatedSkeleton;
-import birsy.clinker.client.model.base.InterpolatedSkeletonParent;
+import birsy.clinker.client.necromancer.Skeleton;
+import birsy.clinker.client.necromancer.SkeletonParent;
 import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.ClientboundPathfindingDebugPacket;
 import birsy.clinker.core.util.MathUtils;
@@ -37,7 +37,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 
-public class UrnEntity extends AbstractGolem implements InterpolatedSkeletonParent {
+public class UrnEntity extends AbstractGolem implements SkeletonParent {
     private Vec3 desiredPosition, targetDesiredPosition;
     public UrnFoot[] legs = new UrnFoot[5];
 
@@ -263,15 +263,15 @@ public class UrnEntity extends AbstractGolem implements InterpolatedSkeletonPare
         return factor;
     }
 
-    public InterpolatedSkeleton skeleton;
+    public Skeleton skeleton;
 
     @Override
-    public void setSkeleton(InterpolatedSkeleton skeleton) {
+    public void setSkeleton(Skeleton skeleton) {
         this.skeleton = skeleton;
     }
 
     @Override
-    public InterpolatedSkeleton getSkeleton() {
+    public Skeleton getSkeleton() {
         return skeleton;
     }
 

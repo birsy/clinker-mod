@@ -1,14 +1,13 @@
 package birsy.clinker.common.world.entity.salamander;
 
-import birsy.clinker.client.model.base.InterpolatedSkeleton;
-import birsy.clinker.client.model.base.InterpolatedSkeletonParent;
+import birsy.clinker.client.necromancer.Skeleton;
+import birsy.clinker.client.necromancer.SkeletonParent;
 import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.ClientboundSalamanderSyncPacket;
 
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.JomlConversions;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -40,7 +39,7 @@ import java.util.List;
 // todo:
 //  slipperiness
 //  reimplement ai
-public class NewSalamanderEntity extends LivingEntity implements InterpolatedSkeletonParent {
+public class NewSalamanderEntity extends LivingEntity implements SkeletonParent {
     private static final Vec3 gravity = new Vec3(0, -8, 0);
 
     public SalamanderJoint headJoint;
@@ -409,13 +408,13 @@ public class NewSalamanderEntity extends LivingEntity implements InterpolatedSke
         Clinker.LOGGER.info("removed salamander");
     }
 
-    InterpolatedSkeleton skeleton;
+    Skeleton skeleton;
     @Override
-    public void setSkeleton(InterpolatedSkeleton skeleton) {
+    public void setSkeleton(Skeleton skeleton) {
         this.skeleton = skeleton;
     }
     @Override
-    public InterpolatedSkeleton getSkeleton() {
+    public Skeleton getSkeleton() {
         return skeleton;
     }
 

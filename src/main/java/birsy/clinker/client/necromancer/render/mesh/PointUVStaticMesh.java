@@ -1,6 +1,6 @@
-package birsy.clinker.client.model.base.mesh;
+package birsy.clinker.client.necromancer.render.mesh;
 
-import birsy.clinker.client.model.base.InterpolatedBone;
+import birsy.clinker.client.necromancer.Bone;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.core.Direction;
@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 // TODO: add support for arbitrary meshes;
-public class PointUVStaticMesh extends ModelMesh {
+public class PointUVStaticMesh extends Mesh {
     private final List<Face> faces;
     final int textureWidth, textureHeight;
 
@@ -72,7 +72,7 @@ public class PointUVStaticMesh extends ModelMesh {
     public record FaceVertex(float x, float y, float z, float u, float v) {}
 
     @Override
-    public void render(InterpolatedBone part, PoseStack pPoseStack, VertexConsumer pVertexConsumer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha) {
+    public void render(Bone part, PoseStack pPoseStack, VertexConsumer pVertexConsumer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha) {
         Matrix4f matrix4f = pPoseStack.last().pose();
         Matrix3f matrix3f = pPoseStack.last().normal();
         Vector4f position = new Vector4f();

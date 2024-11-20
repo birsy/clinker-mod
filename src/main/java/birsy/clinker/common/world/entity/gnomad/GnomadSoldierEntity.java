@@ -1,26 +1,20 @@
 package birsy.clinker.common.world.entity.gnomad;
 
-import birsy.clinker.client.model.base.InterpolatedSkeleton;
-import birsy.clinker.client.model.base.InterpolatedSkeletonParent;
-import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.GnomadSquadSensor;
+import birsy.clinker.client.necromancer.Skeleton;
+import birsy.clinker.client.necromancer.SkeletonParent;
 import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.SupplyDepotSensor;
-import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.TargetSupplyDepotSensor;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.monster.Skeleton;
-import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.level.Level;
 import net.tslat.smartbrainlib.api.SmartBrainOwner;
 import net.tslat.smartbrainlib.api.core.BrainActivityGroup;
 import net.tslat.smartbrainlib.api.core.SmartBrainProvider;
 import net.tslat.smartbrainlib.api.core.behaviour.FirstApplicableBehaviour;
-import net.tslat.smartbrainlib.api.core.behaviour.OneRandomBehaviour;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.look.LookAtTarget;
-import net.tslat.smartbrainlib.api.core.behaviour.custom.misc.Idle;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.move.MoveToWalkTarget;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.path.SetRandomWalkTarget;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.target.SetPlayerLookTarget;
@@ -32,7 +26,7 @@ import net.tslat.smartbrainlib.api.core.sensor.vanilla.NearbyLivingEntitySensor;
 
 import java.util.List;
 
-public class GnomadSoldierEntity extends Monster implements SmartBrainOwner<GnomadSoldierEntity>, InterpolatedSkeletonParent {
+public class GnomadSoldierEntity extends Monster implements SmartBrainOwner<GnomadSoldierEntity>, SkeletonParent {
     public GnomadSoldierEntity(EntityType<? extends Monster> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
     }
@@ -83,14 +77,14 @@ public class GnomadSoldierEntity extends Monster implements SmartBrainOwner<Gnom
                 new SetRandomWalkTarget<>().speedModifier(1)
         );
     }
-    InterpolatedSkeleton skeleton;
+    Skeleton skeleton;
     @Override
-    public void setSkeleton(InterpolatedSkeleton skeleton) {
+    public void setSkeleton(Skeleton skeleton) {
         this.skeleton = skeleton;
     }
 
     @Override
-    public InterpolatedSkeleton getSkeleton() {
+    public Skeleton getSkeleton() {
         return skeleton;
     }
 }
