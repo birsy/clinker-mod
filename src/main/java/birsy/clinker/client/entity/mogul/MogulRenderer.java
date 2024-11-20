@@ -2,8 +2,8 @@ package birsy.clinker.client.entity.mogul;
 
 import birsy.clinker.client.necromancer.render.NecromancerEntityRenderer;
 import birsy.clinker.client.necromancer.render.Skin;
-import birsy.clinker.client.render.entity.layer.GnomadMogulRobesLayer;
-import birsy.clinker.client.render.entity.layer.GnomadMogulWeaponLayer;
+import birsy.clinker.client.entity.mogul.layer.MogulRobesLayer;
+import birsy.clinker.client.entity.mogul.layer.GnomadMogulWeaponLayer;
 import birsy.clinker.common.world.entity.gnomad.GnomadMogulEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -19,7 +19,7 @@ public class MogulRenderer extends NecromancerEntityRenderer<GnomadMogulEntity, 
 
     public MogulRenderer(EntityRendererProvider.Context context) {
         super(context, MogulSkeleton::new, MogulAnimator::new, 2.0F);
-        this.addLayer(new GnomadMogulRobesLayer(this));
+        this.addLayer(new MogulRobesLayer(this));
         this.addLayer(new GnomadMogulWeaponLayer(this));
     }
 
