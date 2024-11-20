@@ -2,7 +2,6 @@ package birsy.clinker.client.book.formatting;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.TextureAtlas;
@@ -25,14 +24,13 @@ public class ImageBox extends PageElement {
     }
 
     @Override
-    public void renderElementContents(PoseStack stack, MultiBufferSource source, float partialTicks) {
+    public void renderElementContents(PoseStack stack, MultiBufferSource source) {
         RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
         RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.disableDepthTest();
-
 
         Matrix4f pMatrix = stack.last().pose();
 

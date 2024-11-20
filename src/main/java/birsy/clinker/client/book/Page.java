@@ -31,7 +31,7 @@ public class Page {
         this.texture = new ResourceLocation(Clinker.MOD_ID, "textures/book/book_cover.png");
     }
 
-    public void render(PoseStack stack, MultiBufferSource source, float partialTicks) {
+    public void render(PoseStack stack, MultiBufferSource source) {
         if (this.needsLayerRegeneration) this.sortElementsByZIndex();
 
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
@@ -68,7 +68,7 @@ public class Page {
         BufferUploader.drawWithShader(bufferbuilder.end());
 
         for (PageElement element : this.elements) {
-            element.render(stack, source, partialTicks);
+            element.render(stack, source);
         }
     }
 

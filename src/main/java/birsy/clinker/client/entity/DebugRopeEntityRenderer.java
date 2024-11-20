@@ -1,19 +1,16 @@
-package birsy.clinker.client.render.entity;
+package birsy.clinker.client.entity;
 
 import birsy.clinker.client.render.DebugRenderUtil;
 import birsy.clinker.common.world.entity.rope.RopeEntity;
 import birsy.clinker.common.world.entity.rope.RopeEntitySegment;
-import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
 import org.joml.Vector3d;

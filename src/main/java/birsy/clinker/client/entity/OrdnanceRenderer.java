@@ -1,4 +1,4 @@
-package birsy.clinker.client.render.entity;
+package birsy.clinker.client.entity;
 
 import birsy.clinker.common.world.entity.projectile.OrdnanceEntity;
 import birsy.clinker.core.Clinker;

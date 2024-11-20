@@ -1,18 +1,13 @@
-package birsy.clinker.client.render.entity;
+package birsy.clinker.client.entity;
 
-import birsy.clinker.client.render.DebugRenderUtil;
-import birsy.clinker.common.world.entity.mold.BiohazardEntity;
 import birsy.clinker.common.world.entity.mold.MoldCell;
 import birsy.clinker.common.world.entity.mold.MoldEntity;
-import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.Util;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
-import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.*;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.core.Direction;

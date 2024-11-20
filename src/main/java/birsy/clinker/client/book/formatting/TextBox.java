@@ -27,7 +27,7 @@ public class TextBox extends PageElement {
     }
 
     @Override
-    public void renderElementContents(PoseStack stack, MultiBufferSource source, float partialTicks) {
+    public void renderElementContents(PoseStack stack, MultiBufferSource source) {
         stack.scale(textSize, textSize, 1.0F);
         for (int i = 0; i < textLines.size(); i++) {
             FormattedCharSequence textLine = textLines.get(i);

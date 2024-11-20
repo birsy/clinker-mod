@@ -1,25 +1,12 @@
 package birsy.clinker.client.book.formatting;
 
 import birsy.clinker.client.book.Page;
-import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.font.FontManager;
-import net.minecraft.client.gui.screens.inventory.BookViewScreen;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.network.chat.FormattedText;
-import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FormattedCharSequence;
-import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
-
-import java.util.List;
 
 public abstract class PageElement {
     public Page page;
@@ -36,15 +23,15 @@ public abstract class PageElement {
         this.z = z;
     }
 
-    public void render(PoseStack stack, MultiBufferSource source, float partialTicks) {
+    public void render(PoseStack stack, MultiBufferSource source) {
         stack.pushPose();
         stack.translate(this.getXPixelPosition(), this.getYPixelPosition(), 0);
         stack.mulPose(new Quaternionf().rotateZ(this.rotation));
-        this.renderElementContents(stack, source, partialTicks);
+        this.renderElementContents(stack, source);
         stack.popPose();
     }
 
-    public abstract void renderElementContents(PoseStack stack, MultiBufferSource source, float partialTicks);
+    public abstract void renderElementContents(PoseStack stack, MultiBufferSource source);
     public void tick() {}
 
     public float getXPixelPosition() {
