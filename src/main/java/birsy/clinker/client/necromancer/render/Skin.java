@@ -5,22 +5,19 @@ import birsy.clinker.client.necromancer.Skeleton;
 import birsy.clinker.client.necromancer.render.mesh.Mesh;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.RenderType;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class Skin<T extends Skeleton<?>> {
-    final RenderType renderType;
     final Map<String, Mesh> meshes;
 
-    public Skin(RenderType renderType) {
-        this.renderType = renderType;
+    public Skin() {
         this.meshes = new HashMap<>();
     }
 
-    public void addMesh(Bone bone, Mesh mesh) {
-        meshes.put(bone.identifier, mesh);
+    public void addMesh(String boneID, Mesh mesh) {
+        meshes.put(boneID, mesh);
     }
 
     public Mesh getMesh(Bone bone) {

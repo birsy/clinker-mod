@@ -3,7 +3,6 @@ package birsy.clinker.mixin.client;
 import birsy.clinker.client.ClinkerCursor;
 import birsy.clinker.client.gui.AlchemicalWorkstationScreen;
 import birsy.clinker.client.necromancer.render.NecromancerEntityRenderer;
-import birsy.clinker.client.render.entity.base.InterpolatedEntityRenderer;
 import birsy.clinker.client.render.world.VolumetricRenderer;
 import birsy.clinker.client.necromancer.SkeletonParent;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -33,8 +32,8 @@ public abstract class LevelRendererMixin {
     @Inject(method = "tick()V", at = @At("HEAD"))
     private void clinker$tick(CallbackInfo ci) {
         for (Entity entity : this.level.entitiesForRendering()) {
-            if (entity instanceof SkeletonParent<?> parent) {
-                if (parent.getAnimator() != null) parent.getAnimator().tick();
+            if (entity instanceof SkeletonParent parent) {
+                if (parent.getAnimator() != null) parent.getAnimator().tick((SkeletonParent<?>) parent);
             }
         }
 

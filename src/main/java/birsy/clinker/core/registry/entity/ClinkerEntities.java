@@ -1,5 +1,6 @@
 package birsy.clinker.core.registry.entity;
 
+import birsy.clinker.client.entity.mogul.MogulRenderer;
 import birsy.clinker.client.render.entity.*;
 import birsy.clinker.client.render.entity.model.*;
 import birsy.clinker.common.world.entity.*;
@@ -170,7 +171,7 @@ public class ClinkerEntities {
         event.registerEntityRenderer(ClinkerEntities.REROLL_FLASK.get(), ThrownItemRenderer::new);
 
         event.registerEntityRenderer(ClinkerEntities.GNOMAD_SOLDIER.get(), NewGnomadRenderer::new);
-        event.registerEntityRenderer(ClinkerEntities.GNOMAD_MOGUL.get(), GnomadMogulRenderer::new);
+        event.registerEntityRenderer(ClinkerEntities.GNOMAD_MOGUL.get(), MogulRenderer::new);
 
         event.registerEntityRenderer(ClinkerEntities.MOLD.get(), MoldRenderer::new);
 

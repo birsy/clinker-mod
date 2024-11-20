@@ -3,6 +3,7 @@ package birsy.clinker.client.necromancer.render;
 import birsy.clinker.client.necromancer.RenderFactory;
 import birsy.clinker.client.necromancer.Skeleton;
 import birsy.clinker.client.necromancer.SkeletonParent;
+import birsy.clinker.client.necromancer.animation.Animator;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -18,14 +19,21 @@ import net.minecraft.world.entity.LivingEntity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public abstract class NecromancerEntityRenderer<T extends Entity & SkeletonParent, M extends Skeleton<T>> extends EntityRenderer<T> {
-    final RenderFactory<T> renderFactory;
+    final Function<T, M> skeletonFactory;
+    final BiFunction<T, M, Animator<T, M>> animatorFactory;
     final List<NecromancerEntityRenderLayer<T, M>> layers;
 
-    protected NecromancerEntityRenderer(EntityRendererProvider.Context pContext, RenderFactory<T> renderFactory, float shadowRadius) {
+    protected NecromancerEntityRenderer(EntityRendererProvider.Context pContext,
+                                        Function<T, M> skeletonFactory,
+                                        BiFunction<T, M, Animator<T, M>> animatorFactory,
+                                        float shadowRadius) {
         super(pContext);
-        this.renderFactory = renderFactory;
+        this.skeletonFactory = skeletonFactory;
+        this.animatorFactory = animatorFactory;
         this.shadowRadius = shadowRadius;
         this.layers = new ArrayList<>();
     }
@@ -33,12 +41,11 @@ public abstract class NecromancerEntityRenderer<T extends Entity & SkeletonParen
     public void addLayer(NecromancerEntityRenderLayer<T, M> layer) {
         this.layers.add(layer);
     }
-    
+
     public void setupEntity(T entity) {
-        renderFactory.setup(entity);
-        Skeleton<T> skeleton = renderFactory.createSkeleton(entity);
+        M skeleton = skeletonFactory.apply(entity);
         entity.setSkeleton(skeleton);
-        entity.setAnimator(renderFactory.createAnimator(entity, skeleton));
+        entity.setAnimator(animatorFactory.apply(entity, skeleton));
     }
 
     public abstract Skin<M> getSkin(T parent);
@@ -60,7 +67,7 @@ public abstract class NecromancerEntityRenderer<T extends Entity & SkeletonParen
         if (rendertype != null && skeleton != null && skin != null) {
             int packedOverlay = OverlayTexture.NO_OVERLAY;
             if (pEntity instanceof LivingEntity living) packedOverlay = LivingEntityRenderer.getOverlayCoords(living, 0);
-            renderSkin(skeleton, skin, pEntity.tickCount, pPartialTicks, poseStack, pBuffer.getBuffer(rendertype), pPackedLight, packedOverlay, 1, 1, 1, 1);
+            renderSkin(pEntity, skeleton, skin, pEntity.tickCount, pPartialTicks, poseStack, pBuffer.getBuffer(rendertype), pPackedLight, packedOverlay, 1, 1, 1, 1);
         }
 
         if (!pEntity.isSpectator() && rendertype != null && skeleton != null) {
@@ -71,7 +78,7 @@ public abstract class NecromancerEntityRenderer<T extends Entity & SkeletonParen
         super.render(pEntity, pEntityYaw, pPartialTicks, poseStack, pBuffer, pPackedLight);
     }
 
-    public void renderSkin(M skeleton, Skin<M> skin, int ticksExisted, float partialTicks, PoseStack poseStack, VertexConsumer consumer, int packedLight, int packedOverlay, float r, float g, float b, float a) {
+    public void renderSkin(T entity, M skeleton, Skin<M> skin, int ticksExisted, float partialTicks, PoseStack poseStack, VertexConsumer consumer, int packedLight, int packedOverlay, float r, float g, float b, float a) {
         skin.render(skeleton, ticksExisted, partialTicks, poseStack, consumer, packedLight, packedOverlay, r, g, b, a);
     }
 

@@ -1,5 +1,6 @@
 package birsy.clinker.client.necromancer.animation;
 
+import birsy.clinker.client.necromancer.Bone;
 import birsy.clinker.client.necromancer.Skeleton;
 import birsy.clinker.client.necromancer.SkeletonParent;
 import birsy.clinker.client.necromancer.constraint.Constraint;
@@ -9,8 +10,8 @@ import java.util.Comparator;
 import java.util.List;
 
 public abstract class Animator<P extends SkeletonParent, T extends Skeleton<P>> {
-    final P parent;
-    final T skeleton;
+    protected final P parent;
+    protected final T skeleton;
     final List<ConstraintEntry> constraints;
     final List<AnimationEntry<P, T>> animations;
 
@@ -33,15 +34,16 @@ public abstract class Animator<P extends SkeletonParent, T extends Skeleton<P>> 
         return entry;
     }
 
-    public void tick() {
+    public void tick(P parent) {
         this.skeleton.tick();
+        this.skeleton.bones.forEach((name, bone) -> bone.reset());
+        this.animate(parent);
         this.animations.forEach(animation -> animation.apply(this.parent, this.skeleton));
-        this.animate();
         this.constraints.forEach(constraintEntry -> constraintEntry.constraint.apply());
-        this.animatePostConstraints();
+        this.animatePostConstraints(parent);
     }
-    public void animate() {}
-    public void animatePostConstraints() {}
+    public void animate(P parent) {}
+    public void animatePostConstraints(P parent) {}
 
     record ConstraintEntry(Constraint constraint, int priority) {}
 
