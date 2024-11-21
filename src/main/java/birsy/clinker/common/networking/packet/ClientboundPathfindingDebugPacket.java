@@ -1,8 +1,6 @@
 package birsy.clinker.common.networking.packet;
 
-import birsy.clinker.common.world.entity.UrnEntity;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Mob;

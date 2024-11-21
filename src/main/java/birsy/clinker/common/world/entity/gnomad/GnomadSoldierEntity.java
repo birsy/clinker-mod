@@ -26,8 +26,10 @@ import net.tslat.smartbrainlib.api.core.sensor.vanilla.NearbyLivingEntitySensor;
 
 import java.util.List;
 
-public class GnomadSoldierEntity extends Monster implements SmartBrainOwner<GnomadSoldierEntity>, SkeletonParent {
-    public GnomadSoldierEntity(EntityType<? extends Monster> pEntityType, Level pLevel) {
+import static net.minecraft.world.entity.monster.Monster.createMonsterAttributes;
+
+public class GnomadSoldierEntity extends GnomadEntity implements SmartBrainOwner<GnomadSoldierEntity> {
+    public GnomadSoldierEntity(EntityType<? extends GnomadEntity> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
     }
 
@@ -57,7 +59,6 @@ public class GnomadSoldierEntity extends Monster implements SmartBrainOwner<Gnom
         );
     }
 
-
     @Override
     public BrainActivityGroup<? extends GnomadSoldierEntity> getCoreTasks() {
         return BrainActivityGroup.coreTasks(
@@ -76,15 +77,5 @@ public class GnomadSoldierEntity extends Monster implements SmartBrainOwner<Gnom
                 ),
                 new SetRandomWalkTarget<>().speedModifier(1)
         );
-    }
-    Skeleton skeleton;
-    @Override
-    public void setSkeleton(Skeleton skeleton) {
-        this.skeleton = skeleton;
-    }
-
-    @Override
-    public Skeleton getSkeleton() {
-        return skeleton;
     }
 }

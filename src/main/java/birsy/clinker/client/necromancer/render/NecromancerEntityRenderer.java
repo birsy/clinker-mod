@@ -65,8 +65,7 @@ public abstract class NecromancerEntityRenderer<T extends Entity & SkeletonParen
         Skin<M> skin = this.getSkin(pEntity);
 
         if (rendertype != null && skeleton != null && skin != null) {
-            int packedOverlay = OverlayTexture.NO_OVERLAY;
-            if (pEntity instanceof LivingEntity living) packedOverlay = LivingEntityRenderer.getOverlayCoords(living, 0);
+            int packedOverlay = (pEntity instanceof LivingEntity living) ? LivingEntityRenderer.getOverlayCoords(living, 0) : OverlayTexture.NO_OVERLAY;
             renderSkin(pEntity, skeleton, skin, pEntity.tickCount, pPartialTicks, poseStack, pBuffer.getBuffer(rendertype), pPackedLight, packedOverlay, 1, 1, 1, 1);
         }
 

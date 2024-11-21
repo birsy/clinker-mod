@@ -1,9 +1,9 @@
 package birsy.clinker.client.render.world.blockentity;
 
+import birsy.clinker.client.render.BasicModelPart;
 import birsy.clinker.client.render.ClinkerRenderTypes;
 import birsy.clinker.client.render.DebugRenderUtil;
 import birsy.clinker.client.render.RenderUtils;
-import birsy.clinker.client.render.entity.model.base.BasicModelPart;
 import birsy.clinker.common.world.block.blockentity.fairyfruit.FairyFruitBlockEntity;
 import birsy.clinker.common.world.block.blockentity.fairyfruit.FairyFruitVine;
 import birsy.clinker.core.Clinker;

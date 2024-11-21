@@ -30,14 +30,14 @@ public class WarhookRenderer extends EntityRenderer<WarhookEntity> {
 
         VertexConsumer consumer;
 
-        consumer = pBuffer.getBuffer(RenderType.entityCutoutNoCull(MogulWeaponModels.WARHOOK_LOCATION));
+        consumer = pBuffer.getBuffer(RenderType.entityCutoutNoCull(MogulWeaponModels.WARHOOK_TEXTURE_LOCATION));
         pPoseStack.pushPose();
         pPoseStack.translate(0, 1.5F / 16.0F, 0);
 
         pPoseStack.mulPose(rotation);
         pPoseStack.translate(0, -1, 0);
         pPoseStack.scale(1.0F / 16.0F, 1.0F / 16.0F, 1.0F / 16.0F);
-        MogulWeaponModels.WARHOOK.render(null, pPoseStack, consumer, pPackedLight, OverlayTexture.NO_OVERLAY, 1, 1, 1, 1);
+        MogulWeaponModels.WARHOOK.render(pPoseStack, consumer, pPackedLight, OverlayTexture.NO_OVERLAY, 1, 1, 1, 1);
         pPoseStack.popPose();
 
         super.render(pEntity, pEntityYaw, pPartialTick, pPoseStack, pBuffer, pPackedLight);
@@ -47,6 +47,6 @@ public class WarhookRenderer extends EntityRenderer<WarhookEntity> {
 
     @Override
     public ResourceLocation getTextureLocation(WarhookEntity pEntity) {
-        return MogulWeaponModels.WARHOOK_LOCATION;
+        return MogulWeaponModels.WARHOOK_TEXTURE_LOCATION;
     }
 }

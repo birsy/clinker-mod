@@ -30,9 +30,8 @@ public class GnomadMogulWeaponLayer extends NecromancerEntityRenderLayer<GnomadM
             float scale = 1.2F;
             pPoseStack.scale(scale, scale, scale);
             MogulWeaponModels.WARHOOK.render(
-                    pSkeleton.MogulRightArmGrasp,
                     pPoseStack,
-                    pBuffer.getBuffer(RenderType.entityCutoutNoCull(MogulWeaponModels.WARHOOK_LOCATION)),
+                    pBuffer.getBuffer(RenderType.entityCutoutNoCull(MogulWeaponModels.WARHOOK_TEXTURE_LOCATION)),
                     pPackedLight, packedOverlay,
                     0.8F, 0.8F, 0.8F, 1);
         }

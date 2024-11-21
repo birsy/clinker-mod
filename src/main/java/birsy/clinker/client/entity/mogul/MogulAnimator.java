@@ -13,26 +13,26 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
     private static MogulAnimator.WalkAnimation WALK = new WalkAnimation();
     private static MogulAnimator.StrafeAnimation STRAFE = new StrafeAnimation();
 
-    private final AnimationEntry<?, ?> idle, mask, walk, strafe;
+    private final AnimationEntry<?, ?> idleAnim, maskAnim, walkAnim, strafeAnim;
     private int maskShakeTime = 0, maskShakeDuration = 1;
     private boolean maskShaking = false;
 
     protected MogulAnimator(GnomadMogulEntity parent, MogulSkeleton skeleton) {
         super(parent, skeleton);
-        this.strafe = this.addAnimation(STRAFE, 2);
-        this.walk = this.addAnimation(WALK, 1);
-        this.mask = this.addAnimation(MASK, 0);
-        this.idle = this.addAnimation(IDLE, 0);
+        this.strafeAnim = this.addAnimation(STRAFE, 2);
+        this.walkAnim = this.addAnimation(WALK, 1);
+        this.maskAnim = this.addAnimation(MASK, 0);
+        this.idleAnim = this.addAnimation(IDLE, 0);
     }
 
     @Override
     public void animate(GnomadMogulEntity entity) {
         super.animate(entity);
         // idle
-        this.idle.setTime(entity.tickCount);
-        this.idle.setMixFactor(1.0F);
+        this.idleAnim.setTime(entity.tickCount);
+        this.idleAnim.setMixFactor(1.0F);
 
-        // randomly start shaking mask
+        // randomly start shaking maskAnim
         if (maskShaking) {
             this.maskShakeTime++;
             // if we're out of time, stop shaking
@@ -47,19 +47,19 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
         }
         float normalizedTime = (float) this.maskShakeTime / this.maskShakeDuration;
         float shakeAmount = Mth.clamp(-4.0F*normalizedTime*normalizedTime + 4.0F*normalizedTime, 0, 1);
-        this.mask.setMixFactor(shakeAmount * shakeAmount * shakeAmount * shakeAmount * 0.5F);
-        this.mask.setTime(entity.tickCount);
+        this.maskAnim.setMixFactor(shakeAmount * shakeAmount * shakeAmount * shakeAmount * 0.5F);
+        this.maskAnim.setTime(entity.tickCount);
 
         // locomotion
         float moveTime = entity.getCumulativeWalk() * 2.3F;
 
         float walkFac = Mth.clamp(5 * entity.getWalkAmount(1.0F), -0.8F, 0.8F);
-        this.walk.setMixFactor(walkFac);
-        this.walk.setTime(moveTime);
+        this.walkAnim.setMixFactor(walkFac);
+        this.walkAnim.setTime(moveTime);
 
         float strafeFac = Mth.clamp(5 * -entity.getStrafeAmount(1.0F), -0.8F, 0.8F);
-        this.strafe.setMixFactor(strafeFac);
-        this.strafe.setTime(strafeFac);
+        this.strafeAnim.setMixFactor(strafeFac);
+        this.strafeAnim.setTime(strafeFac);
     }
 
     private static class MaskAnimation extends Animation<GnomadMogulEntity, MogulSkeleton> {
@@ -214,3 +214,4 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
         }
     }
 }
+

@@ -2,6 +2,7 @@ package birsy.clinker.common.world.entity.gnomad;
 
 import birsy.clinker.client.necromancer.Skeleton;
 import birsy.clinker.client.necromancer.SkeletonParent;
+import birsy.clinker.client.necromancer.animation.Animator;
 import birsy.clinker.common.world.entity.GroundLocomoteEntity;
 import birsy.clinker.common.world.entity.gnomad.gnomind.squad.GnomadSquad;
 import birsy.clinker.common.world.entity.gnomad.gnomind.squad.GnomadSquads;
@@ -83,6 +84,7 @@ public abstract class GnomadEntity extends GroundLocomoteEntity implements Enemy
         return (this.entityData.get(DATA_ANIMATION_FLAGS_ID) & 0b1) > 0;
     }
 
+    @OnlyIn(Dist.CLIENT)
     Skeleton skeleton;
     @Override
     @OnlyIn(Dist.CLIENT)
@@ -93,5 +95,17 @@ public abstract class GnomadEntity extends GroundLocomoteEntity implements Enemy
     @OnlyIn(Dist.CLIENT)
     public Skeleton getSkeleton() {
         return this.skeleton;
+    }
+    @OnlyIn(Dist.CLIENT)
+    Animator animator;
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public void setAnimator(Animator animator) {
+        this.animator = animator;
+    }
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public Animator getAnimator() {
+        return animator;
     }
 }

@@ -1,6 +1,5 @@
 package birsy.clinker.common.world.block;
 
-import birsy.clinker.common.world.entity.MudScarabEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -38,10 +37,6 @@ public class SulfricMudBlock extends Block implements SimpleWaterloggedBlock {
 
     @Override
     public void stepOn(Level pLevel, BlockPos pPos, BlockState pState, Entity pEntity) {
-        if (!(pEntity instanceof MudScarabEntity)) {
-            pEntity.setDeltaMovement(pEntity.getDeltaMovement().multiply(0.5, 0.5, 0.5));
-        }
-
         if (!pState.getValue(SQUISHED)) {
             if (!(pLevel.getBlockState(pPos.above()).getBlock() instanceof BushBlock)) {
                 pLevel.playSound(null, pEntity, SoundEvents.SLIME_SQUISH, pEntity.getSoundSource(), 0.125F, 0.125F);

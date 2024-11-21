@@ -1,14 +1,9 @@
 package birsy.clinker.common.networking.packet;
 
-import birsy.clinker.common.world.entity.InverseKinematicsLegEntity;
-import birsy.clinker.common.world.entity.mold.MoldCell;
-import birsy.clinker.common.world.entity.mold.MoldEntity;
 import birsy.clinker.common.world.entity.proceduralanimation.IKLocomotionEntity;
 import birsy.clinker.core.Clinker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -53,8 +48,6 @@ public class ClientboundInverseKinematicsStepPacket<E extends LivingEntity & IKL
         Entity entity = level.getEntity(entityId);
         if (entity instanceof LivingEntity liver && entity instanceof IKLocomotionEntity critter) {
             critter.getLeg(this.legIndex).step(true, liver, this.stepX, this.stepY, this.stepZ);
-//        if (entity instanceof InverseKinematicsLegEntity critter) {
-//            critter.legs[legIndex].step(true, critter, this.stepX, this.stepY, this.stepZ);
         } else {
             Clinker.LOGGER.warn("No IKLocomotionEntity instance with id " + this.entityId + " found! This is not good. If something's legs seem broken and you see this message in your logs, put it in the Clinker discord server. If you see this message but nothing looks broken then it's probably fine.");
         }

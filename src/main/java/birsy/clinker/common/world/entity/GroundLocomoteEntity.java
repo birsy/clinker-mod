@@ -1,13 +1,6 @@
 package birsy.clinker.common.world.entity;
 
-import birsy.clinker.common.networking.ClinkerPacketHandler;
-import birsy.clinker.common.networking.packet.ClientboundPathfindingDebugPacket;
 import birsy.clinker.common.world.entity.ai.*;
-import birsy.clinker.common.world.entity.gnomad.OldGnomadAxemanEntity;
-import birsy.clinker.core.Clinker;
-import com.mojang.math.Constants;
-import net.minecraft.SharedConstants;
-import net.minecraft.client.Minecraft;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;

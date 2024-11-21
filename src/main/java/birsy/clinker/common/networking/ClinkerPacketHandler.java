@@ -40,7 +40,6 @@ public class ClinkerPacketHandler {
         registrar.play(createId(ClientboundInteractableRemovePacket.class), ClientboundInteractableRemovePacket::new, ClientboundInteractableRemovePacket::handle);
         registrar.play(createId(ClientboundInteractableUpdatePacket.class), ClientboundInteractableUpdatePacket::new, ClientboundInteractableUpdatePacket::handle);
 
-        registrar.play(createId(ClientboundSalamanderSyncPacket.class), ClientboundSalamanderSyncPacket::new, ClientboundSalamanderSyncPacket::handle);
         registrar.play(createId(ClientboundPushPacket.class), ClientboundPushPacket::new, ClientboundPushPacket::handle);
 
         registrar.play(createId(ClientboundWorkstationChangeBlockPacket.class), ClientboundWorkstationChangeBlockPacket::new, ClientboundWorkstationChangeBlockPacket::handle);

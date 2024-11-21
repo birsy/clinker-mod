@@ -99,28 +99,6 @@ public class StaticMesh extends Mesh {
         return face;
     }
 
-//    public static void rotate(Face[] faces, Quaternionf quaternion) {
-//        for (Face face : faces) {
-//            for (int i = 0; i < face.vertices.length; i++) {
-//                Vertex initialVertex = face.vertices[i];
-//                Vector3f newVertex = quaternion.transform(initialVertex.x(), initialVertex.y(), initialVertex.z());
-//                face.vertices[i] = new Vertex(newVertex.x(), newVertex.y(), newVertex.z());
-//            }
-//            quaternion.transform(face.normal);
-//        }
-//    }
-//
-//    public static void rotate(float originX, float originY, float originZ, Face[] faces, Quaternionf quaternion) {
-//        for (Face face : faces) {
-//            for (int i = 0; i < face.vertices.length; i++) {
-//                Vertex initialVertex = face.vertices[i];
-//                Vector3f newVertex = quaternion.transform(initialVertex.x() + originX, initialVertex.y() + originY, initialVertex.z() + originZ);
-//                face.vertices[i] = new Vertex(newVertex.x() - originX, newVertex.y() - originY, newVertex.z() - originZ);
-//            }
-//            quaternion.transform(face.normal);
-//        }
-//    }
-
     public record FaceVertex(float x, float y, float z, float u, float v) {}
 
     @Override
