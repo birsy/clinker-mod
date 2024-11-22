@@ -1,7 +1,7 @@
 package birsy.clinker.client.entity.mogul;
 
-import birsy.clinker.client.necromancer.render.NecromancerEntityRenderer;
-import birsy.clinker.client.necromancer.render.Skin;
+import birsy.necromancer.render.NecromancerEntityRenderer;
+import birsy.necromancer.render.Skin;
 import birsy.clinker.client.entity.mogul.layer.MogulRobesLayer;
 import birsy.clinker.client.entity.mogul.layer.GnomadMogulWeaponLayer;
 import birsy.clinker.common.world.entity.gnomad.GnomadMogulEntity;
@@ -11,6 +11,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 
 public class MogulRenderer extends NecromancerEntityRenderer<GnomadMogulEntity, MogulSkeleton> {

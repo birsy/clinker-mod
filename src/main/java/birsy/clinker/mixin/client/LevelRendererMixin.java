@@ -2,9 +2,8 @@ package birsy.clinker.mixin.client;
 
 import birsy.clinker.client.ClinkerCursor;
 import birsy.clinker.client.gui.AlchemicalWorkstationScreen;
-import birsy.clinker.client.necromancer.render.NecromancerEntityRenderer;
 import birsy.clinker.client.render.world.VolumetricRenderer;
-import birsy.clinker.client.necromancer.SkeletonParent;
+import birsy.necromancer.SkeletonParent;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -24,8 +23,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 @Mixin(LevelRenderer.class)
 public abstract class LevelRendererMixin {

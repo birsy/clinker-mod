@@ -1,14 +1,11 @@
 package birsy.clinker.common.world.entity.gnomad;
 
-import birsy.clinker.client.necromancer.Skeleton;
-import birsy.clinker.client.necromancer.SkeletonParent;
 import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.SupplyDepotSensor;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 import net.tslat.smartbrainlib.api.SmartBrainOwner;
 import net.tslat.smartbrainlib.api.core.BrainActivityGroup;

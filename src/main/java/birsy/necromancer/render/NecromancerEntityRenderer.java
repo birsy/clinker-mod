@@ -1,9 +1,8 @@
-package birsy.clinker.client.necromancer.render;
+package birsy.necromancer.render;
 
-import birsy.clinker.client.necromancer.RenderFactory;
-import birsy.clinker.client.necromancer.Skeleton;
-import birsy.clinker.client.necromancer.SkeletonParent;
-import birsy.clinker.client.necromancer.animation.Animator;
+import birsy.necromancer.Skeleton;
+import birsy.necromancer.SkeletonParent;
+import birsy.necromancer.animation.Animator;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -56,17 +55,17 @@ public abstract class NecromancerEntityRenderer<T extends Entity & SkeletonParen
         poseStack.scale(scale, scale, scale);
 
         Minecraft minecraft = Minecraft.getInstance();
-        boolean invisible = pEntity.isInvisible();
-        boolean spectator = !invisible && !pEntity.isInvisibleTo(minecraft.player);
+        boolean invisible = pEntity.isInvisibleTo(minecraft.player);
         boolean glowing = minecraft.shouldEntityAppearGlowing(pEntity);
 
-        RenderType rendertype = this.getRenderType(pEntity, invisible, spectator, glowing);
+        boolean shouldRender = !invisible;
+
+        RenderType rendertype = this.getRenderType(pEntity, this.getTextureLocation(pEntity));
         M skeleton = (M) pEntity.getSkeleton();
         Skin<M> skin = this.getSkin(pEntity);
 
-        if (rendertype != null && skeleton != null && skin != null) {
-            int packedOverlay = (pEntity instanceof LivingEntity living) ? LivingEntityRenderer.getOverlayCoords(living, 0) : OverlayTexture.NO_OVERLAY;
-            renderSkin(pEntity, skeleton, skin, pEntity.tickCount, pPartialTicks, poseStack, pBuffer.getBuffer(rendertype), pPackedLight, packedOverlay, 1, 1, 1, 1);
+        if (shouldRender && skeleton != null && skin != null ) {
+            renderSkin(pEntity, skeleton, skin, pEntity.tickCount, pPartialTicks, poseStack, pBuffer.getBuffer(rendertype), pPackedLight, this.getOverlayCoords(pEntity), 1, 1, 1, 1);
         }
 
         if (!pEntity.isSpectator() && rendertype != null && skeleton != null) {
@@ -77,6 +76,10 @@ public abstract class NecromancerEntityRenderer<T extends Entity & SkeletonParen
         super.render(pEntity, pEntityYaw, pPartialTicks, poseStack, pBuffer, pPackedLight);
     }
 
+    public int getOverlayCoords(T pEntity) {
+        return (pEntity instanceof LivingEntity living) ? LivingEntityRenderer.getOverlayCoords(living, 0) : OverlayTexture.NO_OVERLAY;
+    }
+
     public void renderSkin(T entity, M skeleton, Skin<M> skin, int ticksExisted, float partialTicks, PoseStack poseStack, VertexConsumer consumer, int packedLight, int packedOverlay, float r, float g, float b, float a) {
         skin.render(skeleton, ticksExisted, partialTicks, poseStack, consumer, packedLight, packedOverlay, r, g, b, a);
     }
@@ -85,17 +88,7 @@ public abstract class NecromancerEntityRenderer<T extends Entity & SkeletonParen
 
     protected RenderType getRenderType(T pLivingEntity, boolean visible, boolean spectator, boolean glowing) {
         ResourceLocation texture = this.getTextureLocation(pLivingEntity);
-
-        if (spectator) {
-            return RenderType.itemEntityTranslucentCull(texture);
-        }
-        if (glowing) {
-            return RenderType.outline(texture);
-        }
-        if (visible) {
-            return this.getRenderType(pLivingEntity, texture);
-        }
-
-        return null;
+        if (!visible) return null;
+        return this.getRenderType(pLivingEntity, texture);
     }
 }

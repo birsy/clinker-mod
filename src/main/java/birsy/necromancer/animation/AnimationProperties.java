@@ -1,4 +1,4 @@
-package birsy.clinker.client.necromancer.animation;
+package birsy.necromancer.animation;
 
 import java.util.HashMap;
 import java.util.Map;

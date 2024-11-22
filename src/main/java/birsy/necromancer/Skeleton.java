@@ -1,6 +1,4 @@
-package birsy.clinker.client.necromancer;
-
-import birsy.clinker.client.necromancer.constraint.Constraint;
+package birsy.necromancer;
 
 import java.util.*;
 

@@ -18,14 +18,14 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+
 import org.joml.Matrix4f;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-@OnlyIn(Dist.CLIENT)
+
 public class AlchemyBundleGUIRenderer {
     public static final ResourceLocation BUNDLE_LOCATION = new ResourceLocation(Clinker.MOD_ID, "textures/gui/alchemy_bundle.png");
     private final Minecraft minecraft;

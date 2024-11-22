@@ -17,7 +17,7 @@ import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.InputEvent;
@@ -27,7 +27,7 @@ import org.joml.Quaternionf;
 
 import java.awt.*;
 
-@OnlyIn(Dist.CLIENT)
+
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = Clinker.MOD_ID)
 public class TestPageRenderer {
     public static PageAtlasRenderer pageAtlasRenderer;

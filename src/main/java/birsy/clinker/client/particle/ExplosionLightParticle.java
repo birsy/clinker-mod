@@ -12,7 +12,7 @@ import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+
 
 public class ExplosionLightParticle extends Particle {
     private PointLight light;
@@ -56,7 +56,7 @@ public class ExplosionLightParticle extends Particle {
         return ParticleRenderType.CUSTOM;
     }
 
-    @OnlyIn(Dist.CLIENT)
+    
     public static class Provider implements ParticleProvider<SimpleParticleType> {
         public Provider(SpriteSet spriteSet) {}
 

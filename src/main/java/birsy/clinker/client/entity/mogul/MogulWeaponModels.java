@@ -1,6 +1,6 @@
 package birsy.clinker.client.entity.mogul;
 
-import birsy.clinker.client.necromancer.render.mesh.StaticMesh;
+import birsy.necromancer.render.mesh.StaticMesh;
 import birsy.clinker.core.Clinker;
 import net.minecraft.resources.ResourceLocation;
 

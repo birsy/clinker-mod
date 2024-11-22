@@ -1,6 +1,6 @@
-package birsy.clinker.client.necromancer;
+package birsy.necromancer;
 
-import birsy.clinker.client.necromancer.animation.Animator;
+import birsy.necromancer.animation.Animator;
 
 public interface RenderFactory<P extends SkeletonParent> {
     default void setup(P parent) {}

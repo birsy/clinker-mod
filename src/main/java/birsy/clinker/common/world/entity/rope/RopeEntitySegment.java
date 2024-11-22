@@ -13,7 +13,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 
@@ -71,9 +71,9 @@ public class RopeEntitySegment {
     public Vector3dc getPosition() { return this.position; }
 
 
-    @OnlyIn(Dist.CLIENT)
+    
     Vector3d interpolatedPosition = new Vector3d();
-    @OnlyIn(Dist.CLIENT)
+    
     public Vector3dc getPosition(float partialTick) {
         return this.previousPosition.lerp(this.position, partialTick, this.interpolatedPosition);
     }
@@ -91,9 +91,9 @@ public class RopeEntitySegment {
 
     public Vector3dc getWalkVector() { return this.walk; }
 
-    @OnlyIn(Dist.CLIENT)
+    
     Vector3d interpolatedWalkVector = new Vector3d();
-    @OnlyIn(Dist.CLIENT)
+    
     public Vector3dc getWalkVector(float partialTick) {
         return this.previousWalk.lerp(this.walk, partialTick, this.interpolatedWalkVector);
     }
@@ -165,7 +165,7 @@ public class RopeEntitySegment {
         this.walk.set(0,0,0);
     }
 
-    @OnlyIn(Dist.CLIENT)
+    
     protected void updateClient() {
         this.previousPosition.set(this.position);
         this.position.set(this.nextPosition);

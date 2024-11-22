@@ -21,7 +21,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
@@ -37,11 +37,11 @@ public class WarhookEntity extends Projectile {
     private boolean hasHookedEntity = false;
     boolean hasTouchedGround = false;
 
-    @OnlyIn(Dist.CLIENT)
+    
     private Vec3 direction = Vec3.ZERO, pDirection = Vec3.ZERO;
-    @OnlyIn(Dist.CLIENT)
+    
     private Vec3 ownerPos, pOwnerPos;
-    @OnlyIn(Dist.CLIENT)
+    
     public float roll, pRoll = 0;
 
     public WarhookEntity(EntityType<? extends Projectile> pEntityType, Level pLevel) {

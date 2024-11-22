@@ -6,7 +6,7 @@ import net.minecraft.client.particle.*;
 import net.minecraft.core.particles.DustColorTransitionOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+
 import org.joml.Vector3f;
 
 public class OrdnanceTrailParticle extends DustColorTransitionParticle {
@@ -33,7 +33,7 @@ public class OrdnanceTrailParticle extends DustColorTransitionParticle {
         this.bCol = color.z();
     }
 
-    @OnlyIn(Dist.CLIENT)
+    
     public static class Provider implements ParticleProvider<DustColorTransitionOptions>, ParticleEngine.SpriteParticleRegistration<DustColorTransitionOptions> {
         private final SpriteSet sprites;
 

@@ -1,11 +1,13 @@
 package birsy.clinker.client.entity.mogul;
 
-import birsy.clinker.client.necromancer.animation.Animation;
-import birsy.clinker.client.necromancer.animation.Animator;
+import birsy.clinker.core.util.MathUtils;
+import birsy.necromancer.animation.Animation;
+import birsy.necromancer.animation.Animator;
 import birsy.clinker.common.world.entity.gnomad.GnomadMogulEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.tslat.smartbrainlib.util.RandomUtil;
+import org.joml.Vector3f;
 
 public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
     private static MogulAnimator.IdleAnimation IDLE = new IdleAnimation();
@@ -13,9 +15,12 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
     private static MogulAnimator.WalkAnimation WALK = new WalkAnimation();
     private static MogulAnimator.StrafeAnimation STRAFE = new StrafeAnimation();
 
-    private final AnimationEntry<?, ?> idleAnim, maskAnim, walkAnim, strafeAnim;
+    public final AnimationEntry<?, ?> idleAnim, maskAnim, walkAnim, strafeAnim;
     private int maskShakeTime = 0, maskShakeDuration = 1;
     private boolean maskShaking = false;
+
+    private final Vector3f smoothedAcceleration = new Vector3f();
+    private static final Vector3f temp = new Vector3f();
 
     protected MogulAnimator(GnomadMogulEntity parent, MogulSkeleton skeleton) {
         super(parent, skeleton);
@@ -60,6 +65,43 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
         float strafeFac = Mth.clamp(5 * -entity.getStrafeAmount(1.0F), -0.8F, 0.8F);
         this.strafeAnim.setMixFactor(strafeFac);
         this.strafeAnim.setTime(strafeFac);
+
+        // flinch
+        if (entity.hurtDuration > 0) {
+            float flinchTime = entity.tickCount;
+            float flinchFactor = (float) entity.hurtTime / entity.hurtDuration;
+            skeleton.MogulRoot.rotateDeg(Mth.sin(flinchTime) * 4 * flinchFactor, Direction.Axis.X);
+            skeleton.MogulRoot.rotateDeg(Mth.cos(flinchTime) * 4 * flinchFactor, Direction.Axis.Z);
+
+            skeleton.MogulHead.rotateDeg(Mth.sin(flinchTime - 1) * 8 * flinchFactor, Direction.Axis.X);
+            skeleton.MogulHead.rotateDeg(Mth.cos(flinchTime - 1) * 8 * flinchFactor, Direction.Axis.Z);
+
+            skeleton.MogulRightArm.rotateDeg(Mth.sin(flinchTime - 1) * 8 * flinchFactor, Direction.Axis.X);
+            skeleton.MogulRightArm.rotateDeg(Mth.cos(flinchTime - 1) * 8 * flinchFactor, Direction.Axis.Z);
+            skeleton.MogulLeftArm.rotateDeg(Mth.sin(flinchTime - 1) * 8 * flinchFactor, Direction.Axis.X);
+            skeleton.MogulLeftArm.rotateDeg(Mth.cos(flinchTime - 1) * 8 * flinchFactor, Direction.Axis.Z);
+        }
+
+        // death
+        if (entity.isDeadOrDying()) {
+            float deathFactor = Mth.clamp(entity.deathTime / 17F, 0, 1);
+            deathFactor = MathUtils.ease(deathFactor, MathUtils.EasingType.easeOutBack);
+            skeleton.MogulBody.rotation.rotateAxis(deathFactor * 70 * Mth.DEG_TO_RAD, Mth.sqrt(2), 0, Mth.sqrt(2));
+        }
+
+        smoothedAcceleration.lerp(temp.set(entity.acceleration.x(), entity.acceleration.y(), entity.acceleration.z()), 0.15F);
+        //if (Math.abs(entity.acceleration.y) > Mth.abs(smoothedAcceleration.y)) smoothedAcceleration.set(smoothedAcceleration.x(), entity.acceleration.y, smoothedAcceleration.z());
+
+        Vector3f axis = smoothedAcceleration.mul(1, 0, 1, temp);
+        if (axis.lengthSquared() > 0) {
+            float angle = axis.length();
+            axis = axis.normalize().cross(0, 1, 0);
+            skeleton.MogulRoot.rotation.rotateAxis(angle * 2, axis);
+        }
+
+        if (smoothedAcceleration.y() < 0) {
+            skeleton.MogulRoot.ySize = Mth.lerp(Mth.clamp(smoothedAcceleration.y() * -5, 0, 1), 1, 0.5F);
+        }
     }
 
     private static class MaskAnimation extends Animation<GnomadMogulEntity, MogulSkeleton> {
@@ -156,7 +198,7 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
             skeleton.MogulRightArm.z += Mth.sin(armCircleTime) * mixFactor * globalDegree * 5 * sign - 1 * mixFactor * globalDegree;
 
             skeleton.MogulRoot.y += Mth.sin(time * 2) * mixFactor * globalDegree * 2;
-            skeleton.MogulRoot.z += Mth.sin(time * 2 - 1F) * mixFactor * globalDegree * 0.5F * sign;
+            skeleton.MogulRoot.z += Mth.sin(time * 2 - 1F) * mixFactor * globalDegree * 2 * sign;
             skeleton.MogulRoot.rotateDeg(-10 * mixFactor * globalDegree * sign, Direction.Axis.X);
 
             skeleton.MogulFrontRobe.rotateDeg(Mth.lerp((sign + 1.0F) * 0.5F, -30, -10) * mixFactor * globalDegree * sign, Direction.Axis.X);

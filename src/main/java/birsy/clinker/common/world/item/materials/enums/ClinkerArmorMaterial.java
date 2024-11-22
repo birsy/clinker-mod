@@ -8,7 +8,7 @@ import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerItems;
 
@@ -61,7 +61,7 @@ public enum ClinkerArmorMaterial implements ArmorMaterial
 		return this.soundEvent;
 	}
 	
-	@OnlyIn(Dist.CLIENT)
+	
 	@Override
 	public Ingredient getRepairIngredient() {
 		return this.repairMaterial.get();

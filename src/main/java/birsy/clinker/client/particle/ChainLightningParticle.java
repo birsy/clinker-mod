@@ -22,13 +22,13 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@OnlyIn(Dist.CLIENT)
+
 public class ChainLightningParticle extends Particle {
     protected TextureAtlasSprite sprite;
     private final RenderType renderType = ClinkerRenderTypes.chainLightning();
@@ -119,7 +119,7 @@ public class ChainLightningParticle extends Particle {
         bufferSource.endBatch();
     }
 
-    @OnlyIn(Dist.CLIENT)
+    
     public static class Provider implements ParticleProvider<ChainLightningParticleOptions>, ParticleEngine.SpriteParticleRegistration<ChainLightningParticleOptions> {
         private final SpriteSet sprites;
 

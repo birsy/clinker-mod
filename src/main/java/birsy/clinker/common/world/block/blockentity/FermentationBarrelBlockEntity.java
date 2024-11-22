@@ -16,7 +16,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.LidBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -111,7 +111,7 @@ public class FermentationBarrelBlockEntity extends BlockEntity implements LidBlo
         return lidController.getOpenness(pPartialTicks);
     }
 
-    @OnlyIn(Dist.CLIENT)
+    
     public List<? extends FormattedText> getText(BlockEntity blockEntity) {
         ArrayList<Component> text = new ArrayList<>();
         text.add(Component.translatable("block.clinker.fermentation_barrel").withStyle(ChatFormatting.DARK_GRAY));
@@ -119,7 +119,7 @@ public class FermentationBarrelBlockEntity extends BlockEntity implements LidBlo
         return text;
     }
 
-    @OnlyIn(Dist.CLIENT)
+    
     public void renderCustomElements(BlockEntity blockEntity, PoseStack mStack, int x, int y, int width, int height) {
 
     }

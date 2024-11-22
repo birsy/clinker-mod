@@ -12,7 +12,7 @@ import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.FallingBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+
 
 public class AshBlock extends FallingBlock {
 	private final int dustColor;
@@ -27,7 +27,7 @@ public class AshBlock extends FallingBlock {
 		return null;
 	}
 
-	@OnlyIn(Dist.CLIENT)
+	
 	public int getDustColor(BlockState pState, BlockGetter pLevel, BlockPos pPos) {
 		return this.dustColor;
 	}

@@ -23,7 +23,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+
 import net.tslat.smartbrainlib.util.EntityRetrievalUtil;
 import org.joml.Vector3d;
 import org.joml.Vector3f;
@@ -31,7 +31,7 @@ import org.joml.Vector3fc;
 
 public class GroundLocomoteEntity extends PathfinderMob {
     public final Vector3f walk = new Vector3f(), previousWalk = new Vector3f();
-    @OnlyIn(Dist.CLIENT)
+    
     Vector3f smoothedWalk = new Vector3f();
 
     private static final EntityDataAccessor<Vector3f> DATA_WALK_ID = SynchedEntityData.defineId(GroundLocomoteEntity.class, EntityDataSerializers.VECTOR3);
@@ -98,7 +98,8 @@ public class GroundLocomoteEntity extends PathfinderMob {
 
     private final Vector3f returnWalkVector = new Vector3f();
     public Vector3fc getWalkVector(float partialTicks) {
-        return this.smoothedWalk;
+        returnWalkVector.set(smoothedWalk);
+        return returnWalkVector;
     }
 
     private final Vector3f returnFacingVector = new Vector3f();
@@ -107,10 +108,14 @@ public class GroundLocomoteEntity extends PathfinderMob {
         return returnFacingVector.set(Mth.sin(angle), 0, Mth.cos(angle));
     }
 
-    public float getWalkAmount(float partialTick) { return this.getWalkVector(partialTick).dot(this.getBodyFacingDirection(partialTick)); }
+    public float getWalkAmount(float partialTick) {
+        return this.getWalkVector(partialTick).dot(this.getBodyFacingDirection(partialTick));
+    }
 
     private final Vector3f strafeDir = new Vector3f(1, 0, 0);
-    public float getStrafeAmount(float partialTick) { return this.getWalkVector(partialTick).dot(this.getBodyFacingDirection(partialTick).cross(0, 1, 0, strafeDir)); }
+    public float getStrafeAmount(float partialTick) {
+        return this.getWalkVector(partialTick).dot(this.getBodyFacingDirection(partialTick).cross(0, 1, 0, strafeDir));
+    }
 
     public float getCumulativeWalk() {
         return cumulativeWalk;

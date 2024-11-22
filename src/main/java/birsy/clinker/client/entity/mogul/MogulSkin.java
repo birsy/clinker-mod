@@ -1,7 +1,7 @@
 package birsy.clinker.client.entity.mogul;
 
-import birsy.clinker.client.necromancer.render.Skin;
-import birsy.clinker.client.necromancer.render.mesh.StaticMesh;
+import birsy.necromancer.render.Skin;
+import birsy.necromancer.render.mesh.StaticMesh;
 
 public class MogulSkin extends Skin<MogulSkeleton> {
     public MogulSkin() {

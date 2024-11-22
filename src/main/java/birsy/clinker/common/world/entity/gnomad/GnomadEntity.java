@@ -1,8 +1,5 @@
 package birsy.clinker.common.world.entity.gnomad;
 
-import birsy.clinker.client.necromancer.Skeleton;
-import birsy.clinker.client.necromancer.SkeletonParent;
-import birsy.clinker.client.necromancer.animation.Animator;
 import birsy.clinker.common.world.entity.GroundLocomoteEntity;
 import birsy.clinker.common.world.entity.gnomad.gnomind.squad.GnomadSquad;
 import birsy.clinker.common.world.entity.gnomad.gnomind.squad.GnomadSquads;
@@ -19,14 +16,14 @@ import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+
 
 import static net.minecraft.world.entity.monster.Monster.createMonsterAttributes;
 
-public abstract class GnomadEntity extends GroundLocomoteEntity implements Enemy, SkeletonParent {
+public abstract class GnomadEntity extends GroundLocomoteEntity implements Enemy {
     public GnomadSquad squad;
 
-    @OnlyIn(Dist.CLIENT)
+    
     public Vec3 acceleration = Vec3.ZERO;
     private Vec3 deltaPosition = Vec3.ZERO;
     private static final EntityDataAccessor<Byte> DATA_ANIMATION_FLAGS_ID = SynchedEntityData.defineId(GnomadEntity.class, EntityDataSerializers.BYTE);
@@ -64,7 +61,7 @@ public abstract class GnomadEntity extends GroundLocomoteEntity implements Enemy
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
+    
     public void updateAcceleration() {
         Vec3 pDeltaPosition = new Vec3(this.deltaPosition.x, this.deltaPosition.y, this.deltaPosition.z);
         this.deltaPosition = this.getDeltaMovement();
@@ -82,30 +79,5 @@ public abstract class GnomadEntity extends GroundLocomoteEntity implements Enemy
 
     public boolean isSitting() {
         return (this.entityData.get(DATA_ANIMATION_FLAGS_ID) & 0b1) > 0;
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    Skeleton skeleton;
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public void setSkeleton(Skeleton skeleton) {
-        this.skeleton = skeleton;
-    }
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public Skeleton getSkeleton() {
-        return this.skeleton;
-    }
-    @OnlyIn(Dist.CLIENT)
-    Animator animator;
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public void setAnimator(Animator animator) {
-        this.animator = animator;
-    }
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public Animator getAnimator() {
-        return animator;
     }
 }

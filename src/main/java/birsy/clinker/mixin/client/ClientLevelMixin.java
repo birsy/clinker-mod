@@ -1,6 +1,6 @@
 package birsy.clinker.mixin.client;
 
-import birsy.clinker.client.necromancer.render.NecromancerEntityRenderer;
+import birsy.necromancer.render.NecromancerEntityRenderer;
 import birsy.clinker.common.world.alchemy.workstation.WorkstationManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;

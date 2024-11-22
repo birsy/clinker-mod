@@ -21,11 +21,11 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-@OnlyIn(Dist.CLIENT)
+
 public class FireSpewParticle extends Particle {
     protected final TextureAtlasSprite sprite;
     final Vector3f velocity = new Vector3f(), pVelocity = new Vector3f();
@@ -175,7 +175,7 @@ public class FireSpewParticle extends Particle {
                 .endVertex();
     }
 
-    @OnlyIn(Dist.CLIENT)
+    
     public static class Provider implements ParticleProvider<SimpleParticleType> {
         private final SpriteSet sprites;
 

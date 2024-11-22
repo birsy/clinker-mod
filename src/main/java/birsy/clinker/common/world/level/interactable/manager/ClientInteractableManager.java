@@ -11,12 +11,12 @@ import net.minecraft.core.SectionPos;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+
 
 import java.util.Collection;
 import java.util.Optional;
 
-@OnlyIn(Dist.CLIENT)
+
 public class ClientInteractableManager extends InteractableManager {
     private final LongSortedSet requestedChunks = new LongAVLTreeSet();
 

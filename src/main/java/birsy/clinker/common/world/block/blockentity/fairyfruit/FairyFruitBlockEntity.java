@@ -9,13 +9,13 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+
 
 public class FairyFruitBlockEntity extends BlockEntity implements InteractableParent {
     public FairyFruitVine vine;
-    @OnlyIn(Dist.CLIENT)
+    
     public float lengthOffset;
-    @OnlyIn(Dist.CLIENT)
+    
     public PointLight light;
 
     public FairyFruitBlockEntity(BlockPos pPos, BlockState pBlockState) {

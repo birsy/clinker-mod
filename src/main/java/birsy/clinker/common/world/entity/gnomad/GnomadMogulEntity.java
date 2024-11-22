@@ -1,7 +1,8 @@
 package birsy.clinker.common.world.entity.gnomad;
 
-import birsy.clinker.client.necromancer.Skeleton;
-import birsy.clinker.client.necromancer.SkeletonParent;
+import birsy.clinker.client.entity.mogul.MogulAnimator;
+import birsy.clinker.client.entity.mogul.MogulSkeleton;
+import birsy.necromancer.SkeletonParent;
 import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.ClientboundBrainDebugPacket;
 import birsy.clinker.common.world.entity.ai.behaviors.*;
@@ -27,14 +28,14 @@ import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
+import net.minecraft.world.entity.monster.warden.Warden;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+
 import net.tslat.smartbrainlib.api.SmartBrainOwner;
 import net.tslat.smartbrainlib.api.core.BrainActivityGroup;
 import net.tslat.smartbrainlib.api.core.SmartBrainProvider;
@@ -60,7 +61,7 @@ import java.util.List;
 
 import static net.minecraft.world.entity.monster.Monster.createMonsterAttributes;
 
-public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<GnomadMogulEntity>, SkeletonParent {
+public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<GnomadMogulEntity>, SkeletonParent<GnomadMogulEntity, MogulSkeleton, MogulAnimator> {
     private static final int[] ROBE_COLORS = new int[]{0x4d423c, 0x513337, 0x4a4751, 0x505049, 0x4f4c4b};
     private static final EntityDataAccessor<Integer> DATA_ROBE_COLOR = SynchedEntityData.defineId(GnomadMogulEntity.class, EntityDataSerializers.INT);
 
@@ -197,11 +198,11 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
         this.entityData.set(DATA_ROBE_COLOR, robeColor);
     }
 
-    @OnlyIn(Dist.CLIENT)
+    
     protected double prevSmoothedHeight = 0;
-    @OnlyIn(Dist.CLIENT)
+    
     protected double smoothedHeight = 0;
-    @OnlyIn(Dist.CLIENT)
+    
     protected void computeHeightOffset() {
         this.prevSmoothedHeight = this.smoothedHeight;
         Vec3 samplePosition = this.getPosition(1.0F).add(0, 0.1F, 0);
@@ -212,19 +213,27 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
         if (this.smoothedHeight > this.getY()) this.smoothedHeight = this.getY();
         this.smoothedHeight = MathUtils.clampDifference(this.smoothedHeight, this.getY(), this.getStepHeight());
     }
-    @OnlyIn(Dist.CLIENT)
+    
     public float getHeightOffset(float partialTick) {
         return (float) (Mth.lerp(partialTick, prevSmoothedHeight, smoothedHeight) - this.getPosition(partialTick).y);
     }
 
-    Skeleton<?> skeleton;
+    MogulSkeleton skeleton;
+    MogulAnimator animator;
     @Override
-    public void setSkeleton(Skeleton skeleton) {
+    public void setSkeleton(MogulSkeleton skeleton) {
         this.skeleton = skeleton;
     }
-
     @Override
-    public Skeleton getSkeleton() {
-        return skeleton;
+    public MogulSkeleton getSkeleton() {
+        return this.skeleton;
+    }
+    @Override
+    public void setAnimator(MogulAnimator animator) {
+        this.animator = animator;
+    }
+    @Override
+    public MogulAnimator getAnimator() {
+        return animator;
     }
 }

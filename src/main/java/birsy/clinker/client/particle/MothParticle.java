@@ -25,10 +25,10 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+
 import org.joml.Matrix4f;
 
-@OnlyIn(Dist.CLIENT)
+
 public class MothParticle extends Particle {
     protected TextureAtlasSprite sprite;
     private static final FastNoiseLite noise;
@@ -259,7 +259,7 @@ public class MothParticle extends Particle {
         pBuffer.vertex(matrix, maxX, 0, maxZ).uv(maxU, minV).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(packedLight).endVertex();
     }
 
-    @OnlyIn(Dist.CLIENT)
+    
     public static class Provider implements ParticleProvider<SimpleParticleType> {
         private final SpriteSet sprites;
 

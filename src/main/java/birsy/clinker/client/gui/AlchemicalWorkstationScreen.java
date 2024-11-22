@@ -25,7 +25,7 @@ import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.ViewportEvent;
@@ -35,7 +35,6 @@ import org.lwjgl.glfw.GLFW;
 import java.lang.Math;
 import java.util.Optional;
 
-@OnlyIn(Dist.CLIENT)
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = Clinker.MOD_ID)
 public class AlchemicalWorkstationScreen extends GuiElementParent {
     public BlockPos targetedBlock;         // block the camera is aiming at

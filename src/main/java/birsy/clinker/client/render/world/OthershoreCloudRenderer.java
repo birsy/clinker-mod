@@ -14,11 +14,11 @@ import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+
 import org.joml.Matrix4f;
 import org.joml.Vector3fc;
 
-@OnlyIn(Dist.CLIENT)
+
 public class OthershoreCloudRenderer {
     public static final float CLOUDS_START = 250.0F;
     public static final float CLOUDS_END = 450.0F;

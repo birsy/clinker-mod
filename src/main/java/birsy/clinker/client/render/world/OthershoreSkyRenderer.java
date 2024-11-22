@@ -21,13 +21,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
-@OnlyIn(Dist.CLIENT)
+
 public class OthershoreSkyRenderer {
     private static final ResourceLocation NOISE_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/environment/noise.png");
     private static final ResourceLocation SKY_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/environment/sky.png");

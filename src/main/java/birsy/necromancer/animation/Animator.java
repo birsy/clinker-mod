@@ -1,9 +1,8 @@
-package birsy.clinker.client.necromancer.animation;
+package birsy.necromancer.animation;
 
-import birsy.clinker.client.necromancer.Bone;
-import birsy.clinker.client.necromancer.Skeleton;
-import birsy.clinker.client.necromancer.SkeletonParent;
-import birsy.clinker.client.necromancer.constraint.Constraint;
+import birsy.necromancer.Skeleton;
+import birsy.necromancer.SkeletonParent;
+import birsy.necromancer.constraint.Constraint;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -29,6 +28,13 @@ public abstract class Animator<P extends SkeletonParent, T extends Skeleton<P>> 
 
     public AnimationEntry<P, T> addAnimation(Animation<P, T> animation, int priority) {
         AnimationEntry<P, T> entry = new AnimationEntry<>(animation, priority);
+        this.animations.add(entry);
+        animations.sort(Comparator.comparingInt(animEntry -> animEntry.priority));
+        return entry;
+    }
+
+    public TimedAnimationEntry<P, T> addTimedAnimation(Animation<P, T> animation, int priority, int animLength) {
+        TimedAnimationEntry<P, T> entry = new TimedAnimationEntry<>(animation, priority, animLength);
         this.animations.add(entry);
         animations.sort(Comparator.comparingInt(animEntry -> animEntry.priority));
         return entry;
@@ -64,12 +70,37 @@ public abstract class Animator<P extends SkeletonParent, T extends Skeleton<P>> 
         public void setTime(float time) {
             this.time = time;
         }
-        public void progressTime(float deltaTime) {
-            this.setTime(this.time + deltaTime);
-        }
         protected void apply(P parent, T skeleton) {
             if (!this.animation.running(parent, skeleton, mixFactor, time)) return;
             this.animation.apply(parent, skeleton, mixFactor, time);
+        }
+    }
+
+    public static class TimedAnimationEntry<P extends SkeletonParent, T extends Skeleton<P>> extends AnimationEntry<P, T> {
+        final int lengthInTicks;
+        boolean rewinding = false;
+        boolean playing = false;
+
+        private TimedAnimationEntry(Animation<P, T> animation, int priority, int lengthInTicks) {
+            super(animation, priority);
+            this.lengthInTicks = lengthInTicks;
+        }
+
+        public void begin() { this.time = 0; this.resume(); }
+        public void resume() { this.playing = true; }
+        public void rewind() { this.rewinding = true; }
+        public void stop() { this.playing = false; this.rewinding = false; }
+
+        private void updateTime(P parent, T skeleton) {
+            if (this.playing && this.animation.running(parent, skeleton, mixFactor, time)) this.time += (this.rewinding ? -1.0F : 1.0F) / lengthInTicks;
+            if ((this.time > 1 && !rewinding) || (time < 0 && rewinding)) this.stop();
+        }
+
+        @Override
+        protected void apply(P parent, T skeleton) {
+            updateTime(parent, skeleton);
+            if (!this.playing) return;
+            super.apply(parent, skeleton);
         }
     }
 }

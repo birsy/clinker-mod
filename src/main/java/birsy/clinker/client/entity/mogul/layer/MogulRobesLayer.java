@@ -2,7 +2,7 @@ package birsy.clinker.client.entity.mogul.layer;
 
 import birsy.clinker.client.entity.mogul.MogulRenderer;
 import birsy.clinker.client.entity.mogul.MogulSkeleton;
-import birsy.clinker.client.necromancer.render.NecromancerEntityRenderLayer;
+import birsy.necromancer.render.NecromancerEntityRenderLayer;
 import birsy.clinker.common.world.entity.gnomad.GnomadMogulEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -23,15 +23,12 @@ public class MogulRobesLayer extends NecromancerEntityRenderLayer<GnomadMogulEnt
     public void render(PoseStack poseStack, MultiBufferSource buffer, int packedLight, GnomadMogulEntity entity, MogulSkeleton skeleton, float partialTicks) {
         Vec3 robeColor = Vec3.fromRGB24(entity.getRobeColor());
         this.renderer.renderSkin(
-                entity,
-                skeleton,
+                entity, skeleton,
                 this.renderer.getSkin(entity),
-                entity.tickCount,
-                partialTicks,
-                poseStack,
-                buffer.getBuffer(RenderType.entityCutoutNoCullZOffset(MOGUL_ROBES_LOCATION)),
-                packedLight, LivingEntityRenderer.getOverlayCoords(entity, 0),
-                (float) robeColor.x, (float) robeColor.y, (float) robeColor.z, 1.0F
+                entity.tickCount, partialTicks,
+                poseStack, buffer.getBuffer(RenderType.entityCutoutNoCullZOffset(MOGUL_ROBES_LOCATION)),
+                packedLight, this.renderer.getOverlayCoords(entity),
+                (float) robeColor.x, (float) robeColor.y, (float) robeColor.z, (float) 1.0
         );
     }
 }

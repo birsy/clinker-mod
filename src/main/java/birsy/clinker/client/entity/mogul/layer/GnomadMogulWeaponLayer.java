@@ -3,8 +3,9 @@ package birsy.clinker.client.entity.mogul.layer;
 import birsy.clinker.client.entity.mogul.MogulRenderer;
 import birsy.clinker.client.entity.mogul.MogulSkeleton;
 import birsy.clinker.client.entity.mogul.MogulWeaponModels;
-import birsy.clinker.client.necromancer.Bone;
-import birsy.clinker.client.necromancer.render.NecromancerEntityRenderLayer;
+import birsy.clinker.core.Clinker;
+import birsy.necromancer.Bone;
+import birsy.necromancer.render.NecromancerEntityRenderLayer;
 import birsy.clinker.common.world.entity.gnomad.GnomadMogulEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -21,10 +22,7 @@ public class GnomadMogulWeaponLayer extends NecromancerEntityRenderLayer<GnomadM
         pPoseStack.pushPose();
         pPoseStack.translate(0, 16 * pLivingEntity.getHeightOffset(pPartialTicks), 0);
         if (pSkeleton != null) {
-            int packedOverlay = LivingEntityRenderer.getOverlayCoords(pLivingEntity, 0);
-            for (Bone bone : pSkeleton.MogulRightArmGrasp.parentChain) {
-                bone.transform(pPoseStack, pPartialTicks);
-            }
+            for (Bone bone : pSkeleton.MogulRightArmGrasp.parentChain) bone.transform(pPoseStack, pPartialTicks);
             pSkeleton.MogulRightArmGrasp.transform(pPoseStack, pPartialTicks);
             pPoseStack.translate(-0.6, 0, 1);
             float scale = 1.2F;
@@ -32,7 +30,7 @@ public class GnomadMogulWeaponLayer extends NecromancerEntityRenderLayer<GnomadM
             MogulWeaponModels.WARHOOK.render(
                     pPoseStack,
                     pBuffer.getBuffer(RenderType.entityCutoutNoCull(MogulWeaponModels.WARHOOK_TEXTURE_LOCATION)),
-                    pPackedLight, packedOverlay,
+                    pPackedLight, this.renderer.getOverlayCoords(pLivingEntity),
                     0.8F, 0.8F, 0.8F, 1);
         }
         pPoseStack.popPose();

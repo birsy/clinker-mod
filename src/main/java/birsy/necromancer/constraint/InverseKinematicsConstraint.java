@@ -1,8 +1,8 @@
-package birsy.clinker.client.necromancer.constraint;
+package birsy.necromancer.constraint;
 
-import birsy.clinker.client.necromancer.Bone;
-import birsy.clinker.client.necromancer.Skeleton;
-import birsy.clinker.client.necromancer.SkeletonParent;
+import birsy.necromancer.Bone;
+import birsy.necromancer.Skeleton;
+import birsy.necromancer.SkeletonParent;
 import birsy.clinker.client.render.DebugRenderUtil;
 import birsy.clinker.core.util.VectorUtils;
 import com.mojang.blaze3d.vertex.PoseStack;

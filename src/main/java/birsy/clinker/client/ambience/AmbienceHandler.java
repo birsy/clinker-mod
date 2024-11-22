@@ -4,13 +4,13 @@ import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.world.ClinkerWorld;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.event.TickEvent;
 
-@OnlyIn(Dist.CLIENT)
+
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = Clinker.MOD_ID)
 public class AmbienceHandler {
     public static final SurfaceAmbience SURFACE_AMBIENCE_HANDLER = new SurfaceAmbience(Minecraft.getInstance());

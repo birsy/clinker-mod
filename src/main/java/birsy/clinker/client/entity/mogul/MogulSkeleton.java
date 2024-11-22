@@ -1,7 +1,7 @@
 package birsy.clinker.client.entity.mogul;
 
-import birsy.clinker.client.necromancer.Bone;
-import birsy.clinker.client.necromancer.Skeleton;
+import birsy.necromancer.Bone;
+import birsy.necromancer.Skeleton;
 import birsy.clinker.common.world.entity.gnomad.GnomadMogulEntity;
 import org.joml.Quaternionf;
 

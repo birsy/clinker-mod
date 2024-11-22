@@ -11,7 +11,7 @@ import net.minecraft.core.particles.ParticleType;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+
 import org.joml.Vector3f;
 
 public class OrdnanceExplosionParticle extends DustColorTransitionParticle {
@@ -38,7 +38,7 @@ public class OrdnanceExplosionParticle extends DustColorTransitionParticle {
         this.setPos(this.x, this.y, this.z);
     }
 
-    @OnlyIn(Dist.CLIENT)
+    
     public static class Provider implements ParticleProvider<DustColorTransitionOptions> {
         private final SpriteSet sprites;
 

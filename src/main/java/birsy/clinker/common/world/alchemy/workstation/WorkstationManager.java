@@ -16,7 +16,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+
 
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
@@ -30,7 +30,7 @@ import java.util.*;
 public class WorkstationManager {
     public static final Map<ServerLevel, WorkstationManager> managerByLevel = new HashMap<>();
     public static final Map<ResourceKey<Level>, WorkstationManager> managerByDimension = new HashMap<>();
-    @OnlyIn(Dist.CLIENT)
+    
     public static WorkstationManager clientWorkstationManager = new WorkstationManager();
 
     //TODO: diagonals
@@ -160,7 +160,7 @@ public class WorkstationManager {
         ClinkerPacketHandler.sendToClient(client, new ClientboundWorkstationLoadPacket(id, workstation));
     }
 
-    @OnlyIn(Dist.CLIENT)
+    
     public void addWorkstationBlockToUUID(BlockPos pos, UUID id) {
         if (!this.workstationStorage.containsKey(id)) {
             this.workstationStorage.put(id, new Workstation(this.level, id));
@@ -169,7 +169,7 @@ public class WorkstationManager {
         this.workstationStorage.get(id).addBlock(pos);
     }
 
-    @OnlyIn(Dist.CLIENT)
+    
     public void mergeWorkstations(UUID id0, UUID id1) {
         Workstation station0 = this.workstationStorage.get(id0);
         Workstation station1 = this.workstationStorage.get(id1);

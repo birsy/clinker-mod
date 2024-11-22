@@ -12,7 +12,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+
 
 import java.util.UUID;
 
@@ -25,7 +25,7 @@ public class Workstation {
 
     public WorkstationEnvironment environment;
 
-    @OnlyIn(Dist.CLIENT)
+    
     public final WorkstationCamera camera;
 
     public Workstation(Level level) {
@@ -49,7 +49,7 @@ public class Workstation {
         this.environment.tick();
     }
 
-    @OnlyIn(Dist.CLIENT)
+    
     public void initializeCameraPosition(Vec3 position) {
         CameraPath.CameraPathNode closestNode = path.cameraPathNodes.get(0);
         double distance = Double.MAX_VALUE;
@@ -123,7 +123,7 @@ public class Workstation {
         return station;
     }
 
-    @OnlyIn(Dist.CLIENT)
+    
     public void bootClientsFromGui() {
         if (Minecraft.getInstance().screen instanceof AlchemicalWorkstationScreen screen) {
             if (screen.workstation == this) screen.beginClosing();

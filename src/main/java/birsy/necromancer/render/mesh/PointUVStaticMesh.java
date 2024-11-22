@@ -1,6 +1,6 @@
-package birsy.clinker.client.necromancer.render.mesh;
+package birsy.necromancer.render.mesh;
 
-import birsy.clinker.client.necromancer.Bone;
+import birsy.necromancer.Bone;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.core.Direction;

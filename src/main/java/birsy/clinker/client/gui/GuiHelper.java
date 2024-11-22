@@ -29,7 +29,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec2;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+
 import org.joml.Matrix4f;
 import org.joml.Quaterniond;
 import org.joml.Vector3f;
@@ -37,7 +37,7 @@ import org.joml.Vector3f;
 import javax.annotation.Nullable;
 import java.util.*;
 
-@OnlyIn(Dist.CLIENT)
+
 public class GuiHelper {
     //Given all leaf nodes, finds the hovered element with the most parents.
     public static GuiElement findHoveredElement(Collection<GuiElement> leafNodes, float mouseX, float mouseY, float partialTick) {
@@ -135,7 +135,7 @@ public class GuiHelper {
 
 
 
-    @OnlyIn(Dist.CLIENT)
+    
     public static void renderGuiItemDecorations(GuiGraphics graphics, Font font, ItemStack pStack, float pXPosition, float pYPosition, float alpha, @Nullable String pText) {
         if (!pStack.isEmpty()) {
             PoseStack posestack = new PoseStack();

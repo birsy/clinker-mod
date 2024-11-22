@@ -14,7 +14,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+
 import net.neoforged.neoforge.entity.PartEntity;
 import net.neoforged.neoforge.fluids.FluidType;
 
@@ -33,7 +33,7 @@ public class MoldEntity extends LivingEntity {
     protected AtomicInteger currentId = new AtomicInteger(0);
     Set<BlockPos> occupiedSpaces;
 
-    @OnlyIn(Dist.CLIENT)
+    
     public AABB renderAABB;
     public MoldEntity(EntityType<? extends LivingEntity> type, Level level) {
         super(type, level);

@@ -34,7 +34,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.*;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
@@ -52,9 +52,9 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
     float stuckEntityAngleOffset, stuckEntityHeightOffset;
     Vec3 stuckDirection;
 
-    @OnlyIn(Dist.CLIENT)
+    
     private OrdnanceSoundInstance sound;
-    @OnlyIn(Dist.CLIENT)
+    
     private float spin, pSpin;
 
     public OrdnanceEntity(EntityType<? extends Projectile> pEntityType, Level pLevel) {
@@ -282,7 +282,7 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
         return drag;
     }
 
-    @OnlyIn(Dist.CLIENT)
+    
     protected void tickClient() {
         this.updateSpin();
 
@@ -321,7 +321,7 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
         this.level().playSound(null, pos.x(), pos.y(), pos.z(), ClinkerSounds.ORDNANCE_BOUNCE.get(), SoundSource.BLOCKS, volume * volumeMultiplier, pitch * pitchMultiplier);
     }
 
-    @OnlyIn(Dist.CLIENT)
+    
     public void updateSpin() {
         this.pSpin = this.spin;
         Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
