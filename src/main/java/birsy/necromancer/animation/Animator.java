@@ -77,23 +77,39 @@ public abstract class Animator<P extends SkeletonParent, T extends Skeleton<P>> 
     }
 
     public static class TimedAnimationEntry<P extends SkeletonParent, T extends Skeleton<P>> extends AnimationEntry<P, T> {
-        final int lengthInTicks;
+        int lengthInTicks;
         boolean rewinding = false;
         boolean playing = false;
 
         private TimedAnimationEntry(Animation<P, T> animation, int priority, int lengthInTicks) {
             super(animation, priority);
-            this.lengthInTicks = lengthInTicks;
+            this.setAnimLength(lengthInTicks);
         }
 
-        public void begin() { this.time = 0; this.resume(); }
-        public void resume() { this.playing = true; }
-        public void rewind() { this.rewinding = true; }
-        public void stop() { this.playing = false; this.rewinding = false; }
-
-        private void updateTime(P parent, T skeleton) {
-            if (this.playing && this.animation.running(parent, skeleton, mixFactor, time)) this.time += (this.rewinding ? -1.0F : 1.0F) / lengthInTicks;
-            if ((this.time > 1 && !rewinding) || (time < 0 && rewinding)) this.stop();
+        public void setAnimLength(int lengthInTicks) {
+            this.lengthInTicks = lengthInTicks;
+        }
+        public void begin() {
+            this.time = 0;
+            this.resume();
+        }
+        public void resume() {
+            this.playing = true;
+            if (animationEnded()) this.time = 0;
+        }
+        public void rewind() {
+            this.rewinding = true;
+        }
+        public void stop() {
+            this.playing = false;
+            this.rewinding = false;
+        }
+        protected boolean animationEnded() {
+            return (this.time > this.lengthInTicks && !rewinding) || (time < 0 && rewinding);
+        }
+        protected void updateTime(P parent, T skeleton) {
+            if (this.playing && this.animation.running(parent, skeleton, mixFactor, time)) this.time += (this.rewinding ? -1.0F : 1.0F);
+            if (animationEnded()) this.stop();
         }
 
         @Override
