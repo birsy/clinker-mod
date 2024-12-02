@@ -37,18 +37,18 @@ public class OrdnanceItem extends Item {
                 SoundEvents.TNT_PRIMED, SoundSource.PLAYERS,
                 0.5F, 0.4F / (pLevel.getRandom().nextFloat() * 0.4F + 0.8F)
         );
-        if (!itemstack.getOrCreateTag().getBoolean("Lit")) {
-            itemstack.getOrCreateTag().putBoolean("Lit", true);
-            itemstack.getOrCreateTag().putInt("MaxFuseTime", OrdnanceEffects.DEFAULT_EFFECT_PARAMS.maxFuseTime());
-            itemstack.getOrCreateTag().putInt("FuseTime", 0);
-//            itemstack.getOrCreateTag().putUUID("SoundID", UUID.randomUUID());
-
-//            if (pLevel.isClientSide()) {
-//                OrdnanceSoundInstance sound = new OrdnanceSoundInstance(pPlayer, itemstack.getOrCreateTag().getInt("MaxFuseTime"), () -> (float)itemstack.getOrCreateTag().getInt("FuseTime"));
-//                sounds.put(itemstack.getOrCreateTag().getUUID("SoundID"), sound);
-//                Minecraft.getInstance().getSoundManager().play(sound);
-//            }
-        }
+//        if (!itemstack.getOrCreateTag().getBoolean("Lit")) {
+//            itemstack.getOrCreateTag().putBoolean("Lit", true);
+//            itemstack.getOrCreateTag().putInt("MaxFuseTime", OrdnanceEffects.DEFAULT_EFFECT_PARAMS.maxFuseTime());
+//            itemstack.getOrCreateTag().putInt("FuseTime", 0);
+////            itemstack.getOrCreateTag().putUUID("SoundID", UUID.randomUUID());
+//
+////            if (pLevel.isClientSide()) {
+////                OrdnanceSoundInstance sound = new OrdnanceSoundInstance(pPlayer, itemstack.getOrCreateTag().getInt("MaxFuseTime"), () -> (float)itemstack.getOrCreateTag().getInt("FuseTime"));
+////                sounds.put(itemstack.getOrCreateTag().getUUID("SoundID"), sound);
+////                Minecraft.getInstance().getSoundManager().play(sound);
+////            }
+//        }
 
         return InteractionResultHolder.consume(itemstack);
     }
@@ -60,16 +60,16 @@ public class OrdnanceItem extends Item {
                 SoundEvents.TRIDENT_THROW, SoundSource.PLAYERS,
                 0.5F, 0.4F / (pLevel.getRandom().nextFloat() * 0.4F + 0.8F)
         );
-        pStack.getOrCreateTag().putBoolean("Lit", false);
+        //pStack.getOrCreateTag().putBoolean("Lit", false);
         if (!pLevel.isClientSide) {
-            int fuseTime = pStack.getOrCreateTag().getInt("FuseTime");
-            if (fuseTime >= pStack.getOrCreateTag().getInt("MaxFuseTime")) {
-                OrdnanceEntity.createOrdnanceExplosion(pEntityLiving.getEyePosition(), pLevel, pEntityLiving, null, OrdnanceEffects.DEFAULT_EFFECT_PARAMS);
-            } else {
-                OrdnanceEntity entity = OrdnanceEntity.toss(pLevel, pEntityLiving);
-                entity.setFuseTime(fuseTime);
-                pLevel.addFreshEntity(entity);
-            }
+//            int fuseTime = pStack.getOrCreateTag().getInt("FuseTime");
+//            if (fuseTime >= pStack.getOrCreateTag().getInt("MaxFuseTime")) {
+//                OrdnanceEntity.createOrdnanceExplosion(pEntityLiving.getEyePosition(), pLevel, pEntityLiving, null, OrdnanceEffects.DEFAULT_EFFECT_PARAMS);
+//            } else {
+//                OrdnanceEntity entity = OrdnanceEntity.toss(pLevel, pEntityLiving);
+//                entity.setFuseTime(fuseTime);
+//                pLevel.addFreshEntity(entity);
+//            }
         } else {
 //            if (pStack.getOrCreateTag().hasUUID("SoundID")) {
 //                UUID soundID = pStack.getOrCreateTag().getUUID("SoundID");
@@ -105,15 +105,11 @@ public class OrdnanceItem extends Item {
         return UseAnim.BOW;
     }
 
-    @Override
-    public int getUseDuration(ItemStack pStack) {
-        return 72000;
-    }
 
     @Override
     public void inventoryTick(ItemStack pStack, Level pLevel, Entity pEntity, int pSlotId, boolean pIsSelected) {
         super.inventoryTick(pStack, pLevel, pEntity, pSlotId, pIsSelected);
-        if (!pStack.getOrCreateTag().getBoolean("Lit")) return;
+        //if (!pStack.getOrCreateTag().getBoolean("Lit")) return;
 
 //        if (pLevel.isClientSide() && pStack.getOrCreateTag().hasUUID("SoundID")) {
 //            UUID soundID = pStack.getOrCreateTag().getUUID("SoundID");
@@ -125,18 +121,18 @@ public class OrdnanceItem extends Item {
 //
 //        }
 
-        int fuseTime = pStack.getOrCreateTag().getInt("FuseTime") + 1;
-        pStack.getOrCreateTag().putInt("FuseTime", fuseTime);
-
-        if (fuseTime >= pStack.getOrCreateTag().getInt("MaxFuseTime")) {
-            if (pEntity instanceof LivingEntity livingEntity) {
-                if (livingEntity.getUseItem() == pStack) {
-                    livingEntity.releaseUsingItem();
-                } else {
-                    pStack.releaseUsing(pLevel, livingEntity, 0);
-                    pStack.onStopUsing(livingEntity, 0);
-                }
-            }
-        }
+//        int fuseTime = pStack.getOrCreateTag().getInt("FuseTime") + 1;
+//        pStack.getOrCreateTag().putInt("FuseTime", fuseTime);
+//
+//        if (fuseTime >= pStack.getOrCreateTag().getInt("MaxFuseTime")) {
+//            if (pEntity instanceof LivingEntity livingEntity) {
+//                if (livingEntity.getUseItem() == pStack) {
+//                    livingEntity.releaseUsingItem();
+//                } else {
+//                    pStack.releaseUsing(pLevel, livingEntity, 0);
+//                    pStack.onStopUsing(livingEntity, 0);
+//                }
+//            }
+//        }
     }
 }
