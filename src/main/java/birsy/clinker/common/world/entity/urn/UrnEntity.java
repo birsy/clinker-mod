@@ -1,7 +1,7 @@
 package birsy.clinker.common.world.entity.urn;
 
 import birsy.clinker.common.networking.ClinkerPacketHandler;
-import birsy.clinker.common.networking.packet.ClientboundBrainDebugPacket;
+import birsy.clinker.common.networking.packet.debug.ClientboundBrainDebugPacket;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;

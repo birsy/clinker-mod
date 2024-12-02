@@ -1,5 +1,6 @@
-package birsy.clinker.common.networking.packet;
+package birsy.clinker.common.networking.packet.debug;
 
+import birsy.clinker.common.networking.packet.ClientboundPacket;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;

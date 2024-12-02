@@ -1,7 +1,7 @@
 package birsy.clinker.common.world.entity;
 
 import birsy.clinker.common.networking.ClinkerPacketHandler;
-import birsy.clinker.common.networking.packet.ClientboundPathfindingDebugPacket;
+import birsy.clinker.common.networking.packet.debug.ClientboundPathfindingDebugPacket;
 import birsy.clinker.common.world.entity.ai.ClinkerSmoothGroundNavigation;
 import birsy.clinker.common.world.entity.ai.behaviors.SetRandomWalkTargetCloseEnough;
 import birsy.clinker.common.world.entity.rope.RopeEntity;

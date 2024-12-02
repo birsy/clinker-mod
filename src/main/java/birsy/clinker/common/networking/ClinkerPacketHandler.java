@@ -1,6 +1,8 @@
 package birsy.clinker.common.networking;
 
 import birsy.clinker.common.networking.packet.*;
+import birsy.clinker.common.networking.packet.debug.ClientboundBrainDebugPacket;
+import birsy.clinker.common.networking.packet.debug.ClientboundPathfindingDebugPacket;
 import birsy.clinker.common.networking.packet.debug.GnomadSquadDebugPacket;
 import birsy.clinker.common.networking.packet.debug.GnomadSquadRemovalDebugPacket;
 import birsy.clinker.common.networking.packet.interactable.*;
@@ -15,7 +17,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
 import net.neoforged.neoforge.network.registration.IPayloadRegistrar;

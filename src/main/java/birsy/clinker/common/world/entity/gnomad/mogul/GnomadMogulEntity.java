@@ -5,7 +5,7 @@ import birsy.clinker.client.entity.mogul.MogulSkeleton;
 import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
 import birsy.necromancer.SkeletonParent;
 import birsy.clinker.common.networking.ClinkerPacketHandler;
-import birsy.clinker.common.networking.packet.ClientboundBrainDebugPacket;
+import birsy.clinker.common.networking.packet.debug.ClientboundBrainDebugPacket;
 import birsy.clinker.common.world.entity.ai.behaviors.*;
 import birsy.clinker.common.world.entity.ai.behaviors.LookAtNearestEntity;
 import birsy.clinker.common.world.entity.ai.behaviors.SetRandomLookTargetImproved;

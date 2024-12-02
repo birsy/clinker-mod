@@ -1,5 +1,6 @@
-package birsy.clinker.common.networking.packet;
+package birsy.clinker.common.networking.packet.debug;
 
+import birsy.clinker.common.networking.packet.ClientboundPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
