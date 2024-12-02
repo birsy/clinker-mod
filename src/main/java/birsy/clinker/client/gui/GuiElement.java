@@ -132,8 +132,7 @@ public abstract class GuiElement<P extends GuiElement, S extends GuiElementParen
 
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         RenderSystem.enableBlend();
-        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         bufferbuilder.addVertex(pMatrix, 0, this.height, this.blitOffset).setColor(brightness, brightness, brightness, 0.5F);
         bufferbuilder.addVertex(pMatrix, this.width, this.height, this.blitOffset).setColor(brightness, brightness, brightness, 0.5F);
         bufferbuilder.addVertex(pMatrix, this.width, 0, this.blitOffset).setColor(brightness, brightness, brightness, 0.5F);

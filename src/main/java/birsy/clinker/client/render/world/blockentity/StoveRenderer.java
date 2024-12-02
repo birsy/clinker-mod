@@ -17,6 +17,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.state.properties.ChestType;
 
@@ -69,35 +70,39 @@ public class StoveRenderer<T extends StoveBlockEntity> implements BlockEntityRen
 
         pPoseStack.mulPose(Axis.YP.rotationDegrees(90 * (direction.get2DDataValue() + 2)));
         VertexConsumer vertexconsumer;
+        int flameColor = FastColor.ARGB32.colorFromFloat(alpha, alpha, alpha, alpha);
+        int flameColorBright = FastColor.ARGB32.colorFromFloat(brightAlpha, brightAlpha, brightAlpha, brightAlpha);
         if (type == ChestType.SINGLE) {
             this.chimney.chimney.visible = !onlyLip;
             this.stove.stove.visible = !onlyLip;
 
             vertexconsumer = flames ? pBufferSource.getBuffer(RenderType.energySwirl(STOVE_LIT, 0, 0)) : pBufferSource.getBuffer(RenderType.entityCutoutNoCull(STOVE));
-            this.stove.renderToBuffer(pPoseStack, vertexconsumer, light, pPackedOverlay, alpha, alpha, alpha, alpha);
+            this.stove.renderToBuffer(pPoseStack, vertexconsumer, light, pPackedOverlay, flameColor);
             if (flames) {
                 vertexconsumer = pBufferSource.getBuffer(RenderType.energySwirl(STOVE_INNER_LIT, 0, 0));
-                this.stove.renderToBuffer(pPoseStack, vertexconsumer, light, pPackedOverlay, brightAlpha, brightAlpha, brightAlpha, brightAlpha);
+                this.stove.renderToBuffer(pPoseStack, vertexconsumer, light, pPackedOverlay, flameColorBright);
             }
             pPoseStack.translate(0, -1, 0);
             vertexconsumer = flames ? pBufferSource.getBuffer(RenderType.energySwirl(STOVE_CHIMNEY_LIT, 0, 0)) : pBufferSource.getBuffer(RenderType.entityCutoutNoCull(STOVE_CHIMNEY));
             alpha *= flames ? 0.5 : 1;
-            this.chimney.renderToBuffer(pPoseStack, vertexconsumer, light, pPackedOverlay, alpha, alpha, alpha, alpha);
+            flameColor = FastColor.ARGB32.colorFromFloat(alpha, alpha, alpha, alpha);
+            this.chimney.renderToBuffer(pPoseStack, vertexconsumer, light, pPackedOverlay, flameColor);
         } else {
             if (type == ChestType.LEFT) pPoseStack.translate(-1, 0, 0);
             this.doubleChimney.chimney.visible = !onlyLip;
             this.doubleStove.stove.visible = !onlyLip;
 
             vertexconsumer = flames ? pBufferSource.getBuffer(RenderType.energySwirl(DOUBLE_STOVE_LIT, 0, 0)) : pBufferSource.getBuffer(RenderType.entityCutoutNoCull(DOUBLE_STOVE));
-            this.doubleStove.renderToBuffer(pPoseStack, vertexconsumer, light, pPackedOverlay, alpha, alpha, alpha,alpha);
+            this.doubleStove.renderToBuffer(pPoseStack, vertexconsumer, light, pPackedOverlay, flameColor);
             if (flames) {
                 vertexconsumer = pBufferSource.getBuffer(RenderType.energySwirl(DOUBLE_STOVE_INNER_LIT, 0, 0));
-                this.doubleStove.renderToBuffer(pPoseStack, vertexconsumer, light, pPackedOverlay, brightAlpha, brightAlpha, brightAlpha, brightAlpha);
+                this.doubleStove.renderToBuffer(pPoseStack, vertexconsumer, light, pPackedOverlay, flameColorBright);
             }
             pPoseStack.translate(0, -1, 0);
             vertexconsumer = flames ? pBufferSource.getBuffer(RenderType.energySwirl(DOUBLE_STOVE_CHIMNEY_LIT, 0, 0)) : pBufferSource.getBuffer(RenderType.entityCutoutNoCull(DOUBLE_STOVE_CHIMNEY));
             alpha *= flames ? 0.5 : 1;
-            this.doubleChimney.renderToBuffer(pPoseStack, vertexconsumer, light, pPackedOverlay, alpha, alpha, alpha, alpha);
+            flameColor = FastColor.ARGB32.colorFromFloat(alpha, alpha, alpha, alpha);
+            this.doubleChimney.renderToBuffer(pPoseStack, vertexconsumer, light, pPackedOverlay, flameColor);
         }
 
         pPoseStack.popPose();
@@ -136,9 +141,9 @@ public class StoveRenderer<T extends StoveBlockEntity> implements BlockEntityRen
         }
 
         @Override
-        public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-            stove.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-            lip.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+        public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
+            stove.render(poseStack, buffer, packedLight, packedOverlay, color);
+            lip.render(poseStack, buffer, packedLight, packedOverlay, color);
         }
     }
     public class StoveChimneyModel extends Model {
@@ -163,12 +168,12 @@ public class StoveRenderer<T extends StoveBlockEntity> implements BlockEntityRen
         }
 
         @Override
-        public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-            chimney.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+        public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int color) {
+            chimney.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
         }
     }
     public static class DoubleStoveModel extends Model {
-        public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation("modid", "doublestove"), "main");
+        public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(Clinker.resource("doublestove"), "main");
         private final ModelPart stove;
         private final ModelPart lip;
 
@@ -196,13 +201,13 @@ public class StoveRenderer<T extends StoveBlockEntity> implements BlockEntityRen
         }
 
         @Override
-        public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-            stove.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-            lip.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+        public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int color) {
+            stove.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
+            lip.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
         }
     }
     public static class DoubleStoveChimneyModel extends Model {
-        public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation("modid", "doublestovechimney"), "main");
+        public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(Clinker.resource("doublestovechimney"), "main");
         private final ModelPart chimney;
 
         public DoubleStoveChimneyModel(ModelPart root) {
@@ -223,8 +228,8 @@ public class StoveRenderer<T extends StoveBlockEntity> implements BlockEntityRen
         }
 
         @Override
-        public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-            chimney.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+        public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int color) {
+            chimney.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
         }
     }
 }

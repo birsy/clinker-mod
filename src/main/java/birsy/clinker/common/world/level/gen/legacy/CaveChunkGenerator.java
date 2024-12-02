@@ -66,7 +66,7 @@ public class CaveChunkGenerator extends ChunkGenerator {
         this.globalFluidPicker = (a, b, c) -> new Aquifer.FluidStatus(this.settings.seaLevel(), this.settings.defaultFluid());
     }
 
-    protected Codec<? extends ChunkGenerator> codec() {
+    protected MapCodec<? extends ChunkGenerator> codec() {
         return CODEC;
     }
 
@@ -74,11 +74,6 @@ public class CaveChunkGenerator extends ChunkGenerator {
     public ChunkGeneratorStructureState createState(HolderLookup<StructureSet> pStructureSetLookup, RandomState pRandomState, long pSeed) {
         seed = pSeed;
         return super.createState(pStructureSetLookup, pRandomState, pSeed);
-    }
-
-    @Override
-    public CompletableFuture<ChunkAccess> createBiomes(Executor pExecutor, RandomState pRandomState, Blender pBlender, StructureManager pStructureManager, ChunkAccess pChunk) {
-        return super.createBiomes(pExecutor, pRandomState, pBlender, pStructureManager, pChunk);
     }
 
     public void buildSurface(WorldGenRegion genRegion, StructureManager structureManager, RandomState randomState, ChunkAccess chunk) {
@@ -107,7 +102,7 @@ public class CaveChunkGenerator extends ChunkGenerator {
         return this.sampler.setSeed(seed);
     }
 
-    public CompletableFuture<ChunkAccess> fillFromNoise(Executor executor, Blender densityBlender, RandomState random, StructureManager structureManager, ChunkAccess chunk) {
+    public CompletableFuture<ChunkAccess> fillFromNoise(Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunk) {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         Heightmap[] heightmaps = {chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.OCEAN_FLOOR_WG), chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.WORLD_SURFACE_WG)};
 
@@ -425,62 +420,7 @@ public class CaveChunkGenerator extends ChunkGenerator {
     }
 
     private double getBeardifierContribution(int x, int y, int z) {
-        double totalContribution;
-        double individualContribution;
-        for(totalContribution = 0.0D; this.beardifier.pieceIterator.hasNext(); totalContribution += individualContribution) {
-            Beardifier.Rigid beardifier$rigid = this.beardifier.pieceIterator.next();
-            BoundingBox boundingbox = beardifier$rigid.box();
-            int groundLevelD = beardifier$rigid.groundLevelDelta();
-            int bbX = Math.max(0, Math.max(boundingbox.minX() - x, x - boundingbox.maxX()));
-            int bbZ = Math.max(0, Math.max(boundingbox.minZ() - z, z - boundingbox.maxZ()));
-            int bbY = boundingbox.minY() + groundLevelD;
-            int yFactor = y - bbY;
-            int i3;
-            switch (beardifier$rigid.terrainAdjustment()) {
-                case NONE:
-                    i3 = 0;
-                    break;
-                case BURY:
-                case BEARD_THIN:
-                    i3 = yFactor;
-                    break;
-                case BEARD_BOX:
-                    i3 = Math.max(0, Math.max(bbY - y, y - boundingbox.maxY()));
-                    break;
-                default:
-                    throw new IncompatibleClassChangeError();
-            }
-
-            int i2 = i3;
-            switch (beardifier$rigid.terrainAdjustment()) {
-                case NONE:
-                    individualContribution = 0.0D;
-                    break;
-                case BURY:
-                    individualContribution = this.beardifier.getBuryContribution(bbX, i2, bbZ);
-                    break;
-                case BEARD_THIN:
-                case BEARD_BOX:
-                    individualContribution = this.beardifier.getBeardContribution(bbX, i2, bbZ, yFactor) * 0.8D;
-                    break;
-                default:
-                    throw new IncompatibleClassChangeError();
-            }
-        }
-
-        this.beardifier.pieceIterator.back(Integer.MAX_VALUE);
-
-        while(this.beardifier.junctionIterator.hasNext()) {
-            JigsawJunction jigsawjunction = this.beardifier.junctionIterator.next();
-            int jjX = x - jigsawjunction.getSourceX();
-            int jjY = y - jigsawjunction.getSourceGroundY();
-            int jjZ = z - jigsawjunction.getSourceZ();
-            totalContribution += this.beardifier.getBeardContribution(jjX, jjY, jjZ, jjY) * 0.4D;
-        }
-
-        this.beardifier.junctionIterator.back(Integer.MAX_VALUE);
-
-        return totalContribution;
+        return 0;
     }
 
     public BlockState getStone(int x, int y, int z, double facingUp) {

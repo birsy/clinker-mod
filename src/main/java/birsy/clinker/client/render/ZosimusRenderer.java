@@ -32,9 +32,9 @@ public class ZosimusRenderer {
         pPoseStack.scale(128, 128, 1);
         pPoseStack.translate(2, 2, 0);
 
-        RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         RenderSystem.setShaderTexture(0, TEXTURE);
-        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
+        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
 
         this.root.yRot = (float) (tickTime * 0.1F);//Mth.cos((float) (tickTime * 0.08F));
         this.root.xRot = 0.5F;//Mth.sin((float) (tickTime * 0.1F)) * 0.5F;
@@ -330,8 +330,7 @@ public class ZosimusRenderer {
 
     private static void drawColoredBox(Matrix4f matrix, float x1, float y1, float x2, float y2, float zOffset, float r, float g, float b, float a) {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         bufferbuilder.addVertex(matrix, x1, y2, zOffset).setColor(r, g, b, a);
         bufferbuilder.addVertex(matrix, x2, y2, zOffset).setColor(r, g, b, a);
         bufferbuilder.addVertex(matrix, x2, y1, zOffset).setColor(r, g, b, a);
@@ -355,8 +354,7 @@ public class ZosimusRenderer {
         float length = Mth.sqrt(neckX*neckX + neckY*neckY);
         float widthOffsetX = (-neckY / length) * width*0.5f, widthOffsetY = (neckX / length) * width*0.5f;
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         bufferbuilder.addVertex(matrix, x1 - widthOffsetX, y1 - widthOffsetY, 0).setColor(0.0F, 0.0F, 0.0F, 1.0F);
         bufferbuilder.addVertex(matrix, x1 + widthOffsetX, y1 + widthOffsetY, 0).setColor(0.0F, 0.0F, 0.0F, 1.0F);
         bufferbuilder.addVertex(matrix, x2 + widthOffsetX, y2 + widthOffsetY, 0).setColor(0.0F, 0.0F, 0.0F, 1.0F);

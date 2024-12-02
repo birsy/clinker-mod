@@ -101,7 +101,7 @@ public class ClinkerRenderTypes {
                 .setLightmapState(NO_LIGHTMAP)
                 .setOverlayState(NO_OVERLAY)
                 .createCompositeState(false);
-        return RenderType.create("rendertype_fire_spew", DefaultVertexFormat.POSITION_COLOR_TEX, VertexFormat.Mode.QUADS, 256, true, false, compositeState);
+        return RenderType.create("rendertype_fire_spew", DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS, 256, true, false, compositeState);
     });
 
     public static RenderType entityUnlitTranslucent(ResourceLocation pLocation, boolean pOutline) {

@@ -26,7 +26,7 @@ public class ImageBox extends PageElement {
     @Override
     public void renderElementContents(PoseStack stack, MultiBufferSource source) {
         RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
-        RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();

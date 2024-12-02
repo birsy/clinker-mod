@@ -91,6 +91,6 @@ public class ClinkerSmoothGroundNavigation extends SmoothGroundNavigation {
 
         return Math.abs(mob.getX() - nextNodePos.x) < distance &&
                Math.abs(mob.getZ() - nextNodePos.z) < distance &&
-               Math.abs(mob.getY() - nextNodePos.y) < distance + mob.getStepHeight();
+               Math.abs(mob.getY() - nextNodePos.y) < distance + mob.maxUpStep();
     }
 }

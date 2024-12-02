@@ -67,7 +67,7 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
     }
 
     @Override
-    public boolean renderClouds(ClientLevel level, int ticks, float partialTick, PoseStack pPoseStack, double camX, double camY, double camZ, Matrix4f projectionMatrix) {
+    public boolean renderClouds(ClientLevel level, int ticks, float partialTick, PoseStack pPoseStack, double camX, double camY, double camZ, Matrix4f modelViewMatrix, Matrix4f projectionMatrix) {
         Minecraft.getInstance().getProfiler().push("clinker.drawClouds");
         this.cloudRenderer.render(level, ticks, partialTick, pPoseStack, camX, camY, camZ, projectionMatrix, this.getSkyColor(level, new Vec3(camX, camY, camZ), partialTick));
         Minecraft.getInstance().getProfiler().pop();
@@ -75,12 +75,10 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
     }
 
     @Override
-    public boolean renderSky(ClientLevel level, int ticks, float partialTick, PoseStack poseStack, Camera camera, Matrix4f projectionMatrix, boolean isFoggy, Runnable setupFog) {
-        //NecromancerEntityRenderer.buildSkinAndSkeletonTemporary();
-
+    public boolean renderSky(ClientLevel level, int ticks, float partialTick, Matrix4f modelViewMatrix, Camera camera, Matrix4f projectionMatrix, boolean isFoggy, Runnable setupFog) {
         Minecraft.getInstance().getProfiler().push("clinker.drawSky");
         setupFog.run();
-        this.skyRenderer.render(level, ticks, partialTick, poseStack, camera, projectionMatrix, this.getSkyColor(level, camera.getPosition(), partialTick));
+        this.skyRenderer.render(level, ticks, partialTick, new PoseStack(), camera, projectionMatrix, this.getSkyColor(level, camera.getPosition(), partialTick));
         Minecraft.getInstance().getProfiler().pop();
         return true;
     }

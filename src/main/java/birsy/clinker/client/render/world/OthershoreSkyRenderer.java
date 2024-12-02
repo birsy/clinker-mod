@@ -268,9 +268,7 @@ public class OthershoreSkyRenderer {
 
     private void drawHorizon(Matrix4f matrix, float skyR, float skyG, float skyB, float aboveCloudOffset) {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
-
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         for (int i = 0; i < 16; i++) {
             float f1 = (i / (float) 16);
             float x1 = Mth.sin(f1 * Mth.TWO_PI) * RING_MAX_RADIUS;
@@ -320,9 +318,10 @@ public class OthershoreSkyRenderer {
         }
     }
     private VertexBuffer buildStarBuffer(VertexBuffer vbo, float rangeStart, float rangeEnd, int count) {
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder bufferBuilder = tesselator.getBuilder();
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder bufferBuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
 
         if (vbo != null) vbo.close();
         vbo = new VertexBuffer(VertexBuffer.Usage.STATIC);
@@ -332,7 +331,6 @@ public class OthershoreSkyRenderer {
         float minStarRadius = 3.0F;
         float maxStarRadius = 5.0F;
 
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
         Matrix4f matrix = new Matrix4f();
         for (int i = 0; i < count; i++) {
             matrix.identity().rotateY(random.nextFloat() * Mth.TWO_PI);
@@ -356,22 +354,18 @@ public class OthershoreSkyRenderer {
 
             bufferBuilder.addVertex(matrix, -radius, height - radius, distance)
                     .setUv(u1, v1)
-                    .setColor(rotationSpeedMultiplier, gradientPos, twinkleOffset, fancy)
-                    ;
+                    .setColor(rotationSpeedMultiplier, gradientPos, twinkleOffset, fancy);
             bufferBuilder.addVertex(matrix, -radius, height + radius, distance)
                     .setUv(u2, v1)
-                    .setColor(rotationSpeedMultiplier, gradientPos, twinkleOffset, fancy)
-                    ;
+                    .setColor(rotationSpeedMultiplier, gradientPos, twinkleOffset, fancy);
             bufferBuilder.addVertex(matrix,  radius, height + radius, distance)
                     .setUv(u2, v2)
-                    .setColor(rotationSpeedMultiplier, gradientPos, twinkleOffset, fancy)
-                    ;
+                    .setColor(rotationSpeedMultiplier, gradientPos, twinkleOffset, fancy);
             bufferBuilder.addVertex(matrix,  radius, height - radius, distance)
                     .setUv(u1, v2)
-                    .setColor(rotationSpeedMultiplier, gradientPos, twinkleOffset, fancy)
-                    ;
+                    .setColor(rotationSpeedMultiplier, gradientPos, twinkleOffset, fancy);
         }
-        BufferBuilder.RenderedBuffer renderedBuffer = bufferBuilder.buildOrThrow();
+        MeshData renderedBuffer = bufferBuilder.buildOrThrow();
 
         vbo.bind();
         vbo.upload(renderedBuffer);
@@ -381,13 +375,12 @@ public class OthershoreSkyRenderer {
     }
     private VertexBuffer buildCloudBuffer(VertexBuffer vbo, int resolution) {
         Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder bufferBuilder = tesselator.getBuilder();
+        BufferBuilder bufferBuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
 
         if (vbo != null) vbo.close();
         vbo = new VertexBuffer(VertexBuffer.Usage.STATIC);
 
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
         for (int i = 0; i < resolution; i++) {
             float f1 = (i / (float) resolution);
             float x1 = Mth.sin(f1 * Mth.TWO_PI);
@@ -397,12 +390,12 @@ public class OthershoreSkyRenderer {
             float x2 = Mth.sin(f2 * Mth.TWO_PI);
             float z2 = Mth.cos(f2 * Mth.TWO_PI);
 
-            bufferBuilder.addVertex(x1,-0.5, z1).setColor(0xFFFFFFFF).setUv(f1, 0.0F);
-            bufferBuilder.addVertex(x1, 0.5, z1).setColor(0xFFFFFFFF).setUv(f1, 1.0F);
-            bufferBuilder.addVertex(x2, 0.5, z2).setColor(0xFFFFFFFF).setUv(f2, 1.0F);
-            bufferBuilder.addVertex(x2,-0.5, z2).setColor(0xFFFFFFFF).setUv(f2, 0.0F);
+            bufferBuilder.addVertex(x1,-0.5F, z1).setColor(0xFFFFFFFF).setUv(f1, 0.0F);
+            bufferBuilder.addVertex(x1, 0.5F, z1).setColor(0xFFFFFFFF).setUv(f1, 1.0F);
+            bufferBuilder.addVertex(x2, 0.5F, z2).setColor(0xFFFFFFFF).setUv(f2, 1.0F);
+            bufferBuilder.addVertex(x2,-0.5F, z2).setColor(0xFFFFFFFF).setUv(f2, 0.0F);
         }
-        BufferBuilder.RenderedBuffer renderedBuffer = bufferBuilder.buildOrThrow();
+        MeshData renderedBuffer = bufferBuilder.buildOrThrow();
 
         vbo.bind();
         vbo.upload(renderedBuffer);
@@ -412,13 +405,12 @@ public class OthershoreSkyRenderer {
     }
     private VertexBuffer buildOuterSkyBuffer(VertexBuffer vbo, int resolution) {
         Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder bufferBuilder = tesselator.getBuilder();
+        BufferBuilder bufferBuilder = tesselator.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_TEX_COLOR);
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
 
         if (vbo != null) vbo.close();
         vbo = new VertexBuffer(VertexBuffer.Usage.STATIC);
 
-        bufferBuilder.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_TEX_COLOR);
         // r = fog color / sky color
         // g = use texture
         // sky
@@ -429,7 +421,7 @@ public class OthershoreSkyRenderer {
                 1.0F,0.0F, 0.0F, 1.0F,
                  1.0F, 0.0F, 0.0F, 1.0F);
 
-        BufferBuilder.RenderedBuffer renderedBuffer = bufferBuilder.buildOrThrow();
+        MeshData renderedBuffer = bufferBuilder.buildOrThrow();
 
         vbo.bind();
         vbo.upload(renderedBuffer);
@@ -439,13 +431,12 @@ public class OthershoreSkyRenderer {
     }
     private VertexBuffer buildOuterCloudsBuffer(VertexBuffer vbo, int resolution, int layerCount) {
         Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder bufferBuilder = tesselator.getBuilder();
+        BufferBuilder bufferBuilder = tesselator.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_TEX_COLOR);
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
 
         if (vbo != null) vbo.close();
         vbo = new VertexBuffer(VertexBuffer.Usage.STATIC);
 
-        bufferBuilder.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_TEX_COLOR);
         for (int i = 0; i < layerCount; i++) {
             float factor = (float) i / layerCount;
             float height = Mth.lerp(factor, 0.7F, 0.5F);
@@ -454,7 +445,7 @@ public class OthershoreSkyRenderer {
                      0.02F, 1.0F, 1.0F, factor);
         }
 
-        BufferBuilder.RenderedBuffer renderedBuffer = bufferBuilder.buildOrThrow();
+        MeshData renderedBuffer = bufferBuilder.buildOrThrow();
 
         vbo.bind();
         vbo.upload(renderedBuffer);
@@ -466,7 +457,7 @@ public class OthershoreSkyRenderer {
         RandomSource random = RandomSource.create(1337);
 
         Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder bufferBuilder = tesselator.getBuilder();
+        BufferBuilder bufferBuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
 
         if (vbo != null) vbo.close();
@@ -475,7 +466,6 @@ public class OthershoreSkyRenderer {
         float minStarRadius = 1.0F/150.0F;
         float maxStarRadius = 3.0F/150.0F;
 
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
         Matrix4f matrix = new Matrix4f();
         for (int i = 0; i < count; i++) {
             matrix.identity()
@@ -496,22 +486,18 @@ public class OthershoreSkyRenderer {
             float twinkleOffset = random.nextFloat();
             bufferBuilder.addVertex(matrix, - radius, - radius, distance)
                     .setUv(u1, v1)
-                    .setColor(brightness, gradientPos, twinkleOffset, fancy)
-                    ;
+                    .setColor(brightness, gradientPos, twinkleOffset, fancy);
             bufferBuilder.addVertex(matrix, - radius, + radius, distance)
                     .setUv(u2, v1)
-                    .setColor(brightness, gradientPos, twinkleOffset, fancy)
-                    ;
+                    .setColor(brightness, gradientPos, twinkleOffset, fancy);
             bufferBuilder.addVertex(matrix, + radius, + radius, distance)
                     .setUv(u2, v2)
-                    .setColor(brightness, gradientPos, twinkleOffset, fancy)
-                    ;
+                    .setColor(brightness, gradientPos, twinkleOffset, fancy);
             bufferBuilder.addVertex(matrix, + radius, - radius, distance)
                     .setUv(u1, v2)
-                    .setColor(brightness, gradientPos, twinkleOffset, fancy)
-                    ;
+                    .setColor(brightness, gradientPos, twinkleOffset, fancy);
         }
-        BufferBuilder.RenderedBuffer renderedBuffer = bufferBuilder.buildOrThrow();
+        MeshData renderedBuffer = bufferBuilder.buildOrThrow();
 
         vbo.bind();
         vbo.upload(renderedBuffer);
@@ -521,14 +507,12 @@ public class OthershoreSkyRenderer {
     }
     private VertexBuffer buildHorizonFogBuffer(VertexBuffer vbo, int resolution) {
         Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder bufferBuilder = tesselator.getBuilder();
+        BufferBuilder bufferBuilder = tesselator.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
 
         if (vbo != null) vbo.close();
         vbo = new VertexBuffer(VertexBuffer.Usage.STATIC);
-
-        bufferBuilder.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
-
+        
         for (int i = 0; i < resolution; i++) {
             float f1 = i / (float) resolution;
             float x1 = Mth.sin(f1 * Mth.TWO_PI) * RING_MIN_RADIUS;
@@ -540,35 +524,26 @@ public class OthershoreSkyRenderer {
 
             // triangle at the bottom
             bufferBuilder.addVertex(x1, -0.25F * RING_HEIGHT, -z1)
-                    .setColor(1.0F, 1.0F, 1.0F, 1.0F)
-                    ;
-            bufferBuilder.addVertex(0.0, -0.5F * RING_HEIGHT, 0.0)
-                    .setColor(1.0F, 1.0F, 1.0F, 1.0F)
-                    ;
+                    .setColor(1.0F, 1.0F, 1.0F, 1.0F);
+            bufferBuilder.addVertex(0.0F, -0.5F * RING_HEIGHT, 0.0F)
+                    .setColor(1.0F, 1.0F, 1.0F, 1.0F);
             bufferBuilder.addVertex(x2, -0.25F * RING_HEIGHT, -z2)
-                    .setColor(1.0F, 1.0F, 1.0F, 1.0F)
-                    ;
+                    .setColor(1.0F, 1.0F, 1.0F, 1.0F);
 
             // two quads
             bufferBuilder.addVertex(x1, 0.1F * RING_HEIGHT, z1)
-                    .setColor(1.0F, 1.0F, 1.0F, 0.0F)
-                    ;
+                    .setColor(1.0F, 1.0F, 1.0F, 0.0F);
             bufferBuilder.addVertex(x2, 0.1F * RING_HEIGHT, z2)
-                    .setColor(1.0F, 1.0F, 1.0F, 0.0F)
-                    ;
+                    .setColor(1.0F, 1.0F, 1.0F, 0.0F);
             bufferBuilder.addVertex(x1,-0.25F * RING_HEIGHT, z1)
-                    .setColor(1.0F, 1.0F, 1.0F, 1.0F)
-                    ;
+                    .setColor(1.0F, 1.0F, 1.0F, 1.0F);
 
             bufferBuilder.addVertex(x2, 0.1F * RING_HEIGHT, z2)
-                    .setColor(1.0F, 1.0F, 1.0F, 0.0F)
-                    ;
+                    .setColor(1.0F, 1.0F, 1.0F, 0.0F);
             bufferBuilder.addVertex(x2,-0.25F * RING_HEIGHT, z2)
-                    .setColor(1.0F, 1.0F, 1.0F, 1.0F)
-                    ;
+                    .setColor(1.0F, 1.0F, 1.0F, 1.0F);
             bufferBuilder.addVertex(x1,-0.25F * RING_HEIGHT, z1)
-                    .setColor(1.0F, 1.0F, 1.0F, 1.0F)
-                    ;
+                    .setColor(1.0F, 1.0F, 1.0F, 1.0F);
 
 
 
@@ -584,7 +559,7 @@ public class OthershoreSkyRenderer {
 //                    ;
         }
 
-        BufferBuilder.RenderedBuffer renderedBuffer = bufferBuilder.buildOrThrow();
+        MeshData renderedBuffer = bufferBuilder.buildOrThrow();
 
         vbo.bind();
         vbo.upload(renderedBuffer);
@@ -607,16 +582,13 @@ public class OthershoreSkyRenderer {
 
             bufferBuilder.addVertex(x1 * radius, ringHeight, z1 * radius * windingMultiplier)
                     .setUv((x1 + 1.0F) / 2.0F, (z1 * windingMultiplier + 1.0F) / 2.0F)
-                    .setColor(ringR, ringG, ringB, ringA)
-                    ;
-            bufferBuilder.addVertex(0.0, height, 0.0)
+                    .setColor(ringR, ringG, ringB, ringA);
+            bufferBuilder.addVertex(0.0F, height, 0.0F)
                     .setUv(0.5F, 0.5F)
-                    .setColor(topR, topG, topB, topA)
-                    ;
+                    .setColor(topR, topG, topB, topA);
             bufferBuilder.addVertex(x2 * radius, ringHeight, z2 * radius * windingMultiplier)
                     .setUv((x2 + 1.0F) / 2.0F, (z2 * windingMultiplier + 1.0F) / 2.0F)
-                    .setColor(ringR, ringG, ringB, ringA)
-                    ;
+                    .setColor(ringR, ringG, ringB, ringA);
         }
     }
 

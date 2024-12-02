@@ -145,16 +145,17 @@ public class ClinkerBlocks
     public static final DeferredBlock<Block> SMALL_SHALE_BRICKS_SLAB = createBlock("small_shale_bricks_slab", () -> new SlabBlock(getShaleProperties()));
     public static final DeferredBlock<Block> SMALL_SHALE_BRICKS_STAIRS = createBlock("small_shale_bricks_stairs", () -> new StairBlock(SMOOTH_SHALE.get().defaultBlockState(), getShaleProperties()));
     public static final DeferredBlock<Block> SMALL_SHALE_BRICKS_FENCE = createBlock("small_shale_bricks_fence", () -> new FenceBlock(getShaleProperties()));
-    
-    
-    //Ancient Bricks
-    public static final DeferredBlock<Block> ANCIENT_BRICKS = createBlock("ancient_bricks", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.SAND).requiresCorrectToolForDrops().strength(25.0F, 1200.0F)));
-    public static final DeferredBlock<Block> ANCIENT_BRICK_SLAB = createBlock("ancient_brick_slab", () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(ANCIENT_BRICKS.get())));
-    public static final DeferredBlock<Block> ANCIENT_BRICK_STAIRS = createBlock("ancient_brick_stairs", () -> new StairBlock(ClinkerBlocks.ANCIENT_BRICKS.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(ANCIENT_BRICKS.get())));
-    public static final DeferredBlock<Block> ANCIENT_SMOOTH_BRICK = createBlock("ancient_smooth_brick", () -> new Block(BlockBehaviour.Properties.ofFullCopy(ANCIENT_BRICKS.get())));
-    public static final DeferredBlock<Block> ANCIENT_STONE = createBlock("ancient_stone", () -> new Block(BlockBehaviour.Properties.ofFullCopy(ANCIENT_BRICKS.get())));
-    public static final DeferredBlock<Block> ANCIENT_BRICK_FLAT = createBlock("ancient_brick_flat", AncientBrickFlatBlock::new);
-    public static final DeferredBlock<Block> ANCIENT_RUNE = createBlock("ancient_rune", AncientBrickRunesBlock::new);
+
+
+//    Ancient Bricks
+//    redo this at some point. sorry ender
+//    public static final DeferredBlock<Block> ANCIENT_BRICKS = createBlock("ancient_bricks", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.SAND).requiresCorrectToolForDrops().strength(25.0F, 1200.0F)));
+//    public static final DeferredBlock<Block> ANCIENT_BRICK_SLAB = createBlock("ancient_brick_slab", () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(ANCIENT_BRICKS.get())));
+//    public static final DeferredBlock<Block> ANCIENT_BRICK_STAIRS = createBlock("ancient_brick_stairs", () -> new StairBlock(ClinkerBlocks.ANCIENT_BRICKS.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(ANCIENT_BRICKS.get())));
+//    public static final DeferredBlock<Block> ANCIENT_SMOOTH_BRICK = createBlock("ancient_smooth_brick", () -> new Block(BlockBehaviour.Properties.ofFullCopy(ANCIENT_BRICKS.get())));
+//    public static final DeferredBlock<Block> ANCIENT_STONE = createBlock("ancient_stone", () -> new Block(BlockBehaviour.Properties.ofFullCopy(ANCIENT_BRICKS.get())));
+//    public static final DeferredBlock<Block> ANCIENT_BRICK_FLAT = createBlock("ancient_brick_flat", AncientBrickFlatBlock::new);
+//    public static final DeferredBlock<Block> ANCIENT_RUNE = createBlock("ancient_rune", AncientBrickRunesBlock::new);
 
     
     //Metal Ores

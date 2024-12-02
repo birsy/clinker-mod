@@ -4,6 +4,7 @@ import birsy.necromancer.Bone;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.core.Direction;
+import net.minecraft.util.FastColor;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -86,7 +87,7 @@ public class PointUVStaticMesh extends Mesh {
                 matrix4f.transform(position);
                 normal.set(face.normal.x(), face.normal.y(), face.normal.z());
                 matrix3f.transform(normal);
-                pVertexConsumer.addVertex(position.x(), position.y(), position.z(), pRed, pGreen, pBlue, pAlpha, uv.u(), uv.v(), pPackedOverlay, pPackedLight, normal.x(), normal.y(), normal.z());
+                pVertexConsumer.addVertex(position.x(), position.y(), position.z(), FastColor.ARGB32.colorFromFloat(pRed, pGreen, pBlue, pAlpha), uv.u(), uv.v(), pPackedOverlay, pPackedLight, normal.x(), normal.y(), normal.z());
             }
         }
     }

@@ -5,6 +5,7 @@ import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
 import birsy.clinker.core.Clinker;
 import com.google.common.collect.Maps;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.datafix.DataFixTypes;
@@ -12,6 +13,7 @@ import net.minecraft.world.level.saveddata.SavedData;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.*;
 
@@ -27,7 +29,7 @@ public class GnomadSquads extends SavedData {
         this.setDirty();
     }
     public static Factory<GnomadSquads> factory(ServerLevel pLevel) {
-        return new Factory<>(() -> new GnomadSquads(pLevel), data -> load(pLevel, data), DataFixTypes.SAVED_DATA_RAIDS);
+        return new Factory<>(() -> new GnomadSquads(pLevel), (data, registry) -> load(pLevel, data), DataFixTypes.SAVED_DATA_RAIDS);
     }
 
     public void tick() {
@@ -36,7 +38,7 @@ public class GnomadSquads extends SavedData {
             Map.Entry<UUID, GnomadSquad> entry = iterator.next();
             GnomadSquad squad = entry.getValue();
             if (squad.markedForRemoval) {
-                PacketDistributor.sendToAllPlayers(new GnomadSquadRemovalDebugPacket(squad));
+                PacketDistributor.sendToAllPlayers(new GnomadSquadRemovalDebugPacket(squad.id));
                 iterator.remove();
                 continue;
             }
@@ -60,7 +62,7 @@ public class GnomadSquads extends SavedData {
     }
 
     @Override
-    public CompoundTag save(CompoundTag pCompoundTag) {
+    public CompoundTag save(CompoundTag pCompoundTag, HolderLookup.Provider registries) {
         // don't do anything LOL
         return pCompoundTag;
     }

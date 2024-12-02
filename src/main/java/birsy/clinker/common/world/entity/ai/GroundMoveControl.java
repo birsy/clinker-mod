@@ -48,7 +48,7 @@ public class GroundMoveControl extends MoveControl {
             BlockPos blockpos = me.blockPosition();
             BlockState blockstate = me.level().getBlockState(blockpos);
             VoxelShape voxelshape = blockstate.getCollisionShape(me.level(), blockpos);
-            if (dY > me.getStepHeight() && dX * dX + dZ * dZ < Math.max(1.0F, me.getBbWidth())
+            if (dY > me.maxUpStep() && dX * dX + dZ * dZ < Math.max(1.0F, me.getBbWidth())
                     || !voxelshape.isEmpty()
                     && me.getY() < voxelshape.max(Direction.Axis.Y) + blockpos.getY()
                     && !blockstate.is(BlockTags.DOORS)

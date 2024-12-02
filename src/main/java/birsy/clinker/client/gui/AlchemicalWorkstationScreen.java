@@ -322,14 +322,13 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
                 RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
                 RenderSystem.enableBlend();
                 RenderSystem.defaultBlendFunc();
-                BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
 
                 pPoseStack.pushPose();
                 float offsetX = mousePos.x - this.itemOffsetX, offsetY = mousePos.y - this.itemOffsetY;
                 pPoseStack.translate(offsetX, offsetY, 0);
 
                 float ix = this.inventoryElement.getScreenX(pPartialTick) - offsetX, iy = this.inventoryElement.getScreenY(pPartialTick) - offsetY;
-                element.renderShadow(bufferbuilder, pPoseStack.last().pose(), pPartialTick, ix, iy + 7, (ix + inventoryElement.width - 6), (iy + inventoryElement.height - 7));
+                element.renderShadow(Tesselator.getInstance(), pPoseStack.last().pose(), pPartialTick, ix, iy + 7, (ix + inventoryElement.width - 6), (iy + inventoryElement.height - 7));
                 pPoseStack.translate(0, 0, 200);
                 element.renderItem(pPoseStack, pPartialTick);
 
@@ -680,10 +679,10 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
             RenderSystem.setShader(ClinkerShaders::getPositionColorTextureUnclampedShader);
             RenderSystem.setShaderTexture(0, TEXTURE);
             RenderSystem.enableBlend();
-            BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
+            Tesselator tesselator = Tesselator.getInstance();
 
             //draw selection highlight
-            renderSelection(bufferbuilder, pMatrix, pPartialTick, pMouseX, pMouseY);
+            renderSelection(tesselator, pMatrix, pPartialTick, pMouseX, pMouseY);
             
             //draw item
             if (!this.clicked && !this.getItem().isEmpty()) {
@@ -693,7 +692,7 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
                 float ix = - this.x - this.itemX,
                       iy = - this.y - this.itemY;
 
-                renderShadow(bufferbuilder, pPoseStack.last().pose(), pPartialTick, ix, iy + 7, (ix + parent.width - 6), (iy + parent.height - 7));
+                renderShadow(tesselator, pPoseStack.last().pose(), pPartialTick, ix, iy + 7, (ix + parent.width - 6), (iy + parent.height - 7));
                 renderItem(pPoseStack, pPartialTick);
                 pPoseStack.popPose();
             }
@@ -702,11 +701,11 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
             this.itemY = Mth.lerp(0.08F, this.itemY, 0);
         }
 
-        protected void renderShadow(BufferBuilder bufferbuilder, Matrix4f pMatrix, float pPartialTick) {
-            renderShadow(bufferbuilder, pMatrix, pPartialTick, Float.MIN_VALUE, Float.MIN_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+        protected void renderShadow(Tesselator tesselator, Matrix4f pMatrix, float pPartialTick) {
+            renderShadow(tesselator, pMatrix, pPartialTick, Float.MIN_VALUE, Float.MIN_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
         }
 
-        protected void renderShadow(BufferBuilder bufferbuilder, Matrix4f pMatrix, float pPartialTick, float x1, float y1, float x2, float y2) {
+        protected void renderShadow(Tesselator tesselator, Matrix4f pMatrix, float pPartialTick, float x1, float y1, float x2, float y2) {
             float alpha = 0.3F;
             float shadowOffset = 3F;
             float awfulRandom = 0;
@@ -729,7 +728,7 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
             pMaxU -= uMaxOffset / (float)this.textureWidth;
             pMaxV -= vMinOffset / (float)this.textureHeight;
 
-            bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
+            BufferBuilder bufferbuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
             bufferbuilder.addVertex(pMatrix, xStartClamped, yStartClamped, this.blitOffset).setColor(1, 1, 1, alpha).setUv(pMinU, pMaxV);
             bufferbuilder.addVertex(pMatrix, xEndClamped,   yStartClamped, this.blitOffset).setColor(1, 1, 1, alpha).setUv(pMaxU, pMaxV);
             bufferbuilder.addVertex(pMatrix, xEndClamped,   yEndClamped,   this.blitOffset).setColor(1, 1, 1, alpha).setUv(pMaxU, pMinV);
@@ -737,7 +736,7 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
             BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
         }
 
-        protected void renderSelection(BufferBuilder bufferbuilder, Matrix4f pMatrix, float pPartialTick, float pMouseX, float pMouseY) {
+        protected void renderSelection(Tesselator tesselator, Matrix4f pMatrix, float pPartialTick, float pMouseX, float pMouseY) {
             float xDist = this.getScreenX(pPartialTick) - (pMouseX - 8);
             float yDist = this.getScreenY(pPartialTick) - (pMouseY - 4);
             float distToMouse = Mth.sqrt(xDist * xDist + yDist * yDist);
@@ -748,7 +747,7 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
             float pMaxU = pMinU + (this.width / (float)this.textureWidth);
             float pMaxV = pMinV + (this.height / (float)this.textureHeight);
 
-            bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
+            BufferBuilder bufferbuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
             bufferbuilder.addVertex(pMatrix, 0, this.height, this.blitOffset).setColor(1, 1, 1, alpha).setUv(pMinU, pMaxV);
             bufferbuilder.addVertex(pMatrix, this.width, this.height, this.blitOffset).setColor(1, 1, 1, alpha).setUv(pMaxU, pMaxV);
             bufferbuilder.addVertex(pMatrix, this.width, 0, this.blitOffset).setColor(1, 1, 1, alpha).setUv(pMaxU, pMinV);

@@ -6,6 +6,7 @@ import birsy.clinker.core.registry.entity.ClinkerBlockEntities;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.*;
@@ -32,15 +33,17 @@ public class FermentationBarrelBlockEntity extends BlockEntity implements LidBlo
         super(ClinkerBlockEntities.FERMENTATION_BARREL.get(), pWorldPosition, pBlockState);
     }
 
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    @Override
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
         tag.putBoolean("Fermenting", this.isFermenting);
         tag.putInt("FermentationTime", this.fermentationTime);
         tag.putBoolean("Open", lidController.isOpen());
     }
 
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    @Override
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
         this.isFermenting = tag.getBoolean("Fermenting");
         this.fermentationTime = tag.getInt("FermentationTime");
         lidController.setOpen(tag.getBoolean("Open"));

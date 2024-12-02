@@ -20,6 +20,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.phys.AABB;
@@ -166,6 +167,10 @@ public class FairyFruitRenderer<T extends FairyFruitBlockEntity> implements Bloc
         }
 
         @Override
+        public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
+            this.renderToBuffer(poseStack, buffer, packedLight, packedOverlay, FastColor.ABGR32.red(color) / 255.0F, FastColor.ABGR32.green(color) / 255.0F, FastColor.ABGR32.blue(color) / 255.0F, FastColor.ABGR32.alpha(color) / 255.0F);
+        }
+
         public void renderToBuffer(PoseStack pPoseStack, VertexConsumer pBuffer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha) {
             this.fruit.render(pPoseStack, pBuffer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
             this.bud.render(pPoseStack, pBuffer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);

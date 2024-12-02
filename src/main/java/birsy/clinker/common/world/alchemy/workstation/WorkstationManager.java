@@ -13,6 +13,7 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 
 import net.neoforged.bus.api.SubscribeEvent;
@@ -134,14 +135,14 @@ public class WorkstationManager {
             if (!adjacentWorkstations.isEmpty()) {
                 for (Workstation adjacentWorkstation : adjacentWorkstations) {
                     nearestWorkstation.merge(adjacentWorkstation);
-                    PacketDistributor.sendToPlayersTrackingChunk(this.level.getChunkAt(pos), new ClientboundWorkstationMergePacket(nearestWorkstation.uuid, adjacentWorkstation.uuid));
+                    PacketDistributor.sendToPlayersTrackingChunk((ServerLevel) this.level, new ChunkPos(pos), new ClientboundWorkstationMergePacket(nearestWorkstation.uuid, adjacentWorkstation.uuid));
                     workstationStorage.remove(adjacentWorkstation.uuid);
                 }
             }
         }
 
         nearestWorkstation.addBlock(pos);
-        PacketDistributor.sendToPlayersTrackingChunk(this.level.getChunkAt(pos), new ClientboundWorkstationChangeBlockPacket(pos, true, nearestWorkstation.uuid));
+        PacketDistributor.sendToPlayersTrackingChunk((ServerLevel) this.level, new ChunkPos(pos), new ClientboundWorkstationChangeBlockPacket(pos, true, nearestWorkstation.uuid));
     }
 
     public void loadWorkstationToClient(UUID id, ServerPlayer client) {
@@ -155,7 +156,7 @@ public class WorkstationManager {
 
         ServerLevel level = (ServerLevel) this.level;
         if (Math.sqrt(workstationCenter.distToCenterSqr(client.position())) - workstation.containedBlocks.getRoughMaxRadius() > (level.getServer().getPlayerList().getViewDistance() + 1) * 16) return;
-        PacketDistributor.sendToPlayer(client, new ClientboundWorkstationLoadPacket(id, workstation));
+        PacketDistributor.sendToPlayer(client, new ClientboundWorkstationLoadPacket(workstation.serialize(), id));
     }
 
     
@@ -186,7 +187,7 @@ public class WorkstationManager {
     public void removeWorkstationBlockFromUUID(BlockPos pos, UUID id) {
         if (!this.workstationStorage.containsKey(id)) { Clinker.LOGGER.warn("No workstation of UUID " + id.toString() + " exists!"); return; }
         this.workstationStorage.get(id).removeBlock(pos);
-        if (!this.isClientSide) PacketDistributor.sendToPlayersTrackingChunk(this.level.getChunkAt(pos), new ClientboundWorkstationChangeBlockPacket(pos, false, id));
+        if (!this.isClientSide) PacketDistributor.sendToPlayersTrackingChunk((ServerLevel) this.level, new ChunkPos(pos), new ClientboundWorkstationChangeBlockPacket(pos, false, id));
     }
 
     private void clear() {

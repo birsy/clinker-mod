@@ -88,13 +88,6 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(ClinkerBlocks.SMALL_SHALE_BRICKS_SLAB.get());
         pOutput.accept(ClinkerBlocks.SMALL_SHALE_BRICKS_STAIRS.get());
         pOutput.accept(ClinkerBlocks.SMALL_SHALE_BRICKS_FENCE.get());
-        pOutput.accept(ClinkerBlocks.ANCIENT_BRICKS.get());
-        pOutput.accept(ClinkerBlocks.ANCIENT_BRICK_SLAB.get());
-        pOutput.accept(ClinkerBlocks.ANCIENT_BRICK_STAIRS.get());
-        pOutput.accept(ClinkerBlocks.ANCIENT_SMOOTH_BRICK.get());
-        pOutput.accept(ClinkerBlocks.ANCIENT_STONE.get());
-        pOutput.accept(ClinkerBlocks.ANCIENT_BRICK_FLAT.get());
-        pOutput.accept(ClinkerBlocks.ANCIENT_RUNE.get());
         pOutput.accept(ClinkerBlocks.LEAD_ORE.get());
         pOutput.accept(ClinkerBlocks.LOCUST_LOG.get());
         pOutput.accept(ClinkerBlocks.TRIMMED_LOCUST_LOG.get());

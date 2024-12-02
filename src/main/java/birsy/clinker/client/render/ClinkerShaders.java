@@ -93,13 +93,13 @@ public class ClinkerShaders {
         event.registerShader(new ShaderInstance(event.getResourceProvider(), Clinker.resource("rendertype_entity_unlit_cutout"), DefaultVertexFormat.NEW_ENTITY), (shader) -> rendertypeEntityCutoutUnlitShader = shader);
         event.registerShader(new ShaderInstance(event.getResourceProvider(), Clinker.resource("rendertype_entity_unlit_cutout_nocull"), DefaultVertexFormat.NEW_ENTITY), (shader) -> rendertypeEntityCutoutNoCullUnlitShader = shader);
 
-        event.registerShader(new ShaderInstance(event.getResourceProvider(), Clinker.resource("position_color_tex_unclamped"), DefaultVertexFormat.POSITION_COLOR_TEX), (shader) -> positionColorTextureUnclampedShader = shader);
+        event.registerShader(new ShaderInstance(event.getResourceProvider(), Clinker.resource("position_color_tex_unclamped"), DefaultVertexFormat.POSITION_TEX_COLOR), (shader) -> positionColorTextureUnclampedShader = shader);
         event.registerShader(new ShaderInstance(event.getResourceProvider(), Clinker.resource("position_color_unclamped"), DefaultVertexFormat.POSITION_COLOR), (shader) -> positionColorUnclampedShader = shader);
 
         event.registerShader(new ShaderInstance(event.getResourceProvider(), Clinker.resource("chain_lightning"), DefaultVertexFormat.NEW_ENTITY), (shader) -> chainLightningShader = shader);
         event.registerShader(new ShaderInstance(event.getResourceProvider(), Clinker.resource("fire_spew"), DefaultVertexFormat.NEW_ENTITY), (shader) -> fireSpewShader = shader);
 
-        event.registerShader(new ShaderInstance(event.getResourceProvider(), Clinker.resource("sky_cloud"), DefaultVertexFormat.POSITION_COLOR_TEX), (shader) -> skyCloudShader = shader);
+        event.registerShader(new ShaderInstance(event.getResourceProvider(), Clinker.resource("sky_cloud"), DefaultVertexFormat.POSITION_TEX_COLOR), (shader) -> skyCloudShader = shader);
         event.registerShader(new ShaderInstance(event.getResourceProvider(), Clinker.resource("sky_star"), DefaultVertexFormat.POSITION_TEX_COLOR), (shader) -> skyStarShader = shader);
         event.registerShader(new ShaderInstance(event.getResourceProvider(), Clinker.resource("sky_outer"), DefaultVertexFormat.POSITION_TEX_COLOR), (shader) -> skyOuterShader = shader);
         event.registerShader(new ShaderInstance(event.getResourceProvider(), Clinker.resource("sky_outer_cloud"), DefaultVertexFormat.POSITION_TEX_COLOR), (shader) -> skyOuterCloudShader = shader);

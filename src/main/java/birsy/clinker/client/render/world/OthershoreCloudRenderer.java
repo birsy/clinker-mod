@@ -147,13 +147,12 @@ public class OthershoreCloudRenderer {
 
     private VertexBuffer buildCloudBuffer(VertexBuffer vbo, int resolution, int layers, boolean down, float radius) {
         Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder bufferBuilder = tesselator.getBuilder();
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+        BufferBuilder bufferBuilder = tesselator.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_TEX_COLOR);
 
         if (vbo != null) vbo.close();
         vbo = new VertexBuffer(VertexBuffer.Usage.STATIC);
 
-        bufferBuilder.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_TEX_COLOR);
         for (int i = 0; i < layers; i++) {
             float offset = (float) i / layers;
             if (down) {
@@ -164,7 +163,8 @@ public class OthershoreCloudRenderer {
                         1.0F, 1.0F, 1.0F, offset, false);
             }
         }
-        BufferBuilder.RenderedBuffer renderedBuffer = bufferBuilder.buildOrThrow();
+
+        MeshData renderedBuffer = bufferBuilder.buildOrThrow();
 
         vbo.bind();
         vbo.upload(renderedBuffer);
@@ -187,16 +187,13 @@ public class OthershoreCloudRenderer {
 
             bufferBuilder.addVertex(x1 * radius, height, z1 * radius * windingMultiplier)
                     .setUv((x1 + 1.0F) / 2.0F, (z1 * windingMultiplier + 1.0F) / 2.0F)
-                    .setColor(r, g, b, a)
-                    ;
-            bufferBuilder.addVertex(0.0, height, 0.0)
+                    .setColor(r, g, b, a);
+            bufferBuilder.addVertex(0.0F, height, 0.0F)
                     .setUv(0.5F, 0.5F)
-                    .setColor(r, g, b, a)
-                    ;
+                    .setColor(r, g, b, a);
             bufferBuilder.addVertex(x2 * radius, height, z2 * radius * windingMultiplier)
                     .setUv((x2 + 1.0F) / 2.0F, (z2 * windingMultiplier + 1.0F) / 2.0F)
-                    .setColor(r, g, b, a)
-                    ;
+                    .setColor(r, g, b, a);
         }
     }
 

@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
 import org.joml.Matrix4f;
@@ -88,7 +89,7 @@ public class SarcophagusInnardsRenderer<T extends SarcophagusBlockEntity> implem
 
                 if (surroundingGutLevel > 0) {
                     Vector4f delta = new Vector4f(Math.abs(normal.getX()), Math.abs(normal.getY()), Math.abs(normal.getZ()), 0);
-                    face[v] = new Vertex(vectorLerp(delta, vertex.position(), fullCube[f][v].position()), vertex.setColor());
+                    face[v] = new Vertex(vectorLerp(delta, vertex.position(), fullCube[f][v].position()), vertex.color());
                 } else {
 
                 }
@@ -147,11 +148,11 @@ public class SarcophagusInnardsRenderer<T extends SarcophagusBlockEntity> implem
             matrix.transform(pos);
            // normal.transform(matrix);
 
-            Vector3f color = vertex.setColor();
+            Vector3f color = vertex.color();
 
             Vec2 uv = uvs[i];
 
-            consumer.addVertex(pos.x(), pos.y(), pos.z(), color.x(), color.y(), color.z(), 0.0F, uv.x, uv.y, pPackedOverlay, pPackedLight, normal.x(), normal.y(), normal.z());
+            consumer.addVertex(pos.x(), pos.y(), pos.z(), FastColor.ARGB32.colorFromFloat(1.0F, color.x(), color.y(), color.z()), uv.x, uv.y, pPackedOverlay, pPackedLight, normal.x(), normal.y(), normal.z());
         }
     }
 
