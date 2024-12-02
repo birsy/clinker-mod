@@ -51,8 +51,8 @@ public abstract class HomunculoidEntity extends PathfinderMob {
     }
 
     @Override
-    public void onAddedToWorld() {
-        super.onAddedToWorld();
+    public void onAddedToLevel() {
+        super.onAddedToLevel();
         this.timeRemaining = this.getTotalTime();
     }
 

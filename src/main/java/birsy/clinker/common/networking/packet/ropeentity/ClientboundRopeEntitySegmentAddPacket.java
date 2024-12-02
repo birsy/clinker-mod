@@ -12,7 +12,7 @@ import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record ClientboundRopeEntitySegmentAddPacket(int entityId, int segmentType) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<ClientboundRopeEntitySegmentAddPacket> TYPE = new CustomPacketPayload.Type<>(Clinker.resource("clientRopeAdd"));
+    public static final CustomPacketPayload.Type<ClientboundRopeEntitySegmentAddPacket> TYPE = new CustomPacketPayload.Type<>(Clinker.resource("client/rope/add"));
     public static final StreamCodec<ByteBuf, ClientboundRopeEntitySegmentAddPacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT,
             ClientboundRopeEntitySegmentAddPacket::entityId,

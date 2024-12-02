@@ -1,31 +1,29 @@
 package birsy.clinker.common.networking.packet.debug;
 
 import birsy.clinker.client.render.debug.ClinkerDebugRenderers;
-import birsy.clinker.common.networking.packet.ClientboundPacket;
-import birsy.clinker.common.world.entity.gnomad.gnomind.squad.GnomadSquad;
-import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import birsy.clinker.core.Clinker;
+import birsy.clinker.core.util.codecs.ExtraByteBufCodecs;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.UUID;
 
-public class GnomadSquadRemovalDebugPacket extends ClientboundPacket {
-    public final UUID squadID;
-
-    public GnomadSquadRemovalDebugPacket(GnomadSquad squad) {
-        this.squadID = squad.id;
-    }
-
-    public GnomadSquadRemovalDebugPacket(FriendlyByteBuf buffer) {
-        this.squadID = buffer.readUUID();
-    }
+public record GnomadSquadRemovalDebugPacket(UUID uuid) implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<GnomadSquadRemovalDebugPacket> TYPE = new CustomPacketPayload.Type<>(Clinker.resource("debug/gnomadsquadremove"));
+    public static final StreamCodec<ByteBuf, GnomadSquadRemovalDebugPacket> STREAM_CODEC = StreamCodec.composite(
+            ExtraByteBufCodecs.UUID,
+            GnomadSquadRemovalDebugPacket::uuid,
+            GnomadSquadRemovalDebugPacket::new
+    );
 
     @Override
-    public void write(FriendlyByteBuf buffer) {
-        buffer.writeUUID(this.squadID);
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    @Override
-    public void run(PlayPayloadContext context) {
-        ClinkerDebugRenderers.gnomadSquadDebugRenderer.removeSquad(this.squadID);
+    public void handle(final IPayloadContext context) {
+        ClinkerDebugRenderers.gnomadSquadDebugRenderer.removeSquad(this.uuid);
     }
 }

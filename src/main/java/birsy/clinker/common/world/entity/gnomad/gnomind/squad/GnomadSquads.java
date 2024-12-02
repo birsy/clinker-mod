@@ -1,6 +1,5 @@
 package birsy.clinker.common.world.entity.gnomad.gnomind.squad;
 
-import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.debug.GnomadSquadRemovalDebugPacket;
 import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
 import birsy.clinker.core.Clinker;
@@ -37,7 +36,7 @@ public class GnomadSquads extends SavedData {
             Map.Entry<UUID, GnomadSquad> entry = iterator.next();
             GnomadSquad squad = entry.getValue();
             if (squad.markedForRemoval) {
-                ClinkerPacketHandler.sendToAllClients(new GnomadSquadRemovalDebugPacket(squad));
+                PacketDistributor.sendToAllPlayers(new GnomadSquadRemovalDebugPacket(squad));
                 iterator.remove();
                 continue;
             }

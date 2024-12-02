@@ -12,55 +12,53 @@ import org.joml.Vector3f;
 public class RenderUtils {
     public static void drawFaceBetweenPoints(VertexConsumer consumer, PoseStack stack, float width, Vector3f pos1, Vector3f tangent1, Vector3f normal1, Vector3f biTangent1, int packedLight1, int overlay1, float u1, float v1,
                                              Vector3f pos2, Vector3f tangent2, Vector3f normal2, Vector3f biTangent2, int packedLight2, int overlay2, float u2, float v2) {
-        Matrix4f pose = stack.last().pose();
-        Matrix3f normal = stack.last(). normal();
+        PoseStack.Pose pose = stack.last();
         consumer.addVertex(pose, pos1.x() + biTangent1.x() * width, pos1.y + biTangent1.y() * width, pos1.z() + biTangent1.z() * width)
                 .setColor(1.0F, 1.0F, 1.0F, 1.0F)
                 .setUv(u1, v1)
                 .setOverlay(overlay1).setLight(packedLight1)
-                .setNormal(normal, normal1.x(), normal1.y(), normal1.z());
+                .setNormal(pose, normal1.x(), normal1.y(), normal1.z());
         consumer.addVertex(pose, pos2.x() + biTangent2.x() * width, pos2.y + biTangent2.y() * width, pos2.z() + biTangent2.z() * width)
                 .setColor(1.0F, 1.0F, 1.0F, 1.0F)
                 .setUv(u1, v2)
                 .setOverlay(overlay2).setLight(packedLight2)
-                .setNormal(normal, normal2.x(), normal2.y(), normal2.z());
+                .setNormal(pose, normal2.x(), normal2.y(), normal2.z());
         consumer.addVertex(pose, pos2.x() - biTangent2.x() * width, pos2.y - biTangent2.y() * width, pos2.z() - biTangent2.z() * width)
                 .setColor(1.0F, 1.0F, 1.0F, 1.0F)
                 .setUv(u2, v2)
                 .setOverlay(overlay2).setLight(packedLight2)
-                .setNormal(normal, normal2.x(), normal2.y(), normal2.z());
+                .setNormal(pose, normal2.x(), normal2.y(), normal2.z());
         consumer.addVertex(pose, pos1.x() - biTangent1.x() * width, pos1.y - biTangent1.y() * width, pos1.z() - biTangent1.z() * width)
                 .setColor(1.0F, 1.0F, 1.0F, 1.0F)
                 .setUv(u2, v1)
                 .setOverlay(overlay1).setLight(packedLight1)
-                .setNormal(normal, normal1.x(), normal1.y(), normal1.z());
+                .setNormal(pose, normal1.x(), normal1.y(), normal1.z());
     }
 
 
     public static void drawFaceBetweenPoints(VertexConsumer consumer, PoseStack stack, float width, Vec3 pos1, Vector3f tangent1, Vector3f normal1, Vector3f biTangent1, int packedLight1, int overlay1, float u1, float v1,
                                                                                                     Vec3 pos2, Vector3f tangent2, Vector3f normal2, Vector3f biTangent2, int packedLight2, int overlay2, float u2, float v2) {
-        Matrix4f pose = stack.last().pose();
-        Matrix3f normal = stack.last(). normal();
+        PoseStack.Pose pose = stack.last();
         consumer.addVertex(pose, (float) (pos1.x() + biTangent1.x() * width), (float) (pos1.y + biTangent1.y() * width), (float) (pos1.z() + biTangent1.z() * width))
                 .setColor(1.0F, 1.0F, 1.0F, 1.0F)
                 .setUv(u1, v1)
                 .setOverlay(overlay1).setLight(packedLight1)
-                .setNormal(normal, normal1.x(), normal1.y(), normal1.z());
+                .setNormal(pose, normal1.x(), normal1.y(), normal1.z());
         consumer.addVertex(pose, (float) (pos2.x() + biTangent2.x() * width), (float) (pos2.y + biTangent2.y() * width), (float) (pos2.z() + biTangent2.z() * width))
                 .setColor(1.0F, 1.0F, 1.0F, 1.0F)
                 .setUv(u1, v2)
                 .setOverlay(overlay2).setLight(packedLight2)
-                .setNormal(normal, normal2.x(), normal2.y(), normal2.z());
+                .setNormal(pose, normal2.x(), normal2.y(), normal2.z());
         consumer.addVertex(pose, (float) (pos2.x() - biTangent2.x() * width), (float) (pos2.y - biTangent2.y() * width), (float) (pos2.z() - biTangent2.z() * width))
                 .setColor(1.0F, 1.0F, 1.0F, 1.0F)
                 .setUv(u2, v2)
                 .setOverlay(overlay2).setLight(packedLight2)
-                .setNormal(normal, normal2.x(), normal2.y(), normal2.z());
+                .setNormal(pose, normal2.x(), normal2.y(), normal2.z());
         consumer.addVertex(pose, (float) (pos1.x() - biTangent1.x() * width), (float) (pos1.y - biTangent1.y() * width), (float) (pos1.z() - biTangent1.z() * width))
                 .setColor(1.0F, 1.0F, 1.0F, 1.0F)
                 .setUv(u2, v1)
                 .setOverlay(overlay1).setLight(packedLight1)
-                .setNormal(normal, normal1.x(), normal1.y(), normal1.z());
+                .setNormal(pose, normal1.x(), normal1.y(), normal1.z());
     }
 
     public static void drawFaceBetweenPoints(VertexConsumer consumer, PoseStack stack, float width, Vec3 pos1, Vector3f tangent1, Vector3f normal1, Vector3f biTangent1, float u1, float v1,
@@ -73,28 +71,27 @@ public class RenderUtils {
                                              Vec3 pos2, Vector3f tangent2, Vector3f normal2, Vector3f biTangent2, float u2, float v2, float r2, float g2, float b2, float a2) {
         int overlay = OverlayTexture.NO_OVERLAY;
         int light = LightTexture.FULL_BRIGHT;
-        Matrix4f pose = stack.last().pose();
-        Matrix3f normal = stack.last(). normal();
+        PoseStack.Pose pose = stack.last();
         consumer.addVertex(pose, (float) (pos1.x() + biTangent1.x() * width), (float) (pos1.y + biTangent1.y() * width), (float) (pos1.z() + biTangent1.z() * width))
                 .setColor(r1,g1,b1,a1)
                 .setUv(u1, v1)
                 .setOverlay(overlay).setLight(light)
-                .setNormal(normal, normal1.x(), normal1.y(), normal1.z());
+                .setNormal(pose, normal1.x(), normal1.y(), normal1.z());
         consumer.addVertex(pose, (float) (pos2.x() + biTangent2.x() * width), (float) (pos2.y + biTangent2.y() * width), (float) (pos2.z() + biTangent2.z() * width))
                 .setColor(r2,g2,b2,a2)
                 .setUv(u1, v2)
                 .setOverlay(overlay).setLight(light)
-                .setNormal(normal, normal2.x(), normal2.y(), normal2.z());
+                .setNormal(pose, normal2.x(), normal2.y(), normal2.z());
         consumer.addVertex(pose, (float) (pos2.x() - biTangent2.x() * width), (float) (pos2.y - biTangent2.y() * width), (float) (pos2.z() - biTangent2.z() * width))
                 .setColor(r2,g2,b2,a2)
                 .setUv(u2, v2)
                 .setOverlay(overlay).setLight(light)
-                .setNormal(normal, normal2.x(), normal2.y(), normal2.z());
+                .setNormal(pose, normal2.x(), normal2.y(), normal2.z());
         consumer.addVertex(pose, (float) (pos1.x() - biTangent1.x() * width), (float) (pos1.y - biTangent1.y() * width), (float) (pos1.z() - biTangent1.z() * width))
                 .setColor(r1,g1,b1,a1)
                 .setUv(u2, v1)
                 .setOverlay(overlay).setLight(light)
-                .setNormal(normal, normal1.x(), normal1.y(), normal1.z());
+                .setNormal(pose, normal1.x(), normal1.y(), normal1.z());
     }
 
 

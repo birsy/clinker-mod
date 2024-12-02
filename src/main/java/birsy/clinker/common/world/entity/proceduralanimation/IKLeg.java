@@ -1,9 +1,7 @@
 package birsy.clinker.common.world.entity.proceduralanimation;
 
-import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.ClientboundInverseKinematicsStepPacket;
 import birsy.clinker.core.util.JomlConversions;
-import birsy.clinker.core.util.VectorUtil;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -234,7 +232,7 @@ public class IKLeg<E extends LivingEntity & IKLocomotionEntity> {
 
         this.nextStepPosition.set(x, y, z);
         this.previousStepPosition.set(this.foot);
-        if (!client) ClinkerPacketHandler.sendToClientsTrackingEntity(entity, new ClientboundInverseKinematicsStepPacket(entity, this.legIndex, this.nextStepPosition));
+        if (!client) PacketDistributor.sendToPlayersTrackingEntity(entity, new ClientboundInverseKinematicsStepPacket(entity, this.legIndex, this.nextStepPosition));
     }
 
     private float getStepDistance(E entity) {

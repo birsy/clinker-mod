@@ -1,6 +1,5 @@
 package birsy.clinker.mixin.common;
 
-import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.ropeentity.ClientboundRopeEntityInitPacket;
 import birsy.clinker.common.networking.packet.ropeentity.ClientboundRopeEntitySyncPacket;
 import birsy.clinker.common.world.entity.rope.RopeEntity;
@@ -22,7 +21,7 @@ public abstract class ServerEntityMixin {
             at = @At("TAIL"))
     private void clinker$addPairing(ServerPlayer serverPlayer, CallbackInfo ci) {
         if (this.entity instanceof RopeEntity ropeEntity) {
-            ClinkerPacketHandler.sendToClient(serverPlayer, new ClientboundRopeEntityInitPacket(ropeEntity));
+            PacketDistributor.sendToPlayer(serverPlayer, new ClientboundRopeEntityInitPacket(ropeEntity));
         }
     }
 
@@ -30,7 +29,7 @@ public abstract class ServerEntityMixin {
             at = @At("TAIL"))
     private void clinker$sendChanges(CallbackInfo ci) {
         if (this.entity instanceof RopeEntity ropeEntity) {
-            ClinkerPacketHandler.sendToClientsTrackingEntity(ropeEntity, new ClientboundRopeEntitySyncPacket(ropeEntity));
+            PacketDistributor.sendToPlayersTrackingEntity(ropeEntity, new ClientboundRopeEntitySyncPacket(ropeEntity));
         }
     }
 }

@@ -34,8 +34,7 @@ public class ZosimusRenderer {
 
         RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
         RenderSystem.setShaderTexture(0, TEXTURE);
-        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
+        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
 
         this.root.yRot = (float) (tickTime * 0.1F);//Mth.cos((float) (tickTime * 0.08F));
         this.root.xRot = 0.5F;//Mth.sin((float) (tickTime * 0.1F)) * 0.5F;

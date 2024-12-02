@@ -1,6 +1,5 @@
 package birsy.clinker.common.world.entity;
 
-import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.debug.ClientboundPathfindingDebugPacket;
 import birsy.clinker.common.world.entity.ai.ClinkerSmoothGroundNavigation;
 import birsy.clinker.common.world.entity.ai.behaviors.SetRandomWalkTargetCloseEnough;
@@ -206,7 +205,7 @@ public class TestRopeEntity extends RopeEntity<RopeEntitySegment> implements Sma
     protected void customServerAiStep() {
         tickBrain(this);
         if (this.navigation.getPath() != null) {
-            ClinkerPacketHandler.sendToAllClients(new ClientboundPathfindingDebugPacket(this, this.navigation.getPath()));
+            PacketDistributor.sendToAllPlayers(new ClientboundPathfindingDebugPacket(this, this.navigation.getPath()));
         }
     }
 

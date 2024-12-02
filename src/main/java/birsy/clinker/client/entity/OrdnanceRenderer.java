@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.phys.Vec3;
@@ -84,11 +85,23 @@ public class OrdnanceRenderer extends EntityRenderer<OrdnanceEntity> {
         }
         Vector3f normal = new Vector3f(0, 0, -1);
         normal = stack.last(). normal().transform(normal);
-
-        consumer.addVertex(verticies[0].x(), verticies[0].y(), verticies[0].z(), 1, 1, 1, 1, verticies[0].u(), verticies[0].v(), overlayTexture, pPackedLight, normal.x, normal.y, normal.z);
-        consumer.addVertex(verticies[1].x(), verticies[1].y(), verticies[1].z(), 1, 1, 1, 1, verticies[1].u(), verticies[1].v(), overlayTexture, pPackedLight, normal.x, normal.y, normal.z);
-        consumer.addVertex(verticies[2].x(), verticies[2].y(), verticies[2].z(), 1, 1, 1, 1, verticies[2].u(), verticies[2].v(), overlayTexture, pPackedLight, normal.x, normal.y, normal.z);
-        consumer.addVertex(verticies[3].x(), verticies[3].y(), verticies[3].z(), 1, 1, 1, 1, verticies[3].u(), verticies[3].v(), overlayTexture, pPackedLight, normal.x, normal.y, normal.z);
+        int color = FastColor.ARGB32.colorFromFloat(1, 1, 1, 1);
+        consumer.addVertex(verticies[0].x(), verticies[0].y(), verticies[0].z(),
+                color,
+                verticies[0].u(), verticies[0].v(), overlayTexture, pPackedLight,
+                normal.x, normal.y, normal.z);
+        consumer.addVertex(verticies[1].x(), verticies[1].y(), verticies[1].z(),
+                color,
+                verticies[1].u(), verticies[1].v(), overlayTexture, pPackedLight,
+                normal.x, normal.y, normal.z);
+        consumer.addVertex(verticies[2].x(), verticies[2].y(), verticies[2].z(),
+                color,
+                verticies[2].u(), verticies[2].v(), overlayTexture, pPackedLight,
+                normal.x, normal.y, normal.z);
+        consumer.addVertex(verticies[3].x(), verticies[3].y(), verticies[3].z(),
+                color,
+                verticies[3].u(), verticies[3].v(), overlayTexture, pPackedLight,
+                normal.x, normal.y, normal.z);
         stack.popPose();
     }
 
@@ -117,11 +130,11 @@ public class OrdnanceRenderer extends EntityRenderer<OrdnanceEntity> {
         }
         Vector3f normal = new Vector3f(0, 0, -1);
         normal = stack.last(). normal().transform(normal);
-
-        consumer.addVertex(verticies[0].x(), verticies[0].y(), verticies[0].z(), 1, 1, 1, 1, verticies[0].u(), verticies[0].v(), overlayTexture, pPackedLight, normal.x, normal.y, normal.z);
-        consumer.addVertex(verticies[1].x(), verticies[1].y(), verticies[1].z(), 1, 1, 1, 1, verticies[1].u(), verticies[1].v(), overlayTexture, pPackedLight, normal.x, normal.y, normal.z);
-        consumer.addVertex(verticies[2].x(), verticies[2].y(), verticies[2].z(), 1, 1, 1, 1, verticies[2].u(), verticies[2].v(), overlayTexture, pPackedLight, normal.x, normal.y, normal.z);
-        consumer.addVertex(verticies[3].x(), verticies[3].y(), verticies[3].z(), 1, 1, 1, 1, verticies[3].u(), verticies[3].v(), overlayTexture, pPackedLight, normal.x, normal.y, normal.z);
+        int color = FastColor.ARGB32.colorFromFloat(1, 1, 1, 1);
+        consumer.addVertex(verticies[0].x(), verticies[0].y(), verticies[0].z(), color, verticies[0].u(), verticies[0].v(), overlayTexture, pPackedLight, normal.x, normal.y, normal.z);
+        consumer.addVertex(verticies[1].x(), verticies[1].y(), verticies[1].z(), color, verticies[1].u(), verticies[1].v(), overlayTexture, pPackedLight, normal.x, normal.y, normal.z);
+        consumer.addVertex(verticies[2].x(), verticies[2].y(), verticies[2].z(), color, verticies[2].u(), verticies[2].v(), overlayTexture, pPackedLight, normal.x, normal.y, normal.z);
+        consumer.addVertex(verticies[3].x(), verticies[3].y(), verticies[3].z(), color, verticies[3].u(), verticies[3].v(), overlayTexture, pPackedLight, normal.x, normal.y, normal.z);
 
         stack.popPose();
     }

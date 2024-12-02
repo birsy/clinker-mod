@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -47,8 +48,8 @@ public class MoldEntity extends LivingEntity {
     }
 
     @Override
-    public void onAddedToWorld() {
-        super.onAddedToWorld();
+    public void onAddedToLevel() {
+        super.onAddedToLevel();
         this.renderAABB = new AABB(this.blockPosition());
         this.setPos(Math.floor(this.getX()) + 0.5F, Math.floor(this.getY()), Math.floor(this.getZ()) + 0.5F);
 
@@ -178,7 +179,7 @@ public class MoldEntity extends LivingEntity {
         }
 
         @Override
-        protected void defineSynchedData() {
+        protected void defineSynchedData(SynchedEntityData.Builder builder) {
         }
 
         @Override

@@ -2,7 +2,8 @@ package birsy.clinker.client.render.world.blockentity;
 
 import birsy.clinker.common.world.block.blockentity.SarcophagusBlockEntity;
 import birsy.clinker.core.Clinker;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;

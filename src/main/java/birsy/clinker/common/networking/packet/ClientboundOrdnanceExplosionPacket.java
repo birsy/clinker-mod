@@ -1,41 +1,40 @@
 package birsy.clinker.common.networking.packet;
 
+import birsy.clinker.common.networking.packet.workstation.ClientboundWorkstationMergePacket;
 import birsy.clinker.common.world.entity.projectile.OrdnanceEffects;
 import birsy.clinker.common.world.entity.projectile.OrdnanceEntity;
+import birsy.clinker.core.Clinker;
+import birsy.clinker.core.util.codecs.ExtraByteBufCodecs;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public class ClientboundOrdnanceExplosionPacket extends ClientboundPacket {
-    private final Vec3 position;
-    private final OrdnanceEffects effects;
-
-    public ClientboundOrdnanceExplosionPacket(Vec3 position, OrdnanceEffects effects) {
-        this.position = position;
-        this.effects = effects;
-    }
-
-    public ClientboundOrdnanceExplosionPacket(FriendlyByteBuf buffer) {
-        this.position = new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
-        this.effects = OrdnanceEffects.deserialize(buffer.readNbt());
-    }
-
+public record ClientboundOrdnanceExplosionPacket(Vec3 location, CompoundTag serializedEffects) implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<ClientboundOrdnanceExplosionPacket> TYPE = new CustomPacketPayload.Type<>(Clinker.resource("client/ordnance/explode"));
+    public static final StreamCodec<ByteBuf, ClientboundOrdnanceExplosionPacket> STREAM_CODEC = StreamCodec.composite(
+            ExtraByteBufCodecs.VEC3, ClientboundOrdnanceExplosionPacket::location,
+            ByteBufCodecs.COMPOUND_TAG, ClientboundOrdnanceExplosionPacket::serializedEffects,
+            ClientboundOrdnanceExplosionPacket::new
+    );
 
     @Override
-    public void write(FriendlyByteBuf buffer) {
-        buffer.writeDouble(position.x());
-        buffer.writeDouble(position.y());
-        buffer.writeDouble(position.z());
-        buffer.writeNbt(this.effects.serialize(new CompoundTag()));
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    @Override
-    public void run(PlayPayloadContext context) {
-        Minecraft mc = Minecraft.getInstance();
-        ClientLevel level = mc.level;
-        OrdnanceEntity.createOrdnanceExplosion(position, level, null, null, this.effects);
+    public void handle(final IPayloadContext context) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return;
+        OrdnanceEntity.createOrdnanceExplosion(
+                location, level, null, null,
+                OrdnanceEffects.deserialize(serializedEffects, level.registryAccess())
+        );
     }
 }

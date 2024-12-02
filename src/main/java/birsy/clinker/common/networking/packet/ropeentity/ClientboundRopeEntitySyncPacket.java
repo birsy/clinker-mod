@@ -16,7 +16,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record ClientboundRopeEntitySyncPacket(int entityId, Double[] segmentAttributes) implements CustomPacketPayload {
     static final int SIZE_PER_SEGMENT = 6;
-    public static final CustomPacketPayload.Type<ClientboundRopeEntitySyncPacket> TYPE = new CustomPacketPayload.Type<>(Clinker.resource("clientRopeSync"));
+    public static final CustomPacketPayload.Type<ClientboundRopeEntitySyncPacket> TYPE = new CustomPacketPayload.Type<>(Clinker.resource("client/rope/sync"));
     public static final StreamCodec<ByteBuf, ClientboundRopeEntitySyncPacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT,
             ClientboundRopeEntitySyncPacket::entityId,

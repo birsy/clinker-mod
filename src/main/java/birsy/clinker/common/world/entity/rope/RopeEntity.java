@@ -1,6 +1,5 @@
 package birsy.clinker.common.world.entity.rope;
 
-import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.ClientboundPushPacket;
 import birsy.clinker.common.networking.packet.ropeentity.ClientboundRopeEntitySegmentAddPacket;
 import birsy.clinker.common.world.entity.ColliderEntity;
@@ -23,6 +22,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 
@@ -123,7 +123,7 @@ public abstract class RopeEntity<T extends RopeEntitySegment> extends Pathfinder
         this.segmentByCollider.put(segment.collider, segment);
 
         if (network && this.level().isClientSide()) {
-            ClinkerPacketHandler.sendToClientsTrackingEntity(this, new ClientboundRopeEntitySegmentAddPacket(this, type));
+            PacketDistributor.sendToPlayersTrackingEntity(this, new ClientboundRopeEntitySegmentAddPacket(this, type));
         }
     }
 
@@ -287,7 +287,7 @@ public abstract class RopeEntity<T extends RopeEntitySegment> extends Pathfinder
                     }
 
                     if (!pusher.isVehicle() && pusher.isPushable()) {
-                        if (pusher instanceof ServerPlayer client) ClinkerPacketHandler.sendToClient(client, new ClientboundPushPacket(xMovement, 0.0, zMovement));
+                        if (pusher instanceof ServerPlayer client) PacketDistributor.sendToPlayer(client, new ClientboundPushPacket(xMovement, 0.0, zMovement));
                         pusher.push(xMovement, 0.0, zMovement);
                     }
                 }

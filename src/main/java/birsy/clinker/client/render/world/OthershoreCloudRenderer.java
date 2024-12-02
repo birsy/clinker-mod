@@ -13,7 +13,6 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-
 import org.joml.Matrix4f;
 import org.joml.Vector3fc;
 

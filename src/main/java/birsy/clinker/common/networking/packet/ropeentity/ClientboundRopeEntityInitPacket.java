@@ -15,7 +15,7 @@ import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record ClientboundRopeEntityInitPacket(int entityId, Integer[] segmentTypes) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<ClientboundRopeEntityInitPacket> TYPE = new CustomPacketPayload.Type<>(Clinker.resource("clientRopeInit"));
+    public static final CustomPacketPayload.Type<ClientboundRopeEntityInitPacket> TYPE = new CustomPacketPayload.Type<>(Clinker.resource("client/rope/init"));
     public static final StreamCodec<ByteBuf, ClientboundRopeEntityInitPacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT,
             ClientboundRopeEntityInitPacket::entityId,

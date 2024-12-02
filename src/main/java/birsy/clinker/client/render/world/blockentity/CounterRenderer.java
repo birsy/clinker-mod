@@ -3,7 +3,6 @@ package birsy.clinker.client.render.world.blockentity;
 import birsy.clinker.common.world.alchemy.workstation.Workstation;
 import birsy.clinker.common.world.block.blockentity.CounterBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;

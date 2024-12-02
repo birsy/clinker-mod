@@ -41,14 +41,15 @@ public abstract class GnomadEntity extends GroundLocomoteEntity implements Enemy
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_ANIMATION_FLAGS_ID, (byte) 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_ANIMATION_FLAGS_ID, (byte) 0);
     }
+    
 
     @Override
-    public void onAddedToWorld() {
-        super.onAddedToWorld();
+    public void onAddedToLevel() {
+        super.onAddedToLevel();
         if (this.level() instanceof ServerLevel level) GnomadSquads.getInstance(level).createSquad(this);
     }
 

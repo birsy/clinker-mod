@@ -3,7 +3,6 @@ package birsy.clinker.common.world.entity.projectile;
 import birsy.clinker.client.particle.OrdnanceExplosionParticle;
 import birsy.clinker.client.particle.OrdnanceTrailParticle;
 import birsy.clinker.client.sound.OrdnanceSoundInstance;
-import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.ClientboundOrdnanceExplosionPacket;
 import birsy.clinker.core.registry.entity.ClinkerEntities;
 import birsy.clinker.core.registry.ClinkerParticles;
@@ -16,9 +15,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -29,12 +30,14 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.*;
 
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
@@ -59,15 +62,7 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
     public OrdnanceEntity(EntityType<? extends Projectile> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         if (!pLevel.isClientSide()) {
-            this.effects = new OrdnanceEffects (
-                OrdnanceEffects.DetonationType.FLECHETTE,
-                OrdnanceEffects.TouchType.NORMAL,
-                Potions.EMPTY,
-                false,
-                false,
-                pLevel.random.nextInt(0x000000, 0xFFFFFF),
-                120
-            );
+            this.effects = OrdnanceEffects.DEFAULT_EFFECT_PARAMS;
         }
     }
 
@@ -102,28 +97,28 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
 
     // networking & serialization
     @Override
-    public void writeSpawnData(FriendlyByteBuf buffer) {
-        buffer.writeNbt(this.effects.serialize(new CompoundTag()));
+    public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
+        buffer.writeNbt(this.effects.serialize(new CompoundTag(), buffer.registryAccess()));
     }
     @Override
-    public void readSpawnData(FriendlyByteBuf buffer) {
-        this.effects = OrdnanceEffects.deserialize(buffer.readNbt());
+    public void readSpawnData(RegistryFriendlyByteBuf buffer) {
+        this.effects = OrdnanceEffects.deserialize(buffer.readNbt(), buffer.registryAccess());
     }
     @Override
-    protected void defineSynchedData() {
-        this.entityData.define(DATA_FUSE_TIME, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(DATA_FUSE_TIME, 0);
     }
     @Override
     protected void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
         pCompound.putInt("Fuse Time", this.getFuseTime());
-        effects.serialize(pCompound);
+        effects.serialize(pCompound, this.registryAccess());
    }
     @Override
     protected void readAdditionalSaveData(CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
         this.setFuseTime(pCompound.getInt("Fuse Time"));
-        this.effects = OrdnanceEffects.deserialize(pCompound);
+        this.effects = OrdnanceEffects.deserialize(pCompound, this.registryAccess());
     }
 
     // behavior
@@ -143,7 +138,7 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
         Vec3 velocity = this.getDeltaMovement();
 
         float drag = this.getDrag();
-        float gravity = this.getGravity();
+        float gravity = (float) this.getGravity();
 
         if (this.stuck) {
             this.setDeltaMovement(0, 0, 0);
@@ -270,7 +265,8 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
         this.stuckEntityHeightOffset = 0;
     }
 
-    protected float getGravity() {
+    @Override
+    protected double getDefaultGravity() {
         float gravity = -0.024F;
         if (this.isUnderWater()) gravity *= -0.1F;
         return gravity;
@@ -287,7 +283,7 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
 
         // wait a few ticks, so the particles don't get in your face.
         if (this.tickCount > 5) {
-            Vector3f baseColor = Vec3.fromRGB24(effects.setColor()).toVector3f();
+            Vector3f baseColor = Vec3.fromRGB24(effects.color()).toVector3f();
             Vector3f smokeColor =  new Vector3f(0.8f, 0.8f, 0.8f);
 
             float speed = 0.01F;
@@ -381,7 +377,7 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
                     Vec3 velocity = particlePoint.normalize();
                     velocity = velocity.scale(radius + (level.random.nextGaussian() * 0.1F));
 
-                    Vector3f baseColor = Vec3.fromRGB24(effects.setColor()).toVector3f();
+                    Vector3f baseColor = Vec3.fromRGB24(effects.color()).toVector3f();
                     Vector3f smokeColor = new Vector3f(0.8f, 0.8f, 0.8f);
                     level.addParticle(new OrdnanceExplosionParticle.Options(baseColor, smokeColor, Mth.abs((float) level.random.nextGaussian()) * 3.0F), location.x(), location.y(), location.z(),
                             velocity.x(), velocity.y, velocity.z);
@@ -395,7 +391,14 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
             level.playLocalSound(location.x(), location.y(), location.z(), SoundEvents.FIREWORK_ROCKET_LARGE_BLAST, SoundSource.BLOCKS, 4F, Mth.lerp(level.random.nextFloat(), 0.7F, 0.9F), false);
             level.playLocalSound(location.x(), location.y(), location.z(), SoundEvents.FIREWORK_ROCKET_TWINKLE_FAR, SoundSource.BLOCKS, 0.1F, Mth.lerp(level.random.nextFloat(), 0.7F, 0.9F), false);
         } else {
-            ClinkerPacketHandler.sendToClientsTrackingChunk(level.getChunkAt(BlockPos.containing(location)), new ClientboundOrdnanceExplosionPacket(location, effects));
+            if (level instanceof ServerLevel serverLevel) {
+                PacketDistributor.sendToPlayersTrackingChunk(serverLevel,
+                        new ChunkPos(BlockPos.containing(location)),
+                        new ClientboundOrdnanceExplosionPacket(location,
+                                effects.serialize(new CompoundTag(), level.registryAccess())
+                        )
+                );
+            }
 
             if (effects.detonationType() == OrdnanceEffects.DetonationType.FLECHETTE) {
                 for (Vec3 particlePoint : FLECHETTE_POINTS) {

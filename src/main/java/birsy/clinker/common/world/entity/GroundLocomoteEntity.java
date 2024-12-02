@@ -58,11 +58,11 @@ public class GroundLocomoteEntity extends PathfinderMob {
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_WALK_ID, new Vector3f());
-        this.entityData.define(DATA_DISTANCED_WALKED_ID, 0.0F);
-        this.entityData.define(DATA_WATCHING_ENTITY, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_WALK_ID, new Vector3f());
+        builder.define(DATA_DISTANCED_WALKED_ID, 0.0F);
+        builder.define(DATA_WATCHING_ENTITY, false);
     }
 
     @Override

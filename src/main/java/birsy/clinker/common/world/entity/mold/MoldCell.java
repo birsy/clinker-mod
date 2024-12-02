@@ -1,6 +1,5 @@
 package birsy.clinker.common.world.entity.mold;
 
-import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.ClientboundMoldGrowthPacket;
 import birsy.clinker.core.util.MathUtil;
 import net.minecraft.Util;
@@ -12,6 +11,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.SupportType;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -300,7 +300,7 @@ public class MoldCell {
         if (supportDirection == null) return false;
 
         MoldCell child = new MoldCell(this, supportDirection, growthPos, growthDirection.getOpposite());
-        ClinkerPacketHandler.sendToClientsTrackingEntity(this.entity, new ClientboundMoldGrowthPacket(child));
+        PacketDistributor.sendToPlayersTrackingEntity(this.entity, new ClientboundMoldGrowthPacket(child));
         return true;
     }
 
@@ -494,6 +494,7 @@ public class MoldCell {
         SOUTH_WEST_EDGE_INNER(true, Direction.SOUTH, Direction.WEST),
         NORTH_WEST_EDGE_INNER(true, Direction.NORTH, Direction.WEST);
 
+        private static final AttachmentPoint[] fromOrdinal = AttachmentPoint.values();
         public final Vec3 vector;
         public final Direction[] directions;
         public final boolean isEdge;
@@ -668,6 +669,10 @@ public class MoldCell {
         });
         private static AttachmentPoint[] getSortedSupportList(Direction direction) {
             return SORTED_SUPPORT_LISTS[direction.ordinal()];
+        }
+
+        public static AttachmentPoint fromOrdinal(int ordinal) {
+            return fromOrdinal[ordinal];
         }
     }
 

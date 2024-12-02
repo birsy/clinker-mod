@@ -1,15 +1,14 @@
 package birsy.clinker.common.world.entity.gnomad.gnomind.squad;
 
 import birsy.clinker.client.render.debug.ClinkerDebugRenderers;
-import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.debug.GnomadSquadDebugPacket;
 import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
 import birsy.clinker.common.world.entity.gnomad.gnomind.squad.squadtasks.GnomadSquadTask;
-import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.tslat.smartbrainlib.util.BrainUtils;
 import net.tslat.smartbrainlib.util.EntityRetrievalUtil;
 import net.tslat.smartbrainlib.util.SensoryUtils;
@@ -39,7 +38,7 @@ public class GnomadSquad {
         this.searchForNewMembers(10.0F);
         this.cullDeadOrRemovedMembers();
 
-        if (ClinkerDebugRenderers.shouldRender) ClinkerPacketHandler.sendToAllClients(new GnomadSquadDebugPacket(this));
+        if (ClinkerDebugRenderers.shouldRender) PacketDistributor.sendToAllPlayers(new GnomadSquadDebugPacket(this));
     }
 
     private void cullDeadOrRemovedMembers() {

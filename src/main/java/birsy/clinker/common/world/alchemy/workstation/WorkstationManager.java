@@ -1,6 +1,5 @@
 package birsy.clinker.common.world.alchemy.workstation;
 
-import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.workstation.ClientboundWorkstationChangeBlockPacket;
 import birsy.clinker.common.networking.packet.workstation.ClientboundWorkstationLoadPacket;
 import birsy.clinker.common.networking.packet.workstation.ClientboundWorkstationMergePacket;
@@ -20,6 +19,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -134,14 +134,14 @@ public class WorkstationManager {
             if (!adjacentWorkstations.isEmpty()) {
                 for (Workstation adjacentWorkstation : adjacentWorkstations) {
                     nearestWorkstation.merge(adjacentWorkstation);
-                    ClinkerPacketHandler.sendToClientsTrackingChunk(this.level.getChunkAt(pos), new ClientboundWorkstationMergePacket(nearestWorkstation.uuid, adjacentWorkstation.uuid));
+                    PacketDistributor.sendToPlayersTrackingChunk(this.level.getChunkAt(pos), new ClientboundWorkstationMergePacket(nearestWorkstation.uuid, adjacentWorkstation.uuid));
                     workstationStorage.remove(adjacentWorkstation.uuid);
                 }
             }
         }
 
         nearestWorkstation.addBlock(pos);
-        ClinkerPacketHandler.sendToClientsTrackingChunk(this.level.getChunkAt(pos), new ClientboundWorkstationChangeBlockPacket(pos, true, nearestWorkstation.uuid));
+        PacketDistributor.sendToPlayersTrackingChunk(this.level.getChunkAt(pos), new ClientboundWorkstationChangeBlockPacket(pos, true, nearestWorkstation.uuid));
     }
 
     public void loadWorkstationToClient(UUID id, ServerPlayer client) {
@@ -155,7 +155,7 @@ public class WorkstationManager {
 
         ServerLevel level = (ServerLevel) this.level;
         if (Math.sqrt(workstationCenter.distToCenterSqr(client.position())) - workstation.containedBlocks.getRoughMaxRadius() > (level.getServer().getPlayerList().getViewDistance() + 1) * 16) return;
-        ClinkerPacketHandler.sendToClient(client, new ClientboundWorkstationLoadPacket(id, workstation));
+        PacketDistributor.sendToPlayer(client, new ClientboundWorkstationLoadPacket(id, workstation));
     }
 
     
@@ -173,7 +173,7 @@ public class WorkstationManager {
         Workstation station1 = this.workstationStorage.get(id1);
 
         if (station0 == null || station1 == null) {
-            ClinkerPacketHandler.sendToServer(new ServerboundWorkstationLoadRequestPacket(id0, this.level));
+            PacketDistributor.sendToServer(new ServerboundWorkstationLoadRequestPacket(id0));
         } else {
             station0.merge(station1);
         }
@@ -186,7 +186,7 @@ public class WorkstationManager {
     public void removeWorkstationBlockFromUUID(BlockPos pos, UUID id) {
         if (!this.workstationStorage.containsKey(id)) { Clinker.LOGGER.warn("No workstation of UUID " + id.toString() + " exists!"); return; }
         this.workstationStorage.get(id).removeBlock(pos);
-        if (!this.isClientSide) ClinkerPacketHandler.sendToClientsTrackingChunk(this.level.getChunkAt(pos), new ClientboundWorkstationChangeBlockPacket(pos, false, id));
+        if (!this.isClientSide) PacketDistributor.sendToPlayersTrackingChunk(this.level.getChunkAt(pos), new ClientboundWorkstationChangeBlockPacket(pos, false, id));
     }
 
     private void clear() {

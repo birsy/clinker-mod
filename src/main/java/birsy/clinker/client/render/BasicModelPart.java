@@ -7,6 +7,7 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeDefinition;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.util.FastColor;
 
 import java.util.*;
 
@@ -117,7 +118,7 @@ public class BasicModelPart {
 
     private void compile(PoseStack.Pose pPose, VertexConsumer pVertexConsumer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha) {
         for(ModelPart.Cube cube : this.cubes) {
-            cube.compile(pPose, pVertexConsumer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
+            cube.compile(pPose, pVertexConsumer, pPackedLight, pPackedOverlay, FastColor.ARGB32.color((int)(pAlpha * 255), (int)(pRed * 255), (int)(pGreen * 255), (int)(pBlue * 255)));
         }
     }
 

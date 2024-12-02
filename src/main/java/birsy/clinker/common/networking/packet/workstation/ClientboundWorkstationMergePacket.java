@@ -1,41 +1,33 @@
 package birsy.clinker.common.networking.packet.workstation;
 
-import birsy.clinker.common.networking.packet.ClientboundPacket;
 import birsy.clinker.common.world.alchemy.workstation.WorkstationManager;
-import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import birsy.clinker.core.Clinker;
+import birsy.clinker.core.util.codecs.ExtraByteBufCodecs;
+import io.netty.buffer.ByteBuf;
 
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.UUID;
 
-public class ClientboundWorkstationMergePacket extends ClientboundPacket {
-    private final UUID id0;
-    private final UUID id1;
-
-    public ClientboundWorkstationMergePacket(UUID id0, UUID id1) {
-        this.id0 = id0;
-        this.id1 = id1;
-    }
-
-    public ClientboundWorkstationMergePacket(FriendlyByteBuf buffer) {
-        CompoundTag NBT = buffer.readNbt();
-        this.id0 = NBT.getUUID("uuid0");
-        this.id1 = NBT.getUUID("uuid1");
-    }
+public record ClientboundWorkstationMergePacket(UUID uuid0, UUID uuid1) implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<ClientboundWorkstationMergePacket> TYPE = new CustomPacketPayload.Type<>(Clinker.resource("client/workstation/merge"));
+    public static final StreamCodec<ByteBuf, ClientboundWorkstationMergePacket> STREAM_CODEC = StreamCodec.composite(
+            ExtraByteBufCodecs.UUID,
+            ClientboundWorkstationMergePacket::uuid0,
+            ExtraByteBufCodecs.UUID,
+            ClientboundWorkstationMergePacket::uuid1,
+            ClientboundWorkstationMergePacket::new
+    );
 
     @Override
-    public void write(FriendlyByteBuf buffer) {
-        CompoundTag NBT = new CompoundTag();
-        NBT.putUUID("uuid0", this.id0);
-        NBT.putUUID("uuid1", this.id1);
-        buffer.writeNbt(NBT);
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    @Override
-    public void run(PlayPayloadContext context) {
+    public void handle(final IPayloadContext context) {
         WorkstationManager clientManager = WorkstationManager.clientWorkstationManager;
-        clientManager.mergeWorkstations(id0, id1);
+        clientManager.mergeWorkstations(uuid0, uuid1);
     }
 }

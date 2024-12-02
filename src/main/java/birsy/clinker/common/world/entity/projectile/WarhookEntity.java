@@ -57,11 +57,11 @@ public class WarhookEntity extends Projectile {
         return entity;
     }
 
-    protected void defineSynchedData() {
-        this.entityData.define(ID_FOIL, false);
-        this.entityData.define(ID_REELING, false);
-        this.entityData.define(ID_HASOWNER, false);
-        this.entityData.define(ID_OWNERPOS, new Vector3f(0, 0, 0));
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(ID_FOIL, false);
+        builder.define(ID_REELING, false);
+        builder.define(ID_HASOWNER, false);
+        builder.define(ID_OWNERPOS, new Vector3f(0, 0, 0));
     }
 
     boolean embedded = false;
@@ -149,16 +149,12 @@ public class WarhookEntity extends Projectile {
 
     public void readAdditionalSaveData(CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
-        if (pCompound.contains("Item", 10)) {
-            this.item = ItemStack.of(pCompound.getCompound("Trident"));
-        }
         this.direction = new Vec3(pCompound.getDouble("TailX"), pCompound.getDouble("TailY"), pCompound.getDouble("TailZ"));
         this.pDirection = this.direction;
     }
 
     public void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
-        pCompound.put("Item", this.item.save(new CompoundTag()));
         pCompound.putDouble("TailX", this.direction.x());
         pCompound.putDouble("TailY", this.direction.y());
         pCompound.putDouble("TailZ", this.direction.z());

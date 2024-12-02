@@ -31,7 +31,7 @@ public class GnomadSquadDebugRenderer implements DebugRenderer.SimpleDebugRender
     @Override
     public void render(PoseStack poseStack, MultiBufferSource bufferSource, double x, double y, double z) {
         for (GnomadSquadDebugPacket squadDump : squadDumps.values()) renderSquad(squadDump, poseStack, bufferSource, x, y, z);
-        squadDumps.values().removeIf(packet -> packet.squadMemberIDs.isEmpty());
+        squadDumps.values().removeIf(packet -> packet.squadMemberIDs().isEmpty());
     }
 
     @Override
@@ -45,33 +45,33 @@ public class GnomadSquadDebugRenderer implements DebugRenderer.SimpleDebugRender
         poseStack.pushPose();
         poseStack.translate(-x, -y, -z);
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.LINES);
-        for (int memberId : squadDump.squadMemberIDs) {
+        for (int memberId : squadDump.squadMemberIDs()) {
             Entity member = level.getEntity(memberId);
             if (member == null) continue;
-            DebugRenderUtil.renderLine(poseStack, consumer, squadDump.squadCenter, member.getEyePosition(), 0, 0, 0, 0.5F);
+            DebugRenderUtil.renderLine(poseStack, consumer, squadDump.squadCenter(), member.getEyePosition(), 0, 0, 0, 0.5F);
         }
         poseStack.popPose();
 
-        double squadY = squadDump.squadCenter.y() + 8.5F;
+        double squadY = squadDump.squadCenter().y() + 8.5F;
         double yOffset = 0;
-        DebugRenderer.renderFloatingText(poseStack, bufferSource, "Squad " + squadDump.squadID.toString(), squadDump.squadCenter.x(), squadY - yOffset, squadDump.squadCenter.z(), -16711936);
+        DebugRenderer.renderFloatingText(poseStack, bufferSource, "Squad " + squadDump.squadID().toString(), squadDump.squadCenter().x(), squadY - yOffset, squadDump.squadCenter().z(), -16711936);
         yOffset += 0.3;
 
-        DebugRenderer.renderFloatingText(poseStack, bufferSource, "Members:", squadDump.squadCenter.x(), squadY - yOffset, squadDump.squadCenter.z(), -16711681);
-        for (int i = 0; i < squadDump.squadMemberIDs.size(); i++) {
-            int id = squadDump.squadMemberIDs.get(i);
+        DebugRenderer.renderFloatingText(poseStack, bufferSource, "Members:", squadDump.squadCenter().x(), squadY - yOffset, squadDump.squadCenter().z(), -16711681);
+        for (int i = 0; i < squadDump.squadMemberIDs().size(); i++) {
+            int id = squadDump.squadMemberIDs().get(i);
             Entity entity = level.getEntity(id);
             if (entity == null) continue;
             String name  = DebugEntityNameGenerator.getEntityName(entity);
             yOffset += 0.25;
-            DebugRenderer.renderFloatingText(poseStack, bufferSource, name, squadDump.squadCenter.x(), squadY - yOffset, squadDump.squadCenter.z(), -3355444);
+            DebugRenderer.renderFloatingText(poseStack, bufferSource, name, squadDump.squadCenter().x(), squadY - yOffset, squadDump.squadCenter().z(), -3355444);
         }
 
         yOffset += 0.4;
-        DebugRenderer.renderFloatingText(poseStack, bufferSource, "Tasks:", squadDump.squadCenter.x(), squadY - yOffset, squadDump.squadCenter.z(), -98404);
-        for (int i = 0; i < squadDump.taskNames.size(); i++) {
-            String task = squadDump.taskNames.get(i);
-            yOffset = drawSquadTask(poseStack, bufferSource, squadDump.squadCenter.x(), squadY, squadDump.squadCenter.z(), yOffset, task);
+        DebugRenderer.renderFloatingText(poseStack, bufferSource, "Tasks:", squadDump.squadCenter().x(), squadY - yOffset, squadDump.squadCenter().z(), -98404);
+        for (int i = 0; i < squadDump.taskNames().size(); i++) {
+            String task = squadDump.taskNames().get(i);
+            yOffset = drawSquadTask(poseStack, bufferSource, squadDump.squadCenter().x(), squadY, squadDump.squadCenter().z(), yOffset, task);
         }
     }
 
@@ -86,7 +86,7 @@ public class GnomadSquadDebugRenderer implements DebugRenderer.SimpleDebugRender
     }
 
     public void dumpSquad(GnomadSquadDebugPacket debugPacket) {
-        squadDumps.put(debugPacket.squadID, debugPacket);
+        squadDumps.put(debugPacket.squadID(), debugPacket);
     }
     public void removeSquad(UUID squadID) {
         squadDumps.remove(squadID);

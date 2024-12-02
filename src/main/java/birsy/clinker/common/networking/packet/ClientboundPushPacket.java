@@ -8,7 +8,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record ClientboundPushPacket(double x, double y, double z) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<ClientboundPushPacket> TYPE = new CustomPacketPayload.Type<>(Clinker.resource("clientPush"));
+    public static final CustomPacketPayload.Type<ClientboundPushPacket> TYPE = new CustomPacketPayload.Type<>(Clinker.resource("client/push"));
     public static final StreamCodec<ByteBuf, ClientboundPushPacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.DOUBLE,
             ClientboundPushPacket::x,

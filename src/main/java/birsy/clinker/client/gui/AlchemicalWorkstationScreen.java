@@ -297,8 +297,9 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
 
     @Override
     public void render(GuiGraphics graphics, int pMouseX, int pMouseY, float pPartialTick) {
-        if (this.movingLeft) this.workstation.camera.lineProgress -= cameraSpeed * Minecraft.getInstance().getDeltaFrameTime();
-        if (this.movingRight) this.workstation.camera.lineProgress += cameraSpeed * Minecraft.getInstance().getDeltaFrameTime();
+        float deltaTime = 1.0F / 60.0F;
+        if (this.movingLeft) this.workstation.camera.lineProgress -= cameraSpeed * deltaTime;
+        if (this.movingRight) this.workstation.camera.lineProgress += cameraSpeed * deltaTime;
         this.workstation.camera.update();
 
         Vec2 middle = GuiHelper.toGuiSpace(this, this.width, this.height);
@@ -629,14 +630,14 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
         @Override
         public void onClick(float mouseX, float mouseY, int pButton) {
             super.onClick(mouseX, mouseY, pButton);
-            this.screen.itemOffsetX = mouseX - this.getScreenX(Minecraft.getInstance().getPartialTick());
-            this.screen.itemOffsetY = mouseY - this.getScreenY(Minecraft.getInstance().getPartialTick());
+            this.screen.itemOffsetX = mouseX - this.getScreenX(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true));
+            this.screen.itemOffsetY = mouseY - this.getScreenY(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true));
         }
 
         @Override
         public void onRelease(float mouseX, float mouseY, int pButton) {
             super.onRelease(mouseX, mouseY, pButton);
-            float partialTick = Minecraft.getInstance().getPartialTick();
+            float partialTick = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
 
             //parent isnt marked as interactable, so an extra check is needed to make sure you don't dump stuff
             boolean isHoveringParent = (mouseX > parent.getScreenX(partialTick) && mouseX < parent.getScreenX(partialTick) + parent.width &&

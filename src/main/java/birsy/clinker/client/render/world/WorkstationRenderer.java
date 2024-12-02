@@ -16,10 +16,9 @@ import net.minecraft.core.SectionPos;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
-
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 
 import java.util.ArrayList;
 import java.util.List;

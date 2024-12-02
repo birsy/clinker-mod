@@ -1,6 +1,5 @@
 package birsy.clinker.common.world.entity.urn;
 
-import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.debug.ClientboundBrainDebugPacket;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.world.entity.EntityType;
@@ -34,7 +33,7 @@ public class UrnEntity extends Mob implements SmartBrainOwner<UrnEntity> {
     protected void customServerAiStep() {
         super.customServerAiStep();
         tickBrain(this);
-        ClinkerPacketHandler.sendToClientsTrackingEntity(this, new ClientboundBrainDebugPacket(this));
+        PacketDistributor.sendToPlayersTrackingEntity(this, new ClientboundBrainDebugPacket(this));
     }
     @Override
     protected PathNavigation createNavigation(Level pLevel) {

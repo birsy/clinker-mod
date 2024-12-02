@@ -15,7 +15,6 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.api.distmarker.Dist;
 
 
 

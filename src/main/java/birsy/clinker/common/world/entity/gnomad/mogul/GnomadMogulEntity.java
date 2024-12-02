@@ -4,7 +4,6 @@ import birsy.clinker.client.entity.mogul.MogulAnimator;
 import birsy.clinker.client.entity.mogul.MogulSkeleton;
 import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
 import birsy.necromancer.SkeletonParent;
-import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.debug.ClientboundBrainDebugPacket;
 import birsy.clinker.common.world.entity.ai.behaviors.*;
 import birsy.clinker.common.world.entity.ai.behaviors.LookAtNearestEntity;
@@ -19,21 +18,26 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.util.valueproviders.ConstantFloat;
 import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
+import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.tslat.smartbrainlib.api.SmartBrainOwner;
 import net.tslat.smartbrainlib.api.core.BrainActivityGroup;
 import net.tslat.smartbrainlib.api.core.SmartBrainProvider;
@@ -67,7 +71,6 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
 
     public GnomadMogulEntity(EntityType<? extends GnomadEntity> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
-        this.setMaxUpStep(1.1F);
         this.attackHandler = new MogulAttackHandler(this);
     }
 
@@ -75,24 +78,28 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
     protected void attack(LivingEntity entity, float damage, float knockbackX, float knockbackY, float knockbackZ) {
         float attackDamage = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * damage;
         boolean intentionalHit = entity == this.getTarget();
-        if (entity.hurt(intentionalHit ? this.damageSources().noAggroMobAttack(this) : this.damageSources().mobAttack(this), attackDamage)) {
+        DamageSource source = intentionalHit ? this.damageSources().noAggroMobAttack(this) : this.damageSources().mobAttack(this);
+        if (entity.hurt(source, attackDamage)) {
             float knockbackResistance = (float) entity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE);
             float knockbackMultiplier = Math.max(0.0F, 1.0F - knockbackResistance);
             Vector3f knockback = knockbackVector.set(knockbackX, knockbackY, knockbackZ)
                     .rotateY(-this.yBodyRot * Mth.DEG_TO_RAD)
                     .mul(knockbackMultiplier);
             entity.addDeltaMovement(new Vec3(knockback.x(), knockback.y(), knockback.z()));
-            this.doEnchantDamageEffects(this, entity);
+
+            if (this.level() instanceof ServerLevel serverLevel) EnchantmentHelper.doPostAttackEffects(serverLevel, entity, source);
             this.setLastHurtMob(entity);
+            this.playAttackSound();
         }
     }
 
     public static AttributeSupplier.Builder createAttributes() {
         return createMonsterAttributes()
                 .add(Attributes.MAX_HEALTH, 20.0D)
-                .add(Attributes.MOVEMENT_SPEED, 0.5D)
-                //.add(NeoForgeMod.STEP_HEIGHT.value(), 1.1D)
-                .add(Attributes.ATTACK_DAMAGE, 2.0D);
+                .add(Attributes.MOVEMENT_SPEED, 0.23F)
+                .add(Attributes.ATTACK_DAMAGE, 2.0)
+                .add(Attributes.ARMOR, 2.0)
+                .add(Attributes.STEP_HEIGHT, 1.1D);
     }
 
     @Override
@@ -103,9 +110,9 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
 
     // data
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_ROBE_COLOR, ROBE_COLORS[0]);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_ROBE_COLOR, ROBE_COLORS[0]);
     }
 
     @Override
@@ -136,7 +143,7 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
     protected void customServerAiStep() {
         tickBrain(this);
         super.customServerAiStep();
-        ClinkerPacketHandler.sendToClientsTrackingEntity(this, new ClientboundBrainDebugPacket(this));
+        PacketDistributor.sendToPlayersTrackingEntity(this, new ClientboundBrainDebugPacket(this));
     }
 
     @Override
@@ -219,10 +226,10 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
     }
 
     @Override
-    public @Nullable SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
+    public @Nullable SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
         // we're a little silly. choose a random robe
         this.setRobeColor(ROBE_COLORS[this.random.nextInt(ROBE_COLORS.length)]);
-        return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+        return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
     }
 
     public int getRobeColor() {
@@ -240,12 +247,12 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
     protected void computeHeightOffset() {
         this.prevSmoothedHeight = this.smoothedHeight;
         Vec3 samplePosition = this.getPosition(1.0F).add(0, 0.1F, 0);
-        Vec3 to = samplePosition.add(0, -this.getStepHeight() - 0.1F, 0);
+        Vec3 to = samplePosition.add(0, -this.maxUpStep() - 0.1F, 0);
         HitResult result = this.level().clip(new ClipContext(samplePosition, to, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, this));
         double height = (result.getLocation().y + this.getY()) / 2.0F;
         this.smoothedHeight = Mth.lerp(0.3F, this.smoothedHeight, height);
         if (this.smoothedHeight > this.getY()) this.smoothedHeight = this.getY();
-        this.smoothedHeight = MathUtil.clampDifference(this.smoothedHeight, this.getY(), this.getStepHeight());
+        this.smoothedHeight = MathUtil.clampDifference(this.smoothedHeight, this.getY(), this.maxUpStep());
     }
     
     public float getHeightOffset(float partialTick) {

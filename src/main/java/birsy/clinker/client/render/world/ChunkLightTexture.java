@@ -10,7 +10,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.LightLayer;
 
 import java.awt.*;
-import java.io.IOException;
 import java.util.concurrent.FutureTask;
 
 public class ChunkLightTexture implements AutoCloseable {

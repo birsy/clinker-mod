@@ -24,38 +24,37 @@ public class DebugRenderUtil {
     }
 
     public static void renderBox(PoseStack pPoseStack, VertexConsumer pConsumer, double pMinX, double pMinY, double pMinZ, double pMaxX, double pMaxY, double pMaxZ, float pRed, float pGreen, float pBlue, float pAlpha) {
-        Matrix4f matrix4f = pPoseStack.last().pose();
-        Matrix3f matrix3f = pPoseStack.last(). normal();
+        PoseStack.Pose pose = pPoseStack.last();
         float iX = (float) pMinX;
         float iY = (float) pMinY;
         float iZ = (float) pMinZ;
         float aX = (float) pMaxX;
         float aY = (float) pMaxY;
         float aZ = (float) pMaxZ;
-        pConsumer.addVertex(matrix4f, iX, iY, iZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(matrix3f, 1.0F, 0.0F, 0.0F) ;
-        pConsumer.addVertex(matrix4f, aX, iY, iZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(matrix3f, 1.0F, 0.0F, 0.0F) ;
-        pConsumer.addVertex(matrix4f, iX, iY, iZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(matrix3f, 0.0F, 1.0F, 0.0F) ;
-        pConsumer.addVertex(matrix4f, iX, aY, iZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(matrix3f, 0.0F, 1.0F, 0.0F) ;
-        pConsumer.addVertex(matrix4f, iX, iY, iZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(matrix3f, 0.0F, 0.0F, 1.0F) ;
-        pConsumer.addVertex(matrix4f, iX, iY, aZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(matrix3f, 0.0F, 0.0F, 1.0F) ;
-        pConsumer.addVertex(matrix4f, aX, iY, iZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(matrix3f, 0.0F, 1.0F, 0.0F) ;
-        pConsumer.addVertex(matrix4f, aX, aY, iZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(matrix3f, 0.0F, 1.0F, 0.0F) ;
-        pConsumer.addVertex(matrix4f, aX, aY, iZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(matrix3f, -1.0F, 0.0F, 0.0F);
-        pConsumer.addVertex(matrix4f, iX, aY, iZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(matrix3f, -1.0F, 0.0F, 0.0F);
-        pConsumer.addVertex(matrix4f, iX, aY, iZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(matrix3f, 0.0F, 0.0F, 1.0F) ;
-        pConsumer.addVertex(matrix4f, iX, aY, aZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(matrix3f, 0.0F, 0.0F, 1.0F) ;
-        pConsumer.addVertex(matrix4f, iX, aY, aZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(matrix3f, 0.0F, -1.0F, 0.0F);
-        pConsumer.addVertex(matrix4f, iX, iY, aZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(matrix3f, 0.0F, -1.0F, 0.0F);
-        pConsumer.addVertex(matrix4f, iX, iY, aZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(matrix3f, 1.0F, 0.0F, 0.0F) ;
-        pConsumer.addVertex(matrix4f, aX, iY, aZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(matrix3f, 1.0F, 0.0F, 0.0F) ;
-        pConsumer.addVertex(matrix4f, aX, iY, aZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(matrix3f, 0.0F, 0.0F, -1.0F);
-        pConsumer.addVertex(matrix4f, aX, iY, iZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(matrix3f, 0.0F, 0.0F, -1.0F);
-        pConsumer.addVertex(matrix4f, iX, aY, aZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(matrix3f, 1.0F, 0.0F, 0.0F) ;
-        pConsumer.addVertex(matrix4f, aX, aY, aZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(matrix3f, 1.0F, 0.0F, 0.0F) ;
-        pConsumer.addVertex(matrix4f, aX, iY, aZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(matrix3f, 0.0F, 1.0F, 0.0F) ;
-        pConsumer.addVertex(matrix4f, aX, aY, aZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(matrix3f, 0.0F, 1.0F, 0.0F) ;
-        pConsumer.addVertex(matrix4f, aX, aY, iZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(matrix3f, 0.0F, 0.0F, 1.0F) ;
-        pConsumer.addVertex(matrix4f, aX, aY, aZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(matrix3f, 0.0F, 0.0F, 1.0F) ;
+        pConsumer.addVertex(pose, iX, iY, iZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(pose, 1.0F, 0.0F, 0.0F) ;
+        pConsumer.addVertex(pose, aX, iY, iZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(pose, 1.0F, 0.0F, 0.0F) ;
+        pConsumer.addVertex(pose, iX, iY, iZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(pose, 0.0F, 1.0F, 0.0F) ;
+        pConsumer.addVertex(pose, iX, aY, iZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(pose, 0.0F, 1.0F, 0.0F) ;
+        pConsumer.addVertex(pose, iX, iY, iZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(pose, 0.0F, 0.0F, 1.0F) ;
+        pConsumer.addVertex(pose, iX, iY, aZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(pose, 0.0F, 0.0F, 1.0F) ;
+        pConsumer.addVertex(pose, aX, iY, iZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(pose, 0.0F, 1.0F, 0.0F) ;
+        pConsumer.addVertex(pose, aX, aY, iZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(pose, 0.0F, 1.0F, 0.0F) ;
+        pConsumer.addVertex(pose, aX, aY, iZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(pose, -1.0F, 0.0F, 0.0F);
+        pConsumer.addVertex(pose, iX, aY, iZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(pose, -1.0F, 0.0F, 0.0F);
+        pConsumer.addVertex(pose, iX, aY, iZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(pose, 0.0F, 0.0F, 1.0F) ;
+        pConsumer.addVertex(pose, iX, aY, aZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(pose, 0.0F, 0.0F, 1.0F) ;
+        pConsumer.addVertex(pose, iX, aY, aZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(pose, 0.0F, -1.0F, 0.0F);
+        pConsumer.addVertex(pose, iX, iY, aZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(pose, 0.0F, -1.0F, 0.0F);
+        pConsumer.addVertex(pose, iX, iY, aZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(pose, 1.0F, 0.0F, 0.0F) ;
+        pConsumer.addVertex(pose, aX, iY, aZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(pose, 1.0F, 0.0F, 0.0F) ;
+        pConsumer.addVertex(pose, aX, iY, aZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(pose, 0.0F, 0.0F, -1.0F);
+        pConsumer.addVertex(pose, aX, iY, iZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(pose, 0.0F, 0.0F, -1.0F);
+        pConsumer.addVertex(pose, iX, aY, aZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(pose, 1.0F, 0.0F, 0.0F) ;
+        pConsumer.addVertex(pose, aX, aY, aZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(pose, 1.0F, 0.0F, 0.0F) ;
+        pConsumer.addVertex(pose, aX, iY, aZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(pose, 0.0F, 1.0F, 0.0F) ;
+        pConsumer.addVertex(pose, aX, aY, aZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(pose, 0.0F, 1.0F, 0.0F) ;
+        pConsumer.addVertex(pose, aX, aY, iZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(pose, 0.0F, 0.0F, 1.0F) ;
+        pConsumer.addVertex(pose, aX, aY, aZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(pose, 0.0F, 0.0F, 1.0F) ;
     }
 
     public static void renderBox(PoseStack pPoseStack, VertexConsumer pConsumer, AABB box, float pRed, float pGreen, float pBlue, float pAlpha) {
@@ -72,8 +71,7 @@ public class DebugRenderUtil {
                 case 1: pPoseStack.mulPose(Axis.YP.rotationDegrees(90)); break;
                 case 2: pPoseStack.mulPose(Axis.XP.rotationDegrees(90)); break;
             }
-            Matrix4f matrix4f = pPoseStack.last().pose();
-            Matrix3f matrix3f = pPoseStack.last(). normal();
+            PoseStack.Pose pose = pPoseStack.last();
             pPoseStack.popPose();
             for (int segment = 0; segment < resolution; segment++) {
                 float angle1 = (segment / (float)resolution) * Mth.TWO_PI;
@@ -87,7 +85,7 @@ public class DebugRenderUtil {
                 normal.sub(new Vector3f(s2, 0, c2));
                 normal.normalize();
 
-                renderLine(matrix4f, matrix3f, pConsumer, s1, c1, 0, s2, c2, 0, pRed, pGreen, pBlue, pAlpha);
+                renderLine(pose, pConsumer, s1, c1, 0, s2, c2, 0, pRed, pGreen, pBlue, pAlpha);
             }
         }
 
@@ -103,8 +101,7 @@ public class DebugRenderUtil {
         pPoseStack.translate(x, y, z);
         pPoseStack.mulPose(rotation);
 
-        Matrix4f matrix4f = pPoseStack.last().pose();
-        Matrix3f matrix3f = pPoseStack.last(). normal();
+        PoseStack.Pose pose = pPoseStack.last();
         for (int segment = 0; segment < resolution; segment++) {
             float angle1 = (segment / (float)resolution) * Mth.TWO_PI;
             float angle2 = ((segment + 1) / (float)resolution) * Mth.TWO_PI;
@@ -113,7 +110,7 @@ public class DebugRenderUtil {
             float s2 = Mth.sin(angle2) * radius;
             float c2 = Mth.cos(angle2) * radius;
 
-            renderLine(matrix4f, matrix3f, pConsumer, s1, c1, 0, s2, c2, 0, pRed, pGreen, pBlue, pAlpha);
+            renderLine(pose, pConsumer, s1, c1, 0, s2, c2, 0, pRed, pGreen, pBlue, pAlpha);
         }
 
         pPoseStack.popPose();
@@ -123,8 +120,7 @@ public class DebugRenderUtil {
         pPoseStack.pushPose();
         pPoseStack.translate(x, y, z);
 
-        Matrix4f matrix4f = pPoseStack.last().pose();
-        Matrix3f matrix3f = pPoseStack.last(). normal();
+        PoseStack.Pose pose = pPoseStack.last();
         for (int segment = 0; segment < resolution; segment++) {
             float angle1 = (segment / (float)resolution) * Mth.TWO_PI;
             float angle2 = ((segment + 1) / (float)resolution) * Mth.TWO_PI;
@@ -133,7 +129,7 @@ public class DebugRenderUtil {
             float s2 = Mth.sin(angle2) * radius;
             float c2 = Mth.cos(angle2) * radius;
 
-            renderLine(matrix4f, matrix3f, pConsumer, s1, 0, c1, s2, 0, c2, pRed, pGreen, pBlue, pAlpha);
+            renderLine(pose, pConsumer, s1, 0, c1, s2, 0, c2, pRed, pGreen, pBlue, pAlpha);
         }
 
         pPoseStack.popPose();
@@ -152,8 +148,7 @@ public class DebugRenderUtil {
     }
 
     public static void renderLine(PoseStack pPoseStack, VertexConsumer pConsumer, double pMinX, double pMinY, double pMinZ, double pMaxX, double pMaxY, double pMaxZ, float r1, float g1, float b1, float a1, float r2, float g2, float b2, float a2) {
-        Matrix4f matrix4f = pPoseStack.last().pose();
-        Matrix3f matrix3f = pPoseStack.last(). normal();
+        PoseStack.Pose pose = pPoseStack.last();
         float minX = (float)pMinX;
         float minY = (float)pMinY;
         float minZ = (float)pMinZ;
@@ -164,14 +159,14 @@ public class DebugRenderUtil {
         normal.sub(new Vector3f(maxX, maxY, maxZ));
         normal.normalize();
 
-        pConsumer.addVertex(matrix4f, minX, minY, minZ).setColor(r1, g1, b1, a1).setNormal(matrix3f, normal.x(), normal.y(), normal.z());
-        pConsumer.addVertex(matrix4f, maxX, maxY, maxZ).setColor(r2, g2, b2, a2).setNormal(matrix3f, normal.x(), normal.y(), normal.z());
+        pConsumer.addVertex(pose, minX, minY, minZ).setColor(r1, g1, b1, a1).setNormal(pose, normal.x(), normal.y(), normal.z());
+        pConsumer.addVertex(pose, maxX, maxY, maxZ).setColor(r2, g2, b2, a2).setNormal(pose, normal.x(), normal.y(), normal.z());
     }
 
-    public static void renderLine(Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer pConsumer, float minX, float minY, float minZ, float maxX, float maxY, float maxZ, float pRed, float pGreen, float pBlue, float pAlpha) {
+    public static void renderLine(PoseStack.Pose pose, VertexConsumer pConsumer, float minX, float minY, float minZ, float maxX, float maxY, float maxZ, float pRed, float pGreen, float pBlue, float pAlpha) {
         float length = Mth.sqrt((minX - maxX)*(minX - maxX) + (minY - maxY)*(minY - maxY) + (minZ - maxZ)*(minZ - maxZ));
-        pConsumer.addVertex(matrix4f, minX, minY, minZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(matrix3f, (minX - maxX) / length, (minY - maxY) / length, (minZ - maxZ) / length);
-        pConsumer.addVertex(matrix4f, maxX, maxY, maxZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(matrix3f, (minX - maxX) / length, (minY - maxY) / length, (minZ - maxZ) / length);
+        pConsumer.addVertex(pose, minX, minY, minZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(pose, (minX - maxX) / length, (minY - maxY) / length, (minZ - maxZ) / length);
+        pConsumer.addVertex(pose, maxX, maxY, maxZ).setColor(pRed, pGreen, pBlue, pAlpha).setNormal(pose, (minX - maxX) / length, (minY - maxY) / length, (minZ - maxZ) / length);
     }
 
 }

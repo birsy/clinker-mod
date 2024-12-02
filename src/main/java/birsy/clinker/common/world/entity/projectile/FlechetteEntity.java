@@ -5,6 +5,7 @@ import birsy.clinker.core.util.VectorUtil;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -44,26 +45,26 @@ public class FlechetteEntity extends Projectile implements IEntityWithComplexSpa
 
     // networking & serialization
     @Override
-    public void writeSpawnData(FriendlyByteBuf buffer) {
-        buffer.writeNbt(this.effects.serialize(new CompoundTag()));
+    public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
+        buffer.writeNbt(this.effects.serialize(new CompoundTag(), buffer.registryAccess()));
     }
     @Override
-    public void readSpawnData(FriendlyByteBuf buffer) {
-        this.effects = OrdnanceEffects.deserialize(buffer.readNbt());
+    public void readSpawnData(RegistryFriendlyByteBuf buffer) {
+        this.effects = OrdnanceEffects.deserialize(buffer.readNbt(), buffer.registryAccess());
     }
     @Override
     protected void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
-        effects.serialize(pCompound);
+        effects.serialize(pCompound, this.registryAccess());
     }
     @Override
     protected void readAdditionalSaveData(CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
-        this.effects = OrdnanceEffects.deserialize(pCompound);
+        this.effects = OrdnanceEffects.deserialize(pCompound, this.registryAccess());
     }
     @Override
-    protected void defineSynchedData() {
-        this.entityData.define(DATA_ORIENTATION, new Quaternionf());
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(DATA_ORIENTATION, new Quaternionf());
     }
 
     // tick
@@ -103,7 +104,7 @@ public class FlechetteEntity extends Projectile implements IEntityWithComplexSpa
         }
 
         float drag = this.getDrag();
-        float gravity = this.getGravity();
+        float gravity = (float) this.getGravity();
 
         velocity = velocity.scale(drag);
         velocity = velocity.add(0, gravity, 0);
@@ -165,7 +166,7 @@ public class FlechetteEntity extends Projectile implements IEntityWithComplexSpa
         entity.hurt(entity.damageSources().source(DamageTypes.ARROW, this.getOwner(), this), 4.0F);
         if (entity instanceof LivingEntity livingentity) {
             if (!this.level().isClientSide) livingentity.setArrowCount(livingentity.getArrowCount() + 1);
-            for (MobEffectInstance effect : this.effects.potion().getEffects()) livingentity.addEffect(effect, this.getOwner());
+            for (MobEffectInstance effect : this.effects.potion().getAllEffects()) livingentity.addEffect(effect, this.getOwner());
             if (this.effects.electrified()) ChainLightningHandler.shock(this, livingentity);
         }
     }
@@ -191,7 +192,8 @@ public class FlechetteEntity extends Projectile implements IEntityWithComplexSpa
         }
     }
 
-    protected float getGravity() {
+    @Override
+    public double getDefaultGravity() {
         float gravity = -0.024F;
         if (this.isUnderWater()) gravity *= -0.1F;
         return gravity;

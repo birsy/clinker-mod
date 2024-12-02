@@ -1,51 +1,41 @@
 package birsy.clinker.common.networking.packet.workstation;
 
-import birsy.clinker.common.networking.packet.ClientboundPacket;
 import birsy.clinker.common.world.alchemy.workstation.WorkstationManager;
+import birsy.clinker.core.Clinker;
+import birsy.clinker.core.util.codecs.ExtraByteBufCodecs;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.UUID;
 
-public class ClientboundWorkstationChangeBlockPacket extends ClientboundPacket {
-    private final BlockPos pos;
-    private final UUID id;
-    private final boolean add;
-
-    public ClientboundWorkstationChangeBlockPacket(BlockPos pos, boolean add, UUID id) {
-        this.pos = pos;
-        this.id = id;
-        this.add = add;
-    }
-
-    public ClientboundWorkstationChangeBlockPacket(FriendlyByteBuf buffer) {
-        CompoundTag NBT = buffer.readNbt();
-        this.id = NBT.getUUID("uuid");
-        this.add = NBT.getBoolean("add");
-        int[] positions =  NBT.getIntArray("pos");
-        this.pos = new BlockPos(positions[0], positions[1], positions[2]);
-    }
+public record ClientboundWorkstationChangeBlockPacket(BlockPos pos, boolean add, UUID uuid) implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<ClientboundWorkstationChangeBlockPacket> TYPE = new CustomPacketPayload.Type<>(Clinker.resource("client/workstation/changeblock"));
+    public static final StreamCodec<ByteBuf, ClientboundWorkstationChangeBlockPacket> STREAM_CODEC = StreamCodec.composite(
+            ExtraByteBufCodecs.BLOCK_POS,
+            ClientboundWorkstationChangeBlockPacket::pos,
+            ByteBufCodecs.BOOL,
+            ClientboundWorkstationChangeBlockPacket::add,
+            ExtraByteBufCodecs.UUID,
+            ClientboundWorkstationChangeBlockPacket::uuid,
+            ClientboundWorkstationChangeBlockPacket::new
+    );
 
     @Override
-    public void write(FriendlyByteBuf buffer) {
-        CompoundTag NBT = new CompoundTag();
-        NBT.putUUID("uuid", this.id);
-        NBT.putBoolean("add", this.add);
-        NBT.putIntArray("pos", new int[]{this.pos.getX(), this.pos.getY(), this.pos.getZ()});
-
-        buffer.writeNbt(NBT);
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    @Override
-    public void run(PlayPayloadContext context) {
+    public void handle(final IPayloadContext context) {
         WorkstationManager clientManager = WorkstationManager.clientWorkstationManager;
         if (this.add) {
-            clientManager.addWorkstationBlockToUUID(pos, id);
+            clientManager.addWorkstationBlockToUUID(pos, uuid);
         } else {
-            clientManager.removeWorkstationBlockFromUUID(pos, id);
+            clientManager.removeWorkstationBlockFromUUID(pos, uuid);
         }
     }
 }

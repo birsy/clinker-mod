@@ -1,38 +1,37 @@
 package birsy.clinker.common.networking.packet.workstation;
 
-import birsy.clinker.common.networking.packet.ServerboundPacket;
 import birsy.clinker.common.world.alchemy.workstation.WorkstationManager;
-import net.minecraft.network.FriendlyByteBuf;
+import birsy.clinker.core.Clinker;
+import birsy.clinker.core.util.codecs.ExtraByteBufCodecs;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.Level;
 
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.UUID;
 
-public class ServerboundWorkstationLoadRequestPacket extends ServerboundPacket {
-    private final UUID id;
-    public ServerboundWorkstationLoadRequestPacket(UUID id, Level level) {
-        this.id = id;
-    }
-
-    public ServerboundWorkstationLoadRequestPacket(FriendlyByteBuf buffer) {
-        this.id = buffer.readUUID();
-    }
+public record ServerboundWorkstationLoadRequestPacket(UUID uuid) implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<ServerboundWorkstationLoadRequestPacket> TYPE = new CustomPacketPayload.Type<>(Clinker.resource("server/workstation/load"));
+    public static final StreamCodec<ByteBuf, ServerboundWorkstationLoadRequestPacket> STREAM_CODEC = StreamCodec.composite(
+            ExtraByteBufCodecs.UUID,
+            ServerboundWorkstationLoadRequestPacket::uuid,
+            ServerboundWorkstationLoadRequestPacket::new
+    );
 
     @Override
-    public void write(FriendlyByteBuf buffer) {
-        buffer.writeUUID(id);
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    @Override
-    public void run(PlayPayloadContext context) {
-        Entity sender = context.player().get();
+    public void handle(final IPayloadContext context) {
+        Entity sender = context.player();
         if (sender.level() instanceof ServerLevel level) {
             WorkstationManager manager = WorkstationManager.managerByLevel.get(level);
-            manager.loadWorkstationToClient(id, (ServerPlayer) context.player().get());
+            manager.loadWorkstationToClient(uuid, (ServerPlayer) context.player());
         }
     }
 }

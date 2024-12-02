@@ -24,7 +24,8 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import org.joml.*;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.util.List;
 import java.util.function.Function;

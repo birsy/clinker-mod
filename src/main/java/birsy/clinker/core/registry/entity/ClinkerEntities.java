@@ -79,7 +79,7 @@ public class ClinkerEntities {
     @SubscribeEvent
     public static void registerEntityAttribute(EntityAttributeCreationEvent event) {
         event.put(GNOMAD_SOLDIER.get(), Zombie.createAttributes().build());
-        event.put(GNOMAD_MOGUL.get(), Zombie.createAttributes().build());
+        event.put(GNOMAD_MOGUL.get(), GnomadMogulEntity.createAttributes().build());
         event.put(TEST_ROPE.get(), Zombie.createAttributes().build());
 
         event.put(MOLD.get(), MoldEntity.createAttributes().build());

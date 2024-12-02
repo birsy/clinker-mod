@@ -13,9 +13,9 @@ import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.level.material.FogType;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ViewportEvent;
 
 @EventBusSubscriber(modid = Clinker.MOD_ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public class OthershoreFogRenderer {

@@ -1,61 +1,35 @@
 package birsy.clinker.common.networking.packet.debug;
 
-import birsy.clinker.common.networking.packet.ClientboundPacket;
+import birsy.clinker.core.Clinker;
+import birsy.clinker.core.util.codecs.ExtraByteBufCodecs;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.Path;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
-
-import java.util.ArrayList;
-import java.util.List;
-
-public class ClientboundPathfindingDebugPacket extends ClientboundPacket {
-    private final Path path;
-    private final float maxDistanceToWaypoint;
-    private final int id;
+public record ClientboundPathfindingDebugPacket(Path path, float maxDistanceToWaypoint, int id) implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<ClientboundPathfindingDebugPacket> TYPE = new CustomPacketPayload.Type<>(Clinker.resource("debug/path"));
+    public static final StreamCodec<ByteBuf, ClientboundPathfindingDebugPacket> STREAM_CODEC = StreamCodec.composite(
+            ExtraByteBufCodecs.PATH, ClientboundPathfindingDebugPacket::path,
+            ByteBufCodecs.FLOAT, ClientboundPathfindingDebugPacket::maxDistanceToWaypoint,
+            ByteBufCodecs.INT, ClientboundPathfindingDebugPacket::id,
+            ClientboundPathfindingDebugPacket::new
+    );
 
     public ClientboundPathfindingDebugPacket(Mob entity, Path path) {
-        this.path = path;
-        this.maxDistanceToWaypoint = entity.getNavigation().getMaxDistanceToWaypoint();
-        this.id = entity.getId();
-    }
-
-    public ClientboundPathfindingDebugPacket(FriendlyByteBuf buffer) {
-        this.id = buffer.readInt();
-        this.maxDistanceToWaypoint = buffer.readFloat();
-        BlockPos target = buffer.readBlockPos();
-        boolean reached  = buffer.readBoolean();
-        int index = buffer.readInt();
-
-        int nodeCount = buffer.readInt();
-        List<Node> nodes = new ArrayList<>();
-        for (int i = 0; i < nodeCount; i++) {
-            nodes.add(Node.createFromStream(buffer));
-        }
-        this.path = new Path(nodes, target, reached);
-        this.path.setNextNodeIndex(index);
+        this(path, entity.getNavigation().getMaxDistanceToWaypoint(), entity.getId());
     }
 
     @Override
-    public void write(FriendlyByteBuf buffer) {
-        buffer.writeInt(this.id);
-        buffer.writeFloat(this.maxDistanceToWaypoint);
-        buffer.writeBlockPos(path.getTarget());
-        buffer.writeBoolean(path.canReach());
-        buffer.writeInt(this.path.getNextNodeIndex());
-
-        buffer.writeInt(this.path.getNodeCount());
-        for (Node node : this.path.nodes) {
-            node.writeToStream(buffer);
-        }
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    @Override
-    public void run(PlayPayloadContext context) {
+    public void handle(final IPayloadContext context) {
         Minecraft mc = Minecraft.getInstance();
         mc.debugRenderer.pathfindingRenderer.addPath(id, path, maxDistanceToWaypoint);
     }

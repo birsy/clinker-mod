@@ -1,7 +1,7 @@
 package birsy.clinker.client.render.world;
 
 import birsy.clinker.core.util.MathUtil;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -13,7 +13,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.phys.Vec3;
-
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;

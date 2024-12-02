@@ -141,8 +141,7 @@ public class AlchemyBundleGUIRenderer {
 
         Matrix4f matrix = stack.last().pose();
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
         bufferbuilder.addVertex(matrix, x1, y2, z).setUv(u1, v2);
         bufferbuilder.addVertex(matrix, x2, y2, z).setUv(u2, v2);
         bufferbuilder.addVertex(matrix, x2, y1, z).setUv(u2, v1);
