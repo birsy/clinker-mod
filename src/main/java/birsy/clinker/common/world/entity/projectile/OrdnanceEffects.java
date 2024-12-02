@@ -44,7 +44,7 @@ public record OrdnanceEffects(
         }
         tag.putBoolean("Electrified", this.electrified());
         tag.putBoolean("Trail", this.trail());
-        tag.putInt("Color", this.setColor());
+        tag.putInt("Color", this.color());
         tag.putInt("MaxFuseTime", this.maxFuseTime());
         return tag;
     }

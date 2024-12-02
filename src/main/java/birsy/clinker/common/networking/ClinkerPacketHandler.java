@@ -6,6 +6,9 @@ import birsy.clinker.common.networking.packet.debug.ClientboundPathfindingDebugP
 import birsy.clinker.common.networking.packet.debug.GnomadSquadDebugPacket;
 import birsy.clinker.common.networking.packet.debug.GnomadSquadRemovalDebugPacket;
 import birsy.clinker.common.networking.packet.interactable.*;
+import birsy.clinker.common.networking.packet.ropeentity.ClientboundRopeEntityInitPacket;
+import birsy.clinker.common.networking.packet.ropeentity.ClientboundRopeEntitySegmentAddPacket;
+import birsy.clinker.common.networking.packet.ropeentity.ClientboundRopeEntitySyncPacket;
 import birsy.clinker.common.networking.packet.workstation.ClientboundWorkstationChangeBlockPacket;
 import birsy.clinker.common.networking.packet.workstation.ClientboundWorkstationLoadPacket;
 import birsy.clinker.common.networking.packet.workstation.ClientboundWorkstationMergePacket;
@@ -17,9 +20,11 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
-import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+
 
 @EventBusSubscriber(modid = Clinker.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public class ClinkerPacketHandler {
@@ -29,19 +34,18 @@ public class ClinkerPacketHandler {
     }
 
     @SubscribeEvent
-    public static void register(RegisterPayloadHandlerEvent event) {
-        final IPayloadRegistrar registrar = event.registrar(Clinker.MOD_ID);
+    public static void register(RegisterPayloadHandlersEvent event) {
+        PayloadRegistrar registrar = event.registrar(Clinker.MOD_ID);
+
+        registrar.playToClient(ClientboundPushPacket.TYPE, ClientboundPushPacket.STREAM_CODEC, ClientboundPushPacket::handle);
+
+        registrar.playToClient(ClientboundRopeEntityInitPacket.TYPE, ClientboundRopeEntityInitPacket.STREAM_CODEC, ClientboundRopeEntityInitPacket::handle);
+        registrar.playToClient(ClientboundRopeEntitySegmentAddPacket.TYPE, ClientboundRopeEntitySegmentAddPacket.STREAM_CODEC, ClientboundRopeEntitySegmentAddPacket::handle);
+        registrar.playToClient(ClientboundRopeEntitySyncPacket.TYPE, ClientboundRopeEntitySyncPacket.STREAM_CODEC, ClientboundRopeEntitySyncPacket::handle);
+
+        //debug packets
         registrar.play(createId(ClientboundPathfindingDebugPacket.class), ClientboundPathfindingDebugPacket::new, ClientboundPathfindingDebugPacket::handle);
 
-        registrar.play(createId(ServerboundInteractableLoadChunkRequestPacket.class), ServerboundInteractableLoadChunkRequestPacket::new, ServerboundInteractableLoadChunkRequestPacket::handle);
-        registrar.play(createId(ServerboundInteractableLoadRequestPacket.class), ServerboundInteractableLoadRequestPacket::new, ServerboundInteractableLoadRequestPacket::handle);
-        registrar.play(createId(ClientboundInteractableLoadChunkPacket.class), ClientboundInteractableLoadChunkPacket::new, ClientboundInteractableLoadChunkPacket::handle);
-        registrar.play(createId(ClientboundInteractableUnloadChunkPacket.class), ClientboundInteractableUnloadChunkPacket::new, ClientboundInteractableUnloadChunkPacket::handle);
-        registrar.play(createId(ClientboundInteractableAddPacket.class), ClientboundInteractableAddPacket::new, ClientboundInteractableAddPacket::handle);
-        registrar.play(createId(ClientboundInteractableRemovePacket.class), ClientboundInteractableRemovePacket::new, ClientboundInteractableRemovePacket::handle);
-        registrar.play(createId(ClientboundInteractableUpdatePacket.class), ClientboundInteractableUpdatePacket::new, ClientboundInteractableUpdatePacket::handle);
-
-        registrar.play(createId(ClientboundPushPacket.class), ClientboundPushPacket::new, ClientboundPushPacket::handle);
 
         registrar.play(createId(ClientboundWorkstationChangeBlockPacket.class), ClientboundWorkstationChangeBlockPacket::new, ClientboundWorkstationChangeBlockPacket::handle);
         registrar.play(createId(ClientboundWorkstationLoadPacket.class), ClientboundWorkstationLoadPacket::new, ClientboundWorkstationLoadPacket::handle);

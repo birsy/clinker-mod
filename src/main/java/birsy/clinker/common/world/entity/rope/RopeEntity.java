@@ -2,11 +2,10 @@ package birsy.clinker.common.world.entity.rope;
 
 import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.ClientboundPushPacket;
-import birsy.clinker.common.networking.packet.ClientboundRopeEntitySegmentAddPacket;
+import birsy.clinker.common.networking.packet.ropeentity.ClientboundRopeEntitySegmentAddPacket;
 import birsy.clinker.common.world.entity.ColliderEntity;
 import birsy.clinker.common.world.entity.CollisionParent;
 import birsy.clinker.core.util.JomlConversions;
-import birsy.clinker.core.util.VectorUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerPlayer;
