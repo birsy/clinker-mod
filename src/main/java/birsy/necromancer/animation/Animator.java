@@ -56,6 +56,7 @@ public abstract class Animator<P extends SkeletonParent, T extends Skeleton<P>> 
     public static class AnimationEntry<P extends SkeletonParent, T extends Skeleton<P>> {
         final Animation<P, T> animation;
         final int priority;
+
         float mixFactor;
         float time;
 
@@ -64,9 +65,11 @@ public abstract class Animator<P extends SkeletonParent, T extends Skeleton<P>> 
             this.priority = priority;
         }
 
+        public float getMixFactor() { return mixFactor; }
         public void setMixFactor(float mixFactor) {
             this.mixFactor = mixFactor;
         }
+        public float getTime() { return time; }
         public void setTime(float time) {
             this.time = time;
         }
@@ -79,7 +82,7 @@ public abstract class Animator<P extends SkeletonParent, T extends Skeleton<P>> 
     public static class TimedAnimationEntry<P extends SkeletonParent, T extends Skeleton<P>> extends AnimationEntry<P, T> {
         final int lengthInTicks;
         boolean rewinding = false;
-        boolean playing = false;
+        public boolean playing = false;
 
         private TimedAnimationEntry(Animation<P, T> animation, int priority, int lengthInTicks) {
             super(animation, priority);
@@ -87,19 +90,18 @@ public abstract class Animator<P extends SkeletonParent, T extends Skeleton<P>> 
         }
 
         public void begin() { this.time = 0; this.resume(); }
-        public void resume() { this.playing = true; }
+        public void resume() { this.playing = true; if (this.time > lengthInTicks) this.time = 0; }
         public void rewind() { this.rewinding = true; }
         public void stop() { this.playing = false; this.rewinding = false; }
 
         private void updateTime(P parent, T skeleton) {
-            if (this.playing && this.animation.running(parent, skeleton, mixFactor, time)) this.time += (this.rewinding ? -1.0F : 1.0F) / lengthInTicks;
-            if ((this.time > 1 && !rewinding) || (time < 0 && rewinding)) this.stop();
+            if (this.playing && this.animation.running(parent, skeleton, mixFactor, time)) this.time += (this.rewinding ? -1.0F : 1.0F);
+            if ((this.time > lengthInTicks && !rewinding) || (time < 0 && rewinding)) this.stop();
         }
 
         @Override
         protected void apply(P parent, T skeleton) {
             updateTime(parent, skeleton);
-            if (!this.playing) return;
             super.apply(parent, skeleton);
         }
     }

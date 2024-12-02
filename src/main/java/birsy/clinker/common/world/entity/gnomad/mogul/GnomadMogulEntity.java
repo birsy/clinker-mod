@@ -1,7 +1,9 @@
-package birsy.clinker.common.world.entity.gnomad;
+package birsy.clinker.common.world.entity.gnomad.mogul;
 
 import birsy.clinker.client.entity.mogul.MogulAnimator;
 import birsy.clinker.client.entity.mogul.MogulSkeleton;
+import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
+import birsy.clinker.core.Clinker;
 import birsy.necromancer.SkeletonParent;
 import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.ClientboundBrainDebugPacket;
@@ -18,21 +20,20 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.util.valueproviders.ConstantFloat;
 import net.minecraft.world.DifficultyInstance;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.SpawnGroupData;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
-import net.minecraft.world.entity.monster.warden.Warden;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
@@ -54,20 +55,45 @@ import net.tslat.smartbrainlib.api.core.sensor.vanilla.HurtBySensor;
 import net.tslat.smartbrainlib.api.core.sensor.vanilla.InWaterSensor;
 import net.tslat.smartbrainlib.api.core.sensor.vanilla.NearbyLivingEntitySensor;
 import net.tslat.smartbrainlib.api.core.sensor.vanilla.NearbyPlayersSensor;
+import net.tslat.smartbrainlib.util.EntityRetrievalUtil;
 import net.tslat.smartbrainlib.util.RandomUtil;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Quaternionf;
+import org.joml.Vector2f;
+import org.joml.Vector3d;
+import org.joml.Vector3f;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 import static net.minecraft.world.entity.monster.Monster.createMonsterAttributes;
 
 public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<GnomadMogulEntity>, SkeletonParent<GnomadMogulEntity, MogulSkeleton, MogulAnimator> {
     private static final int[] ROBE_COLORS = new int[]{0x4d423c, 0x513337, 0x4a4751, 0x505049, 0x4f4c4b};
     private static final EntityDataAccessor<Integer> DATA_ROBE_COLOR = SynchedEntityData.defineId(GnomadMogulEntity.class, EntityDataSerializers.INT);
+    private final MogulAttackHandler attackHandler;
 
     public GnomadMogulEntity(EntityType<? extends GnomadEntity> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         this.setMaxUpStep(1.1F);
+        this.attackHandler = new MogulAttackHandler(this);
+    }
+
+    private Vector3f knockbackVector = new Vector3f();
+    protected void attack(LivingEntity entity, float damage, float knockbackX, float knockbackY, float knockbackZ) {
+        float attackDamage = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * damage;
+        boolean intentionalHit = entity == this.getTarget();
+        if (entity.hurt(intentionalHit ? this.damageSources().noAggroMobAttack(this) : this.damageSources().mobAttack(this), attackDamage)) {
+            float knockbackResistance = (float) entity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE);
+            float knockbackMultiplier = Math.max(0.0F, 1.0F - knockbackResistance);
+            Vector3f knockback = knockbackVector.set(knockbackX, knockbackY, knockbackZ)
+                    .rotateY(-this.yBodyRot * Mth.DEG_TO_RAD)
+                    .mul(knockbackMultiplier);
+            entity.addDeltaMovement(new Vec3(knockback.x(), knockback.y(), knockback.z()));
+            this.doEnchantDamageEffects(this, entity);
+            this.setLastHurtMob(entity);
+        }
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -76,6 +102,12 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
                 .add(Attributes.MOVEMENT_SPEED, 0.5D)
                 //.add(NeoForgeMod.STEP_HEIGHT.value(), 1.1D)
                 .add(Attributes.ATTACK_DAMAGE, 2.0D);
+    }
+
+    @Override
+    public void handleEntityEvent(byte pId) {
+        super.handleEntityEvent(pId);
+        if (this.level().isClientSide()) this.attackHandler.handleAnimationEvent(pId, this.animator);
     }
 
     // data
@@ -114,13 +146,25 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
         tickBrain(this);
         super.customServerAiStep();
         ClinkerPacketHandler.sendToClientsTrackingEntity(this, new ClientboundBrainDebugPacket(this));
-       // if (this.navigation.getPath() != null)
     }
 
     @Override
     public void tick() {
         super.tick();
         if (this.level().isClientSide()) this.computeHeightOffset();
+        if (!this.level().isClientSide()) {
+            this.attackHandler.tick();
+            if (this.tickCount % 100 == 0) {
+                int attack = this.random.nextIntBetweenInclusive(0, 2);
+                if (attack == 0) this.attackHandler.beginAttack(MogulAttackHandler.SWING_UP);
+                if (attack == 1) this.attackHandler.beginAttack(MogulAttackHandler.SWING_LEFT);
+                if (attack == 2) this.attackHandler.beginAttack(MogulAttackHandler.SWING_RIGHT);
+            }
+
+            if ((this.tickCount - 16) % 100 == 0) {
+                this.attackHandler.cancelAttack();
+            }
+        }
     }
 
     @Override
@@ -198,7 +242,6 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
         this.entityData.set(DATA_ROBE_COLOR, robeColor);
     }
 
-    
     protected double prevSmoothedHeight = 0;
     
     protected double smoothedHeight = 0;

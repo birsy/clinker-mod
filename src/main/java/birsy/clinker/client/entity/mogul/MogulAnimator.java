@@ -1,21 +1,19 @@
 package birsy.clinker.client.entity.mogul;
 
+import birsy.clinker.common.world.entity.gnomad.mogul.MogulAttackHandler;
+import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
 import birsy.necromancer.animation.Animation;
 import birsy.necromancer.animation.Animator;
-import birsy.clinker.common.world.entity.gnomad.GnomadMogulEntity;
+import birsy.clinker.common.world.entity.gnomad.mogul.GnomadMogulEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.tslat.smartbrainlib.util.RandomUtil;
 import org.joml.Vector3f;
 
 public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
-    private static MogulAnimator.IdleAnimation IDLE = new IdleAnimation();
-    private static MogulAnimator.MaskAnimation MASK = new MaskAnimation();
-    private static MogulAnimator.WalkAnimation WALK = new WalkAnimation();
-    private static MogulAnimator.StrafeAnimation STRAFE = new StrafeAnimation();
-
     public final AnimationEntry<?, ?> idleAnim, maskAnim, walkAnim, strafeAnim;
+    public final TimedAnimationEntry<?, ?> upSwingAnim, leftSwingAnim, rightSwingAnim;
     private int maskShakeTime = 0, maskShakeDuration = 1;
     private boolean maskShaking = false;
 
@@ -24,20 +22,37 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
 
     protected MogulAnimator(GnomadMogulEntity parent, MogulSkeleton skeleton) {
         super(parent, skeleton);
-        this.strafeAnim = this.addAnimation(STRAFE, 2);
-        this.walkAnim = this.addAnimation(WALK, 1);
-        this.maskAnim = this.addAnimation(MASK, 0);
-        this.idleAnim = this.addAnimation(IDLE, 0);
+        this.upSwingAnim = this.addTimedAnimation(UpAttackAnimation.INSTANCE, 3, UpAttackAnimation.INSTANCE.animLength);
+        this.leftSwingAnim = this.addTimedAnimation(LeftAttackAnimation.INSTANCE, 3, LeftAttackAnimation.INSTANCE.animLength);
+        this.rightSwingAnim = this.addTimedAnimation(RightAttackAnimation.INSTANCE, 3, RightAttackAnimation.INSTANCE.animLength);
+
+        this.strafeAnim = this.addAnimation(StrafeAnimation.INSTANCE, 2);
+        this.walkAnim = this.addAnimation(WalkAnimation.INSTANCE, 1);
+        this.maskAnim = this.addAnimation(MaskAnimation.INSTANCE, 0);
+        this.idleAnim = this.addAnimation(IdleAnimation.INSTANCE, 0);
+    }
+
+    private void updateAttackAnim(TimedAnimationEntry<?, ?> attack) {
+        if (attack.playing) {
+            attack.setMixFactor(Mth.lerp(0.3F, attack.getMixFactor(), 1));
+        } else {
+            attack.setMixFactor(Mth.lerp(0.1F, attack.getMixFactor(), 0));
+        }
     }
 
     @Override
     public void animate(GnomadMogulEntity entity) {
         super.animate(entity);
+        // attacks!
+        updateAttackAnim(upSwingAnim);
+        updateAttackAnim(rightSwingAnim);
+        updateAttackAnim(leftSwingAnim);
+
         // idle
         this.idleAnim.setTime(entity.tickCount);
         this.idleAnim.setMixFactor(1.0F);
 
-        // randomly start shaking maskAnim
+        // randomly start shaking face
         if (maskShaking) {
             this.maskShakeTime++;
             // if we're out of time, stop shaking
@@ -90,7 +105,6 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
         }
 
         smoothedAcceleration.lerp(temp.set(entity.acceleration.x(), entity.acceleration.y(), entity.acceleration.z()), 0.15F);
-        //if (Math.abs(entity.acceleration.y) > Mth.abs(smoothedAcceleration.y)) smoothedAcceleration.set(smoothedAcceleration.x(), entity.acceleration.y, smoothedAcceleration.z());
 
         Vector3f axis = smoothedAcceleration.mul(1, 0, 1, temp);
         if (axis.lengthSquared() > 0) {
@@ -105,6 +119,7 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
     }
 
     private static class MaskAnimation extends Animation<GnomadMogulEntity, MogulSkeleton> {
+        protected static MaskAnimation INSTANCE = new MaskAnimation();
         @Override
         public void apply(GnomadMogulEntity entity, MogulSkeleton skeleton, float mixFactor, float time) {
             float headShake = Mth.sin(time * 0.44F) * mixFactor * 0.05F * Mth.RAD_TO_DEG;
@@ -119,6 +134,7 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
     }
 
     private static class IdleAnimation extends Animation<GnomadMogulEntity, MogulSkeleton> {
+        protected static IdleAnimation INSTANCE = new IdleAnimation();
         @Override
         public void apply(GnomadMogulEntity entity, MogulSkeleton skeleton, float mixFactor, float time) {
             float bodyYaw = 180 - entity.yBodyRot;
@@ -158,6 +174,7 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
     }
 
     private static class WalkAnimation extends Animation<GnomadMogulEntity, MogulSkeleton> {
+        protected static WalkAnimation INSTANCE = new WalkAnimation();
         @Override
         public void apply(GnomadMogulEntity parent, MogulSkeleton skeleton, float mixFactor, float time) {
             float globalDegree = 1.0F;
@@ -209,6 +226,7 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
     }
 
     private static class StrafeAnimation extends Animation<GnomadMogulEntity, MogulSkeleton> {
+        protected static StrafeAnimation INSTANCE = new StrafeAnimation();
         @Override
         public void apply(GnomadMogulEntity parent, MogulSkeleton skeleton, float mixFactor, float time) {
             float globalDegree = 1.0F;
@@ -253,6 +271,220 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
             skeleton.MogulRightArm.rotateDeg(Mth.lerp((sign + 1.0F) * 0.5F, 10, 20) * mixFactor * globalDegree, Direction.Axis.Z);
 
             skeleton.MogulNeck.rotateDeg(10 * mixFactor * globalDegree * sign, Direction.Axis.Z);
+        }
+    }
+
+    private static class AttackAnimation extends Animation<GnomadMogulEntity, MogulSkeleton> {
+        protected final int animLength, windupLength, swingLength, recoveryLength;
+        private AttackAnimation(MogulAttackHandler.MogulAttackType attackType) {
+            this.animLength = attackType.length;
+            this.windupLength = attackType.windupLength;
+            this.swingLength = attackType.swingLength;
+            this.recoveryLength = attackType.recoveryLength;
+        }
+    }
+
+    private static class UpAttackAnimation extends AttackAnimation {
+        protected static UpAttackAnimation INSTANCE = new UpAttackAnimation();
+
+        private UpAttackAnimation() {
+            super(MogulAttackHandler.SWING_UP);
+        }
+
+        @Override
+        public void apply(GnomadMogulEntity parent, MogulSkeleton skeleton, float mixFactor, float time) {
+            float timeDelayed = time - 0.2F;
+            float blend = 1 - Mth.clamp((time - (windupLength + swingLength)) / recoveryLength, 0, 1);
+            blend = MathUtils.smoothstep(blend) * mixFactor;
+            {   // windup anim
+                float windupTime = Mth.clamp(time / windupLength, 0, 1);
+                float windupTimeDelayed = Mth.clamp(timeDelayed / windupLength, 0, 1);
+
+                float weaponSpinTime = Mth.clamp(time / (windupLength * 1.5F), 0, 1);
+                float weaponSpin = MathUtils.ease(weaponSpinTime, MathUtils.EasingType.easeOutBack);
+                skeleton.MogulRightArmGrasp.rotateDeg(-40 * weaponSpin * blend, Direction.Axis.X);
+                skeleton.MogulRightArmGrasp.rotateDeg(180 * weaponSpin * blend, Direction.Axis.Y);
+                Vector3f movement = skeleton.MogulRightArmGrasp.rotation.transform(0, 1, 0, new Vector3f());
+                float movementAmount = 5 * weaponSpin * blend;
+                skeleton.MogulRightArmGrasp.x += movement.x * movementAmount;
+                skeleton.MogulRightArmGrasp.y += movement.y * movementAmount;
+                skeleton.MogulRightArmGrasp.z += movement.z * movementAmount;
+
+                float armRaise = MathUtils.ease(windupTime, MathUtils.EasingType.easeOutBack);
+                skeleton.MogulRightArm.rotateDeg(30 * armRaise * blend, Direction.Axis.Y);
+                skeleton.MogulRightArm.rotateDeg(30 * armRaise * blend, Direction.Axis.X);
+                skeleton.MogulRightArm.z -= 8 * MathUtils.ease(windupTime, MathUtils.EasingType.easeInOutQuad) * blend;
+
+                float bodyRot = MathUtils.ease(windupTime, MathUtils.EasingType.easeInOutBack);
+                skeleton.MogulRoot.rotateDeg(5 * bodyRot * blend, Direction.Axis.Z);
+                skeleton.MogulRoot.rotateDeg(-15 * bodyRot * blend, Direction.Axis.X);
+                skeleton.MogulFrontRobe.rotateDeg(15 * bodyRot * blend, Direction.Axis.X);
+                skeleton.MogulBackRobe.rotateDeg(15 * bodyRot * blend, Direction.Axis.X);
+
+                float neckRot = MathUtils.ease(windupTimeDelayed, MathUtils.EasingType.easeInOutBack);
+                skeleton.MogulNeck.rotateDeg(15 * bodyRot * blend, Direction.Axis.X);
+                skeleton.MogulNeck.rotateDeg(-15 * neckRot * blend, Direction.Axis.X);
+
+                float armRot = MathUtils.ease(windupTimeDelayed, MathUtils.EasingType.easeInOutBack);
+                skeleton.MogulLeftArm.rotateDeg(15 * bodyRot * blend, Direction.Axis.X);
+                skeleton.MogulLeftArm.rotateDeg(-15 * armRot * blend, Direction.Axis.X);
+            }
+            {   // swing anim
+                float swingTime = Mth.clamp((time - windupLength) / swingLength, 0, 1);
+                float swingTimeDelayed = Mth.clamp((timeDelayed - windupLength) / swingLength, 0, 1);
+
+                float armRaise = MathUtils.ease(swingTime, MathUtils.EasingType.easeOutBack);
+                skeleton.MogulRightArm.rotateDeg(-40 * armRaise * blend, Direction.Axis.Y);
+                skeleton.MogulRightArm.rotateDeg(90 * armRaise * blend, Direction.Axis.X);
+
+                float bodyRot = MathUtils.ease(swingTime, MathUtils.EasingType.easeOutBack);
+                skeleton.MogulRoot.rotateDeg(-10 * bodyRot * blend, Direction.Axis.Z);
+                skeleton.MogulRoot.rotateDeg(30 * bodyRot * blend, Direction.Axis.X);
+                skeleton.MogulFrontRobe.rotateDeg(-40 * bodyRot * blend, Direction.Axis.X);
+                skeleton.MogulBackRobe.rotateDeg(-40 * bodyRot * blend, Direction.Axis.X);
+
+                float neckRot = MathUtils.ease(swingTimeDelayed, MathUtils.EasingType.easeOutBack);
+                skeleton.MogulNeck.rotateDeg(-30 * bodyRot * blend, Direction.Axis.X);
+                skeleton.MogulNeck.rotateDeg(30 * neckRot * blend, Direction.Axis.X);
+
+                float armRot = MathUtils.ease(swingTimeDelayed, MathUtils.EasingType.easeInOutBack);
+                skeleton.MogulLeftArm.rotateDeg(15 * bodyRot * blend, Direction.Axis.X);
+                skeleton.MogulLeftArm.rotateDeg(-15 * armRot * blend, Direction.Axis.X);
+            }
+        }
+    }
+
+    private static class LeftAttackAnimation extends AttackAnimation {
+        protected static LeftAttackAnimation INSTANCE = new LeftAttackAnimation();
+
+        private LeftAttackAnimation() {
+            super(MogulAttackHandler.SWING_LEFT);
+        }
+
+        @Override
+        public void apply(GnomadMogulEntity parent, MogulSkeleton skeleton, float mixFactor, float time) {
+            float timeDelayed = time - 0.1F;
+            float blend = 1 - Mth.clamp((time - (windupLength + swingLength)) / recoveryLength, 0, 1);
+
+            blend = MathUtils.smoothstep(blend) * mixFactor;
+            {   // windup anim
+                float windupTime = Mth.clamp(time / windupLength, 0, 1);
+                float windupTimeDelayed = Mth.clamp(timeDelayed / windupLength, 0, 1);
+                float flap = -Mth.cos(2 * Mth.PI * windupTime) * 0.5F + 0.5F;
+
+                float armRot = MathUtils.ease(windupTime, MathUtils.EasingType.easeInOutBack);
+                skeleton.MogulRightArm.rotateDeg(100 * armRot * blend, Direction.Axis.X);
+                skeleton.MogulRightArm.rotateDeg(40 * armRot * blend, Direction.Axis.Z);
+                skeleton.MogulRightArm.rotateDeg(-40 * armRot * blend, Direction.Axis.Y);
+
+                skeleton.MogulLeftArm.rotateDeg(4 * flap * blend, Direction.Axis.Z);
+
+                float offset = MathUtils.ease(windupTime, MathUtils.EasingType.easeInOutQuad);
+                skeleton.MogulRightArm.z -= 3 * offset * blend;
+                skeleton.MogulRightArm.x -= 2 * offset * blend;
+                skeleton.MogulRightArmGrasp.z -= 8 * offset * blend;
+
+                float bodyRot = MathUtils.ease(windupTime, MathUtils.EasingType.easeInOutBack);
+                skeleton.MogulRoot.rotateDeg(5 * bodyRot * blend, Direction.Axis.X);
+                skeleton.MogulRoot.rotateDeg(-15 * bodyRot * blend, Direction.Axis.Y);
+
+                float headRot = MathUtils.ease(windupTimeDelayed, MathUtils.EasingType.easeInOutBack);
+                skeleton.MogulNeck.rotateDeg(-5 * headRot * blend, Direction.Axis.X);
+                skeleton.MogulNeck.rotateDeg(15 * headRot * blend, Direction.Axis.Y);
+
+                skeleton.MogulLeftRobe.rotateDeg(5 * flap * blend, Direction.Axis.X);
+                skeleton.MogulRightRobe.rotateDeg(-5 * flap * blend, Direction.Axis.X);
+            }
+            {   // swing anim
+                float swingTime = Mth.clamp((time - windupLength) / swingLength, 0, 1);
+                float swingTimeDelayed = Mth.clamp((timeDelayed - windupLength) / swingLength, 0, 1);
+                float flap = -Mth.cos(2 * Mth.PI * swingTime) * 0.5F + 0.5F;
+
+                float armRot = MathUtils.ease(swingTime, MathUtils.EasingType.easeInOutBack);
+                skeleton.MogulRightArm.rotateDeg(-20 * armRot * blend, Direction.Axis.Y);
+                skeleton.MogulRightArm.rotateDeg(-120 * armRot * blend, Direction.Axis.X);
+                //skeleton.MogulRightArm.rotateDeg(-60 * armRot * blend, Direction.Axis.Z);
+                float offset = MathUtils.ease(swingTime, MathUtils.EasingType.easeOutBack);
+                skeleton.MogulRightArm.x += 2 * offset * blend;
+                skeleton.MogulRightArm.z -= 8 * offset * blend;
+
+                skeleton.MogulLeftArm.rotateDeg(-5 * flap * blend, Direction.Axis.Z);
+                float otherArmRot = MathUtils.ease(swingTimeDelayed, MathUtils.EasingType.easeOutBack);
+                skeleton.MogulLeftArm.rotateDeg(-10 * otherArmRot * blend, Direction.Axis.Z);
+
+                float bodyRot = MathUtils.ease(swingTime, MathUtils.EasingType.easeOutBack);
+                skeleton.MogulRoot.rotateDeg(-20 * bodyRot * blend, Direction.Axis.X);
+                skeleton.MogulRoot.rotateDeg(30 * bodyRot * blend, Direction.Axis.Y);
+
+                float headRot = MathUtils.ease(swingTimeDelayed, MathUtils.EasingType.easeOutBack);
+                skeleton.MogulNeck.rotateDeg(20 * headRot * blend, Direction.Axis.X);
+                skeleton.MogulNeck.rotateDeg(-30 * headRot * blend, Direction.Axis.Y);
+                skeleton.MogulHead.rotateDeg(15 * headRot * blend, Direction.Axis.Z);
+
+                skeleton.MogulLeftRobe.rotateDeg(8 * flap * blend, Direction.Axis.X);
+                skeleton.MogulRightRobe.rotateDeg(-8 * flap * blend, Direction.Axis.X);
+
+                skeleton.MogulHelmetBase.rotateDeg(5 * flap * blend, Direction.Axis.Z);
+
+            }
+        }
+    }
+
+    private static class RightAttackAnimation extends AttackAnimation {
+        protected static RightAttackAnimation INSTANCE = new RightAttackAnimation();
+
+        private RightAttackAnimation() {
+            super(MogulAttackHandler.SWING_RIGHT);
+        }
+
+        @Override
+        public void apply(GnomadMogulEntity parent, MogulSkeleton skeleton, float mixFactor, float time) {
+            float timeDelayed = time - 0.2F;
+            float timeDelayedForward = time + 0.1F;
+
+            float blend = 1 - Mth.clamp((time - (windupLength + swingLength)) / recoveryLength, 0, 1);
+            blend = MathUtils.smoothstep(blend) * mixFactor;
+            {   // windup anim
+                float windupTime = Mth.clamp(time / windupLength, 0, 1);
+                float windupTimeDelayed = Mth.clamp(timeDelayed / windupLength, 0, 1);
+                float windupTimeDelayedForward = Mth.clamp(timeDelayedForward / windupLength, 0, 1);
+
+                float armRaise = MathUtils.ease(windupTime, MathUtils.EasingType.easeInOutBack);
+                skeleton.MogulRightArm.rotateDeg(30 * armRaise * blend, Direction.Axis.X);
+                skeleton.MogulRightArm.rotateDeg(80 * armRaise * blend, Direction.Axis.Y);
+                skeleton.MogulRightArm.z -= 8 * MathUtils.ease(windupTime, MathUtils.EasingType.easeInOutQuad) * blend;
+
+                float armRot = MathUtils.ease(windupTime, MathUtils.EasingType.easeInOutBack);
+                skeleton.MogulRightArm.rotateDeg(30 * armRot * blend, Direction.Axis.X);
+                float otherArmRot = MathUtils.ease(windupTimeDelayed, MathUtils.EasingType.easeInOutBack);
+                skeleton.MogulLeftArm.rotateDeg(-4 * otherArmRot * blend, Direction.Axis.Z);
+
+                float bodyRot = MathUtils.ease(windupTime, MathUtils.EasingType.easeInOutBack);
+                skeleton.MogulRoot.rotateDeg(15 * bodyRot * blend, Direction.Axis.Y);
+                float neckRot = MathUtils.ease(windupTimeDelayedForward, MathUtils.EasingType.easeInOutBack);
+                skeleton.MogulNeck.rotateDeg(-15 * neckRot * blend, Direction.Axis.Y);
+            }
+            {   // swing anim
+                float swingTime = Mth.clamp((time - windupLength) / swingLength, 0, 1);
+                float swingTimeDelayed = Mth.clamp((timeDelayed - windupLength) / swingLength, 0, 1);
+
+                float armRot = MathUtils.ease(swingTime, MathUtils.EasingType.easeOutBack);
+                skeleton.MogulRightArm.rotateDeg(-90 * armRot * blend, Direction.Axis.X);
+
+                float bodyRot = MathUtils.ease(swingTime, MathUtils.EasingType.easeOutBack);
+                skeleton.MogulRoot.rotateDeg(-30 * bodyRot * blend, Direction.Axis.Y);
+                skeleton.MogulNeck.rotateDeg(30 * bodyRot * blend, Direction.Axis.Y);
+
+                float otherArmRot = MathUtils.ease(swingTimeDelayed, MathUtils.EasingType.easeOutBack);
+                skeleton.MogulLeftArm.rotateDeg(4 * otherArmRot * blend, Direction.Axis.Z);
+            }
+
+            float windupTime = Mth.clamp((time - 0.2F) / (windupLength+swingLength), 0, 1);
+            Vector3f movement = skeleton.MogulRightArmGrasp.rotation.transform(0, 1, 0, new Vector3f());
+            float movementAmount = 10 * windupTime * blend;
+            skeleton.MogulRightArmGrasp.x += movement.x * movementAmount;
+            skeleton.MogulRightArmGrasp.y += movement.y * movementAmount;
+            skeleton.MogulRightArmGrasp.z += movement.z * movementAmount;
         }
     }
 }

@@ -2,7 +2,7 @@ package birsy.clinker.client.entity.mogul;
 
 import birsy.necromancer.Bone;
 import birsy.necromancer.Skeleton;
-import birsy.clinker.common.world.entity.gnomad.GnomadMogulEntity;
+import birsy.clinker.common.world.entity.gnomad.mogul.GnomadMogulEntity;
 import org.joml.Quaternionf;
 
 public class MogulSkeleton extends Skeleton<GnomadMogulEntity> {

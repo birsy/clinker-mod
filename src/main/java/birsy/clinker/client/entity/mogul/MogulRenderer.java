@@ -1,18 +1,23 @@
 package birsy.clinker.client.entity.mogul;
 
+import birsy.clinker.client.render.DebugRenderUtil;
+import birsy.clinker.common.world.entity.gnomad.mogul.MogulAttackHandler;
 import birsy.necromancer.render.NecromancerEntityRenderer;
 import birsy.necromancer.render.Skin;
 import birsy.clinker.client.entity.mogul.layer.MogulRobesLayer;
 import birsy.clinker.client.entity.mogul.layer.GnomadMogulWeaponLayer;
-import birsy.clinker.common.world.entity.gnomad.GnomadMogulEntity;
+import birsy.clinker.common.world.entity.gnomad.mogul.GnomadMogulEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.AABB;
+import org.joml.Vector3d;
+import org.joml.Vector3f;
 
 public class MogulRenderer extends NecromancerEntityRenderer<GnomadMogulEntity, MogulSkeleton> {
     protected static final MogulSkin SKIN = new MogulSkin();

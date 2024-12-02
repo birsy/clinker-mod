@@ -30,7 +30,7 @@ public abstract class LevelRendererMixin {
     private void clinker$tick(CallbackInfo ci) {
         for (Entity entity : this.level.entitiesForRendering()) {
             if (entity instanceof SkeletonParent parent) {
-                if (parent.getAnimator() != null) parent.getAnimator().tick((SkeletonParent<?>) parent);
+                if (parent.getAnimator() != null) parent.getAnimator().tick((SkeletonParent<?, ?, ?>) parent);
             }
         }
 

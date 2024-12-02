@@ -4,6 +4,7 @@ import birsy.clinker.client.entity.*;
 import birsy.clinker.client.entity.mogul.MogulRenderer;
 import birsy.clinker.common.world.entity.*;
 import birsy.clinker.common.world.entity.gnomad.*;
+import birsy.clinker.common.world.entity.gnomad.mogul.GnomadMogulEntity;
 import birsy.clinker.common.world.entity.mold.MoldEntity;
 import birsy.clinker.common.world.entity.projectile.FlechetteEntity;
 import birsy.clinker.common.world.entity.projectile.OrdnanceEntity;
@@ -38,7 +39,7 @@ public class ClinkerEntities {
 
     public static final Supplier<EntityType<GnomadMogulEntity>> GNOMAD_MOGUL = ENTITY_TYPES.register("gnomad_mogul", () ->
             EntityType.Builder.of(GnomadMogulEntity::new, MobCategory.MONSTER)
-                    .sized(1.5f, 3.5f)
+                    .sized(2.25f, 3.5f)
                     .build(new ResourceLocation(Clinker.MOD_ID, "gnomad_mogul").toString()));
 
     public static final Supplier<EntityType<OrdnanceEntity>> ORDNANCE = ENTITY_TYPES.register("ordnance", () ->
