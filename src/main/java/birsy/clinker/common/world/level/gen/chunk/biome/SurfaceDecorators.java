@@ -16,11 +16,11 @@ public class SurfaceDecorators {
     public static final SurfaceDecorator TEST_DECORATOR = new BasicSurfaceDecorator(Blocks.RED_WOOL.defaultBlockState(), Blocks.GREEN_WOOL.defaultBlockState(), Blocks.BLUE_WOOL.defaultBlockState(), 4);
 
     static {
-        register(new ResourceLocation(Clinker.MOD_ID, "ash_steppe"),
+        register(Clinker.resource("ash_steppe"),
                  new AshSteppeSurfaceDecorator());
-        register(new ResourceLocation(Clinker.MOD_ID, "test_biome_a"),
+        register(Clinker.resource("test_biome_a"),
                 TEST_DECORATOR);
-        register(new ResourceLocation(Clinker.MOD_ID, "test_biome_c"),
+        register(Clinker.resource("test_biome_c"),
                 new AshSteppeSurfaceDecorator());
     }
 

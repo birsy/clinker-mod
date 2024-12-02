@@ -1,7 +1,7 @@
 package birsy.clinker.common.world.level.gen.legacy.noiseproviders;
 
 import birsy.clinker.common.world.level.gen.legacy.OthershoreNoiseSampler;
-import birsy.clinker.core.util.MathUtils;
+import birsy.clinker.core.util.MathUtil;
 import net.minecraft.Util;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -56,41 +56,41 @@ public class TerrainNoiseProvider extends NoiseProvider {
 
             double plateauSize = 2.0;
             double cliffsideSize = 1.5;
-            double erosion = MathUtils.biasTowardsExtreme(s.largeNoise.GetNoise((x + 4233) * frequency * 3, (z + 3234) * frequency) * 3, 0.1F, 1);
+            double erosion = MathUtil.biasTowardsExtreme(s.largeNoise.GetNoise((x + 4233) * frequency * 3, (z + 3234) * frequency) * 3, 0.1F, 1);
             erosion = (erosion + 1) * 0.5;
             erosion = Mth.clamp(erosion, 0.0, 1.0);
-            erosion = MathUtils.bias(erosion, 0.3F);
-            erosion = MathUtils.mapRange(0.0, 1.0, 0.2, 0.8, erosion);
+            erosion = MathUtil.bias(erosion, 0.3F);
+            erosion = MathUtil.mapRange(0.0, 1.0, 0.2, 0.8, erosion);
             double tBaseNoise = s.largeNoise.GetNoise(x * frequency, z * frequency);
-            tBaseNoise = MathUtils.smoothMinExpo((tBaseNoise * plateauSize + plateauSize) - 1, 1, 0.0);
-            tBaseNoise = tBaseNoise < 0.0 ? MathUtils.smoothMinExpo(tBaseNoise * cliffsideSize, -1, -0.1) : tBaseNoise;
-            double baseNoise = MathUtils.biasTowardsExtreme(tBaseNoise, erosion, 2);
+            tBaseNoise = MathUtil.smoothMinExpo((tBaseNoise * plateauSize + plateauSize) - 1, 1, 0.0);
+            tBaseNoise = tBaseNoise < 0.0 ? MathUtil.smoothMinExpo(tBaseNoise * cliffsideSize, -1, -0.1) : tBaseNoise;
+            double baseNoise = MathUtil.biasTowardsExtreme(tBaseNoise, erosion, 2);
 
             double basicNoise = baseNoise;
-            basicNoise = MathUtils.mapRange(-1.0, 1.0, minHeight, maxHeight, basicNoise);
+            basicNoise = MathUtil.mapRange(-1.0, 1.0, minHeight, maxHeight, basicNoise);
             basicNoise -= y;
 
             double overhangStepSize = 0.07;
             double overhangStepNoise = (s.largeNoise.GetNoise(x * overhangStepSize, 22.0, z * overhangStepSize) + 1.0F) / 2.0F;
-            overhangStepNoise = MathUtils.map(4.0F, 8.0F, (float) overhangStepNoise);
+            overhangStepNoise = MathUtil.map(4.0F, 8.0F, (float) overhangStepNoise);
             double detailIntensityO = 0.3;//0.23;
-            double overhangNoise = (MathUtils.biasTowardsExtreme(tBaseNoise, 0.9F, 2) * (1 - detailIntensityO)) + (detailNoise * detailIntensityO);
-            overhangNoise = MathUtils.mapRange(-1.0, 1.0, minHeight, maxHeight, overhangNoise);
+            double overhangNoise = (MathUtil.biasTowardsExtreme(tBaseNoise, 0.9F, 2) * (1 - detailIntensityO)) + (detailNoise * detailIntensityO);
+            overhangNoise = MathUtil.mapRange(-1.0, 1.0, minHeight, maxHeight, overhangNoise);
             overhangNoise -= overhang(y, overhangStepNoise, 64, 240);
 
             double stepSize = 0.15;
             double terrainStepNoise = (s.largeNoise.GetNoise(x * stepSize, 2342.0, z * stepSize) + 1.0F) / 2.0F;
             double detailIntensityT = 0.04;
-            double terracedNoise = MathUtils.terrace((float) ((baseNoise * (1 - detailIntensityT)) + (detailNoise * detailIntensityT)), 1.0F / (MathUtils.map(3.3F, 1.2F, (float) MathUtils.bias(terrainStepNoise, -0.2F))), 0.08F).first;
-            terracedNoise = MathUtils.mapRange(-1.0, 1.0, minHeight, maxHeight, terracedNoise);
+            double terracedNoise = MathUtil.terrace((float) ((baseNoise * (1 - detailIntensityT)) + (detailNoise * detailIntensityT)), 1.0F / (MathUtil.map(3.3F, 1.2F, (float) MathUtil.bias(terrainStepNoise, -0.2F))), 0.08F).first;
+            terracedNoise = MathUtil.mapRange(-1.0, 1.0, minHeight, maxHeight, terracedNoise);
             terracedNoise -= y;
 
             double smoothingFactor = baseNoise * baseNoise * baseNoise * baseNoise * baseNoise * baseNoise;
-            smoothingFactor = MathUtils.bias(smoothingFactor, -0.1F);
-            smoothingFactor = MathUtils.map(0.0F, 0.9F, (float) smoothingFactor);
+            smoothingFactor = MathUtil.bias(smoothingFactor, -0.1F);
+            smoothingFactor = MathUtil.map(0.0F, 0.9F, (float) smoothingFactor);
 
             double shapeScale = 0.4;
-            double shapeNoise = MathUtils.bias((MathUtils.biasTowardsExtreme(s.largeNoise.GetNoise(x * shapeScale, -1234.0, z * shapeScale), 0.8F, 1) + 1.0F) / 2.0F, 0.35F);
+            double shapeNoise = MathUtil.bias((MathUtil.biasTowardsExtreme(s.largeNoise.GetNoise(x * shapeScale, -1234.0, z * shapeScale), 0.8F, 1) + 1.0F) / 2.0F, 0.35F);
             terrainShape = Mth.lerp(shapeNoise, terracedNoise, overhangNoise);
             terrainShape = Mth.lerp(smoothingFactor, terrainShape, basicNoise);
 
@@ -98,11 +98,11 @@ public class TerrainNoiseProvider extends NoiseProvider {
             duneShape = (1 - Math.abs(s.detailNoise.GetNoise(x * duneSize, z * duneSize)));
             duneShape *= duneShape;
             duneShape *= 1 + (1 - smoothingFactor);
-            duneShape *= MathUtils.mapRange(-1.0, 1.0, 3.0, 5.0, tBaseNoise);
+            duneShape *= MathUtil.mapRange(-1.0, 1.0, 3.0, 5.0, tBaseNoise);
             duneShape += basicNoise;
             duneShape += ((terrainStepNoise * 2) - 1) * 6;
-            duneShape -= MathUtils.map(2, 15, /*(float) Math.min(shapeNoise, 1 - smoothingFactor)*/ (float)shapeNoise);
-            duneShape += MathUtils.mapRange(-1.0, 1.0, 6.0, 0.0, tBaseNoise);
+            duneShape -= MathUtil.map(2, 15, /*(float) Math.min(shapeNoise, 1 - smoothingFactor)*/ (float)shapeNoise);
+            duneShape += MathUtil.mapRange(-1.0, 1.0, 6.0, 0.0, tBaseNoise);
             duneShape += (smoothingFactor) * 1.5;
             duneShape -= (1 - smoothingFactor) * 3.5;
         }
@@ -114,15 +114,15 @@ public class TerrainNoiseProvider extends NoiseProvider {
     }
 
     public double overhang(double y, double overhangAmount, int minHeight, int maxHeight) {
-        double dist = MathUtils.mapRange(minHeight, maxHeight, 0, 1, y);
+        double dist = MathUtil.mapRange(minHeight, maxHeight, 0, 1, y);
         double a = Mth.frac(dist * overhangAmount);
 
         double topSteepness = 0.08;
         double overhangDepth = 4.1;
 
-        double i = MathUtils.smoothClampExpo((a - 1)/topSteepness + 1, 0, 1, 0.2);
+        double i = MathUtil.smoothClampExpo((a - 1)/topSteepness + 1, 0, 1, 0.2);
         double o = ((a - 1)*(a - 1)*(a - 1) + (a - 1)*(a - 1)) * overhangDepth;
-        double s = MathUtils.bias(a, 0.7);
+        double s = MathUtil.bias(a, 0.7);
         a = Mth.lerp(i, o, s);
 
         //a = OVERHANG_CURVE.bezierPoint(a).y();
@@ -130,6 +130,6 @@ public class TerrainNoiseProvider extends NoiseProvider {
         double b = Math.floor(dist * overhangAmount);
 
         double overhang = (a + b) / overhangAmount;
-        return MathUtils.map(64, 240, (float) overhang);
+        return MathUtil.map(64, 240, (float) overhang);
     }
 }

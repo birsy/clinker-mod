@@ -1,10 +1,10 @@
 package birsy.clinker.client.particle;
 
-import birsy.clinker.core.util.MathUtils;
+import birsy.clinker.core.util.MathUtil;
 import birsy.clinker.core.util.noise.FastNoiseLite;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import foundry.veil.api.client.render.VeilRenderSystem;
-import foundry.veil.api.client.render.deferred.light.PointLight;
+import foundry.veil.api.client.render.light.PointLight;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
@@ -13,7 +13,6 @@ import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
 
 import org.joml.Quaternionf;
 import org.joml.Vector3d;
@@ -27,7 +26,7 @@ public class FireflyParticle extends TextureSheetParticle {
     private final Quaternionf rotation = new Quaternionf();
     private Vector3f movementDirection = new Vector3f(), pMovementDirection = new Vector3f();
 
-    private PointLight light;
+    private final PointLight light;
 
     private final double seed;
 
@@ -45,20 +44,16 @@ public class FireflyParticle extends TextureSheetParticle {
         this.gCol = level.random.nextFloat();
         this.bCol = level.random.nextFloat();
 
-        if (VeilRenderSystem.renderer().getDeferredRenderer().isEnabled()) {
-            this.light = new PointLight();
-            VeilRenderSystem.renderer().getDeferredRenderer().getLightRenderer().addLight(this.light);
-        }
+        this.light = new PointLight();
+        VeilRenderSystem.renderer().getLightRenderer().addLight(this.light);
 
         this.seed = level.random.nextDouble();
     }
 
     @Override
     public void remove() {
+        if (this.light != null) VeilRenderSystem.renderer().getLightRenderer().removeLight(this.light);
         super.remove();
-        if (VeilRenderSystem.renderer().getDeferredRenderer().isEnabled()) {
-            if (this.light != null) VeilRenderSystem.renderer().getDeferredRenderer().getLightRenderer().removeLight(this.light);
-        }
     }
 
     @Override
@@ -69,7 +64,7 @@ public class FireflyParticle extends TextureSheetParticle {
 
         super.tick();
         float updateSpeed = (float) ((seed * 10000) + age * 2.0F);
-        float speed = (float) MathUtils.mapRange(-1F, 1F, 0.1F, 1.0F, noise.GetNoise(updateSpeed, updateSpeed, updateSpeed));
+        float speed = (float) MathUtil.mapRange(-1F, 1F, 0.1F, 1.0F, noise.GetNoise(updateSpeed, updateSpeed, updateSpeed));
         Vector3d movement = new Vector3d(noise.GetNoise(updateSpeed, 0), noise.GetNoise(updateSpeed, updateSpeed) * 0.1, noise.GetNoise(0, updateSpeed)).mul(speed);
         this.move(movement.x, movement.y, movement.z);
         double xA = this.x;
@@ -118,10 +113,10 @@ public class FireflyParticle extends TextureSheetParticle {
         float v0 = this.getV0();
         float v1 = this.getV1();
         int packedLight = this.getLightColor(partialTick);
-        consumer.vertex(verticies[0].x(), verticies[0].y(), verticies[0].z()).uv(u1, v1).color(this.rCol, this.gCol, this.bCol, fadeFactor).uv2(packedLight).endVertex();
-        consumer.vertex(verticies[1].x(), verticies[1].y(), verticies[1].z()).uv(u1, v0).color(this.rCol, this.gCol, this.bCol, fadeFactor).uv2(packedLight).endVertex();
-        consumer.vertex(verticies[2].x(), verticies[2].y(), verticies[2].z()).uv(u0, v0).color(this.rCol, this.gCol, this.bCol, fadeFactor).uv2(packedLight).endVertex();
-        consumer.vertex(verticies[3].x(), verticies[3].y(), verticies[3].z()).uv(u0, v1).color(this.rCol, this.gCol, this.bCol, fadeFactor).uv2(packedLight).endVertex();
+        consumer.addVertex(verticies[0].x(), verticies[0].y(), verticies[0].z()).setUv(u1, v1).setColor(this.rCol, this.gCol, this.bCol, fadeFactor).setLight(packedLight);
+        consumer.addVertex(verticies[1].x(), verticies[1].y(), verticies[1].z()).setUv(u1, v0).setColor(this.rCol, this.gCol, this.bCol, fadeFactor).setLight(packedLight);
+        consumer.addVertex(verticies[2].x(), verticies[2].y(), verticies[2].z()).setUv(u0, v0).setColor(this.rCol, this.gCol, this.bCol, fadeFactor).setLight(packedLight);
+        consumer.addVertex(verticies[3].x(), verticies[3].y(), verticies[3].z()).setUv(u0, v1).setColor(this.rCol, this.gCol, this.bCol, fadeFactor).setLight(packedLight);
     }
 
     private void updateLight(float partialTick) {

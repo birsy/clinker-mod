@@ -2,19 +2,14 @@ package birsy.clinker.mixin.client;
 
 import birsy.clinker.client.ClinkerCursor;
 import birsy.clinker.client.gui.AlchemicalWorkstationScreen;
-import birsy.clinker.client.render.world.VolumetricRenderer;
 import birsy.necromancer.SkeletonParent;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.entity.Entity;
-import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -40,33 +35,17 @@ public abstract class LevelRendererMixin {
 
     @Shadow @Nullable private ClientLevel level;
 
-    @Inject(method = "close()V", at = @At("TAIL"))
-    private void clinker$close(CallbackInfo info) {
-        VolumetricRenderer.close();
-    }
 
     @Inject(method = "onResourceManagerReload(Lnet/minecraft/server/packs/resources/ResourceManager;)V", at = @At("TAIL"))
     private void clinker$onResourceManagerLoad(ResourceManager pResourceManager, CallbackInfo ci) throws IOException {
-        VolumetricRenderer.init();
         ClinkerCursor.init();
     }
 
-    @Inject(method = "resize(II)V", at = @At("TAIL"))
-    private void clinker$resize(int pWidth, int pHeight, CallbackInfo ci) {
-        VolumetricRenderer.resize(pWidth, pHeight);
-    }
 
     @Inject(method = "setupRender(Lnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/culling/Frustum;ZZ)V", at = @At("HEAD"))
     private void clinker$setupRender(Camera pCamera, Frustum pFrustrum, boolean pHasCapturedFrustrum, boolean pIsSpectator, CallbackInfo ci) {
         if (Minecraft.getInstance().screen instanceof AlchemicalWorkstationScreen screen) {
-            screen.setCameraView(pCamera, null, Minecraft.getInstance().getPartialTick());
-        }
-    }
-
-    @Inject(method = "renderLevel(Lcom/mojang/blaze3d/vertex/PoseStack;FJZLnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/GameRenderer;Lnet/minecraft/client/renderer/LightTexture;Lorg/joml/Matrix4f;)V", at = @At("HEAD"))
-    private void clinker$render(PoseStack pPoseStack, float pPartialTick, long pFinishNanoTime, boolean pRenderBlockOutline, Camera pCamera, GameRenderer pGameRenderer, LightTexture pLightTexture, Matrix4f pProjectionMatrix, CallbackInfo ci) {
-        if (Minecraft.getInstance().screen instanceof AlchemicalWorkstationScreen screen) {
-            //screen.setCameraView(pCamera, pPoseStack, Minecraft.getInstance().getPartialTick());
+            screen.setCameraView(pCamera, null, Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true));
         }
     }
 

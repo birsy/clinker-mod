@@ -43,7 +43,7 @@ public class AshLayerBlock extends AshBlock implements SimpleWaterloggedBlock
 			box(0.0D, 0.0D, 0.0D, 16.0D, 14.0D, 16.0D),
 			box(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D)};
 	
-	public AshLayerBlock(BlockBehaviour.Properties properties)
+	public AshLayerBlock(Properties properties)
 	{
 		super(properties);
 		this.registerDefaultState(this.stateDefinition.any().setValue(LAYERS, Integer.valueOf(1)).setValue(WATERLOGGED, Boolean.valueOf(false)));

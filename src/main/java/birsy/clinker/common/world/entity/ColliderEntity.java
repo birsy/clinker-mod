@@ -189,7 +189,7 @@ public class ColliderEntity<T extends Entity & CollisionParent> extends Entity i
     }
 
     @Override
-    public boolean canChangeDimensions() {
+    public boolean canChangeDimensions(Level oldLevel, Level newLevel) {
         return false;
     }
 
@@ -233,10 +233,10 @@ public class ColliderEntity<T extends Entity & CollisionParent> extends Entity i
     }
 
     @Override
-    protected void defineSynchedData() {
-        this.entityData.define(DATA_WIDTH_ID, 1.0F);
-        this.entityData.define(DATA_HEIGHT_ID, 1.0F);
-        this.entityData.define(DATA_PARENT_ID_ID, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(DATA_WIDTH_ID, 1.0F);
+        builder.define(DATA_HEIGHT_ID, 1.0F);
+        builder.define(DATA_PARENT_ID_ID, 0);
     }
 
     @Override

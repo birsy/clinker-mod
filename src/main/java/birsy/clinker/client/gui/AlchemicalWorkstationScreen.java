@@ -6,7 +6,7 @@ import birsy.clinker.common.world.alchemy.workstation.Workstation;
 import birsy.clinker.common.world.alchemy.workstation.WorkstationPhysicsObject;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.JomlConversions;
-import birsy.clinker.core.util.MathUtils;
+import birsy.clinker.core.util.MathUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
@@ -27,7 +27,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ViewportEvent;
 import org.joml.*;
 import org.lwjgl.glfw.GLFW;
@@ -35,7 +35,7 @@ import org.lwjgl.glfw.GLFW;
 import java.lang.Math;
 import java.util.Optional;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = Clinker.MOD_ID)
+@EventBusSubscriber(value = Dist.CLIENT, modid = Clinker.MOD_ID)
 public class AlchemicalWorkstationScreen extends GuiElementParent {
     public BlockPos targetedBlock;         // block the camera is aiming at
     public BlockPos[] nextTargetedBlock;   // block the camera will be aiming at when a direction is pressed.
@@ -53,7 +53,7 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
 
     private InventoryElement inventoryElement;
     
-    private static final ResourceLocation TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/gui/workstation.png");
+    private static final ResourceLocation TEXTURE = Clinker.resource("textures/gui/workstation.png");
     private static final int RES_X = 128;
     private static final int RES_Y = 256;
 
@@ -384,7 +384,7 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
     }
 
     public float getScreenTransition(float partialTicks) {
-        return MathUtils.ease(Mth.lerp(partialTicks, prevScreenTransition, screenTransition), isClosing ? MathUtils.EasingType.easeInCubic : MathUtils.EasingType.easeInOutCubic);
+        return MathUtil.ease(Mth.lerp(partialTicks, prevScreenTransition, screenTransition), isClosing ? MathUtil.EasingType.easeInCubic : MathUtil.EasingType.easeInOutCubic);
     }
 
     public Vec3 getCamPos(float partialTick) {
@@ -423,7 +423,7 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
             int skyLight = entity.level().getBrightness(LightLayer.SKY, entity.blockPosition());
 
             int decimalColor = Minecraft.getInstance().gameRenderer.lightTexture().lightPixels.getPixelRGBA(blockLight, skyLight);
-            Vec3 color = MathUtils.convertColorToVec3(decimalColor);
+            Vec3 color = MathUtil.convertColorToVec3(decimalColor);
 
             if (updateCurrent) lightColor = color;
             desiredLightColor = color;
@@ -619,7 +619,7 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
         }
 
         private float getWiggle(float partialTick) {
-            return MathUtils.ease(Mth.lerp(partialTick, wiggle, pWiggle), MathUtils.EasingType.easeOutBack);
+            return MathUtil.ease(Mth.lerp(partialTick, wiggle, pWiggle), MathUtil.EasingType.easeOutBack);
         }
 
         private float getParentVelocity(float partialTick) {
@@ -729,11 +729,11 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
             pMaxV -= vMinOffset / (float)this.textureHeight;
 
             bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
-            bufferbuilder.vertex(pMatrix, xStartClamped, yStartClamped, this.blitOffset).color(1, 1, 1, alpha).uv(pMinU, pMaxV).endVertex();
-            bufferbuilder.vertex(pMatrix, xEndClamped,   yStartClamped, this.blitOffset).color(1, 1, 1, alpha).uv(pMaxU, pMaxV).endVertex();
-            bufferbuilder.vertex(pMatrix, xEndClamped,   yEndClamped,   this.blitOffset).color(1, 1, 1, alpha).uv(pMaxU, pMinV).endVertex();
-            bufferbuilder.vertex(pMatrix, xStartClamped, yEndClamped,   this.blitOffset).color(1, 1, 1, alpha).uv(pMinU, pMinV).endVertex();
-            BufferUploader.drawWithShader(bufferbuilder.end());
+            bufferbuilder.addVertex(pMatrix, xStartClamped, yStartClamped, this.blitOffset).setColor(1, 1, 1, alpha).setUv(pMinU, pMaxV);
+            bufferbuilder.addVertex(pMatrix, xEndClamped,   yStartClamped, this.blitOffset).setColor(1, 1, 1, alpha).setUv(pMaxU, pMaxV);
+            bufferbuilder.addVertex(pMatrix, xEndClamped,   yEndClamped,   this.blitOffset).setColor(1, 1, 1, alpha).setUv(pMaxU, pMinV);
+            bufferbuilder.addVertex(pMatrix, xStartClamped, yEndClamped,   this.blitOffset).setColor(1, 1, 1, alpha).setUv(pMinU, pMinV);
+            BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
         }
 
         protected void renderSelection(BufferBuilder bufferbuilder, Matrix4f pMatrix, float pPartialTick, float pMouseX, float pMouseY) {
@@ -748,11 +748,11 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
             float pMaxV = pMinV + (this.height / (float)this.textureHeight);
 
             bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
-            bufferbuilder.vertex(pMatrix, 0, this.height, this.blitOffset).color(1, 1, 1, alpha).uv(pMinU, pMaxV).endVertex();
-            bufferbuilder.vertex(pMatrix, this.width, this.height, this.blitOffset).color(1, 1, 1, alpha).uv(pMaxU, pMaxV).endVertex();
-            bufferbuilder.vertex(pMatrix, this.width, 0, this.blitOffset).color(1, 1, 1, alpha).uv(pMaxU, pMinV).endVertex();
-            bufferbuilder.vertex(pMatrix, 0, 0, this.blitOffset).color(1, 1, 1, alpha).uv(pMinU, pMinV).endVertex();
-            BufferUploader.drawWithShader(bufferbuilder.end());
+            bufferbuilder.addVertex(pMatrix, 0, this.height, this.blitOffset).setColor(1, 1, 1, alpha).setUv(pMinU, pMaxV);
+            bufferbuilder.addVertex(pMatrix, this.width, this.height, this.blitOffset).setColor(1, 1, 1, alpha).setUv(pMaxU, pMaxV);
+            bufferbuilder.addVertex(pMatrix, this.width, 0, this.blitOffset).setColor(1, 1, 1, alpha).setUv(pMaxU, pMinV);
+            bufferbuilder.addVertex(pMatrix, 0, 0, this.blitOffset).setColor(1, 1, 1, alpha).setUv(pMinU, pMinV);
+            BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
         }
 
         protected void renderItem(PoseStack pPoseStack, float pPartialTick) {

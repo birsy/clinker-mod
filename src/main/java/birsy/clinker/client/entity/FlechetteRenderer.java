@@ -16,7 +16,7 @@ import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
 public class FlechetteRenderer extends EntityRenderer<FlechetteEntity> {
-    private static final ResourceLocation TEXTURE_LOCATION = new ResourceLocation(Clinker.MOD_ID, "textures/entity/flechette.png");
+    private static final ResourceLocation TEXTURE_LOCATION = Clinker.resource("textures/entity/flechette.png");
 
     public FlechetteRenderer(EntityRendererProvider.Context pContext) {
         super(pContext);
@@ -42,29 +42,28 @@ public class FlechetteRenderer extends EntityRenderer<FlechetteEntity> {
             pPoseStack.pushPose();
             pPoseStack.mulPose(Axis.YP.rotationDegrees(90 * i +  45));
             // draw quad
-            Matrix4f matrix4f = pPoseStack.last().pose();
-            Matrix3f matrix3f = pPoseStack.last().normal();
+            PoseStack.Pose pose = pPoseStack.last();
 
-            consumer.vertex(matrix4f, width, height, 0F)
-                    .color(1F,1F,1F,1F)
-                    .uv(u0, v0)
-                    .overlayCoords(packedOverlay).uv2(pPackedLight)
-                    .normal(matrix3f, 0, 0, 1).endVertex();
-            consumer.vertex(matrix4f, -width, height, 0F)
-                    .color(1F,1F,1F,1F)
-                    .uv(u1, v0)
-                    .overlayCoords(packedOverlay).uv2(pPackedLight)
-                    .normal(matrix3f, 0, 0, 1).endVertex();
-            consumer.vertex(matrix4f, -width, -height, 0F)
-                    .color(1F,1F,1F,1F)
-                    .uv(u1, v1)
-                    .overlayCoords(packedOverlay).uv2(pPackedLight)
-                    .normal(matrix3f, 0, 0, 1).endVertex();
-            consumer.vertex(matrix4f, width, -height, 0F)
-                    .color(1F,1F,1F,1F)
-                    .uv(u0, v1)
-                    .overlayCoords(packedOverlay).uv2(pPackedLight)
-                    .normal(matrix3f, 0, 0, 1).endVertex();
+            consumer.addVertex(pose, width, height, 0F)
+                    .setColor(1F,1F,1F,1F)
+                    .setUv(u0, v0)
+                    .setOverlay(packedOverlay).setLight(pPackedLight)
+                    .setNormal(pPoseStack.last(), 0, 0, 1);
+            consumer.addVertex(pose, -width, height, 0F)
+                    .setColor(1F,1F,1F,1F)
+                    .setUv(u1, v0)
+                    .setOverlay(packedOverlay).setLight(pPackedLight)
+                    .setNormal(pose, 0, 0, 1);
+            consumer.addVertex(pose, -width, -height, 0F)
+                    .setColor(1F,1F,1F,1F)
+                    .setUv(u1, v1)
+                    .setOverlay(packedOverlay).setLight(pPackedLight)
+                    .setNormal(pose, 0, 0, 1);
+            consumer.addVertex(pose, width, -height, 0F)
+                    .setColor(1F,1F,1F,1F)
+                    .setUv(u0, v1)
+                    .setOverlay(packedOverlay).setLight(pPackedLight)
+                    .setNormal(pose, 0, 0, 1);
 
             pPoseStack.popPose();
         }

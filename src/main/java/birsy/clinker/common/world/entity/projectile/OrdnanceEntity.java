@@ -8,8 +8,8 @@ import birsy.clinker.common.networking.packet.ClientboundOrdnanceExplosionPacket
 import birsy.clinker.core.registry.entity.ClinkerEntities;
 import birsy.clinker.core.registry.ClinkerParticles;
 import birsy.clinker.core.registry.ClinkerSounds;
-import birsy.clinker.core.util.MathUtils;
-import birsy.clinker.core.util.VectorUtils;
+import birsy.clinker.core.util.MathUtil;
+import birsy.clinker.core.util.VectorUtil;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -33,15 +33,14 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.*;
-import net.neoforged.api.distmarker.Dist;
 
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpawn {
-    private static final Vec3[] FLECHETTE_POINTS = MathUtils.generateSpherePoints(128);
-    private static final Vec3[] PARTICLE_POINTS = MathUtils.generateSpherePoints(500);
+    private static final Vec3[] FLECHETTE_POINTS = MathUtil.generateSpherePoints(128);
+    private static final Vec3[] PARTICLE_POINTS = MathUtil.generateSpherePoints(500);
 
     private static final EntityDataAccessor<Integer> DATA_FUSE_TIME = SynchedEntityData.defineId(OrdnanceEntity.class, EntityDataSerializers.INT);
 
@@ -223,7 +222,7 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
         Vec3 normal = new Vec3(pResult.getDirection().getStepX(), pResult.getDirection().getStepY(), pResult.getDirection().getStepZ());
         //extra little force to prevent goofy bouncing
         if (normal.distanceTo(new Vec3(0, 1, 0)) < 0.01) velocity = velocity.subtract(0, this.getGravity(), 0);
-        velocity = VectorUtils.reflect(normal, velocity);
+        velocity = VectorUtil.reflect(normal, velocity);
 
         switch (effects.touchType()) {
             case NORMAL:
@@ -288,7 +287,7 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
 
         // wait a few ticks, so the particles don't get in your face.
         if (this.tickCount > 5) {
-            Vector3f baseColor = Vec3.fromRGB24(effects.color()).toVector3f();
+            Vector3f baseColor = Vec3.fromRGB24(effects.setColor()).toVector3f();
             Vector3f smokeColor =  new Vector3f(0.8f, 0.8f, 0.8f);
 
             float speed = 0.01F;
@@ -382,7 +381,7 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
                     Vec3 velocity = particlePoint.normalize();
                     velocity = velocity.scale(radius + (level.random.nextGaussian() * 0.1F));
 
-                    Vector3f baseColor = Vec3.fromRGB24(effects.color()).toVector3f();
+                    Vector3f baseColor = Vec3.fromRGB24(effects.setColor()).toVector3f();
                     Vector3f smokeColor = new Vector3f(0.8f, 0.8f, 0.8f);
                     level.addParticle(new OrdnanceExplosionParticle.Options(baseColor, smokeColor, Mth.abs((float) level.random.nextGaussian()) * 3.0F), location.x(), location.y(), location.z(),
                             velocity.x(), velocity.y, velocity.z);

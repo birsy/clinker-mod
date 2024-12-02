@@ -1,6 +1,6 @@
 package birsy.clinker.common.world.alchemy.workstation.storage;
 
-import birsy.clinker.core.util.MathUtils;
+import birsy.clinker.core.util.MathUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.core.Vec3i;
@@ -29,7 +29,7 @@ public class SectionBitSet extends BitSet {
     }
 
     public static Vec3i toLocalCoords(BlockPos posIn) {
-        return new Vec3i(MathUtils.wrap(posIn.getX(), SectionPos.SECTION_SIZE), MathUtils.wrap(posIn.getY(), SectionPos.SECTION_SIZE), MathUtils.wrap(posIn.getZ(), SectionPos.SECTION_SIZE));
+        return new Vec3i(MathUtil.wrap(posIn.getX(), SectionPos.SECTION_SIZE), MathUtil.wrap(posIn.getY(), SectionPos.SECTION_SIZE), MathUtil.wrap(posIn.getZ(), SectionPos.SECTION_SIZE));
     }
 
 

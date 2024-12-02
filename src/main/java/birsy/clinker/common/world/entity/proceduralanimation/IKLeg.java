@@ -2,7 +2,8 @@ package birsy.clinker.common.world.entity.proceduralanimation;
 
 import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.ClientboundInverseKinematicsStepPacket;
-import birsy.clinker.core.util.VectorUtils;
+import birsy.clinker.core.util.JomlConversions;
+import birsy.clinker.core.util.VectorUtil;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -12,7 +13,6 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import org.joml.Quaterniond;
 import org.joml.Vector3d;
@@ -135,15 +135,15 @@ public class IKLeg<E extends LivingEntity & IKLocomotionEntity> {
         this.restPos.add(this.base);
 
         BlockHitResult raycast = level.clip(new ClipContext(
-                VectorUtils.toMoj(this.restPos.add(this.attachmentDir.mul(-1.5, temp), temp)),
-                VectorUtils.toMoj(this.restPos.add(this.attachmentDir.mul(1.5, temp), temp)),
+                JomlConversions.toMoj(this.restPos.add(this.attachmentDir.mul(-1.5, temp), temp)),
+                JomlConversions.toMoj(this.restPos.add(this.attachmentDir.mul(1.5, temp), temp)),
                 ClipContext.Block.COLLIDER,
                 ClipContext.Fluid.NONE,
                 CollisionContext.empty()
         ));
 
         if (raycast.getType() == HitResult.Type.BLOCK) {
-            VectorUtils.toJOML(raycast.getLocation(), this.restPos);
+            JomlConversions.toJOML(raycast.getLocation(), this.restPos);
         } else {
             this.searchNeighboringBlocksForValidRestPos(entity, level);
         }
@@ -159,15 +159,15 @@ public class IKLeg<E extends LivingEntity & IKLocomotionEntity> {
             for (int zOffset = -1; zOffset <= 1; zOffset++) {
                 if (xOffset == 0 && zOffset == 0) continue;
                 BlockHitResult raycast = level.clip(new ClipContext(
-                        VectorUtils.toMoj(this.restPos.add(this.attachmentDir.mul(-1.5, temp), temp).add(xOffsetDirection.mul(xOffset, temp2)).add(zOffsetDirection.mul(zOffset, temp2))),
-                        VectorUtils.toMoj(this.restPos.add(this.attachmentDir.mul(1.5, temp), temp).add(xOffsetDirection.mul(xOffset, temp2)).add(zOffsetDirection.mul(zOffset, temp2))),
+                        JomlConversions.toMoj(this.restPos.add(this.attachmentDir.mul(-1.5, temp), temp).add(xOffsetDirection.mul(xOffset, temp2)).add(zOffsetDirection.mul(zOffset, temp2))),
+                        JomlConversions.toMoj(this.restPos.add(this.attachmentDir.mul(1.5, temp), temp).add(xOffsetDirection.mul(xOffset, temp2)).add(zOffsetDirection.mul(zOffset, temp2))),
                         ClipContext.Block.COLLIDER,
                         ClipContext.Fluid.NONE,
                         CollisionContext.empty()
                 ));
 
                 if (raycast.getType() == HitResult.Type.BLOCK) {
-                    VectorUtils.toJOML(raycast.getLocation(), this.restPos);
+                    JomlConversions.toJOML(raycast.getLocation(), this.restPos);
                     return;
                 }
             }

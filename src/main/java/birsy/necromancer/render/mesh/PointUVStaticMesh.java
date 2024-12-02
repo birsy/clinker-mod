@@ -74,7 +74,7 @@ public class PointUVStaticMesh extends Mesh {
     @Override
     public void render(Bone part, PoseStack pPoseStack, VertexConsumer pVertexConsumer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha) {
         Matrix4f matrix4f = pPoseStack.last().pose();
-        Matrix3f matrix3f = pPoseStack.last().normal();
+        Matrix3f matrix3f = pPoseStack.last(). normal();
         Vector4f position = new Vector4f();
         Vector3f normal = new Vector3f();
 
@@ -86,7 +86,7 @@ public class PointUVStaticMesh extends Mesh {
                 matrix4f.transform(position);
                 normal.set(face.normal.x(), face.normal.y(), face.normal.z());
                 matrix3f.transform(normal);
-                pVertexConsumer.vertex(position.x(), position.y(), position.z(), pRed, pGreen, pBlue, pAlpha, uv.u(), uv.v(), pPackedOverlay, pPackedLight, normal.x(), normal.y(), normal.z());
+                pVertexConsumer.addVertex(position.x(), position.y(), position.z(), pRed, pGreen, pBlue, pAlpha, uv.u(), uv.v(), pPackedOverlay, pPackedLight, normal.x(), normal.y(), normal.z());
             }
         }
     }

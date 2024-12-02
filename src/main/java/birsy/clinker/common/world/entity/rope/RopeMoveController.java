@@ -1,7 +1,6 @@
 package birsy.clinker.common.world.entity.rope;
 
-import birsy.clinker.core.util.MathUtils;
-import net.minecraft.commands.arguments.EntityAnchorArgument;
+import birsy.clinker.core.util.MathUtil;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.MoveControl;
@@ -58,9 +57,9 @@ public class RopeMoveController extends MoveControl {
                     float usedAccel = acceleration;
                     if (slowingDown && !isBody) usedAccel = acceleration * 0.5F;
                     segment.walk(
-                            MathUtils.approach(segment.previousWalk.x, walkVector.x, usedAccel),
+                            MathUtil.approach(segment.previousWalk.x, walkVector.x, usedAccel),
                             0,
-                            MathUtils.approach(segment.previousWalk.z, walkVector.z, usedAccel)
+                            MathUtil.approach(segment.previousWalk.z, walkVector.z, usedAccel)
                     );
                 } else {
                     // the rest follow behind.
@@ -87,12 +86,12 @@ public class RopeMoveController extends MoveControl {
 
                 float ppFactor = ((factor - schmooveFactor) / (1-schmooveFactor)) - me.tickCount*0.01F;
                 float pingPong = Mth.abs(Mth.frac((ppFactor*3 - 1) / (2.0F)) * 2.0F - 1);
-                pingPong = MathUtils.mapRange(0, 1, -1, 1, pingPong);
+                pingPong = MathUtil.mapRange(0, 1, -1, 1, pingPong);
                 pingPong *= 2;
                 pingPong = Mth.clamp(pingPong, -1, 1);
-                pingPong = MathUtils.mapRange(-1, 1, 0, 1, pingPong);
-                pingPong = MathUtils.ease(pingPong, MathUtils.EasingType.easeInOutSine);
-                pingPong = MathUtils.mapRange(0, 1, -1, 1, pingPong);
+                pingPong = MathUtil.mapRange(-1, 1, 0, 1, pingPong);
+                pingPong = MathUtil.ease(pingPong, MathUtil.EasingType.easeInOutSine);
+                pingPong = MathUtil.mapRange(0, 1, -1, 1, pingPong);
                 angle = Mth.lerp(Mth.clamp(factor*1.4F, 0, 1), angle, pingPong * 90F);
 
                 angle = (float) Math.toRadians(angle);
@@ -133,9 +132,9 @@ public class RopeMoveController extends MoveControl {
             acceleration = 0.05F;
             for (RopeEntitySegment segment : me.segments) {
                 segment.walk(
-                        MathUtils.approach(segment.previousWalk.x, 0, acceleration),
+                        MathUtil.approach(segment.previousWalk.x, 0, acceleration),
                         0,
-                        MathUtils.approach(segment.previousWalk.z, 0, acceleration)
+                        MathUtil.approach(segment.previousWalk.z, 0, acceleration)
                 );
             }
         }

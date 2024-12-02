@@ -6,11 +6,11 @@ import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
-import net.neoforged.neoforge.event.TickEvent;
 
-@Mod.EventBusSubscriber(modid = Clinker.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
+@EventBusSubscriber(modid = Clinker.MOD_ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public class GUIRenderer {
     public static AlchemyBundleGUIRenderer alchemyBundleGUIRenderer;
     public static ZosimusRenderer zosimusRenderer = new ZosimusRenderer();
@@ -21,7 +21,7 @@ public class GUIRenderer {
     }
 
     @SubscribeEvent
-    public static void onGUITick(TickEvent.ClientTickEvent event) {
+    public static void onGUITick(ClientTickEvent.Post event) {
         //alchemyBundleGUIRenderer.tick();
     }
     /*@SubscribeEvent

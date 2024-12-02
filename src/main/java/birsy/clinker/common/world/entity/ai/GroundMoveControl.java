@@ -1,23 +1,16 @@
 package birsy.clinker.common.world.entity.ai;
 
 import birsy.clinker.common.world.entity.GroundLocomoteEntity;
-import birsy.clinker.common.world.entity.rope.RopeEntity;
-import birsy.clinker.common.world.entity.rope.RopeEntitySegment;
-import birsy.clinker.core.Clinker;
-import birsy.clinker.core.util.MathUtils;
-import net.minecraft.commands.arguments.EntityAnchorArgument;
+import birsy.clinker.core.util.MathUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.joml.Vector3d;
-import org.joml.Vector3dc;
 
 public class GroundMoveControl extends MoveControl {
     public GroundMoveControl(GroundLocomoteEntity pMob) {
@@ -61,7 +54,7 @@ public class GroundMoveControl extends MoveControl {
                     && !blockstate.is(BlockTags.DOORS)
                     && !blockstate.is(BlockTags.FENCES)) {
                 this.mob.getJumpControl().jump();
-                this.operation = MoveControl.Operation.JUMPING;
+                this.operation = Operation.JUMPING;
             }
         }
 
@@ -79,7 +72,7 @@ public class GroundMoveControl extends MoveControl {
         }
 
         if (this.operation == Operation.JUMPING) {
-            if (this.mob.onGround()) this.operation = MoveControl.Operation.WAIT;
+            if (this.mob.onGround()) this.operation = Operation.WAIT;
         }
 
         if (this.operation == Operation.WAIT) {
@@ -90,9 +83,9 @@ public class GroundMoveControl extends MoveControl {
         }
 
         me.walk(
-                (float) MathUtils.approach(me.previousWalk.x, walkVector.x, acceleration),
+                (float) MathUtil.approach(me.previousWalk.x, walkVector.x, acceleration),
                 (float) 0,
-                (float) MathUtils.approach(me.previousWalk.z, walkVector.z, acceleration)
+                (float) MathUtil.approach(me.previousWalk.z, walkVector.z, acceleration)
         );
     }
 }

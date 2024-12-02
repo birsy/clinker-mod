@@ -15,16 +15,16 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
 import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
 
-@Mod.EventBusSubscriber(modid = Clinker.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Clinker.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public class ClinkerPacketHandler {
     // todo: make this a thing for each packet and not this shitty awful thing.
     public static ResourceLocation createId(Class clazz) {
-        return new ResourceLocation(Clinker.MOD_ID, clazz.getSimpleName().toLowerCase());
+        return Clinker.resource(clazz.getSimpleName().toLowerCase());
     }
 
     @SubscribeEvent

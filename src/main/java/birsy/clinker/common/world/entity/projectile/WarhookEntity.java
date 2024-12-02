@@ -2,7 +2,7 @@ package birsy.clinker.common.world.entity.projectile;
 
 import birsy.clinker.core.registry.entity.ClinkerEntities;
 import birsy.clinker.core.registry.ClinkerItems;
-import birsy.clinker.core.util.VectorUtils;
+import birsy.clinker.core.util.VectorUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -20,7 +20,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
 
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
@@ -140,7 +139,7 @@ public class WarhookEntity extends Projectile {
     }
 
     public Vec3 getDirection(float partialTick) {
-        return VectorUtils.slerp(this.pDirection, this.direction, partialTick).normalize();
+        return VectorUtil.slerp(this.pDirection, this.direction, partialTick).normalize();
     }
 
     @Override

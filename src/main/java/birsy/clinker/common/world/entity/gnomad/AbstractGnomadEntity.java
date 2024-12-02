@@ -1,6 +1,6 @@
 package birsy.clinker.common.world.entity.gnomad;
 
-import birsy.clinker.core.util.MathUtils;
+import birsy.clinker.core.util.MathUtil;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.EntityType;
@@ -76,7 +76,7 @@ public abstract class AbstractGnomadEntity extends Monster{
     public float getSitTicks(float partialTicks) {
         float sitAmount = Mth.lerp(partialTicks, pSitTicks, sitTicks);
         float bounceIntensity = 1.3F;
-        return ((MathUtils.ease(sitAmount, MathUtils.EasingType.easeInBack) - sitAmount) * bounceIntensity) + sitAmount;
+        return ((MathUtil.ease(sitAmount, MathUtil.EasingType.easeInBack) - sitAmount) * bounceIntensity) + sitAmount;
     }
     public void setSitTicks(float sitTicks) {
         this.pSitTicks = this.sitTicks;

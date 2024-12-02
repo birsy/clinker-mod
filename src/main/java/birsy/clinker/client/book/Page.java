@@ -28,7 +28,7 @@ public class Page {
     public Page() {
         this.xSize = 47;
         this.ySize = 63;
-        this.texture = new ResourceLocation(Clinker.MOD_ID, "textures/book/book_cover.png");
+        this.texture = Clinker.resource("textures/book/book_cover.png");
     }
 
     public void render(PoseStack stack, MultiBufferSource source) {
@@ -42,8 +42,7 @@ public class Page {
 
         Matrix4f pMatrix = stack.last().pose();
 
-        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
         float x0 = 0;
         float x1 = this.xSize;
@@ -52,20 +51,16 @@ public class Page {
 
         float r = 199F/255F, g = 189F/255F, b = 155F/255F;
 
-        bufferbuilder.vertex(pMatrix, x0, y1, 0)
-                .color(r, g, b, 1.0F)
-                .endVertex();
-        bufferbuilder.vertex(pMatrix, x1, y1, 0)
-                .color(r, g, b, 1.0F)
-                .endVertex();
-        bufferbuilder.vertex(pMatrix, x1, y0, 0)
-                .color(r, g, b, 1.0F)
-                .endVertex();
-        bufferbuilder.vertex(pMatrix, x0, y0, 0)
-                .color(r, g, b, 1.0F)
-                .endVertex();
+        bufferbuilder.addVertex(pMatrix, x0, y1, 0)
+                .setColor(r, g, b, 1.0F);
+        bufferbuilder.addVertex(pMatrix, x1, y1, 0)
+                .setColor(r, g, b, 1.0F);
+        bufferbuilder.addVertex(pMatrix, x1, y0, 0)
+                .setColor(r, g, b, 1.0F);
+        bufferbuilder.addVertex(pMatrix, x0, y0, 0)
+                .setColor(r, g, b, 1.0F);
 
-        BufferUploader.drawWithShader(bufferbuilder.end());
+        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
 
         for (PageElement element : this.elements) {
             element.render(stack, source);
@@ -83,8 +78,7 @@ public class Page {
 
         Matrix4f pMatrix = stack.last().pose();
 
-        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
         float x0 = 0;
         float x1 = x0 + this.xSize;
@@ -93,20 +87,16 @@ public class Page {
 
         float r = 0.1F, g = 0.1F, b = 0.1F;
 
-        bufferbuilder.vertex(pMatrix, x0, y1, 0)
-                .color(r, g, b, 1.0F)
-                .endVertex();
-        bufferbuilder.vertex(pMatrix, x1, y1, 0)
-                .color(r, g, b, 1.0F)
-                .endVertex();
-        bufferbuilder.vertex(pMatrix, x1, y0, 0)
-                .color(r, g, b, 1.0F)
-                .endVertex();
-        bufferbuilder.vertex(pMatrix, x0, y0, 0)
-                .color(r, g, b, 1.0F)
-                .endVertex();
+        bufferbuilder.addVertex(pMatrix, x0, y1, 0)
+                .setColor(r, g, b, 1.0F);
+        bufferbuilder.addVertex(pMatrix, x1, y1, 0)
+                .setColor(r, g, b, 1.0F);
+        bufferbuilder.addVertex(pMatrix, x1, y0, 0)
+                .setColor(r, g, b, 1.0F);
+        bufferbuilder.addVertex(pMatrix, x0, y0, 0)
+                .setColor(r, g, b, 1.0F);
 
-        BufferUploader.drawWithShader(bufferbuilder.end());
+        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
 
         for (PageElement element : this.elements) {
             element.renderLayout(stack, source);

@@ -6,7 +6,7 @@ public class ClinkerConfiguredFeatures {
     public static ConfiguredFeature<?, ?> CAPSTONE_REPLACEMENT = registerConfiguredFeature("capstone_replacement", ClinkerFeatures.LAYERED_REPLACEMENT.get().configured(FeatureConfiguration.NONE).squared().rangeUniform(VerticalAnchor.bottom(), VerticalAnchor.absolute(180)).count(UniformInt.of(20, 30)));
 
     public static ConfiguredFeature<?, ?> registerConfiguredFeature(String registryName, ConfiguredFeature<?, ?> configuredFeature) {
-        ResourceLocation resourceLocation = new ResourceLocation(Clinker.MOD_ID, registryName);
+        ResourceLocation resourceLocation = Clinker.resource(registryName);
 
         if (BuiltinRegistries.CONFIGURED_FEATURE.keySet().contains(resourceLocation)) {
             throw new IllegalStateException("Configured Feature ID: \"" + resourceLocation.toString() + "\" is already in the registry!");

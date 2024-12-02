@@ -33,7 +33,7 @@ public class FairyFruitBlock extends BaseEntityBlock implements SimpleWaterlogge
     protected static final VoxelShape SHAPE = Block.box(2.0D, 10.0D, 2.0D, 14.0D, 16.0D, 14.0D);
     public static final MapCodec<FairyFruitBlock> CODEC = simpleCodec(FairyFruitBlock::new);
 
-    public FairyFruitBlock(BlockBehaviour.Properties properties) {
+    public FairyFruitBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(WATERLOGGED, false));
     }

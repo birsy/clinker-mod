@@ -2,7 +2,7 @@ package birsy.clinker.common.world.level.gen.chunk.biome.surfacedecorator;
 
 import birsy.clinker.common.world.block.AshLayerBlock;
 import birsy.clinker.core.registry.ClinkerBlocks;
-import birsy.clinker.core.util.MathUtils;
+import birsy.clinker.core.util.MathUtil;
 import birsy.clinker.core.util.noise.FastNoiseLite;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
@@ -44,7 +44,7 @@ public class AshSteppeSurfaceDecorator extends SurfaceDecorator {
                 float ditherRandomAshDuneAmount = this.random.nextFloat();
                 ditherRandomAshDuneAmount *= -0.15F;
                 double noiseSample = noise.GetNoise(pos.getX() * 5, 0, pos.getZ() * 5) + ditherRandomAshDuneAmount;
-                int ashAmount = ((int) MathUtils.mapRange(-1.0, 1.0, -1, 6, noiseSample));
+                int ashAmount = ((int) MathUtil.mapRange(-1.0, 1.0, -1, 6, noiseSample));
                 if (ashAmount > 1) chunk.setBlockState(pos.above(), ClinkerBlocks.ASH_LAYER.get().defaultBlockState().setValue(AshLayerBlock.LAYERS, ashAmount), false);
             }
         }

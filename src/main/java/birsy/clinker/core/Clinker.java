@@ -3,7 +3,6 @@ package birsy.clinker.core;
 import birsy.clinker.client.render.GUIRenderer;
 import birsy.clinker.client.gui.AlchemyBundleGUIRenderer;
 import birsy.clinker.client.render.debug.ClinkerDebugRenderers;
-import birsy.clinker.common.world.entity.projectile.OrdnanceEntity;
 import birsy.clinker.core.registry.*;
 import birsy.clinker.core.registry.entity.ClinkerBlockEntities;
 import birsy.clinker.core.registry.entity.ClinkerEntities;
@@ -13,13 +12,8 @@ import birsy.clinker.core.registry.world.ClinkerFeatures;
 import birsy.clinker.core.registry.world.ClinkerWorld;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.core.Position;
-import net.minecraft.core.dispenser.AbstractProjectileDispenseBehavior;
-import net.minecraft.core.dispenser.BlockSource;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.level.Level;
+import net.minecraft.core.dispenser.ProjectileDispenseBehavior;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
@@ -29,7 +23,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.world.item.ItemStack;
 
 @Mod(Clinker.MOD_ID)
 public class Clinker {
@@ -58,32 +51,17 @@ public class Clinker {
         modEventBus.addListener(this::doClientStuff);
     }
 
+    public static ResourceLocation resource(String resource) {
+        return ResourceLocation.fromNamespaceAndPath(Clinker.MOD_ID, resource);
+    }
+
     private void setup(final FMLCommonSetupEvent event) {
-        DispenserBlock.registerBehavior(ClinkerItems.ORDNANCE.get(), new AbstractProjectileDispenseBehavior() {
-            protected Projectile getProjectile(Level level, Position position, ItemStack item) {
-                return OrdnanceEntity.create(level, position.x(), position.y(), position.z());
-            }
-
-            @Override
-            protected void playSound(BlockSource pSource) {
-                pSource.level().playSound(null, pSource.pos().getX(), pSource.pos().getY(), pSource.pos().getZ(), SoundEvents.TRIDENT_THROW, SoundSource.BLOCKS, 0.5F, 0.4F / (pSource.level().getRandom().nextFloat() * 0.4F + 0.8F));
-            }
-        });
-
-        event.enqueueWork(() -> {
-            //OthershoreChunkGenerator.register();
-            //TestChunkGenerator.register();
-            //AxeItem.STRIPPABLES.put(ClinkerBlocks.LOCUST_LOG.get(), ClinkerBlocks.STRIPPED_LOCUST_LOG.get());
-            //AxeItem.STRIPPABLES.put(ClinkerBlocks.SWAMP_ASPEN_LOG.get(), ClinkerBlocks.STRIPPED_SWAMP_ASPEN_LOG.get());
-        });
+        DispenserBlock.registerBehavior(ClinkerItems.ORDNANCE.get(), new ProjectileDispenseBehavior(ClinkerItems.ORDNANCE.get()));
     }
 
     private void doClientStuff(final FMLClientSetupEvent event) {
         ClinkerDebugRenderers.initialize();
         ClinkerBlockEntities.registerTileEntityRenderers();
-
-        ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.LOCUST_LOG.get(), RenderType.cutout());
-        //ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.LOCUST_DOOR.get(), RenderType.cutout());
 
         ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.SHORT_MUD_REEDS.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.MUD_REEDS.get(), RenderType.cutout());
@@ -91,33 +69,4 @@ public class Clinker {
 
         GUIRenderer.alchemyBundleGUIRenderer = new AlchemyBundleGUIRenderer(Minecraft.getInstance());
     }
-
-    /*
-
-       the, elder, scrolls,
-       klaatu, berata, niktu, xyzzy,
-       bless, curse,
-       light, darkness,
-       fire, air, earth, water,
-       hot, dry, cold, wet,
-       ignite, snuff,
-       embiggen, twist, shorten, stretch,
-       fiddle, destroy,
-       imbue,
-       galvanize,
-       enchant,
-       free, limited,
-       range, of,
-       towards, inside,
-       sphere, cube, self, other, ball,
-       mental, physical,
-       grow, shrink,
-       demon, elemental, spirit, animal, creature, beast, humanoid, undead,
-       fresh, stale,
-       phnglui, mglwnafh,
-       cthulhu, rlyeh,
-       wgahnagl, fhtagn,
-       baguette
-
-     */
 }

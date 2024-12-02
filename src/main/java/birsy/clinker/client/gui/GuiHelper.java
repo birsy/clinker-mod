@@ -217,10 +217,10 @@ public class GuiHelper {
         boolean flag = !pBakedModel.usesBlockLight();
         Vector3f DIFFUSE_LIGHT_0 = Util.make(new Vector3f(0.2F, 1.0F, -0.7F), Vector3f::normalize);
         Vector3f DIFFUSE_LIGHT_1 = Util.make(new Vector3f(1.0F, 1.0F, 1.0F), (vec) -> {
-            stack.last().normal().transform(vec);
+            stack.last(). normal().transform(vec);
             vec.normalize();
         });
-        //DIFFUSE_LIGHT_1.transform(stack.last().normal());
+        //DIFFUSE_LIGHT_1.transform(stack.last(). normal());
 
         //RenderSystem.setupGui3DDiffuseLighting(DIFFUSE_LIGHT_1, DIFFUSE_LIGHT_1);
         //RenderSystem.setupGuiFlatDiffuseLighting(DIFFUSE_LIGHT_1, DIFFUSE_LIGHT_1);
@@ -247,10 +247,10 @@ public class GuiHelper {
     public static void fillRect(BufferBuilder pRenderer, float pX, float pY, float pWidth, float pHeight, float pRed, float pGreen, float pBlue, float pAlpha) {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         pRenderer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        pRenderer.vertex(pX + 0, pY + 0, 0.0D).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-        pRenderer.vertex(pX + 0, pY + pHeight, 0.0D).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-        pRenderer.vertex(pX + pWidth, pY + pHeight, 0.0D).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-        pRenderer.vertex(pX + pWidth, pY + 0, 0.0D).color(pRed, pGreen, pBlue, pAlpha).endVertex();
+        pRenderer.addVertex(pX + 0, pY + 0, 0.0D).setColor(pRed, pGreen, pBlue, pAlpha);
+        pRenderer.addVertex(pX + 0, pY + pHeight, 0.0D).setColor(pRed, pGreen, pBlue, pAlpha);
+        pRenderer.addVertex(pX + pWidth, pY + pHeight, 0.0D).setColor(pRed, pGreen, pBlue, pAlpha);
+        pRenderer.addVertex(pX + pWidth, pY + 0, 0.0D).setColor(pRed, pGreen, pBlue, pAlpha);
         BufferUploader.drawWithShader(pRenderer.end());
     }
 
@@ -284,11 +284,11 @@ public class GuiHelper {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        bufferbuilder.vertex(pMatrix, pX1, pY2, pBlitOffset).uv(pMinU, pMaxV).endVertex();
-        bufferbuilder.vertex(pMatrix, pX2, pY2, pBlitOffset).uv(pMaxU, pMaxV).endVertex();
-        bufferbuilder.vertex(pMatrix, pX2, pY1, pBlitOffset).uv(pMaxU, pMinV).endVertex();
-        bufferbuilder.vertex(pMatrix, pX1, pY1, pBlitOffset).uv(pMinU, pMinV).endVertex();
-        BufferUploader.drawWithShader(bufferbuilder.end());
+        bufferbuilder.addVertex(pMatrix, pX1, pY2, pBlitOffset).setUv(pMinU, pMaxV);
+        bufferbuilder.addVertex(pMatrix, pX2, pY2, pBlitOffset).setUv(pMaxU, pMaxV);
+        bufferbuilder.addVertex(pMatrix, pX2, pY1, pBlitOffset).setUv(pMaxU, pMinV);
+        bufferbuilder.addVertex(pMatrix, pX1, pY1, pBlitOffset).setUv(pMinU, pMinV);
+        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
     }
 
     public static void setCameraRotation(Camera camera, Quaterniond rotation) {

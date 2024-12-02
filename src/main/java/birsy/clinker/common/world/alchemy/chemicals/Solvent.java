@@ -4,7 +4,7 @@ import birsy.clinker.common.world.alchemy.anatomy.EntityBody;
 
 public class Solvent extends Chemical {
     public final float capacity;
-    public Solvent(float capacity, Chemical.Properties properties) {
+    public Solvent(float capacity, Properties properties) {
         super(properties.solvent(true));
         this.capacity = capacity;
     }

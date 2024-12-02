@@ -47,7 +47,7 @@ public class OrdnanceTrailParticle extends DustColorTransitionParticle {
 
         @Override
         public ParticleProvider<DustColorTransitionOptions> create(SpriteSet pSprites) {
-            return new OrdnanceTrailParticle.Provider(pSprites);
+            return new Provider(pSprites);
         }
     }
 

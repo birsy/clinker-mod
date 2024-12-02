@@ -3,7 +3,6 @@ package birsy.clinker.common.world.entity.gnomad.mogul;
 import birsy.clinker.client.entity.mogul.MogulAnimator;
 import birsy.clinker.client.entity.mogul.MogulSkeleton;
 import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
-import birsy.clinker.core.Clinker;
 import birsy.necromancer.SkeletonParent;
 import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.ClientboundBrainDebugPacket;
@@ -14,13 +13,12 @@ import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.*;
 import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.GnomadSquadSensor;
 import birsy.clinker.common.world.entity.gnomad.gnomind.squad.squadtasks.RestWithFriendsTask;
 import birsy.clinker.core.registry.ClinkerTags;
-import birsy.clinker.core.util.MathUtils;
+import birsy.clinker.core.util.MathUtil;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.util.valueproviders.ConstantFloat;
 import net.minecraft.world.DifficultyInstance;
@@ -33,7 +31,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
@@ -55,17 +52,11 @@ import net.tslat.smartbrainlib.api.core.sensor.vanilla.HurtBySensor;
 import net.tslat.smartbrainlib.api.core.sensor.vanilla.InWaterSensor;
 import net.tslat.smartbrainlib.api.core.sensor.vanilla.NearbyLivingEntitySensor;
 import net.tslat.smartbrainlib.api.core.sensor.vanilla.NearbyPlayersSensor;
-import net.tslat.smartbrainlib.util.EntityRetrievalUtil;
 import net.tslat.smartbrainlib.util.RandomUtil;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Quaternionf;
-import org.joml.Vector2f;
-import org.joml.Vector3d;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
 
 import static net.minecraft.world.entity.monster.Monster.createMonsterAttributes;
 
@@ -254,7 +245,7 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
         double height = (result.getLocation().y + this.getY()) / 2.0F;
         this.smoothedHeight = Mth.lerp(0.3F, this.smoothedHeight, height);
         if (this.smoothedHeight > this.getY()) this.smoothedHeight = this.getY();
-        this.smoothedHeight = MathUtils.clampDifference(this.smoothedHeight, this.getY(), this.getStepHeight());
+        this.smoothedHeight = MathUtil.clampDifference(this.smoothedHeight, this.getY(), this.getStepHeight());
     }
     
     public float getHeightOffset(float partialTick) {

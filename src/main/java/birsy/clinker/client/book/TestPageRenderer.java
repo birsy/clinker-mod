@@ -1,7 +1,6 @@
 package birsy.clinker.client.book;
 
 import birsy.clinker.client.book.formatting.ImageBox;
-import birsy.clinker.client.book.formatting.PageElement;
 import birsy.clinker.client.book.formatting.TextBox;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -10,25 +9,18 @@ import com.mojang.blaze3d.vertex.*;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-
-import java.awt.*;
 
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = Clinker.MOD_ID)
+@EventBusSubscriber(value = Dist.CLIENT, modid = Clinker.MOD_ID)
 public class TestPageRenderer {
     public static PageAtlasRenderer pageAtlasRenderer;
     public static Page page;
@@ -72,37 +64,32 @@ public class TestPageRenderer {
 
         Matrix4f pMatrix = stack.last().pose();
 
-        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
 
         float x0 = 0;
         float x1 = 384;
         float y0 = 0;
         float y1 = 384;
 
-        bufferbuilder.vertex(pMatrix, x0, y1, 0)
-                .uv(0, 1)
-                .endVertex();
-        bufferbuilder.vertex(pMatrix, x1, y1, 0)
-                .uv(1, 1)
-                .endVertex();
-        bufferbuilder.vertex(pMatrix, x1, y0, 0)
-                .uv(1, 0)
-                .endVertex();
-        bufferbuilder.vertex(pMatrix, x0, y0, 0)
-                .uv(0, 0)
-                .endVertex();
+        bufferbuilder.addVertex(pMatrix, x0, y1, 0)
+                .setUv(0, 1);
+        bufferbuilder.addVertex(pMatrix, x1, y1, 0)
+                .setUv(1, 1);
+        bufferbuilder.addVertex(pMatrix, x1, y0, 0)
+                .setUv(1, 0);
+        bufferbuilder.addVertex(pMatrix, x0, y0, 0)
+                .setUv(0, 0);
 
-        BufferUploader.drawWithShader(bufferbuilder.end());
+        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
     }
 
     private static void regeneratePage() {
         page = new Page();
         TextBox box = new TextBox(1, 1, 45, 30, 1);
         box.initializeText(FormattedText.composite(
-                FormattedText.of("multiple styles, ", Style.EMPTY.withFont(new ResourceLocation(Clinker.MOD_ID, "alchemical")).withBold(true).withColor(ChatFormatting.DARK_AQUA)),
-                FormattedText.of("Multiple styles!, ", Style.EMPTY.withFont(new ResourceLocation(Clinker.MOD_ID, "small")).withItalic(true).withColor(ChatFormatting.DARK_GRAY)),
-                FormattedText.of("multiple styles... ", Style.EMPTY.withFont(new ResourceLocation(Clinker.MOD_ID, "alchemical")).withColor(0)),
+                FormattedText.of("multiple styles, ", Style.EMPTY.withFont(Clinker.resource("alchemical")).withBold(true).withColor(ChatFormatting.DARK_AQUA)),
+                FormattedText.of("Multiple styles!, ", Style.EMPTY.withFont(Clinker.resource("small")).withItalic(true).withColor(ChatFormatting.DARK_GRAY)),
+                FormattedText.of("multiple styles... ", Style.EMPTY.withFont(Clinker.resource("alchemical")).withColor(0)),
                 FormattedText.of("oooh. how very delightful!", Style.EMPTY.withColor(ChatFormatting.BLUE))
         ));
         page.addElement(box);
@@ -110,7 +97,7 @@ public class TestPageRenderer {
         TextBox box2 = new TextBox(1, 23, 20, 20, 1);
         box2.initializeText(FormattedText.composite(
                 FormattedText.of("ah. there it is!",
-                        Style.EMPTY.withFont(new ResourceLocation(Clinker.MOD_ID, "small")).withColor(0x2b2722).withItalic(true))
+                        Style.EMPTY.withFont(Clinker.resource("small")).withColor(0x2b2722).withItalic(true))
                 ));
         page.addElement(box2);
 

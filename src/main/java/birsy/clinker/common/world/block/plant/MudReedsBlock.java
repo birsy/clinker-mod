@@ -77,8 +77,8 @@ public class MudReedsBlock extends BushBlock implements BonemealableBlock, IShea
         return state.hasProperty(BlockStateProperties.WATERLOGGED) ? state.setValue(BlockStateProperties.WATERLOGGED, Boolean.valueOf(reader.isWaterAt(pos))) : state;
     }
 
-    public BlockBehaviour.OffsetType getOffsetType() {
-        return BlockBehaviour.OffsetType.XYZ;
+    public OffsetType getOffsetType() {
+        return OffsetType.XYZ;
     }
 
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> stateBuilder) {

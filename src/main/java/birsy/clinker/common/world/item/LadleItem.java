@@ -4,7 +4,7 @@ import net.minecraft.world.item.Item;
 
 
 public class LadleItem extends Item {
-    public LadleItem(Item.Properties properties) {
+    public LadleItem(Properties properties) {
         super(properties);
     }
 

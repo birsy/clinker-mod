@@ -20,28 +20,19 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Vanishable;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 
 import java.util.function.Consumer;
 
-public class MogulWarhookItem extends Item implements Vanishable {
-    private final Multimap<Attribute, AttributeModifier> defaultModifiers;
-
+public class MogulWarhookItem extends Item {
     public MogulWarhookItem(Properties pProperties) {
         super(pProperties);
-        ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
-        builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", 5, AttributeModifier.Operation.ADDITION));
-        builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", -3.1F, AttributeModifier.Operation.ADDITION));
-        this.defaultModifiers = builder.build();
-    }
-
-    @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
-        if (slot == EquipmentSlot.MAINHAND) return defaultModifiers;
-        return super.getAttributeModifiers(slot, stack);
+//        ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
+//        builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", 5, AttributeModifier.Operation.ADDITION));
+//        builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", -3.1F, AttributeModifier.Operation.ADDITION));
+//        this.defaultModifiers = builder.build();
     }
 
     public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pHand) {
@@ -75,13 +66,13 @@ public class MogulWarhookItem extends Item implements Vanishable {
     }
 
     public boolean hurtEnemy(ItemStack pStack, LivingEntity pTarget, LivingEntity pAttacker) {
-        pStack.hurtAndBreak(1, pAttacker, (holder) -> holder.broadcastBreakEvent(EquipmentSlot.MAINHAND));
+        pStack.hurtAndBreak(1, pAttacker, EquipmentSlot.MAINHAND);
         return true;
     }
 
     public boolean mineBlock(ItemStack pStack, Level pLevel, BlockState pState, BlockPos pPos, LivingEntity pEntityLiving) {
         if (pState.getDestroySpeed(pLevel, pPos) != 0.0D) {
-            pStack.hurtAndBreak(2, pEntityLiving, (holder) -> holder.broadcastBreakEvent(EquipmentSlot.MAINHAND));
+            pStack.hurtAndBreak(2, pEntityLiving, EquipmentSlot.MAINHAND);
         }
         return true;
     }

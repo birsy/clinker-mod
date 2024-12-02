@@ -2,9 +2,7 @@ package birsy.clinker.common.world.entity.mold;
 
 import birsy.clinker.common.networking.ClinkerPacketHandler;
 import birsy.clinker.common.networking.packet.ClientboundMoldGrowthPacket;
-import birsy.clinker.core.util.MathUtils;
-import birsy.clinker.core.util.VectorUtils;
-import com.google.common.collect.HashBiMap;
+import birsy.clinker.core.util.MathUtil;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -12,10 +10,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SupportType;
 import net.minecraft.world.phys.Vec3;
-import org.spongepowered.asm.mixin.injection.At;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -208,7 +204,7 @@ public class MoldCell {
     }
 
     public float getGrowthAmount(float partialTicks) {
-        return MathUtils.ease(Mth.clamp(Mth.lerp(partialTicks, this.previousGrowthAmount, this.growthAmount), 0, 1), MathUtils.EasingType.easeInOutQuad);
+        return MathUtil.ease(Mth.clamp(Mth.lerp(partialTicks, this.previousGrowthAmount, this.growthAmount), 0, 1), MathUtil.EasingType.easeInOutQuad);
     }
 
     protected void tick() {

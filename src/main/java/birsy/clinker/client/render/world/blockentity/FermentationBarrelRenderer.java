@@ -19,8 +19,8 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 
 public class FermentationBarrelRenderer<T extends FermentationBarrelBlockEntity> implements BlockEntityRenderer<T> {
-    public static final ResourceLocation TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/block/fermentation_barrel/fermentation_barrel_lid.png");
-    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation(Clinker.MOD_ID, "fermentation_barrel"), "main");
+    public static final ResourceLocation TEXTURE = Clinker.resource("textures/block/fermentation_barrel/fermentation_barrel_lid.png");
+    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(Clinker.resource("fermentation_barrel"), "main");
     private final ModelPart lid;
 
     public FermentationBarrelRenderer(BlockEntityRendererProvider.Context context) {

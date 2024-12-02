@@ -7,6 +7,7 @@ import birsy.clinker.common.world.alchemy.workstation.WorkstationPhysicsObject;
 import birsy.clinker.common.world.alchemy.workstation.camera.CameraPath;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
@@ -18,13 +19,13 @@ import net.neoforged.api.distmarker.Dist;
 
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-@Mod.EventBusSubscriber(modid = Clinker.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
+@EventBusSubscriber(modid = Clinker.MOD_ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public class WorkstationRenderer {
     @SubscribeEvent
     public static void onRenderLevel(RenderLevelStageEvent event) {
@@ -32,7 +33,7 @@ public class WorkstationRenderer {
             event.getPoseStack().pushPose();
             Vec3 camPos = event.getCamera().getPosition();
             event.getPoseStack().translate(-camPos.x(), -camPos.y(), -camPos.z());
-            render(event.getPoseStack(), event.getLevelRenderer().renderBuffers.bufferSource(), event.getFrustum(), event.getPartialTick());
+            render(event.getPoseStack(), Minecraft.getInstance().renderBuffers().bufferSource(), event.getFrustum(), event.getPartialTick().getGameTimeDeltaTicks());
             event.getPoseStack().popPose();
         }
     }

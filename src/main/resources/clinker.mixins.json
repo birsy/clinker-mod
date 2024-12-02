@@ -23,6 +23,6 @@
     "common.RandomizableContainerBlockEntityMixin",
     "common.ServerEntityMixin",
     "common.ServerLevelMixin",
-    "common.ChunkStatusMixin"
+    "common.ChunkStatusTasksMixin"
   ]
 }

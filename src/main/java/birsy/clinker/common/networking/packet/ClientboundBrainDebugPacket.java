@@ -4,7 +4,6 @@ import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.GlobalPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.BrainDebugPayload;
 import net.minecraft.network.protocol.game.DebugEntityNameGenerator;
@@ -13,9 +12,6 @@ import net.minecraft.world.entity.ai.behavior.BehaviorControl;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.npc.InventoryCarrier;
 import net.minecraft.world.entity.schedule.Activity;
-import net.minecraft.world.level.pathfinder.Node;
-import net.minecraft.world.level.pathfinder.Path;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import net.tslat.smartbrainlib.util.BrainUtils;
 
 import java.util.ArrayList;

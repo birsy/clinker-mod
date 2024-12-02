@@ -17,7 +17,7 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 public class SarcophagusInnardsRenderer<T extends SarcophagusBlockEntity> implements BlockEntityRenderer<T> {
-    public static final ResourceLocation TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/block/sarcophagus/sarcophagus_innards.png");
+    public static final ResourceLocation TEXTURE = Clinker.resource("textures/block/sarcophagus/sarcophagus_innards.png");
     private final BlockEntityRendererProvider.Context context;
     public static final Vector3f white = new Vector3f(1, 1, 1);
     public static final Vec2[] faceUVs = new Vec2[]{new Vec2(1, 1), new Vec2(1, 0), new Vec2(0, 0), new Vec2(0, 1)};
@@ -49,7 +49,7 @@ public class SarcophagusInnardsRenderer<T extends SarcophagusBlockEntity> implem
     public void render(T pBlockEntity, float pPartialTick, PoseStack pPoseStack, MultiBufferSource pBufferSource, int pPackedLight, int pPackedOverlay) {
         pPoseStack.pushPose();
         Matrix4f matrix = pPoseStack.last().pose();
-        VertexConsumer consumer = pBufferSource.getBuffer(RenderType.entitySolid(new ResourceLocation(Clinker.MOD_ID, "textures/block/sarcophagus/sarcophagus_innards.png")));
+        VertexConsumer consumer = pBufferSource.getBuffer(RenderType.entitySolid(Clinker.resource("textures/block/sarcophagus/sarcophagus_innards.png")));
 
         float gutLevel = pBlockEntity.getNeighboringLevels(Direction.values().length, pPartialTick) / 3.0F;
         float[] surroundingGutLevels = new float[Direction.values().length];
@@ -87,7 +87,7 @@ public class SarcophagusInnardsRenderer<T extends SarcophagusBlockEntity> implem
 
                 if (surroundingGutLevel > 0) {
                     Vector4f delta = new Vector4f(Math.abs(normal.getX()), Math.abs(normal.getY()), Math.abs(normal.getZ()), 0);
-                    face[v] = new Vertex(vectorLerp(delta, vertex.position(), fullCube[f][v].position()), vertex.color());
+                    face[v] = new Vertex(vectorLerp(delta, vertex.position(), fullCube[f][v].position()), vertex.setColor());
                 } else {
 
                 }
@@ -146,11 +146,11 @@ public class SarcophagusInnardsRenderer<T extends SarcophagusBlockEntity> implem
             matrix.transform(pos);
            // normal.transform(matrix);
 
-            Vector3f color = vertex.color();
+            Vector3f color = vertex.setColor();
 
             Vec2 uv = uvs[i];
 
-            consumer.vertex(pos.x(), pos.y(), pos.z(), color.x(), color.y(), color.z(), 0.0F, uv.x, uv.y, pPackedOverlay, pPackedLight, normal.x(), normal.y(), normal.z());
+            consumer.addVertex(pos.x(), pos.y(), pos.z(), color.x(), color.y(), color.z(), 0.0F, uv.x, uv.y, pPackedOverlay, pPackedLight, normal.x(), normal.y(), normal.z());
         }
     }
 

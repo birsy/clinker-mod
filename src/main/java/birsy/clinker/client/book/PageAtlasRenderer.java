@@ -62,15 +62,14 @@ public class PageAtlasRenderer {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, TextureManager.INTENTIONAL_MISSING_TEXTURE);
 
-        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
         Matrix4f pMatrix = posestack.last().pose();
         float x0 = 0, x1 = PAGE_RESOLUTION, y0 = 0, y1 = PAGE_RESOLUTION;
-        bufferbuilder.vertex(pMatrix, x0, y1, -500F).uv(0, 1).endVertex();
-        bufferbuilder.vertex(pMatrix, x1, y1, -500F).uv(1, 1).endVertex();
-        bufferbuilder.vertex(pMatrix, x1, y0, -500F).uv(1, 0).endVertex();
-        bufferbuilder.vertex(pMatrix, x0, y0, -500F).uv(0, 0).endVertex();
-        BufferUploader.drawWithShader(bufferbuilder.end());
+        bufferbuilder.addVertex(pMatrix, x0, y1, -500F).setUv(0, 1);
+        bufferbuilder.addVertex(pMatrix, x1, y1, -500F).setUv(1, 1);
+        bufferbuilder.addVertex(pMatrix, x1, y0, -500F).setUv(1, 0);
+        bufferbuilder.addVertex(pMatrix, x0, y0, -500F).setUv(0, 0);
+        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
 
         pageAtlas.unbindWrite();
         Minecraft.getInstance().getMainRenderTarget().bindWrite(true);

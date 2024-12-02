@@ -11,11 +11,11 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.EntityStruckByLightningEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.tslat.smartbrainlib.util.EntityRetrievalUtil;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,11 +23,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-@Mod.EventBusSubscriber(modid = Clinker.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = Clinker.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
 public class ChainLightningHandler {
-    private static List<LivingEntity> chainLightningAffectedEntities = new ArrayList<>();
-    private static List<LivingEntity> entitiesToAdd = new ArrayList<>();
-    private static Int2ObjectOpenHashMap<TravellingBolt> travellingBolts = new Int2ObjectOpenHashMap<>();
+    private static final List<LivingEntity> chainLightningAffectedEntities = new ArrayList<>();
+    private static final List<LivingEntity> entitiesToAdd = new ArrayList<>();
+    private static final Int2ObjectOpenHashMap<TravellingBolt> travellingBolts = new Int2ObjectOpenHashMap<>();
     private static int currentTravellingLightningID = 0;
 
     public static int BOLT_TRAVEL_TIME = 15;
@@ -60,12 +60,7 @@ public class ChainLightningHandler {
     }
 
     @SubscribeEvent
-    public static void tick(TickEvent.ServerTickEvent event) {
-        if (event.phase != TickEvent.Phase.END ) {
-            return;
-        }
-
-
+    public static void tick(ServerTickEvent.Post event) {
         Iterator<LivingEntity> iterator = chainLightningAffectedEntities.iterator();
         while (iterator.hasNext()) {
             LivingEntity entity = iterator.next();

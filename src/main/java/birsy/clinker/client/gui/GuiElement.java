@@ -134,11 +134,11 @@ public abstract class GuiElement<P extends GuiElement, S extends GuiElementParen
         RenderSystem.enableBlend();
         BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        bufferbuilder.vertex(pMatrix, 0, this.height, this.blitOffset).color(brightness, brightness, brightness, 0.5F).endVertex();
-        bufferbuilder.vertex(pMatrix, this.width, this.height, this.blitOffset).color(brightness, brightness, brightness, 0.5F).endVertex();
-        bufferbuilder.vertex(pMatrix, this.width, 0, this.blitOffset).color(brightness, brightness, brightness, 0.5F).endVertex();
-        bufferbuilder.vertex(pMatrix, 0, 0, this.blitOffset).color(brightness, brightness, brightness, 0.5F).endVertex();
-        BufferUploader.drawWithShader(bufferbuilder.end());
+        bufferbuilder.addVertex(pMatrix, 0, this.height, this.blitOffset).setColor(brightness, brightness, brightness, 0.5F);
+        bufferbuilder.addVertex(pMatrix, this.width, this.height, this.blitOffset).setColor(brightness, brightness, brightness, 0.5F);
+        bufferbuilder.addVertex(pMatrix, this.width, 0, this.blitOffset).setColor(brightness, brightness, brightness, 0.5F);
+        bufferbuilder.addVertex(pMatrix, 0, 0, this.blitOffset).setColor(brightness, brightness, brightness, 0.5F);
+        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
     }
 
     public void setTexture(ResourceLocation texture, int width, int height) {

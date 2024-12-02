@@ -1,8 +1,6 @@
 package birsy.clinker.common.world.entity.rope;
 
 import birsy.clinker.common.world.entity.ColliderEntity;
-import birsy.clinker.core.Clinker;
-import birsy.clinker.core.util.VectorUtils;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -12,13 +10,10 @@ import net.minecraft.world.level.border.WorldBorder;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.api.distmarker.Dist;
 
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class RopeEntitySegment {
@@ -178,7 +173,7 @@ public class RopeEntitySegment {
             tempA = new Vector3d(), tempB = new Vector3d();
     public void collideWithLevel() {
         float epsilon = 0.001F;
-        float stepUpHeight = this.parent.getStepHeight();
+        float stepUpHeight = this.parent.maxUpStep();
 
         double xMovement = this.nextPosition.x - this.position.x, yMovement = this.nextPosition.y - this.position.y, zMovement = this.nextPosition.z - this.position.z;
 
@@ -350,7 +345,7 @@ public class RopeEntitySegment {
         // constrain movement based off level collisions...
         // todo: write this myself
         List<VoxelShape> list = level.getEntityCollisions(parent, aabb.expandTowards(this.movement.x, this.movement.y, this.movement.z));
-        VectorUtils.toJOML(Entity.collideBoundingBox(parent, VectorUtils.toMoj(this.movement), aabb, level, list), this.movement);
+        VectorUtil.toJOML(Entity.collideBoundingBox(parent, JomlConversions.toMoj(this.movement), aabb, level, list), this.movement);
 
         // apply friction
         // ...only on y-axis. simplifies + this is actually how vanilla handles it LOL

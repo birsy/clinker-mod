@@ -5,6 +5,8 @@ import birsy.clinker.core.registry.ClinkerItems;
 import birsy.clinker.core.registry.entity.ClinkerEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -14,7 +16,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -41,7 +43,7 @@ public class RerollFlaskEntity extends ThrowableItemProjectile {
     }
 
     @Override
-    protected float getGravity() {
+    public double getDefaultGravity() {
         return 0.07F;
     }
 
@@ -49,7 +51,7 @@ public class RerollFlaskEntity extends ThrowableItemProjectile {
     protected void onHit(HitResult pResult) {
         super.onHit(pResult);
         if (this.level() instanceof ServerLevel) {
-            this.level().levelEvent(2002, this.blockPosition(), PotionUtils.getColor(Potions.WATER));
+            this.level().levelEvent(2002, this.blockPosition(), PotionContents.getColor(Potions.WATER));
             this.discard();
         }
     }
@@ -86,7 +88,10 @@ public class RerollFlaskEntity extends ThrowableItemProjectile {
         container.setData(ClinkerDataAttachments.FILLING_LOOT_TABLE, true);
 
         container.clearContent();
-        container.setLootTable(new ResourceLocation(container.getData(ClinkerDataAttachments.REROLL_LOOT_LOCATION)), this.random.nextLong());
+        container.setLootTable(
+                ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.parse(container.getData(ClinkerDataAttachments.REROLL_LOOT_LOCATION))),
+                this.random.nextLong()
+        );
 
         Player player = null;
         if (this.getOwner() instanceof Player owner) player = owner;

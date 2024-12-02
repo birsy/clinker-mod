@@ -91,14 +91,14 @@ public abstract class BugParticle extends Particle {
     }
 
     private void drawDoubleSidedQuad(VertexConsumer pBuffer, Matrix4f matrix, float maxX, float maxZ, float minX, float minZ, float maxU, float maxV, float minU, float minV, int packedLight) {
-        pBuffer.vertex(matrix, maxX, 0, maxZ).uv(maxU, minV).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(packedLight).endVertex();
-        pBuffer.vertex(matrix, maxX, 0, minZ).uv(maxU, maxV).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(packedLight).endVertex();
-        pBuffer.vertex(matrix, minX, 0, minZ).uv(minU, maxV).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(packedLight).endVertex();
-        pBuffer.vertex(matrix, minX, 0, maxZ).uv(minU, minV).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(packedLight).endVertex();
+        pBuffer.addVertex(matrix, maxX, 0, maxZ).setUv(maxU, minV).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(packedLight);
+        pBuffer.addVertex(matrix, maxX, 0, minZ).setUv(maxU, maxV).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(packedLight);
+        pBuffer.addVertex(matrix, minX, 0, minZ).setUv(minU, maxV).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(packedLight);
+        pBuffer.addVertex(matrix, minX, 0, maxZ).setUv(minU, minV).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(packedLight);
 
-        pBuffer.vertex(matrix, minX, 0, maxZ).uv(minU, minV).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(packedLight).endVertex();
-        pBuffer.vertex(matrix, minX, 0, minZ).uv(minU, maxV).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(packedLight).endVertex();
-        pBuffer.vertex(matrix, maxX, 0, minZ).uv(maxU, maxV).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(packedLight).endVertex();
-        pBuffer.vertex(matrix, maxX, 0, maxZ).uv(maxU, minV).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(packedLight).endVertex();
+        pBuffer.addVertex(matrix, minX, 0, maxZ).setUv(minU, minV).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(packedLight);
+        pBuffer.addVertex(matrix, minX, 0, minZ).setUv(minU, maxV).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(packedLight);
+        pBuffer.addVertex(matrix, maxX, 0, minZ).setUv(maxU, maxV).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(packedLight);
+        pBuffer.addVertex(matrix, maxX, 0, maxZ).setUv(maxU, minV).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(packedLight);
     }
 }

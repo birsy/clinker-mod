@@ -2,7 +2,7 @@ package birsy.clinker.client.render.world;
 
 import birsy.clinker.client.render.ClinkerShaders;
 import birsy.clinker.core.Clinker;
-import birsy.clinker.core.util.MathUtils;
+import birsy.clinker.core.util.MathUtil;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.shaders.Uniform;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -14,13 +14,10 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.CubicSampler;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
 
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -29,12 +26,12 @@ import org.joml.Vector3fc;
 
 
 public class OthershoreSkyRenderer {
-    private static final ResourceLocation NOISE_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/environment/noise.png");
-    private static final ResourceLocation SKY_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/environment/sky.png");
-    private static final ResourceLocation OUTER_CLOUD_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/environment/outer_clouds.png");
-    private static final ResourceLocation STAR_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/environment/star.png");
-    private static final ResourceLocation STAR_COLOR_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/environment/star_color.png");
-    private static final ResourceLocation MATURE_STAR_COLOR_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/environment/star_color_mature.png");
+    private static final ResourceLocation NOISE_TEXTURE = Clinker.resource("textures/environment/noise.png");
+    private static final ResourceLocation SKY_TEXTURE = Clinker.resource("textures/environment/sky.png");
+    private static final ResourceLocation OUTER_CLOUD_TEXTURE = Clinker.resource("textures/environment/outer_clouds.png");
+    private static final ResourceLocation STAR_TEXTURE = Clinker.resource("textures/environment/star.png");
+    private static final ResourceLocation STAR_COLOR_TEXTURE = Clinker.resource("textures/environment/star_color.png");
+    private static final ResourceLocation MATURE_STAR_COLOR_TEXTURE = Clinker.resource("textures/environment/star_color_mature.png");
 
     private VertexBuffer outerSkyBuffer;
     private VertexBuffer outerCloudsBuffer;
@@ -111,7 +108,7 @@ public class OthershoreSkyRenderer {
         poseStack.scale(scale, scale, scale);
         float aboveCloudsDarken = 0.7F;
         aboveCloudsDarken = Mth.lerp(
-                Mth.clamp(MathUtils.mapRange(OthershoreCloudRenderer.CLOUDS_END - OthershoreCloudRenderer.CLOUD_LAYER_THICKNESS*0.5F, OthershoreCloudRenderer.CLOUDS_END, 0F, 1F, (float)cameraPos.y), 0, 1),
+                Mth.clamp(MathUtil.mapRange(OthershoreCloudRenderer.CLOUDS_END - OthershoreCloudRenderer.CLOUD_LAYER_THICKNESS*0.5F, OthershoreCloudRenderer.CLOUDS_END, 0F, 1F, (float)cameraPos.y), 0, 1),
                 1.0F,
                 aboveCloudsDarken
         );
@@ -193,7 +190,7 @@ public class OthershoreSkyRenderer {
                                 float camY,
                                 float fogR, float fogG, float fogB,
                                 float skyR, float skyG, float skyB) {
-        float aboveCloudAlphaOffset = Mth.clamp(MathUtils.mapRange(400F, 450F, 1.0F, 0.0F, camY), 0.0F, 1.0F);
+        float aboveCloudAlphaOffset = Mth.clamp(MathUtil.mapRange(400F, 450F, 1.0F, 0.0F, camY), 0.0F, 1.0F);
 
 
         float time = ticks + partialTick;
@@ -236,7 +233,7 @@ public class OthershoreSkyRenderer {
             RenderSystem.setShader(ClinkerShaders::getSkyCloudShader);
             RenderSystem.setShaderGameTime(ticks, partialTick);
 
-            float smoothRingDist = MathUtils.ease(ringDist, MathUtils.EasingType.easeOutCirc);
+            float smoothRingDist = MathUtil.ease(ringDist, MathUtil.EasingType.easeOutCirc);
             float ringR = fogR, ringG = fogG, ringB = fogB;
             //delta = smoothRingDist * 0.7F;
             //ringR = Mth.lerp(delta, ringR, cloudR); ringG = Mth.lerp(delta, ringG, cloudG); ringB = Mth.lerp(delta, ringB, cloudB);
@@ -284,18 +281,18 @@ public class OthershoreSkyRenderer {
             float x2 = Mth.sin(f2 * Mth.TWO_PI) * RING_MAX_RADIUS;
             float z2 = Mth.cos(f2 * Mth.TWO_PI) * RING_MAX_RADIUS;
 
-            bufferbuilder.vertex(matrix, x1,-RING_HEIGHT, z1).color(skyR, skyG, skyB, 0.0F).endVertex();
-            bufferbuilder.vertex(matrix, x1, 0.0F, z1).color(skyR, skyG, skyB, aboveCloudOffset).endVertex();
-            bufferbuilder.vertex(matrix, x2, 0.0F, z2).color(skyR, skyG, skyB, aboveCloudOffset).endVertex();
-            bufferbuilder.vertex(matrix, x2,-RING_HEIGHT, z2).color(skyR, skyG, skyB, 0.0F).endVertex();
+            bufferbuilder.addVertex(matrix, x1,-RING_HEIGHT, z1).setColor(skyR, skyG, skyB, 0.0F);
+            bufferbuilder.addVertex(matrix, x1, 0.0F, z1).setColor(skyR, skyG, skyB, aboveCloudOffset);
+            bufferbuilder.addVertex(matrix, x2, 0.0F, z2).setColor(skyR, skyG, skyB, aboveCloudOffset);
+            bufferbuilder.addVertex(matrix, x2,-RING_HEIGHT, z2).setColor(skyR, skyG, skyB, 0.0F);
 
-            bufferbuilder.vertex(matrix, x1,0.0F, z1).color(skyR, skyG, skyB, aboveCloudOffset).endVertex();
-            bufferbuilder.vertex(matrix, x1, RING_HEIGHT, z1).color(skyR, skyG, skyB, 0.0F).endVertex();
-            bufferbuilder.vertex(matrix, x2, RING_HEIGHT, z2).color(skyR, skyG, skyB, 0.0F).endVertex();
-            bufferbuilder.vertex(matrix, x2,0.0F, z2).color(skyR, skyG, skyB, aboveCloudOffset).endVertex();
+            bufferbuilder.addVertex(matrix, x1,0.0F, z1).setColor(skyR, skyG, skyB, aboveCloudOffset);
+            bufferbuilder.addVertex(matrix, x1, RING_HEIGHT, z1).setColor(skyR, skyG, skyB, 0.0F);
+            bufferbuilder.addVertex(matrix, x2, RING_HEIGHT, z2).setColor(skyR, skyG, skyB, 0.0F);
+            bufferbuilder.addVertex(matrix, x2,0.0F, z2).setColor(skyR, skyG, skyB, aboveCloudOffset);
         }
 
-        BufferUploader.drawWithShader(bufferbuilder.end());
+        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
     }
 
     private void buildVBOs() {
@@ -358,24 +355,24 @@ public class OthershoreSkyRenderer {
             fancy += (brightness * brightness) * 0.5F * random.nextFloat();
             float twinkleOffset = random.nextFloat();
 
-            bufferBuilder.vertex(matrix, -radius, height - radius, distance)
-                    .uv(u1, v1)
-                    .color(rotationSpeedMultiplier, gradientPos, twinkleOffset, fancy)
-                    .endVertex();
-            bufferBuilder.vertex(matrix, -radius, height + radius, distance)
-                    .uv(u2, v1)
-                    .color(rotationSpeedMultiplier, gradientPos, twinkleOffset, fancy)
-                    .endVertex();
-            bufferBuilder.vertex(matrix,  radius, height + radius, distance)
-                    .uv(u2, v2)
-                    .color(rotationSpeedMultiplier, gradientPos, twinkleOffset, fancy)
-                    .endVertex();
-            bufferBuilder.vertex(matrix,  radius, height - radius, distance)
-                    .uv(u1, v2)
-                    .color(rotationSpeedMultiplier, gradientPos, twinkleOffset, fancy)
-                    .endVertex();
+            bufferBuilder.addVertex(matrix, -radius, height - radius, distance)
+                    .setUv(u1, v1)
+                    .setColor(rotationSpeedMultiplier, gradientPos, twinkleOffset, fancy)
+                    ;
+            bufferBuilder.addVertex(matrix, -radius, height + radius, distance)
+                    .setUv(u2, v1)
+                    .setColor(rotationSpeedMultiplier, gradientPos, twinkleOffset, fancy)
+                    ;
+            bufferBuilder.addVertex(matrix,  radius, height + radius, distance)
+                    .setUv(u2, v2)
+                    .setColor(rotationSpeedMultiplier, gradientPos, twinkleOffset, fancy)
+                    ;
+            bufferBuilder.addVertex(matrix,  radius, height - radius, distance)
+                    .setUv(u1, v2)
+                    .setColor(rotationSpeedMultiplier, gradientPos, twinkleOffset, fancy)
+                    ;
         }
-        BufferBuilder.RenderedBuffer renderedBuffer = bufferBuilder.end();
+        BufferBuilder.RenderedBuffer renderedBuffer = bufferBuilder.buildOrThrow();
 
         vbo.bind();
         vbo.upload(renderedBuffer);
@@ -401,12 +398,12 @@ public class OthershoreSkyRenderer {
             float x2 = Mth.sin(f2 * Mth.TWO_PI);
             float z2 = Mth.cos(f2 * Mth.TWO_PI);
 
-            bufferBuilder.vertex(x1,-0.5, z1).color(0xFFFFFFFF).uv(f1, 0.0F).endVertex();
-            bufferBuilder.vertex(x1, 0.5, z1).color(0xFFFFFFFF).uv(f1, 1.0F).endVertex();
-            bufferBuilder.vertex(x2, 0.5, z2).color(0xFFFFFFFF).uv(f2, 1.0F).endVertex();
-            bufferBuilder.vertex(x2,-0.5, z2).color(0xFFFFFFFF).uv(f2, 0.0F).endVertex();
+            bufferBuilder.addVertex(x1,-0.5, z1).setColor(0xFFFFFFFF).setUv(f1, 0.0F);
+            bufferBuilder.addVertex(x1, 0.5, z1).setColor(0xFFFFFFFF).setUv(f1, 1.0F);
+            bufferBuilder.addVertex(x2, 0.5, z2).setColor(0xFFFFFFFF).setUv(f2, 1.0F);
+            bufferBuilder.addVertex(x2,-0.5, z2).setColor(0xFFFFFFFF).setUv(f2, 0.0F);
         }
-        BufferBuilder.RenderedBuffer renderedBuffer = bufferBuilder.end();
+        BufferBuilder.RenderedBuffer renderedBuffer = bufferBuilder.buildOrThrow();
 
         vbo.bind();
         vbo.upload(renderedBuffer);
@@ -433,7 +430,7 @@ public class OthershoreSkyRenderer {
                 1.0F,0.0F, 0.0F, 1.0F,
                  1.0F, 0.0F, 0.0F, 1.0F);
 
-        BufferBuilder.RenderedBuffer renderedBuffer = bufferBuilder.end();
+        BufferBuilder.RenderedBuffer renderedBuffer = bufferBuilder.buildOrThrow();
 
         vbo.bind();
         vbo.upload(renderedBuffer);
@@ -458,7 +455,7 @@ public class OthershoreSkyRenderer {
                      0.02F, 1.0F, 1.0F, factor);
         }
 
-        BufferBuilder.RenderedBuffer renderedBuffer = bufferBuilder.end();
+        BufferBuilder.RenderedBuffer renderedBuffer = bufferBuilder.buildOrThrow();
 
         vbo.bind();
         vbo.upload(renderedBuffer);
@@ -498,24 +495,24 @@ public class OthershoreSkyRenderer {
             float gradientPos = random.nextFloat();
             float brightness = distanceFactor * distanceFactor;
             float twinkleOffset = random.nextFloat();
-            bufferBuilder.vertex(matrix, - radius, - radius, distance)
-                    .uv(u1, v1)
-                    .color(brightness, gradientPos, twinkleOffset, fancy)
-                    .endVertex();
-            bufferBuilder.vertex(matrix, - radius, + radius, distance)
-                    .uv(u2, v1)
-                    .color(brightness, gradientPos, twinkleOffset, fancy)
-                    .endVertex();
-            bufferBuilder.vertex(matrix, + radius, + radius, distance)
-                    .uv(u2, v2)
-                    .color(brightness, gradientPos, twinkleOffset, fancy)
-                    .endVertex();
-            bufferBuilder.vertex(matrix, + radius, - radius, distance)
-                    .uv(u1, v2)
-                    .color(brightness, gradientPos, twinkleOffset, fancy)
-                    .endVertex();
+            bufferBuilder.addVertex(matrix, - radius, - radius, distance)
+                    .setUv(u1, v1)
+                    .setColor(brightness, gradientPos, twinkleOffset, fancy)
+                    ;
+            bufferBuilder.addVertex(matrix, - radius, + radius, distance)
+                    .setUv(u2, v1)
+                    .setColor(brightness, gradientPos, twinkleOffset, fancy)
+                    ;
+            bufferBuilder.addVertex(matrix, + radius, + radius, distance)
+                    .setUv(u2, v2)
+                    .setColor(brightness, gradientPos, twinkleOffset, fancy)
+                    ;
+            bufferBuilder.addVertex(matrix, + radius, - radius, distance)
+                    .setUv(u1, v2)
+                    .setColor(brightness, gradientPos, twinkleOffset, fancy)
+                    ;
         }
-        BufferBuilder.RenderedBuffer renderedBuffer = bufferBuilder.end();
+        BufferBuilder.RenderedBuffer renderedBuffer = bufferBuilder.buildOrThrow();
 
         vbo.bind();
         vbo.upload(renderedBuffer);
@@ -543,52 +540,52 @@ public class OthershoreSkyRenderer {
             float z2 = Mth.cos(f2 * Mth.TWO_PI) * RING_MIN_RADIUS;
 
             // triangle at the bottom
-            bufferBuilder.vertex(x1, -0.25F * RING_HEIGHT, -z1)
-                    .color(1.0F, 1.0F, 1.0F, 1.0F)
-                    .endVertex();
-            bufferBuilder.vertex(0.0, -0.5F * RING_HEIGHT, 0.0)
-                    .color(1.0F, 1.0F, 1.0F, 1.0F)
-                    .endVertex();
-            bufferBuilder.vertex(x2, -0.25F * RING_HEIGHT, -z2)
-                    .color(1.0F, 1.0F, 1.0F, 1.0F)
-                    .endVertex();
+            bufferBuilder.addVertex(x1, -0.25F * RING_HEIGHT, -z1)
+                    .setColor(1.0F, 1.0F, 1.0F, 1.0F)
+                    ;
+            bufferBuilder.addVertex(0.0, -0.5F * RING_HEIGHT, 0.0)
+                    .setColor(1.0F, 1.0F, 1.0F, 1.0F)
+                    ;
+            bufferBuilder.addVertex(x2, -0.25F * RING_HEIGHT, -z2)
+                    .setColor(1.0F, 1.0F, 1.0F, 1.0F)
+                    ;
 
             // two quads
-            bufferBuilder.vertex(x1, 0.1F * RING_HEIGHT, z1)
-                    .color(1.0F, 1.0F, 1.0F, 0.0F)
-                    .endVertex();
-            bufferBuilder.vertex(x2, 0.1F * RING_HEIGHT, z2)
-                    .color(1.0F, 1.0F, 1.0F, 0.0F)
-                    .endVertex();
-            bufferBuilder.vertex(x1,-0.25F * RING_HEIGHT, z1)
-                    .color(1.0F, 1.0F, 1.0F, 1.0F)
-                    .endVertex();
+            bufferBuilder.addVertex(x1, 0.1F * RING_HEIGHT, z1)
+                    .setColor(1.0F, 1.0F, 1.0F, 0.0F)
+                    ;
+            bufferBuilder.addVertex(x2, 0.1F * RING_HEIGHT, z2)
+                    .setColor(1.0F, 1.0F, 1.0F, 0.0F)
+                    ;
+            bufferBuilder.addVertex(x1,-0.25F * RING_HEIGHT, z1)
+                    .setColor(1.0F, 1.0F, 1.0F, 1.0F)
+                    ;
 
-            bufferBuilder.vertex(x2, 0.1F * RING_HEIGHT, z2)
-                    .color(1.0F, 1.0F, 1.0F, 0.0F)
-                    .endVertex();
-            bufferBuilder.vertex(x2,-0.25F * RING_HEIGHT, z2)
-                    .color(1.0F, 1.0F, 1.0F, 1.0F)
-                    .endVertex();
-            bufferBuilder.vertex(x1,-0.25F * RING_HEIGHT, z1)
-                    .color(1.0F, 1.0F, 1.0F, 1.0F)
-                    .endVertex();
-
-
+            bufferBuilder.addVertex(x2, 0.1F * RING_HEIGHT, z2)
+                    .setColor(1.0F, 1.0F, 1.0F, 0.0F)
+                    ;
+            bufferBuilder.addVertex(x2,-0.25F * RING_HEIGHT, z2)
+                    .setColor(1.0F, 1.0F, 1.0F, 1.0F)
+                    ;
+            bufferBuilder.addVertex(x1,-0.25F * RING_HEIGHT, z1)
+                    .setColor(1.0F, 1.0F, 1.0F, 1.0F)
+                    ;
 
 
-//            bufferBuilder.vertex(x2, 0.0F, z2)
-//                    .color(1.0F, 1.0F, 1.0F, 1.0F)
-//                    .endVertex();
-//            bufferBuilder.vertex(x2, -0.25F * RING_HEIGHT, z2)
-//                    .color(1.0F, 1.0F, 1.0F, 1.0F)
-//                    .endVertex();
-//            bufferBuilder.vertex(x1,-0.25F * RING_HEIGHT , z1)
-//                    .color(1.0F, 1.0F, 1.0F, 1.0F)
-//                    .endVertex();
+
+
+//            bufferBuilder.addVertex(x2, 0.0F, z2)
+//                    .setColor(1.0F, 1.0F, 1.0F, 1.0F)
+//                    ;
+//            bufferBuilder.addVertex(x2, -0.25F * RING_HEIGHT, z2)
+//                    .setColor(1.0F, 1.0F, 1.0F, 1.0F)
+//                    ;
+//            bufferBuilder.addVertex(x1,-0.25F * RING_HEIGHT , z1)
+//                    .setColor(1.0F, 1.0F, 1.0F, 1.0F)
+//                    ;
         }
 
-        BufferBuilder.RenderedBuffer renderedBuffer = bufferBuilder.end();
+        BufferBuilder.RenderedBuffer renderedBuffer = bufferBuilder.buildOrThrow();
 
         vbo.bind();
         vbo.upload(renderedBuffer);
@@ -609,18 +606,18 @@ public class OthershoreSkyRenderer {
 
             float windingMultiplier = height >= ringHeight ? 1.0F : -1.0F;
 
-            bufferBuilder.vertex(x1 * radius, ringHeight, z1 * radius * windingMultiplier)
-                    .uv((x1 + 1.0F) / 2.0F, (z1 * windingMultiplier + 1.0F) / 2.0F)
-                    .color(ringR, ringG, ringB, ringA)
-                    .endVertex();
-            bufferBuilder.vertex(0.0, height, 0.0)
-                    .uv(0.5F, 0.5F)
-                    .color(topR, topG, topB, topA)
-                    .endVertex();
-            bufferBuilder.vertex(x2 * radius, ringHeight, z2 * radius * windingMultiplier)
-                    .uv((x2 + 1.0F) / 2.0F, (z2 * windingMultiplier + 1.0F) / 2.0F)
-                    .color(ringR, ringG, ringB, ringA)
-                    .endVertex();
+            bufferBuilder.addVertex(x1 * radius, ringHeight, z1 * radius * windingMultiplier)
+                    .setUv((x1 + 1.0F) / 2.0F, (z1 * windingMultiplier + 1.0F) / 2.0F)
+                    .setColor(ringR, ringG, ringB, ringA)
+                    ;
+            bufferBuilder.addVertex(0.0, height, 0.0)
+                    .setUv(0.5F, 0.5F)
+                    .setColor(topR, topG, topB, topA)
+                    ;
+            bufferBuilder.addVertex(x2 * radius, ringHeight, z2 * radius * windingMultiplier)
+                    .setUv((x2 + 1.0F) / 2.0F, (z2 * windingMultiplier + 1.0F) / 2.0F)
+                    .setColor(ringR, ringG, ringB, ringA)
+                    ;
         }
     }
 

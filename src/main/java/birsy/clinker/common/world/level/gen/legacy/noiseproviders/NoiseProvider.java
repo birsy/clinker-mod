@@ -1,6 +1,6 @@
 package birsy.clinker.common.world.level.gen.legacy.noiseproviders;
 
-import birsy.clinker.core.util.MathUtils;
+import birsy.clinker.core.util.MathUtil;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.phys.Vec3;
@@ -173,7 +173,7 @@ public abstract class NoiseProvider {
         double lerpXY = Mth.lerp(sFracX, sampleGrid[sMinX][sMaxY][sMinZ], sampleGrid[sMaxX][sMaxY][sMinZ]);
         double lerpXYZ = Mth.lerp(sFracX, sampleGrid[sMinX][sMaxY][sMaxZ], sampleGrid[sMaxX][sMaxY][sMaxZ]);
 
-        return Mth.lerp(easeY ? MathUtils.ease((float) sFracY, MathUtils.EasingType.easeInOutQuad) : sFracY, Mth.lerp(sFracZ, lerpX, lerpXZ), Mth.lerp(sFracZ, lerpXY, lerpXYZ));
+        return Mth.lerp(easeY ? MathUtil.ease((float) sFracY, MathUtil.EasingType.easeInOutQuad) : sFracY, Mth.lerp(sFracZ, lerpX, lerpXZ), Mth.lerp(sFracZ, lerpXY, lerpXYZ));
         /*return MathUtils.lerp3(sFracX, sFracY, sFracZ,
                 sampleGrid[sMinX][sMinY][sMinZ], sampleGrid[sMinX][sMaxY][sMinZ],
                 sampleGrid[sMaxX][sMinY][sMinZ], sampleGrid[sMaxX][sMaxY][sMinZ],
@@ -207,13 +207,13 @@ public abstract class NoiseProvider {
         int sMinZ = Mth.floor(sZ);
         int sMaxZ = Mth.ceil(sZ);
 
-        Vec3 lerpX = MathUtils.vec3Lerp(sFracX, sampleGrid[sMinX][sMinY][sMinZ], sampleGrid[sMaxX][sMinY][sMinZ]);
-        Vec3 lerpXZ = MathUtils.vec3Lerp(sFracX, sampleGrid[sMinX][sMinY][sMaxZ], sampleGrid[sMaxX][sMinY][sMaxZ]);
+        Vec3 lerpX = MathUtil.vec3Lerp(sFracX, sampleGrid[sMinX][sMinY][sMinZ], sampleGrid[sMaxX][sMinY][sMinZ]);
+        Vec3 lerpXZ = MathUtil.vec3Lerp(sFracX, sampleGrid[sMinX][sMinY][sMaxZ], sampleGrid[sMaxX][sMinY][sMaxZ]);
 
-        Vec3 lerpXY = MathUtils.vec3Lerp(sFracX, sampleGrid[sMinX][sMaxY][sMinZ], sampleGrid[sMaxX][sMaxY][sMinZ]);
-        Vec3 lerpXYZ = MathUtils.vec3Lerp(sFracX, sampleGrid[sMinX][sMaxY][sMaxZ], sampleGrid[sMaxX][sMaxY][sMaxZ]);
+        Vec3 lerpXY = MathUtil.vec3Lerp(sFracX, sampleGrid[sMinX][sMaxY][sMinZ], sampleGrid[sMaxX][sMaxY][sMinZ]);
+        Vec3 lerpXYZ = MathUtil.vec3Lerp(sFracX, sampleGrid[sMinX][sMaxY][sMaxZ], sampleGrid[sMaxX][sMaxY][sMaxZ]);
 
-        return MathUtils.vec3Lerp(MathUtils.ease((float) sFracY, MathUtils.EasingType.easeInOutQuad), MathUtils.vec3Lerp(sFracZ, lerpX, lerpXZ), MathUtils.vec3Lerp(sFracZ, lerpXY, lerpXYZ));
+        return MathUtil.vec3Lerp(MathUtil.ease((float) sFracY, MathUtil.EasingType.easeInOutQuad), MathUtil.vec3Lerp(sFracZ, lerpX, lerpXZ), MathUtil.vec3Lerp(sFracZ, lerpXY, lerpXYZ));
         /*return MathUtils.lerp3(sFracX, sFracY, sFracZ,
                 sampleGrid[sMinX][sMinY][sMinZ], sampleGrid[sMinX][sMaxY][sMinZ],
                 sampleGrid[sMaxX][sMinY][sMinZ], sampleGrid[sMaxX][sMaxY][sMinZ],

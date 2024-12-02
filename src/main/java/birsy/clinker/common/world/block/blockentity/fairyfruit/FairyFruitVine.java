@@ -118,7 +118,7 @@ public class FairyFruitVine {
                 for (AABB aabb : aabbs) {
                     Optional<CollisionUtils.CollisionManifold> manifold = CollisionUtils.sphereAABBCollision(JomlConversions.toJOML(this.position), this.radius, aabb);
                     if (manifold.isPresent()) {
-                        this.position = JomlConversions.toMojang(manifold.get().adjustment());
+                        this.position = JomlConversions.toMoj(manifold.get().adjustment());
                     }
                 }
             }
@@ -129,7 +129,7 @@ public class FairyFruitVine {
             for (Entity entity : level.getEntities(null, new AABB(this.position, this.position).inflate(this.radius + 0.1))) {
                 Optional<CollisionUtils.CollisionManifold> manifold = CollisionUtils.sphereAABBCollision(JomlConversions.toJOML(this.position), this.radius, entity.getBoundingBox());
                 if (manifold.isPresent()) {
-                    this.position = JomlConversions.toMojang(manifold.get().adjustment());
+                    this.position = JomlConversions.toMoj(manifold.get().adjustment());
                 }
             }
         }

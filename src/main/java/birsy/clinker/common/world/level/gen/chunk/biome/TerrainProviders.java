@@ -1,6 +1,5 @@
 package birsy.clinker.common.world.level.gen.chunk.biome;
 
-import birsy.clinker.common.world.level.gen.chunk.biome.surfacedecorator.AshSteppeSurfaceDecorator;
 import birsy.clinker.common.world.level.gen.chunk.biome.terrainprovider.*;
 import birsy.clinker.core.Clinker;
 import net.minecraft.resources.ResourceLocation;
@@ -12,13 +11,13 @@ public class TerrainProviders {
     private static final TerrainProvider DEFAULT_PROVIDER = new DefaultTerrainProvider();
 
     static {
-        register(new ResourceLocation(Clinker.MOD_ID, "ash_steppe"),
+        register(Clinker.resource("ash_steppe"),
                 new AshSteppeTerrainProvider());
-        register(new ResourceLocation(Clinker.MOD_ID, "test_biome_a"),
+        register(Clinker.resource("test_biome_a"),
                 new TestTerrainProviderA());
-        register(new ResourceLocation(Clinker.MOD_ID, "test_biome_b"),
+        register(Clinker.resource("test_biome_b"),
                 new TestTerrainProviderB());
-        register(new ResourceLocation(Clinker.MOD_ID, "test_biome_c"),
+        register(Clinker.resource("test_biome_c"),
                 new TestTerrainProviderC());
     }
 

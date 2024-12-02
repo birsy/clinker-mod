@@ -2,7 +2,6 @@ package birsy.clinker.client.render.world.blockentity;
 
 import birsy.clinker.client.render.BasicModelPart;
 import birsy.clinker.client.render.ClinkerRenderTypes;
-import birsy.clinker.client.render.DebugRenderUtil;
 import birsy.clinker.client.render.RenderUtils;
 import birsy.clinker.common.world.block.blockentity.fairyfruit.FairyFruitBlockEntity;
 import birsy.clinker.common.world.block.blockentity.fairyfruit.FairyFruitVine;
@@ -11,7 +10,6 @@ import birsy.clinker.core.util.JomlConversions;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.renderer.LightTexture;
@@ -32,7 +30,7 @@ import java.util.List;
 import java.util.function.Function;
 
 public class FairyFruitRenderer<T extends FairyFruitBlockEntity> implements BlockEntityRenderer<T> {
-    public static final ResourceLocation TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/block/fairy_fruit.png");
+    public static final ResourceLocation TEXTURE = Clinker.resource("textures/block/fairy_fruit.png");
     public final FairyFruitModel leavesModel;
     public final FairyFruitModel fruitModel;
 

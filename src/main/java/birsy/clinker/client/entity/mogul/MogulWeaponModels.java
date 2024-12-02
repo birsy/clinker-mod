@@ -5,8 +5,8 @@ import birsy.clinker.core.Clinker;
 import net.minecraft.resources.ResourceLocation;
 
 public class MogulWeaponModels {
-    public static final ResourceLocation WARHOOK_TEXTURE_LOCATION = new ResourceLocation(Clinker.MOD_ID, "textures/entity/mogul_warhook.png");
-    public static final ResourceLocation WARHOOK_CHAIN_TEXTURE_LOCATION = new ResourceLocation(Clinker.MOD_ID, "textures/entity/mogul_warhook_chain.png");
+    public static final ResourceLocation WARHOOK_TEXTURE_LOCATION = Clinker.resource("textures/entity/mogul_warhook.png");
+    public static final ResourceLocation WARHOOK_CHAIN_TEXTURE_LOCATION = Clinker.resource("textures/entity/mogul_warhook_chain.png");
     public static final StaticMesh WARHOOK = new StaticMesh(32, 32);
     static {
         WARHOOK.addCube(1F, 4F, 2F, 0F, 16.5F, -6F, 0F, 0F, 0F, 6F, 23F, false);

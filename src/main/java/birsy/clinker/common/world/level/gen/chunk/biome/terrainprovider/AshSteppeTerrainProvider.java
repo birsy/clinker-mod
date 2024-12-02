@@ -1,9 +1,6 @@
 package birsy.clinker.common.world.level.gen.chunk.biome.terrainprovider;
 
-import birsy.clinker.common.world.level.gen.MetaChunk;
 import birsy.clinker.common.world.level.gen.NoiseCache;
-import birsy.clinker.common.world.level.gen.NoiseProviders;
-import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.core.util.noise.CachedFastNoise;
 import birsy.clinker.core.util.noise.FastNoiseLite;
 import net.minecraft.Util;

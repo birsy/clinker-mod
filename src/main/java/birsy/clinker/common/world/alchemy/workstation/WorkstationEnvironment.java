@@ -1,16 +1,10 @@
 package birsy.clinker.common.world.alchemy.workstation;
 
-import birsy.clinker.common.world.physics.rigidbody.colliders.ICollisionShape;
-import birsy.clinker.common.world.physics.rigidbody.colliders.OBBCollisionShape;
-import birsy.clinker.common.world.physics.rigidbody.gjkepa.GJKEPA;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.JomlConversions;
-import birsy.clinker.core.util.VectorUtils;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Vec3i;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Vector3d;
 
 import java.util.*;
 

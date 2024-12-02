@@ -8,7 +8,7 @@ public class GnomeatJerkyItem extends Item
 {
 	public GnomeatJerkyItem()
 	{
-		super(new Item.Properties()
+		super(new Properties()
 				.food(new FoodProperties.Builder()
 						.nutrition(5)
 						.saturationMod(5.0F)

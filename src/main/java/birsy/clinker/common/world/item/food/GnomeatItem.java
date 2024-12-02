@@ -21,7 +21,7 @@ public class GnomeatItem extends Item
 {	
 	public GnomeatItem()
 	{
-		super(new Item.Properties()
+		super(new Properties()
 				.food(new FoodProperties.Builder()
 						.nutrition(2)
 						.saturationMod(2.0F)

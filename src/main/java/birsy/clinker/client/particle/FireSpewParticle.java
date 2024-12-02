@@ -1,8 +1,6 @@
 package birsy.clinker.client.particle;
 
-import birsy.clinker.core.Clinker;
-import birsy.clinker.core.util.MathUtils;
-import com.mojang.blaze3d.vertex.PoseStack;
+import birsy.clinker.core.util.MathUtil;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -20,9 +18,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.neoforged.api.distmarker.Dist;
 
-import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 
@@ -97,19 +93,19 @@ public class FireSpewParticle extends Particle {
     private void updateColor() {
         float offset = 0;
         float factor = (this.age + offset) / (this.lifetime);
-        this.alpha = MathUtils.smoothstep(1.0F - factor);
+        this.alpha = MathUtil.smoothstep(1.0F - factor);
 
         //factor = (float) Math.pow(factor, 0.5);
         float transitionFac = 0.1F;
         if (factor < transitionFac) {
             factor = factor / transitionFac;
-            factor = MathUtils.smoothstep(factor);
+            factor = MathUtil.smoothstep(factor);
             this.rCol = Mth.lerp(factor, START_COLOR.x(), MID_COLOR.x());
             this.gCol = Mth.lerp(factor, START_COLOR.y(), MID_COLOR.y());
             this.bCol = Mth.lerp(factor, START_COLOR.z(), MID_COLOR.z());
         } else {
             factor = (factor - transitionFac) / (1-transitionFac);
-            factor = MathUtils.smoothstep(factor);
+            factor = MathUtil.smoothstep(factor);
             this.rCol = Mth.lerp(factor, MID_COLOR.x(), END_COLOR.x());
             this.gCol = Mth.lerp(factor, MID_COLOR.y(), END_COLOR.y());
             this.bCol = Mth.lerp(factor, MID_COLOR.z(), END_COLOR.z());
@@ -153,26 +149,22 @@ public class FireSpewParticle extends Particle {
         float f7 = (this.sprite.getU1() - this.sprite.getU0())*(14F/32F) + this.sprite.getU0();
         float f5 = (this.sprite.getV1() - this.sprite.getV0())*(21F/32F) + this.sprite.getV0();
         int j = LightTexture.FULL_BRIGHT;
-        pBuffer.vertex(verticies[0].x(), verticies[0].y(), verticies[0].z())
-                .uv(f7, f5)
-                .color(this.rCol, this.gCol, this.bCol, this.alpha)
-                .uv2(j)
-                .endVertex();
-        pBuffer.vertex(verticies[1].x(), verticies[1].y(), verticies[1].z())
-                .uv(f7, f4)
-                .color(this.rCol, this.gCol, this.bCol, this.alpha)
-                .uv2(j)
-                .endVertex();
-        pBuffer.vertex(verticies[2].x(), verticies[2].y(), verticies[2].z())
-                .uv(f6, f4)
-                .color(this.rCol, this.gCol, this.bCol, this.alpha)
-                .uv2(j)
-                .endVertex();
-        pBuffer.vertex(verticies[3].x(), verticies[3].y(), verticies[3].z())
-                .uv(f6, f5)
-                .color(this.rCol, this.gCol, this.bCol, this.alpha)
-                .uv2(j)
-                .endVertex();
+        pBuffer.addVertex(verticies[0].x(), verticies[0].y(), verticies[0].z())
+                .setUv(f7, f5)
+                .setColor(this.rCol, this.gCol, this.bCol, this.alpha)
+                .setLight(j);
+        pBuffer.addVertex(verticies[1].x(), verticies[1].y(), verticies[1].z())
+                .setUv(f7, f4)
+                .setColor(this.rCol, this.gCol, this.bCol, this.alpha)
+                .setLight(j);
+        pBuffer.addVertex(verticies[2].x(), verticies[2].y(), verticies[2].z())
+                .setUv(f6, f4)
+                .setColor(this.rCol, this.gCol, this.bCol, this.alpha)
+                .setLight(j);
+        pBuffer.addVertex(verticies[3].x(), verticies[3].y(), verticies[3].z())
+                .setUv(f6, f5)
+                .setColor(this.rCol, this.gCol, this.bCol, this.alpha)
+                .setLight(j);
     }
 
     

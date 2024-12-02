@@ -2,7 +2,7 @@ package birsy.clinker.client.entity;
 
 import birsy.clinker.common.world.entity.mold.MoldCell;
 import birsy.clinker.common.world.entity.mold.MoldEntity;
-import birsy.clinker.core.util.MathUtils;
+import birsy.clinker.core.util.MathUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.Util;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -55,7 +55,7 @@ public class MoldRenderer extends EntityRenderer<MoldEntity> {
                     if (first) scaleMultiplierFactor = 0;
                     scaleMultiplierFactor *= scaleMultiplierFactor;
                     float scaleMultiplier = (float) Mth.lerp(scaleMultiplierFactor, 1,
-                            1 + 0.3F * MathUtils.smoothMinExpo(Mth.sin(time * 0.15F - depth * 4), -0.5, -0.5));
+                            1 + 0.3F * MathUtil.smoothMinExpo(Mth.sin(time * 0.15F - depth * 4), -0.5, -0.5));
 
                     float scaleFactor = factor * factor * (3.0F - 2.0F * factor);
                     float partRadius = cell.getRadius(pPartialTick);

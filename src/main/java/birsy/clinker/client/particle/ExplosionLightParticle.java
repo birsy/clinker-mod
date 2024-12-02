@@ -2,7 +2,7 @@ package birsy.clinker.client.particle;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import foundry.veil.api.client.render.VeilRenderSystem;
-import foundry.veil.api.client.render.deferred.light.PointLight;
+import foundry.veil.api.client.render.light.PointLight;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
@@ -11,11 +11,10 @@ import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
-import net.neoforged.api.distmarker.Dist;
 
 
 public class ExplosionLightParticle extends Particle {
-    private PointLight light;
+    private final PointLight light;
 
     protected ExplosionLightParticle(ClientLevel level, double x, double y, double z) {
         super(level, x, y, z);
@@ -23,21 +22,17 @@ public class ExplosionLightParticle extends Particle {
         this.hasPhysics = false;
         this.gravity = 0.0F;
 
-        if (VeilRenderSystem.renderer().getDeferredRenderer().isEnabled()) {
-            this.light = new PointLight();
-            this.light.setPosition(x, y, z);
-            this.light.setRadius(0);
-            light.setColor(0, 0, 0);
-            VeilRenderSystem.renderer().getDeferredRenderer().getLightRenderer().addLight(this.light);
-        }
+        this.light = new PointLight();
+        this.light.setPosition(x, y, z);
+        this.light.setRadius(0);
+        light.setColor(0, 0, 0);
+        VeilRenderSystem.renderer().getLightRenderer().addLight(this.light);
     }
 
     @Override
     public void remove() {
         super.remove();
-        if (VeilRenderSystem.renderer().getDeferredRenderer().isEnabled()) {
-            if (this.light != null) VeilRenderSystem.renderer().getDeferredRenderer().getLightRenderer().removeLight(this.light);
-        }
+        if (this.light != null) VeilRenderSystem.renderer().getLightRenderer().removeLight(this.light);
     }
 
     @Override

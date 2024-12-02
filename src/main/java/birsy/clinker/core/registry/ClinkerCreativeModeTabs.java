@@ -4,7 +4,9 @@ import birsy.clinker.core.Clinker;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
@@ -12,20 +14,15 @@ import java.util.function.Supplier;
 public class ClinkerCreativeModeTabs {
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(BuiltInRegistries.CREATIVE_MODE_TAB, Clinker.MOD_ID);
 
-    public static final Supplier<CreativeModeTab> CLINKER_BLOCKS = TABS.register("clinker_blocks",
-            () -> CreativeModeTab.builder()
-                    .title(Component.translatable("creative_tab.clinker_blocks.name"))
-                    .icon(() -> new ItemStack(ClinkerBlocks.STOVE.get().asItem()))
-                    .withSlotColor(10658645)
-                    .displayItems(ClinkerCreativeModeTabs::addBlocks)
-                    .build());
-    public static final Supplier<CreativeModeTab> CLINKER_ITEMS = TABS.register("clinker_items",
-            () -> CreativeModeTab.builder()
-                    .title(Component.translatable("creative_tab.clinker_items.name"))
-                    .icon(() -> new ItemStack(ClinkerItems.SULFUR.get().asItem()))
-                    .withSlotColor(10658645)
-                    .displayItems(ClinkerCreativeModeTabs::addItems)
-                    .build());
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CLINKER = TABS.register("clinker", () -> CreativeModeTab.builder()
+            .title(Component.translatable("itemGroup.clinker"))
+            .withTabsBefore(CreativeModeTabs.COMBAT)
+            .icon(() -> new ItemStack(ClinkerItems.ALCHEMY_BOOK.get().asItem()))
+            .displayItems((parameters, output) -> {
+                ClinkerCreativeModeTabs.addItems(parameters, output);
+                ClinkerCreativeModeTabs.addBlocks(parameters, output);
+            }).build());
+
 
     public static void addBlocks(CreativeModeTab.ItemDisplayParameters pParameters, CreativeModeTab.Output pOutput) {
         pOutput.accept(ClinkerBlocks.FERMENTATION_BARREL.get());
@@ -130,8 +127,6 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(ClinkerItems.CENTIPEDE_SHELL.get());
         pOutput.accept(ClinkerItems.SALT.get());
         pOutput.accept(ClinkerItems.FAIRY_FRUIT.get());
-        pOutput.accept(ClinkerItems.GNOMEAT_JERKY.get());
-        pOutput.accept(ClinkerItems.GNOMEAT.get());
         pOutput.accept(ClinkerItems.LEAD_SWORD.get());
         pOutput.accept(ClinkerItems.LEAD_AXE.get());
         pOutput.accept(ClinkerItems.LEAD_PICKAXE.get());

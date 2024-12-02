@@ -1,17 +1,15 @@
 package birsy.clinker.common.world.block.blockentity.fairyfruit;
 
-import birsy.clinker.common.world.level.interactable.InteractableParent;
 import birsy.clinker.core.registry.entity.ClinkerBlockEntities;
 import foundry.veil.api.client.render.VeilRenderSystem;
-import foundry.veil.api.client.render.deferred.light.PointLight;
+import foundry.veil.api.client.render.light.PointLight;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.api.distmarker.Dist;
 
 
-public class FairyFruitBlockEntity extends BlockEntity implements InteractableParent {
+public class FairyFruitBlockEntity extends BlockEntity {
     public FairyFruitVine vine;
     
     public float lengthOffset;
@@ -35,9 +33,7 @@ public class FairyFruitBlockEntity extends BlockEntity implements InteractablePa
             this.light = new PointLight();
             this.light.setColor(0xffaf59);
             this.light.setRadius(12.0F);
-            if (VeilRenderSystem.renderer().getDeferredRenderer().isEnabled()) {
-                VeilRenderSystem.renderer().getDeferredRenderer().getLightRenderer().addLight(this.light);
-            }
+            VeilRenderSystem.renderer().getLightRenderer().addLight(this.light);
         }
     }
 
@@ -46,9 +42,7 @@ public class FairyFruitBlockEntity extends BlockEntity implements InteractablePa
         super.setRemoved();
         if (this.level.isClientSide) {
             if (this.light == null) return;
-            if (VeilRenderSystem.renderer().getDeferredRenderer().isEnabled()) {
-                VeilRenderSystem.renderer().getDeferredRenderer().getLightRenderer().removeLight(this.light);
-            }
+            VeilRenderSystem.renderer().getLightRenderer().removeLight(this.light);
         }
     }
 
@@ -57,9 +51,7 @@ public class FairyFruitBlockEntity extends BlockEntity implements InteractablePa
         super.onChunkUnloaded();
         if (this.level.isClientSide) {
             if (this.light == null) return;
-            if (VeilRenderSystem.renderer().getDeferredRenderer().isEnabled()) {
-                VeilRenderSystem.renderer().getDeferredRenderer().getLightRenderer().removeLight(this.light);
-            }
+            VeilRenderSystem.renderer().getLightRenderer().removeLight(this.light);
         }
     }
 

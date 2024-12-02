@@ -17,7 +17,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
 
 import org.joml.Matrix4f;
 
@@ -27,7 +26,7 @@ import java.util.Random;
 
 
 public class AlchemyBundleGUIRenderer {
-    public static final ResourceLocation BUNDLE_LOCATION = new ResourceLocation(Clinker.MOD_ID, "textures/gui/alchemy_bundle.png");
+    public static final ResourceLocation BUNDLE_LOCATION = Clinker.resource("textures/gui/alchemy_bundle.png");
     private final Minecraft minecraft;
     private final ItemRenderer itemRenderer;
     public int ticks;
@@ -144,11 +143,11 @@ public class AlchemyBundleGUIRenderer {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        bufferbuilder.vertex(matrix, x1, y2, z).uv(u1, v2).endVertex();
-        bufferbuilder.vertex(matrix, x2, y2, z).uv(u2, v2).endVertex();
-        bufferbuilder.vertex(matrix, x2, y1, z).uv(u2, v1).endVertex();
-        bufferbuilder.vertex(matrix, x1, y1, z).uv(u1, v1).endVertex();
-        BufferUploader.drawWithShader(bufferbuilder.end());
+        bufferbuilder.addVertex(matrix, x1, y2, z).setUv(u1, v2);
+        bufferbuilder.addVertex(matrix, x2, y2, z).setUv(u2, v2);
+        bufferbuilder.addVertex(matrix, x2, y1, z).setUv(u2, v1);
+        bufferbuilder.addVertex(matrix, x1, y1, z).setUv(u1, v1);
+        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
     }
 
     private class BaggedItem {

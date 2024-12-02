@@ -1,8 +1,7 @@
 package birsy.clinker.common.world.level.gen;
 
 import birsy.clinker.common.world.level.gen.chunk.biome.TerrainLayer;
-import birsy.clinker.core.Clinker;
-import birsy.clinker.core.util.MathUtils;
+import birsy.clinker.core.util.MathUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
@@ -193,7 +192,7 @@ public class MetaChunk {
             float val = noise;
             float distSqr = (float) generationPosition.distToCenterSqr(x, y, z);
             double sphereSDF = (RADIUS - Math.sqrt(distSqr)) / RADIUS;
-            val = (float) -MathUtils.smoothMinExpo(-val, -sphereSDF, 0.1F);
+            val = (float) -MathUtil.smoothMinExpo(-val, -sphereSDF, 0.1F);
             //val += Math.max(RADIUS - this.generationPosition.distToCenterSqr(x, y, z), 0.0F);
             return val;
         }

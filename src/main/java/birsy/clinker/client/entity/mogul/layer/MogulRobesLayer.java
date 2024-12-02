@@ -12,7 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 
 public class MogulRobesLayer extends NecromancerEntityRenderLayer<GnomadMogulEntity, MogulSkeleton> {
-    private static final ResourceLocation MOGUL_ROBES_LOCATION = new ResourceLocation(Clinker.MOD_ID, "textures/entity/gnomad/mogul/gnomad_mogul_robes.png");
+    private static final ResourceLocation MOGUL_ROBES_LOCATION = Clinker.resource("textures/entity/gnomad/mogul/gnomad_mogul_robes.png");
 
     public MogulRobesLayer(MogulRenderer pRenderer) {
         super(pRenderer);

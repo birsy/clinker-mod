@@ -21,7 +21,7 @@ public abstract class Chemical {
     public float burningPoint;
     public int color;
 
-    public Chemical(Chemical.Properties properties) {
+    public Chemical(Properties properties) {
         this.density = properties.density;
         this.hardness = properties.hardness;
         this.malleability = properties.malleability;
@@ -107,10 +107,10 @@ public abstract class Chemical {
         }
 
         public Properties color(float r, float g, float b) {
-            return this.color((int) r * 255, (int) g * 255, (int) b * 255);
+            return this.setColor((int) r * 255, (int) g * 255, (int) b * 255);
         }
         public Properties color(int r, int g, int b) {
-            return  this.color((r << 16) & (g << 8) & b);
+            return  this.setColor((r << 16) & (g << 8) & b);
         }
         public Properties color(int color) {
             this.color = color;

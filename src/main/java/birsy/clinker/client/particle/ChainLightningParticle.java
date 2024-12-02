@@ -9,6 +9,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -19,6 +20,10 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.particles.*;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
@@ -133,12 +138,12 @@ public class ChainLightningParticle extends Particle {
 
         @Override
         public ParticleProvider<ChainLightningParticleOptions> create(SpriteSet pSprites) {
-            return new ChainLightningParticle.Provider(pSprites);
+            return new Provider(pSprites);
         }
     }
 
     public static class ChainLightningParticleOptions implements ParticleOptions {
-        public static final Codec<ChainLightningParticleOptions> CODEC = RecordCodecBuilder.create(
+        public static final MapCodec<ChainLightningParticleOptions> CODEC = RecordCodecBuilder.mapCodec(
                 builder -> builder.group(
                                 Codec.DOUBLE.fieldOf("startX").forGetter(particleOptions -> particleOptions.startX),
                                 Codec.DOUBLE.fieldOf("startY").forGetter(particleOptions -> particleOptions.startY),
@@ -146,38 +151,17 @@ public class ChainLightningParticle extends Particle {
                                 Codec.DOUBLE.fieldOf("endX").forGetter(particleOptions -> particleOptions.endX),
                                 Codec.DOUBLE.fieldOf("endY").forGetter(particleOptions -> particleOptions.endY),
                                 Codec.DOUBLE.fieldOf("endZ").forGetter(particleOptions -> particleOptions.endZ)
-                        )
-                        .apply(builder, ChainLightningParticleOptions::new)
+                        ).apply(builder, ChainLightningParticleOptions::new)
         );
-        public static final ParticleOptions.Deserializer<ChainLightningParticleOptions> DESERIALIZER = new ParticleOptions.Deserializer<>() {
-            public ChainLightningParticleOptions fromCommand(ParticleType<ChainLightningParticleOptions> options, StringReader reader) throws CommandSyntaxException {
-                reader.expect(' ');
-                double sx = reader.readDouble();
-                reader.expect(' ');
-                double sy = reader.readDouble();
-                reader.expect(' ');
-                double sz = reader.readDouble();
-                reader.expect(' ');
-                double ex = reader.readDouble();
-                reader.expect(' ');
-                double ey = reader.readDouble();
-                reader.expect(' ');
-                double ez = reader.readDouble();
-
-                return new ChainLightningParticleOptions(sx, sy, sz, ex, ey, ez);
-            }
-
-            public ChainLightningParticleOptions fromNetwork(ParticleType<ChainLightningParticleOptions> options, FriendlyByteBuf buffer) {
-                double sx = buffer.readDouble();
-                double sy = buffer.readDouble();
-                double sz = buffer.readDouble();
-                double ex = buffer.readDouble();
-                double ey = buffer.readDouble();
-                double ez = buffer.readDouble();
-
-                return new ChainLightningParticleOptions(sx, sy, sz, ex, ey, ez);
-            }
-        };
+        public static final StreamCodec<RegistryFriendlyByteBuf, ChainLightningParticleOptions> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.DOUBLE, particleOptions -> particleOptions.startX,
+                ByteBufCodecs.DOUBLE, particleOptions -> particleOptions.startY,
+                ByteBufCodecs.DOUBLE, particleOptions -> particleOptions.startZ,
+                ByteBufCodecs.DOUBLE, particleOptions -> particleOptions.endX,
+                ByteBufCodecs.DOUBLE, particleOptions -> particleOptions.endY,
+                ByteBufCodecs.DOUBLE, particleOptions -> particleOptions.endZ,
+                ChainLightningParticleOptions::new
+        );
 
         protected final double startX, startY, startZ;
         protected final double endX, endY, endZ;
@@ -203,21 +187,6 @@ public class ChainLightningParticle extends Particle {
         @Override
         public ParticleType<?> getType() {
             return ClinkerParticles.CHAIN_LIGHTNING.get();
-        }
-
-        @Override
-        public void writeToNetwork(FriendlyByteBuf pBuffer) {
-            pBuffer.writeDouble(startX);
-            pBuffer.writeDouble(startY);
-            pBuffer.writeDouble(startZ);
-            pBuffer.writeDouble(endX);
-            pBuffer.writeDouble(endY);
-            pBuffer.writeDouble(endZ);
-        }
-
-        @Override
-        public String writeToString() {
-            return "whuh??";
         }
     }
 }

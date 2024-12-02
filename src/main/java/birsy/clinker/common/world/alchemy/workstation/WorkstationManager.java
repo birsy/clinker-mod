@@ -15,18 +15,16 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
-import net.neoforged.api.distmarker.Dist;
-
 
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-@Mod.EventBusSubscriber(modid = Clinker.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = Clinker.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
 public class WorkstationManager {
     public static final Map<ServerLevel, WorkstationManager> managerByLevel = new HashMap<>();
     public static final Map<ResourceKey<Level>, WorkstationManager> managerByDimension = new HashMap<>();

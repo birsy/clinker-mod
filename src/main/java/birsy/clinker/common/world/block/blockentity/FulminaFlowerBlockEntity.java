@@ -3,6 +3,8 @@ package birsy.clinker.common.world.block.blockentity;
 import birsy.clinker.common.world.block.plant.FulminaFlowerBlock;
 import birsy.clinker.core.registry.entity.ClinkerBlockEntities;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
@@ -14,7 +16,7 @@ import net.minecraft.world.level.gameevent.GameEventListener;
 import net.minecraft.world.level.gameevent.PositionSource;
 import net.minecraft.world.phys.Vec3;
 
-public class FulminaFlowerBlockEntity extends BlockEntity implements GameEventListener.Holder<FulminaFlowerBlockEntity.LightningListener> {
+public class FulminaFlowerBlockEntity extends BlockEntity implements GameEventListener.Provider<FulminaFlowerBlockEntity.LightningListener> {
     LightningListener lightningListener;
     int ticksUntilExtinguish = 0;
 
@@ -36,14 +38,14 @@ public class FulminaFlowerBlockEntity extends BlockEntity implements GameEventLi
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
         tag.putInt("TicksUntilExtinguish", this.ticksUntilExtinguish);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
         this.ticksUntilExtinguish = tag.getInt("TicksUntilExtinguish");
     }
 
@@ -72,15 +74,14 @@ public class FulminaFlowerBlockEntity extends BlockEntity implements GameEventLi
         }
 
         @Override
-        public boolean handleGameEvent(ServerLevel pLevel, GameEvent pGameEvent, GameEvent.Context pContext, Vec3 pPos) {
-            if (pGameEvent == GameEvent.LIGHTNING_STRIKE) {
-                BlockEntity flower = pLevel.getBlockEntity(BlockPos.containing(this.listenerSource.getPosition(pLevel).get()));
+        public boolean handleGameEvent(ServerLevel level, Holder<GameEvent> gameEvent, GameEvent.Context context, Vec3 pos) {
+            if (gameEvent.is(GameEvent.LIGHTNING_STRIKE)) {
+                BlockEntity flower = level.getBlockEntity(BlockPos.containing(this.listenerSource.getPosition(level).get()));
                 if (flower instanceof FulminaFlowerBlockEntity) {
                     ((FulminaFlowerBlockEntity) flower).activate();
                     return true;
                 }
             }
-
             return false;
         }
     }

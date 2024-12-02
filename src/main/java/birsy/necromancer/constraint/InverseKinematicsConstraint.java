@@ -1,10 +1,10 @@
 package birsy.necromancer.constraint;
 
+import birsy.clinker.core.util.VectorUtil;
 import birsy.necromancer.Bone;
 import birsy.necromancer.Skeleton;
 import birsy.necromancer.SkeletonParent;
 import birsy.clinker.client.render.DebugRenderUtil;
-import birsy.clinker.core.util.VectorUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -130,7 +130,7 @@ public class InverseKinematicsConstraint implements Constraint {
             boolean direction = calculateJointDirection(point, prevPoint, nextPoint, this.poleTarget);
 
             if (direction != this.jointDirections[i]) {
-                Vector3f projectedPoint = VectorUtils.projectPointOntoLine(point, prevPoint, nextPoint);
+                Vector3f projectedPoint = VectorUtil.projectPointOntoLine(point, prevPoint, nextPoint);
                 point.set(Mth.lerp(2, point.x(), projectedPoint.x()), Mth.lerp(2, point.y(), projectedPoint.y()), Mth.lerp(2, point.z(), projectedPoint.z()));
             }
         }
@@ -174,8 +174,8 @@ public class InverseKinematicsConstraint implements Constraint {
 
     // calculates the "direction" of a joint relative to it's neighbors, used in the joint direction correction step
     private boolean calculateJointDirection(Vector3f point, Vector3f prevPoint, Vector3f nextPoint, Vector3f polePoint) {
-        Vector3f projectedPoint = VectorUtils.projectPointOntoLine(point, prevPoint, nextPoint);
-        Vector3f projectedPole = VectorUtils.projectPointOntoLine(polePoint, prevPoint, nextPoint);
+        Vector3f projectedPoint = VectorUtil.projectPointOntoLine(point, prevPoint, nextPoint);
+        Vector3f projectedPole = VectorUtil.projectPointOntoLine(polePoint, prevPoint, nextPoint);
         Vector3f pointDirection = new Vector3f(projectedPoint);
         pointDirection.sub(point);
         Vector3f poleDirection = new Vector3f(projectedPole);

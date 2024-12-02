@@ -47,7 +47,7 @@ public class FermentationBarrelBlock extends BaseEntityBlock {
         this.registerDefaultState(this.stateDefinition.any().setValue(OPEN, true).setValue(FACING, Direction.NORTH));
     }
 
-    public FermentationBarrelBlock(BlockBehaviour.Properties behaviour) {
+    public FermentationBarrelBlock(Properties behaviour) {
         super(Properties.ofFullCopy(Blocks.BARREL).noOcclusion());
         this.registerDefaultState(this.stateDefinition.any().setValue(OPEN, true).setValue(FACING, Direction.NORTH));
     }

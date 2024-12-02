@@ -1,8 +1,7 @@
 package birsy.clinker.common.world.alchemy.workstation;
 
-import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.JomlConversions;
-import birsy.clinker.core.util.MathUtils;
+import birsy.clinker.core.util.MathUtil;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
@@ -42,7 +41,7 @@ public class WorkstationPhysicsObject {
         this.torque = new Quaterniond();
 
         //MathUtils.min(sizeX, sizeY, sizeZ) * 0.5
-        this.collider = new SphereBoxCollider(sizeX, sizeY, sizeZ, MathUtils.min(sizeX, sizeY, sizeZ) * 0.25);
+        this.collider = new SphereBoxCollider(sizeX, sizeY, sizeZ, MathUtil.min(sizeX, sizeY, sizeZ) * 0.25);
     }
 
     public void integrate() {
@@ -68,7 +67,7 @@ public class WorkstationPhysicsObject {
     // DONT FUCKING WORRY ABOUT ROTATION SHIT FOR NOW
     // todo: rotation shit
     public void push(Vector3d pos, Vector3d nudge) {
-        this.position = this.position.add(JomlConversions.toMojang(nudge));
+        this.position = this.position.add(JomlConversions.toMoj(nudge));
 //        Vector3d currentPos = JomlConversions.toJOML(this.position);
 //
 //        nudge = this.rotation.transformInverse(nudge);
@@ -90,7 +89,7 @@ public class WorkstationPhysicsObject {
 //        currentPos.add(nudge);
 //
 //        // update actual pose
-//        this.position = JomlConversions.toMojang(currentPos);
+//        this.position = JomlConversions.toMoj(currentPos);
 //
 //        // rotational push
 //        this.pushRotate(angularNudge, scalar);
@@ -160,7 +159,7 @@ public class WorkstationPhysicsObject {
 
         public void updateTransform(Vec3 position, Quaterniond orientation) {
             for (SphereCollider sphere : this.spheres) {
-                sphere.position = JomlConversions.toMojang(orientation.transform(JomlConversions.toJOML(sphere.initialPosition))).add(position);
+                sphere.position = JomlConversions.toMoj(orientation.transform(JomlConversions.toJOML(sphere.initialPosition))).add(position);
             }
 
             updateBoundingBox();
@@ -187,7 +186,7 @@ public class WorkstationPhysicsObject {
             for (SphereCollider sphere : this.spheres) {
                 if (aabb.contains(sphere.position)) {
                     //we are colliding!
-                    Vec3 pointOnSurface = MathUtils.closestPointOnAABB(sphere.position, aabb);
+                    Vec3 pointOnSurface = MathUtil.closestPointOnAABB(sphere.position, aabb);
 
                     Vec3 point = sphere.position.subtract(pointOnSurface).normalize().scale(sphere.radius);
                     Vec3 adjustment = pointOnSurface.subtract(sphere.position);

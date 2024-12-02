@@ -1,6 +1,6 @@
 package birsy.clinker.client.render.world;
 
-import birsy.clinker.core.util.MathUtils;
+import birsy.clinker.core.util.MathUtil;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -13,7 +13,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -111,7 +110,7 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
         float b2 = blockL;
         b2 = (float) Math.pow(b2, 15.0F);
         // torch flicker
-        float flicker = 1.0F + MathUtils.awfulRandom(((level.getGameTime() + partialTicks) % 20000.0F)) * 0.1F;
+        float flicker = 1.0F + MathUtil.awfulRandom(((level.getGameTime() + partialTicks) % 20000.0F)) * 0.1F;
         b2 *= flicker;
         b2 *= 8.0;
         blockLightColor.add(b2, b2, b2 * 0.5F);

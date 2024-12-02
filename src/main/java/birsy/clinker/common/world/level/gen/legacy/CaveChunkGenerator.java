@@ -1,10 +1,11 @@
 package birsy.clinker.common.world.level.gen.legacy;
 
 import birsy.clinker.core.registry.ClinkerBlocks;
-import birsy.clinker.core.util.MathUtils;
+import birsy.clinker.core.util.MathUtil;
 import birsy.clinker.core.util.noise.VoronoiGenerator;
 import com.google.common.annotations.VisibleForTesting;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.SharedConstants;
 import net.minecraft.core.BlockPos;
@@ -39,7 +40,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 public class CaveChunkGenerator extends ChunkGenerator {
-    public static final Codec<CaveChunkGenerator> CODEC = RecordCodecBuilder.create((codec) ->
+    public static final MapCodec<CaveChunkGenerator> CODEC = RecordCodecBuilder.mapCodec((codec) ->
             codec.group(BiomeSource.CODEC.fieldOf("biome_source").forGetter((generator) -> generator.biomeSource),
                  NoiseGeneratorSettings.CODEC.fieldOf("settings").forGetter((generator) -> generator.settingsHolder))
             .apply(codec, codec.stable(CaveChunkGenerator::new)));
@@ -197,7 +198,7 @@ public class CaveChunkGenerator extends ChunkGenerator {
         return outputArray;
     }
 
-    public double lerpSample(double[][][] sampleGrid, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, double x, double y, double z, MathUtils.EasingType yEasingType) {
+    public double lerpSample(double[][][] sampleGrid, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, double x, double y, double z, MathUtil.EasingType yEasingType) {
         //non-negative
         double nNX = x - minX;
         double nNY = y - minY;
@@ -227,14 +228,14 @@ public class CaveChunkGenerator extends ChunkGenerator {
         double lerpXY = Mth.lerp(sFracX, sampleGrid[sMinX][sMaxY][sMinZ], sampleGrid[sMaxX][sMaxY][sMinZ]);
         double lerpXYZ = Mth.lerp(sFracX, sampleGrid[sMinX][sMaxY][sMaxZ], sampleGrid[sMaxX][sMaxY][sMaxZ]);
 
-        return Mth.lerp(MathUtils.ease((float) sFracY, yEasingType), Mth.lerp(sFracZ, lerpX, lerpXZ), Mth.lerp(sFracZ, lerpXY, lerpXYZ));
+        return Mth.lerp(MathUtil.ease((float) sFracY, yEasingType), Mth.lerp(sFracZ, lerpX, lerpXZ), Mth.lerp(sFracZ, lerpXY, lerpXYZ));
         /*return MathUtils.lerp3(sFracX, sFracY, sFracZ,
                 sampleGrid[sMinX][sMinY][sMinZ], sampleGrid[sMinX][sMaxY][sMinZ],
                 sampleGrid[sMaxX][sMinY][sMinZ], sampleGrid[sMaxX][sMaxY][sMinZ],
                 sampleGrid[sMinX][sMinY][sMaxZ], sampleGrid[sMinX][sMaxY][sMaxZ],
                 sampleGrid[sMaxX][sMinY][sMaxZ], sampleGrid[sMaxX][sMaxY][sMaxZ]);*/
     }
-    public Vec3 lerpSampleVec3(Vec3[][][] sampleGrid, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, double x, double y, double z, MathUtils.EasingType yEasingType) {
+    public Vec3 lerpSampleVec3(Vec3[][][] sampleGrid, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, double x, double y, double z, MathUtil.EasingType yEasingType) {
         //non-negative
         double nNX = x - minX;
         double nNY = y - minY;
@@ -260,13 +261,13 @@ public class CaveChunkGenerator extends ChunkGenerator {
         int sMinZ = Mth.floor(sZ);
         int sMaxZ = Mth.ceil(sZ);
 
-        Vec3 lerpX = MathUtils.vec3Lerp(sFracX, sampleGrid[sMinX][sMinY][sMinZ], sampleGrid[sMaxX][sMinY][sMinZ]);
-        Vec3 lerpXZ = MathUtils.vec3Lerp(sFracX, sampleGrid[sMinX][sMinY][sMaxZ], sampleGrid[sMaxX][sMinY][sMaxZ]);
+        Vec3 lerpX = MathUtil.vec3Lerp(sFracX, sampleGrid[sMinX][sMinY][sMinZ], sampleGrid[sMaxX][sMinY][sMinZ]);
+        Vec3 lerpXZ = MathUtil.vec3Lerp(sFracX, sampleGrid[sMinX][sMinY][sMaxZ], sampleGrid[sMaxX][sMinY][sMaxZ]);
 
-        Vec3 lerpXY = MathUtils.vec3Lerp(sFracX, sampleGrid[sMinX][sMaxY][sMinZ], sampleGrid[sMaxX][sMaxY][sMinZ]);
-        Vec3 lerpXYZ = MathUtils.vec3Lerp(sFracX, sampleGrid[sMinX][sMaxY][sMaxZ], sampleGrid[sMaxX][sMaxY][sMaxZ]);
+        Vec3 lerpXY = MathUtil.vec3Lerp(sFracX, sampleGrid[sMinX][sMaxY][sMinZ], sampleGrid[sMaxX][sMaxY][sMinZ]);
+        Vec3 lerpXYZ = MathUtil.vec3Lerp(sFracX, sampleGrid[sMinX][sMaxY][sMaxZ], sampleGrid[sMaxX][sMaxY][sMaxZ]);
 
-        return MathUtils.vec3Lerp(MathUtils.ease((float) sFracY, yEasingType), MathUtils.vec3Lerp(sFracZ, lerpX, lerpXZ), MathUtils.vec3Lerp(sFracZ, lerpXY, lerpXYZ));
+        return MathUtil.vec3Lerp(MathUtil.ease((float) sFracY, yEasingType), MathUtil.vec3Lerp(sFracZ, lerpX, lerpXZ), MathUtil.vec3Lerp(sFracZ, lerpXY, lerpXYZ));
         /*return MathUtils.lerp3(sFracX, sFracY, sFracZ,
                 sampleGrid[sMinX][sMinY][sMinZ], sampleGrid[sMinX][sMaxY][sMinZ],
                 sampleGrid[sMaxX][sMinY][sMinZ], sampleGrid[sMaxX][sMaxY][sMinZ],
@@ -288,11 +289,11 @@ public class CaveChunkGenerator extends ChunkGenerator {
         double erosion = 0.8;
         newY = Mth.clamp(newY, -62, 318);
 
-        double caveShape = lerpSample(caveShapeSamplePoints, 0, -64, 0, 16, 320, 16, mod(x, 16), newY, mod(z, 16), MathUtils.EasingType.linear);
-        double caveShape2 = lerpSample(caveShapeSamplePoints, 0, -64, 0, 16, 320, 16, mod(x, 16), y, mod(z, 16), MathUtils.EasingType.linear);
+        double caveShape = lerpSample(caveShapeSamplePoints, 0, -64, 0, 16, 320, 16, mod(x, 16), newY, mod(z, 16), MathUtil.EasingType.linear);
+        double caveShape2 = lerpSample(caveShapeSamplePoints, 0, -64, 0, 16, 320, 16, mod(x, 16), y, mod(z, 16), MathUtil.EasingType.linear);
         caveShape = Mth.lerp(erosion, caveShape, caveShape2);
-        Vec3 derivative = lerpSampleVec3(caveDerivativeSamplePoints, 0, -64, 0,16, 320, 16, mod(x, 16), newY, mod(z, 16), MathUtils.EasingType.linear);
-        Vec3 derivative2 = lerpSampleVec3(caveDerivativeSamplePoints, 0, -64, 0,16, 320, 16, mod(x, 16), y, mod(z, 16), MathUtils.EasingType.linear);
+        Vec3 derivative = lerpSampleVec3(caveDerivativeSamplePoints, 0, -64, 0,16, 320, 16, mod(x, 16), newY, mod(z, 16), MathUtil.EasingType.linear);
+        Vec3 derivative2 = lerpSampleVec3(caveDerivativeSamplePoints, 0, -64, 0,16, 320, 16, mod(x, 16), y, mod(z, 16), MathUtil.EasingType.linear);
         derivative = derivative.lerp(derivative2, erosion);
         derivative = derivative.normalize();
         double facingUp = (derivative.dot(new Vec3(0, 1, 0)) + 1) * 0.5F;
@@ -311,10 +312,10 @@ public class CaveChunkGenerator extends ChunkGenerator {
 
         double aHFreq = 1.0;
         double aquiferMidHeight  = -40;
-        double aquiferUpperRange = aquiferMidHeight + MathUtils.mapRange(-1.0F, 1.0F, 10.0F, 45.0F, s.largeNoise.GetNoise(x * aHFreq, z * aHFreq));
+        double aquiferUpperRange = aquiferMidHeight + MathUtil.mapRange(-1.0F, 1.0F, 10.0F, 45.0F, s.largeNoise.GetNoise(x * aHFreq, z * aHFreq));
         double aquiferLowerRange = aquiferMidHeight - 20;
 
-        double caveClamping = Mth.clamp(MathUtils.mapRange(aquiferUpperRange - 10, aquiferUpperRange + 15, 0, 1, y), 0, 1);
+        double caveClamping = Mth.clamp(MathUtil.mapRange(aquiferUpperRange - 10, aquiferUpperRange + 15, 0, 1, y), 0, 1);
 
         //Stalagmite Noise;
         double stalagHFreq = (1.0 / 16.0);
@@ -325,7 +326,7 @@ public class CaveChunkGenerator extends ChunkGenerator {
         double yFac = ((Math.abs(stalagVec.y()) + 0.5));
         yFac *= yFac;
         double stalag = stalagVec.multiply(1, 0, 1).length() * yFac;
-        double stalagThreshold = MathUtils.map(0.5, 1.0, MathUtils.bias(stalagInfo.hash(), 0.8F)) * Mth.sqrt(3) * stalagHFreq;
+        double stalagThreshold = MathUtil.map(0.5, 1.0, MathUtil.bias(stalagInfo.hash(), 0.8F)) * Mth.sqrt(3) * stalagHFreq;
         stalag -= stalagThreshold;
         stalag *= -1;
 
@@ -348,11 +349,11 @@ public class CaveChunkGenerator extends ChunkGenerator {
             double aFreq = 6.0;
             double altNoise = s.largeNoise.GetNoise(x * aFreq, z * aFreq);
 
-            double aTopThres = MathUtils.mapRange(aquiferLowerRange, aquiferMidHeight, 0.0F, 1.0F, y);
+            double aTopThres = MathUtil.mapRange(aquiferLowerRange, aquiferMidHeight, 0.0F, 1.0F, y);
             double aquiferSizeThrottling = y < aquiferMidHeight ?
-                    Mth.lerp(0.0, MathUtils.ease((float) aTopThres, MathUtils.EasingType.easeOutBounce), MathUtils.ease((float) aTopThres, MathUtils.EasingType.easeOutQuad)) :
-                    Mth.lerp(MathUtils.bias((altNoise + 1) / 2, 0.2), MathUtils.ease((float) MathUtils.mapRange(aquiferMidHeight, aquiferUpperRange, 1.0F, 0.0F, y), MathUtils.EasingType.easeOutQuad),
-                            MathUtils.ease((float) MathUtils.mapRange(aquiferMidHeight, aquiferUpperRange, 1.0F, 0.0F, y), MathUtils.EasingType.easeOutBounce));
+                    Mth.lerp(0.0, MathUtil.ease((float) aTopThres, MathUtil.EasingType.easeOutBounce), MathUtil.ease((float) aTopThres, MathUtil.EasingType.easeOutQuad)) :
+                    Mth.lerp(MathUtil.bias((altNoise + 1) / 2, 0.2), MathUtil.ease((float) MathUtil.mapRange(aquiferMidHeight, aquiferUpperRange, 1.0F, 0.0F, y), MathUtil.EasingType.easeOutQuad),
+                            MathUtil.ease((float) MathUtil.mapRange(aquiferMidHeight, aquiferUpperRange, 1.0F, 0.0F, y), MathUtil.EasingType.easeOutBounce));
             double aquiferSizeThreshold = 0.5 * aquiferSizeThrottling;
 
             double aquiferCaveNoiseValue = s.largeNoise.GetNoise(x, z);
@@ -363,7 +364,7 @@ public class CaveChunkGenerator extends ChunkGenerator {
         double bCave = bridgeCavern[0];
         double bCaveShell = bridgeCavern[1];
 
-        return MathUtils.smoothMinExpo(MathUtils.smoothMinExpo(sCave, stalag, -0.05) + Math.max(bCaveShell * 0.8, 0), bCave, 0.06);//MathUtils.smoothMinExpo(stalag, sampleBridgeCaveNoise(x, y, z, seed), -0.05);//MathUtils.smoothMinExpo(aCave, MathUtils.smoothMinExpo(sCave, stalag, -0.1), 0.06);
+        return MathUtil.smoothMinExpo(MathUtil.smoothMinExpo(sCave, stalag, -0.05) + Math.max(bCaveShell * 0.8, 0), bCave, 0.06);//MathUtils.smoothMinExpo(stalag, sampleBridgeCaveNoise(x, y, z, seed), -0.05);//MathUtils.smoothMinExpo(aCave, MathUtils.smoothMinExpo(sCave, stalag, -0.1), 0.06);
     }
 
     private double[] sampleBridgeCaveNoise (double x, double y, double z, long seed) {
@@ -381,7 +382,7 @@ public class CaveChunkGenerator extends ChunkGenerator {
         Vec3 distortPos = localPos.add(noise, noise, noise);
         double cavernRadius = 32.0;
         double cavern = distortPos.multiply(1.0, 0.5, 1.0).length() - cavernRadius;
-        double shell = MathUtils.mapRange(cavernRadius, cavernRadius + 10.0, 1.0, -1.0, distortPos.multiply(1.0, 1.0, 1.0).length());
+        double shell = MathUtil.mapRange(cavernRadius, cavernRadius + 10.0, 1.0, -1.0, distortPos.multiply(1.0, 1.0, 1.0).length());
         double bridge = 1.0 / frequency;
         double tunnel = 1.0 / frequency;
 
@@ -390,10 +391,10 @@ public class CaveChunkGenerator extends ChunkGenerator {
         // TODO: please cache this
         for (int i = 0; i < bridgeNumber; i++) {
             bridgeHeight += ((cavernRadius * 2.0) / bridgeNumber); //MathUtils.awfulRandom(info.hash() * 512.12342 + i * 32) *
-            float rotation = (float) Mth.lerp(MathUtils.awfulRandom(info.hash() * 864.2343 + i * 12), 0, 2 * Math.PI);
+            float rotation = (float) Mth.lerp(MathUtil.awfulRandom(info.hash() * 864.2343 + i * 12), 0, 2 * Math.PI);
             Vec3 point1 = new Vec3(Mth.sin(rotation), 0, Mth.cos(rotation)).scale(cavernRadius * 2).add(caveCenter.x(), bridgeHeight, caveCenter.z());
             Vec3 point2 = new Vec3(Mth.sin(rotation + Mth.PI), 0, Mth.cos(rotation + Mth.PI)).scale(cavernRadius * 2).add(caveCenter.x(), bridgeHeight, caveCenter.z());
-            Vec3 random = new Vec3((MathUtils.awfulRandom(info.hash() * 464.2383 + i * 2) * 2.0) - 1.0, 0, (MathUtils.awfulRandom(info.hash() * 33.2343 + i * 18) * 2.0) - 1.0).scale(16);
+            Vec3 random = new Vec3((MathUtil.awfulRandom(info.hash() * 464.2383 + i * 2) * 2.0) - 1.0, 0, (MathUtil.awfulRandom(info.hash() * 33.2343 + i * 18) * 2.0) - 1.0).scale(16);
             double bDistance = getBridgeDistance(position, point1.add(random), point2.add(random), 4);
             double tDistance = getBridgeDistance(position, point1.add(random).add(0, 10, 0), point2.add(random).add(0, 10, 0), 3.5);
 
@@ -404,7 +405,7 @@ public class CaveChunkGenerator extends ChunkGenerator {
         shell += Math.min((tunnel - 5) * 2, 0);
         shell -= Math.min(bridge * 2, 0);
         //shell = Mth.clamp(shell, 0, 1);
-        return new double[]{MathUtils.smoothMinExpo(MathUtils.smoothMinExpo((float) -bridge, (float) cavern, -5.0F), tunnel, 2.0F) * 0.05, shell};
+        return new double[]{MathUtil.smoothMinExpo(MathUtil.smoothMinExpo((float) -bridge, (float) cavern, -5.0F), tunnel, 2.0F) * 0.05, shell};
     }
 
     // actually just a cylinder SDF
@@ -581,7 +582,7 @@ public class CaveChunkGenerator extends ChunkGenerator {
             noise *= 8.0;
             Vec3 distortPos = localPos.add(noise, noise, noise);
             double cavern = distortPos.multiply(1.0, 0.5, 1.0).length() - cavernRadius;
-            double shell = MathUtils.mapRange(cavernRadius, cavernRadius + 10.0, 1.0, -1.0, distortPos.multiply(1.0, 1.0, 1.0).length());
+            double shell = MathUtil.mapRange(cavernRadius, cavernRadius + 10.0, 1.0, -1.0, distortPos.multiply(1.0, 1.0, 1.0).length());
 
             double bridge = 1.0 / frequency;
             double tunnel = 1.0 / frequency;
@@ -596,7 +597,7 @@ public class CaveChunkGenerator extends ChunkGenerator {
             shell += Math.min((tunnel - 5) * 2, 0);
             shell -= Math.min(bridge * 2, 0);
 
-            return new CaveDensitySample(MathUtils.smoothMinExpo( MathUtils.smoothMinExpo(-bridge, cavern, -5.0) , tunnel, 2.0) * 0.05, shell );
+            return new CaveDensitySample(MathUtil.smoothMinExpo( MathUtil.smoothMinExpo(-bridge, cavern, -5.0) , tunnel, 2.0) * 0.05, shell );
         }
 
         /* actually just a tube sdf

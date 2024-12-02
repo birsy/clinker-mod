@@ -21,7 +21,7 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 public class OrdnanceRenderer extends EntityRenderer<OrdnanceEntity> {
-    private static final ResourceLocation ORDNANCE_LOCATION = new ResourceLocation(Clinker.MOD_ID, "textures/entity/ordnance.png");
+    private static final ResourceLocation ORDNANCE_LOCATION = Clinker.resource("textures/entity/ordnance.png");
 
     public OrdnanceRenderer(EntityRendererProvider.Context pContext) {
         super(pContext);
@@ -83,12 +83,12 @@ public class OrdnanceRenderer extends EntityRenderer<OrdnanceEntity> {
             vertex.position.set(vert.x, vert.y, vert.z);
         }
         Vector3f normal = new Vector3f(0, 0, -1);
-        normal = stack.last().normal().transform(normal);
+        normal = stack.last(). normal().transform(normal);
 
-        consumer.vertex(verticies[0].x(), verticies[0].y(), verticies[0].z(), 1, 1, 1, 1, verticies[0].u(), verticies[0].v(), overlayTexture, pPackedLight, normal.x, normal.y, normal.z);
-        consumer.vertex(verticies[1].x(), verticies[1].y(), verticies[1].z(), 1, 1, 1, 1, verticies[1].u(), verticies[1].v(), overlayTexture, pPackedLight, normal.x, normal.y, normal.z);
-        consumer.vertex(verticies[2].x(), verticies[2].y(), verticies[2].z(), 1, 1, 1, 1, verticies[2].u(), verticies[2].v(), overlayTexture, pPackedLight, normal.x, normal.y, normal.z);
-        consumer.vertex(verticies[3].x(), verticies[3].y(), verticies[3].z(), 1, 1, 1, 1, verticies[3].u(), verticies[3].v(), overlayTexture, pPackedLight, normal.x, normal.y, normal.z);
+        consumer.addVertex(verticies[0].x(), verticies[0].y(), verticies[0].z(), 1, 1, 1, 1, verticies[0].u(), verticies[0].v(), overlayTexture, pPackedLight, normal.x, normal.y, normal.z);
+        consumer.addVertex(verticies[1].x(), verticies[1].y(), verticies[1].z(), 1, 1, 1, 1, verticies[1].u(), verticies[1].v(), overlayTexture, pPackedLight, normal.x, normal.y, normal.z);
+        consumer.addVertex(verticies[2].x(), verticies[2].y(), verticies[2].z(), 1, 1, 1, 1, verticies[2].u(), verticies[2].v(), overlayTexture, pPackedLight, normal.x, normal.y, normal.z);
+        consumer.addVertex(verticies[3].x(), verticies[3].y(), verticies[3].z(), 1, 1, 1, 1, verticies[3].u(), verticies[3].v(), overlayTexture, pPackedLight, normal.x, normal.y, normal.z);
         stack.popPose();
     }
 
@@ -116,12 +116,12 @@ public class OrdnanceRenderer extends EntityRenderer<OrdnanceEntity> {
             vertex.position.set(vert.x, vert.y, vert.z);
         }
         Vector3f normal = new Vector3f(0, 0, -1);
-        normal = stack.last().normal().transform(normal);
+        normal = stack.last(). normal().transform(normal);
 
-        consumer.vertex(verticies[0].x(), verticies[0].y(), verticies[0].z(), 1, 1, 1, 1, verticies[0].u(), verticies[0].v(), overlayTexture, pPackedLight, normal.x, normal.y, normal.z);
-        consumer.vertex(verticies[1].x(), verticies[1].y(), verticies[1].z(), 1, 1, 1, 1, verticies[1].u(), verticies[1].v(), overlayTexture, pPackedLight, normal.x, normal.y, normal.z);
-        consumer.vertex(verticies[2].x(), verticies[2].y(), verticies[2].z(), 1, 1, 1, 1, verticies[2].u(), verticies[2].v(), overlayTexture, pPackedLight, normal.x, normal.y, normal.z);
-        consumer.vertex(verticies[3].x(), verticies[3].y(), verticies[3].z(), 1, 1, 1, 1, verticies[3].u(), verticies[3].v(), overlayTexture, pPackedLight, normal.x, normal.y, normal.z);
+        consumer.addVertex(verticies[0].x(), verticies[0].y(), verticies[0].z(), 1, 1, 1, 1, verticies[0].u(), verticies[0].v(), overlayTexture, pPackedLight, normal.x, normal.y, normal.z);
+        consumer.addVertex(verticies[1].x(), verticies[1].y(), verticies[1].z(), 1, 1, 1, 1, verticies[1].u(), verticies[1].v(), overlayTexture, pPackedLight, normal.x, normal.y, normal.z);
+        consumer.addVertex(verticies[2].x(), verticies[2].y(), verticies[2].z(), 1, 1, 1, 1, verticies[2].u(), verticies[2].v(), overlayTexture, pPackedLight, normal.x, normal.y, normal.z);
+        consumer.addVertex(verticies[3].x(), verticies[3].y(), verticies[3].z(), 1, 1, 1, 1, verticies[3].u(), verticies[3].v(), overlayTexture, pPackedLight, normal.x, normal.y, normal.z);
 
         stack.popPose();
     }

@@ -5,14 +5,14 @@ import birsy.clinker.common.networking.packet.ClientboundPushPacket;
 import birsy.clinker.common.networking.packet.ClientboundRopeEntitySegmentAddPacket;
 import birsy.clinker.common.world.entity.ColliderEntity;
 import birsy.clinker.common.world.entity.CollisionParent;
-import birsy.clinker.core.util.VectorUtils;
+import birsy.clinker.core.util.JomlConversions;
+import birsy.clinker.core.util.VectorUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
@@ -148,7 +148,7 @@ public abstract class RopeEntity<T extends RopeEntitySegment> extends Pathfinder
                 continue;
             }
             BlockHitResult raycast = this.level().clip(new ClipContext(
-                    VectorUtils.toMoj(behindSegment.position), VectorUtils.toMoj(aheadSegment.position), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.of(this)
+                    JomlConversions.toMoj(behindSegment.position), JomlConversions.toMoj(aheadSegment.position), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.of(this)
             ));
             if (raycast.isInside() || raycast.getType() == HitResult.Type.BLOCK) behindSegment.accelerate(0, 0.1,  0);
 

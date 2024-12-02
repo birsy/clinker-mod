@@ -21,18 +21,18 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.state.properties.ChestType;
 
 public class StoveRenderer<T extends StoveBlockEntity> implements BlockEntityRenderer<T> {
-    public static final ResourceLocation STOVE = new ResourceLocation(Clinker.MOD_ID, "textures/block/stove.png");
-    public static final ResourceLocation STOVE_CHIMNEY = new ResourceLocation(Clinker.MOD_ID, "textures/block/stove_chimney.png");
-    public static final ResourceLocation DOUBLE_STOVE = new ResourceLocation(Clinker.MOD_ID, "textures/block/stove_double.png");
-    public static final ResourceLocation DOUBLE_STOVE_CHIMNEY = new ResourceLocation(Clinker.MOD_ID, "textures/block/stove_chimney_double.png");
+    public static final ResourceLocation STOVE = Clinker.resource("textures/block/stove.png");
+    public static final ResourceLocation STOVE_CHIMNEY = Clinker.resource("textures/block/stove_chimney.png");
+    public static final ResourceLocation DOUBLE_STOVE = Clinker.resource("textures/block/stove_double.png");
+    public static final ResourceLocation DOUBLE_STOVE_CHIMNEY = Clinker.resource("textures/block/stove_chimney_double.png");
 
-    public static final ResourceLocation STOVE_LIT = new ResourceLocation(Clinker.MOD_ID, "textures/block/stove_lit.png");
-    public static final ResourceLocation STOVE_CHIMNEY_LIT = new ResourceLocation(Clinker.MOD_ID, "textures/block/stove_chimney_lit.png");
-    public static final ResourceLocation DOUBLE_STOVE_LIT = new ResourceLocation(Clinker.MOD_ID, "textures/block/stove_double_lit.png");
-    public static final ResourceLocation DOUBLE_STOVE_CHIMNEY_LIT = new ResourceLocation(Clinker.MOD_ID, "textures/block/stove_chimney_double_lit.png");
+    public static final ResourceLocation STOVE_LIT = Clinker.resource("textures/block/stove_lit.png");
+    public static final ResourceLocation STOVE_CHIMNEY_LIT = Clinker.resource("textures/block/stove_chimney_lit.png");
+    public static final ResourceLocation DOUBLE_STOVE_LIT = Clinker.resource("textures/block/stove_double_lit.png");
+    public static final ResourceLocation DOUBLE_STOVE_CHIMNEY_LIT = Clinker.resource("textures/block/stove_chimney_double_lit.png");
 
-    public static final ResourceLocation STOVE_INNER_LIT = new ResourceLocation(Clinker.MOD_ID, "textures/block/stove_inner_lit.png");
-    public static final ResourceLocation DOUBLE_STOVE_INNER_LIT = new ResourceLocation(Clinker.MOD_ID, "textures/block/stove_double_inner_lit.png");
+    public static final ResourceLocation STOVE_INNER_LIT = Clinker.resource("textures/block/stove_inner_lit.png");
+    public static final ResourceLocation DOUBLE_STOVE_INNER_LIT = Clinker.resource("textures/block/stove_double_inner_lit.png");
 
 
     private final StoveModel stove;
@@ -104,7 +104,7 @@ public class StoveRenderer<T extends StoveBlockEntity> implements BlockEntityRen
     }
 
     public class StoveModel extends Model {
-        public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation(Clinker.MOD_ID, "stove"), "main");
+        public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(Clinker.resource("stove"), "main");
         private final ModelPart stove;
         private final ModelPart lip;
 
@@ -142,7 +142,7 @@ public class StoveRenderer<T extends StoveBlockEntity> implements BlockEntityRen
         }
     }
     public class StoveChimneyModel extends Model {
-        public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation(Clinker.MOD_ID, "chimney"), "main");
+        public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(Clinker.resource("chimney"), "main");
         private final ModelPart chimney;
 
         public StoveChimneyModel(ModelPart root) {

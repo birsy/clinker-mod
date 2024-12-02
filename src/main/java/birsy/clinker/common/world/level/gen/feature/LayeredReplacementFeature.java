@@ -21,7 +21,7 @@ public class LayeredReplacementFeature extends Feature<NoneFeatureConfiguration>
     }
 
     /**
-     * Places the given feature at the given location.
+     * Places the given feature at the given resource.
      * During world generation, features are provided with a 3x3 region of chunks, centered on the chunk being generated,
      * that they can safely generate into.
      *

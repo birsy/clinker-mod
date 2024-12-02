@@ -67,7 +67,7 @@ public class RigidBody {
 
         Vec3 towardsPoint = this.position.subtract(point);
         Vec3 torqueVector = towardsPoint.cross(force);
-        torqueVector = JomlConversions.toMojang(inverseInertiaTensor.transform(JomlConversions.toJOML(torqueVector)));
+        torqueVector = JomlConversions.toMoj(inverseInertiaTensor.transform(JomlConversions.toJOML(torqueVector)));
         torque = torque.mul(new Quaterniond(new AxisAngle4d(torqueVector.length(), JomlConversions.toJOML(torqueVector).normalize())));
     }
 

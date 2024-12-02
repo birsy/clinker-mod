@@ -1,7 +1,6 @@
 package birsy.clinker.common.world.block.blockentity;
 
-import birsy.clinker.core.Clinker;
-import birsy.clinker.core.util.MathUtils;
+import birsy.clinker.core.util.MathUtil;
 import net.minecraft.util.Mth;
 
 public class LidController {
@@ -36,7 +35,7 @@ public class LidController {
     }
 
     public float getOpenness(float pPartialTicks) {
-        return MathUtils.ease(Mth.lerp(pPartialTicks, this.oOpenness, this.openness), MathUtils.EasingType.easeOutBack);
+        return MathUtil.ease(Mth.lerp(pPartialTicks, this.oOpenness, this.openness), MathUtil.EasingType.easeOutBack);
     }
 
     public void setOpen(boolean pShouldBeOpen) {

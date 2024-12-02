@@ -12,7 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 public class RerollFlaskItem extends Item {
-    public RerollFlaskItem(Item.Properties pProperties) {
+    public RerollFlaskItem(Properties pProperties) {
         super(pProperties);
     }
 

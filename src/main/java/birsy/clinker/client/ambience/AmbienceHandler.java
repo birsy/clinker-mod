@@ -6,23 +6,20 @@ import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import net.neoforged.neoforge.event.TickEvent;
 
-
-@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = Clinker.MOD_ID)
+@EventBusSubscriber(value = Dist.CLIENT, modid = Clinker.MOD_ID)
 public class AmbienceHandler {
     public static final SurfaceAmbience SURFACE_AMBIENCE_HANDLER = new SurfaceAmbience(Minecraft.getInstance());
 
     @SubscribeEvent
-    public static void onTick(TickEvent.ClientTickEvent event) {
+    public static void onTick(ClientTickEvent.Pre event) {
         if (shouldntUpdate()) return;
 
         Minecraft.getInstance().getProfiler().push("clinker.ambienceTick");
-        if (event.phase == TickEvent.Phase.END) {
-            SURFACE_AMBIENCE_HANDLER.tick();
-        }
+        SURFACE_AMBIENCE_HANDLER.tick();
         Minecraft.getInstance().getProfiler().pop();
     }
 

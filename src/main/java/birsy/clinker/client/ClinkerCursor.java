@@ -10,8 +10,6 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.system.MemoryUtil;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Optional;
@@ -22,15 +20,15 @@ public class ClinkerCursor {
     private static boolean loadedCursors = false;
     private static int currentCursor = -1;
 
-    private static final ResourceLocation IDLE = new ResourceLocation(Clinker.MOD_ID, "textures/gui/cursor/cursor_idle.png");
-    private static final ResourceLocation GRAB = new ResourceLocation(Clinker.MOD_ID, "textures/gui/cursor/cursor_grab.png");
-    private static final ResourceLocation HOVER = new ResourceLocation(Clinker.MOD_ID, "textures/gui/cursor/cursor_hover.png");
-    private static final ResourceLocation BIRD = new ResourceLocation(Clinker.MOD_ID, "textures/gui/cursor/cursor_bird.png");
+    private static final ResourceLocation IDLE = Clinker.resource("textures/gui/cursor/cursor_idle.png");
+    private static final ResourceLocation GRAB = Clinker.resource("textures/gui/cursor/cursor_grab.png");
+    private static final ResourceLocation HOVER = Clinker.resource("textures/gui/cursor/cursor_hover.png");
+    private static final ResourceLocation BIRD = Clinker.resource("textures/gui/cursor/cursor_bird.png");
     private static final ResourceLocation[] CURSOR_LOCATIONS = new ResourceLocation[]{IDLE, HOVER, GRAB, BIRD};
-    private static final ResourceLocation LEFT_IDLE = new ResourceLocation(Clinker.MOD_ID, "textures/gui/cursor/cursor_left_idle.png");
-    private static final ResourceLocation LEFT_GRAB = new ResourceLocation(Clinker.MOD_ID, "textures/gui/cursor/cursor_left_grab.png");
-    private static final ResourceLocation LEFT_HOVER = new ResourceLocation(Clinker.MOD_ID, "textures/gui/cursor/cursor_left_hover.png");
-    private static final ResourceLocation LEFT_BIRD = new ResourceLocation(Clinker.MOD_ID, "textures/gui/cursor/cursor_left_bird.png");
+    private static final ResourceLocation LEFT_IDLE = Clinker.resource("textures/gui/cursor/cursor_left_idle.png");
+    private static final ResourceLocation LEFT_GRAB = Clinker.resource("textures/gui/cursor/cursor_left_grab.png");
+    private static final ResourceLocation LEFT_HOVER = Clinker.resource("textures/gui/cursor/cursor_left_hover.png");
+    private static final ResourceLocation LEFT_BIRD = Clinker.resource("textures/gui/cursor/cursor_left_bird.png");
     private static final ResourceLocation[] LEFT_CURSOR_LOCATIONS = new ResourceLocation[]{LEFT_IDLE, LEFT_HOVER, LEFT_GRAB, LEFT_BIRD};
 
     public static void init() throws IOException {

@@ -1,7 +1,7 @@
 package birsy.clinker.client.render;
 
 import birsy.clinker.core.Clinker;
-import birsy.clinker.core.util.MathUtils;
+import birsy.clinker.core.util.MathUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ZosimusRenderer {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/gui/zosimus.png");
+    private static final ResourceLocation TEXTURE = Clinker.resource("textures/gui/zosimus.png");
     ZosimusBodyPart root;
     public ZosimusRenderer() {
         this.root = new ZosimusBodyPart(null, 0, 0, 0);
@@ -41,13 +41,13 @@ public class ZosimusRenderer {
         this.root.xRot = 0.5F;//Mth.sin((float) (tickTime * 0.1F)) * 0.5F;
         this.root.tilt = 0.0F;
         this.root.render(bufferbuilder, pPoseStack);
-        BufferUploader.drawWithShader(bufferbuilder.end());
+        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
 
         pPoseStack.popPose();
     }
 
     private static class ZosimusEyes extends ZosimusBodyPart {
-        public ZosimusEyes(@Nullable ZosimusRenderer.ZosimusHead parent) {
+        public ZosimusEyes(@Nullable ZosimusHead parent) {
             super(parent, 0, 0, 0);
         }
 
@@ -105,20 +105,20 @@ public class ZosimusRenderer {
                 u1 = u2;
                 u2 = temp;
             }
-            bufferbuilder.vertex(matrix, x1, y2, 1)
-                    .color(181, 138, 88, 255).uv(u1, v2).endVertex();
-            bufferbuilder.vertex(matrix, x2, y2, 1)
-                    .color(181, 138, 88, 255).uv(u2, v2).endVertex();
-            bufferbuilder.vertex(matrix, x2, y1, 1)
-                    .color(181, 138, 88, 255).uv(u2, v1).endVertex();
-            bufferbuilder.vertex(matrix, x1, y1, 1)
-                    .color(181, 138, 88, 255).uv(u1, v1).endVertex();
+            bufferbuilder.addVertex(matrix, x1, y2, 1)
+                    .setColor(181, 138, 88, 255).setUv(u1, v2);
+            bufferbuilder.addVertex(matrix, x2, y2, 1)
+                    .setColor(181, 138, 88, 255).setUv(u2, v2);
+            bufferbuilder.addVertex(matrix, x2, y1, 1)
+                    .setColor(181, 138, 88, 255).setUv(u2, v1);
+            bufferbuilder.addVertex(matrix, x1, y1, 1)
+                    .setColor(181, 138, 88, 255).setUv(u1, v1);
         }
     }
 
     private static class ZosimusHead extends ZosimusBodyPart {
 
-        public ZosimusHead(@Nullable ZosimusRenderer.ZosimusBodyPart parent, float x, float y, float z) {
+        public ZosimusHead(@Nullable ZosimusBodyPart parent, float x, float y, float z) {
             super(parent, x, y, z);
         }
 
@@ -136,19 +136,19 @@ public class ZosimusRenderer {
             float headWidth = this.getHeadWidth()*0.5F;
             float headHeight = this.getHeadHeight();
             Matrix4f matrix = stack.last().pose();
-            bufferbuilder.vertex(matrix, -headWidth, 0, 0)
-                    .color(1F,1F,1F,1F).uv(1F, 1F).endVertex();
-            bufferbuilder.vertex(matrix, headWidth, 0, 0)
-                    .color(1F,1F,1F,1F).uv(1F, 1F).endVertex();
-            bufferbuilder.vertex(matrix, headWidth, -headHeight, 0)
-                    .color(1F,1F,1F,1F).uv(1F, 1F).endVertex();
-            bufferbuilder.vertex(matrix, -headWidth, -headHeight, 0)
-                    .color(1F,1F,1F,1F).uv(1F, 1F).endVertex();
+            bufferbuilder.addVertex(matrix, -headWidth, 0, 0)
+                    .setColor(1F,1F,1F,1F).setUv(1F, 1F);
+            bufferbuilder.addVertex(matrix, headWidth, 0, 0)
+                    .setColor(1F,1F,1F,1F).setUv(1F, 1F);
+            bufferbuilder.addVertex(matrix, headWidth, -headHeight, 0)
+                    .setColor(1F,1F,1F,1F).setUv(1F, 1F);
+            bufferbuilder.addVertex(matrix, -headWidth, -headHeight, 0)
+                    .setColor(1F,1F,1F,1F).setUv(1F, 1F);
         }
     }
 
     private static class ZosimusCollar extends ZosimusBodyPart {
-        public ZosimusCollar(ZosimusRenderer.ZosimusBodyPart parent, float x, float y, float z) {
+        public ZosimusCollar(ZosimusBodyPart parent, float x, float y, float z) {
             super(parent, x, y, z);
         }
 
@@ -163,14 +163,14 @@ public class ZosimusRenderer {
             float u2 = (62.0F / 128.0F), v2 = (104.0F / 128.0F);
 
             Matrix4f matrix = stack.last().pose();
-            bufferbuilder.vertex(matrix, x1, y2, 0)
-                    .color(1F,1F,1F,1F).uv(u1, v2).endVertex();
-            bufferbuilder.vertex(matrix, x2, y2, 0)
-                    .color(1F,1F,1F,1F).uv(u2, v2).endVertex();
-            bufferbuilder.vertex(matrix, x2, y1, 0)
-                    .color(1F,1F,1F,1F).uv(u2, v1).endVertex();
-            bufferbuilder.vertex(matrix, x1, y1, 0)
-                    .color(1F,1F,1F,1F).uv(u1, v1).endVertex();
+            bufferbuilder.addVertex(matrix, x1, y2, 0)
+                    .setColor(1F,1F,1F,1F).setUv(u1, v2);
+            bufferbuilder.addVertex(matrix, x2, y2, 0)
+                    .setColor(1F,1F,1F,1F).setUv(u2, v2);
+            bufferbuilder.addVertex(matrix, x2, y1, 0)
+                    .setColor(1F,1F,1F,1F).setUv(u2, v1);
+            bufferbuilder.addVertex(matrix, x1, y1, 0)
+                    .setColor(1F,1F,1F,1F).setUv(u1, v1);
 
             float clamping = 1 - Mth.clamp(this.getTotalYRot() / Mth.HALF_PI, 0, 1);
             float xRot = this.getTotalXRot();
@@ -181,29 +181,29 @@ public class ZosimusRenderer {
                 y1 = y2;
                 y2 = temp;
             }
-            bufferbuilder.vertex(matrix, x1, y2, 0)
-                    .color(1F,1F,1F,1F).uv(1.0F, 1.0F).endVertex();
-            bufferbuilder.vertex(matrix, x2, y2, 0)
-                    .color(1F,1F,1F,1F).uv(1.0F, 1.0F).endVertex();
-            bufferbuilder.vertex(matrix, x2, y1, 0)
-                    .color(1F,1F,1F,1F).uv(1.0F, 1.0F).endVertex();
-            bufferbuilder.vertex(matrix, x1, y1, 0)
-                    .color(1F,1F,1F,1F).uv(1.0F, 1.0F).endVertex();
+            bufferbuilder.addVertex(matrix, x1, y2, 0)
+                    .setColor(1F,1F,1F,1F).setUv(1.0F, 1.0F);
+            bufferbuilder.addVertex(matrix, x2, y2, 0)
+                    .setColor(1F,1F,1F,1F).setUv(1.0F, 1.0F);
+            bufferbuilder.addVertex(matrix, x2, y1, 0)
+                    .setColor(1F,1F,1F,1F).setUv(1.0F, 1.0F);
+            bufferbuilder.addVertex(matrix, x1, y1, 0)
+                    .setColor(1F,1F,1F,1F).setUv(1.0F, 1.0F);
 
-//            bufferbuilder.vertex(matrix, x1, y2, zOffset)
-//                    .color(1F,1F,1F,1F).uv(u1, v2).endVertex();
-//            bufferbuilder.vertex(matrix, x2, y2, zOffset)
-//                    .color(1F,1F,1F,1F).uv(u2, v2).endVertex();
-//            bufferbuilder.vertex(matrix, x2, y1, zOffset)
-//                    .color(1F,1F,1F,1F).uv(u2, v1).endVertex();
-//            bufferbuilder.vertex(matrix, x1, y1, zOffset)
-//                    .color(1F,1F,1F,1F).uv(u1, v1).endVertex();
+//            bufferbuilder.addVertex(matrix, x1, y2, zOffset)
+//                    .setColor(1F,1F,1F,1F).setUv(u1, v2);
+//            bufferbuilder.addVertex(matrix, x2, y2, zOffset)
+//                    .setColor(1F,1F,1F,1F).setUv(u2, v2);
+//            bufferbuilder.addVertex(matrix, x2, y1, zOffset)
+//                    .setColor(1F,1F,1F,1F).setUv(u2, v1);
+//            bufferbuilder.addVertex(matrix, x1, y1, zOffset)
+//                    .setColor(1F,1F,1F,1F).setUv(u1, v1);
         }
     }
 
     private static class ZosimusCloak extends ZosimusBodyPart {
         private float leftElbowOffset, rightElbowOffset;
-        public ZosimusCloak(@Nullable ZosimusRenderer.ZosimusBodyPart parent, float x, float y, float z) {
+        public ZosimusCloak(@Nullable ZosimusBodyPart parent, float x, float y, float z) {
             super(parent, x, y, z);
         }
 
@@ -217,38 +217,38 @@ public class ZosimusRenderer {
 
             float depthMultiplier = 0.3F;
             float yRotation = this.getTotalYRot();
-            float rotationMultiplier = MathUtils.smoothAbs(Mth.cos(yRotation), 0.1F) * 1
-                                     + MathUtils.smoothAbs(Mth.sin(yRotation), 0.1F) * depthMultiplier;
-            float rotatedCloakWidthL = MathUtils.smoothAbs(Mth.cos(yRotation), 0.1F) * (cloakWidth - leftElbowOffset)
-                    + MathUtils.smoothAbs(Mth.sin(yRotation), 0.1F) * (cloakWidth * depthMultiplier);
-            float rotatedCloakWidthR = MathUtils.smoothAbs(Mth.cos(yRotation), 0.1F) * (cloakWidth + rightElbowOffset)
-                    + MathUtils.smoothAbs(Mth.sin(yRotation), 0.1F) * (cloakWidth * depthMultiplier);
+            float rotationMultiplier = MathUtil.smoothAbs(Mth.cos(yRotation), 0.1F) * 1
+                                     + MathUtil.smoothAbs(Mth.sin(yRotation), 0.1F) * depthMultiplier;
+            float rotatedCloakWidthL = MathUtil.smoothAbs(Mth.cos(yRotation), 0.1F) * (cloakWidth - leftElbowOffset)
+                    + MathUtil.smoothAbs(Mth.sin(yRotation), 0.1F) * (cloakWidth * depthMultiplier);
+            float rotatedCloakWidthR = MathUtil.smoothAbs(Mth.cos(yRotation), 0.1F) * (cloakWidth + rightElbowOffset)
+                    + MathUtil.smoothAbs(Mth.sin(yRotation), 0.1F) * (cloakWidth * depthMultiplier);
 
             float xRotation = this.getTotalXRot();
-            float rotatedShoulderHeight = MathUtils.smoothAbs(Mth.cos(xRotation), 0.1F) * (shoulderHeight)
-                    + MathUtils.smoothAbs(Mth.sin(xRotation), 0.1F) * (shoulderWidth * depthMultiplier);
-            float rotatedNeckHeight = MathUtils.smoothAbs(Mth.cos(xRotation), 0.1F) * (neckHeight)
-                    + MathUtils.smoothAbs(Mth.sin(xRotation), 0.1F) * (shoulderWidth * depthMultiplier);
+            float rotatedShoulderHeight = MathUtil.smoothAbs(Mth.cos(xRotation), 0.1F) * (shoulderHeight)
+                    + MathUtil.smoothAbs(Mth.sin(xRotation), 0.1F) * (shoulderWidth * depthMultiplier);
+            float rotatedNeckHeight = MathUtil.smoothAbs(Mth.cos(xRotation), 0.1F) * (neckHeight)
+                    + MathUtil.smoothAbs(Mth.sin(xRotation), 0.1F) * (shoulderWidth * depthMultiplier);
 
             Matrix4f matrix = stack.last().pose();
             // left side
-            bufferbuilder.vertex(matrix, -rotatedCloakWidthL, -cloakHeight, 0)
-                    .color(1F,1F,1F,1F).uv(1.0F, 1.0F).endVertex();
-            bufferbuilder.vertex(matrix, 0, -cloakHeight, 0)
-                    .color(1F,1F,1F,1F).uv(1.0F, 1.0F).endVertex();
-            bufferbuilder.vertex(matrix, 0, -rotatedNeckHeight, 0)
-                    .color(1F,1F,1F,1F).uv(1.0F, 1.0F).endVertex();
-            bufferbuilder.vertex(matrix, -shoulderWidth*rotationMultiplier, -rotatedShoulderHeight, 0)
-                    .color(1F,1F,1F,1F).uv(1.0F, 1.0F).endVertex();
+            bufferbuilder.addVertex(matrix, -rotatedCloakWidthL, -cloakHeight, 0)
+                    .setColor(1F,1F,1F,1F).setUv(1.0F, 1.0F);
+            bufferbuilder.addVertex(matrix, 0, -cloakHeight, 0)
+                    .setColor(1F,1F,1F,1F).setUv(1.0F, 1.0F);
+            bufferbuilder.addVertex(matrix, 0, -rotatedNeckHeight, 0)
+                    .setColor(1F,1F,1F,1F).setUv(1.0F, 1.0F);
+            bufferbuilder.addVertex(matrix, -shoulderWidth*rotationMultiplier, -rotatedShoulderHeight, 0)
+                    .setColor(1F,1F,1F,1F).setUv(1.0F, 1.0F);
             // right side
-            bufferbuilder.vertex(matrix, 0, -cloakHeight, 0)
-                    .color(1F,1F,1F,1F).uv(1.0F, 1.0F).endVertex();
-            bufferbuilder.vertex(matrix, rotatedCloakWidthR, -cloakHeight, 0)
-                    .color(1F,1F,1F,1F).uv(1.0F, 1.0F).endVertex();
-            bufferbuilder.vertex(matrix, shoulderWidth*rotationMultiplier, -rotatedShoulderHeight, 0)
-                    .color(1F,1F,1F,1F).uv(1.0F, 1.0F).endVertex();
-            bufferbuilder.vertex(matrix, 0, -rotatedNeckHeight, 0)
-                    .color(1F,1F,1F,1F).uv(1.0F, 1.0F).endVertex();
+            bufferbuilder.addVertex(matrix, 0, -cloakHeight, 0)
+                    .setColor(1F,1F,1F,1F).setUv(1.0F, 1.0F);
+            bufferbuilder.addVertex(matrix, rotatedCloakWidthR, -cloakHeight, 0)
+                    .setColor(1F,1F,1F,1F).setUv(1.0F, 1.0F);
+            bufferbuilder.addVertex(matrix, shoulderWidth*rotationMultiplier, -rotatedShoulderHeight, 0)
+                    .setColor(1F,1F,1F,1F).setUv(1.0F, 1.0F);
+            bufferbuilder.addVertex(matrix, 0, -rotatedNeckHeight, 0)
+                    .setColor(1F,1F,1F,1F).setUv(1.0F, 1.0F);
         }
     }
 
@@ -333,11 +333,11 @@ public class ZosimusRenderer {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        bufferbuilder.vertex(matrix, x1, y2, zOffset).color(r, g, b, a).endVertex();
-        bufferbuilder.vertex(matrix, x2, y2, zOffset).color(r, g, b, a).endVertex();
-        bufferbuilder.vertex(matrix, x2, y1, zOffset).color(r, g, b, a).endVertex();
-        bufferbuilder.vertex(matrix, x1, y1, zOffset).color(r, g, b, a).endVertex();
-        BufferUploader.drawWithShader(bufferbuilder.end());
+        bufferbuilder.addVertex(matrix, x1, y2, zOffset).setColor(r, g, b, a);
+        bufferbuilder.addVertex(matrix, x2, y2, zOffset).setColor(r, g, b, a);
+        bufferbuilder.addVertex(matrix, x2, y1, zOffset).setColor(r, g, b, a);
+        bufferbuilder.addVertex(matrix, x1, y1, zOffset).setColor(r, g, b, a);
+        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
     }
 
     private static void drawSkinBox(Matrix4f matrix, float x1, float y1, float x2, float y2) {
@@ -358,10 +358,10 @@ public class ZosimusRenderer {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        bufferbuilder.vertex(matrix, x1 - widthOffsetX, y1 - widthOffsetY, 0).color(0.0F, 0.0F, 0.0F, 1.0F).endVertex();
-        bufferbuilder.vertex(matrix, x1 + widthOffsetX, y1 + widthOffsetY, 0).color(0.0F, 0.0F, 0.0F, 1.0F).endVertex();
-        bufferbuilder.vertex(matrix, x2 + widthOffsetX, y2 + widthOffsetY, 0).color(0.0F, 0.0F, 0.0F, 1.0F).endVertex();
-        bufferbuilder.vertex(matrix, x2 - widthOffsetX, y2 - widthOffsetY, 0).color(0.0F, 0.0F, 0.0F, 1.0F).endVertex();
-        BufferUploader.drawWithShader(bufferbuilder.end());
+        bufferbuilder.addVertex(matrix, x1 - widthOffsetX, y1 - widthOffsetY, 0).setColor(0.0F, 0.0F, 0.0F, 1.0F);
+        bufferbuilder.addVertex(matrix, x1 + widthOffsetX, y1 + widthOffsetY, 0).setColor(0.0F, 0.0F, 0.0F, 1.0F);
+        bufferbuilder.addVertex(matrix, x2 + widthOffsetX, y2 + widthOffsetY, 0).setColor(0.0F, 0.0F, 0.0F, 1.0F);
+        bufferbuilder.addVertex(matrix, x2 - widthOffsetX, y2 - widthOffsetY, 0).setColor(0.0F, 0.0F, 0.0F, 1.0F);
+        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
     }
 }

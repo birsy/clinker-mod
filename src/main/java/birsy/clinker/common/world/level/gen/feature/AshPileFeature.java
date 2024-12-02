@@ -2,7 +2,7 @@ package birsy.clinker.common.world.level.gen.feature;
 
 import birsy.clinker.common.world.block.AshLayerBlock;
 import birsy.clinker.core.registry.ClinkerBlocks;
-import birsy.clinker.core.util.MathUtils;
+import birsy.clinker.core.util.MathUtil;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -18,7 +18,7 @@ public class AshPileFeature extends Feature<NoneFeatureConfiguration> {
     }
 
     /**
-     * Places the given feature at the given location.
+     * Places the given feature at the given resource.
      * During world generation, features are provided with a 3x3 region of chunks, centered on the chunk being generated,
      * that they can safely generate into.
      * @param featureContext A context object with a reference to the level and the position the feature is being placed at
@@ -40,7 +40,7 @@ public class AshPileFeature extends Feature<NoneFeatureConfiguration> {
                         pos.set(x, y, z);
 
                         if (level.getBlockState(pos.below()).isFaceSturdy(level, pos.below(), Direction.UP) && level.getBlockState(pos).isAir()) {
-                            int ashHeight = (int) MathUtils.mapRange(0, range, maxHeight, 0, pos.distManhattan(origin));
+                            int ashHeight = (int) MathUtil.mapRange(0, range, maxHeight, 0, pos.distManhattan(origin));
                             ashHeight += featureContext.random().nextGaussian();
 
                             for (Direction direction : Direction.Plane.HORIZONTAL) {

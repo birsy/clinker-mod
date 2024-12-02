@@ -66,8 +66,7 @@ public abstract class PageElement {
 
         Matrix4f pMatrix = stack.last().pose();
 
-        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
         float x0 = this.getXPixelPosition();
         float x1 = x0 + this.getXPixelSize();
@@ -76,19 +75,15 @@ public abstract class PageElement {
 
         float r = 1.0F, g = 1.0F, b = 1.0F, a = 0.25F;
 
-        bufferbuilder.vertex(pMatrix, x0, y1, 0)
-                .color(r, g, b, a)
-                .endVertex();
-        bufferbuilder.vertex(pMatrix, x1, y1, 0)
-                .color(r, g, b, a)
-                .endVertex();
-        bufferbuilder.vertex(pMatrix, x1, y0, 0)
-                .color(r, g, b, a)
-                .endVertex();
-        bufferbuilder.vertex(pMatrix, x0, y0, 0)
-                .color(r, g, b, a)
-                .endVertex();
+        bufferbuilder.addVertex(pMatrix, x0, y1, 0)
+                .setColor(r, g, b, a);
+        bufferbuilder.addVertex(pMatrix, x1, y1, 0)
+                .setColor(r, g, b, a);
+        bufferbuilder.addVertex(pMatrix, x1, y0, 0)
+                .setColor(r, g, b, a);
+        bufferbuilder.addVertex(pMatrix, x0, y0, 0)
+                .setColor(r, g, b, a);
 
-        BufferUploader.drawWithShader(bufferbuilder.end());
+        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
     }
 }

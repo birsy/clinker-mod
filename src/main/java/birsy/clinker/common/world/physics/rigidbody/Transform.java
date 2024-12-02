@@ -74,11 +74,11 @@ public class Transform {
     }
 
     public Vec3 rotate(Vec3 vec) {
-        return JomlConversions.toMojang(this.orientation.transform(JomlConversions.toJOML(vec)));
+        return JomlConversions.toMoj(this.orientation.transform(JomlConversions.toJOML(vec)));
     }
 
     public Vec3 rotateInverse(Vec3 vec) {
-        return JomlConversions.toMojang(this.orientation.transformInverse(JomlConversions.toJOML(vec)));
+        return JomlConversions.toMoj(this.orientation.transformInverse(JomlConversions.toJOML(vec)));
     }
 
     public Transform lerp(Transform t, double alpha) {

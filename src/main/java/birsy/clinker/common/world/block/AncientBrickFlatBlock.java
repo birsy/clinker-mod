@@ -14,13 +14,13 @@ import net.minecraft.world.level.material.MapColor;
 public class AncientBrickFlatBlock extends DirectionalBlock {
 	public static final MapCodec<AncientBrickFlatBlock> CODEC = simpleCodec(AncientBrickFlatBlock::new);
 
-	public AncientBrickFlatBlock(BlockBehaviour.Properties p_52664_) {
+	public AncientBrickFlatBlock(Properties p_52664_) {
 		super(p_52664_);
 		this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.UP));
 	}
 
 	public AncientBrickFlatBlock() {
-		this(Block.Properties.of().mapColor(MapColor.SAND)
+		this(Properties.of().mapColor(MapColor.SAND)
 				.requiresCorrectToolForDrops()
 				.strength(25.0F, 1200.0F));
 	}

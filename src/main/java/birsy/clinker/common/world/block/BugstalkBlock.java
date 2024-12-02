@@ -1,10 +1,8 @@
 package birsy.clinker.common.world.block;
 
-import birsy.clinker.core.registry.ClinkerParticles;
-import birsy.clinker.core.util.MathUtils;
+import birsy.clinker.core.util.MathUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.BlockGetter;
@@ -20,8 +18,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-
-import java.util.Random;
 
 public class BugstalkBlock extends RotatedPillarBlock implements SimpleWaterloggedBlock {
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
@@ -68,7 +64,7 @@ public class BugstalkBlock extends RotatedPillarBlock implements SimpleWaterlogg
     public void animateTick(BlockState pState, Level pLevel, BlockPos pPos, RandomSource pRandom) {
         super.animateTick(pState, pLevel, pPos, pRandom);
         for (int i = 0; i < 3; i++) {
-            Vec3 particlePosition = MathUtils.cubeNormalize(
+            Vec3 particlePosition = MathUtil.cubeNormalize(
                     new Vec3(pRandom.nextDouble(), pRandom.nextDouble(), (pRandom.nextDouble())).multiply(2.0, 2.0, 2.0).subtract(1.0, 1.0, 1.0))
                     .multiply(0.5, 0.5, 0.5)
                     .multiply(1.1, 1.1, 1.1);

@@ -1,6 +1,6 @@
 package birsy.clinker.client.particle;
 
-import birsy.clinker.core.util.MathUtils;
+import birsy.clinker.core.util.MathUtil;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
@@ -9,7 +9,6 @@ import net.minecraft.client.particle.*;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
 
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -37,11 +36,11 @@ public class AshCloudParticle extends TextureSheetParticle {
         this.oRoll = this.roll;
         float progress = (float)(this.age) / (float)(this.lifetime);
         float fadeStart = 0.2F;
-        this.alpha = progress < fadeStart ? MathUtils.mapRange(0, fadeStart, 0, 1, progress) : MathUtils.mapRange(fadeStart, 1, 1, 0, progress);
+        this.alpha = progress < fadeStart ? MathUtil.mapRange(0, fadeStart, 0, 1, progress) : MathUtil.mapRange(fadeStart, 1, 1, 0, progress);
         this.alpha *= this.pAlpha;
         this.roll += this.zd;
         this.zd += random.nextGaussian() * 0.005;
-        this.move(0, 0, 0.5 * MathUtils.bias(progress, -0.5));
+        this.move(0, 0, 0.5 * MathUtil.bias(progress, -0.5));
     }
 
 
@@ -91,10 +90,10 @@ public class AshCloudParticle extends TextureSheetParticle {
         float v0 = this.getV0();
         float v1 = this.getV1();
         int packedLight = this.getLightColor(pPartialTicks);
-        pBuffer.vertex(verticies[0].x(), verticies[0].y(), verticies[0].z()).uv(u1, v1).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(packedLight).endVertex();
-        pBuffer.vertex(verticies[1].x(), verticies[1].y(), verticies[1].z()).uv(u1, v0).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(packedLight).endVertex();
-        pBuffer.vertex(verticies[2].x(), verticies[2].y(), verticies[2].z()).uv(u0, v0).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(packedLight).endVertex();
-        pBuffer.vertex(verticies[3].x(), verticies[3].y(), verticies[3].z()).uv(u0, v1).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(packedLight).endVertex();
+        pBuffer.addVertex(verticies[0].x(), verticies[0].y(), verticies[0].z()).setUv(u1, v1).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(packedLight);
+        pBuffer.addVertex(verticies[1].x(), verticies[1].y(), verticies[1].z()).setUv(u1, v0).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(packedLight);
+        pBuffer.addVertex(verticies[2].x(), verticies[2].y(), verticies[2].z()).setUv(u0, v0).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(packedLight);
+        pBuffer.addVertex(verticies[3].x(), verticies[3].y(), verticies[3].z()).setUv(u0, v1).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(packedLight);
     }
 
     

@@ -7,11 +7,12 @@ import birsy.clinker.common.world.level.gen.NoiseCache;
 import birsy.clinker.common.world.level.gen.chunk.biome.surfacedecorator.SurfaceDecorator;
 import birsy.clinker.common.world.level.gen.chunk.biome.SurfaceDecorators;
 import birsy.clinker.core.Clinker;
-import birsy.clinker.core.util.MathUtils;
+import birsy.clinker.core.util.MathUtil;
 import birsy.clinker.core.util.noise.CachedFastNoise;
 import birsy.clinker.core.util.noise.FastNoiseLite;
 import birsy.clinker.core.util.noise.VoronoiGenerator;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.Util;
 import net.minecraft.core.*;
@@ -41,7 +42,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 public class TestChunkGenerator extends ChunkGenerator {
-    public static final Codec<TestChunkGenerator> CODEC = RecordCodecBuilder.create((codec) ->
+    public static final MapCodec<TestChunkGenerator> CODEC = RecordCodecBuilder.mapCodec((codec) ->
             codec.group(BiomeSource.CODEC.fieldOf("biome_source").forGetter((generator) -> generator.biomeSource),
                             NoiseGeneratorSettings.CODEC.fieldOf("settings").forGetter((generator) -> generator.settingsHolder))
                     .apply(codec, codec.stable(TestChunkGenerator::new)));
@@ -343,7 +344,7 @@ public class TestChunkGenerator extends ChunkGenerator {
 
         float surfaceNoise = (totalNoise + baseNoise * 0.1F + detailNoise * 0.1F) - ((y - scaledSeaLevel) * heightFactor);
 
-        float value = (float) MathUtils.smoothMinExpo(caveNoise, surfaceNoise, 0.05F);
+        float value = (float) MathUtil.smoothMinExpo(caveNoise, surfaceNoise, 0.05F);
         for (MetaChunk.TerrainFeature terrainFeature : this.terrainFeatures) {
             value = terrainFeature.modifyNoiseLayers(value, x, unmodifiedY, z);
         }
@@ -365,12 +366,12 @@ public class TestChunkGenerator extends ChunkGenerator {
 
         double aHFreq = 1.0;
         double aquiferMidHeight  = -40;
-        double aquiferUpperRange = aquiferMidHeight + MathUtils.mapRange(-1.0F, 1.0F, 10.0F, 45.0F, noise.get(x * aHFreq, z * aHFreq));
+        double aquiferUpperRange = aquiferMidHeight + MathUtil.mapRange(-1.0F, 1.0F, 10.0F, 45.0F, noise.get(x * aHFreq, z * aHFreq));
         double aquiferLowerRange = aquiferMidHeight - 20;
 
         double seaLevel = this.getSeaLevel();
-        double caveClamping = Mth.clamp(MathUtils.mapRange(aquiferUpperRange - 10, aquiferUpperRange + 15, 0, 1, y), 0, 1);
-        caveClamping *= Mth.clamp(MathUtils.mapRange(seaLevel - 20, seaLevel + 5, 1, 0.2, y), 0, 1);
+        double caveClamping = Mth.clamp(MathUtil.mapRange(aquiferUpperRange - 10, aquiferUpperRange + 15, 0, 1, y), 0, 1);
+        caveClamping *= Mth.clamp(MathUtil.mapRange(seaLevel - 20, seaLevel + 5, 1, 0.2, y), 0, 1);
 
 
         //Stalagmite Noise;
@@ -382,7 +383,7 @@ public class TestChunkGenerator extends ChunkGenerator {
         double yFac = ((Math.abs(stalagVec.y()) + 0.5));
         yFac *= yFac;
         double stalag = stalagVec.multiply(1, 0, 1).length() * yFac;
-        double stalagThreshold = MathUtils.map(0.5, 1.0, MathUtils.bias(stalagInfo.hash(), 0.8F)) * Mth.sqrt(3) * stalagHFreq;
+        double stalagThreshold = MathUtil.map(0.5, 1.0, MathUtil.bias(stalagInfo.hash(), 0.8F)) * Mth.sqrt(3) * stalagHFreq;
         stalag -= stalagThreshold;
         stalag *= -1;
 
@@ -405,11 +406,11 @@ public class TestChunkGenerator extends ChunkGenerator {
             double aFreq = 6.0;
             double altNoise = noise.get(x * aFreq, z * aFreq);
 
-            double aTopThres = MathUtils.mapRange(aquiferLowerRange, aquiferMidHeight, 0.0F, 1.0F, y);
+            double aTopThres = MathUtil.mapRange(aquiferLowerRange, aquiferMidHeight, 0.0F, 1.0F, y);
             double aquiferSizeThrottling = y < aquiferMidHeight ?
-                    Mth.lerp(0.0, MathUtils.ease((float) aTopThres, MathUtils.EasingType.easeOutBounce), MathUtils.ease((float) aTopThres, MathUtils.EasingType.easeOutQuad)) :
-                    Mth.lerp(MathUtils.bias((altNoise + 1) / 2, 0.2), MathUtils.ease((float) MathUtils.mapRange(aquiferMidHeight, aquiferUpperRange, 1.0F, 0.0F, y), MathUtils.EasingType.easeOutQuad),
-                            MathUtils.ease((float) MathUtils.mapRange(aquiferMidHeight, aquiferUpperRange, 1.0F, 0.0F, y), MathUtils.EasingType.easeOutBounce));
+                    Mth.lerp(0.0, MathUtil.ease((float) aTopThres, MathUtil.EasingType.easeOutBounce), MathUtil.ease((float) aTopThres, MathUtil.EasingType.easeOutQuad)) :
+                    Mth.lerp(MathUtil.bias((altNoise + 1) / 2, 0.2), MathUtil.ease((float) MathUtil.mapRange(aquiferMidHeight, aquiferUpperRange, 1.0F, 0.0F, y), MathUtil.EasingType.easeOutQuad),
+                            MathUtil.ease((float) MathUtil.mapRange(aquiferMidHeight, aquiferUpperRange, 1.0F, 0.0F, y), MathUtil.EasingType.easeOutBounce));
             double aquiferSizeThreshold = 0.5 * aquiferSizeThrottling;
 
             double aquiferCaveNoiseValue = this.noise.get(x, z);
@@ -420,7 +421,7 @@ public class TestChunkGenerator extends ChunkGenerator {
         double bCave = 1.0F;//bridgeCavern[0];
         double bCaveShell = -1.0F;//bridgeCavern[1];
 
-        return MathUtils.smoothMinExpo(MathUtils.smoothMinExpo(sCave, stalag, -0.05) + Math.max(bCaveShell * 0.8, 0), bCave, 0.06);//MathUtils.smoothMinExpo(stalag, sampleBridgeCaveNoise(x, y, z, seed), -0.05);//MathUtils.smoothMinExpo(aCave, MathUtils.smoothMinExpo(sCave, stalag, -0.1), 0.06);
+        return MathUtil.smoothMinExpo(MathUtil.smoothMinExpo(sCave, stalag, -0.05) + Math.max(bCaveShell * 0.8, 0), bCave, 0.06);//MathUtils.smoothMinExpo(stalag, sampleBridgeCaveNoise(x, y, z, seed), -0.05);//MathUtils.smoothMinExpo(aCave, MathUtils.smoothMinExpo(sCave, stalag, -0.1), 0.06);
     }
 
     private double[] sampleBridgeCaveNoise (double x, double y, double z, long seed) {
@@ -437,7 +438,7 @@ public class TestChunkGenerator extends ChunkGenerator {
         Vec3 distortPos = localPos.add(wiggleNoise, wiggleNoise, wiggleNoise);
         double cavernRadius = 32.0;
         double cavern = distortPos.multiply(1.0, 0.5, 1.0).length() - cavernRadius;
-        double shell = MathUtils.mapRange(cavernRadius, cavernRadius + 10.0, 1.0, -1.0, distortPos.multiply(1.0, 1.0, 1.0).length());
+        double shell = MathUtil.mapRange(cavernRadius, cavernRadius + 10.0, 1.0, -1.0, distortPos.multiply(1.0, 1.0, 1.0).length());
         double bridge = 1.0 / frequency;
         double tunnel = 1.0 / frequency;
 
@@ -446,10 +447,10 @@ public class TestChunkGenerator extends ChunkGenerator {
         // TODO: please cache this
         for (int i = 0; i < bridgeNumber; i++) {
             bridgeHeight += ((cavernRadius * 2.0) / bridgeNumber); //MathUtils.awfulRandom(info.hash() * 512.12342 + i * 32) *
-            float rotation = (float) Mth.lerp(MathUtils.awfulRandom(info.hash() * 864.2343 + i * 12), 0, 2 * Math.PI);
+            float rotation = (float) Mth.lerp(MathUtil.awfulRandom(info.hash() * 864.2343 + i * 12), 0, 2 * Math.PI);
             Vec3 point1 = new Vec3(Mth.sin(rotation), 0, Mth.cos(rotation)).scale(cavernRadius * 2).add(caveCenter.x(), bridgeHeight, caveCenter.z());
             Vec3 point2 = new Vec3(Mth.sin(rotation + Mth.PI), 0, Mth.cos(rotation + Mth.PI)).scale(cavernRadius * 2).add(caveCenter.x(), bridgeHeight, caveCenter.z());
-            Vec3 random = new Vec3((MathUtils.awfulRandom(info.hash() * 464.2383 + i * 2) * 2.0) - 1.0, 0, (MathUtils.awfulRandom(info.hash() * 33.2343 + i * 18) * 2.0) - 1.0).scale(16);
+            Vec3 random = new Vec3((MathUtil.awfulRandom(info.hash() * 464.2383 + i * 2) * 2.0) - 1.0, 0, (MathUtil.awfulRandom(info.hash() * 33.2343 + i * 18) * 2.0) - 1.0).scale(16);
             double bDistance = getBridgeDistance(position, point1.add(random), point2.add(random), 4);
             double tDistance = getBridgeDistance(position, point1.add(random).add(0, 10, 0), point2.add(random).add(0, 10, 0), 3.5);
 
@@ -460,7 +461,7 @@ public class TestChunkGenerator extends ChunkGenerator {
         shell += Math.min((tunnel - 5) * 2, 0);
         shell -= Math.min(bridge * 2, 0);
         //shell = Mth.clamp(shell, 0, 1);
-        return new double[]{MathUtils.smoothMinExpo(MathUtils.smoothMinExpo((float) -bridge, (float) cavern, -5.0F), tunnel, 2.0F) * 0.05, shell};
+        return new double[]{MathUtil.smoothMinExpo(MathUtil.smoothMinExpo((float) -bridge, (float) cavern, -5.0F), tunnel, 2.0F) * 0.05, shell};
     }
 
     // actually just a cylinder SDF
@@ -502,6 +503,6 @@ public class TestChunkGenerator extends ChunkGenerator {
     }
 
     public static void register() {
-        Registry.register(BuiltInRegistries.CHUNK_GENERATOR, new ResourceLocation(Clinker.MOD_ID, "test_chunk_generator"), CODEC);
+        Registry.register(BuiltInRegistries.CHUNK_GENERATOR, Clinker.resource("test_chunk_generator"), CODEC);
     }
 }

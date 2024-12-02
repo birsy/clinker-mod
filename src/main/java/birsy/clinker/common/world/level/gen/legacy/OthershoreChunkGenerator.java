@@ -2,10 +2,11 @@ package birsy.clinker.common.world.level.gen.legacy;
 
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlocks;
-import birsy.clinker.core.util.MathUtils;
+import birsy.clinker.core.util.MathUtil;
 import com.google.common.annotations.VisibleForTesting;
 import com.mojang.datafixers.util.Function4;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.SharedConstants;
 import net.minecraft.core.BlockPos;
@@ -14,7 +15,6 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.LevelHeightAccessor;
@@ -41,7 +41,7 @@ import java.util.concurrent.Executor;
 
 //TODO: convert density function to NoiseChunk so can do beardifier shit to it. or don't, maybe? more importantly, i'd like to use surface rules because otherwise that shit will be a pain.
 public class OthershoreChunkGenerator extends ChunkGenerator {
-    public static final Codec<OthershoreChunkGenerator> CODEC = RecordCodecBuilder.create((codec) ->
+    public static final MapCodec<OthershoreChunkGenerator> CODEC = RecordCodecBuilder.mapCodec((codec) ->
             codec.group(BiomeSource.CODEC.fieldOf("biome_source").forGetter((generator) -> generator.biomeSource),
                             NoiseGeneratorSettings.CODEC.fieldOf("settings").forGetter((generator) -> generator.settingsHolder))
                     .apply(codec, codec.stable(OthershoreChunkGenerator::new)));
@@ -200,7 +200,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         return outputArray;
     }
 
-    public double lerpSample(double[][][] sampleGrid, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, double x, double y, double z, MathUtils.EasingType yEasingType) {
+    public double lerpSample(double[][][] sampleGrid, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, double x, double y, double z, MathUtil.EasingType yEasingType) {
         //non-negative
         double nNX = x - minX;
         double nNY = y - minY;
@@ -230,9 +230,9 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         double lerpXY = Mth.lerp(sFracX, sampleGrid[sMinX][sMaxY][sMinZ], sampleGrid[sMaxX][sMaxY][sMinZ]);
         double lerpXYZ = Mth.lerp(sFracX, sampleGrid[sMinX][sMaxY][sMaxZ], sampleGrid[sMaxX][sMaxY][sMaxZ]);
 
-        return Mth.lerp(MathUtils.ease((float) sFracY, yEasingType), Mth.lerp(sFracZ, lerpX, lerpXZ), Mth.lerp(sFracZ, lerpXY, lerpXYZ));
+        return Mth.lerp(MathUtil.ease((float) sFracY, yEasingType), Mth.lerp(sFracZ, lerpX, lerpXZ), Mth.lerp(sFracZ, lerpXY, lerpXYZ));
     }
-    public Vec3 lerpSampleVec3(Vec3[][][] sampleGrid, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, double x, double y, double z, MathUtils.EasingType yEasingType) {
+    public Vec3 lerpSampleVec3(Vec3[][][] sampleGrid, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, double x, double y, double z, MathUtil.EasingType yEasingType) {
         //non-negative
         double nNX = x - minX;
         double nNY = y - minY;
@@ -256,11 +256,11 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         int sMinZ = Mth.floor(sZ);
         int sMaxZ = Mth.ceil(sZ);
 
-        Vec3 lerpX = MathUtils.vec3Lerp(sFracX, sampleGrid[sMinX][sMinY][sMinZ], sampleGrid[sMaxX][sMinY][sMinZ]);
-        Vec3 lerpXZ = MathUtils.vec3Lerp(sFracX, sampleGrid[sMinX][sMinY][sMaxZ], sampleGrid[sMaxX][sMinY][sMaxZ]);
-        Vec3 lerpXY = MathUtils.vec3Lerp(sFracX, sampleGrid[sMinX][sMaxY][sMinZ], sampleGrid[sMaxX][sMaxY][sMinZ]);
-        Vec3 lerpXYZ = MathUtils.vec3Lerp(sFracX, sampleGrid[sMinX][sMaxY][sMaxZ], sampleGrid[sMaxX][sMaxY][sMaxZ]);
-        return MathUtils.vec3Lerp(MathUtils.ease((float) sFracY, yEasingType), MathUtils.vec3Lerp(sFracZ, lerpX, lerpXZ), MathUtils.vec3Lerp(sFracZ, lerpXY, lerpXYZ));
+        Vec3 lerpX = MathUtil.vec3Lerp(sFracX, sampleGrid[sMinX][sMinY][sMinZ], sampleGrid[sMaxX][sMinY][sMinZ]);
+        Vec3 lerpXZ = MathUtil.vec3Lerp(sFracX, sampleGrid[sMinX][sMinY][sMaxZ], sampleGrid[sMaxX][sMinY][sMaxZ]);
+        Vec3 lerpXY = MathUtil.vec3Lerp(sFracX, sampleGrid[sMinX][sMaxY][sMinZ], sampleGrid[sMaxX][sMaxY][sMinZ]);
+        Vec3 lerpXYZ = MathUtil.vec3Lerp(sFracX, sampleGrid[sMinX][sMaxY][sMaxZ], sampleGrid[sMaxX][sMaxY][sMaxZ]);
+        return MathUtil.vec3Lerp(MathUtil.ease((float) sFracY, yEasingType), MathUtil.vec3Lerp(sFracZ, lerpX, lerpXZ), MathUtil.vec3Lerp(sFracZ, lerpXY, lerpXYZ));
     }
 
     public double mod(double x, double m) {
@@ -271,8 +271,8 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         int maxHeight = 320;
         int minHeight = -64;
 
-        double terrainShape = lerpSample(terrainShapeSamplePoints, 0, minHeight, 0, 16, maxHeight, 16, mod(x, 16), y, mod(z, 16), MathUtils.EasingType.linear);
-        Vec3 derivative = lerpSampleVec3(terrainDerivativeSamplePoints, 0, minHeight, 0,16, maxHeight, 16, mod(x, 16), y, mod(z, 16), MathUtils.EasingType.linear);
+        double terrainShape = lerpSample(terrainShapeSamplePoints, 0, minHeight, 0, 16, maxHeight, 16, mod(x, 16), y, mod(z, 16), MathUtil.EasingType.linear);
+        Vec3 derivative = lerpSampleVec3(terrainDerivativeSamplePoints, 0, minHeight, 0,16, maxHeight, 16, mod(x, 16), y, mod(z, 16), MathUtil.EasingType.linear);
         double facingUp = (derivative.dot(new Vec3(0, 1, 0)) + 1) * 0.5F;
         terrainShape += getBeardifierContribution(x, y, z);
 
@@ -291,7 +291,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         sample += sampler.largeNoise.GetNoise(x * frequency2, y * 0.1 * frequency2, z * frequency2) * 0.5;
 
         double steepnessNoise = sampler.largeNoise.GetNoise(x * frequency, z * frequency);
-        steepnessNoise = MathUtils.mapRange(-1, 1, 0.07, 1, steepnessNoise);
+        steepnessNoise = MathUtil.mapRange(-1, 1, 0.07, 1, steepnessNoise);
 
         sample = shape(sample, 0.2, steepnessNoise);
 
@@ -409,6 +409,6 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
     }
 
     public static void register() {
-        Registry.register(BuiltInRegistries.CHUNK_GENERATOR, new ResourceLocation(Clinker.MOD_ID, "othershore_generator"), CODEC);
+        Registry.register(BuiltInRegistries.CHUNK_GENERATOR, Clinker.resource("othershore_generator"), CODEC);
     }
 }

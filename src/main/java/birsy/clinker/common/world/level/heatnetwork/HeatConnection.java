@@ -1,7 +1,7 @@
 package birsy.clinker.common.world.level.heatnetwork;
 
 import birsy.clinker.core.Clinker;
-import birsy.clinker.core.util.MathUtils;
+import birsy.clinker.core.util.MathUtil;
 
 import java.util.Collection;
 
@@ -46,7 +46,7 @@ public class HeatConnection {
     }
     
     public float getTransferredHeat(float heatIn) {
-        return MathUtils.approach(heatIn * efficiency, 0, loss);
+        return MathUtil.approach(heatIn * efficiency, 0, loss);
     }
 
     public static float calculateEfficiencyGiven(float initialValue, float loss, float range) {

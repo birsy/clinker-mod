@@ -11,14 +11,14 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 import java.util.*;
 
 // keeps track of squads in a given ServerLevel
 // not actually saved data - squads are ephemeral. just wanted an easy way to attach it to a serverlevel
-@Mod.EventBusSubscriber(modid = Clinker.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = Clinker.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
 public class GnomadSquads extends SavedData {
     private final HashMap<UUID, GnomadSquad> squadMap = Maps.newHashMap();
     private final ServerLevel level;
@@ -27,8 +27,8 @@ public class GnomadSquads extends SavedData {
         this.level = pLevel;
         this.setDirty();
     }
-    public static SavedData.Factory<GnomadSquads> factory(ServerLevel pLevel) {
-        return new SavedData.Factory<>(() -> new GnomadSquads(pLevel), data -> load(pLevel, data), DataFixTypes.SAVED_DATA_RAIDS);
+    public static Factory<GnomadSquads> factory(ServerLevel pLevel) {
+        return new Factory<>(() -> new GnomadSquads(pLevel), data -> load(pLevel, data), DataFixTypes.SAVED_DATA_RAIDS);
     }
 
     public void tick() {
@@ -67,9 +67,9 @@ public class GnomadSquads extends SavedData {
     }
 
     @SubscribeEvent
-    public static void tick(TickEvent.LevelTickEvent event) {
+    public static void tick(LevelTickEvent.Post event) {
         Minecraft.getInstance().getProfiler().push("tickGnomadSquads");
-        if (event.level instanceof ServerLevel level) {
+        if (event.getLevel() instanceof ServerLevel level) {
             getInstance(level).tick();
         }
         Minecraft.getInstance().getProfiler().pop();

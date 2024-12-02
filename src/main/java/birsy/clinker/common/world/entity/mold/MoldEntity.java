@@ -71,7 +71,7 @@ public class MoldEntity extends LivingEntity {
     public void tick() {
         super.tick();
         if (this.root.energy <= 0) {
-            this.remove(Entity.RemovalReason.KILLED);
+            this.remove(RemovalReason.KILLED);
         }
         this.root.tick();
     }
@@ -102,8 +102,8 @@ public class MoldEntity extends LivingEntity {
         return this.renderAABB;
     }
 
-    protected Entity.MovementEmission getMovementEmission() {
-        return Entity.MovementEmission.NONE;
+    protected MovementEmission getMovementEmission() {
+        return MovementEmission.NONE;
     }
 
     @Override

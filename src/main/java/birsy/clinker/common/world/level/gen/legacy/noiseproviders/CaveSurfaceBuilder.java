@@ -1,7 +1,7 @@
 package birsy.clinker.common.world.level.gen.legacy.noiseproviders;
 
 import birsy.clinker.core.Clinker;
-import birsy.clinker.core.util.MathUtils;
+import birsy.clinker.core.util.MathUtil;
 import birsy.clinker.core.util.noise.FastNoiseLite;
 import birsy.clinker.core.util.noise.VoronoiGenerator;
 import com.mojang.datafixers.util.Pair;
@@ -114,7 +114,7 @@ public class CaveSurfaceBuilder {
 
         BlockPos.MutableBlockPos blockPos = new BlockPos.MutableBlockPos(x, chunkIn.getMaxBuildHeight(), z);
 
-        int aquiferUpperRange = (int) MathUtils.mapRange(-1.0F, 1.0F, -30.0F, -5.0F, (float) this.caveSizeNoise.GetNoise((x + 682) * 2, (z + 682) * 2));
+        int aquiferUpperRange = (int) MathUtil.mapRange(-1.0F, 1.0F, -30.0F, -5.0F, (float) this.caveSizeNoise.GetNoise((x + 682) * 2, (z + 682) * 2));
         int aquiferLowerRange = -63;
         int aquiferMidHeight  = ((aquiferUpperRange + aquiferLowerRange) / 2) - 5;
         double altNoise = caveSizeNoise.GetNoise(x * 6, z * 6);
@@ -190,14 +190,14 @@ public class CaveSurfaceBuilder {
     }
 
     private double[] sampleBridgedCavernNoise(ChunkAccess chunk, int x, int y, int z, int maxHeight, int minHeight, double scale, double cavernRadius, double tunnelMinDistance, double tunnelMaxDistance, double bridgeRadius, double tunnelRadius, ArrayList<VoronoiGenerator.VoronoiInfo> cavernSamples, double[] bridgeSamples) {
-        double upperHeightThrottling = Mth.clamp(MathUtils.mapRange(maxHeight, maxHeight - 20.0F, 0, 1, y), 0, 1);
-        double lowerHeightThrottling = Mth.clamp(MathUtils.mapRange(minHeight + 3, minHeight + 20.0F, 0, 1, y), 0, 1);
+        double upperHeightThrottling = Mth.clamp(MathUtil.mapRange(maxHeight, maxHeight - 20.0F, 0, 1, y), 0, 1);
+        double lowerHeightThrottling = Mth.clamp(MathUtil.mapRange(minHeight + 3, minHeight + 20.0F, 0, 1, y), 0, 1);
         double heightThrottling = y > (maxHeight + minHeight / 2) ? upperHeightThrottling : lowerHeightThrottling;
 
         VoronoiGenerator.VoronoiInfo voronoiSample = cavernSamples.get(y - chunk.getMinBuildHeight());
 
-        double distanceMul1 = Mth.clamp(MathUtils.mapRange(100 / scale, tunnelMinDistance / scale, 2, 1, voronoiSample.distance()), 0, 1);
-        double distanceMul2 = Mth.clamp(MathUtils.mapRange(tunnelMaxDistance / scale, tunnelMinDistance / scale, 5, 1, voronoiSample.distance()), 1, 5);
+        double distanceMul1 = Mth.clamp(MathUtil.mapRange(100 / scale, tunnelMinDistance / scale, 2, 1, voronoiSample.distance()), 0, 1);
+        double distanceMul2 = Mth.clamp(MathUtil.mapRange(tunnelMaxDistance / scale, tunnelMinDistance / scale, 5, 1, voronoiSample.distance()), 1, 5);
 
         double bridgeSample = bridgeSamples[y - chunk.getMinBuildHeight()] - (bridgeRadius / scale);
 
@@ -209,7 +209,7 @@ public class CaveSurfaceBuilder {
 
         double cavernSample = (voronoiSample.distance() * -1) + ((cavernRadius * heightThrottling) / scale);
 
-        return new double[]{MathUtils.smoothMinExpo(MathUtils.smoothMinExpo(tunnelSample1, cavernSample, -0.01), bridgeSample, 0.03), MathUtils.smoothMinExpo(MathUtils.smoothMinExpo(tunnelSample2, cavernSample, -0.01), bridgeSample, 0.03)};
+        return new double[]{MathUtil.smoothMinExpo(MathUtil.smoothMinExpo(tunnelSample1, cavernSample, -0.01), bridgeSample, 0.03), MathUtil.smoothMinExpo(MathUtil.smoothMinExpo(tunnelSample2, cavernSample, -0.01), bridgeSample, 0.03)};
     }
 
     private double sampleCavernBridgeNoise(Vec3 localPos, Vec3 globalPos, double cellValue, double cavernRadius, double cavernHeight) {
@@ -232,13 +232,13 @@ public class CaveSurfaceBuilder {
             seed = hash(seed);
             //double zOffset = ((rand.nextDouble() * 2) - 1) * xzOffsetFactor;
 
-            distances[bridgeNum] = new Vec3(sampleX + xOffset, sampleY - yOffset, 0).length() * MathUtils.mapRange(0, 1, 0.95, 1.4, randomValue(seed));
+            distances[bridgeNum] = new Vec3(sampleX + xOffset, sampleY - yOffset, 0).length() * MathUtil.mapRange(0, 1, 0.95, 1.4, randomValue(seed));
             seed = hash(seed);
         }
 
         double minimum = distances[0];
         for (int i = 1; i < distances.length; i++) {
-            minimum = MathUtils.smoothMinExpo(minimum, distances[i], 0.01);
+            minimum = MathUtil.smoothMinExpo(minimum, distances[i], 0.01);
         }
         return minimum;
     }
@@ -263,21 +263,21 @@ public class CaveSurfaceBuilder {
         double stalagmiteFrequency = 2.5;
         //Determines the area that the stalagmite effects surrounding it. Higher values = more blend-y stalagmites.
         double minStalagmiteFactor = 1.0;
-        double stalagmiteSize = MathUtils.mapRange(0, 1, 0.4F, 0.9F, (float) ((altNoise + 1) * 0.5F));
-        double stalagmiteNoise1 = Math.max(Math.min(Math.max(MathUtils.ease((float) (stalagmiteNoise.GetNoise(x * stalagmiteFrequency, y * 0.1 * stalagmiteFrequency, z * stalagmiteFrequency) + stalagmiteSize), MathUtils.EasingType.easeOutSine), 0.0), minStalagmiteFactor) / minStalagmiteFactor, 0.07);
+        double stalagmiteSize = MathUtil.mapRange(0, 1, 0.4F, 0.9F, (float) ((altNoise + 1) * 0.5F));
+        double stalagmiteNoise1 = Math.max(Math.min(Math.max(MathUtil.ease((float) (stalagmiteNoise.GetNoise(x * stalagmiteFrequency, y * 0.1 * stalagmiteFrequency, z * stalagmiteFrequency) + stalagmiteSize), MathUtil.EasingType.easeOutSine), 0.0), minStalagmiteFactor) / minStalagmiteFactor, 0.07);
 
         //BRIDGE CAVERN NOISE
         double cavernStrength = 15000;
         double tunnelEncouragement = 10;
-        double lowerBridgeCavernHeightClamping = Mth.clamp(MathUtils.mapRange(aquiferLowerRange + 2.0F, aquiferLowerRange + 12.0F, 0, 1, y), 0, 1);
-        double intensityDistance = Mth.clamp(MathUtils.mapRange(cavernMinInfluence / cavernScale, cavernMaxInfluence / cavernScale, 0, 1, cavernVoronoiSample.distance()), 0, 1);
+        double lowerBridgeCavernHeightClamping = Mth.clamp(MathUtil.mapRange(aquiferLowerRange + 2.0F, aquiferLowerRange + 12.0F, 0, 1, y), 0, 1);
+        double intensityDistance = Mth.clamp(MathUtil.mapRange(cavernMinInfluence / cavernScale, cavernMaxInfluence / cavernScale, 0, 1, cavernVoronoiSample.distance()), 0, 1);
         double intensityMultiplier1 = Mth.lerp(intensityDistance, cavernStrength, tunnelEncouragement) * lowerBridgeCavernHeightClamping;
         double intensityMultiplier2 = Mth.lerp(intensityDistance, cavernStrength, cavernStrength * 10) * lowerBridgeCavernHeightClamping;
-        double bridgeCavernNoise = Math.max(Math.max(cavernNoiseTunnel * intensityMultiplier1, cavernNoiseSmall * intensityMultiplier2), 0) + Mth.clamp(MathUtils.mapRange((cavernMinInfluence - (cavernMinInfluence / 2)) / cavernScale, cavernMaxInfluence / cavernScale, 0, 1, cavernVoronoiSample.distance()), 0, 1);
+        double bridgeCavernNoise = Math.max(Math.max(cavernNoiseTunnel * intensityMultiplier1, cavernNoiseSmall * intensityMultiplier2), 0) + Mth.clamp(MathUtil.mapRange((cavernMinInfluence - (cavernMinInfluence / 2)) / cavernScale, cavernMaxInfluence / cavernScale, 0, 1, cavernVoronoiSample.distance()), 0, 1);
 
         //CAVE SIZE
-        double lowerCaveHeightClamping = Mth.clamp(MathUtils.mapRange(minheight + 5.0F, minheight + 20.0F, 0, 1, y), 0, 1);
-        double surfaceCaveEntranceBlending = Math.max(MathUtils.mapRange(startHeight - 6, startHeight, 1, 10, y), 1);
+        double lowerCaveHeightClamping = Mth.clamp(MathUtil.mapRange(minheight + 5.0F, minheight + 20.0F, 0, 1, y), 0, 1);
+        double surfaceCaveEntranceBlending = Math.max(MathUtil.mapRange(startHeight - 6, startHeight, 1, 10, y), 1);
         //Determines the area that the liquid shell effects surrounding it. Higher values = more blend-y liquid shells.
         double minLiquidNoiseFactor = 1;
         double liquidShell = Math.min(liquidShellNoise * -1, minLiquidNoiseFactor) / minLiquidNoiseFactor;
@@ -298,8 +298,8 @@ public class CaveSurfaceBuilder {
         double thresholdedAquiferCaveNoise = 1.0;
         if (y < aquiferUpperRange + 10) {
             double aquiferSizeThrottling = y < aquiferMidHeight ?
-                    MathUtils.ease(MathUtils.mapRange(aquiferLowerRange, aquiferMidHeight, 0.0F, 1.0F, y), MathUtils.EasingType.easeOutBounce):
-                    Mth.lerp(MathUtils.bias((altNoise + 1) / 2, 0.2), MathUtils.ease(MathUtils.mapRange(aquiferMidHeight, aquiferUpperRange, 1.0F, 0.0F, y), MathUtils.EasingType.easeOutQuad), MathUtils.ease(MathUtils.mapRange(aquiferMidHeight, aquiferUpperRange, 1.0F, 0.0F, y), MathUtils.EasingType.easeOutBounce));
+                    MathUtil.ease(MathUtil.mapRange(aquiferLowerRange, aquiferMidHeight, 0.0F, 1.0F, y), MathUtil.EasingType.easeOutBounce):
+                    Mth.lerp(MathUtil.bias((altNoise + 1) / 2, 0.2), MathUtil.ease(MathUtil.mapRange(aquiferMidHeight, aquiferUpperRange, 1.0F, 0.0F, y), MathUtil.EasingType.easeOutQuad), MathUtil.ease(MathUtil.mapRange(aquiferMidHeight, aquiferUpperRange, 1.0F, 0.0F, y), MathUtil.EasingType.easeOutBounce));
             double aquiferSizeThreshold = 0.03 * caveSize * aquiferSizeThrottling * Mth.lerp(0.0, stalagmiteNoise1, 1);
 
             double aquiferCaveNoiseValue = this.aquiferCaveNoise.GetNoise(x, y * 0.125F, z);
@@ -326,7 +326,7 @@ public class CaveSurfaceBuilder {
             shellNoise -= liquidNoiseThreshold;
 
             double hBorderSize = borderSize / 2;
-            double shell = Math.min(MathUtils.mapRange(0, hBorderSize, 0, 1, shellNoise), MathUtils.mapRange(hBorderSize, 0, 0, 1, shellNoise));
+            double shell = Math.min(MathUtil.mapRange(0, hBorderSize, 0, 1, shellNoise), MathUtil.mapRange(hBorderSize, 0, 0, 1, shellNoise));
 
             double heightClamping = (y - (liquidHeight + liquidSurfaceHeight));
             heightClamping *= heightClamping > 0 ? 0.7 : 0.001;

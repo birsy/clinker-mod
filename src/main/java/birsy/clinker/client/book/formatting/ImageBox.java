@@ -34,8 +34,7 @@ public class ImageBox extends PageElement {
 
         Matrix4f pMatrix = stack.last().pose();
 
-        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
+        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
 
         float x0 = 0;
         float x1 = this.getXPixelSize();
@@ -47,23 +46,19 @@ public class ImageBox extends PageElement {
         float v0 = mirroredY ? 1.0F : 0.0F;
         float v1 = mirroredY ? 0.0F : 1.0F;
 
-        bufferbuilder.vertex(pMatrix, x0, y1, 0)
-                .color(this.r, this.g, this.b, this.a)
-                .uv(u0, v1)
-                .endVertex();
-        bufferbuilder.vertex(pMatrix, x1, y1, 0)
-                .color(this.r, this.g, this.b, this.a)
-                .uv(u1, v1)
-                .endVertex();
-        bufferbuilder.vertex(pMatrix, x1, y0, 0)
-                .color(this.r, this.g, this.b, this.a)
-                .uv(u1, v0)
-                .endVertex();
-        bufferbuilder.vertex(pMatrix, x0, y0, 0)
-                .color(this.r, this.g, this.b, this.a)
-                .uv(u0, v0)
-                .endVertex();
+        bufferbuilder.addVertex(pMatrix, x0, y1, 0)
+                .setUv(u0, v1)
+                .setColor(this.r, this.g, this.b, this.a);
+        bufferbuilder.addVertex(pMatrix, x1, y1, 0)
+                .setUv(u1, v1)
+                .setColor(this.r, this.g, this.b, this.a);
+        bufferbuilder.addVertex(pMatrix, x1, y0, 0)
+                .setUv(u1, v0)
+                .setColor(this.r, this.g, this.b, this.a);
+        bufferbuilder.addVertex(pMatrix, x0, y0, 0)
+                .setUv(u0, v0)
+                .setColor(this.r, this.g, this.b, this.a);
 
-        BufferUploader.drawWithShader(bufferbuilder.end());
+        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
     }
 }

@@ -3,7 +3,6 @@ package birsy.clinker.client.render.world;
 import birsy.clinker.client.ambience.AmbienceHandler;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.world.ClinkerWorld;
-import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.shaders.FogShape;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -16,9 +15,9 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 
-@Mod.EventBusSubscriber(modid = Clinker.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
+@EventBusSubscriber(modid = Clinker.MOD_ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public class OthershoreFogRenderer {
     @SubscribeEvent
     public static void renderFog(ViewportEvent.RenderFog event) {

@@ -1,6 +1,6 @@
 package birsy.clinker.client.particle;
 
-import birsy.clinker.core.util.MathUtils;
+import birsy.clinker.core.util.MathUtil;
 import birsy.clinker.core.util.noise.FastNoiseLite;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -24,7 +24,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.neoforged.api.distmarker.Dist;
 
 import org.joml.Matrix4f;
 
@@ -227,7 +226,7 @@ public class MothParticle extends Particle {
             posestack.mulPose(Axis.YP.rotation(tilt));
         }
         float totalLife = (this.age + pPartialTicks) / this.lifetime;
-        float scale = Mth.clamp(MathUtils.mapRange(0.95F, 1.0F, 1, 0, totalLife), 0, 1);
+        float scale = Mth.clamp(MathUtil.mapRange(0.95F, 1.0F, 1, 0, totalLife), 0, 1);
         scale *= Mth.sqrt(scale);
         posestack.scale(scale, scale, scale);
         int packedLight = getLightColor(pPartialTicks);
@@ -248,15 +247,15 @@ public class MothParticle extends Particle {
     }
 
     private void drawDoubleSidedQuad(VertexConsumer pBuffer, Matrix4f matrix, float maxX, float maxZ, float minX, float minZ, float maxU, float maxV, float minU, float minV, int packedLight) {
-        pBuffer.vertex(matrix, maxX, 0, maxZ).uv(maxU, minV).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(packedLight).endVertex();
-        pBuffer.vertex(matrix, maxX, 0, minZ).uv(maxU, maxV).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(packedLight).endVertex();
-        pBuffer.vertex(matrix, minX, 0, minZ).uv(minU, maxV).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(packedLight).endVertex();
-        pBuffer.vertex(matrix, minX, 0, maxZ).uv(minU, minV).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(packedLight).endVertex();
+        pBuffer.addVertex(matrix, maxX, 0, maxZ).setUv(maxU, minV).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(packedLight);
+        pBuffer.addVertex(matrix, maxX, 0, minZ).setUv(maxU, maxV).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(packedLight);
+        pBuffer.addVertex(matrix, minX, 0, minZ).setUv(minU, maxV).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(packedLight);
+        pBuffer.addVertex(matrix, minX, 0, maxZ).setUv(minU, minV).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(packedLight);
 
-        pBuffer.vertex(matrix, minX, 0, maxZ).uv(minU, minV).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(packedLight).endVertex();
-        pBuffer.vertex(matrix, minX, 0, minZ).uv(minU, maxV).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(packedLight).endVertex();
-        pBuffer.vertex(matrix, maxX, 0, minZ).uv(maxU, maxV).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(packedLight).endVertex();
-        pBuffer.vertex(matrix, maxX, 0, maxZ).uv(maxU, minV).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(packedLight).endVertex();
+        pBuffer.addVertex(matrix, minX, 0, maxZ).setUv(minU, minV).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(packedLight);
+        pBuffer.addVertex(matrix, minX, 0, minZ).setUv(minU, maxV).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(packedLight);
+        pBuffer.addVertex(matrix, maxX, 0, minZ).setUv(maxU, maxV).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(packedLight);
+        pBuffer.addVertex(matrix, maxX, 0, maxZ).setUv(maxU, minV).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(packedLight);
     }
 
     

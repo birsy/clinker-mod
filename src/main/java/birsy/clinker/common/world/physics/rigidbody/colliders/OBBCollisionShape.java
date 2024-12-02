@@ -1,6 +1,6 @@
 package birsy.clinker.common.world.physics.rigidbody.colliders;
 
-import birsy.clinker.core.util.MathUtils;
+import birsy.clinker.core.util.MathUtil;
 import birsy.clinker.common.world.physics.rigidbody.Transform;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.phys.AABB;
@@ -151,8 +151,8 @@ public class OBBCollisionShape implements ICollisionShape {
     private static double intersectBox(Vec3 boundsMin, Vec3 boundsMax, Vec3 rayOrigin, Vec3 rayDirection) {
         Vec3 t0 = boundsMin.subtract(rayOrigin).multiply(1.0 / rayDirection.x(), 1.0 / rayDirection.y(), 1.0 / rayDirection.z());
         Vec3 t1 = boundsMax.subtract(rayOrigin).multiply(1.0 / rayDirection.x(), 1.0 / rayDirection.y(), 1.0 / rayDirection.z());
-        Vec3 tMin = MathUtils.min(t0, t1);
-        Vec3 tMax = MathUtils.max(t0, t1);
+        Vec3 tMin = MathUtil.min(t0, t1);
+        Vec3 tMax = MathUtil.max(t0, t1);
 
         double distA = Math.max(Math.max(tMin.x, tMin.y), tMin.z);
         double distB = Math.min(tMax.x, Math.min(tMax.y, tMax.z));

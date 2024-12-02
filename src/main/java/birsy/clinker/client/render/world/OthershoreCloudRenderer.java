@@ -2,7 +2,7 @@ package birsy.clinker.client.render.world;
 
 import birsy.clinker.client.render.ClinkerShaders;
 import birsy.clinker.core.Clinker;
-import birsy.clinker.core.util.MathUtils;
+import birsy.clinker.core.util.MathUtil;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.shaders.Uniform;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -13,7 +13,6 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.neoforged.api.distmarker.Dist;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3fc;
@@ -24,7 +23,7 @@ public class OthershoreCloudRenderer {
     public static final float CLOUDS_END = 450.0F;
     public static final float CLOUD_LAYER_THICKNESS = 48.0F;
 
-    private static final ResourceLocation NOISE_TEXTURE = new ResourceLocation(Clinker.MOD_ID, "textures/environment/noise.png");
+    private static final ResourceLocation NOISE_TEXTURE = Clinker.resource("textures/environment/noise.png");
 
     private VertexBuffer cloudLayerDownBuffer;
     private VertexBuffer cloudLayerUpBuffer;
@@ -60,7 +59,7 @@ public class OthershoreCloudRenderer {
         ShaderInstance shader = RenderSystem.getShader();
 
         float transitionLerp = Mth.clamp(
-                MathUtils.mapRange(CLOUDS_START, CLOUDS_START + CLOUD_LAYER_THICKNESS, 0.0F, 1.0F, (float)camY),
+                MathUtil.mapRange(CLOUDS_START, CLOUDS_START + CLOUD_LAYER_THICKNESS, 0.0F, 1.0F, (float)camY),
                 0.0F, 1.0F);
 
         // render ordering magic
@@ -166,7 +165,7 @@ public class OthershoreCloudRenderer {
                         1.0F, 1.0F, 1.0F, offset, false);
             }
         }
-        BufferBuilder.RenderedBuffer renderedBuffer = bufferBuilder.end();
+        BufferBuilder.RenderedBuffer renderedBuffer = bufferBuilder.buildOrThrow();
 
         vbo.bind();
         vbo.upload(renderedBuffer);
@@ -187,18 +186,18 @@ public class OthershoreCloudRenderer {
 
             float windingMultiplier = winding ? 1.0F : -1.0F;
 
-            bufferBuilder.vertex(x1 * radius, height, z1 * radius * windingMultiplier)
-                    .uv((x1 + 1.0F) / 2.0F, (z1 * windingMultiplier + 1.0F) / 2.0F)
-                    .color(r, g, b, a)
-                    .endVertex();
-            bufferBuilder.vertex(0.0, height, 0.0)
-                    .uv(0.5F, 0.5F)
-                    .color(r, g, b, a)
-                    .endVertex();
-            bufferBuilder.vertex(x2 * radius, height, z2 * radius * windingMultiplier)
-                    .uv((x2 + 1.0F) / 2.0F, (z2 * windingMultiplier + 1.0F) / 2.0F)
-                    .color(r, g, b, a)
-                    .endVertex();
+            bufferBuilder.addVertex(x1 * radius, height, z1 * radius * windingMultiplier)
+                    .setUv((x1 + 1.0F) / 2.0F, (z1 * windingMultiplier + 1.0F) / 2.0F)
+                    .setColor(r, g, b, a)
+                    ;
+            bufferBuilder.addVertex(0.0, height, 0.0)
+                    .setUv(0.5F, 0.5F)
+                    .setColor(r, g, b, a)
+                    ;
+            bufferBuilder.addVertex(x2 * radius, height, z2 * radius * windingMultiplier)
+                    .setUv((x2 + 1.0F) / 2.0F, (z2 * windingMultiplier + 1.0F) / 2.0F)
+                    .setColor(r, g, b, a)
+                    ;
         }
     }
 
