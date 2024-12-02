@@ -4,6 +4,7 @@ import birsy.clinker.common.world.level.gen.*;
 import birsy.clinker.core.util.noise.FastNoiseLite;
 import birsy.clinker.core.util.noise.VoronoiGenerator;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.Util;
 import net.minecraft.core.*;
@@ -27,7 +28,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 public class TestChunkGenerator2 extends ChunkGenerator {
-    public static final Codec<TestChunkGenerator2> CODEC = RecordCodecBuilder.create((codec) ->
+    public static final MapCodec<TestChunkGenerator2> CODEC = RecordCodecBuilder.mapCodec((codec) ->
             codec.group(BiomeSource.CODEC.fieldOf("biome_source").forGetter((generator) -> generator.biomeSource),
                             NoiseGeneratorSettings.CODEC.fieldOf("settings").forGetter((generator) -> generator.settingsHolder))
                     .apply(codec, codec.stable(TestChunkGenerator2::new)));
@@ -72,7 +73,8 @@ public class TestChunkGenerator2 extends ChunkGenerator {
         return super.createState(pStructureSetLookup, pRandomState, pSeed);
     }
 
-    public CompletableFuture<ChunkAccess> fillFromNoise(Executor executor, Blender densityBlender, RandomState random, StructureManager structureManager, ChunkAccess chunk) {
+    @Override
+    public CompletableFuture<ChunkAccess> fillFromNoise(Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunk) {
         this.setNoiseSeed(this.seed);
         this.terrainField.setPosOffset(chunk.getPos().getMinBlockX(), chunk.getMinBuildHeight(), chunk.getPos().getMinBlockZ());
         this.terrainField.fill(this::evaluateNoise);
@@ -270,7 +272,7 @@ public class TestChunkGenerator2 extends ChunkGenerator {
     public void addDebugScreenInfo(List<String> pInfo, RandomState pRandom, BlockPos pPos) {}
     public void applyCarvers(WorldGenRegion p_224166_, long seed, RandomState p_224168_, BiomeManager p_224169_, StructureManager p_224170_, ChunkAccess p_224171_, GenerationStep.Carving p_224172_) {}
     public void spawnOriginalMobs(WorldGenRegion pLevel) {}
-    protected Codec<? extends ChunkGenerator> codec() {
+    protected MapCodec<? extends ChunkGenerator> codec() {
         return CODEC;
     }
     public int getSpawnHeight(LevelHeightAccessor pLevel) {

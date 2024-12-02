@@ -105,7 +105,7 @@ public class TestChunkGenerator extends ChunkGenerator {
         super.createReferences(pLevel, pStructureManager, pChunk);
     }
 
-    public CompletableFuture<ChunkAccess> fillFromNoise(Executor executor, Blender densityBlender, RandomState random, StructureManager structureManager, ChunkAccess chunk) {
+    public CompletableFuture<ChunkAccess> fillFromNoise(Blender densityBlender, RandomState random, StructureManager structureManager, ChunkAccess chunk) {
         //fillNoiseSampleArrays(chunk);
         if (this.metaChunk != null) {
             this.terrainFeatures = metaChunk.getFeaturesInChunk(chunk.getPos());
@@ -483,7 +483,7 @@ public class TestChunkGenerator extends ChunkGenerator {
     public void addDebugScreenInfo(List<String> pInfo, RandomState pRandom, BlockPos pPos) {}
 
     public void spawnOriginalMobs(WorldGenRegion pLevel) {}
-    protected Codec<? extends ChunkGenerator> codec() {
+    protected MapCodec<? extends ChunkGenerator> codec() {
         return CODEC;
     }
     private NoiseChunk createNoiseChunk(ChunkAccess chunk, StructureManager structureManager, Blender blender, RandomState random) {

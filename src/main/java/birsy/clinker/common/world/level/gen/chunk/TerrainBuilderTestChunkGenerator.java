@@ -73,7 +73,7 @@ public class TerrainBuilderTestChunkGenerator extends ChunkGenerator implements 
         this.seed = seed;
     }
     @Override
-    public CompletableFuture<ChunkAccess> fillFromNoise(Executor executor, Blender densityBlender, RandomState random, StructureManager structureManager, ChunkAccess chunk) {
+    public CompletableFuture<ChunkAccess> fillFromNoise(Blender densityBlender, RandomState random, StructureManager structureManager, ChunkAccess chunk) {
 
         ChunkPos chunkPos = chunk.getPos();
         InterpolatedNoiseField noiseField = new InterpolatedNoiseField(16, 256, 16, 6, 256 / 6, 6);
@@ -219,7 +219,7 @@ public class TerrainBuilderTestChunkGenerator extends ChunkGenerator implements 
     public int getSeaLevel() {
         return 150;
     }
-    protected Codec<? extends ChunkGenerator> codec() {
+    protected MapCodec<? extends ChunkGenerator> codec() {
         return CODEC;
     }
     public int getSpawnHeight(LevelHeightAccessor pLevel) {
