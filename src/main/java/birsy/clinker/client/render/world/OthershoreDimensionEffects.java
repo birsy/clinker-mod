@@ -2,6 +2,7 @@ package birsy.clinker.client.render.world;
 
 import birsy.clinker.core.util.MathUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -9,14 +10,15 @@ import net.minecraft.client.renderer.DimensionSpecialEffects;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.util.CubicSampler;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
-import org.joml.Vector3fc;
+import org.joml.*;
 
+import java.lang.Math;
 
 
 public class OthershoreDimensionEffects extends DimensionSpecialEffects {
@@ -69,7 +71,9 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
     @Override
     public boolean renderClouds(ClientLevel level, int ticks, float partialTick, PoseStack pPoseStack, double camX, double camY, double camZ, Matrix4f modelViewMatrix, Matrix4f projectionMatrix) {
         Minecraft.getInstance().getProfiler().push("clinker.drawClouds");
-        this.cloudRenderer.render(level, ticks, partialTick, pPoseStack, camX, camY, camZ, projectionMatrix, this.getSkyColor(level, new Vec3(camX, camY, camZ), partialTick));
+        PoseStack stack = new PoseStack();
+        stack.mulPose(modelViewMatrix);
+        this.cloudRenderer.render(level, ticks, partialTick, stack, camX, camY, camZ, projectionMatrix, this.getSkyColor(level, new Vec3(camX, camY, camZ), partialTick));
         Minecraft.getInstance().getProfiler().pop();
         return true;
     }
@@ -78,7 +82,21 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
     public boolean renderSky(ClientLevel level, int ticks, float partialTick, Matrix4f modelViewMatrix, Camera camera, Matrix4f projectionMatrix, boolean isFoggy, Runnable setupFog) {
         Minecraft.getInstance().getProfiler().push("clinker.drawSky");
         setupFog.run();
-        this.skyRenderer.render(level, ticks, partialTick, new PoseStack(), camera, projectionMatrix, this.getSkyColor(level, camera.getPosition(), partialTick));
+        PoseStack stack = new PoseStack();
+
+        // account for view bobbing...
+        if (mc.options.bobView().get() && mc.getCameraEntity() instanceof Player player) {
+            float f = player.walkDist - player.walkDistO;
+            float f1 = -(player.walkDist + f * partialTick);
+            float f2 = Mth.lerp(partialTick, player.oBob, player.bob);
+            stack.translate(Mth.sin(f1 * Mth.PI) * f2 * 0.5F, -Math.abs(Mth.cos(f1 * Mth.PI) * f2), 0.0F);
+            stack.mulPose(Axis.ZP.rotationDegrees(Mth.sin(f1 * Mth.PI) * f2 * 3.0F));
+            stack.mulPose(Axis.XP.rotationDegrees(Math.abs(Mth.cos(f1 * Mth.PI - 0.2F) * f2) * 5.0F));
+        }
+
+        stack.mulPose(modelViewMatrix);
+
+        this.skyRenderer.render(level, ticks, partialTick, stack, camera, projectionMatrix, this.getSkyColor(level, camera.getPosition(), partialTick));
         Minecraft.getInstance().getProfiler().pop();
         return true;
     }

@@ -143,7 +143,7 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
     protected void customServerAiStep() {
         tickBrain(this);
         super.customServerAiStep();
-        PacketDistributor.sendToPlayersTrackingEntity(this, new ClientboundBrainDebugPacket(this));
+        //PacketDistributor.sendToPlayersTrackingEntity(this, new ClientboundBrainDebugPacket(this));
     }
 
     @Override
@@ -157,10 +157,6 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
                 if (attack == 0) this.attackHandler.beginAttack(MogulAttackHandler.SWING_UP);
                 if (attack == 1) this.attackHandler.beginAttack(MogulAttackHandler.SWING_LEFT);
                 if (attack == 2) this.attackHandler.beginAttack(MogulAttackHandler.SWING_RIGHT);
-            }
-
-            if ((this.tickCount - 16) % 100 == 0) {
-                this.attackHandler.cancelAttack();
             }
         }
     }

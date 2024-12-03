@@ -56,7 +56,7 @@ public class Clinker {
     }
 
     private void setup(final FMLCommonSetupEvent event) {
-        DispenserBlock.registerBehavior(ClinkerItems.ORDNANCE.get(), new ProjectileDispenseBehavior(ClinkerItems.ORDNANCE.get()));
+//        DispenserBlock.registerBehavior(ClinkerItems.ORDNANCE.get(), new ProjectileDispenseBehavior(ClinkerItems.ORDNANCE.get()));
     }
 
     private void doClientStuff(final FMLClientSetupEvent event) {

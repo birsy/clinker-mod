@@ -38,7 +38,6 @@ public abstract class LevelRendererMixin {
 
     @Inject(method = "onResourceManagerReload(Lnet/minecraft/server/packs/resources/ResourceManager;)V", at = @At("TAIL"))
     private void clinker$onResourceManagerLoad(ResourceManager pResourceManager, CallbackInfo ci) throws IOException {
-        ClinkerCursor.init();
     }
 
 

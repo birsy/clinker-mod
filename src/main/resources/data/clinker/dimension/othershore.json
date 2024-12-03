@@ -1,5 +1,5 @@
 {
-  "type": "clinker:othershore",
+  "type": "clinker:othershore_type",
   "generator": {
     "type": "clinker:terrain_builder_test_chunk_generator",
     "settings": "clinker:othershore",

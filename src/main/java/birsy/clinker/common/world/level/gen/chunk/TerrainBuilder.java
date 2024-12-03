@@ -42,24 +42,27 @@ public class TerrainBuilder {
 
         Map<Holder<Biome>, Float> biomeContributions = new HashMap<>();
 
-        float totalContribution = 0.0F;
-        for (int xo = -blendRadius; xo < blendRadius; xo++) {
-            for (int yo = -blendRadius; yo < blendRadius; yo++) {
-                for (int zo = -blendRadius; zo < blendRadius; zo++) {
-                    int bx = biomeX + xo, by = biomeY + yo, bz = biomeZ + zo;
-                    // kernel takes in the normalized distance
-                    float contribution = kernel.apply(Mth.sqrt(xo*xo + yo*yo + zo*zo) / blendRadius);
-                    totalContribution += contribution;
+        float totalContribution = 1.0F;
+        Holder<Biome> biomeAtPos = level.getNoiseBiome(biomeX, biomeY, biomeZ);
+        biomeContributions.put(biomeAtPos, 1.0F);
 
-                    Holder<Biome> biomeAtPos = level.getNoiseBiome(bx, by, bz);
-                    if (biomeContributions.containsKey(biomeAtPos)) {
-                        biomeContributions.replace(biomeAtPos, biomeContributions.get(biomeAtPos) + contribution);
-                    } else {
-                        biomeContributions.put(biomeAtPos, contribution);
-                    }
-                }
-            }
-        }
+//        for (int xo = -blendRadius; xo < blendRadius; xo++) {
+//            for (int yo = -blendRadius; yo < blendRadius; yo++) {
+//                for (int zo = -blendRadius; zo < blendRadius; zo++) {
+//                    int bx = biomeX + xo, by = biomeY + yo, bz = biomeZ + zo;
+//                    // kernel takes in the normalized distance
+//                    float contribution = kernel.apply(Mth.sqrt(xo*xo + yo*yo + zo*zo) / blendRadius);
+//                    totalContribution += contribution;
+//
+//                    Holder<Biome> biomeAtPos = level.getNoiseBiome(bx, by, bz);
+//                    if (biomeContributions.containsKey(biomeAtPos)) {
+//                        biomeContributions.replace(biomeAtPos, biomeContributions.get(biomeAtPos) + contribution);
+//                    } else {
+//                        biomeContributions.put(biomeAtPos, contribution);
+//                    }
+//                }
+//            }
+//        }
 
         float finalNoiseValue = 0;
         for (Map.Entry<Holder<Biome>, Float> holderFloatEntry : biomeContributions.entrySet()) {

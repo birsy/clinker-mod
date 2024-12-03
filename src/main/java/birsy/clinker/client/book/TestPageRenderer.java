@@ -35,7 +35,7 @@ public class TestPageRenderer {
         //stack.translate(guiEvent.getWindow().getGuiScaledWidth() * 0.5F, guiEvent.getWindow().getGuiScaledHeight() * 0.5F, 0.0F);
         //stack.scale(5.0F, 5.0F, 1.0F);
         //stack.translate(page.getSizeX() * -0.5F, page.getSizeY() * -0.5F, 0.0F);
-        drawAtlas(stack);
+        //drawAtlas(stack);
         //page.render(stack, guiEvent.getGuiGraphics().bufferSource());
         stack.popPose();
     }
@@ -43,7 +43,7 @@ public class TestPageRenderer {
     @SubscribeEvent
     public static void input(InputEvent.Key inputEvent) {
         if (inputEvent.getKey() == InputConstants.KEY_R) {
-            regeneratePage();
+            //regeneratePage();
         }
     }
 

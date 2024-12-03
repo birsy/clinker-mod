@@ -78,7 +78,7 @@ public class TerrainBuilderTestChunkGenerator extends ChunkGenerator implements 
         ChunkPos chunkPos = chunk.getPos();
         InterpolatedNoiseField noiseField = new InterpolatedNoiseField(16, 256, 16, 6, 256 / 6, 6);
         NoiseCache sampler = new NoiseCache(noiseField, 0);
-        TerrainBuilder terrainBuilder = new TerrainBuilder(4, (distance) -> (1.0F), sampler);
+        TerrainBuilder terrainBuilder = new TerrainBuilder(2, (distance) -> (1.0F), sampler);
 
         noiseField.setPosOffset(chunkPos.getMinBlockX(), chunk.getMinBuildHeight(), chunkPos.getMinBlockZ());
         terrainBuilder.populateNoiseField(noiseLevel, chunk, this.seed, noiseField);

@@ -205,7 +205,7 @@ public class ClinkerBlocks
 
     public static DeferredBlock<Block> createBlock(String name, final Supplier<? extends Block> supplier) {
         DeferredBlock<Block> block = BLOCKS.register(name, supplier);
-        ClinkerItems.ITEMS.registerSimpleBlockItem(name, supplier);
+        ClinkerItems.ITEMS.registerSimpleBlockItem(name, block);
         return block;
     }
 

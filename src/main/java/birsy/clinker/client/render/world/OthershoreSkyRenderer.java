@@ -18,10 +18,9 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
-import org.joml.Vector3fc;
+import org.joml.*;
+
+import java.lang.Math;
 
 
 public class OthershoreSkyRenderer {
@@ -84,27 +83,11 @@ public class OthershoreSkyRenderer {
 
         poseStack.pushPose();
 
-        // account for view bobbing
-        if (mc.options.bobView().get() && mc.getCameraEntity() instanceof Player) {
-            Player player = (Player) mc.getCameraEntity();
-            float playerStep = player.walkDist - player.walkDistO;
-            float stepSize = -(player.walkDist + playerStep * partialTick);
-            float viewBob = Mth.lerp(partialTick, player.oBob, player.bob);
-
-            Quaternionf cameraRotation = camera.rotation();
-            Vector3f xAxis = cameraRotation.transform(new Vector3f(1, 0, 0));
-            Vector3f ZAxis = cameraRotation.transform(new Vector3f(0, 0, 1));
-
-            Quaternionf bobXRotation = new Quaternionf().rotateAxis((float) Math.toRadians(Math.abs(Mth.cos(stepSize * (float) Math.PI - 0.2f) * viewBob) * 5f), xAxis);
-            Quaternionf bobZRotation = new Quaternionf().rotateAxis((float) Math.toRadians(Mth.sin(stepSize * (float) Math.PI) * viewBob * 3f), ZAxis);
-            poseStack.mulPose(bobXRotation.conjugate());
-            poseStack.mulPose(bobZRotation.conjugate());
-            poseStack.translate(Mth.sin(stepSize * (float) Math.PI) * viewBob * 0.5f, Math.abs(Mth.cos(stepSize * (float) Math.PI) * viewBob), 0f);
-        }
-
         poseStack.pushPose();
         float scale = 4990.0F;
         poseStack.scale(scale, scale, scale);
+
+
         float aboveCloudsDarken = 0.7F;
         aboveCloudsDarken = Mth.lerp(
                 Mth.clamp(MathUtil.mapRange(OthershoreCloudRenderer.CLOUDS_END - OthershoreCloudRenderer.CLOUD_LAYER_THICKNESS*0.5F, OthershoreCloudRenderer.CLOUDS_END, 0F, 1F, (float)cameraPos.y), 0, 1),

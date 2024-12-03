@@ -29,6 +29,6 @@ public class ChunkStatusTasksMixin {
     )
     private static void clinker$uploadWorldGenRegionToNoiseStage(WorldGenContext worldGenContext, ChunkStep step, StaticCache2D<GenerationChunkHolder> cache, ChunkAccess chunk, CallbackInfoReturnable<CompletableFuture<ChunkAccess>> cir, @Local ServerLevel serverlevel, @Local WorldGenRegion worldgenregion) {
         ChunkGenerator generator = worldGenContext.generator();
-        if (generator instanceof LevelNoiseProvidable providable) providable.provideLevelAndSeed(worldgenregion, serverlevel.getSeed());
+        if (generator instanceof LevelNoiseProvidable providable) providable.provideLevelAndSeed(serverlevel, serverlevel.getSeed());
     }
 }
