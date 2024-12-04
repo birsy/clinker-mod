@@ -3,10 +3,10 @@ package birsy.clinker.client.entity.mogul.layer;
 import birsy.clinker.client.entity.mogul.MogulRenderer;
 import birsy.clinker.client.entity.mogul.MogulSkeleton;
 import birsy.clinker.client.entity.mogul.MogulWeaponModels;
-import birsy.necromancer.Bone;
-import birsy.necromancer.render.NecromancerEntityRenderLayer;
 import birsy.clinker.common.world.entity.gnomad.mogul.GnomadMogulEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
+import foundry.veil.api.client.necromancer.Bone;
+import foundry.veil.api.client.necromancer.render.NecromancerEntityRenderLayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 

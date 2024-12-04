@@ -2,9 +2,9 @@ package birsy.clinker.client.entity.mogul;
 
 import birsy.clinker.common.world.entity.gnomad.mogul.MogulAttackHandler;
 import birsy.clinker.core.util.MathUtil;
-import birsy.necromancer.animation.Animation;
-import birsy.necromancer.animation.Animator;
 import birsy.clinker.common.world.entity.gnomad.mogul.GnomadMogulEntity;
+import foundry.veil.api.client.necromancer.animation.Animation;
+import foundry.veil.api.client.necromancer.animation.Animator;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.tslat.smartbrainlib.util.RandomUtil;
@@ -12,7 +12,7 @@ import org.joml.Vector3f;
 
 public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
     public final AnimationEntry<?, ?> idleAnim, maskAnim, walkAnim, strafeAnim;
-    public final TimedAnimationEntry<?, ?> upSwingAnim, leftSwingAnim, rightSwingAnim;
+    public final Animator.TimedAnimationEntry<?, ?> upSwingAnim, leftSwingAnim, rightSwingAnim;
     private int maskShakeTime = 0, maskShakeDuration = 1;
     private boolean maskShaking = false;
 
@@ -40,8 +40,10 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
     }
 
     @Override
-    public void animate(GnomadMogulEntity entity) {
-        super.animate(entity);
+    public void animate() {
+        super.animate();
+        GnomadMogulEntity entity = this.parent;
+
         // attacks!
         updateAttackAnim(upSwingAnim);
         updateAttackAnim(rightSwingAnim);

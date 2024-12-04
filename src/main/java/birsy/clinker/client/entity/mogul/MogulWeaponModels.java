@@ -1,13 +1,13 @@
 package birsy.clinker.client.entity.mogul;
 
-import birsy.necromancer.render.mesh.StaticMesh;
 import birsy.clinker.core.Clinker;
+import foundry.veil.api.client.necromancer.render.mesh.CubeMesh;
 import net.minecraft.resources.ResourceLocation;
 
 public class MogulWeaponModels {
     public static final ResourceLocation WARHOOK_TEXTURE_LOCATION = Clinker.resource("textures/entity/mogul_warhook.png");
     public static final ResourceLocation WARHOOK_CHAIN_TEXTURE_LOCATION = Clinker.resource("textures/entity/mogul_warhook_chain.png");
-    public static final StaticMesh WARHOOK = new StaticMesh(32, 32);
+    public static final CubeMesh WARHOOK = new CubeMesh(32, 32);
     static {
         WARHOOK.addCube(1F, 4F, 2F, 0F, 16.5F, -6F, 0F, 0F, 0F, 6F, 23F, false);
         WARHOOK.addCube(2F, 14F, 3F, -0.5F, -9.5F, -1.5F, -0.2F, -0.2F, -0.2F, 6F, 0F, false);

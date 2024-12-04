@@ -1,6 +1,5 @@
 package birsy.clinker.mixin.client;
 
-import birsy.clinker.client.ClinkerCursor;
 import birsy.clinker.client.gui.AlchemicalWorkstationScreen;
 import birsy.necromancer.SkeletonParent;
 import net.minecraft.client.Camera;

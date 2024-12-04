@@ -1,8 +1,9 @@
 package birsy.clinker.client.entity.mogul;
 
-import birsy.necromancer.Bone;
-import birsy.necromancer.Skeleton;
+
 import birsy.clinker.common.world.entity.gnomad.mogul.GnomadMogulEntity;
+import foundry.veil.api.client.necromancer.Bone;
+import foundry.veil.api.client.necromancer.Skeleton;
 import org.joml.Quaternionf;
 
 public class MogulSkeleton extends Skeleton<GnomadMogulEntity> {
