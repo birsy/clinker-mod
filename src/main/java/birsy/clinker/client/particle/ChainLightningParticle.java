@@ -25,9 +25,11 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 
+import org.checkerframework.checker.units.qual.A;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -77,6 +79,11 @@ public class ChainLightningParticle extends Particle {
         }
 
         this.setLifetime(ChainLightningHandler.BOLT_TRAVEL_TIME);
+    }
+
+    @Override
+    public AABB getBoundingBox() {
+        return new AABB(startPos, endPos).inflate(0.1F);
     }
 
     @Override
