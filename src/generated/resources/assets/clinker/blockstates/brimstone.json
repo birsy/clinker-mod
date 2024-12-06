@@ -1,0 +1,126 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "clinker:block/brimstone"
+      },
+      {
+        "model": "clinker:block/brimstone_mirrored"
+      },
+      {
+        "model": "clinker:block/brimstone",
+        "y": 90
+      },
+      {
+        "model": "clinker:block/brimstone_mirrored",
+        "y": 90
+      },
+      {
+        "model": "clinker:block/brimstone",
+        "y": 180
+      },
+      {
+        "model": "clinker:block/brimstone_mirrored",
+        "y": 180
+      },
+      {
+        "model": "clinker:block/brimstone",
+        "y": 270
+      },
+      {
+        "model": "clinker:block/brimstone_mirrored",
+        "y": 270
+      },
+      {
+        "model": "clinker:block/brimstone_1"
+      },
+      {
+        "model": "clinker:block/brimstone_1_mirrored"
+      },
+      {
+        "model": "clinker:block/brimstone_1",
+        "y": 90
+      },
+      {
+        "model": "clinker:block/brimstone_1_mirrored",
+        "y": 90
+      },
+      {
+        "model": "clinker:block/brimstone_1",
+        "y": 180
+      },
+      {
+        "model": "clinker:block/brimstone_1_mirrored",
+        "y": 180
+      },
+      {
+        "model": "clinker:block/brimstone_1",
+        "y": 270
+      },
+      {
+        "model": "clinker:block/brimstone_1_mirrored",
+        "y": 270
+      },
+      {
+        "model": "clinker:block/brimstone_2"
+      },
+      {
+        "model": "clinker:block/brimstone_2_mirrored"
+      },
+      {
+        "model": "clinker:block/brimstone_2",
+        "y": 90
+      },
+      {
+        "model": "clinker:block/brimstone_2_mirrored",
+        "y": 90
+      },
+      {
+        "model": "clinker:block/brimstone_2",
+        "y": 180
+      },
+      {
+        "model": "clinker:block/brimstone_2_mirrored",
+        "y": 180
+      },
+      {
+        "model": "clinker:block/brimstone_2",
+        "y": 270
+      },
+      {
+        "model": "clinker:block/brimstone_2_mirrored",
+        "y": 270
+      },
+      {
+        "model": "clinker:block/brimstone_3"
+      },
+      {
+        "model": "clinker:block/brimstone_3_mirrored"
+      },
+      {
+        "model": "clinker:block/brimstone_3",
+        "y": 90
+      },
+      {
+        "model": "clinker:block/brimstone_3_mirrored",
+        "y": 90
+      },
+      {
+        "model": "clinker:block/brimstone_3",
+        "y": 180
+      },
+      {
+        "model": "clinker:block/brimstone_3_mirrored",
+        "y": 180
+      },
+      {
+        "model": "clinker:block/brimstone_3",
+        "y": 270
+      },
+      {
+        "model": "clinker:block/brimstone_3_mirrored",
+        "y": 270
+      }
+    ]
+  }
+}

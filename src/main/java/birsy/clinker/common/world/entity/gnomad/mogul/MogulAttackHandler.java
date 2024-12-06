@@ -2,7 +2,7 @@ package birsy.clinker.common.world.entity.gnomad.mogul;
 
 import birsy.clinker.client.entity.mogul.MogulAnimator;
 import birsy.clinker.core.Clinker;
-import birsy.necromancer.animation.Animator;
+import foundry.veil.api.client.necromancer.animation.Animator;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;

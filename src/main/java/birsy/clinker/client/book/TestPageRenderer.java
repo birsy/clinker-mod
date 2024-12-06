@@ -84,6 +84,7 @@ public class TestPageRenderer {
     }
 
     private static void regeneratePage() {
+        if (Minecraft.getInstance() == null) return;
         page = new Page();
         TextBox box = new TextBox(1, 1, 45, 30, 1);
         box.initializeText(FormattedText.composite(

@@ -9,6 +9,7 @@
   "min_y": -64,
   "height": 384,
   "logical_height": 384,
+  "fixed_time": 23360,
   "infiniburn": "#minecraft:infiniburn_overworld",
   "monster_spawn_block_light_limit": 0,
   "monster_spawn_light_level": {

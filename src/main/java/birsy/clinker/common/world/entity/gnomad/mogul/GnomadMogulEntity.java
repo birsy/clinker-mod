@@ -148,13 +148,13 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
         super.tick();
         if (this.level().isClientSide()) this.computeHeightOffset();
         if (!this.level().isClientSide()) {
-            this.attackHandler.tick();
-            if (this.tickCount % 100 == 0) {
-                int attack = this.random.nextIntBetweenInclusive(0, 2);
-                if (attack == 0) this.attackHandler.beginAttack(MogulAttackHandler.SWING_UP);
-                if (attack == 1) this.attackHandler.beginAttack(MogulAttackHandler.SWING_LEFT);
-                if (attack == 2) this.attackHandler.beginAttack(MogulAttackHandler.SWING_RIGHT);
-            }
+//            this.attackHandler.tick();
+//            if (this.tickCount % 100 == 0) {
+//                int attack = this.random.nextIntBetweenInclusive(0, 2);
+//                if (attack == 0) this.attackHandler.beginAttack(MogulAttackHandler.SWING_UP);
+//                if (attack == 1) this.attackHandler.beginAttack(MogulAttackHandler.SWING_LEFT);
+//                if (attack == 2) this.attackHandler.beginAttack(MogulAttackHandler.SWING_RIGHT);
+//            }
         }
     }
 

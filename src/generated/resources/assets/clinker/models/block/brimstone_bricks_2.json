@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "clinker:block/brimstone_bricks/brimstone_bricks_2"
+  }
+}

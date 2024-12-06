@@ -9,8 +9,6 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-import java.util.function.Supplier;
-
 public class ClinkerCreativeModeTabs {
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(BuiltInRegistries.CREATIVE_MODE_TAB, Clinker.MOD_ID);
 
@@ -49,9 +47,9 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(ClinkerBlocks.POLISHED_BRIMSTONE_STAIRS.get());
         pOutput.accept(ClinkerBlocks.POLISHED_BRIMSTONE_WALL.get());
         pOutput.accept(ClinkerBlocks.BRIMSTONE_BRICKS.get());
-        pOutput.accept(ClinkerBlocks.BRIMSTONE_BRICKS_SLAB.get());
-        pOutput.accept(ClinkerBlocks.BRIMSTONE_BRICKS_STAIRS.get());
-        pOutput.accept(ClinkerBlocks.BRIMSTONE_BRICKS_WALL.get());
+        pOutput.accept(ClinkerBlocks.BRIMSTONE_BRICK_SLAB.get());
+        pOutput.accept(ClinkerBlocks.BRIMSTONE_BRICK_STAIRS.get());
+        pOutput.accept(ClinkerBlocks.BRIMSTONE_BRICK_WALL.get());
         pOutput.accept(ClinkerBlocks.SMOOTH_BRIMSTONE.get());
         pOutput.accept(ClinkerBlocks.CALAMINE.get());
         pOutput.accept(ClinkerBlocks.POLISHED_CALAMINE.get());

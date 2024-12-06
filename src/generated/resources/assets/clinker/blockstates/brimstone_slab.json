@@ -1,0 +1,46 @@
+{
+  "variants": {
+    "type=bottom": [
+      {
+        "model": "clinker:block/brimstone_slab"
+      },
+      {
+        "model": "clinker:block/brimstone_slab_1"
+      },
+      {
+        "model": "clinker:block/brimstone_slab_2"
+      },
+      {
+        "model": "clinker:block/brimstone_slab_3"
+      }
+    ],
+    "type=double": [
+      {
+        "model": "clinker:block/brimstone"
+      },
+      {
+        "model": "clinker:block/brimstone_1"
+      },
+      {
+        "model": "clinker:block/brimstone_2"
+      },
+      {
+        "model": "clinker:block/brimstone_3"
+      }
+    ],
+    "type=top": [
+      {
+        "model": "clinker:block/brimstone_slab_top"
+      },
+      {
+        "model": "clinker:block/brimstone_slab_top_1"
+      },
+      {
+        "model": "clinker:block/brimstone_slab_top_2"
+      },
+      {
+        "model": "clinker:block/brimstone_slab_top_3"
+      }
+    ]
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "variants": {
+    "type=bottom": [
+      {
+        "model": "clinker:block/brimstone_brick_slab"
+      },
+      {
+        "model": "clinker:block/brimstone_brick_slab_1"
+      },
+      {
+        "model": "clinker:block/brimstone_brick_slab_2"
+      },
+      {
+        "model": "clinker:block/brimstone_brick_slab_3"
+      }
+    ],
+    "type=double": [
+      {
+        "model": "clinker:block/brimstone_bricks"
+      },
+      {
+        "model": "clinker:block/brimstone_bricks_1"
+      },
+      {
+        "model": "clinker:block/brimstone_bricks_2"
+      },
+      {
+        "model": "clinker:block/brimstone_bricks_3"
+      }
+    ],
+    "type=top": [
+      {
+        "model": "clinker:block/brimstone_brick_slab_top"
+      },
+      {
+        "model": "clinker:block/brimstone_brick_slab_top_1"
+      },
+      {
+        "model": "clinker:block/brimstone_brick_slab_top_2"
+      },
+      {
+        "model": "clinker:block/brimstone_brick_slab_top_3"
+      }
+    ]
+  }
+}

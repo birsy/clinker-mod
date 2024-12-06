@@ -5,8 +5,6 @@ import birsy.clinker.common.world.block.plant.*;
 import birsy.clinker.common.world.block.plant.aspen.SwampAspenLogBlock;
 import birsy.clinker.core.Clinker;
 import net.minecraft.core.Direction;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
@@ -49,7 +47,7 @@ public class ClinkerBlocks
                   .strength(2.75F, 75.0F)
                   .sound(SoundType.DRIPSTONE_BLOCK);
     }
-    
+
     public static final DeferredBlock<Block> BRIMSTONE = createBlock("brimstone", () -> new Block(getBrimstoneProperties()));
     public static final DeferredBlock<Block> BRIMSTONE_SLAB = createBlock("brimstone_slab", () -> new SlabBlock(getBrimstoneProperties()));
     public static final DeferredBlock<Block> BRIMSTONE_STAIRS = createBlock("brimstone_stairs", () -> new StairBlock(BRIMSTONE.get().defaultBlockState(), getBrimstoneProperties()));
@@ -68,9 +66,9 @@ public class ClinkerBlocks
     public static final DeferredBlock<Block> POLISHED_BRIMSTONE_WALL = createBlock("polished_brimstone_wall", () -> new WallBlock(getBrimstoneProperties()));
     
     public static final DeferredBlock<Block> BRIMSTONE_BRICKS = createBlock("brimstone_bricks", () -> new Block(getBrimstoneProperties()));
-    public static final DeferredBlock<Block> BRIMSTONE_BRICKS_SLAB = createBlock("brimstone_bricks_slab", () -> new SlabBlock(getBrimstoneProperties()));
-    public static final DeferredBlock<Block> BRIMSTONE_BRICKS_STAIRS = createBlock("brimstone_bricks_stairs", () -> new StairBlock(BRIMSTONE_BRICKS.get().defaultBlockState(), getBrimstoneProperties()));
-    public static final DeferredBlock<Block> BRIMSTONE_BRICKS_WALL = createBlock("brimstone_bricks_wall", () -> new WallBlock(getBrimstoneProperties()));
+    public static final DeferredBlock<Block> BRIMSTONE_BRICK_SLAB = createBlock("brimstone_brick_slab", () -> new SlabBlock(getBrimstoneProperties()));
+    public static final DeferredBlock<Block> BRIMSTONE_BRICK_STAIRS = createBlock("brimstone_brick_stairs", () -> new StairBlock(BRIMSTONE_BRICKS.get().defaultBlockState(), getBrimstoneProperties()));
+    public static final DeferredBlock<Block> BRIMSTONE_BRICK_WALL = createBlock("brimstone_brick_wall", () -> new WallBlock(getBrimstoneProperties()));
 
     public static final DeferredBlock<Block> SMOOTH_BRIMSTONE = createBlock("smooth_brimstone", () -> new Block(getBrimstoneProperties()));
 
@@ -205,7 +203,7 @@ public class ClinkerBlocks
 
     public static DeferredBlock<Block> createBlock(String name, final Supplier<? extends Block> supplier) {
         DeferredBlock<Block> block = BLOCKS.register(name, supplier);
-        ClinkerItems.ITEMS.registerSimpleBlockItem(name, block);
+        ClinkerBlocks.BLOCK_ITEMS.registerSimpleBlockItem(name, block);
         return block;
     }
 

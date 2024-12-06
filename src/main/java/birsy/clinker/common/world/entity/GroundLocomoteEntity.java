@@ -1,6 +1,8 @@
 package birsy.clinker.common.world.entity;
 
+import birsy.clinker.common.networking.packet.ClientboundGroundLocomotorSyncPacket;
 import birsy.clinker.common.world.entity.ai.*;
+import birsy.clinker.core.Clinker;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
@@ -24,6 +26,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.neoforged.api.distmarker.Dist;
 
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.tslat.smartbrainlib.util.EntityRetrievalUtil;
 import org.joml.Vector3d;
 import org.joml.Vector3f;
@@ -34,10 +37,9 @@ public class GroundLocomoteEntity extends PathfinderMob {
     
     Vector3f smoothedWalk = new Vector3f();
 
-    private static final EntityDataAccessor<Vector3f> DATA_WALK_ID = SynchedEntityData.defineId(GroundLocomoteEntity.class, EntityDataSerializers.VECTOR3);
-    private static final EntityDataAccessor<Float> DATA_DISTANCED_WALKED_ID = SynchedEntityData.defineId(GroundLocomoteEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Boolean> DATA_WATCHING_ENTITY = SynchedEntityData.defineId(GroundLocomoteEntity.class, EntityDataSerializers.BOOLEAN);
 
+    float cumulativeWalkGoal = 0;
     float cumulativeWalk = 0;
     protected final Scheduler scheduler = new Scheduler();
 
@@ -60,8 +62,6 @@ public class GroundLocomoteEntity extends PathfinderMob {
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
-        builder.define(DATA_WALK_ID, new Vector3f());
-        builder.define(DATA_DISTANCED_WALKED_ID, 0.0F);
         builder.define(DATA_WATCHING_ENTITY, false);
     }
 
@@ -71,9 +71,8 @@ public class GroundLocomoteEntity extends PathfinderMob {
         this.scheduler.tick();
         super.tick();
         if (this.level().isClientSide()) {
-            this.walk.set(this.entityData.get(DATA_WALK_ID));
             this.smoothedWalk.lerp(this.walk,0.1F);
-            this.cumulativeWalk = Mth.lerp(0.5F, this.cumulativeWalk, this.entityData.get(DATA_DISTANCED_WALKED_ID));
+            this.cumulativeWalk = Mth.lerp(0.5F, this.cumulativeWalk, this.cumulativeWalkGoal);
         }
     }
 
@@ -82,10 +81,11 @@ public class GroundLocomoteEntity extends PathfinderMob {
         //this.debugMove();
         Vec3 positionPriorToWalking = this.position();
         this.move(MoverType.SELF, new Vec3(walk.x, walk.y, walk.z));
-        float distancedActuallyWalked = (float) positionPriorToWalking.distanceTo(this.position());
-        this.entityData.set(DATA_WALK_ID, this.walk);
+        Vec3 walkedVector = this.position().subtract(positionPriorToWalking);
+
+        float distancedActuallyWalked = (float) walkedVector.length();
         this.cumulativeWalk += distancedActuallyWalked;
-        this.entityData.set(DATA_DISTANCED_WALKED_ID, this.cumulativeWalk);
+        PacketDistributor.sendToPlayersTrackingEntity(this, new ClientboundGroundLocomotorSyncPacket(this.getId(), walkedVector.toVector3f(), this.cumulativeWalk));
     }
 
     public void walk(float x, float y, float z) {
@@ -115,6 +115,10 @@ public class GroundLocomoteEntity extends PathfinderMob {
     private final Vector3f strafeDir = new Vector3f(1, 0, 0);
     public float getStrafeAmount(float partialTick) {
         return this.getWalkVector(partialTick).dot(this.getBodyFacingDirection(partialTick).cross(0, 1, 0, strafeDir));
+    }
+
+    public void setCumulativeWalk(float amount) {
+        this.cumulativeWalkGoal = amount;
     }
 
     public float getCumulativeWalk() {

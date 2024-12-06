@@ -1,6 +1,7 @@
 package birsy.clinker.client.entity.mogul;
 
 import birsy.clinker.common.world.entity.gnomad.mogul.MogulAttackHandler;
+import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtil;
 import birsy.clinker.common.world.entity.gnomad.mogul.GnomadMogulEntity;
 import foundry.veil.api.client.necromancer.animation.Animation;
@@ -78,9 +79,9 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
         this.walkAnim.setMixFactor(walkFac);
         this.walkAnim.setTime(moveTime);
 
-        float strafeFac = Mth.clamp(5 * -entity.getStrafeAmount(1.0F), -0.8F, 0.8F);
+        float strafeFac = Mth.clamp(8 * entity.getStrafeAmount(1.0F), -0.8F, 0.8F);
         this.strafeAnim.setMixFactor(strafeFac);
-        this.strafeAnim.setTime(strafeFac);
+        this.strafeAnim.setTime(moveTime);
 
         // flinch
         if (entity.hurtDuration > 0) {
@@ -136,6 +137,7 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
 
     private static class IdleAnimation extends Animation<GnomadMogulEntity, MogulSkeleton> {
         protected static IdleAnimation INSTANCE = new IdleAnimation();
+
         @Override
         public void apply(GnomadMogulEntity entity, MogulSkeleton skeleton, float mixFactor, float time) {
             float bodyYaw = 180 - entity.yBodyRot;
@@ -176,6 +178,12 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
 
     private static class WalkAnimation extends Animation<GnomadMogulEntity, MogulSkeleton> {
         protected static WalkAnimation INSTANCE = new WalkAnimation();
+
+        @Override
+        public boolean running(GnomadMogulEntity parent, MogulSkeleton skeleton, float mixFactor, float time) {
+            return mixFactor != 0;
+        }
+
         @Override
         public void apply(GnomadMogulEntity parent, MogulSkeleton skeleton, float mixFactor, float time) {
             float globalDegree = 1.0F;
@@ -185,7 +193,9 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
             float timeOffset = Mth.PI * 0.5F;
             float verticalOffset = 0F;
 
+
             float sign = Mth.sign(mixFactor);
+            mixFactor = Mth.abs(mixFactor);
             float legHeightOffset = 0.35F * legBobAmountV * mixFactor * globalDegree;
 
             skeleton.MogulLeftLeg.z += Mth.cos(time + timeOffset) * legBobAmountH * mixFactor * globalDegree * sign;
@@ -228,6 +238,12 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
 
     private static class StrafeAnimation extends Animation<GnomadMogulEntity, MogulSkeleton> {
         protected static StrafeAnimation INSTANCE = new StrafeAnimation();
+
+        @Override
+        public boolean running(GnomadMogulEntity parent, MogulSkeleton skeleton, float mixFactor, float time) {
+            return mixFactor != 0;
+        }
+
         @Override
         public void apply(GnomadMogulEntity parent, MogulSkeleton skeleton, float mixFactor, float time) {
             float globalDegree = 1.0F;
@@ -237,7 +253,8 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
             float timeOffset = Mth.PI * 0.5F;
             float verticalOffset = 0F;
 
-            float sign = -Mth.sign(mixFactor);
+            float sign = Mth.sign(mixFactor);
+            mixFactor = Mth.abs(mixFactor);
 
             float legHeightOffset = -0.2F * legBobAmountV * mixFactor * globalDegree;
             float sideIntensity = 0.2F;

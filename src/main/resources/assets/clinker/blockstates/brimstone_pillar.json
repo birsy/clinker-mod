@@ -1,7 +1,0 @@
-{
-    "variants": {
-        "axis=y":  { "model": "clinker:block/brimstone/brimstone/brimstone_pillar" },
-        "axis=z":   { "model": "clinker:block/brimstone/brimstone/brimstone_pillar", "x": 90 },
-        "axis=x":   { "model": "clinker:block/brimstone/brimstone/brimstone_pillar", "x": 90, "y": 90 }
-    }
-}
