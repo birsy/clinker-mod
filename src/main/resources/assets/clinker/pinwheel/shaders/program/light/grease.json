@@ -1,0 +1,7 @@
+{
+  "vertex": "veil:light/point",
+  "fragment": "clinker:light/grease",
+  "textures": {
+    "NoiseSampler": "clinker:textures/environment/noise.png"
+  }
+}

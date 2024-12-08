@@ -1,0 +1,19 @@
+{
+    "textures": {
+        "particle": "#wall_side_tall"
+    },
+    "elements": [
+        {
+            "name": "south_tall",
+            "from": [5, -0.01, 8],
+            "to": [11, 15.99, 16],
+            "faces": {
+                "east": {"uv": [0, 0, 8, 16], "texture": "#wall_side_tall"},
+                "south": {"uv": [5, 0, 11, 16], "texture": "#wall_side_tall", "cullface": "south"},
+                "west": {"uv": [8, 0, 16, 16], "texture": "#wall_side_tall"},
+                "up": {"uv": [1, 8, 7, 16], "texture": "#wall_top_tall", "cullface": "up"},
+                "down": {"uv": [1, 0, 7, 8], "texture": "#wall_bottom_tall", "cullface": "down"}
+            }
+        }
+    ]
+}

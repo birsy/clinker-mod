@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "clinker:block/chiseled_brimstone_east"
+    },
+    "facing=north": {
+      "model": "clinker:block/chiseled_brimstone_north"
+    },
+    "facing=south": {
+      "model": "clinker:block/chiseled_brimstone_south"
+    },
+    "facing=west": {
+      "model": "clinker:block/chiseled_brimstone_west"
+    }
+  }
+}

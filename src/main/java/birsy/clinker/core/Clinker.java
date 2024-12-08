@@ -12,9 +12,7 @@ import birsy.clinker.core.registry.world.ClinkerFeatures;
 import birsy.clinker.core.registry.world.ClinkerWorld;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.core.dispenser.ProjectileDispenseBehavior;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.block.DispenserBlock;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
@@ -46,6 +44,8 @@ public class Clinker {
         ClinkerParticles.PARTICLES.register(modEventBus);
         ClinkerDataAttachments.ATTACHMENT_TYPES.register(modEventBus);
         ClinkerCreativeModeTabs.TABS.register(modEventBus);
+
+        ClinkerLightTypes.LIGHT_TYPES.register(modEventBus);
 
         modEventBus.addListener(this::setup);
         modEventBus.addListener(this::doClientStuff);

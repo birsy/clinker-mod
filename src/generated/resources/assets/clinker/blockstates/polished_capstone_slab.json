@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "clinker:block/polished_capstone_slab"
+    },
+    "type=double": {
+      "model": "clinker:block/polished_capstone_double_slab"
+    },
+    "type=top": {
+      "model": "clinker:block/polished_capstone_slab_top"
+    }
+  }
+}

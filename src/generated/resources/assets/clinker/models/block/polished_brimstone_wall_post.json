@@ -1,0 +1,6 @@
+{
+  "parent": "clinker:block/template_wall_extended_post",
+  "textures": {
+    "wall_post": "clinker:block/polished_brimstone_wall_post"
+  }
+}

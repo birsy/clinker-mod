@@ -93,6 +93,89 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
             this.wallBlock((WallBlock) ClinkerBlocks.BRIMSTONE_BRICK_WALL.get(), this.modLoc(ModelProvider.BLOCK_FOLDER + "/brimstone_bricks/brimstone_bricks"));
             this.simpleBlockItem(ClinkerBlocks.BRIMSTONE_BRICK_WALL.get(), this.models().wallInventory("brimstone_brick_wall_inventory", this.modLoc(ModelProvider.BLOCK_FOLDER + "/brimstone_bricks/brimstone_bricks")));
         }
+
+        // polished brimstone
+        {
+            ResourceLocation POLISHED_BRIMSTONE_TOP = this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_brimstone_top");
+            ResourceLocation POLISHED_BRIMSTONE_SIDE = this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_brimstone_side");
+            ResourceLocation POLISHED_BRIMSTONE_BOTTOM = this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_brimstone_bottom");
+
+            ResourceLocation POLISHED_BRIMSTONE_SLAB = this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_brimstone_slab");
+            ResourceLocation POLISHED_BRIMSTONE_STAIRS = POLISHED_BRIMSTONE_TOP;
+
+            this.simpleBlockWithItem(ClinkerBlocks.POLISHED_BRIMSTONE.get(), this.models().cubeBottomTop("polished_brimstone", POLISHED_BRIMSTONE_SIDE, POLISHED_BRIMSTONE_BOTTOM, POLISHED_BRIMSTONE_TOP));
+
+            this.models().cubeColumn("polished_brimstone_double_slab", POLISHED_BRIMSTONE_SLAB, POLISHED_BRIMSTONE_BOTTOM);
+            this.slabBlock((SlabBlock) ClinkerBlocks.POLISHED_BRIMSTONE_SLAB.get(), this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_brimstone_double_slab"), POLISHED_BRIMSTONE_SLAB, POLISHED_BRIMSTONE_BOTTOM, POLISHED_BRIMSTONE_BOTTOM);
+            this.simpleBlockItem(ClinkerBlocks.POLISHED_BRIMSTONE_SLAB.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_brimstone_slab")));
+
+            this.stairsBlock((StairBlock) ClinkerBlocks.POLISHED_BRIMSTONE_STAIRS.get(), POLISHED_BRIMSTONE_STAIRS);
+            this.simpleBlockItem(ClinkerBlocks.POLISHED_BRIMSTONE_STAIRS.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_brimstone_stairs")));
+
+            this.wallExtended(ClinkerBlocks.POLISHED_BRIMSTONE_WALL.get(),
+                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_brimstone_wall_post"),
+                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_brimstone_wall_side"), this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_brimstone_wall_top"), this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_brimstone_wall_bottom"),
+                    POLISHED_BRIMSTONE_BOTTOM, this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_brimstone_wall_bottom"), this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_brimstone_wall_bottom")
+            );
+        }
+
+        this.getVariantBuilder(ClinkerBlocks.CHISELED_BRIMSTONE.get())
+                .partialState().with(HorizontalDirectionalBlock.FACING, Direction.NORTH).addModels(
+                        new ConfiguredModel(this.models().cubeAll("chiseled_brimstone_north", this.modLoc(ModelProvider.BLOCK_FOLDER + "/chiseled_brimstone_north")))
+                ).partialState().with(HorizontalDirectionalBlock.FACING, Direction.SOUTH).addModels(
+                        new ConfiguredModel(this.models().cubeAll("chiseled_brimstone_south", this.modLoc(ModelProvider.BLOCK_FOLDER + "/chiseled_brimstone_south")))
+                ).partialState().with(HorizontalDirectionalBlock.FACING, Direction.EAST).addModels(
+                        new ConfiguredModel(this.models().cubeAll("chiseled_brimstone_east", this.modLoc(ModelProvider.BLOCK_FOLDER + "/chiseled_brimstone_east")))
+                ).partialState().with(HorizontalDirectionalBlock.FACING, Direction.WEST).addModels(
+                        new ConfiguredModel(this.models().cubeAll("chiseled_brimstone_west", this.modLoc(ModelProvider.BLOCK_FOLDER + "/chiseled_brimstone_west")))
+                );
+        this.simpleBlockItem(ClinkerBlocks.CHISELED_BRIMSTONE.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/chiseled_brimstone_north")));
+
+        // capstone bricks
+        {
+            this.simpleBlockWithVariation(ClinkerBlocks.CAPSTONE_BRICKS.get(), 4);
+            this.simpleBlockItem(ClinkerBlocks.CAPSTONE_BRICKS.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/capstone_bricks")));
+
+            this.slabBlockWithVariation(ClinkerBlocks.CAPSTONE_BRICK_SLAB.get(),
+                    (i) -> this.modLoc(ModelProvider.BLOCK_FOLDER + "/capstone_bricks" + (i == 0 ? "" : "_" + i)),
+                    (i) -> this.modLoc(ModelProvider.BLOCK_FOLDER + "/capstone_bricks/capstone_bricks" + (i == 0 ? "" : "_" + i)),
+                    4);
+            this.simpleBlockItem(ClinkerBlocks.CAPSTONE_BRICK_SLAB.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/capstone_brick_slab")));
+
+            this.stairsBlockWithVariation(ClinkerBlocks.CAPSTONE_BRICK_STAIRS.get(), (i) -> this.modLoc(ModelProvider.BLOCK_FOLDER + "/capstone_bricks/capstone_bricks" + (i == 0 ? "" : "_" + i)), 4);
+            this.simpleBlockItem(ClinkerBlocks.CAPSTONE_BRICK_STAIRS.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/capstone_brick_stairs")));
+
+            this.wallBlock((WallBlock) ClinkerBlocks.CAPSTONE_BRICK_WALL.get(), this.modLoc(ModelProvider.BLOCK_FOLDER + "/capstone_bricks/capstone_bricks"));
+            this.simpleBlockItem(ClinkerBlocks.CAPSTONE_BRICK_WALL.get(), this.models().wallInventory("capstone_brick_wall_inventory", this.modLoc(ModelProvider.BLOCK_FOLDER + "/capstone_bricks/capstone_bricks")));
+        }
+
+        // polished capstone
+        {
+            ResourceLocation POLISHED_CAPSTONE = this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_capstone");
+            ResourceLocation POLISHED_CAPSTONE_SLAB = this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_capstone_slab");
+            ResourceLocation POLISHED_CAPSTONE_STAIRS = this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_capstone_stairs");
+
+            this.simpleBlockWithItem(ClinkerBlocks.POLISHED_CAPSTONE.get(), this.models().cubeAll("polished_capstone", POLISHED_CAPSTONE));
+
+            this.models().cubeColumn("polished_capstone_double_slab", POLISHED_CAPSTONE_SLAB, POLISHED_CAPSTONE);
+            this.slabBlock((SlabBlock) ClinkerBlocks.POLISHED_CAPSTONE_SLAB.get(), this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_capstone_double_slab"), POLISHED_CAPSTONE_SLAB, POLISHED_CAPSTONE, POLISHED_CAPSTONE);
+            this.simpleBlockItem(ClinkerBlocks.POLISHED_CAPSTONE_SLAB.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_capstone_slab")));
+
+            this.stairsBlock((StairBlock) ClinkerBlocks.POLISHED_CAPSTONE_STAIRS.get(), POLISHED_CAPSTONE_STAIRS);
+            this.simpleBlockItem(ClinkerBlocks.POLISHED_CAPSTONE_STAIRS.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_capstone_stairs")));
+
+            this.wallExtended(ClinkerBlocks.POLISHED_CAPSTONE_WALL.get(),
+                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_capstone_wall_post"),
+
+                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_capstone_wall_side"),
+                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_capstone_wall_top"),
+                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_capstone_wall_bottom"),
+
+                    POLISHED_CAPSTONE,
+                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_capstone_wall_bottom"),
+                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_capstone_wall_bottom")
+            );
+        }
     }
 
     private void simpleBlockWithVariation(Block block, int variations) {
@@ -243,6 +326,53 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
                 }, StairBlock.WATERLOGGED);
     }
 
+    private void wallExtended(Block block,
+                              ResourceLocation wallPost,
+                              ResourceLocation wallSide, ResourceLocation wallTop, ResourceLocation wallBottom,
+                              ResourceLocation wallTallSide, ResourceLocation wallTallTop, ResourceLocation wallTallBottom) {
+        String name = name(block);
+
+        ModelBuilder postModel = this.models().withExistingParent(name + "_post", this.modLoc(ModelProvider.BLOCK_FOLDER + "/template_wall_extended_post"))
+                .texture("wall_post", wallPost);
+
+        ModelBuilder[] sideModels = new ModelBuilder[4];
+        ModelBuilder[] sideModelsTall = new ModelBuilder[4];
+        for (int i = 0; i < sideModels.length; i++) {
+            Direction direction = Direction.from2DDataValue(i);
+            String dirName = direction.getName().toLowerCase();
+            sideModels[i] = this.models().withExistingParent(name + "_side_" + dirName, this.modLoc(ModelProvider.BLOCK_FOLDER + "/template_wall_extended_side_" + dirName))
+                    .texture("wall_side", wallSide)
+                    .texture("wall_bottom", wallBottom)
+                    .texture("wall_top", wallTop);
+            sideModelsTall[i] = this.models().withExistingParent(name + "_side_tall_" + dirName, this.modLoc(ModelProvider.BLOCK_FOLDER + "/template_wall_extended_side_tall_" + dirName))
+                    .texture("wall_side_tall", wallTallSide)
+                    .texture("wall_bottom_tall", wallTallBottom)
+                    .texture("wall_top_tall", wallTallTop);
+        }
+
+        MultiPartBlockStateBuilder builder = getMultipartBuilder(block)
+                .part().modelFile(postModel).addModel()
+                .condition(WallBlock.UP, true).end();
+        WALL_PROPS.entrySet().stream()
+                .filter(e -> e.getKey().getAxis().isHorizontal())
+                .forEach(entry -> {
+                    builder.part()
+                            .modelFile(sideModels[entry.getKey().get2DDataValue()])
+                            .addModel()
+                            .condition(entry.getValue(), WallSide.LOW);
+                    builder.part()
+                            .modelFile(sideModelsTall[entry.getKey().get2DDataValue()])
+                            .addModel()
+                            .condition(entry.getValue(), WallSide.TALL);
+                });
+
+        // inventory
+        this.simpleBlockItem(block, this.models().withExistingParent(name + "_inventory", this.modLoc(ModelProvider.BLOCK_FOLDER + "/template_wall_extended_inventory"))
+                .texture("wall_post", wallPost)
+                .texture("wall_side", wallSide)
+                .texture("wall_top", wallTop)
+        );
+    }
 
     private ResourceLocation key(Block block) {
         return BuiltInRegistries.BLOCK.getKey(block);

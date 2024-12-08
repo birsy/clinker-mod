@@ -45,7 +45,7 @@ public class ClinkerBlocks
     public static BlockBehaviour.Properties getBrimstoneProperties() {
         return BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BROWN)
                   .strength(2.75F, 75.0F)
-                  .sound(SoundType.DRIPSTONE_BLOCK);
+                  .sound(SoundType.DRIPSTONE_BLOCK).requiresCorrectToolForDrops();
     }
 
     public static final DeferredBlock<Block> BRIMSTONE = createBlock("brimstone", () -> new Block(getBrimstoneProperties()));
@@ -69,6 +69,9 @@ public class ClinkerBlocks
     public static final DeferredBlock<Block> BRIMSTONE_BRICK_SLAB = createBlock("brimstone_brick_slab", () -> new SlabBlock(getBrimstoneProperties()));
     public static final DeferredBlock<Block> BRIMSTONE_BRICK_STAIRS = createBlock("brimstone_brick_stairs", () -> new StairBlock(BRIMSTONE_BRICKS.get().defaultBlockState(), getBrimstoneProperties()));
     public static final DeferredBlock<Block> BRIMSTONE_BRICK_WALL = createBlock("brimstone_brick_wall", () -> new WallBlock(getBrimstoneProperties()));
+
+    public static final DeferredBlock<Block> CHISELED_BRIMSTONE = createBlock("chiseled_brimstone", () -> new GlazedTerracottaBlock(getBrimstoneProperties()));
+
 
     public static final DeferredBlock<Block> SMOOTH_BRIMSTONE = createBlock("smooth_brimstone", () -> new Block(getBrimstoneProperties()));
 
@@ -101,9 +104,9 @@ public class ClinkerBlocks
     public static final DeferredBlock<Block> POLISHED_CAPSTONE_WALL = createBlock("polished_capstone_wall", () -> new WallBlock(getCapstoneProperties()));
 
     public static final DeferredBlock<Block> CAPSTONE_BRICKS = createBlock("capstone_bricks", () -> new Block(getCapstoneProperties()));
-    public static final DeferredBlock<Block> CAPSTONE_BRICKS_SLAB = createBlock("capstone_bricks_slab", () -> new SlabBlock(getCapstoneProperties()));
-    public static final DeferredBlock<Block> CAPSTONE_BRICKS_STAIRS = createBlock("capstone_bricks_stairs", () -> new StairBlock(CAPSTONE_BRICKS.get().defaultBlockState(), getCapstoneProperties()));
-    public static final DeferredBlock<Block> CAPSTONE_BRICKS_WALL = createBlock("capstone_bricks_wall", () -> new WallBlock(getCapstoneProperties()));
+    public static final DeferredBlock<Block> CAPSTONE_BRICK_SLAB = createBlock("capstone_brick_slab", () -> new SlabBlock(getCapstoneProperties()));
+    public static final DeferredBlock<Block> CAPSTONE_BRICK_STAIRS = createBlock("capstone_brick_stairs", () -> new StairBlock(CAPSTONE_BRICKS.get().defaultBlockState(), getCapstoneProperties()));
+    public static final DeferredBlock<Block> CAPSTONE_BRICK_WALL = createBlock("capstone_brick_wall", () -> new WallBlock(getCapstoneProperties()));
 
     //Sulfur
     public static final DeferredBlock<Block> SULFUR_CRYSTAL_BLOCK = createBlock("sulfur_crystal_block", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.GOLD)

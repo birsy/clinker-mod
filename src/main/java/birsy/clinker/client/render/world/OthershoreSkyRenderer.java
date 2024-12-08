@@ -156,17 +156,19 @@ public class OthershoreSkyRenderer {
 
 
         // outer sky clouds
+        poseStack.pushPose();
         RenderSystem.setShader(ClinkerShaders::getSkyOuterCloudShader);
         RenderSystem.setShaderTexture(0,OUTER_CLOUD_TEXTURE);
 
         ShaderInstance outerCloudShader = RenderSystem.getShader();
         setShaderUniform(outerCloudShader, "SkyColor1", skyR, skyG, skyB, 1.0F);
         setShaderUniform(outerCloudShader, "SkyColor2", fogR, fogG, fogB, 1.0F);
-        setShaderUniform(outerCloudShader, "WindOffset", 0.5F * time * 0.00002F + camX, time * 0.00002F + camZ);
+        setShaderUniform(outerCloudShader, "WindOffset", 0.5F * time * 0.00002F + camX*0.2F, time * 0.00002F + camZ*0.2F);
 
         outerCloudsBuffer.bind();
         outerCloudsBuffer.drawWithShader(poseStack.last().pose(), projMatrix, RenderSystem.getShader());
         VertexBuffer.unbind();
+        poseStack.popPose();
     }
 
     private void drawCloudRings(ClientLevel level, int ticks, float partialTick, Matrix4f projMatrix, PoseStack poseStack,

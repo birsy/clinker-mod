@@ -1,0 +1,18 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "clinker:block/capstone_bricks"
+      },
+      {
+        "model": "clinker:block/capstone_bricks_1"
+      },
+      {
+        "model": "clinker:block/capstone_bricks_2"
+      },
+      {
+        "model": "clinker:block/capstone_bricks_3"
+      }
+    ]
+  }
+}

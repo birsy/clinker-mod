@@ -1,6 +1,0 @@
-{
-   "parent": "block/cube_all",
-   "textures": {
-       "all": "clinker:block/brimstone/cobbled_brimstone/cobbled_brimstone3"
-   }
-}

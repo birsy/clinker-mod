@@ -1,0 +1,8 @@
+{
+  "parent": "clinker:block/template_wall_extended_side_west",
+  "textures": {
+    "wall_bottom": "clinker:block/polished_capstone_wall_bottom",
+    "wall_side": "clinker:block/polished_capstone_wall_side",
+    "wall_top": "clinker:block/polished_capstone_wall_top"
+  }
+}

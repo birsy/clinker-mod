@@ -23,9 +23,13 @@ public class SurfaceAmbience {
         this.minecraft = minecraft;
     }
 
+
     private final BlockPos.MutableBlockPos samplePos = new BlockPos.MutableBlockPos();
     private final BlockPos.MutableBlockPos iteratorPos = new BlockPos.MutableBlockPos();
-    public void tick() {
+    public void tick(boolean shouldUpdate) {
+        prevAboveGroundFactor = aboveGroundFactor;
+        if (!shouldUpdate) return;
+
         ClientLevel level = minecraft.level;
         Camera camera = minecraft.gameRenderer.getMainCamera();
         Vector3f cameraLook = camera.getLookVector();
@@ -76,7 +80,6 @@ public class SurfaceAmbience {
         }
 
         float mixFactor = 1.0F / 64.0F;
-        prevAboveGroundFactor = aboveGroundFactor;
         aboveGroundFactor = aboveGroundFactor * (1.0F - mixFactor) + (aboveGround ? 1.0F : -1.0F) * mixFactor;
     }
 

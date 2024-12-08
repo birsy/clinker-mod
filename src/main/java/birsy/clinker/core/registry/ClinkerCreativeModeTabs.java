@@ -50,6 +50,7 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(ClinkerBlocks.BRIMSTONE_BRICK_SLAB.get());
         pOutput.accept(ClinkerBlocks.BRIMSTONE_BRICK_STAIRS.get());
         pOutput.accept(ClinkerBlocks.BRIMSTONE_BRICK_WALL.get());
+        pOutput.accept(ClinkerBlocks.CHISELED_BRIMSTONE.get());
         pOutput.accept(ClinkerBlocks.SMOOTH_BRIMSTONE.get());
         pOutput.accept(ClinkerBlocks.CALAMINE.get());
         pOutput.accept(ClinkerBlocks.POLISHED_CALAMINE.get());
@@ -63,9 +64,9 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(ClinkerBlocks.POLISHED_CAPSTONE_STAIRS.get());
         pOutput.accept(ClinkerBlocks.POLISHED_CAPSTONE_WALL.get());
         pOutput.accept(ClinkerBlocks.CAPSTONE_BRICKS.get());
-        pOutput.accept(ClinkerBlocks.CAPSTONE_BRICKS_SLAB.get());
-        pOutput.accept(ClinkerBlocks.CAPSTONE_BRICKS_STAIRS.get());
-        pOutput.accept(ClinkerBlocks.CAPSTONE_BRICKS_WALL.get());
+        pOutput.accept(ClinkerBlocks.CAPSTONE_BRICK_SLAB.get());
+        pOutput.accept(ClinkerBlocks.CAPSTONE_BRICK_STAIRS.get());
+        pOutput.accept(ClinkerBlocks.CAPSTONE_BRICK_WALL.get());
         pOutput.accept(ClinkerBlocks.SULFUR_CRYSTAL_BLOCK.get());
         pOutput.accept(ClinkerBlocks.SULFUR_ROCK_BLOCK.get());
         pOutput.accept(ClinkerBlocks.SHALE.get());

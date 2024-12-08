@@ -3,6 +3,7 @@ package birsy.clinker.client.render;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -14,6 +15,10 @@ import java.util.Objects;
 
 @EventBusSubscriber(value = Dist.CLIENT, modid = Clinker.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public class ClinkerShaders {
+
+    public static final ResourceLocation LIGHT_GREASE = Clinker.resource("light/grease");
+
+
     @Nullable
     private static ShaderInstance skyCloudShader;
     @Nullable

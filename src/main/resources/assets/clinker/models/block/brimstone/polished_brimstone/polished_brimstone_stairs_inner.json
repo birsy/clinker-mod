@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/inner_stairs",
-  "textures": {
-    "bottom": "clinker:block/brimstone/polished_brimstone/polished_brimstone_top",
-    "top": "clinker:block/brimstone/polished_brimstone/polished_brimstone_top",
-    "side": "clinker:block/brimstone/polished_brimstone/polished_brimstone_top"
-  }
-}

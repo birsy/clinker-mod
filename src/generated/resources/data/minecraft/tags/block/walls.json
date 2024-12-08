@@ -1,0 +1,14 @@
+{
+  "values": [
+    "clinker:brimstone_wall",
+    "clinker:cobbled_brimstone_wall",
+    "clinker:polished_brimstone_wall",
+    "clinker:brimstone_brick_wall",
+    "clinker:capstone_wall",
+    "clinker:polished_capstone_wall",
+    "clinker:capstone_brick_wall",
+    "clinker:smooth_shale_wall",
+    "clinker:polished_shale_wall",
+    "clinker:shale_bricks_wall"
+  ]
+}

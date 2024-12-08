@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "clinker:block/polished_brimstone_bottom",
+    "side": "clinker:block/polished_brimstone_slab"
+  }
+}

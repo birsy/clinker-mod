@@ -16,27 +16,27 @@ public class AmbienceHandler {
 
     @SubscribeEvent
     public static void onTick(ClientTickEvent.Pre event) {
-        if (shouldntUpdate()) return;
-
         Minecraft.getInstance().getProfiler().push("clinker.ambienceTick");
-        SURFACE_AMBIENCE_HANDLER.tick();
+
+        boolean shouldUpdate = shouldUpdate();
+        SURFACE_AMBIENCE_HANDLER.tick(shouldUpdate);
+
         Minecraft.getInstance().getProfiler().pop();
     }
 
     @SubscribeEvent
     public static void onDraw(RenderLevelStageEvent event) {
-        if (shouldntUpdate()) return;
-
-        Minecraft.getInstance().getProfiler().push("clinker.ambienceFrame");
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_LEVEL) {
+            Minecraft.getInstance().getProfiler().push("clinker.ambienceFrame");
+            boolean shouldUpdate = shouldUpdate();
+            Minecraft.getInstance().getProfiler().pop();
         }
-        Minecraft.getInstance().getProfiler().pop();
     }
 
-    private static boolean shouldntUpdate() {
-        return Minecraft.getInstance().level == null ||
-               Minecraft.getInstance().level.dimension() != ClinkerWorld.OTHERSHORE ||
-              !Minecraft.getInstance().level.isLoaded(Minecraft.getInstance().gameRenderer.getMainCamera().getBlockPosition()) ||
-               Minecraft.getInstance().isPaused();
+    private static boolean shouldUpdate() {
+        return Minecraft.getInstance().level != null &&
+               Minecraft.getInstance().level.dimension() == ClinkerWorld.OTHERSHORE &&
+               Minecraft.getInstance().level.isLoaded(Minecraft.getInstance().gameRenderer.getMainCamera().getBlockPosition()) &&
+               !Minecraft.getInstance().isPaused();
     }
 }
