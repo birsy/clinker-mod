@@ -77,25 +77,25 @@ public class OrdnanceRenderer extends EntityRenderer<OrdnanceEntity> {
                 .setUv(u0, v1)
                 .setOverlay(overlayTexture)
                 .setLight(pPackedLight)
-                .setNormal(pose, 0, 0, -1);
+                .setNormal(pose, 0, 0, 1);
         consumer.addVertex(pose, 6.0F, 9.0F, 0)
                 .setColor(color)
                 .setUv(u0, v0)
                 .setOverlay(overlayTexture)
                 .setLight(pPackedLight)
-                .setNormal(pose, 0, 0, -1);
+                .setNormal(pose, 0, 0, 1);
         consumer.addVertex(pose, -6.0F, 9.0F, 0)
                 .setColor(color)
                 .setUv(u1, v0)
                 .setOverlay(overlayTexture)
                 .setLight(pPackedLight)
-                .setNormal(pose, 0, 0, -1);
+                .setNormal(pose, 0, 0, 1);
         consumer.addVertex(pose, -6.0F, -9.0F, 0)
                 .setColor(color)
                 .setUv(u1, v1)
                 .setOverlay(overlayTexture)
                 .setLight(pPackedLight)
-                .setNormal(pose, 0, 0, -1);
+                .setNormal(pose, 0, 0, 1);
         stack.popPose();
     }
 

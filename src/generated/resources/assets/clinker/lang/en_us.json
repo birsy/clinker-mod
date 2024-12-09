@@ -91,6 +91,10 @@
   "entity.clinker.test_rope": "Test Rope",
   "entity.clinker.transmogrifying_flask": "Transmogrifying Flask",
   "entity.clinker.warhook": "Warhook",
+  "item.clinker.alchemists_crossbow": "Alchemist's Crossbow",
+  "item.clinker.alchemists_crossbow.no_ammo": "Hold ammunition in opposite hand to load.",
+  "item.clinker.alchemists_crossbow.primed": "Primed",
+  "item.clinker.alchemists_crossbow.repeater": "Repeater Attachment",
   "item.clinker.alchemy_book": "Alchemy Book",
   "item.clinker.bismuth": "Bismuth",
   "item.clinker.centipede_shell": "Centipede Shell",
@@ -124,5 +128,5 @@
   "item.clinker.salt": "Salt",
   "item.clinker.sulfur": "Sulfur",
   "item.clinker.transmogrifying_flask": "Transmogrifying Flask",
-  "itemGroup.clinker": "Clinker Items"
+  "itemGroup.clinker": "Clinker"
 }

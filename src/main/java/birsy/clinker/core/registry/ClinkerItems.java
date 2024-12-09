@@ -1,7 +1,11 @@
 package birsy.clinker.core.registry;
 
 import birsy.clinker.common.world.item.*;
+import birsy.clinker.common.world.item.components.FuseTimer;
+import birsy.clinker.common.world.item.components.LoadedItemStack;
+import birsy.clinker.common.world.item.components.OrdnanceEffects;
 import birsy.clinker.core.Clinker;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.*;
 
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -27,8 +31,28 @@ public class ClinkerItems
     public static final DeferredItem<Item> SALT = ITEMS.registerSimpleItem("salt", new Item.Properties());
     
     public static final DeferredItem<Item> FAIRY_FRUIT = ITEMS.register("fairy_fruit", () -> new ItemNameBlockItem(ClinkerBlocks.FAIRY_FRUIT_BLOCK.get(), new Item.Properties()));
-    public static final DeferredItem<Item> ORDNANCE = ITEMS.register("ordnance", () -> new OrdnanceItem(new Item.Properties().stacksTo(24)));
-    public static final DeferredItem<Item> REROLL_FLASK = ITEMS.register("transmogrifying_flask", () -> new RerollFlaskItem(new Item.Properties().rarity(Rarity.UNCOMMON).stacksTo(16)));
+
+    public static final DeferredItem<OrdnanceItem> ORDNANCE = ITEMS.register("ordnance", () ->
+            new OrdnanceItem(new Item.Properties()
+                    .stacksTo(24)
+                    .component(ClinkerDataComponents.ORDNANCE_EFFECTS.get(), OrdnanceEffects.DEFAULT)
+                    .component(ClinkerDataComponents.FUSE_TIMER.get(), FuseTimer.EMPTY)
+            )
+    );
+    public static final DeferredItem<AlchemistsCrossbowItem> ALCHEMISTS_CROSSBOW = ITEMS.register("alchemists_crossbow", () ->
+            new AlchemistsCrossbowItem(new Item.Properties()
+                    .stacksTo(1).durability(384)
+                    .component(ClinkerDataComponents.LOADED_ITEM_STACK.get(), LoadedItemStack.EMPTY)
+                    .component(ClinkerDataComponents.FUSE_TIMER.get(), FuseTimer.EMPTY)
+                    .component(ClinkerDataComponents.TICK_DELAY.get(), 0)
+            )
+    );
+    public static final DeferredItem<RerollFlaskItem> REROLL_FLASK = ITEMS.register("transmogrifying_flask", () ->
+            new RerollFlaskItem(new Item.Properties()
+                    .component(DataComponents.RARITY, Rarity.RARE)
+                    .stacksTo(16)
+            )
+    );
     
     
     public static final DeferredItem<SwordItem> LEAD_SWORD = ITEMS.register("lead_sword", () ->

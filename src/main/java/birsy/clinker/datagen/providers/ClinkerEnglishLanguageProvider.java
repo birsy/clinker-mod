@@ -20,12 +20,16 @@ public class ClinkerEnglishLanguageProvider extends LanguageProvider {
 
     @Override
     protected void addTranslations() {
-        this.add("itemGroup.clinker", "Clinker Items");
+        this.add("itemGroup.clinker", "Clinker");
         for (DeferredHolder<Block, ? extends Block> entry : ClinkerBlocks.BLOCKS.getEntries()) {
             this.addBlock(entry, localizedNameFromRegistryName(entry.getId().getPath()));
         }
         for (DeferredHolder<Item, ? extends Item> entry : ClinkerItems.ITEMS.getEntries()) {
-            this.addItem(entry, localizedNameFromRegistryName(entry.getId().getPath()));
+            if (entry == ClinkerItems.ALCHEMISTS_CROSSBOW) {
+                this.addItem(entry, "Alchemist's Crossbow");
+            } else {
+                this.addItem(entry, localizedNameFromRegistryName(entry.getId().getPath()));
+            }
         }
         for (DeferredHolder<EntityType<?>, ? extends EntityType> entry : ClinkerEntities.ENTITY_TYPES.getEntries()) {
             this.addEntityType(entry, localizedNameFromRegistryName(entry.getId().getPath()));
@@ -44,6 +48,10 @@ public class ClinkerEnglishLanguageProvider extends LanguageProvider {
         this.add("item.clinker.ordnance.electrified", "Electrified");
         this.add("item.clinker.ordnance.trail", "Smoke Trail");
         this.add("item.clinker.ordnance.potion", "Potion:");
+
+        this.add("item.clinker.alchemists_crossbow.no_ammo", "Hold ammunition in opposite hand to load.");
+        this.add("item.clinker.alchemists_crossbow.primed", "Primed");
+        this.add("item.clinker.alchemists_crossbow.repeater", "Repeater Attachment");
     }
 
     private String localizedNameFromRegistryName(String registryName) {

@@ -16,7 +16,7 @@ public class ClinkerCreativeModeTabs {
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(BuiltInRegistries.CREATIVE_MODE_TAB, Clinker.MOD_ID);
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CLINKER = TABS.register("clinker", () -> CreativeModeTab.builder()
-            .title(Component.translatable("itemGroup.clinker").withStyle(Style.EMPTY.withFont(Clinker.resource("alchemical")).withColor(ChatFormatting.YELLOW).withBold(true)))
+            .title(Component.translatable("itemGroup.clinker").withStyle(Style.EMPTY.withFont(Clinker.resource("alchemical"))))
             .withTabsBefore(CreativeModeTabs.COMBAT)
             .icon(() -> new ItemStack(ClinkerItems.ALCHEMY_BOOK.get().asItem()))
             .displayItems((parameters, output) -> {
@@ -129,5 +129,7 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(ClinkerItems.LEAD_HOE.get());
         pOutput.accept(ClinkerItems.LADLE.get());
         pOutput.accept(ClinkerItems.ORDNANCE.get());
+        pOutput.accept(ClinkerItems.ALCHEMISTS_CROSSBOW.get());
+        pOutput.accept(ClinkerItems.MOGUL_WARHOOK.get());
     }
 }
