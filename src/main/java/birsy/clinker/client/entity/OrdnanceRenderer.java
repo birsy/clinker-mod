@@ -5,6 +5,8 @@ import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
+import foundry.veil.api.client.util.DebugRenderHelper;
+import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -30,7 +32,6 @@ public class OrdnanceRenderer extends EntityRenderer<OrdnanceEntity> {
 
     @Override
     public void render(OrdnanceEntity pEntity, float pEntityYaw, float pPartialTick, PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight) {
-
         VertexConsumer consumer = pBuffer.getBuffer(RenderType.entityCutout(this.getTextureLocation(pEntity)));
 
         float fuseTime = (pEntity.getFuseTime() + pPartialTick) / (pEntity.getMaxFuseTime() + 1.0F);
@@ -54,7 +55,6 @@ public class OrdnanceRenderer extends EntityRenderer<OrdnanceEntity> {
         pPoseStack.scale(size, size, size);
 
         drawBomb(pPoseStack, consumer, light, overlay, pEntity, pPartialTick, directionTowardsCamera);
-
         pPoseStack.popPose();
 
         super.render(pEntity, pEntityYaw, pPartialTick, pPoseStack, pBuffer, pPackedLight);
@@ -65,43 +65,37 @@ public class OrdnanceRenderer extends EntityRenderer<OrdnanceEntity> {
         Vec3 dir = directionTowardsCamera.scale(8 / 16.0F);
         stack.translate(dir.x(), dir.y(), dir.z());
         stack.mulPose(this.entityRenderDispatcher.cameraOrientation());
-        stack.mulPose(Axis.ZP.rotation(pEntity.getSpin(pPartialTick)));
-
+        stack.mulPose(Axis.ZP.rotation(-pEntity.getSpin(pPartialTick)));
         stack.translate(0, 2 / 16.0F, 0);
 
-        float u0 = 0;
-        float u1 = 12.0F / 32.0F;
-        float v0 = 0;
-        float v1 = 1.0F;
-        Vertex[] verticies = new Vertex[]{
-                new Vertex(-6.0F, -9.0F, 0.0F, u1, v1),
-                new Vertex(-6.0F, 9.0F, 0.0F, u1, v0),
-                new Vertex(6.0F, 9.0F, 0.0F, u0, v0),
-                new Vertex(6.0F, -9.0F, 0.0F, u0, v1)};
-        for (Vertex vertex : verticies) {
-            Vector4f vert = new Vector4f(vertex.position, 1.0F);
-            vert = stack.last().pose().transform(vert);
-            vertex.position.set(vert.x, vert.y, vert.z);
-        }
-        Vector3f normal = new Vector3f(0, 0, -1);
-        normal = stack.last(). normal().transform(normal);
+        float u0 = 0, u1 = 12.0F / 32.0F;
+        float v0 = 0, v1 = 1.0F;
         int color = FastColor.ARGB32.colorFromFloat(1, 1, 1, 1);
-        consumer.addVertex(verticies[0].x(), verticies[0].y(), verticies[0].z(),
-                color,
-                verticies[0].u(), verticies[0].v(), overlayTexture, pPackedLight,
-                normal.x, normal.y, normal.z);
-        consumer.addVertex(verticies[1].x(), verticies[1].y(), verticies[1].z(),
-                color,
-                verticies[1].u(), verticies[1].v(), overlayTexture, pPackedLight,
-                normal.x, normal.y, normal.z);
-        consumer.addVertex(verticies[2].x(), verticies[2].y(), verticies[2].z(),
-                color,
-                verticies[2].u(), verticies[2].v(), overlayTexture, pPackedLight,
-                normal.x, normal.y, normal.z);
-        consumer.addVertex(verticies[3].x(), verticies[3].y(), verticies[3].z(),
-                color,
-                verticies[3].u(), verticies[3].v(), overlayTexture, pPackedLight,
-                normal.x, normal.y, normal.z);
+        PoseStack.Pose pose = stack.last();
+        consumer.addVertex(pose, 6.0F, -9.0F, 0)
+                .setColor(color)
+                .setUv(u0, v1)
+                .setOverlay(overlayTexture)
+                .setLight(pPackedLight)
+                .setNormal(pose, 0, 0, -1);
+        consumer.addVertex(pose, 6.0F, 9.0F, 0)
+                .setColor(color)
+                .setUv(u0, v0)
+                .setOverlay(overlayTexture)
+                .setLight(pPackedLight)
+                .setNormal(pose, 0, 0, -1);
+        consumer.addVertex(pose, -6.0F, 9.0F, 0)
+                .setColor(color)
+                .setUv(u1, v0)
+                .setOverlay(overlayTexture)
+                .setLight(pPackedLight)
+                .setNormal(pose, 0, 0, -1);
+        consumer.addVertex(pose, -6.0F, -9.0F, 0)
+                .setColor(color)
+                .setUv(u1, v1)
+                .setOverlay(overlayTexture)
+                .setLight(pPackedLight)
+                .setNormal(pose, 0, 0, -1);
         stack.popPose();
     }
 

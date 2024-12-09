@@ -30,6 +30,7 @@ public class Clinker {
 
     public Clinker(IEventBus modEventBus) throws InterruptedException {
         ClinkerSounds.SOUNDS.register(modEventBus);
+        ClinkerDataComponents.DATA_COMPONENT_TYPES.register(modEventBus);
         ClinkerItems.ITEMS.register(modEventBus);
         ClinkerBlocks.BLOCKS.register(modEventBus);
         ClinkerBlocks.BLOCK_ITEMS.register(modEventBus);

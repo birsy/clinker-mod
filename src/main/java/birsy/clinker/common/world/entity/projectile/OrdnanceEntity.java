@@ -4,6 +4,7 @@ import birsy.clinker.client.particle.OrdnanceExplosionParticle;
 import birsy.clinker.client.particle.OrdnanceTrailParticle;
 import birsy.clinker.client.sound.OrdnanceSoundInstance;
 import birsy.clinker.common.networking.packet.ClientboundOrdnanceExplosionPacket;
+import birsy.clinker.common.world.item.components.OrdnanceEffects;
 import birsy.clinker.core.registry.entity.ClinkerEntities;
 import birsy.clinker.core.registry.ClinkerParticles;
 import birsy.clinker.core.registry.ClinkerSounds;
@@ -14,7 +15,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -29,7 +29,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
-import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
@@ -46,8 +45,7 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
     private static final Vec3[] PARTICLE_POINTS = MathUtil.generateSpherePoints(500);
 
     private static final EntityDataAccessor<Integer> DATA_FUSE_TIME = SynchedEntityData.defineId(OrdnanceEntity.class, EntityDataSerializers.INT);
-
-    protected OrdnanceEffects effects = OrdnanceEffects.DEFAULT_EFFECT_PARAMS;
+    protected OrdnanceEffects effects = OrdnanceEffects.DEFAULT;
 
     boolean stuck = false;
     Entity stuckEntity;
@@ -61,9 +59,6 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
 
     public OrdnanceEntity(EntityType<? extends Projectile> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
-        if (!pLevel.isClientSide()) {
-            this.effects = OrdnanceEffects.DEFAULT_EFFECT_PARAMS;
-        }
     }
 
     public static OrdnanceEntity create(Level pLevel, double x, double y, double z) {
@@ -98,7 +93,7 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
     // networking & serialization
     @Override
     public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
-        buffer.writeNbt(this.effects.serialize(new CompoundTag(), buffer.registryAccess()));
+        buffer.writeNbt(this.effects.serialize(buffer.registryAccess()));
     }
     @Override
     public void readSpawnData(RegistryFriendlyByteBuf buffer) {
@@ -112,7 +107,7 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
     protected void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
         pCompound.putInt("Fuse Time", this.getFuseTime());
-        effects.serialize(pCompound, this.registryAccess());
+        effects.serialize(this.registryAccess());
    }
     @Override
     protected void readAdditionalSaveData(CompoundTag pCompound) {
@@ -363,6 +358,15 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
         }
     }
 
+    public OrdnanceEffects getEffects() {
+        return effects;
+    }
+
+    public void setEffects(OrdnanceEffects effects) {
+        this.effects = effects;
+    }
+
+
     public void detonate() {
         createOrdnanceExplosion(this.position().add(0, this.getBbHeight() * 0.5, 0), this.level(), this.getOwner(), this, this.effects);
         this.discard();
@@ -394,9 +398,7 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
             if (level instanceof ServerLevel serverLevel) {
                 PacketDistributor.sendToPlayersTrackingChunk(serverLevel,
                         new ChunkPos(BlockPos.containing(location)),
-                        new ClientboundOrdnanceExplosionPacket(location,
-                                effects.serialize(new CompoundTag(), level.registryAccess())
-                        )
+                        new ClientboundOrdnanceExplosionPacket(location, effects.serialize(level.registryAccess()))
                 );
             }
 
@@ -452,7 +454,7 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
     }
 
     public int getMaxFuseTime() {
-        return effects.maxFuseTime();
+        return effects.fuseTime();
     }
 
     // misc stuff idk

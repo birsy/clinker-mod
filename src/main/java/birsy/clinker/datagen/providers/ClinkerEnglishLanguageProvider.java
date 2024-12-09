@@ -31,6 +31,19 @@ public class ClinkerEnglishLanguageProvider extends LanguageProvider {
             this.addEntityType(entry, localizedNameFromRegistryName(entry.getId().getPath()));
         }
 
+        this.add("item.clinker.ordnance.fuse_duration", "Fuse lasts %s seconds");
+
+        this.add("item.clinker.ordnance.detonation_dud", "Dud");
+        this.add("item.clinker.ordnance.detonation_flechette", "Releases Flechettes");
+        this.add("item.clinker.ordnance.detonation_oil", "Bursts into Oil");
+
+        this.add("item.clinker.ordnance.touch_detonate", "Detonates on Impact");
+        this.add("item.clinker.ordnance.touch_stick", "Sticky");
+        this.add("item.clinker.ordnance.touch_bounce", "Bouncy");
+
+        this.add("item.clinker.ordnance.electrified", "Electrified");
+        this.add("item.clinker.ordnance.trail", "Smoke Trail");
+        this.add("item.clinker.ordnance.potion", "Potion:");
     }
 
     private String localizedNameFromRegistryName(String registryName) {

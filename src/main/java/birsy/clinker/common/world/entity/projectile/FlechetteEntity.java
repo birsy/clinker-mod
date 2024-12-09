@@ -1,10 +1,10 @@
 package birsy.clinker.common.world.entity.projectile;
 
 import birsy.clinker.common.world.alchemy.effects.ChainLightningHandler;
+import birsy.clinker.common.world.item.components.OrdnanceEffects;
 import birsy.clinker.core.util.VectorUtil;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -30,7 +30,7 @@ import org.joml.Vector3f;
 public class FlechetteEntity extends Projectile implements IEntityWithComplexSpawn {
     private static final EntityDataAccessor<Quaternionf> DATA_ORIENTATION = SynchedEntityData.defineId(FlechetteEntity.class, EntityDataSerializers.QUATERNION);
 
-    protected OrdnanceEffects effects = OrdnanceEffects.DEFAULT_EFFECT_PARAMS;
+    protected OrdnanceEffects effects = OrdnanceEffects.DEFAULT;
     final Quaternionf currentOrientation = new Quaternionf(), previousOrientation = new Quaternionf();
 
     boolean stuck = false;
@@ -46,7 +46,7 @@ public class FlechetteEntity extends Projectile implements IEntityWithComplexSpa
     // networking & serialization
     @Override
     public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
-        buffer.writeNbt(this.effects.serialize(new CompoundTag(), buffer.registryAccess()));
+        buffer.writeNbt(this.effects.serialize(buffer.registryAccess()));
     }
     @Override
     public void readSpawnData(RegistryFriendlyByteBuf buffer) {
@@ -55,7 +55,7 @@ public class FlechetteEntity extends Projectile implements IEntityWithComplexSpa
     @Override
     protected void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
-        effects.serialize(pCompound, this.registryAccess());
+        effects.serialize(this.registryAccess());
     }
     @Override
     protected void readAdditionalSaveData(CompoundTag pCompound) {

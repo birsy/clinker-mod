@@ -1,8 +1,11 @@
 package birsy.clinker.core.registry;
 
 import birsy.clinker.core.Clinker;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
@@ -13,7 +16,7 @@ public class ClinkerCreativeModeTabs {
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(BuiltInRegistries.CREATIVE_MODE_TAB, Clinker.MOD_ID);
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CLINKER = TABS.register("clinker", () -> CreativeModeTab.builder()
-            .title(Component.translatable("itemGroup.clinker"))
+            .title(Component.translatable("itemGroup.clinker").withStyle(Style.EMPTY.withFont(Clinker.resource("alchemical")).withColor(ChatFormatting.YELLOW).withBold(true)))
             .withTabsBefore(CreativeModeTabs.COMBAT)
             .icon(() -> new ItemStack(ClinkerItems.ALCHEMY_BOOK.get().asItem()))
             .displayItems((parameters, output) -> {
