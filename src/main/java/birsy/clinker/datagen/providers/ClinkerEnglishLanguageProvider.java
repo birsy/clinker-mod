@@ -4,14 +4,12 @@ import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.ClinkerItems;
 import birsy.clinker.core.registry.entity.ClinkerEntities;
-import net.minecraft.core.Registry;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class ClinkerEnglishLanguageProvider extends LanguageProvider {
     public ClinkerEnglishLanguageProvider(PackOutput output) {
@@ -52,6 +50,7 @@ public class ClinkerEnglishLanguageProvider extends LanguageProvider {
         this.add("item.clinker.alchemists_crossbow.no_ammo", "Hold ammunition in opposite hand to load.");
         this.add("item.clinker.alchemists_crossbow.primed", "Primed");
         this.add("item.clinker.alchemists_crossbow.repeater", "Repeater Attachment");
+        this.add("item.clinker.crossbow_repeater_attachment.instructions", "Attachment for an Alchemist's Crossbow.");
     }
 
     private String localizedNameFromRegistryName(String registryName) {

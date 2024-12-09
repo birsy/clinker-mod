@@ -5,11 +5,17 @@ import birsy.clinker.common.world.item.components.FuseTimer;
 import birsy.clinker.common.world.item.components.LoadedItemStack;
 import birsy.clinker.common.world.item.components.OrdnanceEffects;
 import birsy.clinker.core.Clinker;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.world.item.*;
 
+import net.minecraft.world.item.component.ItemLore;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.List;
 
 public class ClinkerItems
 {
@@ -47,9 +53,21 @@ public class ClinkerItems
                     .component(ClinkerDataComponents.TICK_DELAY.get(), 0)
             )
     );
+    public static final DeferredItem<Item> CROSSBOW_REPEATER_ATTACHMENT = ITEMS.registerSimpleItem("crossbow_repeater_attachment",
+            new Item.Properties()
+                    .component(DataComponents.RARITY, Rarity.RARE)
+                    .component(DataComponents.LORE, new ItemLore(
+                            List.of(Component.translatable("item.clinker.crossbow_repeater_attachment.instructions").withStyle(
+                                            Style.EMPTY.withColor(ChatFormatting.GRAY)
+                                                       .withFont(Clinker.resource("small"))))
+                    ))
+    );
+
+
     public static final DeferredItem<RerollFlaskItem> REROLL_FLASK = ITEMS.register("transmogrifying_flask", () ->
             new RerollFlaskItem(new Item.Properties()
-                    .component(DataComponents.RARITY, Rarity.RARE)
+                    .component(DataComponents.RARITY, Rarity.UNCOMMON)
+                    .component(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)
                     .stacksTo(16)
             )
     );

@@ -3,6 +3,7 @@ package birsy.clinker.common.world.item;
 import birsy.clinker.common.world.item.components.LoadedItemStack;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerDataComponents;
+import birsy.clinker.core.registry.ClinkerTags;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.Direction;
@@ -59,6 +60,11 @@ public class AlchemistsCrossbowItem extends ProjectileWeaponItem {
     }
     private static boolean isRepeatFiring(ItemStack stack) {
         return hasRepeater(stack) && isFiring(stack);
+    }
+
+    @Override
+    public boolean isValidRepairItem(ItemStack stack, ItemStack repairCandidate) {
+        return repairCandidate.is(ClinkerTags.ALCHEMISTS_CROSSBOW_REPAIRABLE);
     }
 
     @Override

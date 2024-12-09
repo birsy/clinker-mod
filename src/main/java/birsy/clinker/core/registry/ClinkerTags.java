@@ -18,5 +18,6 @@ public class ClinkerTags {
     public static final TagKey<EntityType<?>> BIRTHABLE_HOMUNCULOIDS = TagKey.create(Registries.ENTITY_TYPE, Clinker.resource("birthable_homunculoids"));
 
     public static final TagKey<Item> NOT_BUOYANT = ItemTags.create(Clinker.resource("not_buoyant"));
+    public static final TagKey<Item> ALCHEMISTS_CROSSBOW_REPAIRABLE = ItemTags.create(Clinker.resource("alchemists_crossbow_repairable"));
 
 }

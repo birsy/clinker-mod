@@ -4,6 +4,7 @@ import birsy.clinker.core.Clinker;
 import birsy.clinker.datagen.providers.ClinkerBlockStateProvider;
 import birsy.clinker.datagen.providers.ClinkerBlockTagProvider;
 import birsy.clinker.datagen.providers.ClinkerEnglishLanguageProvider;
+import birsy.clinker.datagen.providers.ClinkerItemTagProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -23,7 +24,10 @@ public class ClinkerDatagenHandler {
         ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
         CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 
-        generator.addProvider(true, new ClinkerBlockTagProvider(output, lookupProvider, existingFileHelper));
+        ClinkerBlockTagProvider blockTags = new ClinkerBlockTagProvider(output, lookupProvider, existingFileHelper);
+        generator.addProvider(true, blockTags);
+        generator.addProvider(true, new ClinkerItemTagProvider(output, lookupProvider, blockTags.contentsGetter(), existingFileHelper));
+
         generator.addProvider(event.includeClient(), new ClinkerBlockStateProvider(output, existingFileHelper));
         generator.addProvider(event.includeClient(), new ClinkerEnglishLanguageProvider(output));
     }
