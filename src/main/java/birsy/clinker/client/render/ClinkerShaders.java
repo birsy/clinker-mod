@@ -18,6 +18,7 @@ public class ClinkerShaders {
 
     public static final ResourceLocation LIGHT_GREASE = Clinker.resource("light/grease");
 
+    public static final ResourceLocation PAGE_TEXTURE = Clinker.resource("page/texture");
 
     @Nullable
     private static ShaderInstance skyCloudShader;
@@ -87,10 +88,6 @@ public class ClinkerShaders {
     public static ShaderInstance getCloudShader() {
         return Objects.requireNonNull(cloudShader, "Attempted to call getCloudShader before shaders have finished loading.");
     }
-
-    //public static ShaderInstance getSkinnedEntityShader() {
-    //    return Objects.requireNonNull(skinnedEntityShader, "Attempted to call getSkinnedEntityShader before shaders have finished loading.");
-    //}
 
     @SubscribeEvent
     public static void registerShaders(RegisterShadersEvent event) throws IOException {

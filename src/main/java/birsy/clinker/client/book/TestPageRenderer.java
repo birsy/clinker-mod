@@ -16,13 +16,14 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.InputEvent;
+import net.neoforged.neoforge.client.event.RenderFrameEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import org.joml.Matrix4f;
 
 
 @EventBusSubscriber(value = Dist.CLIENT, modid = Clinker.MOD_ID)
 public class TestPageRenderer {
-    public static PageAtlasRenderer pageAtlasRenderer;
+    public static PageAtlas pageAtlas;
     public static Page page;
     static {
         regeneratePage();
@@ -30,14 +31,13 @@ public class TestPageRenderer {
 
     @SubscribeEvent
     public static void renderGui(RenderGuiEvent.Post guiEvent) {
-        PoseStack stack = new PoseStack();
-        stack.pushPose();
-        //stack.translate(guiEvent.getWindow().getGuiScaledWidth() * 0.5F, guiEvent.getWindow().getGuiScaledHeight() * 0.5F, 0.0F);
-        //stack.scale(5.0F, 5.0F, 1.0F);
-        //stack.translate(page.getSizeX() * -0.5F, page.getSizeY() * -0.5F, 0.0F);
-        //drawAtlas(stack);
-        //page.render(stack, guiEvent.getGuiGraphics().bufferSource());
-        stack.popPose();
+
+    }
+
+    @SubscribeEvent
+    public static void render(RenderFrameEvent.Post event) {
+        if (pageAtlas == null) pageAtlas = new PageAtlas();
+        pageAtlas.draw();
     }
 
     @SubscribeEvent
@@ -47,41 +47,6 @@ public class TestPageRenderer {
         }
     }
 
-    public static void drawAtlas(PoseStack stack) {
-        if (pageAtlasRenderer == null) {
-            pageAtlasRenderer = new PageAtlasRenderer(1, 1);
-        }
-        pageAtlasRenderer.pages.clear();
-        pageAtlasRenderer.pages.add(page);
-        pageAtlasRenderer.draw(Minecraft.getInstance().renderBuffers().bufferSource());
-
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, pageAtlasRenderer.getTextureID());
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.disableDepthTest();
-
-        Matrix4f pMatrix = stack.last().pose();
-
-        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-
-        float x0 = 0;
-        float x1 = 384;
-        float y0 = 0;
-        float y1 = 384;
-
-        bufferbuilder.addVertex(pMatrix, x0, y1, 0)
-                .setUv(0, 1);
-        bufferbuilder.addVertex(pMatrix, x1, y1, 0)
-                .setUv(1, 1);
-        bufferbuilder.addVertex(pMatrix, x1, y0, 0)
-                .setUv(1, 0);
-        bufferbuilder.addVertex(pMatrix, x0, y0, 0)
-                .setUv(0, 0);
-
-        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
-    }
 
     private static void regeneratePage() {
         if (Minecraft.getInstance() == null) return;
