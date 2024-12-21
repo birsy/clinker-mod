@@ -82,9 +82,8 @@ public class GasRenderer {
             for (int y = 0; y < SIZE; y++) {
                 for (int z = 0; z < SIZE; z++) {
                     int i = x + y * SIZE + z * SIZE * SIZE;
-                    float brightness = random.nextFloat();
                     data[i] = new GasBlock(
-                            random.nextFloat(), brightness + random.nextFloat(), brightness + random.nextFloat(),
+                            random.nextFloat(), random.nextFloat(), random.nextFloat(),
                             random.nextFloat(),
                             blockLight.get(x, y, z), skyLight.get(x, y, z)
                     );

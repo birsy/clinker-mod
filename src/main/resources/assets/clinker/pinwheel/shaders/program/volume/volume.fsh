@@ -70,212 +70,24 @@ void main() {
 	float rayStartDist = max(intersection.x, 0);
 	float rayEndDist = min(intersection.y, length(terrainPosition));
 	
-	vec3 rayPos = origin + rayEndDist * direction;
+	vec3 rayPos = origin + rayStartDist * direction;
 	
-	float distancePerStep = (rayEndDist - rayStartDist) / iterations;
+	float stepSize = (rayEndDist - rayStartDist) / iterations;
 	
-	float density = 0;
-	vec4 volumeColor = vec4(0);
-	
+	float transmittance = 1;
+	vec3 volumeColor = vec3(0);
+	// raymarch loop
 	for (int i = 0; i < iterations; i++) {
 		ivec3 voxelCoords = ivec3(floor(rayPos - VolumePosition + vec3(8)));
         GasData data = sampleData(voxelCoords);
         
-        float densityAtPoint = data.density * distancePerStep * 0.5;
-        vec3 colorAtPoint = mix(data.color, vec3(0.5), 0.8);
-        colorAtPoint *= texture(LightTextureSampler, (vec2(data.lightmapUV) + 0.5) / 16.0).rgb;
-        
-  		density += densityAtPoint;
-        volumeColor = mix(volumeColor, vec4(colorAtPoint, 1.0), densityAtPoint);
-		rayPos -= direction * distancePerStep;
+        vec3 lightColor = texture(LightTextureSampler, (vec2(data.lightmapUV) + 0.5) / 16.0).rgb;
+        volumeColor += data.density * stepSize * data.color * lightColor * transmittance;
+        transmittance *= exp(-data.density * stepSize);
+		if (transmittance < 0.01) break;
+		
+		rayPos += direction * stepSize;
 	}
-	
-	float luminence = exp(-density);
-	fragColor = vec4(color.rgb * (1.0 - volumeColor.a) + volumeColor.rgb, 1.0);
-    //fragColor = mix(color, volumeColor, volumeColor.a);
-    //fragColor = vec4(vec3(luminence) * color.rgb + (1 - luminence) * volumeColor, 1.0);
+
+	fragColor = vec4(color.rgb * transmittance + volumeColor, 1.0);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
