@@ -83,8 +83,8 @@ public class GasRenderer {
                 for (int z = 0; z < SIZE; z++) {
                     int i = x + y * SIZE + z * SIZE * SIZE;
                     data[i] = new GasBlock(
-                            random.nextFloat(), random.nextFloat(), random.nextFloat(),
-                            random.nextFloat(),
+                            0.5F, 0.5F, 0.5F,//random.nextFloat(), random.nextFloat(), random.nextFloat(),
+                            0.15F,
                             blockLight.get(x, y, z), skyLight.get(x, y, z)
                     );
                 }

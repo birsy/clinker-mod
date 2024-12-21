@@ -2,6 +2,8 @@
 
 #include veil:deferred_utils
 
+#define ITERATIONS 100
+
 uniform sampler2D DiffuseSampler;
 uniform sampler2D DiffuseDepthSampler;
 
@@ -66,28 +68,54 @@ void main() {
 		return;
 	}
 	
-	int iterations = 128;
 	float rayStartDist = max(intersection.x, 0);
 	float rayEndDist = min(intersection.y, length(terrainPosition));
 	
 	vec3 rayPos = origin + rayStartDist * direction;
 	
-	float stepSize = (rayEndDist - rayStartDist) / iterations;
+	float stepSize = (rayEndDist - rayStartDist) / ITERATIONS;
 	
-	float transmittance = 1;
+	float transmittance = 1.0;
 	vec3 volumeColor = vec3(0);
 	// raymarch loop
-	for (int i = 0; i < iterations; i++) {
+	for (int i = 0; i < ITERATIONS; i++) {
 		ivec3 voxelCoords = ivec3(floor(rayPos - VolumePosition + vec3(8)));
         GasData data = sampleData(voxelCoords);
         
         vec3 lightColor = texture(LightTextureSampler, (vec2(data.lightmapUV) + 0.5) / 16.0).rgb;
-        volumeColor += data.density * stepSize * data.color * lightColor * transmittance;
+       	volumeColor += data.density * stepSize * data.color * lightColor * transmittance;
         transmittance *= exp(-data.density * stepSize);
-		if (transmittance < 0.01) break;
 		
+		if (transmittance < 0.05) break;
 		rayPos += direction * stepSize;
 	}
 
 	fragColor = vec4(color.rgb * transmittance + volumeColor, 1.0);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
