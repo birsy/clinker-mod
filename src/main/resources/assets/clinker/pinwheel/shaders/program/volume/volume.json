@@ -1,0 +1,15 @@
+{
+  "vertex": "veil:blit_screen",
+  "fragment": "clinker:volume/volume",
+  "textures": {
+    "DiffuseSampler": {
+      "type": "framebuffer",
+      "name": "minecraft:main"
+    },
+    "DiffuseDepthSampler": {
+      "type": "framebuffer",
+      "name": "minecraft:main:depth"
+    }
+  }
+}
+

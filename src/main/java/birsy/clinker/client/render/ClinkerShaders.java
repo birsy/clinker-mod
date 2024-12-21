@@ -20,6 +20,8 @@ public class ClinkerShaders {
 
     public static final ResourceLocation PAGE_TEXTURE = Clinker.resource("page/texture");
 
+    public static final ResourceLocation VOLUME = Clinker.resource("volume/volume");
+
     @Nullable
     private static ShaderInstance skyCloudShader;
     @Nullable
