@@ -1,4 +1,4 @@
-package birsy.clinker.client.render.world;
+package birsy.clinker.client.render.world.gas;
 
 import birsy.clinker.client.render.ClinkerShaders;
 import birsy.clinker.core.Clinker;
@@ -10,7 +10,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.texture.AbstractTexture;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.resources.ResourceLocation;
@@ -18,7 +17,6 @@ import net.minecraft.util.FastColor;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.chunk.DataLayer;
-import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -63,7 +61,6 @@ public class GasRenderer {
             AbstractTexture abstracttexture = Minecraft.getInstance().getTextureManager()
                     .getTexture(Minecraft.getInstance().gameRenderer.lightTexture().lightTextureLocation);
             shader.addSampler("LightTextureSampler", abstracttexture.getId());
-
             shader.setup();
             VeilRenderSystem.drawScreenQuad();
         } finally {
