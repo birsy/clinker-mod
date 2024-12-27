@@ -70,8 +70,13 @@ void main() {
 	float downWave = wave(pixelPos.y * 0.2 + noiseSample + GameTime * 100) * 0.8 + 0.2;
 	// downWave should have less effect on floors and ceilings...
 	downWave = mix(downWave, noiseSample, abs(dot(normalWS, vec3(0, 1, 0))) * 0.8);
-    fragColor = vec4(attenuation * downWave * albedoColor.rgb * lightColor * color, 1.0);
+    fragColor = vec4(attenuation * downWave * lightColor * color * albedoColor.rgb, 1.0);
 }
+
+
+
+
+
 
 
 

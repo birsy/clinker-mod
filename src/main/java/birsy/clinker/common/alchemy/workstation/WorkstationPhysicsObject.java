@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.alchemy.workstation;
+package birsy.clinker.common.alchemy.workstation;
 
 import birsy.clinker.core.util.JomlConversions;
 import birsy.clinker.core.util.MathUtil;

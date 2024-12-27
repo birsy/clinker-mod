@@ -12,9 +12,11 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
+import net.minecraft.network.protocol.game.ClientboundLightUpdatePacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.chunk.DataLayer;
 import net.neoforged.api.distmarker.Dist;
@@ -31,73 +33,42 @@ public class GasRenderer {
     public static final int SIZE = SectionPos.SECTION_SIZE;
     private static final ResourceLocation VOLUME_FRAMEBUFFER = Clinker.resource("volume");
     private static final ResourceLocation VOLUME_POST = Clinker.resource("volume");
-    private static ShaderBlock<GasBlock[]> shaderBlock;
+
+    private static GasSectionManager sectionManager;
+    private static GasBufferManager bufferManager;
 
     @SubscribeEvent
     public static void renderLevel(RenderLevelStageEvent event) {
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_LEVEL) {
-            GasRenderer.render();
+            GasRenderer.render(Minecraft.getInstance().level);
         }
     }
 
-    private static SectionPos testSection = SectionPos.of(new BlockPos(62, 100, -254));
-    public static void render() {
-        testSection = SectionPos.of(new BlockPos(68, 139, -256));
-        try {
-            AdvancedFbo framebuffer = VeilRenderSystem.renderer().getFramebufferManager().getFramebuffer(VOLUME_FRAMEBUFFER);
-            framebuffer.bind(true);
-
-            if (Minecraft.getInstance().level == null) return;
-            if (shaderBlock == null) {
-                shaderBlock = ShaderBlock.withSize(GL_SHADER_STORAGE_BUFFER, SIZE * SIZE * SIZE * 2 * Integer.BYTES, (gasChunk, buffer) -> {
-                    IntBuffer intBuffer = buffer.asIntBuffer();
-                    for (int i = 0; i < gasChunk.length; i++) GasBlock.upload(gasChunk[i], intBuffer);
-                });
-            }
-            shaderBlock.set(volumeDataFromSection(Minecraft.getInstance().level, testSection));
-            VeilRenderSystem.bind("VolumetricData", shaderBlock);
-            ShaderProgram shader = VeilRenderSystem.setShader(ClinkerShaders.VOLUME);
-
-            AbstractTexture abstracttexture = Minecraft.getInstance().getTextureManager()
-                    .getTexture(Minecraft.getInstance().gameRenderer.lightTexture().lightTextureLocation);
-            shader.addSampler("LightTextureSampler", abstracttexture.getId());
-            shader.setup();
-            VeilRenderSystem.drawScreenQuad();
-        } finally {
-            VeilRenderSystem.unbind(shaderBlock);
-            AdvancedFbo.unbind();
+    public static void updateLight(int chunkX, int chunkZ) {
+        if (bufferManager == null) return;
+        for (int y = Minecraft.getInstance().level.getMinSection(); y < Minecraft.getInstance().level.getMaxSection(); y++) {
+            bufferManager.onLightUpdate(SectionPos.of(new ChunkPos(chunkX, chunkZ), y));
         }
     }
 
-    private static GasBlock[] volumeDataFromSection(ClientLevel level, SectionPos section) {
-        RandomSource random = RandomSource.create(0);
-        GasBlock[] data = new GasBlock[SIZE * SIZE * SIZE];
-        DataLayer skyLight = level.getLightEngine().getLayerListener(LightLayer.SKY).getDataLayerData(section);
-        DataLayer blockLight = level.getLightEngine().getLayerListener(LightLayer.BLOCK).getDataLayerData(section);
-        if (skyLight == null || blockLight == null) return data;
-        for (int x = 0; x < SIZE; x++) {
-            for (int y = 0; y < SIZE; y++) {
-                for (int z = 0; z < SIZE; z++) {
-                    int i = x + y * SIZE + z * SIZE * SIZE;
-                    data[i] = new GasBlock(
-                            0.5F, 0.5F, 0.5F,//random.nextFloat(), random.nextFloat(), random.nextFloat(),
-                            0.15F,
-                            blockLight.get(x, y, z), skyLight.get(x, y, z)
-                    );
-                }
-            }
-        }
-        return data;
-    }
+    public static void render(ClientLevel level) {
+        if (sectionManager == null) sectionManager = new GasSectionManager(level);
+        if (bufferManager == null) bufferManager = new GasBufferManager(sectionManager);
 
-    private record GasBlock(float r, float g, float b, float density, int blockLight, int skyLight) {
-        public static void upload(GasBlock gas, IntBuffer buffer) {
-            if (gas == null) {
-                buffer.put(0).put(0);
-            } else {
-                buffer.put(FastColor.ARGB32.colorFromFloat(gas.density, gas.r, gas.g, gas.b))
-                      .put(LightTexture.pack(gas.blockLight, gas.skyLight));
-            }
-        }
+        bufferManager.changeSection(SectionPos.of(Minecraft.getInstance().gameRenderer.getMainCamera().getBlockPosition()));
+        bufferManager.updateQueue();
+        AdvancedFbo framebuffer = VeilRenderSystem.renderer().getFramebufferManager().getFramebuffer(VOLUME_FRAMEBUFFER);
+        framebuffer.bind(true);
+
+        ShaderProgram shader = VeilRenderSystem.setShader(ClinkerShaders.VOLUME);
+        shader.setInt("BlueNoiseOffset", (int)(Minecraft.getInstance().levelRenderer.ticks * 100));
+        bufferManager.bind();
+        AbstractTexture abstracttexture = Minecraft.getInstance().getTextureManager()
+                .getTexture(Minecraft.getInstance().gameRenderer.lightTexture().lightTextureLocation);
+        shader.addSampler("LightTextureSampler", abstracttexture.getId());
+        shader.setup();
+        VeilRenderSystem.drawScreenQuad();
+        ShaderProgram.unbind();
+        AdvancedFbo.unbind();
     }
 }

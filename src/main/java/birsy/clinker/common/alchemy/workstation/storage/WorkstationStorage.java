@@ -1,7 +1,7 @@
-package birsy.clinker.common.world.alchemy.workstation.storage;
+package birsy.clinker.common.alchemy.workstation.storage;
 
-import birsy.clinker.common.world.alchemy.workstation.Workstation;
-import birsy.clinker.common.world.alchemy.workstation.WorkstationManager;
+import birsy.clinker.common.alchemy.workstation.Workstation;
+import birsy.clinker.common.alchemy.workstation.WorkstationManager;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongAVLTreeSet;

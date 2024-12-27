@@ -2,8 +2,8 @@ package birsy.clinker.client.gui;
 
 import birsy.clinker.client.ClinkerCursor;
 import birsy.clinker.client.render.ClinkerShaders;
-import birsy.clinker.common.world.alchemy.workstation.Workstation;
-import birsy.clinker.common.world.alchemy.workstation.WorkstationPhysicsObject;
+import birsy.clinker.common.alchemy.workstation.Workstation;
+import birsy.clinker.common.alchemy.workstation.WorkstationPhysicsObject;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.JomlConversions;
 import birsy.clinker.core.util.MathUtil;

@@ -1,31 +1,38 @@
 package birsy.clinker.client.render.world.gas;
 
-import java.util.BitSet;
+import birsy.clinker.core.Clinker;
+
+import java.util.Arrays;
 
 public class GasSectionList {
     final GasSection[] array;
-    final BitSet bits;
+    //final BitSet bits;
 
     public GasSectionList(int size) {
-        this.array = new GasSection[size];
-        this.bits = new BitSet(size);
-        // reserve the first index
-        this.bits.set(0);
+        this.array = new GasSection[size + 1];
+        Arrays.fill(array, null);
     }
 
     public int add(GasSection section) {
-        int i = bits.nextClearBit(0);
-        array[i] = section;
-        bits.set(i);
-        return i;
+        for (int i = 1; i < array.length; i++) {
+            if (array[i] == null) {
+                array[i] = section;
+                return i;
+            }
+        }
+        Clinker.LOGGER.error("GasSection buffer out of memory!");
+        return -1;
     }
 
-    public void remove(int index) {
-        array[index] = null;
-        bits.set(index, false);
+    public void remove(int i) {
+        array[i] = null;
     }
 
-    public GasSection retrieve(int index) {
-        return array[index];
+    public GasSection retrieve(int i) {
+        return array[i];
+    }
+
+    public void clear() {
+        Arrays.fill(array, null);
     }
 }

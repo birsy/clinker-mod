@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.alchemy.effects;
+package birsy.clinker.common.alchemy.effects;
 
 import birsy.clinker.client.particle.ChainLightningParticle;
 import birsy.clinker.core.Clinker;

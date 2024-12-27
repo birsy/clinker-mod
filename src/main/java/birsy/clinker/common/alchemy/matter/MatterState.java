@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.alchemy;
+package birsy.clinker.common.alchemy.matter;
 
 public enum MatterState {
     SOLID("solid"), POWDER("powder"), LIQUID("liquid"), GAS("gas");

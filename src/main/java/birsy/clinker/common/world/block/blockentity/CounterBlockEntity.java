@@ -1,7 +1,7 @@
 package birsy.clinker.common.world.block.blockentity;
 
-import birsy.clinker.common.world.alchemy.workstation.Workstation;
-import birsy.clinker.common.world.alchemy.workstation.WorkstationManager;
+import birsy.clinker.common.alchemy.workstation.Workstation;
+import birsy.clinker.common.alchemy.workstation.WorkstationManager;
 import birsy.clinker.core.registry.entity.ClinkerBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;

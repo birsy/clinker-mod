@@ -1,15 +1,13 @@
 package birsy.clinker.common.networking.packet.workstation;
 
-import birsy.clinker.common.world.alchemy.workstation.Workstation;
-import birsy.clinker.common.world.alchemy.workstation.WorkstationManager;
+import birsy.clinker.common.alchemy.workstation.Workstation;
+import birsy.clinker.common.alchemy.workstation.WorkstationManager;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.codecs.ExtraByteBufCodecs;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.nbt.CompoundTag;
 
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;

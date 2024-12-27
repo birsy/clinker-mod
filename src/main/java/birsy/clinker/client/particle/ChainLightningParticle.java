@@ -2,12 +2,10 @@ package birsy.clinker.client.particle;
 
 import birsy.clinker.client.render.ClinkerRenderTypes;
 import birsy.clinker.client.render.RenderUtils;
-import birsy.clinker.common.world.alchemy.effects.ChainLightningHandler;
+import birsy.clinker.common.alchemy.effects.ChainLightningHandler;
 import birsy.clinker.core.registry.ClinkerParticles;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -19,17 +17,13 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.particles.*;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
 
-import org.checkerframework.checker.units.qual.A;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;

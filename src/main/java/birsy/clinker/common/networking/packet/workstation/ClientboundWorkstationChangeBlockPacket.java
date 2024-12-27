@@ -1,6 +1,6 @@
 package birsy.clinker.common.networking.packet.workstation;
 
-import birsy.clinker.common.world.alchemy.workstation.WorkstationManager;
+import birsy.clinker.common.alchemy.workstation.WorkstationManager;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.codecs.ExtraByteBufCodecs;
 import io.netty.buffer.ByteBuf;

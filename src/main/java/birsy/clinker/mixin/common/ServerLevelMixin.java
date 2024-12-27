@@ -1,7 +1,7 @@
 
 package birsy.clinker.mixin.common;
 
-import birsy.clinker.common.world.alchemy.workstation.WorkstationManager;
+import birsy.clinker.common.alchemy.workstation.WorkstationManager;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;

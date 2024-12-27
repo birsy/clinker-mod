@@ -1,6 +1,6 @@
-package birsy.clinker.common.world.alchemy.workstation.camera;
+package birsy.clinker.common.alchemy.workstation.camera;
 
-import birsy.clinker.common.world.alchemy.workstation.Workstation;
+import birsy.clinker.common.alchemy.workstation.Workstation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaterniond;

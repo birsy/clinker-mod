@@ -2,38 +2,30 @@
 
 #include veil:deferred_utils
 
-#define ITERATIONS 100
+#define ITERATIONS 64
+#define RENDER_DISTANCE 8
+#define SECTION_SIZE 16 * 16 * 16
+
+#define GAS_DATA_BLOCK_SIZE SECTION_SIZE * 2
 
 uniform sampler2D DiffuseSampler;
 uniform sampler2D DiffuseDepthSampler;
 
 uniform sampler2D LightTextureSampler;
 
-layout(std430) readonly buffer VolumetricData {
-    uint volumeData[16 * 16 * 16 * 2];
+uniform sampler2D BlueNoiseSampler;
+
+uniform int BlueNoiseOffset;
+
+layout(std430) readonly buffer SectionToDataIndexBuffer {
+    int sectionToDataIndex[RENDER_DISTANCE * RENDER_DISTANCE * RENDER_DISTANCE];
+};
+layout(std430) readonly buffer GasDataBuffer {
+    uint gasData[(RENDER_DISTANCE * RENDER_DISTANCE * RENDER_DISTANCE + 1) * GAS_DATA_BLOCK_SIZE];
 };
 
 in vec2 texCoord;
 out vec4 fragColor;
-
-const vec3 VolumePosition = vec3(72, 136, -248);
-
-// https://iquilezles.org/articles/intersectors/
-vec2 boxIntersection(vec3 ro, vec3 rd, vec3 boxSize, out bool hit, out vec3 outNormal ) {
-    vec3 m = 1.0/rd; // can precompute if traversing a set of aligned boxes
-    vec3 n = m*ro;   // can precompute if traversing a set of aligned boxes
-    vec3 k = abs(m)*boxSize;
-    vec3 t1 = -n - k;
-    vec3 t2 = -n + k;
-    float tN = max( max( t1.x, t1.y ), t1.z );
-    float tF = min( min( t2.x, t2.y ), t2.z );
-	hit = !(tN > tF || tF < 0.0);
-    if (!hit) return vec2(-1.0); // no intersection
-    outNormal = (tN>0.0) ? step(vec3(tN), t1) : // ro ouside the box
-                           step(t2, vec3(tF));  // ro inside the box
-    outNormal *= -sign(rd);
-    return vec2( tN, tF );
-}
 
 vec4 unpackColor(uint packedColor) {
     return vec4(packedColor >> uint(16) & uint(0xFF), packedColor >> uint(8) & uint(0xFF), packedColor & uint(0xFF), packedColor >> uint(24)) / 255.0;
@@ -43,11 +35,30 @@ ivec2 unpackLightmap(uint packedLightUv) {
 }
 
 struct GasData { vec3 color; float density; ivec2 lightmapUV; };
-GasData sampleData(ivec3 pos) {
-    int index = (pos.x + pos.y * 16 + pos.z * 16 * 16) * 2;
-    vec4 color = unpackColor(volumeData[index]);
-    ivec2 lightmap = unpackLightmap(volumeData[index + 1]);
-    return GasData(color.rgb, color.a, lightmap);
+GasData sampleData(vec3 pos) {
+    pos -= floor(VeilCamera.CameraPosition / 16.0) * 16.0;
+
+    ivec3 sectionPos = ivec3(floor(pos / 16.0)) + ivec3(RENDER_DISTANCE / 2);
+    // return empty if we're outside the current buffer range...
+    if (sectionPos.x < 0 || sectionPos.x >= RENDER_DISTANCE ||
+   		sectionPos.y < 0 || sectionPos.y >= RENDER_DISTANCE ||
+    	sectionPos.z < 0 || sectionPos.z >= RENDER_DISTANCE) {
+        return GasData(vec3(0), 0, ivec2(0));
+    }
+
+    int sectionIndex = sectionPos.x + sectionPos.y * RENDER_DISTANCE + sectionPos.z * RENDER_DISTANCE * RENDER_DISTANCE;
+    int gasDataIndexOffset = sectionToDataIndex[sectionIndex] * GAS_DATA_BLOCK_SIZE;
+
+    ivec3 blockPos = ivec3(floor(pos) - floor(pos / 16.0) * 16.0);
+    int gasDataIndex = blockPos.x + blockPos.y * 16 + blockPos.z * 16 * 16;
+   
+    gasDataIndex += gasDataIndexOffset;
+
+    vec4 color = unpackColor(gasData[gasDataIndex]);
+    ivec2 lightmap = unpackLightmap(gasData[gasDataIndex + SECTION_SIZE]);
+	
+	//return GasData(vec3(0.5), max(lightmap.x, lightmap.y) / 16.0, lightmap);
+    return GasData(mix(color.rgb, vec3(0.5), 0.8), max(color.a - color.r*0.2, 0), lightmap);
 }
 
 void main() {
@@ -57,49 +68,34 @@ void main() {
 	vec3 origin = VeilCamera.CameraPosition;
 	vec3 direction = viewDirFromUv(texCoord);
 	
-	bool hit;
-	vec3 boxNormal = vec3(1.0);
-	vec2 intersection = boxIntersection(origin - VolumePosition, direction, vec3(8), hit, boxNormal);
-	
 	vec3 terrainPosition = viewPosFromDepth(depth, texCoord);
-	
-	if (length(terrainPosition) < intersection.x || !hit) {
-		fragColor = color;
-		return;
-	}
-	
-	float rayStartDist = max(intersection.x, 0);
-	float rayEndDist = min(intersection.y, length(terrainPosition));
-	
-	vec3 rayPos = origin + rayStartDist * direction;
-	
-	float stepSize = (rayEndDist - rayStartDist) / ITERATIONS;
-	
-	float transmittance = 1.0;
+	float raymarchDistance = min(length(terrainPosition), (RENDER_DISTANCE - 2) * 16 * 0.5);
+	float stepSize = raymarchDistance / ITERATIONS;
+
+	float blueNoise = texelFetch(BlueNoiseSampler, ivec2(gl_FragCoord.xy + BlueNoiseOffset) % 512, 0).r;
+    vec3 rayPos = origin + blueNoise * stepSize * direction;
+    float transmittance = 1.0;
 	vec3 volumeColor = vec3(0);
 	// raymarch loop
 	for (int i = 0; i < ITERATIONS; i++) {
-		ivec3 voxelCoords = ivec3(floor(rayPos - VolumePosition + vec3(8)));
-        GasData data = sampleData(voxelCoords);
+        GasData data = sampleData(rayPos);
+        GasData aboveData = sampleData(rayPos + vec3(0, 4, 0));
         
-        vec3 lightColor = texture(LightTextureSampler, (vec2(data.lightmapUV) + 0.5) / 16.0).rgb;
+        float ambientLight = smoothstep(0, 1, 1.0 - aboveData.density);
+        ambientLight *= ambientLight * ambientLight;
+        ambientLight = max(ambientLight, 0.5);
+        ambientLight = 1;
+        vec2 lightUV = ((vec2(data.lightmapUV) + 0.5) / 16.0) * vec2(1, ambientLight);
+        vec3 lightColor = texture(LightTextureSampler, lightUV).rgb;
        	volumeColor += data.density * stepSize * data.color * lightColor * transmittance;
         transmittance *= exp(-data.density * stepSize);
 		
-		if (transmittance < 0.05) break;
+		if (transmittance < 0.01) break;
 		rayPos += direction * stepSize;
 	}
 
 	fragColor = vec4(color.rgb * transmittance + volumeColor, 1.0);
 }
-
-
-
-
-
-
-
-
 
 
 

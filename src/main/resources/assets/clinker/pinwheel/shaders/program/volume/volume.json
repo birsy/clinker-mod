@@ -9,7 +9,8 @@
     "DiffuseDepthSampler": {
       "type": "framebuffer",
       "name": "minecraft:main:depth"
-    }
+    },
+    "BlueNoiseSampler": "veil:textures/shader/blue_noise.png"
   }
 }
 

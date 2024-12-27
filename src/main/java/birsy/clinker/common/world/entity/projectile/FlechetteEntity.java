@@ -1,6 +1,6 @@
 package birsy.clinker.common.world.entity.projectile;
 
-import birsy.clinker.common.world.alchemy.effects.ChainLightningHandler;
+import birsy.clinker.common.alchemy.effects.ChainLightningHandler;
 import birsy.clinker.common.world.item.components.OrdnanceEffects;
 import birsy.clinker.core.util.VectorUtil;
 import net.minecraft.core.particles.ParticleTypes;

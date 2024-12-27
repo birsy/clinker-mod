@@ -1,10 +1,10 @@
 package birsy.clinker.client.render.world;
 
 import birsy.clinker.client.render.DebugRenderUtil;
-import birsy.clinker.common.world.alchemy.workstation.Workstation;
-import birsy.clinker.common.world.alchemy.workstation.WorkstationManager;
-import birsy.clinker.common.world.alchemy.workstation.WorkstationPhysicsObject;
-import birsy.clinker.common.world.alchemy.workstation.camera.CameraPath;
+import birsy.clinker.common.alchemy.workstation.Workstation;
+import birsy.clinker.common.alchemy.workstation.WorkstationManager;
+import birsy.clinker.common.alchemy.workstation.WorkstationPhysicsObject;
+import birsy.clinker.common.alchemy.workstation.camera.CameraPath;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;

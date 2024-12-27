@@ -1,6 +1,6 @@
-package birsy.clinker.common.world.alchemy.workstation.storage;
+package birsy.clinker.common.alchemy.workstation.storage;
 
-import birsy.clinker.common.world.alchemy.workstation.Workstation;
+import birsy.clinker.common.alchemy.workstation.Workstation;
 import birsy.clinker.core.Clinker;
 import com.google.common.collect.Maps;
 

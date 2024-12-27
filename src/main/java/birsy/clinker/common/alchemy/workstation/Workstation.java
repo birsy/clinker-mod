@@ -1,17 +1,16 @@
-package birsy.clinker.common.world.alchemy.workstation;
+package birsy.clinker.common.alchemy.workstation;
 
 import birsy.clinker.client.gui.AlchemicalWorkstationScreen;
-import birsy.clinker.common.world.alchemy.workstation.camera.CameraPath;
-import birsy.clinker.common.world.alchemy.workstation.camera.WorkstationCamera;
-import birsy.clinker.common.world.alchemy.workstation.storage.SectionBitSet;
-import birsy.clinker.common.world.alchemy.workstation.storage.WorkstationBlocks;
+import birsy.clinker.common.alchemy.workstation.camera.CameraPath;
+import birsy.clinker.common.alchemy.workstation.camera.WorkstationCamera;
+import birsy.clinker.common.alchemy.workstation.storage.SectionBitSet;
+import birsy.clinker.common.alchemy.workstation.storage.WorkstationBlocks;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
 
 
 import java.util.UUID;
