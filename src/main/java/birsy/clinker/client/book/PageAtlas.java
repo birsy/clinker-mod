@@ -1,5 +1,6 @@
 package birsy.clinker.client.book;
 
+import birsy.clinker.client.render.ClinkerFramebuffers;
 import birsy.clinker.client.render.ClinkerShaders;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.platform.GlConst;
@@ -29,12 +30,11 @@ import org.lwjgl.opengl.GL30C;
 
 
 public class PageAtlas {
-    public static final ResourceLocation PAGE_ATLAS_FRAMEBUFFER = Clinker.resource("page_atlas");
 
     public PageAtlas() {}
 
     public void draw() {
-        AdvancedFbo frameBuffer = VeilRenderSystem.renderer().getFramebufferManager().getFramebuffer(PAGE_ATLAS_FRAMEBUFFER);
+        AdvancedFbo frameBuffer = VeilRenderSystem.renderer().getFramebufferManager().getFramebuffer(ClinkerFramebuffers.PAGE_ATLAS);
         frameBuffer.bind(true);
 
         RenderSystem.setShaderColor(1F, 1F, 1F, 1F);

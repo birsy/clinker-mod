@@ -32,7 +32,7 @@ import java.util.List;
 
 public class ChainLightningParticle extends Particle {
     protected TextureAtlasSprite sprite;
-    private final RenderType renderType = ClinkerRenderTypes.chainLightning();
+    private final RenderType renderType = ClinkerRenderTypes.CHAIN_LIGHTNING;
 
     Vec3 startPos, endPos;
     private List<Vec3> boltPositions;

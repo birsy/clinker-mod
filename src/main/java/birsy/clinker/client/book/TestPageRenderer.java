@@ -2,6 +2,7 @@ package birsy.clinker.client.book;
 
 import birsy.clinker.client.book.formatting.ImageBox;
 import birsy.clinker.client.book.formatting.TextBox;
+import birsy.clinker.client.book.recipemap.RecipeMapPage;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -24,20 +25,19 @@ import org.joml.Matrix4f;
 @EventBusSubscriber(value = Dist.CLIENT, modid = Clinker.MOD_ID)
 public class TestPageRenderer {
     public static PageAtlas pageAtlas;
+    public static RecipeMapPage recipeMapPage;
+
     public static Page page;
     static {
         regeneratePage();
     }
 
     @SubscribeEvent
-    public static void renderGui(RenderGuiEvent.Post guiEvent) {
-
-    }
-
-    @SubscribeEvent
     public static void render(RenderFrameEvent.Post event) {
         if (pageAtlas == null) pageAtlas = new PageAtlas();
         pageAtlas.draw();
+        if (recipeMapPage == null) recipeMapPage = new RecipeMapPage();
+        recipeMapPage.draw();
     }
 
     @SubscribeEvent
@@ -69,8 +69,5 @@ public class TestPageRenderer {
 
         ImageBox imageBox = new ImageBox(5, 25, 40, 40, 1);
         page.addElement(imageBox);
-
-        //page.addElement(new TextBox(0.5F, 0.5F, 0.5f - 0.02F, 0.5f - 0.02F, 1));
-
     }
 }

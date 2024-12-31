@@ -1,37 +1,25 @@
 package birsy.clinker.client.render.world.gas;
 
+import birsy.clinker.client.render.ClinkerFramebuffers;
 import birsy.clinker.client.render.ClinkerShaders;
 import birsy.clinker.core.Clinker;
 import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.api.client.render.framebuffer.AdvancedFbo;
-import foundry.veil.api.client.render.shader.definition.ShaderBlock;
 import foundry.veil.api.client.render.shader.program.ShaderProgram;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.texture.AbstractTexture;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
-import net.minecraft.network.protocol.game.ClientboundLightUpdatePacket;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FastColor;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.LightLayer;
-import net.minecraft.world.level.chunk.DataLayer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 
-import java.nio.IntBuffer;
-
-import static org.lwjgl.opengl.GL43C.*;
-
 @EventBusSubscriber(modid = Clinker.MOD_ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public class GasRenderer {
     public static final int SIZE = SectionPos.SECTION_SIZE;
-    private static final ResourceLocation VOLUME_FRAMEBUFFER = Clinker.resource("volume");
     private static final ResourceLocation VOLUME_POST = Clinker.resource("volume");
 
     private static GasSectionManager sectionManager;
@@ -40,7 +28,8 @@ public class GasRenderer {
     @SubscribeEvent
     public static void renderLevel(RenderLevelStageEvent event) {
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_LEVEL) {
-            GasRenderer.render(Minecraft.getInstance().level);
+            // temporarily disabled
+            //GasRenderer.render(Minecraft.getInstance().level);
         }
     }
 
@@ -57,7 +46,7 @@ public class GasRenderer {
 
         bufferManager.changeSection(SectionPos.of(Minecraft.getInstance().gameRenderer.getMainCamera().getBlockPosition()));
         bufferManager.updateQueue();
-        AdvancedFbo framebuffer = VeilRenderSystem.renderer().getFramebufferManager().getFramebuffer(VOLUME_FRAMEBUFFER);
+        AdvancedFbo framebuffer = VeilRenderSystem.renderer().getFramebufferManager().getFramebuffer(ClinkerFramebuffers.VOLUME);
         framebuffer.bind(true);
 
         ShaderProgram shader = VeilRenderSystem.setShader(ClinkerShaders.VOLUME);
