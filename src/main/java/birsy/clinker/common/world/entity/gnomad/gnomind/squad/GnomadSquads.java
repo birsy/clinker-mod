@@ -9,6 +9,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.datafix.DataFixTypes;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -69,11 +70,12 @@ public class GnomadSquads extends SavedData {
 
     @SubscribeEvent
     public static void tick(LevelTickEvent.Post event) {
-        Minecraft.getInstance().getProfiler().push("tickGnomadSquads");
+//        ProfilerFiller profiler = event.getLevel().getServer().getProfiler();
+//        profiler.push("tickGnomadSquads");
         if (event.getLevel() instanceof ServerLevel level) {
             getInstance(level).tick();
         }
-        Minecraft.getInstance().getProfiler().pop();
+ //       profiler.pop();
     }
 
     public static GnomadSquads getInstance(ServerLevel level) {

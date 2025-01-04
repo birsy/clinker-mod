@@ -3,34 +3,38 @@ package birsy.clinker.client.render.world.gas;
 import birsy.clinker.client.render.ClinkerFramebuffers;
 import birsy.clinker.client.render.ClinkerShaders;
 import birsy.clinker.core.Clinker;
+import com.mojang.blaze3d.systems.RenderSystem;
 import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.api.client.render.framebuffer.AdvancedFbo;
+import foundry.veil.api.client.render.post.PostPipeline;
 import foundry.veil.api.client.render.shader.program.ShaderProgram;
+import foundry.veil.forge.event.ForgeVeilPostProcessingEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.core.SectionPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.ChunkPos;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+
+import static org.lwjgl.opengl.GL11.*;
 
 @EventBusSubscriber(modid = Clinker.MOD_ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public class GasRenderer {
-    public static final int SIZE = SectionPos.SECTION_SIZE;
-    private static final ResourceLocation VOLUME_POST = Clinker.resource("volume");
+    public static final ResourceLocation VOLUME_POST = Clinker.resource("volume");
 
     private static GasSectionManager sectionManager;
     private static GasBufferManager bufferManager;
 
     @SubscribeEvent
-    public static void renderLevel(RenderLevelStageEvent event) {
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_LEVEL) {
-            // temporarily disabled
-            //GasRenderer.render(Minecraft.getInstance().level);
-        }
+    public static void startGasCompositePipeline(ForgeVeilPostProcessingEvent event) {
+//        if (Minecraft.getInstance().level == null) return;
+//        if (!event.getName().equals(VOLUME_POST)) return;
+//        GasRenderer.render(Minecraft.getInstance().level);
     }
 
     public static void updateLight(int chunkX, int chunkZ) {
@@ -41,16 +45,26 @@ public class GasRenderer {
     }
 
     public static void render(ClientLevel level) {
+        ProfilerFiller profiler = Minecraft.getInstance().getProfiler();
+
+        profiler.push("volumetrics");
         if (sectionManager == null) sectionManager = new GasSectionManager(level);
         if (bufferManager == null) bufferManager = new GasBufferManager(sectionManager);
 
+        profiler.push("upload_volume_data");
         bufferManager.changeSection(SectionPos.of(Minecraft.getInstance().gameRenderer.getMainCamera().getBlockPosition()));
+        bufferManager.markUnusedData();
         bufferManager.updateQueue();
         AdvancedFbo framebuffer = VeilRenderSystem.renderer().getFramebufferManager().getFramebuffer(ClinkerFramebuffers.VOLUME);
         framebuffer.bind(true);
 
+        profiler.popPush("render_volume");
+
+        RenderSystem.enableDepthTest();
+        RenderSystem.depthMask(true);
+
         ShaderProgram shader = VeilRenderSystem.setShader(ClinkerShaders.VOLUME);
-        shader.setInt("BlueNoiseOffset", (int)(Minecraft.getInstance().levelRenderer.ticks * 100));
+        shader.setInt("BlueNoiseOffset", (int)(System.currentTimeMillis() % 512));
         bufferManager.bind();
         AbstractTexture abstracttexture = Minecraft.getInstance().getTextureManager()
                 .getTexture(Minecraft.getInstance().gameRenderer.lightTexture().lightTextureLocation);
@@ -59,5 +73,16 @@ public class GasRenderer {
         VeilRenderSystem.drawScreenQuad();
         ShaderProgram.unbind();
         AdvancedFbo.unbind();
+        RenderSystem.depthMask(false);
+        RenderSystem.disableDepthTest();
+
+        profiler.popPush("composite_volume");
+        PostPipeline volumeCompositePipeline = VeilRenderSystem.renderer().getPostProcessingManager().getPipeline(VOLUME_POST);
+        if (volumeCompositePipeline != null) {
+            VeilRenderSystem.renderer().getPostProcessingManager().runPipeline(volumeCompositePipeline, false);
+        }
+        profiler.pop();
+
+        profiler.pop();
     }
 }

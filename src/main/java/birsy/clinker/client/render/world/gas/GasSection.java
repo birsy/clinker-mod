@@ -1,9 +1,6 @@
 package birsy.clinker.client.render.world.gas;
 
-import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.noise.FastNoiseLite;
-import net.minecraft.Util;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.core.SectionPos;
 import net.minecraft.util.FastColor;
@@ -13,7 +10,6 @@ import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.chunk.DataLayer;
 
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 
 import static net.minecraft.core.SectionPos.SECTION_SIZE;
 

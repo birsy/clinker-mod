@@ -32,7 +32,7 @@ public class GasBufferManager {
     int[] sectionToDataIndex;
     final ShaderBlock<int[]> sectionToDataIndexShaderBlock;
     // the gas data buffer. each loaded sectionPos has its own block
-    final GasSectionList gasData;
+    final GasSectionHeap gasData;
     final int gasDataBufferPointer;
     final DynamicShaderBlock<?> gasDataShaderBlock;
 
@@ -43,7 +43,7 @@ public class GasBufferManager {
         this.gasSectionManager = gasSectionManager;
 
         this.sectionToDataIndex = new int[SECTION_COUNT];
-        this.gasData = new GasSectionList(SECTION_COUNT);
+        this.gasData = new GasSectionHeap(SECTION_COUNT);
 
         this.gasDataToUpload = new ArrayDeque<>();
 
@@ -64,9 +64,11 @@ public class GasBufferManager {
         VeilRenderSystem.bind("SectionToDataIndexBuffer", this.sectionToDataIndexShaderBlock);
         VeilRenderSystem.bind("GasDataBuffer", this.gasDataShaderBlock);
     }
+
     public void updateQueue() {
         if (gasDataToUpload.isEmpty()) return;
-        for (int i = 0; i < Math.min(8, gasDataToUpload.size()); i++) {
+        for (int i = 0; i < Math.min(3, gasDataToUpload.size()); i++) {
+            if (this.gasData.full()) break;
             QueuedGasData data = gasDataToUpload.poll();
             int dataIndex = this.gasData.add(data.data);
             sectionToDataIndex[data.sectionIndex] = dataIndex;
@@ -75,8 +77,23 @@ public class GasBufferManager {
         }
         this.uploadSectionToDataIndex();
     }
+    public void markUnusedData() {
+        int amountRemoved = 0;
+        for (int i = 1; i < this.gasData.array.length; i++) {
+            GasSection section = this.gasData.retrieve(i);
+            if (section == null) continue;
+            SectionPos pos = section.sectionPos;
+            boolean outOfBounds =
+                    pos.x() - currentCenterPos.x() < -GAS_RENDER_RADIUS || pos.x() - currentCenterPos.x() >= GAS_RENDER_RADIUS ||
+                    pos.y() - currentCenterPos.y() < -GAS_RENDER_RADIUS || pos.y() - currentCenterPos.y() >= GAS_RENDER_RADIUS ||
+                    pos.z() - currentCenterPos.z() < -GAS_RENDER_RADIUS || pos.z() - currentCenterPos.z() >= GAS_RENDER_RADIUS;
+            if (outOfBounds) {
+                if (this.gasData.remove(i)) amountRemoved++;
+            }
+        }
+        if (amountRemoved > 0) Clinker.LOGGER.info("Marked {} gas data chunks as unused.", amountRemoved);
+    }
 
-    private final Set<Integer> dataToKeep = new HashSet<>();
     public void changeSection(SectionPos newCenterPos) {
         if (!initialized) {
             initialize(newCenterPos);
@@ -85,44 +102,30 @@ public class GasBufferManager {
         if (newCenterPos.equals(currentCenterPos)) return;
 
         int[] newSectionToDataIndex = new int[SECTION_COUNT];
-        gasData.clear();
-        for (int x = 0; x < GAS_RENDER_SIZE; x++) {
-            for (int y = 0; y < GAS_RENDER_SIZE; y++) {
-                for (int z = 0; z < GAS_RENDER_SIZE; z++) {
-                    SectionPos sectionPos = newCenterPos.offset(x - GAS_RENDER_RADIUS, y - GAS_RENDER_RADIUS, z - GAS_RENDER_RADIUS);
-                    GasSection section = gasSectionManager.getGasSection(sectionPos);
-                    int newSectionIndex = gasData.add(section);
-                    newSectionToDataIndex[x + y * GAS_RENDER_SIZE + z * GAS_RENDER_SIZE * GAS_RENDER_SIZE] = newSectionIndex;
-                    uploadSectionGasData(newSectionIndex);
-                    uploadSectionLightData(newSectionIndex);
+
+        for (int x = -GAS_RENDER_RADIUS; x < GAS_RENDER_RADIUS; x++) {
+            for (int y = -GAS_RENDER_RADIUS; y < GAS_RENDER_RADIUS; y++) {
+                for (int z = -GAS_RENDER_RADIUS; z < GAS_RENDER_RADIUS; z++) {
+                    int sectionIndex =
+                            (x + GAS_RENDER_RADIUS) +
+                            (y + GAS_RENDER_RADIUS) * GAS_RENDER_SIZE +
+                            (z + GAS_RENDER_RADIUS) * GAS_RENDER_SIZE * GAS_RENDER_SIZE;
+                    SectionPos sectionPos = newCenterPos.offset(x, y, z);
+                    int existingDataIndex = gasData.getIndex(sectionPos);
+
+                    if (existingDataIndex != -1) {
+                        // this chunk is already in our data.
+                        newSectionToDataIndex[sectionIndex] = existingDataIndex;
+                    } else {
+                        // this chunk is not in our data and must be retrieved.
+                        GasSection section = gasSectionManager.getGasSection(sectionPos);
+                        // queue the data for uploading to the gpu
+                        this.gasDataToUpload.add(new QueuedGasData(sectionIndex, section));
+                        newSectionToDataIndex[sectionIndex] = 0;
+                    }
                 }
             }
         }
-
-//        // clear out the sections of the data map that are now out-of-bounds
-//        dataToKeep.clear();
-//        for (int x = 0; x < GAS_RENDER_SIZE; x++) { for (int y = 0; y < GAS_RENDER_SIZE; y++) { for (int z = 0; z < GAS_RENDER_SIZE; z++) {
-//            SectionPos sectionPos = newCenterPos.offset(x - GAS_RENDER_RADIUS, y - GAS_RENDER_RADIUS, z - GAS_RENDER_RADIUS);
-//            int oldSectionIndex = getSectionIndex(currentCenterPos, sectionPos);
-//            int newSectionIndex = getSectionIndex(newCenterPos, sectionPos);
-//            if (oldSectionIndex != -1) {
-//                int dataIndex = sectionToDataIndex[oldSectionIndex];
-//                newSectionToDataIndex[newSectionIndex] = sectionToDataIndex[oldSectionIndex];
-//                dataToKeep.add(dataIndex);
-//            } else {
-//                GasSection section = gasSectionManager.getGasSection(sectionPos);
-//                if (!section.isEmpty()) this.gasDataToUpload.add(new QueuedGasData(newSectionIndex, section));
-//                newSectionToDataIndex[newSectionIndex] = 0;
-//            }
-//        }}}
-//        int c = 0;
-//        for (int i = 1; i < SECTION_COUNT + 1; i++) {
-//            if (dataToKeep.contains(i)) continue;
-//            c++;
-//            this.gasData.remove(i);
-//        }
-//        Clinker.LOGGER.info(c);
-
 
         sectionToDataIndex = newSectionToDataIndex;
         currentCenterPos = newCenterPos;

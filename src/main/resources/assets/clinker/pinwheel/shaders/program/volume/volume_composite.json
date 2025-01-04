@@ -1,0 +1,16 @@
+{
+  "vertex": "veil:blit_screen",
+  "fragment": "clinker:volume/volume_composite",
+  "textures": {
+    "VolumetricSampler": {
+      "type": "framebuffer",
+      "name": "clinker:volume"
+    },
+    "VolumetricDepthSampler": {
+      "type": "framebuffer",
+      "name": "clinker:volume:depth"
+    }
+  }
+}
+
+

@@ -1,0 +1,12 @@
+{
+  "stages": [
+    {
+      "type": "veil:blit",
+      "shader": "clinker:volume/volume_composite",
+      "in": "minecraft:main"
+    }
+  ]
+}
+
+
+
