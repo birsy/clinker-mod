@@ -188,15 +188,6 @@ public class ZosimusRenderer {
                     .setColor(1F,1F,1F,1F).setUv(1.0F, 1.0F);
             bufferbuilder.addVertex(matrix, x1, y1, 0)
                     .setColor(1F,1F,1F,1F).setUv(1.0F, 1.0F);
-
-//            bufferbuilder.addVertex(matrix, x1, y2, zOffset)
-//                    .setColor(1F,1F,1F,1F).setUv(u1, v2);
-//            bufferbuilder.addVertex(matrix, x2, y2, zOffset)
-//                    .setColor(1F,1F,1F,1F).setUv(u2, v2);
-//            bufferbuilder.addVertex(matrix, x2, y1, zOffset)
-//                    .setColor(1F,1F,1F,1F).setUv(u2, v1);
-//            bufferbuilder.addVertex(matrix, x1, y1, zOffset)
-//                    .setColor(1F,1F,1F,1F).setUv(u1, v1);
         }
     }
 

@@ -13,9 +13,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class GreaseLightRenderer extends InstancedLightRenderer<GreaseLight> {
+public class RimLightRenderer extends InstancedLightRenderer<RimLight> {
 
-    public GreaseLightRenderer() {
+    public RimLightRenderer() {
         super(Float.BYTES * 7);
     }
 
@@ -35,17 +35,17 @@ public class GreaseLightRenderer extends InstancedLightRenderer<GreaseLight> {
     }
 
     @Override
-    protected void setupRenderState(@NotNull LightRenderer lightRenderer, @NotNull List<GreaseLight> lights) {
-        VeilRenderSystem.setShader(ClinkerShaders.LIGHT_GREASE)
+    protected void setupRenderState(@NotNull LightRenderer lightRenderer, @NotNull List<RimLight> lights) {
+        VeilRenderSystem.setShader(ClinkerShaders.LIGHT_RIM)
                 .setFloat("GameTime", RenderSystem.getShaderGameTime());
     }
 
     @Override
-    protected void clearRenderState(@NotNull LightRenderer lightRenderer, @NotNull List<GreaseLight> lights) {
+    protected void clearRenderState(@NotNull LightRenderer lightRenderer, @NotNull List<RimLight> lights) {
     }
 
     @Override
-    protected boolean isVisible(GreaseLight light, CullFrustum frustum) {
+    protected boolean isVisible(RimLight light, CullFrustum frustum) {
         return frustum.testSphere(light.getPosition(), light.getRadius() * 1.4F);
     }
 }

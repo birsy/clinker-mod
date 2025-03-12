@@ -35,9 +35,9 @@ public class TestPageRenderer {
     @SubscribeEvent
     public static void render(RenderFrameEvent.Post event) {
         if (pageAtlas == null) pageAtlas = new PageAtlas();
-        pageAtlas.draw();
+        //pageAtlas.draw();
         if (recipeMapPage == null) recipeMapPage = new RecipeMapPage();
-        recipeMapPage.draw();
+        //recipeMapPage.draw();
     }
 
     @SubscribeEvent

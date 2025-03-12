@@ -12,6 +12,7 @@ import birsy.clinker.common.world.entity.gnomad.gnomind.squad.squadtasks.RestWit
 import birsy.clinker.core.registry.ClinkerTags;
 import birsy.clinker.core.util.MathUtil;
 import foundry.veil.api.client.necromancer.SkeletonParent;
+import foundry.veil.api.client.necromancer.animation.Animator;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -61,7 +62,7 @@ import java.util.List;
 
 import static net.minecraft.world.entity.monster.Monster.createMonsterAttributes;
 
-public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<GnomadMogulEntity>, SkeletonParent<GnomadMogulEntity, MogulSkeleton, MogulAnimator> {
+public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<GnomadMogulEntity>, SkeletonParent<GnomadMogulEntity, MogulSkeleton> {
     private static final int[] ROBE_COLORS = new int[]{0x4d423c, 0x513337, 0x4a4751, 0x505049, 0x4f4c4b};
     private static final EntityDataAccessor<Integer> DATA_ROBE_COLOR = SynchedEntityData.defineId(GnomadMogulEntity.class, EntityDataSerializers.INT);
     private final MogulAttackHandler attackHandler;
@@ -258,13 +259,15 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
     public void setSkeleton(MogulSkeleton skeleton) {
         this.skeleton = skeleton;
     }
+
+
     @Override
     public MogulSkeleton getSkeleton() {
         return this.skeleton;
     }
     @Override
-    public void setAnimator(MogulAnimator animator) {
-        this.animator = animator;
+    public void setAnimator(Animator<GnomadMogulEntity, MogulSkeleton> animator) {
+        this.animator = (MogulAnimator) animator;
     }
     @Override
     public MogulAnimator getAnimator() {

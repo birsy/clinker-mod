@@ -17,6 +17,7 @@ import java.util.Objects;
 public class ClinkerShaders {
 
     public static final ResourceLocation LIGHT_GREASE = Clinker.resource("light/grease");
+    public static final ResourceLocation LIGHT_RIM = Clinker.resource("light/rim");
 
     public static final ResourceLocation PAGE_TEXTURE = Clinker.resource("page/texture");
 

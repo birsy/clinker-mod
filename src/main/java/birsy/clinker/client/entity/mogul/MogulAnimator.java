@@ -114,10 +114,10 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
             axis = axis.normalize().cross(0, 1, 0);
             skeleton.MogulRoot.rotation.rotateAxis(angle * 2, axis);
         }
-
-        if (smoothedAcceleration.y() < 0) {
-            skeleton.MogulRoot.ySize = Mth.lerp(Mth.clamp(smoothedAcceleration.y() * -5, 0, 1), 1, 0.5F);
-        }
+//
+//        if (smoothedAcceleration.y() < 0) {
+//            skeleton.MogulRoot.ySize = Mth.lerp(Mth.clamp(smoothedAcceleration.y() * -5, 0, 1), 1, 0.5F);
+//        }
     }
 
     private static class MaskAnimation extends Animation<GnomadMogulEntity, MogulSkeleton> {
@@ -148,8 +148,8 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
 
             skeleton.MogulRoot.rotateDeg(bodyYaw, Direction.Axis.Y);
 
-            skeleton.MogulRightArm.y += Mth.sin(time * globalSpeed * 0.02F) * mixFactor * 0.5F;
-            skeleton.MogulLeftArm.y += Mth.sin(time * globalSpeed * 0.02F) * mixFactor * 0.5F;
+            skeleton.MogulRightArm.offsetY(Mth.sin(time * globalSpeed * 0.02F) * mixFactor * 0.5F);
+            skeleton.MogulLeftArm.offsetY(Mth.sin(time * globalSpeed * 0.02F) * mixFactor * 0.5F);
 
             skeleton.MogulLeftArm.rotateDeg(Mth.sin(time * globalSpeed * 0.055F) * mixFactor * 1.0F, Direction.Axis.X);
             skeleton.MogulLeftArm.rotateDeg(Mth.cos(time * globalSpeed * 0.06F) * mixFactor * 1.0F, Direction.Axis.Z);
@@ -193,23 +193,22 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
             float timeOffset = Mth.PI * 0.5F;
             float verticalOffset = 0F;
 
-
             float sign = Mth.sign(mixFactor);
             mixFactor = Mth.abs(mixFactor);
             float legHeightOffset = 0.35F * legBobAmountV * mixFactor * globalDegree;
 
-            skeleton.MogulLeftLeg.z += Mth.cos(time + timeOffset) * legBobAmountH * mixFactor * globalDegree * sign;
+            skeleton.MogulLeftLeg.offsetZ(Mth.cos(time + timeOffset) * legBobAmountH * mixFactor * globalDegree * sign);
             float leftLegY = (Mth.sin(time + timeOffset) - verticalOffset) * legBobAmountV * mixFactor * globalDegree;
             if (leftLegY < 0) leftLegY *= 0.5F;
-            skeleton.MogulLeftLeg.y += leftLegY + legHeightOffset;
+            skeleton.MogulLeftLeg.offsetY(leftLegY + legHeightOffset);
             skeleton.MogulLeftLeg.rotateDeg(-30 * mixFactor, Direction.Axis.X);
             skeleton.MogulLeftLeg.rotateDeg(Mth.sin(time + timeOffset) * mixFactor * globalDegree * -20 * sign, Direction.Axis.X);
             skeleton.MogulLeftLeg.rotateDeg(Mth.cos(time) * mixFactor * globalDegree * -20, Direction.Axis.X);
 
-            skeleton.MogulRightLeg.z += Mth.sin(time) * legBobAmountH * mixFactor * globalDegree * sign;
+            skeleton.MogulRightLeg.offsetZ(Mth.sin(time) * legBobAmountH * mixFactor * globalDegree * sign);
             float rightLegY = (-Mth.cos(time) - verticalOffset) * legBobAmountV * mixFactor * globalDegree;
             if (rightLegY < 0) rightLegY *= 0.5F;
-            skeleton.MogulRightLeg.y += rightLegY + legHeightOffset;
+            skeleton.MogulRightLeg.offsetY(rightLegY + legHeightOffset);
             skeleton.MogulRightLeg.rotateDeg(-30 * mixFactor, Direction.Axis.X);
             skeleton.MogulRightLeg.rotateDeg(Mth.sin(time + timeOffset) * mixFactor * globalDegree * 20 * sign, Direction.Axis.X);
             skeleton.MogulRightLeg.rotateDeg(Mth.cos(time) * mixFactor * globalDegree * 20, Direction.Axis.X);
@@ -218,15 +217,15 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
             skeleton.MogulLeftArm.rotateDeg(Mth.sin(time + timeOffset) * mixFactor * globalDegree * 20 * sign, Direction.Axis.X);
             skeleton.MogulLeftArm.rotateDeg(Mth.cos(time) * mixFactor * globalDegree * 20 * sign, Direction.Axis.X);
             float armCircleTime = time + (Mth.HALF_PI - 1);
-            skeleton.MogulLeftArm.z += Mth.cos(armCircleTime) * mixFactor * globalDegree * 5 * sign - 1 * mixFactor * globalDegree;
+            skeleton.MogulLeftArm.offsetZ(Mth.cos(armCircleTime) * mixFactor * globalDegree * 5 * sign - 1 * mixFactor * globalDegree);
 
             skeleton.MogulRightArm.rotateDeg(-58 * mixFactor * (-sign * 0.5F + 0.5F), Direction.Axis.X);
             skeleton.MogulRightArm.rotateDeg(Mth.sin(time + timeOffset) * mixFactor * globalDegree * -20 * sign, Direction.Axis.X);
             skeleton.MogulRightArm.rotateDeg(Mth.cos(time) * mixFactor * globalDegree * -20 * sign, Direction.Axis.X);
-            skeleton.MogulRightArm.z += Mth.sin(armCircleTime) * mixFactor * globalDegree * 5 * sign - 1 * mixFactor * globalDegree;
+            skeleton.MogulRightArm.offsetZ(Mth.sin(armCircleTime) * mixFactor * globalDegree * 5 * sign - 1 * mixFactor * globalDegree);
 
-            skeleton.MogulRoot.y += Mth.sin(time * 2) * mixFactor * globalDegree * 2;
-            skeleton.MogulRoot.z += Mth.sin(time * 2 - 1F) * mixFactor * globalDegree * 2 * sign;
+            skeleton.MogulRoot.offsetY(Mth.sin(time * 2) * mixFactor * globalDegree * 2);
+            skeleton.MogulRoot.offsetZ(Mth.sin(time * 2 - 1F) * mixFactor * globalDegree * 2 * sign);
             skeleton.MogulRoot.rotateDeg(-10 * mixFactor * globalDegree * sign, Direction.Axis.X);
 
             skeleton.MogulFrontRobe.rotateDeg(Mth.lerp((sign + 1.0F) * 0.5F, -30, -10) * mixFactor * globalDegree * sign, Direction.Axis.X);
@@ -258,26 +257,26 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
 
             float legHeightOffset = -0.2F * legBobAmountV * mixFactor * globalDegree;
             float sideIntensity = 0.2F;
-            skeleton.MogulLeftLeg.x += Mth.cos(time + timeOffset) * legBobAmountH * mixFactor * globalDegree * 0.5F * sign;
+            skeleton.MogulLeftLeg.offsetX(Mth.cos(time + timeOffset) * legBobAmountH * mixFactor * globalDegree * 0.5F * sign);
             float leftLegY = (-Mth.sin(time + timeOffset) - verticalOffset) * legBobAmountV * mixFactor * globalDegree;
             if (leftLegY < 0) leftLegY *= 0.2F;
-            skeleton.MogulLeftLeg.y += leftLegY + legHeightOffset;
+            skeleton.MogulLeftLeg.offsetY(leftLegY + legHeightOffset);
             skeleton.MogulLeftLeg.rotateDeg(-30 * mixFactor * sign, Direction.Axis.Z);
             skeleton.MogulLeftLeg.rotateDeg(Mth.sin(time + timeOffset) * mixFactor * globalDegree * -20 * sideIntensity * sign, Direction.Axis.Z);
             skeleton.MogulLeftLeg.rotateDeg(Mth.cos(time) * mixFactor * globalDegree * -20 * sideIntensity * sign, Direction.Axis.Z);
 
-            skeleton.MogulRightLeg.x += Mth.sin(time) * legBobAmountH * mixFactor * globalDegree * 0.5F * sign;
+            skeleton.MogulRightLeg.offsetX(Mth.sin(time) * legBobAmountH * mixFactor * globalDegree * 0.5F * sign);
             float rightLegY = (Mth.cos(time) - verticalOffset) * legBobAmountV * mixFactor * globalDegree;
             if (rightLegY < 0) rightLegY *= 0.2F;
-            skeleton.MogulRightLeg.y += rightLegY + legHeightOffset;
+            skeleton.MogulRightLeg.offsetY(rightLegY + legHeightOffset);
             skeleton.MogulRightLeg.rotateDeg(-30 * mixFactor * sign, Direction.Axis.Z);
             skeleton.MogulRightLeg.rotateDeg(Mth.sin(time + timeOffset) * mixFactor * globalDegree * 20 * sideIntensity * sign, Direction.Axis.Z);
             skeleton.MogulRightLeg.rotateDeg(Mth.cos(time) * mixFactor * globalDegree * 20 * sideIntensity * sign, Direction.Axis.Z);
 
             skeleton.MogulRoot.rotateDeg(-10 * mixFactor * globalDegree * sign, Direction.Axis.Z);
 
-            skeleton.MogulRoot.y += Mth.sin(time * 2) * mixFactor * globalDegree;
-            skeleton.MogulRoot.x += Mth.sin(time * 2 - 1F) * mixFactor * globalDegree * -2 * sign;
+            skeleton.MogulRoot.offsetY(Mth.sin(time * 2) * mixFactor * globalDegree);
+            skeleton.MogulRoot.offsetX(Mth.sin(time * 2 - 1F) * mixFactor * globalDegree * -2 * sign);
             skeleton.MogulRoot.rotateDeg(-10 * mixFactor * globalDegree, Direction.Axis.X);
 
             skeleton.MogulLeftRobe.rotateDeg(Mth.lerp((sign + 1.0F) * 0.5F, -5, 20) * mixFactor * globalDegree, Direction.Axis.X);
@@ -324,14 +323,14 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
                 skeleton.MogulRightArmGrasp.rotateDeg(180 * weaponSpin * blend, Direction.Axis.Y);
                 Vector3f movement = skeleton.MogulRightArmGrasp.rotation.transform(0, 1, 0, new Vector3f());
                 float movementAmount = 5 * weaponSpin * blend;
-                skeleton.MogulRightArmGrasp.x += movement.x * movementAmount;
-                skeleton.MogulRightArmGrasp.y += movement.y * movementAmount;
-                skeleton.MogulRightArmGrasp.z += movement.z * movementAmount;
+                skeleton.MogulRightArmGrasp.offsetX(movement.x * movementAmount);
+                skeleton.MogulRightArmGrasp.offsetY(movement.y * movementAmount);
+                skeleton.MogulRightArmGrasp.offsetZ(movement.z * movementAmount);
 
                 float armRaise = MathUtil.ease(windupTime, MathUtil.EasingType.easeOutBack);
                 skeleton.MogulRightArm.rotateDeg(30 * armRaise * blend, Direction.Axis.Y);
                 skeleton.MogulRightArm.rotateDeg(30 * armRaise * blend, Direction.Axis.X);
-                skeleton.MogulRightArm.z -= 8 * MathUtil.ease(windupTime, MathUtil.EasingType.easeInOutQuad) * blend;
+                skeleton.MogulRightArm.offsetZ(-8 * MathUtil.ease(windupTime, MathUtil.EasingType.easeInOutQuad) * blend);
 
                 float bodyRot = MathUtil.ease(windupTime, MathUtil.EasingType.easeInOutBack);
                 skeleton.MogulRoot.rotateDeg(5 * bodyRot * blend, Direction.Axis.Z);
@@ -398,9 +397,9 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
                 skeleton.MogulLeftArm.rotateDeg(4 * flap * blend, Direction.Axis.Z);
 
                 float offset = MathUtil.ease(windupTime, MathUtil.EasingType.easeInOutQuad);
-                skeleton.MogulRightArm.z -= 3 * offset * blend;
-                skeleton.MogulRightArm.x -= 2 * offset * blend;
-                skeleton.MogulRightArmGrasp.z -= 8 * offset * blend;
+                skeleton.MogulRightArm.offsetZ(-3 * offset * blend);
+                skeleton.MogulRightArm.offsetX(-2 * offset * blend);
+                skeleton.MogulRightArmGrasp.offsetZ(-8 * offset * blend);
 
                 float bodyRot = MathUtil.ease(windupTime, MathUtil.EasingType.easeInOutBack);
                 skeleton.MogulRoot.rotateDeg(5 * bodyRot * blend, Direction.Axis.X);
@@ -423,8 +422,8 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
                 skeleton.MogulRightArm.rotateDeg(-120 * armRot * blend, Direction.Axis.X);
                 //skeleton.MogulRightArm.rotateDeg(-60 * armRot * blend, Direction.Axis.Z);
                 float offset = MathUtil.ease(swingTime, MathUtil.EasingType.easeOutBack);
-                skeleton.MogulRightArm.x += 2 * offset * blend;
-                skeleton.MogulRightArm.z -= 8 * offset * blend;
+                skeleton.MogulRightArm.offsetX(2 * offset * blend);
+                skeleton.MogulRightArm.offsetZ(-8 * offset * blend);
 
                 skeleton.MogulLeftArm.rotateDeg(-5 * flap * blend, Direction.Axis.Z);
                 float otherArmRot = MathUtil.ease(swingTimeDelayed, MathUtil.EasingType.easeOutBack);
@@ -443,7 +442,6 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
                 skeleton.MogulRightRobe.rotateDeg(-8 * flap * blend, Direction.Axis.X);
 
                 skeleton.MogulHelmetBase.rotateDeg(5 * flap * blend, Direction.Axis.Z);
-
             }
         }
     }
@@ -470,7 +468,7 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
                 float armRaise = MathUtil.ease(windupTime, MathUtil.EasingType.easeInOutBack);
                 skeleton.MogulRightArm.rotateDeg(30 * armRaise * blend, Direction.Axis.X);
                 skeleton.MogulRightArm.rotateDeg(80 * armRaise * blend, Direction.Axis.Y);
-                skeleton.MogulRightArm.z -= 8 * MathUtil.ease(windupTime, MathUtil.EasingType.easeInOutQuad) * blend;
+                skeleton.MogulRightArm.offsetZ(-8 * MathUtil.ease(windupTime, MathUtil.EasingType.easeInOutQuad) * blend);
 
                 float armRot = MathUtil.ease(windupTime, MathUtil.EasingType.easeInOutBack);
                 skeleton.MogulRightArm.rotateDeg(30 * armRot * blend, Direction.Axis.X);
@@ -500,9 +498,9 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
             float windupTime = Mth.clamp((time - 0.2F) / (windupLength+swingLength), 0, 1);
             Vector3f movement = skeleton.MogulRightArmGrasp.rotation.transform(0, 1, 0, new Vector3f());
             float movementAmount = 10 * windupTime * blend;
-            skeleton.MogulRightArmGrasp.x += movement.x * movementAmount;
-            skeleton.MogulRightArmGrasp.y += movement.y * movementAmount;
-            skeleton.MogulRightArmGrasp.z += movement.z * movementAmount;
+            skeleton.MogulRightArmGrasp.offsetX(movement.x * movementAmount);
+            skeleton.MogulRightArmGrasp.offsetY(movement.y * movementAmount);
+            skeleton.MogulRightArmGrasp.offsetZ(movement.z * movementAmount);
         }
     }
 }

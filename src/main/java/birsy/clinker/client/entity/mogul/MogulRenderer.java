@@ -1,31 +1,72 @@
 package birsy.clinker.client.entity.mogul;
 
-import birsy.clinker.client.entity.mogul.layer.MogulRobesLayer;
-import birsy.clinker.client.entity.mogul.layer.GnomadMogulWeaponLayer;
 import birsy.clinker.common.world.entity.gnomad.mogul.GnomadMogulEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
+import foundry.veil.api.client.necromancer.animation.Animator;
 import foundry.veil.api.client.necromancer.render.NecromancerEntityRenderer;
+import foundry.veil.api.client.necromancer.render.NecromancerRenderer;
+import foundry.veil.api.client.necromancer.render.NecromancerSkinEntityRenderLayer;
 import foundry.veil.api.client.necromancer.render.Skin;
+import foundry.veil.api.client.render.MatrixStack;
+import foundry.veil.api.client.render.rendertype.VeilRenderType;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
 
 public class MogulRenderer extends NecromancerEntityRenderer<GnomadMogulEntity, MogulSkeleton> {
-    protected static final MogulSkin SKIN = new MogulSkin();
-    protected static final ResourceLocation MOGUL_LOCATION = Clinker.resource("textures/entity/gnomad/mogul/gnomad_mogul.png");
+    private static final ResourceLocation RENDERTYPE = Clinker.resource("mogul_entity");
+    private static final ResourceLocation CLOAK_RENDERTYPE = Clinker.resource("mogul_entity_cloak");
+    private static final ResourceLocation TEXTURE_LOCATION = Clinker.resource("textures/entity/gnomad/mogul/gnomad_mogul.png");
+    private static final ResourceLocation ROBE_TEXTURE_LOCATION = Clinker.resource("textures/entity/gnomad/mogul/gnomad_mogul_robes.png");
 
     public MogulRenderer(EntityRendererProvider.Context context) {
-        super(context, MogulSkeleton::new, MogulAnimator::new, 2.0F);
-        this.addLayer(new MogulRobesLayer(this));
-        this.addLayer(new GnomadMogulWeaponLayer(this));
+        super(context, 2.0F);
+        this.addLayer(new NecromancerSkinEntityRenderLayer<>(this) {
+            @Override
+            public RenderType getRenderType(GnomadMogulEntity entity) {
+                return VeilRenderType.get(RENDERTYPE, TEXTURE_LOCATION);
+            }
+            @Override
+            public Skin getSkin(GnomadMogulEntity parent) {
+                return MogulSkin.MOGUL_SKIN;
+            }
+            @Override
+            protected void renderSkin(GnomadMogulEntity parent, MogulSkeleton skeleton, Skin skin, RenderType renderType, NecromancerRenderer renderer, MatrixStack matrixStack, int packedLight, float partialTicks) {
+                if (parent.hurtTime > 0) renderer.setOverlay(OverlayTexture.RED_OVERLAY_V);
+                super.renderSkin(parent, skeleton, skin, renderType, renderer, matrixStack, packedLight, partialTicks);
+            }
+        });
+        this.addLayer(new NecromancerSkinEntityRenderLayer<>(this) {
+            @Override
+            public RenderType getRenderType(GnomadMogulEntity entity) {
+                return VeilRenderType.get(CLOAK_RENDERTYPE, ROBE_TEXTURE_LOCATION);
+            }
+            @Override
+            public Skin getSkin(GnomadMogulEntity parent) {
+                return MogulSkin.MOGUL_SKIN;
+            }
+            @Override
+            protected void renderSkin(GnomadMogulEntity parent, MogulSkeleton skeleton, Skin skin, RenderType renderType, NecromancerRenderer renderer, MatrixStack matrixStack, int packedLight, float partialTicks) {
+                if (parent.hurtTime > 0) renderer.setOverlay(OverlayTexture.RED_OVERLAY_V);
+                Vec3 robeColor = Vec3.fromRGB24(parent.getRobeColor());
+                renderer.setColor((float) robeColor.x, (float) robeColor.y, (float) robeColor.z, 1.0F);
+                super.renderSkin(parent, skeleton, skin, renderType, renderer, matrixStack, packedLight, partialTicks);
+            }
+        });
     }
 
     @Override
-    public Skin<MogulSkeleton> getSkin(GnomadMogulEntity parent) {
-        return SKIN;
+    public MogulSkeleton createSkeleton(GnomadMogulEntity parent) {
+        return new MogulSkeleton();
+    }
+
+    @Override
+    public Animator<GnomadMogulEntity, MogulSkeleton> createAnimator(GnomadMogulEntity parent, MogulSkeleton skeleton) {
+        return new MogulAnimator(parent, skeleton);
     }
 
     @Override
@@ -37,21 +78,7 @@ public class MogulRenderer extends NecromancerEntityRenderer<GnomadMogulEntity, 
     }
 
     @Override
-    public void renderSkin(GnomadMogulEntity entity, MogulSkeleton skeleton, Skin<MogulSkeleton> skin, int ticksExisted, float partialTicks, PoseStack poseStack, VertexConsumer consumer, int packedLight, int packedOverlay, float r, float g, float b, float a) {
-        poseStack.pushPose();
-        poseStack.translate(0, 16 * entity.getHeightOffset(partialTicks), 0);
-        if (entity.isSitting()) poseStack.scale(1, 0.5F, 1);
-        super.renderSkin(entity, skeleton, skin, ticksExisted, partialTicks, poseStack, consumer, packedLight, packedOverlay, r, g, b, a);
-        poseStack.popPose();
-    }
-
-    @Override
-    public RenderType getRenderType(GnomadMogulEntity entity, ResourceLocation texture) {
-        return RenderType.entityCutoutNoCull(texture);
-    }
-
-    @Override
     public ResourceLocation getTextureLocation(GnomadMogulEntity entity) {
-        return MOGUL_LOCATION;
+        return TEXTURE_LOCATION;
     }
 }

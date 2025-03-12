@@ -4,6 +4,7 @@ import birsy.clinker.client.render.ClinkerFramebuffers;
 import birsy.clinker.client.render.ClinkerShaders;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.api.client.render.framebuffer.AdvancedFbo;
 import foundry.veil.api.client.render.post.PostPipeline;
@@ -40,7 +41,7 @@ public class GasRenderer {
     public static void updateLight(int chunkX, int chunkZ) {
         if (bufferManager == null) return;
         for (int y = Minecraft.getInstance().level.getMinSection(); y < Minecraft.getInstance().level.getMaxSection(); y++) {
-            bufferManager.onLightUpdate(SectionPos.of(new ChunkPos(chunkX, chunkZ), y));
+            //bufferManager.onLightUpdate(SectionPos.of(new ChunkPos(chunkX, chunkZ), y));
         }
     }
 
@@ -68,8 +69,10 @@ public class GasRenderer {
         bufferManager.bind();
         AbstractTexture abstracttexture = Minecraft.getInstance().getTextureManager()
                 .getTexture(Minecraft.getInstance().gameRenderer.lightTexture().lightTextureLocation);
-        shader.addSampler("LightTextureSampler", abstracttexture.getId());
-        shader.setup();
+        shader.setSampler("LightTextureSampler", abstracttexture.getId());
+        shader.bind();
+        shader.bindSamplers(0);
+        shader.setDefaultUniforms(VertexFormat.Mode.TRIANGLE_STRIP);
         VeilRenderSystem.drawScreenQuad();
         ShaderProgram.unbind();
         AdvancedFbo.unbind();

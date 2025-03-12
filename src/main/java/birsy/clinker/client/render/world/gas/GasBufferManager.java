@@ -2,8 +2,8 @@ package birsy.clinker.client.render.world.gas;
 
 import birsy.clinker.core.Clinker;
 import foundry.veil.api.client.render.VeilRenderSystem;
-import foundry.veil.api.client.render.shader.definition.DynamicShaderBlock;
-import foundry.veil.api.client.render.shader.definition.ShaderBlock;
+import foundry.veil.api.client.render.shader.block.DynamicShaderBlock;
+import foundry.veil.api.client.render.shader.block.ShaderBlock;
 import net.minecraft.core.SectionPos;
 import org.lwjgl.system.MemoryStack;
 
@@ -47,16 +47,16 @@ public class GasBufferManager {
 
         this.gasDataToUpload = new ArrayDeque<>();
 
-        this.sectionToDataIndexShaderBlock = ShaderBlock.withSize(GL_SHADER_STORAGE_BUFFER, SECTION_COUNT * Integer.BYTES,
+        this.sectionToDataIndexShaderBlock = ShaderBlock.withSize(ShaderBlock.BufferBinding.SHADER_STORAGE, SECTION_COUNT * Integer.BYTES,
                 (array, buffer) -> buffer.asIntBuffer().put(array));
         this.gasDataBufferPointer = glGenBuffers();
-        this.gasDataShaderBlock = ShaderBlock.wrapper(GL_SHADER_STORAGE_BUFFER, this.gasDataBufferPointer);
+        this.gasDataShaderBlock = ShaderBlock.wrapper(ShaderBlock.BufferBinding.SHADER_STORAGE, this.gasDataBufferPointer);
 
         // initialize the buffer
-        glBindBuffer(GL_SHADER_STORAGE_BUFFER, this.gasDataBufferPointer);
+        glBindBuffer(ShaderBlock.BufferBinding.SHADER_STORAGE.getGlType(), this.gasDataBufferPointer);
         // size is 1 bigger than it should be to include space for the "empty" gas sectionPos (always at index 0)
         // this simplifies the shader-side code a little.
-        glBufferData(GL_SHADER_STORAGE_BUFFER, (SECTION_COUNT + 1) * BLOCKS_PER_SECTION * BYTES_PER_BLOCK, GL_DYNAMIC_DRAW);
+        glBufferData(ShaderBlock.BufferBinding.SHADER_STORAGE.getGlType(), (SECTION_COUNT + 1) * BLOCKS_PER_SECTION * BYTES_PER_BLOCK, GL_DYNAMIC_DRAW);
         this.gasDataShaderBlock.setSize((SECTION_COUNT + 1) * BLOCKS_PER_SECTION * BYTES_PER_BLOCK);
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
     }

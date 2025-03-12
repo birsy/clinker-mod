@@ -1,0 +1,10 @@
+{
+  "vertex": "clinker:entity/skinned_mesh",
+  "fragment": "clinker:entity/skinned_mesh",
+  "definitions": [
+    {
+      "NECROMANCER_BONE_BUFFER_SIZE": 1
+    }
+  ]
+}
+

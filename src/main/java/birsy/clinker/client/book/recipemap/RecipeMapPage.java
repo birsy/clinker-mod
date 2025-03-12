@@ -49,7 +49,6 @@ public class RecipeMapPage {
 
         PoseStack poseStack = canvas.poseStack;
         poseStack.pushPose();
-        //poseStack.scale(-1, -1, -1);
         VertexConsumer consumer = Canvas.getBuffer(ClinkerRenderTypes.canvasTextured(TextureAtlas.LOCATION_BLOCKS));
 
         float minX = 0, maxX = minX + 512;
@@ -62,7 +61,6 @@ public class RecipeMapPage {
 
         poseStack.scale(64, 64, 64);
         Font font = Minecraft.getInstance().font;
-        DebugRenderer.renderFloatingText(poseStack, Canvas.BUFFER_SOURCE, "HELLO ASS", 0, 0, 0, 0xFFFFFFFF);
         font.drawInBatch(
                 "Ahh, my spoon.", 0.0F, 1.0F, 0xFFFFFFFF,
                 false, poseStack.last().pose(), Canvas.BUFFER_SOURCE, Font.DisplayMode.NORMAL,
@@ -73,6 +71,7 @@ public class RecipeMapPage {
                 false, poseStack.last().pose(), Canvas.BUFFER_SOURCE, Font.DisplayMode.NORMAL,
                 0, LightTexture.FULL_BRIGHT
         );
+
         poseStack.popPose();
         canvas.finishDraw();
     }

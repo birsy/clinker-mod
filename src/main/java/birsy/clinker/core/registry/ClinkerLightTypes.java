@@ -2,6 +2,8 @@ package birsy.clinker.core.registry;
 
 import birsy.clinker.client.render.world.light.GreaseLight;
 import birsy.clinker.client.render.world.light.GreaseLightRenderer;
+import birsy.clinker.client.render.world.light.RimLight;
+import birsy.clinker.client.render.world.light.RimLightRenderer;
 import birsy.clinker.core.Clinker;
 import foundry.veil.api.client.registry.LightTypeRegistry;
 import foundry.veil.api.client.render.light.Light;
@@ -17,6 +19,11 @@ public class ClinkerLightTypes {
             "grease",
             GreaseLightRenderer::new,
             (level, camera) -> new GreaseLight().setTo(camera).setRadius(15.0F)
+    );
+    public static final Supplier<LightTypeRegistry.LightType<RimLight>> RIM = register(
+            "rim",
+            RimLightRenderer::new,
+            (level, camera) -> new RimLight().setTo(camera).setRadius(15.0F)
     );
 
     private static <T extends Light> Supplier<LightTypeRegistry.LightType<T>> register(String name, LightTypeRegistry.RendererFactory<T> factory, @Nullable LightTypeRegistry.DebugLightFactory debugFactory) {

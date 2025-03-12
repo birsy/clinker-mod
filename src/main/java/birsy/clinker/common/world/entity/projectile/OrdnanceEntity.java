@@ -38,6 +38,7 @@ import net.minecraft.world.phys.*;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpawn {
@@ -460,6 +461,11 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
 
     public int getMaxFuseTime() {
         return effects.fuseTime();
+    }
+
+    @Override
+    public void onClientRemoval() {
+        super.onClientRemoval();
     }
 
     // misc stuff idk

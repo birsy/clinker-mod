@@ -34,12 +34,12 @@ public class ClinkerBlockEntityWithoutLevelRenderer extends BlockEntityWithoutLe
             pPoseStack.scale(scale, scale, scale);
             pPoseStack.translate(7.5, 5.5, 10);
             if (pDisplayContext.firstPerson()) pPoseStack.mulPose(Axis.XP.rotationDegrees(-15));
-            MogulWeaponModels.WARHOOK.render(
-                    pPoseStack,
-                    ItemRenderer.getFoilBuffer(pBuffer, RenderType.entityCutoutNoCull(MogulWeaponModels.WARHOOK_TEXTURE_LOCATION), true, pStack.hasFoil()),
-                    pPackedLight, OverlayTexture.NO_OVERLAY,
-                    1, 1, 1, 1
-            );
+//            MogulWeaponModels.WARHOOK.render(
+//                    pPoseStack,
+//                    ItemRenderer.getFoilBuffer(pBuffer, RenderType.entityCutoutNoCull(MogulWeaponModels.WARHOOK_TEXTURE_LOCATION), true, pStack.hasFoil()),
+//                    pPackedLight, OverlayTexture.NO_OVERLAY,
+//                    1, 1, 1, 1
+//            );
             pPoseStack.popPose();
         }
     }
