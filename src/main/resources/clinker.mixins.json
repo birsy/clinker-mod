@@ -17,6 +17,7 @@
     "client.ModelBlockRendererMixin"
   ],
   "mixins": [
+    "common.ChunkGenerationTaskMixin",
     "common.ChunkMapMixin",
     "common.ChunkStatusTasksMixin",
     "common.EntityMixin",

@@ -1,10 +1,7 @@
 package birsy.clinker.common.networking;
 
 import birsy.clinker.common.networking.packet.*;
-import birsy.clinker.common.networking.packet.debug.ClientboundBrainDebugPacket;
-import birsy.clinker.common.networking.packet.debug.ClientboundPathfindingDebugPacket;
-import birsy.clinker.common.networking.packet.debug.GnomadSquadDebugPacket;
-import birsy.clinker.common.networking.packet.debug.GnomadSquadRemovalDebugPacket;
+import birsy.clinker.common.networking.packet.debug.*;
 import birsy.clinker.common.networking.packet.ropeentity.ClientboundRopeEntityInitPacket;
 import birsy.clinker.common.networking.packet.ropeentity.ClientboundRopeEntitySegmentAddPacket;
 import birsy.clinker.common.networking.packet.ropeentity.ClientboundRopeEntitySyncPacket;
@@ -81,6 +78,10 @@ public class ClinkerPacketRegistry {
         registrar.playToClient(ClientboundBrainDebugPacket.TYPE,
                 ClientboundBrainDebugPacket.STREAM_CODEC,
                 ClientboundBrainDebugPacket::handle);
+
+        registrar.playToClient(ClientboundMetaChunkDebugPacket.TYPE,
+                ClientboundMetaChunkDebugPacket.STREAM_CODEC,
+                ClientboundMetaChunkDebugPacket::handle);
 
         Clinker.LOGGER.info("REGISTERED CLINKER PACKETS!");
     }

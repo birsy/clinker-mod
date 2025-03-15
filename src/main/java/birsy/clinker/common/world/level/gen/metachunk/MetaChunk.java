@@ -1,11 +1,14 @@
 package birsy.clinker.common.world.level.gen.metachunk;
 
+import birsy.clinker.common.networking.packet.debug.ClientboundMetaChunkDebugPacket;
 import birsy.clinker.core.Clinker;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.ChunkPos;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class MetaChunk {
     public static final int MAX_SIZE = 512;
@@ -13,9 +16,9 @@ public class MetaChunk {
 
     @Nullable
     final MetaChunk parent;
-    final int minimumX, minimumZ;
-    final int size;
-
+    public final int minimumX, minimumZ;
+    public final int size;
+    public final int depth;
     MetaChunk[] children;
 
     boolean generated = false;
@@ -29,6 +32,7 @@ public class MetaChunk {
         this.minimumX = minimumX;
         this.minimumZ = minimumZ;
         this.size = size;
+        this.depth = this.parent == null ? 0 : this.parent.depth + 1;
     }
 
     public void createChildrenIfNeeded() {
@@ -64,12 +68,15 @@ public class MetaChunk {
         return this.size != MIN_SIZE;
     }
 
-    public void scheduleGeneration(ChunkPos pos) {
-        if (!this.generated) {
-            // todo: generate metafeatures
-            Clinker.LOGGER.info("generating metafeatures for metachunk at ({}, {}) sized {}", this.minimumX, this.minimumZ, this.size);
-            this.createChildren();
-        }
-        if (this.hasChildren()) this.getChildContainingPos(pos).scheduleGeneration(pos);
+    public void waitForParentGeneration() {
+        if (this.parent == null) return;
+        //while (true) if (this.parent.generated) return;
     }
+
+    public void generate() {
+        Clinker.LOGGER.info("GENERATED METACHUNK AT ({}, {}) SIZED {}", this.minimumX, this.minimumZ, this.size);
+        this.generated = true;
+        PacketDistributor.sendToAllPlayers(new ClientboundMetaChunkDebugPacket(this));
+    }
+
 }
