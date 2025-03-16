@@ -138,7 +138,7 @@ public class TerrainBuilderTestChunkGenerator extends ChunkGenerator implements 
         double aquiferLowerRange = aquiferMidHeight - 20;
 
         double seaLevel = this.getSeaLevel();
-        double caveClamping = Mth.clamp(MathUtil.mapRange(aquiferUpperRange - 10, aquiferUpperRange + 15, 0, 1, y), 0, 1);
+        double caveClamping = Mth.clamp(MathUtil.mapRange(-64, -50, 0, 1, y), 0, 1);
         caveClamping *= Mth.clamp(MathUtil.mapRange(seaLevel - 20, seaLevel + 5, 1, 0.2, y), 0, 1);
 
         //Stalagmite Noise;

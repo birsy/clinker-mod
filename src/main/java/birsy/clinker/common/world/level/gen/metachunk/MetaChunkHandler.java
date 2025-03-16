@@ -44,9 +44,12 @@ public class MetaChunkHandler {
         MetaChunk containingMetachunk = root;
         do {
             // add only meta-chunks that are yet to be generated
-            if (!containingMetachunk.generated) metaChunkGenerationQueue.add(containingMetachunk);
+            if (!containingMetachunk.generated && !containingMetachunk.queuedForGeneration) {
+                containingMetachunk.queuedForGeneration = true;
+                metaChunkGenerationQueue.add(containingMetachunk);
+            }
             containingMetachunk = containingMetachunk.getChildContainingPos(pos);
-        } while (containingMetachunk.hasChildren());
+        } while (!containingMetachunk.isLeaf());
     }
 
     public boolean shouldAwaitMetaChunkGen(ChunkPos pos) {
@@ -64,6 +67,9 @@ public class MetaChunkHandler {
     }
 
     private long getMetaChunkRootIndex(ChunkPos pos) {
-        return ChunkPos.asLong((pos.x / MetaChunk.MAX_SIZE) * MetaChunk.MAX_SIZE, (pos.z / MetaChunk.MAX_SIZE) * MetaChunk.MAX_SIZE);
+        return ChunkPos.asLong(
+                Math.floorDiv(pos.x, MetaChunk.MAX_SIZE) * MetaChunk.MAX_SIZE,
+                Math.floorDiv(pos.z, MetaChunk.MAX_SIZE) * MetaChunk.MAX_SIZE
+        );
     }
 }

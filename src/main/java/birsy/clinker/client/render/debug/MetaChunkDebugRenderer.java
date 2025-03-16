@@ -25,13 +25,13 @@ public class MetaChunkDebugRenderer implements DebugRenderer.SimpleDebugRenderer
         for (int i = 0; i < 7; i++) {
             for (MetaChunkDebugInfo metaChunk : metaChunks) {
                 if (metaChunk.depth != i) continue;
-                color.setHSV((metaChunk.depth / 7.0F) * 360.0F * 0.5F, 0.5F, 0.5F);
+                color.setHSV((metaChunk.depth / 7.0F) * 360.0F, 0.5F, 0.5F);
                 //color.setHSV(metaChunk.depth % 2, 1.0F, 0.5F);
                 int offset = (1 + metaChunk.depth) * 2;
                 DebugRenderer.renderFilledBox(poseStack, bufferSource,
                         metaChunk.x + offset, height - metaChunk.depth*8, metaChunk.z + offset,
                         metaChunk.x + metaChunk.size - offset, height + 3 - metaChunk.depth*8, metaChunk.z + metaChunk.size - offset,
-                        color.red(), color.green(), color.blue(), 0.25F);
+                        color.red(), color.green(), color.blue(), 0.8F);
             }
         }
 

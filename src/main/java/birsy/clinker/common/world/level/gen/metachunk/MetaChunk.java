@@ -21,6 +21,7 @@ public class MetaChunk {
     public final int depth;
     MetaChunk[] children;
 
+    boolean queuedForGeneration = false;
     boolean generated = false;
 
     public MetaChunk(int minimumX, int minimumZ) {
@@ -37,7 +38,7 @@ public class MetaChunk {
 
     public void createChildrenIfNeeded() {
         if (this.children != null) return;
-        if (this.size == MIN_SIZE) return;
+        if (this.isLeaf()) return;
         this.children = new MetaChunk[4];
         int childSize = this.size / 2;
         // northwest
@@ -51,21 +52,21 @@ public class MetaChunk {
     }
 
     public void subdivideToContain(ChunkPos pos) {
-        if (!this.hasChildren()) return;
+        if (this.isLeaf()) return;
         this.createChildrenIfNeeded();
         this.getChildContainingPos(pos).subdivideToContain(pos);
     }
 
     public MetaChunk getChildContainingPos(ChunkPos pos) {
-        if (!this.hasChildren()) return null;
+        if (this.isLeaf()) return null;
         int index = 0;
         if (pos.x > this.minimumX + size/2) index |= 0b10;
         if (pos.z > this.minimumZ + size/2) index |= 0b01;
         return this.children[index];
     }
 
-    public boolean hasChildren() {
-        return this.size != MIN_SIZE;
+    public boolean isLeaf() {
+        return this.size <= MIN_SIZE;
     }
 
     public void waitForParentGeneration() {
