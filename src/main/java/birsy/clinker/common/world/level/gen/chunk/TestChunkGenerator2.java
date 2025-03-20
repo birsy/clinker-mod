@@ -1,9 +1,9 @@
 package birsy.clinker.common.world.level.gen.chunk;
 
-import birsy.clinker.common.world.level.gen.*;
+import birsy.clinker.common.world.level.gen.noise.noisefield.InterpolatedNoiseField;
+import birsy.clinker.common.world.level.gen.noise.noisefield.NoiseFieldWithOffset;
 import birsy.clinker.core.util.noise.FastNoiseLite;
 import birsy.clinker.core.util.noise.VoronoiGenerator;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.Util;
@@ -25,7 +25,6 @@ import net.minecraft.world.level.material.FluidState;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 
 public class TestChunkGenerator2 extends ChunkGenerator {
     public static final MapCodec<TestChunkGenerator2> CODEC = RecordCodecBuilder.mapCodec((codec) ->

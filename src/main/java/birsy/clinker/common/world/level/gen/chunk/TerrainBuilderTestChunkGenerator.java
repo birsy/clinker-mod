@@ -1,14 +1,13 @@
 package birsy.clinker.common.world.level.gen.chunk;
 
-import birsy.clinker.common.world.level.gen.BasicNoiseField;
-import birsy.clinker.common.world.level.gen.InterpolatedNoiseField;
-import birsy.clinker.common.world.level.gen.NoiseCache;
+import birsy.clinker.common.world.level.gen.noise.noisefield.BasicNoiseField;
+import birsy.clinker.common.world.level.gen.noise.noisefield.InterpolatedNoiseField;
+import birsy.clinker.common.world.level.gen.noise.NoiseCache;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtil;
 import birsy.clinker.core.util.noise.CachedFastNoise;
 import birsy.clinker.core.util.noise.FastNoiseLite;
 import birsy.clinker.core.util.noise.VoronoiGenerator;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.Util;
@@ -29,7 +28,6 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 
 public class TerrainBuilderTestChunkGenerator extends ChunkGenerator implements LevelNoiseProvidable {
     public static final MapCodec<TerrainBuilderTestChunkGenerator> CODEC = RecordCodecBuilder.mapCodec((codec) ->

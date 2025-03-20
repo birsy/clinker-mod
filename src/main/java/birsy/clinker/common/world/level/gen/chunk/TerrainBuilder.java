@@ -1,9 +1,9 @@
 package birsy.clinker.common.world.level.gen.chunk;
 
-import birsy.clinker.common.world.level.gen.NoiseFieldWithOffset;
-import birsy.clinker.common.world.level.gen.NoiseCache;
-import birsy.clinker.common.world.level.gen.chunk.biome.TerrainProviders;
-import birsy.clinker.common.world.level.gen.chunk.biome.terrainprovider.TerrainProvider;
+import birsy.clinker.common.world.level.gen.noise.noisefield.NoiseFieldWithOffset;
+import birsy.clinker.common.world.level.gen.noise.NoiseCache;
+import birsy.clinker.common.world.level.gen.biome.TerrainProviders;
+import birsy.clinker.common.world.level.gen.biome.terrainprovider.TerrainProvider;
 import net.minecraft.core.Holder;
 import net.minecraft.core.QuartPos;
 import net.minecraft.resources.ResourceLocation;

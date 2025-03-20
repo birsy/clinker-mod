@@ -1,15 +1,14 @@
 package birsy.clinker.common.world.level.gen.chunk;
 
-import birsy.clinker.common.world.level.gen.BasicNoiseField;
-import birsy.clinker.common.world.level.gen.NoiseCache;
-import birsy.clinker.common.world.level.gen.chunk.biome.surfacedecorator.SurfaceDecorator;
-import birsy.clinker.common.world.level.gen.chunk.biome.SurfaceDecorators;
+import birsy.clinker.common.world.level.gen.noise.noisefield.BasicNoiseField;
+import birsy.clinker.common.world.level.gen.noise.NoiseCache;
+import birsy.clinker.common.world.level.gen.biome.surfacedecorator.SurfaceDecorator;
+import birsy.clinker.common.world.level.gen.biome.SurfaceDecorators;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtil;
 import birsy.clinker.core.util.noise.CachedFastNoise;
 import birsy.clinker.core.util.noise.FastNoiseLite;
 import birsy.clinker.core.util.noise.VoronoiGenerator;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.Util;
@@ -34,10 +33,8 @@ import net.minecraft.world.level.levelgen.structure.StructureSet;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 
 public class TestChunkGenerator extends ChunkGenerator {
     public static final MapCodec<TestChunkGenerator> CODEC = RecordCodecBuilder.mapCodec((codec) ->

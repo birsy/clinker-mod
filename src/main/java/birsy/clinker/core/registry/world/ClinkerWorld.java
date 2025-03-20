@@ -2,8 +2,6 @@ package birsy.clinker.core.registry.world;
 
 import birsy.clinker.client.render.world.OthershoreDimensionEffects;
 import birsy.clinker.common.world.level.gen.chunk.TerrainBuilderTestChunkGenerator;
-import birsy.clinker.common.world.level.gen.legacy.CaveChunkGenerator;
-import birsy.clinker.common.world.level.gen.legacy.OthershoreChunkGenerator;
 import birsy.clinker.common.world.level.gen.chunk.TestChunkGenerator;
 import birsy.clinker.core.Clinker;
 import com.mojang.serialization.Codec;
@@ -26,10 +24,8 @@ public class ClinkerWorld {
 
     public static final ResourceKey<Level> OTHERSHORE = ResourceKey.create(Registries.DIMENSION, Clinker.resource("othershore"));
 
-    public static final Supplier<MapCodec<OthershoreChunkGenerator>> OTHERSHORE_CHUNK_GENERATOR = CHUNK_GENERATORS.register("othershore_chunk_generator", () -> OthershoreChunkGenerator.CODEC);
     public static final Supplier<MapCodec<TestChunkGenerator>> TEST_CHUNK_GENERATOR = CHUNK_GENERATORS.register("test_chunk_generator", () -> TestChunkGenerator.CODEC);
     public static final Supplier<MapCodec<TerrainBuilderTestChunkGenerator>> TERRAIN_BUILDER_TEST_CHUNK_GENERATOR = CHUNK_GENERATORS.register("terrain_builder_test_chunk_generator", () -> TerrainBuilderTestChunkGenerator.CODEC);
-    public static final Supplier<MapCodec<CaveChunkGenerator>> CAVE_CHUNK_GENERATOR = CHUNK_GENERATORS.register("cave_chunk_generator", () -> CaveChunkGenerator.CODEC);
 
     @SubscribeEvent
     public static void registerDimensionEffects(RegisterDimensionSpecialEffectsEvent event) {

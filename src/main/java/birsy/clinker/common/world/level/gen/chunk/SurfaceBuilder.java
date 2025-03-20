@@ -1,9 +1,8 @@
 package birsy.clinker.common.world.level.gen.chunk;
 
-import birsy.clinker.common.world.level.gen.NoiseField;
-import birsy.clinker.common.world.level.gen.NoiseCache;
-import birsy.clinker.common.world.level.gen.chunk.biome.SurfaceDecorators;
-import birsy.clinker.common.world.level.gen.chunk.biome.surfacedecorator.SurfaceDecorator;
+import birsy.clinker.common.world.level.gen.noise.noisefield.NoiseField;
+import birsy.clinker.common.world.level.gen.biome.SurfaceDecorators;
+import birsy.clinker.common.world.level.gen.biome.surfacedecorator.SurfaceDecorator;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;

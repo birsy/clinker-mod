@@ -1,0 +1,13 @@
+package birsy.clinker.common.world.level.gen.biome.terrainprovider;
+
+import birsy.clinker.common.world.level.gen.noise.NoiseCache;
+import birsy.clinker.common.world.level.gen.noise.noiseproviders.NoiseProviders;
+import net.minecraft.world.level.chunk.ChunkAccess;
+
+public class TestTerrainProviderC extends TerrainProvider {
+    @Override
+    public float sample(ChunkAccess chunk, long seed, double x, double y, double z, NoiseCache sampler) {
+        sampler.setSeed(seed);
+        return sampler.sampleUncached(x, y, z, NoiseProviders.NOISE_FREQ_8);
+    }
+}

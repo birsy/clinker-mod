@@ -2,9 +2,9 @@ package birsy.clinker.common.world.level.gen.chunk;
 
 import birsy.clinker.common.world.level.gen.ChunkFluidField;
 import birsy.clinker.common.world.level.gen.ClinkerWorldGenerator;
-import birsy.clinker.common.world.level.gen.NoiseFieldWithOffset;
-import birsy.clinker.common.world.level.gen.chunk.biome.surfacedecorator.SurfaceDecorator;
-import birsy.clinker.common.world.level.gen.chunk.biome.SurfaceDecorators;
+import birsy.clinker.common.world.level.gen.noise.noisefield.NoiseFieldWithOffset;
+import birsy.clinker.common.world.level.gen.biome.surfacedecorator.SurfaceDecorator;
+import birsy.clinker.common.world.level.gen.biome.SurfaceDecorators;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
