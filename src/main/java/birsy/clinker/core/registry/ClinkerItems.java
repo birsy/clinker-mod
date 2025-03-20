@@ -12,11 +12,16 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.world.item.*;
 
 import net.minecraft.world.item.component.ItemLore;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.List;
 
+@EventBusSubscriber(modid = Clinker.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 public class ClinkerItems
 {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Clinker.MOD_ID);
@@ -98,4 +103,9 @@ public class ClinkerItems
                             .rarity(Rarity.UNCOMMON)
             )
     );
+
+    @SubscribeEvent
+    public static void registerClientItemExtensions(RegisterClientExtensionsEvent event) {
+        event.registerItem(new AlchemistsCrossbowItem.AlchemistsCrossbowClientItemExtension(), ALCHEMISTS_CROSSBOW.get());
+    }
 }

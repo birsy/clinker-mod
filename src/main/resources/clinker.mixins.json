@@ -8,21 +8,21 @@
   },
   "refmap": "mixins.clinker.refmap.json",
   "client": [
+    "client.AnimationUtilsMixin",
     "client.ClientLevelMixin",
     "client.DebugRendererMixin",
     "client.EntityRenderDispatcherMixin",
     "client.GameRendererMixin",
     "client.GuiMixin",
-    "client.LevelRendererMixin",
-    "client.ModelBlockRendererMixin"
+    "client.LevelRendererMixin"
   ],
   "mixins": [
+    "common.ChunkStatusTasksMixin",
     "common.EntityMixin",
     "common.ItemEntityMixin",
     "common.PlayerMixin",
     "common.RandomizableContainerBlockEntityMixin",
     "common.ServerEntityMixin",
-    "common.ServerLevelMixin",
-    "common.ChunkStatusTasksMixin"
+    "common.ServerLevelMixin"
   ]
 }

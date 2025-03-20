@@ -1,11 +1,11 @@
 package birsy.clinker.common.world.item;
 
 import birsy.clinker.common.world.item.components.LoadedItemStack;
-import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerDataComponents;
 import birsy.clinker.core.registry.ClinkerTags;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -22,6 +22,7 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.Snowball;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -32,7 +33,7 @@ import java.util.function.Predicate;
 public class AlchemistsCrossbowItem extends ProjectileWeaponItem {
     static int REPEATER_STACK_SIZE = 16;
     static int TICKS_BETWEEN_SHOTS = 8;
-    static int ITEM_LOAD_TIME = 20;
+    public static int ITEM_LOAD_TIME = 20;
 
     public AlchemistsCrossbowItem(Properties properties) {
         super(properties);
@@ -41,7 +42,7 @@ public class AlchemistsCrossbowItem extends ProjectileWeaponItem {
     private static LoadedItemStack getLoadedItems(ItemStack stack) {
         return stack.getOrDefault(ClinkerDataComponents.LOADED_ITEM_STACK.get(), LoadedItemStack.EMPTY);
     }
-    private static boolean hasRepeater(ItemStack stack) {
+    public static boolean hasRepeater(ItemStack stack) {
         return true;
     }
     private static boolean isFiring(ItemStack stack) {
@@ -53,7 +54,7 @@ public class AlchemistsCrossbowItem extends ProjectileWeaponItem {
     private static boolean isFull(ItemStack stack) {
         ItemStack ammo = getLoadedItems(stack).stack();
         if (hasRepeater(stack)) {
-            return ammo.getCount() >= REPEATER_STACK_SIZE || ammo.getCount() >= ammo.getMaxStackSize();
+            return ammo.getCount() > Math.ceilDiv(ammo.getMaxStackSize(), 4) + 1;
         } else {
             return !ammo.isEmpty();
         }
@@ -109,6 +110,7 @@ public class AlchemistsCrossbowItem extends ProjectileWeaponItem {
             ItemStack oppositeHandStack = player.getItemInHand(oppositeHand);
             if (!oppositeHandStack.isEmpty()) {
                 stack.set(ClinkerDataComponents.TICK_DELAY.get(), 0);
+                level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.CROSSBOW_LOADING_START, SoundSource.PLAYERS, 1, 1);
                 player.startUsingItem(hand);
                 return InteractionResultHolder.consume(stack);
             } else {
@@ -204,13 +206,14 @@ public class AlchemistsCrossbowItem extends ProjectileWeaponItem {
     }
 
     @Override
-    public void releaseUsing(ItemStack crossbow, Level level, LivingEntity livingEntity, int timeCharged) {
+    public void releaseUsing(ItemStack crossbow, Level level, LivingEntity living, int timeCharged) {
+        if (living instanceof Player player && isRepeatFiring(crossbow) && !getLoadedItems(crossbow).isEmpty()) player.getCooldowns().addCooldown(this, 20);
         if (isRepeatFiring(crossbow)) {
             crossbow.set(ClinkerDataComponents.TICK_DELAY.get(), 0);
             crossbow.set(ClinkerDataComponents.FIRING.get(), false);
         }
-        if (livingEntity instanceof Player player) player.getCooldowns().addCooldown(this, 20);
-        super.releaseUsing(crossbow, level, livingEntity, timeCharged);
+        level.playSound(null, living.getX(), living.getY(), living.getZ(), SoundEvents.CROSSBOW_LOADING_END, living instanceof Player ? SoundSource.PLAYERS : SoundSource.HOSTILE, 1, 1);
+        super.releaseUsing(crossbow, level, living, timeCharged);
     }
 
     protected void loadItemsTick(Level level, LivingEntity livingEntity, ItemStack crossbow) {
@@ -242,14 +245,30 @@ public class AlchemistsCrossbowItem extends ProjectileWeaponItem {
         crossbow.set(ClinkerDataComponents.TICK_DELAY.get(), 0);
         if (!level.isClientSide())
             level.playSound(null, living.getX(), living.getY(), living.getZ(), SoundEvents.CROSSBOW_LOADING_MIDDLE, living instanceof Player ? SoundSource.PLAYERS : SoundSource.HOSTILE, 1, 1);
-//        if (living instanceof Player player && player.getAbilities().instabuild)
-//            return true;
+        if (living instanceof Player player) {
+            level.playSound(player, living.getX(), living.getY(), living.getZ(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.1F, 0.5F + level.random.nextFloat() * 0.1F);
+        }
         ammo.shrink(1);
         return true;
     }
 
     @Override
-    public UseAnim getUseAnimation(ItemStack stack) {
-        return UseAnim.CROSSBOW;
+    public boolean useOnRelease(ItemStack stack) {
+        return true;
+    }
+
+    public static class AlchemistsCrossbowClientItemExtension implements IClientItemExtensions {
+        @Override
+        public HumanoidModel.@Nullable ArmPose getArmPose(LivingEntity entity, InteractionHand hand, ItemStack crossbow) {
+            LoadedItemStack loadedItems = getLoadedItems(crossbow);
+            boolean loaded = !loadedItems.isEmpty();
+            boolean firing = isFiring(crossbow);
+            if (entity.getUseItemRemainingTicks() > 0 && !firing) {
+                return HumanoidModel.ArmPose.CROSSBOW_CHARGE;
+            } else if ((!entity.swinging && loaded) || firing) {
+                return HumanoidModel.ArmPose.CROSSBOW_HOLD;
+            }
+            return IClientItemExtensions.super.getArmPose(entity, hand, crossbow);
+        }
     }
 }
