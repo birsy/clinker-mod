@@ -1,8 +1,6 @@
 package birsy.clinker.common.world.level.gen.chunk;
 
 import birsy.clinker.common.world.level.gen.BasicNoiseField;
-import birsy.clinker.common.world.level.gen.MetaChunk;
-import birsy.clinker.common.world.level.gen.MetaChunkTracker;
 import birsy.clinker.common.world.level.gen.NoiseCache;
 import birsy.clinker.common.world.level.gen.chunk.biome.surfacedecorator.SurfaceDecorator;
 import birsy.clinker.common.world.level.gen.chunk.biome.SurfaceDecorators;
@@ -68,9 +66,6 @@ public class TestChunkGenerator extends ChunkGenerator {
     private long seed;
     private float[][][] terrainShapeSamplePoints;
 
-    private MetaChunk metaChunk;
-    private List<MetaChunk.TerrainFeature> terrainFeatures;
-
     public TestChunkGenerator(BiomeSource pBiomeSource, Holder<NoiseGeneratorSettings> settings) {
         super(pBiomeSource);
         this.settingsHolder = settings;
@@ -100,21 +95,11 @@ public class TestChunkGenerator extends ChunkGenerator {
     // earliest possible reference to the WorldGenLevel
     @Override
     public void createReferences(WorldGenLevel pLevel, StructureManager pStructureManager, ChunkAccess pChunk) {
-        this.metaChunk = MetaChunkTracker.getOrCreateMetaChunkAtChunk(pLevel, pChunk.getPos());
-        //Clinker.LOGGER.info("metachunk??");
         super.createReferences(pLevel, pStructureManager, pChunk);
     }
 
     public CompletableFuture<ChunkAccess> fillFromNoise(Blender densityBlender, RandomState random, StructureManager structureManager, ChunkAccess chunk) {
         //fillNoiseSampleArrays(chunk);
-        if (this.metaChunk != null) {
-            this.terrainFeatures = metaChunk.getFeaturesInChunk(chunk.getPos());
-            for (MetaChunk.TerrainFeature terrainFeature : this.terrainFeatures) {
-                Clinker.LOGGER.info(terrainFeature.getBoundingBoxes().get(0).getCenter());
-            }
-        } else {
-            this.terrainFeatures = new ArrayList<>();
-        }
 
         Heightmap[] heightmaps = {chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.OCEAN_FLOOR_WG), chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.WORLD_SURFACE_WG)};
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
@@ -345,9 +330,6 @@ public class TestChunkGenerator extends ChunkGenerator {
         float surfaceNoise = (totalNoise + baseNoise * 0.1F + detailNoise * 0.1F) - ((y - scaledSeaLevel) * heightFactor);
 
         float value = (float) MathUtil.smoothMinExpo(caveNoise, surfaceNoise, 0.05F);
-        for (MetaChunk.TerrainFeature terrainFeature : this.terrainFeatures) {
-            value = terrainFeature.modifyNoiseLayers(value, x, unmodifiedY, z);
-        }
         return value;
     }
 
