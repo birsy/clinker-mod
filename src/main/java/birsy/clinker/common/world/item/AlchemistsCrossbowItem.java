@@ -28,24 +28,21 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
 
-// kind of jank right now...
-// todo: less jank.
 public class AlchemistsCrossbowItem extends ProjectileWeaponItem {
-    static int REPEATER_STACK_SIZE = 16;
-    static int TICKS_BETWEEN_SHOTS = 8;
+    public static int TICKS_BETWEEN_SHOTS = 8;
     public static int ITEM_LOAD_TIME = 20;
 
     public AlchemistsCrossbowItem(Properties properties) {
         super(properties);
     }
 
-    private static LoadedItemStack getLoadedItems(ItemStack stack) {
+    public static LoadedItemStack getLoadedItems(ItemStack stack) {
         return stack.getOrDefault(ClinkerDataComponents.LOADED_ITEM_STACK.get(), LoadedItemStack.EMPTY);
     }
     public static boolean hasRepeater(ItemStack stack) {
         return true;
     }
-    private static boolean isFiring(ItemStack stack) {
+    public static boolean isFiring(ItemStack stack) {
         return stack.getOrDefault(ClinkerDataComponents.FIRING.get(), false);
     }
     private static int tickDelay(ItemStack stack) {
@@ -59,7 +56,7 @@ public class AlchemistsCrossbowItem extends ProjectileWeaponItem {
             return !ammo.isEmpty();
         }
     }
-    private static boolean isRepeatFiring(ItemStack stack) {
+    public static boolean isRepeatFiring(ItemStack stack) {
         return hasRepeater(stack) && isFiring(stack);
     }
 
@@ -157,7 +154,8 @@ public class AlchemistsCrossbowItem extends ProjectileWeaponItem {
     protected void fire(ServerLevel level, LivingEntity shooter, InteractionHand hand, ItemStack crossbow, ItemStack ammo, @Nullable LivingEntity target) {
         this.shoot(level, shooter, hand, crossbow, List.of(ammo), 1.5F, ammo.getCount() <= 1 ? 0 : 1.5F, shooter instanceof Player, target);
         int count = ammo.getCount();
-        crossbow.set(ClinkerDataComponents.LOADED_ITEM_STACK.get(), new LoadedItemStack(count <= 1 ? ItemStack.EMPTY : ammo.copyWithCount(count - 1)));
+        LoadedItemStack currentLoadedStack = getLoadedItems(crossbow);
+        crossbow.set(ClinkerDataComponents.LOADED_ITEM_STACK.get(), new LoadedItemStack(count <= 1 ? ItemStack.EMPTY : ammo.copyWithCount(count - 1), currentLoadedStack.lastCount()));
         crossbow.set(ClinkerDataComponents.TICK_DELAY.get(), 0);
         level.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.CROSSBOW_SHOOT, shooter instanceof Player ? SoundSource.PLAYERS : SoundSource.HOSTILE, 1, 1);
     }
@@ -241,7 +239,7 @@ public class AlchemistsCrossbowItem extends ProjectileWeaponItem {
         if (!currentlyLoadedItems.isEmpty() && !ammo.is(currentlyLoadedItems.getItem()))
             return false;
 
-        crossbow.set(ClinkerDataComponents.LOADED_ITEM_STACK.get(), new LoadedItemStack(ammo.copyWithCount(currentlyLoadedItems.getCount() + 1)));
+        crossbow.set(ClinkerDataComponents.LOADED_ITEM_STACK.get(), new LoadedItemStack(ammo.copyWithCount(currentlyLoadedItems.getCount() + 1), currentlyLoadedItems.getCount() + 1));
         crossbow.set(ClinkerDataComponents.TICK_DELAY.get(), 0);
         if (!level.isClientSide())
             level.playSound(null, living.getX(), living.getY(), living.getZ(), SoundEvents.CROSSBOW_LOADING_MIDDLE, living instanceof Player ? SoundSource.PLAYERS : SoundSource.HOSTILE, 1, 1);
@@ -254,7 +252,7 @@ public class AlchemistsCrossbowItem extends ProjectileWeaponItem {
 
     @Override
     public boolean useOnRelease(ItemStack stack) {
-        return true;
+        return false;
     }
 
     public static class AlchemistsCrossbowClientItemExtension implements IClientItemExtensions {

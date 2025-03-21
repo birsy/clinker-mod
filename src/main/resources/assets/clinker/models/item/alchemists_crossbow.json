@@ -1,76 +1,26 @@
 {
-  "parent": "item/generated",
+  "parent": "item/crossbow",
   "textures": {
     "layer0": "clinker:item/alchemists_crossbow_standby"
   },
-  "display": {
-    "thirdperson_righthand": {
-      "rotation": [
-        -90,
-        0,
-        -60
-      ],
-      "translation": [
-        2,
-        0.1,
-        -3
-      ],
-      "scale": [
-        0.9,
-        0.9,
-        0.9
-      ]
+  "overrides": [
+    {
+      "predicate": {
+        "clinker:pull": 0.25
+      },
+      "model": "clinker:item/alchemists_crossbow_pulling_0"
     },
-    "thirdperson_lefthand": {
-      "rotation": [
-        -90,
-        0,
-        30
-      ],
-      "translation": [
-        2,
-        0.1,
-        -3
-      ],
-      "scale": [
-        0.9,
-        0.9,
-        0.9
-      ]
+    {
+      "predicate": {
+        "clinker:pull": 0.50
+      },
+      "model": "clinker:item/alchemists_crossbow_pulling_1"
     },
-    "firstperson_righthand": {
-      "rotation": [
-        -90,
-        0,
-        -55
-      ],
-      "translation": [
-        1.13,
-        3.2,
-        1.13
-      ],
-      "scale": [
-        0.68,
-        0.68,
-        0.68
-      ]
-    },
-    "firstperson_lefthand": {
-      "rotation": [
-        -90,
-        0,
-        35
-      ],
-      "translation": [
-        1.13,
-        3.2,
-        1.13
-      ],
-      "scale": [
-        0.68,
-        0.68,
-        0.68
-      ]
+    {
+      "predicate": {
+        "clinker:pull": 0.75
+      },
+      "model": "clinker:item/alchemists_crossbow_pulling_2"
     }
-  }
+  ]
 }

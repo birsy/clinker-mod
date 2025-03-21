@@ -16,8 +16,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
-
-
 public class ClinkerBlockEntityWithoutLevelRenderer extends BlockEntityWithoutLevelRenderer {
     public static ClinkerBlockEntityWithoutLevelRenderer INSTANCE = new ClinkerBlockEntityWithoutLevelRenderer(Minecraft.getInstance().getBlockEntityRenderDispatcher(), Minecraft.getInstance().getEntityModels());
 

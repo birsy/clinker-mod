@@ -4,6 +4,8 @@ import birsy.clinker.client.render.GUIRenderer;
 import birsy.clinker.client.gui.AlchemyBundleGUIRenderer;
 import birsy.clinker.client.render.debug.ClinkerDebugRenderers;
 import birsy.clinker.client.render.world.gas.GasRenderer;
+import birsy.clinker.client.render.world.item.AlchemistsCrossbowInHandRenderer;
+import birsy.clinker.common.world.item.AlchemistsCrossbowItem;
 import birsy.clinker.core.registry.*;
 import birsy.clinker.core.registry.entity.ClinkerBlockEntities;
 import birsy.clinker.core.registry.entity.ClinkerEntities;
@@ -11,10 +13,13 @@ import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import birsy.clinker.core.registry.entity.ClinkerSensors;
 import birsy.clinker.core.registry.world.ClinkerFeatures;
 import birsy.clinker.core.registry.world.ClinkerWorld;
+import birsy.clinker.core.util.MathUtils;
 import foundry.veil.api.client.render.VeilRenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.CrossbowItem;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
@@ -72,6 +77,7 @@ public class Clinker {
 
         GUIRenderer.alchemyBundleGUIRenderer = new AlchemyBundleGUIRenderer(Minecraft.getInstance());
 
+        ItemProperties.register(ClinkerItems.ALCHEMISTS_CROSSBOW.get(), Clinker.resource("pull"), AlchemistsCrossbowInHandRenderer::getPullPercentage);
         //VeilRenderSystem.renderer().getPostProcessingManager().add(GasRenderer.VOLUME_POST);
     }
 }
