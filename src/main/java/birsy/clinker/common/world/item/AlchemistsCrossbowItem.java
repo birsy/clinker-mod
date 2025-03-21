@@ -155,7 +155,10 @@ public class AlchemistsCrossbowItem extends ProjectileWeaponItem {
         this.shoot(level, shooter, hand, crossbow, List.of(ammo), 1.5F, ammo.getCount() <= 1 ? 0 : 1.5F, shooter instanceof Player, target);
         int count = ammo.getCount();
         LoadedItemStack currentLoadedStack = getLoadedItems(crossbow);
-        crossbow.set(ClinkerDataComponents.LOADED_ITEM_STACK.get(), new LoadedItemStack(count <= 1 ? ItemStack.EMPTY : ammo.copyWithCount(count - 1), currentLoadedStack.lastCount()));
+        crossbow.set(ClinkerDataComponents.LOADED_ITEM_STACK.get(),
+                new LoadedItemStack(
+                        count <= 1 ? ItemStack.EMPTY : ammo.copyWithCount(count - 1),
+                        count <= 1 ? 0 : currentLoadedStack.lastCount()));
         crossbow.set(ClinkerDataComponents.TICK_DELAY.get(), 0);
         level.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.CROSSBOW_SHOOT, shooter instanceof Player ? SoundSource.PLAYERS : SoundSource.HOSTILE, 1, 1);
     }
@@ -239,7 +242,11 @@ public class AlchemistsCrossbowItem extends ProjectileWeaponItem {
         if (!currentlyLoadedItems.isEmpty() && !ammo.is(currentlyLoadedItems.getItem()))
             return false;
 
-        crossbow.set(ClinkerDataComponents.LOADED_ITEM_STACK.get(), new LoadedItemStack(ammo.copyWithCount(currentlyLoadedItems.getCount() + 1), currentlyLoadedItems.getCount() + 1));
+        crossbow.set(ClinkerDataComponents.LOADED_ITEM_STACK.get(),
+                new LoadedItemStack(
+                ammo.copyWithCount(currentlyLoadedItems.getCount() + 1),
+                currentlyLoadedItems.getCount() + 1)
+        );
         crossbow.set(ClinkerDataComponents.TICK_DELAY.get(), 0);
         if (!level.isClientSide())
             level.playSound(null, living.getX(), living.getY(), living.getZ(), SoundEvents.CROSSBOW_LOADING_MIDDLE, living instanceof Player ? SoundSource.PLAYERS : SoundSource.HOSTILE, 1, 1);
