@@ -1,6 +1,8 @@
 package birsy.clinker.common.world.item;
 
+import birsy.clinker.common.world.item.components.CrossbowState;
 import birsy.clinker.common.world.item.components.LoadedItemStack;
+import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerDataComponents;
 import birsy.clinker.core.registry.ClinkerTags;
 import net.minecraft.ChatFormatting;
@@ -42,8 +44,8 @@ public class AlchemistsCrossbowItem extends ProjectileWeaponItem {
     public static boolean hasRepeater(ItemStack stack) {
         return true;
     }
-    public static boolean isFiring(ItemStack stack) {
-        return stack.getOrDefault(ClinkerDataComponents.FIRING.get(), false);
+    public static CrossbowState getCrossbowState(ItemStack stack) {
+        return stack.getOrDefault(ClinkerDataComponents.CROSSBOW_STATE.get(), CrossbowState.STANDBY);
     }
     private static int tickDelay(ItemStack stack) {
         return stack.getOrDefault(ClinkerDataComponents.TICK_DELAY.get(), 0);
@@ -57,7 +59,7 @@ public class AlchemistsCrossbowItem extends ProjectileWeaponItem {
         }
     }
     public static boolean isRepeatFiring(ItemStack stack) {
-        return hasRepeater(stack) && isFiring(stack);
+        return hasRepeater(stack) && getCrossbowState(stack) == CrossbowState.FIRING;
     }
 
     @Override
@@ -95,24 +97,34 @@ public class AlchemistsCrossbowItem extends ProjectileWeaponItem {
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        ItemStack stack = player.getItemInHand(hand);
-        LoadedItemStack loadedItems = getLoadedItems(stack);
-        if (!loadedItems.isEmpty()) {
-            this.pullTrigger(level, player, hand, stack, null);
-            return InteractionResultHolder.consume(stack);
-        } else {
-            stack.set(ClinkerDataComponents.FIRING.get(), false);
-
-            InteractionHand oppositeHand = hand == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND;
-            ItemStack oppositeHandStack = player.getItemInHand(oppositeHand);
-            if (!oppositeHandStack.isEmpty()) {
-                stack.set(ClinkerDataComponents.TICK_DELAY.get(), 0);
-                level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.CROSSBOW_LOADING_START, SoundSource.PLAYERS, 1, 1);
-                player.startUsingItem(hand);
-                return InteractionResultHolder.consume(stack);
-            } else {
-                player.displayClientMessage(Component.translatable("item.clinker.alchemists_crossbow.no_ammo").withStyle(Style.EMPTY.withItalic(true).withColor(ChatFormatting.GRAY)), true);
-                return InteractionResultHolder.fail(stack);
+        ItemStack crossbow = player.getItemInHand(hand);
+        CrossbowState crossbowState = getCrossbowState(crossbow);
+        switch (crossbowState) {
+            case STANDBY -> {
+                InteractionHand oppositeHand = hand == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND;
+                ItemStack oppositeHandStack = player.getItemInHand(oppositeHand);
+                if (!oppositeHandStack.isEmpty()) {
+                    crossbow.set(ClinkerDataComponents.TICK_DELAY.get(), 0);
+                    crossbow.set(ClinkerDataComponents.CROSSBOW_STATE.get(), CrossbowState.LOADING);
+                    player.startUsingItem(hand);
+                    level.playSound(null,
+                            player.getX(), player.getY(), player.getZ(),
+                            SoundEvents.CROSSBOW_LOADING_START,
+                            SoundSource.PLAYERS,
+                            1, 1);
+                    return InteractionResultHolder.consume(crossbow);
+                } else {
+                    player.displayClientMessage(Component.translatable("item.clinker.alchemists_crossbow.no_ammo").withStyle(Style.EMPTY.withItalic(true).withColor(ChatFormatting.GRAY)), true);
+                    return InteractionResultHolder.fail(crossbow);
+                }
+            }
+            case LOADED -> {
+                if (player.isUsingItem()) return InteractionResultHolder.fail(crossbow);
+                this.pullTrigger(level, player, hand, crossbow, null);
+                return InteractionResultHolder.consume(crossbow);
+            }
+            default -> {
+                return InteractionResultHolder.fail(crossbow);
             }
         }
     }
@@ -120,24 +132,22 @@ public class AlchemistsCrossbowItem extends ProjectileWeaponItem {
     @Override
     public void onUseTick(Level level, LivingEntity livingEntity, ItemStack crossbow, int remainingUseDuration) {
         super.onUseTick(level, livingEntity, crossbow, remainingUseDuration);
-
-        if (isRepeatFiring(crossbow)) {
-            tickRepeaterFire(crossbow, livingEntity, level, livingEntity.getUsedItemHand());
-        } else {
-            loadItemsTick(level, livingEntity, crossbow);
+        CrossbowState crossbowState = getCrossbowState(crossbow);
+        switch (crossbowState) {
+            case LOADING -> loadItemsTick(level, livingEntity, crossbow);
+            case FIRING -> tickRepeaterFire(crossbow, livingEntity, level, livingEntity.getUsedItemHand());
         }
     }
 
-    // FIRING
     protected void pullTrigger(Level level, LivingEntity shooter, InteractionHand hand, ItemStack crossbow, @Nullable LivingEntity target) {
         if (level instanceof ServerLevel serverlevel) {
             ItemStack ammo = getLoadedItems(crossbow).stack();
             if (!ammo.isEmpty()) {
-                boolean repeater = hasRepeater(crossbow);
-                if (!repeater || ammo.getCount() == 1) {
+                if (!hasRepeater(crossbow) || ammo.getCount() == 1) {
                     this.fire(serverlevel, shooter, hand, crossbow, ammo, target);
+                    crossbow.set(ClinkerDataComponents.CROSSBOW_STATE.get(), CrossbowState.STANDBY);
                 } else {
-                    crossbow.set(ClinkerDataComponents.FIRING.get(), true);
+                    crossbow.set(ClinkerDataComponents.CROSSBOW_STATE.get(), CrossbowState.FIRING);
                     // will fire immediately
                     crossbow.set(ClinkerDataComponents.TICK_DELAY.get(), TICKS_BETWEEN_SHOTS);
                     shooter.startUsingItem(hand);
@@ -171,7 +181,11 @@ public class AlchemistsCrossbowItem extends ProjectileWeaponItem {
                 ItemStack ammo = getLoadedItems(crossbow).stack();
                 if (ammo.isEmpty()) {
                     // play an "out of ammo" click!
-                    serverLevel.playSound(null, living.getX(), living.getY(), living.getZ(), SoundEvents.DISPENSER_FAIL, living instanceof Player ? SoundSource.PLAYERS : SoundSource.HOSTILE, 1, 1);
+                    serverLevel.playSound(null,
+                            living.getX(), living.getY(), living.getZ(),
+                            SoundEvents.DISPENSER_FAIL,
+                            living instanceof Player ? SoundSource.PLAYERS : SoundSource.HOSTILE,
+                            1, 1);
                     crossbow.set(ClinkerDataComponents.TICK_DELAY.get(), 0);
                 } else {
                     this.fire(serverLevel, living, hand, crossbow, ammo, null);
@@ -208,24 +222,41 @@ public class AlchemistsCrossbowItem extends ProjectileWeaponItem {
 
     @Override
     public void releaseUsing(ItemStack crossbow, Level level, LivingEntity living, int timeCharged) {
-        if (living instanceof Player player && isRepeatFiring(crossbow) && !getLoadedItems(crossbow).isEmpty()) player.getCooldowns().addCooldown(this, 20);
-        if (isRepeatFiring(crossbow)) {
-            crossbow.set(ClinkerDataComponents.TICK_DELAY.get(), 0);
-            crossbow.set(ClinkerDataComponents.FIRING.get(), false);
+        CrossbowState crossbowState = getCrossbowState(crossbow);
+        switch (crossbowState) {
+            case LOADING -> {
+                level.playSound(null,
+                        living.getX(), living.getY(), living.getZ(),
+                        SoundEvents.CROSSBOW_LOADING_END,
+                        living instanceof Player ? SoundSource.PLAYERS : SoundSource.HOSTILE,
+                        1, 1);
+                if (getLoadedItems(crossbow).isEmpty()) {
+                    crossbow.set(ClinkerDataComponents.CROSSBOW_STATE.get(), CrossbowState.STANDBY);
+                } else {
+                    crossbow.set(ClinkerDataComponents.CROSSBOW_STATE.get(), CrossbowState.LOADED);
+                }
+            }
+            case FIRING -> {
+                crossbow.set(ClinkerDataComponents.TICK_DELAY.get(), 0);
+                if (getLoadedItems(crossbow).isEmpty()) {
+                    crossbow.set(ClinkerDataComponents.CROSSBOW_STATE.get(), CrossbowState.STANDBY);
+                } else {
+                    crossbow.set(ClinkerDataComponents.CROSSBOW_STATE.get(), CrossbowState.LOADED);
+                    if (living instanceof Player player) player.getCooldowns().addCooldown(this, 20);
+                }
+            }
         }
-        level.playSound(null, living.getX(), living.getY(), living.getZ(), SoundEvents.CROSSBOW_LOADING_END, living instanceof Player ? SoundSource.PLAYERS : SoundSource.HOSTILE, 1, 1);
-        super.releaseUsing(crossbow, level, living, timeCharged);
     }
 
     protected void loadItemsTick(Level level, LivingEntity livingEntity, ItemStack crossbow) {
         if (isFull(crossbow)) {
-            livingEntity.releaseUsingItem();
+            crossbow.set(ClinkerDataComponents.CROSSBOW_STATE.get(), CrossbowState.LOADED);
         } else {
             ItemStack ammo = livingEntity.getItemInHand(livingEntity.getUsedItemHand() == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND);
             int ticksSinceLastLoad = tickDelay(crossbow);
             if (ticksSinceLastLoad >= ITEM_LOAD_TIME) {
                 if (!loadAmmo(level, livingEntity, crossbow, ammo)) {
-                    livingEntity.releaseUsingItem();
+                    crossbow.set(ClinkerDataComponents.CROSSBOW_STATE.get(), CrossbowState.LOADED);
                 }
             } else {
                 crossbow.set(ClinkerDataComponents.TICK_DELAY.get(), ticksSinceLastLoad + 1);
@@ -265,13 +296,14 @@ public class AlchemistsCrossbowItem extends ProjectileWeaponItem {
     public static class AlchemistsCrossbowClientItemExtension implements IClientItemExtensions {
         @Override
         public HumanoidModel.@Nullable ArmPose getArmPose(LivingEntity entity, InteractionHand hand, ItemStack crossbow) {
-            LoadedItemStack loadedItems = getLoadedItems(crossbow);
-            boolean loaded = !loadedItems.isEmpty();
-            boolean firing = isFiring(crossbow);
-            if (entity.getUseItemRemainingTicks() > 0 && !firing) {
-                return HumanoidModel.ArmPose.CROSSBOW_CHARGE;
-            } else if ((!entity.swinging && loaded) || firing) {
-                return HumanoidModel.ArmPose.CROSSBOW_HOLD;
+            CrossbowState crossbowState = getCrossbowState(crossbow);
+            switch (crossbowState) {
+                case FIRING, LOADED -> {
+                    if (!entity.swinging) return HumanoidModel.ArmPose.CROSSBOW_HOLD;
+                }
+                case LOADING -> {
+                    //return HumanoidModel.ArmPose.CROSSBOW_CHARGE;
+                }
             }
             return IClientItemExtensions.super.getArmPose(entity, hand, crossbow);
         }
