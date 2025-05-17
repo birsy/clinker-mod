@@ -29,18 +29,18 @@ import java.util.function.Supplier;
 
 @Mixin(ChunkGenerationTask.class)
 public class ChunkGenerationTaskMixin {
-    @Shadow @Final private GeneratingChunkMap chunkMap;
-
-    @Shadow @Final private ChunkPos pos;
-
-    @Inject(
-            method = "runUntilWait",
-            at = @At("HEAD")
-    )
-    private void clinker$runUntilWait(CallbackInfoReturnable<CompletableFuture<?>> cir) {
-        // wait until all metachunks have completed generating.
-        while (true) {
-            if (!((MetaChunkMap) this.chunkMap).getMetaChunkHandler().shouldAwaitMetaChunkGen(this.pos)) break;
-        }
-    }
+//    @Shadow @Final private GeneratingChunkMap chunkMap;
+//
+//    @Shadow @Final private ChunkPos pos;
+//
+//    @Inject(
+//            method = "runUntilWait",
+//            at = @At("HEAD")
+//    )
+//    private void clinker$runUntilWait(CallbackInfoReturnable<CompletableFuture<?>> cir) {
+//        // wait until all metachunks have completed generating.
+//        while (true) {
+//            if (!((MetaChunkMap) this.chunkMap).clinker$getMetaChunkHandler().shouldAwaitMetaChunkGen(this.pos)) break;
+//        }
+//    }
 }

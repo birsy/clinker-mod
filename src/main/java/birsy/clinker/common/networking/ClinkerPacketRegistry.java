@@ -79,9 +79,12 @@ public class ClinkerPacketRegistry {
                 ClientboundBrainDebugPacket.STREAM_CODEC,
                 ClientboundBrainDebugPacket::handle);
 
-        registrar.playToClient(ClientboundMetaChunkDebugPacket.TYPE,
-                ClientboundMetaChunkDebugPacket.STREAM_CODEC,
-                ClientboundMetaChunkDebugPacket::handle);
+        registrar.playToClient(ClientboundMetaChunkBeginGenDebugPacket.TYPE,
+                ClientboundMetaChunkBeginGenDebugPacket.STREAM_CODEC,
+                ClientboundMetaChunkBeginGenDebugPacket::handle);
+        registrar.playToClient(ClientboundMetaChunkFinishGenDebugPacket.TYPE,
+                ClientboundMetaChunkFinishGenDebugPacket.STREAM_CODEC,
+                ClientboundMetaChunkFinishGenDebugPacket::handle);
 
         Clinker.LOGGER.info("REGISTERED CLINKER PACKETS!");
     }

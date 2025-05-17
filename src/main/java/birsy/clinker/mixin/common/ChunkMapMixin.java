@@ -31,7 +31,6 @@ import java.util.function.Supplier;
 
 @Mixin(ChunkMap.class)
 public class ChunkMapMixin implements MetaChunkMap {
-    @Shadow @Final private ProcessorHandle<ChunkTaskPriorityQueueSorter.Message<Runnable>> worldgenMailbox;
     @Unique private MetaChunkHandler clinker$metaChunkHandler;
 
     @Inject(
@@ -52,27 +51,11 @@ public class ChunkMapMixin implements MetaChunkMap {
             Supplier overworldDataStorage,
             int viewDistance, boolean sync,
             CallbackInfo ci) {
-        clinker$metaChunkHandler = new MetaChunkHandler();
-    }
-
-    @Inject(
-            method = "scheduleGenerationTask(Lnet/minecraft/world/level/chunk/status/ChunkStatus;Lnet/minecraft/world/level/ChunkPos;)Lnet/minecraft/server/level/ChunkGenerationTask;",
-            at = @At("HEAD")
-    )
-    private void clinker$scheduleGenerationTask(ChunkStatus targetStatus, ChunkPos pos, CallbackInfoReturnable<ChunkGenerationTask> cir) {
-        clinker$metaChunkHandler.queueMetaChunkGeneration(pos);
-    }
-
-    @Inject(
-            method = "runGenerationTasks",
-            at = @At("HEAD")
-    )
-    private void clinker$runGenerationTasks(CallbackInfo ci) {
-        clinker$metaChunkHandler.generateMetaChunks(this.worldgenMailbox);
+        clinker$metaChunkHandler = new MetaChunkHandler(level.getSeed());
     }
 
     @Override
-    public MetaChunkHandler getMetaChunkHandler() {
+    public MetaChunkHandler clinker$getMetaChunkHandler() {
         return clinker$metaChunkHandler;
     }
 }

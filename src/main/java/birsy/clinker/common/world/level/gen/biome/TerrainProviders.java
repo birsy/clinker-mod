@@ -1,7 +1,6 @@
 package birsy.clinker.common.world.level.gen.biome;
 
 import birsy.clinker.common.world.level.gen.biome.terrainprovider.*;
-import birsy.clinker.common.world.level.gen.chunk.biome.terrainprovider.*;
 import birsy.clinker.core.Clinker;
 import net.minecraft.resources.ResourceLocation;
 
