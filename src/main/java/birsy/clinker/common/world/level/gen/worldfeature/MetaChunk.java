@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.level.gen;
+package birsy.clinker.common.world.level.gen.worldfeature;
 
 import net.minecraft.world.level.ChunkPos;
 

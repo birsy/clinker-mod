@@ -1,9 +1,7 @@
-package birsy.clinker.common.world.level.gen;
+package birsy.clinker.common.world.level.gen.worldfeature;
 
 import birsy.clinker.core.Clinker;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.levelgen.PositionalRandomFactory;
 import net.minecraft.world.level.levelgen.RandomState;
 
@@ -11,13 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class MetaChunkMap {
+public class MetaChunkMap {
     public static final int MAX_DEPTH = 10;
     private final RandomState randomState;
     private final PositionalRandomFactory metaChunkRandom;
     private final Map<Long, MetaChunk>[] metaChunkCache;
 
-    protected MetaChunkMap(RandomState randomState) {
+    public MetaChunkMap(RandomState randomState) {
         this.randomState = randomState;
         this.metaChunkRandom = randomState.random.fromHashOf(Clinker.resource("meta_chunk")).forkPositional();
 
@@ -73,7 +71,7 @@ public abstract class MetaChunkMap {
         metaChunk.worldFeatures.add(feature);
     }
 
-    List<WorldFeature> getWorldFeatures(int blockX, int blockZ) {
+    public List<WorldFeature> getWorldFeatures(int blockX, int blockZ) {
         return getMetaChunk(0, blockX, blockZ).worldFeatures;
     }
 }

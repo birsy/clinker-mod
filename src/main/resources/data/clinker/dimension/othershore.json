@@ -1,8 +1,7 @@
 {
   "type": "clinker:othershore_type",
   "generator": {
-    "type": "clinker:terrain_builder_test_chunk_generator",
-    "settings": "clinker:othershore",
+    "type": "clinker:othershore",
     "biome_source": {
       "type": "minecraft:fixed",
       "biome": "clinker:ash_steppe"

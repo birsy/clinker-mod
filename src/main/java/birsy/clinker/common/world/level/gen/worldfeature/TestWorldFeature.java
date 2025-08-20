@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.level.gen;
+package birsy.clinker.common.world.level.gen.worldfeature;
 
 import net.minecraft.util.RandomSource;
 
@@ -25,12 +25,11 @@ public class TestWorldFeature extends WorldFeature {
     }
 
     @Override
-    double modifyTerrain(int x, int y, int z, double currentNoiseValue) {
+    public double modifyTerrain(int x, int y, int z, double currentNoiseValue) {
         int centerY = 64;
-        if (Math.sqrt((x - centerX) * (x - centerX) +
-                      (y - centerY) * (y - centerY) +
-                      (z - centerZ) * (z - centerZ)) < radius)
-            return 10;
-        return currentNoiseValue;
+        double distance = Math.sqrt((x - centerX) * (x - centerX) +
+                (y - centerY) * (y - centerY) +
+                (z - centerZ) * (z - centerZ));
+        return Math.min(currentNoiseValue, distance - radius);
     }
 }

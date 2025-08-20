@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.level.gen;
+package birsy.clinker.common.world.level.gen.worldfeature;
 
 import net.minecraft.core.Holder;
 import net.minecraft.util.RandomSource;
@@ -15,11 +15,11 @@ public abstract class WorldFeature {
 
     abstract void plan(MetaChunk metaChunk, RandomSource randomSource);
 
-    double modifyTerrain(int x, int y, int z, double currentNoiseValue) {
+    public double modifyTerrain(int x, int y, int z, double currentNoiseValue) {
         return currentNoiseValue;
     }
 
-    Holder<Biome> modifyBiome(int x, int y, int z, Holder<Biome> currentBiome) {
+    public Holder<Biome> modifyBiome(int x, int y, int z, Holder<Biome> currentBiome) {
         return currentBiome;
     }
 }
