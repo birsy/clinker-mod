@@ -4,7 +4,7 @@
     "type": "clinker:othershore",
     "biome_source": {
       "type": "minecraft:fixed",
-      "biome": "clinker:ash_steppe"
+      "biome": "clinker:test"
     }
   }
 }

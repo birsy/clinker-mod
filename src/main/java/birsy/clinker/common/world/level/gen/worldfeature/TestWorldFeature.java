@@ -20,8 +20,9 @@ public class TestWorldFeature extends WorldFeature {
 
     @Override
     void plan(MetaChunk metaChunk, RandomSource randomSource) {
-        this.centerX = metaChunk.minX() + (metaChunk.size) / 2;
-        this.centerZ = metaChunk.minZ() + (metaChunk.size) / 2;
+        this.radius = (depth + 1) * 3;
+        this.centerX = randomSource.nextInt(metaChunk.minX(), metaChunk.maxX());
+        this.centerZ = randomSource.nextInt(metaChunk.minZ(), metaChunk.maxZ());
     }
 
     @Override

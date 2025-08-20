@@ -1,6 +1,5 @@
 package birsy.clinker.core.registry.world;
 
-import birsy.clinker.common.world.level.gen.feature.*;
 import birsy.clinker.core.Clinker;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.levelgen.feature.Feature;

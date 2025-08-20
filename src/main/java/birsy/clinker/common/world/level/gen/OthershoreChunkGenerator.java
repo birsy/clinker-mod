@@ -2,10 +2,13 @@ package birsy.clinker.common.world.level.gen;
 
 import birsy.clinker.common.world.level.gen.worldfeature.MetaChunkMapOwner;
 import birsy.clinker.common.world.level.gen.worldfeature.WorldFeature;
+import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.QuartPos;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.NoiseColumn;
@@ -63,6 +66,8 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
         List<WorldFeature> worldFeatures = ((MetaChunkMapOwner)(Object)randomState).clinker$metaChunkMap()
                 .getWorldFeatures(chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());
+        int count = worldFeatures.size();
+        Clinker.LOGGER.info("this chunk contains {} world features", count);
         for (WorldFeature worldFeature : worldFeatures) {
             for (int yi = 0; yi < chunk.getHeight(); yi++) {
                 int y= yi + chunk.getMinBuildHeight();

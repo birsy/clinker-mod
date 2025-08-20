@@ -43,7 +43,7 @@ public class MetaChunkMap {
         MetaChunk newChunk = new MetaChunk(size, metaChunkX, metaChunkZ);
 
         // generate "parents"
-        if (depth < MAX_DEPTH) {
+        if (depth < MAX_DEPTH-1) {
             int parentSize = getMetaChunkSizeForDepth(depth + 1);
             for (int xOffset = -1; xOffset <= 1; xOffset++) {
                 for (int zOffset = -1; zOffset <= 1; zOffset++) {
