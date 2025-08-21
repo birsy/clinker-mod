@@ -194,10 +194,14 @@ public class MothParticle extends Particle {
     }
 
     protected int getLightColor(float pPartialTick) {
-        BlockPos blockpos = BlockPos.containing(x, y, z);
-        if (!this.flying) {
-            blockpos = blockpos.offset((int) (this.attachmentDirection.getNormal().getX() * 0.5), (int) (this.attachmentDirection.getNormal().getY() * 0.5), (int) (this.attachmentDirection.getNormal().getZ() * 0.5));
-        }
+        BlockPos blockpos = this.flying ?
+                BlockPos.containing(x, y, z) :
+                BlockPos.containing(
+                        x + this.attachmentDirection.getNormal().getX() * 0.5F,
+                        y + this.attachmentDirection.getNormal().getY() * 0.5F,
+                        z + this.attachmentDirection.getNormal().getZ() * 0.5F
+                );
+
 
         return this.level.hasChunkAt(blockpos) ? LevelRenderer.getLightColor(this.level, blockpos) : 0;
     }

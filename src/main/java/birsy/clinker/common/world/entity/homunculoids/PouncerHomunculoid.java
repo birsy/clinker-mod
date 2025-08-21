@@ -3,6 +3,7 @@ package birsy.clinker.common.world.entity.homunculoids;
 import birsy.clinker.common.world.entity.ai.behaviors.FollowBehindEntity;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.level.Level;
 import net.tslat.smartbrainlib.api.SmartBrainOwner;
@@ -61,7 +62,7 @@ public class PouncerHomunculoid extends HomunculoidEntity implements SmartBrainO
                         new SetRandomLookTarget<>()
                 ),
                 new FollowBehindEntity<PouncerHomunculoid>()
-                        .entityProvider((homunculoid) -> homunculoid.owner),
+                        .entityProvider(OwnableEntity::getOwner),
                 new OneRandomBehaviour<> (
                         new SetRandomWalkTarget<>().setRadius(2),
                         new Idle<>().runFor(entity -> entity.getRandom().nextInt(30, 60))) );

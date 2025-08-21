@@ -1,0 +1,13 @@
+{
+  "vertex": "clinker:cloud/cloud",
+  "fragment": "clinker:cloud/cloud",
+  "textures": {
+    "NoiseSampler": "clinker:textures/environment/noise.png",
+    "CloudDensitySampler": {
+      "type": "framebuffer",
+      "name": "clinker:cloud_density"
+    }
+  }
+}
+
+

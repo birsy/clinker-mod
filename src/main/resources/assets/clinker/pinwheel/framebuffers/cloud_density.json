@@ -1,0 +1,12 @@
+{
+  "depth": false,
+  "filter": {
+    "wrapY": "repeat",
+    "wrapZ": "clamp_to_border",
+    "wrapX": "repeat",
+    "blur": true
+  },
+  "format": "R8",
+  "width": 1024.0,
+  "height": 1024.0
+}

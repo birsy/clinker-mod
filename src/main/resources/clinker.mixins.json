@@ -9,6 +9,7 @@
   "refmap": "mixins.clinker.refmap.json",
   "client": [
     "client.AnimationUtilsMixin",
+    "client.BlockRenderDispatcherMixin",
     "client.ClientLevelMixin",
     "client.DebugRendererMixin",
     "client.EntityRenderDispatcherMixin",

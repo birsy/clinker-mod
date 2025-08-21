@@ -1,18 +1,29 @@
 package birsy.clinker.client.render.world;
 
+import birsy.clinker.client.render.ClinkerFramebuffers;
 import birsy.clinker.client.render.ClinkerShaders;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtil;
+import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.shaders.Uniform;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Axis;
+import foundry.veil.api.client.render.VeilRenderSystem;
+import foundry.veil.api.client.render.framebuffer.AdvancedFbo;
+import foundry.veil.api.client.render.framebuffer.FramebufferManager;
+import foundry.veil.api.client.render.shader.program.ShaderProgram;
+import foundry.veil.impl.client.render.light.DirectionalLightRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.joml.Vector3fc;
 
@@ -20,7 +31,7 @@ import org.joml.Vector3fc;
 public class OthershoreCloudRenderer {
     public static final float CLOUDS_START = 250.0F;
     public static final float CLOUDS_END = 450.0F;
-    public static final float CLOUD_LAYER_THICKNESS = 48.0F;
+    public static final float CLOUD_LAYER_THICKNESS = 24.0F;
 
     private static final ResourceLocation NOISE_TEXTURE = Clinker.resource("textures/environment/noise.png");
 
@@ -31,6 +42,19 @@ public class OthershoreCloudRenderer {
 
     private float previousRadius = -1.0F;
     public void render(ClientLevel level, int ticks, float partialTick, PoseStack poseStack, double camX, double camY, double camZ, Matrix4f projectionMatrix, Vector3fc skyColor) {
+
+        // update the cloud density fbo
+        AdvancedFbo cloudDensityFBO = VeilRenderSystem.renderer().getFramebufferManager().getFramebuffer(ClinkerFramebuffers.CLOUD_DENSITY);
+        cloudDensityFBO.bind(true);
+        ShaderProgram cloudDensityShader = VeilRenderSystem.setShader(ClinkerShaders.CLOUD_DENSITY);
+        cloudDensityShader.bind();
+        cloudDensityShader.bindSamplers(0);
+        cloudDensityShader.setDefaultUniforms(VertexFormat.Mode.TRIANGLE_STRIP);
+        cloudDensityShader.setFloat("GameTime", (ticks / 20.0F) + (partialTick / 20.0F));
+        VeilRenderSystem.drawScreenQuad();
+        ShaderProgram.unbind();
+        AdvancedFbo.unbind();
+
         RenderSystem.enableBlend();
         RenderSystem.enableDepthTest();
         RenderSystem.blendFuncSeparate(
@@ -39,42 +63,104 @@ public class OthershoreCloudRenderer {
                 GlStateManager.SourceFactor.ONE,
                 GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA
         );
-        RenderSystem.depthMask(true);
+        RenderSystem.depthMask(false);
 
-        float radius = (Minecraft.getInstance().options.getEffectiveRenderDistance()+1) * 4.0F * 16.0F;
-
+        float radius = (Minecraft.getInstance().options.getEffectiveRenderDistance() + 1) * 2F * 16.0F;
         // rebuild VBOs if the render distance changes
         if (radius != previousRadius) {
             previousRadius = radius;
-            this.cloudLayerDownBuffer = buildCloudBuffer(cloudLayerDownBuffer, 64, 2, true, radius);
-            this.cloudLayerUpBuffer = buildCloudBuffer(cloudLayerUpBuffer, 64, 2, false, radius);
+            this.cloudLayerDownBuffer = buildCloudBuffer(cloudLayerDownBuffer, 64, 16, true, radius, CLOUD_LAYER_THICKNESS);
+            this.cloudLayerUpBuffer = buildCloudBuffer(cloudLayerUpBuffer, 64, 16, false, radius, CLOUD_LAYER_THICKNESS);
         }
 
-        RenderSystem.setShader(ClinkerShaders::getCloudShader);
-        RenderSystem.setShaderTexture(0, NOISE_TEXTURE);
         poseStack.pushPose();
-        poseStack.translate(0, -camY, 0);
+        poseStack.translate(0, -camY + CLOUDS_START, 0);
 
-        ShaderInstance shader = RenderSystem.getShader();
+        ShaderProgram cloudShader = VeilRenderSystem.setShader(ClinkerShaders.CLOUD);
+        cloudShader.bind();
+        cloudShader.bindSamplers(0);
+        cloudShader.setDefaultUniforms(VertexFormat.Mode.TRIANGLES);
+        cloudShader.setVector("CameraPos", (float) camX, (float) camY, (float) camZ);
+        cloudShader.setVector("SkyCol", skyColor.x() * 0.8F, skyColor.y() * 0.8F, skyColor.z() * 0.8F);
+        float[] fogColors = RenderSystem.getShaderFogColor();
+        cloudShader.setVector("FogCol", fogColors[0], fogColors[1], fogColors[2]);
+        cloudShader.setVector("ScreenResolution", AdvancedFbo.getMainFramebuffer().getWidth(), AdvancedFbo.getMainFramebuffer().getHeight());
+        cloudShader.setSampler("CloudDensity", cloudDensityFBO.getId());
+        cloudShader.setSampler("DiffuseDepthSampler", AdvancedFbo.getMainFramebuffer().getDepthTextureAttachment().getId());
 
-        float transitionLerp = Mth.clamp(
-                MathUtil.mapRange(CLOUDS_START, CLOUDS_START + CLOUD_LAYER_THICKNESS, 0.0F, 1.0F, (float)camY),
-                0.0F, 1.0F);
-
-        // render ordering magic
-        if (Math.abs(camY - CLOUDS_START) < Math.abs(camY - CLOUDS_END)) {
-            if (camY > CLOUDS_START) drawCloudLayer(CLOUDS_END, radius, CLOUD_LAYER_THICKNESS * 0.5F, false, skyColor, transitionLerp, camX, camY, camZ, poseStack, projectionMatrix, shader);
-            if (camY < CLOUDS_END + CLOUD_LAYER_THICKNESS) drawCloudLayer(CLOUDS_START, radius, CLOUD_LAYER_THICKNESS, true, skyColor, transitionLerp, camX, camY, camZ, poseStack, projectionMatrix, shader);
-        } else {
-            if (camY < CLOUDS_END + CLOUD_LAYER_THICKNESS) drawCloudLayer(CLOUDS_START, radius, CLOUD_LAYER_THICKNESS, true, skyColor, transitionLerp, camX, camY, camZ, poseStack, projectionMatrix, shader);
-            if (camY > CLOUDS_START) drawCloudLayer(CLOUDS_END, radius, CLOUD_LAYER_THICKNESS * 0.5F, false, skyColor, transitionLerp, camX, camY, camZ, poseStack, projectionMatrix, shader);
+        if (camY < CLOUDS_START + CLOUD_LAYER_THICKNESS) {
+            cloudLayerDownBuffer.bind();
+            cloudLayerDownBuffer.drawWithShader(poseStack.last().pose(), projectionMatrix, cloudShader.toShaderInstance());
+        }
+        if (camY > CLOUDS_START) {
+            cloudLayerUpBuffer.bind();
+            cloudLayerUpBuffer.drawWithShader(poseStack.last().pose(), projectionMatrix, cloudShader.toShaderInstance());
         }
 
-        // todo:
-        // increase fog surrounding player when inside cloud layer
-        // create a little sphere around the player (at fog distance) to blot surroundings
+        VertexBuffer.unbind();
+        ShaderProgram.unbind();
 
         poseStack.popPose();
+
+//        RenderSystem.setShader(ClinkerShaders::getCloudShader);
+//        RenderSystem.setShaderTexture(0, NOISE_TEXTURE);
+//        poseStack.pushPose();
+//        poseStack.translate(0, -camY, 0);
+//
+//        ShaderInstance shader = RenderSystem.getShader();
+//
+//        float transitionLerp = Mth.clamp(
+//                MathUtil.mapRange(CLOUDS_START, CLOUDS_START + CLOUD_LAYER_THICKNESS, 0.0F, 1.0F, (float)camY),
+//                0.0F, 1.0F);
+//
+//        // render ordering magic
+//        if (Math.abs(camY - CLOUDS_START) < Math.abs(camY - CLOUDS_END)) {
+//            if (camY > CLOUDS_START) drawCloudLayer(CLOUDS_END, radius, CLOUD_LAYER_THICKNESS * 0.5F, false, skyColor, transitionLerp, camX, camY, camZ, poseStack, projectionMatrix, shader);
+//            if (camY < CLOUDS_END + CLOUD_LAYER_THICKNESS) drawCloudLayer(CLOUDS_START, radius, CLOUD_LAYER_THICKNESS, true, skyColor, transitionLerp, camX, camY, camZ, poseStack, projectionMatrix, shader);
+//        } else {
+//            if (camY < CLOUDS_END + CLOUD_LAYER_THICKNESS) drawCloudLayer(CLOUDS_START, radius, CLOUD_LAYER_THICKNESS, true, skyColor, transitionLerp, camX, camY, camZ, poseStack, projectionMatrix, shader);
+//            if (camY > CLOUDS_START) drawCloudLayer(CLOUDS_END, radius, CLOUD_LAYER_THICKNESS * 0.5F, false, skyColor, transitionLerp, camX, camY, camZ, poseStack, projectionMatrix, shader);
+//        }
+//        poseStack.popPose();
+
+//
+//        // todo:
+//        // increase fog surrounding player when inside cloud layer
+//        // create a little sphere around the player (at fog distance) to blot surroundings
+//
+//        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+//        Tesselator tesselator = Tesselator.getInstance();
+//
+//        RenderSystem.disableDepthTest();
+//        float[] fogColor = RenderSystem.getShaderFogColor();
+//        float size = 1;
+//        float alpha = Mth.clamp((float) (camY < CLOUDS_START + CLOUD_LAYER_THICKNESS ?
+//                MathUtils.mapRange(CLOUDS_START, CLOUDS_START + CLOUD_LAYER_THICKNESS,
+//                        0.0F, 1.0F, camY) :
+//                MathUtils.mapRange(CLOUDS_END, CLOUDS_END + CLOUD_LAYER_THICKNESS*0.5F,
+//                        1.0F, 0.0F, camY)), 0.0F, 1.0F);
+//        alpha *= alpha;
+//        PoseStack obscurePose = new PoseStack();
+//        for (int i = 0; i < 6; i++) {
+//            obscurePose.pushPose();
+//            if (i == 1) obscurePose.mulPose(Axis.XP.rotationDegrees(90.0F));
+//            if (i == 2) obscurePose.mulPose(Axis.XP.rotationDegrees(-90.0F));
+//            if (i == 3) obscurePose.mulPose(Axis.XP.rotationDegrees(180.0F));
+//            if (i == 4) obscurePose.mulPose(Axis.ZP.rotationDegrees(90.0F));
+//            if (i == 5) obscurePose.mulPose(Axis.ZP.rotationDegrees(-90.0F));
+//
+//            //(int) (fogColor[0] * 255), (int) (fogColor[1] * 255), (int) (fogColor[2] * 255), (int) (alpha * 255)
+//            Matrix4f matrix4f = obscurePose.last().pose();
+//            BufferBuilder bufferbuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+//            bufferbuilder.addVertex(matrix4f, -size, -size, -size).setColor((int) (fogColor[0] * 255), (int) (fogColor[1] * 255), (int) (fogColor[2] * 255), (int) (alpha * 255));
+//            bufferbuilder.addVertex(matrix4f, -size, -size, size).setColor((int) (fogColor[0] * 255), (int) (fogColor[1] * 255), (int) (fogColor[2] * 255), (int) (alpha * 255));
+//            bufferbuilder.addVertex(matrix4f, size, -size, size).setColor((int) (fogColor[0] * 255), (int) (fogColor[1] * 255), (int) (fogColor[2] * 255), (int) (alpha * 255));
+//            bufferbuilder.addVertex(matrix4f, size, -size, -size).setColor((int) (fogColor[0] * 255), (int) (fogColor[1] * 255), (int) (fogColor[2] * 255), (int) (alpha * 255));
+//            BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
+//            obscurePose.popPose();
+//        }
+//        RenderSystem.enableDepthTest();
+//        poseStack.popPose();
     }
 
     private void drawCloudLayer(float height, float radius, float thickness, boolean lower, Vector3fc skyColor, float fadeLerp,
@@ -145,7 +231,7 @@ public class OthershoreCloudRenderer {
         }
     }
 
-    private VertexBuffer buildCloudBuffer(VertexBuffer vbo, int resolution, int layers, boolean down, float radius) {
+    private VertexBuffer buildCloudBuffer(VertexBuffer vbo, int resolution, int layers, boolean down, float radius, float thickness) {
         Tesselator tesselator = Tesselator.getInstance();
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         BufferBuilder bufferBuilder = tesselator.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_TEX_COLOR);
@@ -155,13 +241,9 @@ public class OthershoreCloudRenderer {
 
         for (int i = 0; i < layers; i++) {
             float offset = (float) i / layers;
-            if (down) {
-                buildDisc(bufferBuilder, resolution, radius, (1.0F - offset),
-                        1.0F, 1.0F, 1.0F, (1.0F - offset), true);
-            } else {
-                buildDisc(bufferBuilder, resolution, radius, offset,
-                        1.0F, 1.0F, 1.0F, offset, false);
-            }
+            if (down) offset = 1.0F - offset;
+            buildDisc(bufferBuilder, resolution, radius, offset * thickness,
+                    1.0F, 1.0F, 1.0F, offset, down);
         }
 
         MeshData renderedBuffer = bufferBuilder.buildOrThrow();

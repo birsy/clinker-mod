@@ -23,6 +23,10 @@ public class ClinkerShaders {
 
     public static final ResourceLocation VOLUME = Clinker.resource("volume/volume");
 
+    public static final ResourceLocation CLOUD_DENSITY = Clinker.resource("cloud/cloud_density");
+
+    public static final ResourceLocation CLOUD = Clinker.resource("cloud/cloud");
+
     @Nullable
     private static ShaderInstance skyCloudShader;
     @Nullable

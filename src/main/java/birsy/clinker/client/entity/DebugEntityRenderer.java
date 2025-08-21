@@ -25,9 +25,9 @@ public class DebugEntityRenderer extends EntityRenderer<Entity> {
         super.render(pEntity, pEntityYaw, pPartialTick, pPoseStack, pBuffer, pPackedLight);
         pPoseStack.pushPose();
         pPoseStack.mulPose(Axis.YN.rotationDegrees(180 + pEntity.getViewYRot(pPartialTick)));
-        pPoseStack.mulPose(Axis.XP.rotationDegrees(pEntity.getViewXRot(pPartialTick)));
+        pPoseStack.mulPose(Axis.XN.rotationDegrees(pEntity.getViewXRot(pPartialTick)));
         pPoseStack.scale(pEntity.getBbWidth(), pEntity.getBbHeight(), pEntity.getBbWidth());
-        pPoseStack.translate(pEntity.getBbWidth() * -0.5F, 0, pEntity.getBbWidth() * -0.5F);
+        pPoseStack.translate(-0.5F, 0, -0.5F);
 
 
         this.dispatcher.renderSingleBlock(Blocks.DISPENSER.defaultBlockState(), pPoseStack, pBuffer, pPackedLight, OverlayTexture.NO_OVERLAY);

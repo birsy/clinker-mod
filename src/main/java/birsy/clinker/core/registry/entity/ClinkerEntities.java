@@ -5,6 +5,7 @@ import birsy.clinker.client.entity.mogul.MogulRenderer;
 import birsy.clinker.common.world.entity.*;
 import birsy.clinker.common.world.entity.gnomad.*;
 import birsy.clinker.common.world.entity.gnomad.mogul.GnomadMogulEntity;
+import birsy.clinker.common.world.entity.homunculoids.SpitterHomunculoid;
 import birsy.clinker.common.world.entity.mold.MoldEntity;
 import birsy.clinker.common.world.entity.projectile.FlechetteEntity;
 import birsy.clinker.common.world.entity.projectile.OrdnanceEntity;
@@ -76,6 +77,16 @@ public class ClinkerEntities {
                     .sized(0.5F, 0.5F)
                     .build(Clinker.resource("test_rope").toString()));
 
+    public static final Supplier<EntityType<SpitterHomunculoid>> SPITTER_HOMUNCULOID = ENTITY_TYPES.register("spitter_homunculoid", () ->
+            EntityType.Builder.of(SpitterHomunculoid::new, MobCategory.MISC)
+                    .sized(0.3F, 0.38F)
+                    .build(Clinker.resource("spitter_homunculoid").toString()));
+
+    public static final Supplier<EntityType<AiTestEntity>> AI_TEST = ENTITY_TYPES.register("ai_test", () ->
+            EntityType.Builder.of(AiTestEntity::new, MobCategory.MISC)
+                    .sized(0.5F, 0.8F)
+                    .build(Clinker.resource("ai_test").toString()));
+
     @SubscribeEvent
     public static void registerEntityAttribute(EntityAttributeCreationEvent event) {
         event.put(GNOMAD_SOLDIER.get(), Zombie.createAttributes().build());
@@ -83,6 +94,11 @@ public class ClinkerEntities {
         event.put(TEST_ROPE.get(), Zombie.createAttributes().build());
 
         event.put(MOLD.get(), MoldEntity.createAttributes().build());
+
+        event.put(SPITTER_HOMUNCULOID.get(), SpitterHomunculoid.createAttributes().build());
+
+        event.put(AI_TEST.get(), Zombie.createAttributes().build());
+
     }
 
     @SubscribeEvent
@@ -100,5 +116,9 @@ public class ClinkerEntities {
 
         event.registerEntityRenderer(ClinkerEntities.COLLIDER.get(), NoopRenderer::new);
         event.registerEntityRenderer(ClinkerEntities.TEST_ROPE.get(), DebugRopeEntityRenderer::new);
+
+        event.registerEntityRenderer(ClinkerEntities.SPITTER_HOMUNCULOID.get(), DebugEntityRenderer::new);
+
+        event.registerEntityRenderer(ClinkerEntities.AI_TEST.get(), DebugEntityRenderer::new);
     }
 }

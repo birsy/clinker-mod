@@ -1,5 +1,6 @@
 package birsy.clinker.common.world.entity.ai.behaviors;
 
+import birsy.clinker.core.Clinker;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.server.level.ServerLevel;
@@ -29,7 +30,7 @@ public class FollowBehindEntity<E extends PathfinderMob> extends ExtendedBehavio
 
     @Override
     protected List<Pair<MemoryModuleType<?>, MemoryStatus>> getMemoryRequirements() {
-        return null;
+        return MEMORY_REQUIREMENTS;
     }
 
     public FollowBehindEntity<E> entityProvider(Function<E, Entity> entityProvider) {

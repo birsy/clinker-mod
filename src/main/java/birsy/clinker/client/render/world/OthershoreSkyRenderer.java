@@ -3,6 +3,7 @@ package birsy.clinker.client.render.world;
 import birsy.clinker.client.render.ClinkerShaders;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtil;
+import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.shaders.Uniform;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -14,6 +15,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -57,7 +59,7 @@ public class OthershoreSkyRenderer {
     public void render(ClientLevel level, int ticks, float partialTick, PoseStack poseStack, Camera camera, Matrix4f projectionMatrix, Vector3fc skyColor) {
         Minecraft mc = Minecraft.getInstance();
         Vec3 cameraPos = camera.getPosition();
-
+        cameraPos = cameraPos.add(0, 160, 0);
         Matrix4f projMatrix = new Matrix4f(projectionMatrix);
         RenderSystem.setProjectionMatrix(projMatrix.setPerspective(
                 (float)(mc.gameRenderer.getFov(camera, partialTick, true) * (float) (Math.PI / 180.0)),

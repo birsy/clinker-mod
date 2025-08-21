@@ -1,0 +1,7 @@
+{
+  "vertex": "veil:blit_screen",
+  "fragment": "clinker:cloud/cloud_density",
+  "textures": {
+    "NoiseSampler": "clinker:textures/environment/noise.png"
+  }
+}
