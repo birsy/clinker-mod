@@ -30,12 +30,13 @@ public class NoiseCache {
                 case NONE -> null;
                 case DIRECT -> new DirectNoiseMap(this.height);
                 case TWO_DIMENSIONAL -> new TwoDimensionalNoiseMap();
-                case INTERPOLATED_COARSE -> new InterpolatedNoiseMap(this.height, 4, 8);
-                case INTERPOLATED_2D_COARSE -> new Interpolated2DNoiseMap(4);
-                case INTERPOLATED_FINE -> new InterpolatedNoiseMap(this.height, 2, 4);
-                case INTERPOLATED_2D_FINE -> new Interpolated2DNoiseMap(2);
-                case INTERPOLATED_VERY_COARSE -> new InterpolatedNoiseMap(this.height, 16, 16); // todo: get this working as 16x16
-                case INTERPOLATED_2D_VERY_COARSE -> new Interpolated2DNoiseMap(16);
+                case INTERPOLATED_COARSE -> new InterpolatedNoiseMap(this.height, 4, 8, false);
+                case INTERPOLATED_2D_COARSE -> new Interpolated2DNoiseMap(4, false);
+                case INTERPOLATED_FINE -> new InterpolatedNoiseMap(this.height, 2, 4, false);
+                case INTERPOLATED_2D_FINE -> new Interpolated2DNoiseMap(2, false);
+                case INTERPOLATED_VERY_COARSE -> new InterpolatedNoiseMap(this.height, 16, 16, false);
+                case INTERPOLATED_2D_VERY_COARSE -> new Interpolated2DNoiseMap(16, false);
+                case FINAL_DENSITY -> new InterpolatedNoiseMap(this.height, 2, 4, true);
             };
 
             noiseMap.fill(minX, minY, minZ, noiseProcessor, this);
@@ -110,27 +111,27 @@ public class NoiseCache {
     private class InterpolatedNoiseMap extends NoiseMap {
         final int cellWidth, cellHeight;
         final int horizontalResolution, verticalResolution;
+        final int cellCountHorizontal, cellCountVertical;
         final double[] map;
 
-        private InterpolatedNoiseMap(int height, int cellWidth, int cellHeight) {
+        private InterpolatedNoiseMap(int height, int cellWidth, int cellHeight, boolean finalDensity) {
             this.cellWidth = cellWidth;
             this.cellHeight = cellHeight;
             this.horizontalResolution = 16 / cellWidth;
             this.verticalResolution = height / cellHeight;
-            this.map = new double[
-                    (horizontalResolution + 2) *
-                    (horizontalResolution + 2) *
-                    (verticalResolution + 2)
-            ];
+
+            this.cellCountHorizontal = finalDensity ? horizontalResolution + 1 : horizontalResolution + 2;
+            this.cellCountVertical = finalDensity ? verticalResolution + 1 : verticalResolution + 2;
+            this.map = new double[this.cellCountHorizontal * this.cellCountHorizontal * this.cellCountVertical];
         }
 
         @Override
         void fill(int minX, int minY, int minZ, NoiseComputer noiseProcessor, NoiseCache noiseProvider) {
-            for (int x = 0; x < horizontalResolution + 2; x++) {
+            for (int x = 0; x < this.cellCountHorizontal; x++) {
                 int blockX = x * cellWidth + minX;
-                for (int z = 0; z < horizontalResolution + 2; z++) {
+                for (int z = 0; z < this.cellCountHorizontal; z++) {
                     int blockZ = z * cellWidth + minZ;
-                    for (int y = 0; y < verticalResolution + 2; y++) {
+                    for (int y = 0; y < this.cellCountVertical; y++) {
                         int blockY = y * cellHeight + minY;
 
                         int i = index(x, y, z);
@@ -166,26 +167,33 @@ public class NoiseCache {
         }
 
         private int index(int x, int y, int z) {
-            return x + z * (horizontalResolution + 2) + y * (horizontalResolution + 2) * (horizontalResolution + 2);
+            x = Math.clamp(x, 0, this.cellCountHorizontal);
+            y = Math.clamp(y, 0, this.cellCountVertical);
+            z = Math.clamp(z, 0, this.cellCountHorizontal);
+            int i = x + z * this.cellCountHorizontal + y * this.cellCountHorizontal * this.cellCountHorizontal;
+            if (i >= this.map.length) Clinker.LOGGER.error("{}, {}, {}", x, y, z);
+            return i;
         }
     }
     
     private class Interpolated2DNoiseMap extends NoiseMap {
         final int cellWidth;
         final int horizontalResolution;
+        final int cellCountHorizontal;
         final double[] map;
 
-        private Interpolated2DNoiseMap(int cellWidth) {
+        private Interpolated2DNoiseMap(int cellWidth, boolean finalDensity) {
             this.cellWidth = cellWidth;
             this.horizontalResolution = 16 / cellWidth;
-            this.map = new double[(horizontalResolution + 2) * (horizontalResolution + 2)];
+            this.cellCountHorizontal = finalDensity ? this.horizontalResolution + 1 : this.horizontalResolution + 2;
+            this.map = new double[this.cellCountHorizontal * this.cellCountHorizontal];
         }
 
         @Override
         void fill(int minX, int minY, int minZ, NoiseComputer noiseProcessor, NoiseCache noiseProvider) {
-            for (int x = 0; x < horizontalResolution + 2; x++) {
+            for (int x = 0; x < this.cellCountHorizontal; x++) {
                 int blockX = x * cellWidth + minX;
-                for (int z = 0; z < horizontalResolution + 2; z++) {
+                for (int z = 0; z < this.cellCountHorizontal; z++) {
                     int blockZ = z * cellWidth + minZ;
                     int i = index(x, z);
                     map[i] = noiseProcessor.compute(blockX, 0, blockZ, noiseProvider);
@@ -209,7 +217,11 @@ public class NoiseCache {
         }
 
         private int index(int x, int z) {
-            return x + z * (horizontalResolution + 2);
+            x = Math.clamp(x, 0, this.cellCountHorizontal);
+            z = Math.clamp(z, 0, this.cellCountHorizontal);
+            int i = x + z * this.cellCountHorizontal;
+            if (i >= this.map.length) Clinker.LOGGER.error("{}, {}", x, z);
+            return i;
         }
     }
 }

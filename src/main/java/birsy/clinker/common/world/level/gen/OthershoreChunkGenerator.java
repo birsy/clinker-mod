@@ -8,10 +8,11 @@ import birsy.clinker.common.world.level.gen.worldfeature.MetaChunkMapHolder;
 import birsy.clinker.common.world.level.gen.worldfeature.WorldFeature;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlocks;
+import birsy.clinker.core.util.MathUtils;
+import birsy.clinker.core.util.noise.FastNoiseLite;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.NoiseColumn;
@@ -35,7 +36,12 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             obj -> obj.group(BiomeSource.CODEC.fieldOf("biome_source").forGetter(OthershoreChunkGenerator::getBiomeSource))
                       .apply(obj, obj.stable(OthershoreChunkGenerator::new))
     );
-    private static final ResourceLocation FINAL_DENSITY_KEY = Clinker.resource("final_density");
+    private static final FastNoiseLite noise = new FastNoiseLite();
+    static {
+        noise.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2S);
+        noise.SetFractalOctaves(0);
+        noise.SetFrequency(1);
+    }
 
     public OthershoreChunkGenerator(BiomeSource biomeSource) {
         super(biomeSource);
@@ -56,16 +62,30 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
     @Override
     public CompletableFuture<ChunkAccess> fillFromNoise(Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunk) {
-        NoiseCache noiseCache = new NoiseCache(
-                chunk.getPos().getMinBlockX(), chunk.getMinBuildHeight(), chunk.getPos().getMinBlockZ(), chunk.getHeight(),
-                ((WorldSeedHolder)(Object)randomState).clinker$getWorldSeed()
-        );
-        NoiseComputer surfaceHeightComputer = new NoiseComputer("surface_height", CacheType.INTERPOLATED_2D_VERY_COARSE, (x, y, z, noise) -> {
+        long seed = ((WorldSeedHolder)(Object)randomState).clinker$getWorldSeed();
+        noise.SetSeed((int) (seed % Integer.MAX_VALUE));
+        NoiseCache noiseCache = new NoiseCache(chunk.getPos().getMinBlockX(), chunk.getMinBuildHeight(), chunk.getPos().getMinBlockZ(), chunk.getHeight(), seed);
+
+        NoiseComputer surfaceHeightComputer = new NoiseComputer("surface_height", CacheType.INTERPOLATED_2D_VERY_COARSE, (x, y, z, nCache) -> {
             return 64 + Math.sin(x * 0.1) * 4 + Math.cos(z * 0.12) * 1.5;
         });
-        NoiseComputer finalDensityComputer = new NoiseComputer("final_density", CacheType.INTERPOLATED_FINE, (x, y, z, noise) -> {
-            double surfaceHeight = noise.compute(x, y, z, surfaceHeightComputer);
+
+        NoiseComputer caveComputer = new NoiseComputer("caves", CacheType.INTERPOLATED_FINE, (x, y, z, nCache) -> {
+            double frequency = 1.0 / 64.0;
+            double caveNoiseA = noise.GetNoise(x * frequency, y * frequency, z * frequency);
+            double caveNoiseB = noise.GetNoise(x * frequency, y * frequency + chunk.getHeight(), z * frequency);
+
+            double val = Math.sqrt(caveNoiseA * caveNoiseA + caveNoiseB * caveNoiseB) / frequency;
+            val -= 8;
+            return -val;
+        });
+
+        NoiseComputer finalDensityComputer = new NoiseComputer("final_density", CacheType.FINAL_DENSITY, (x, y, z, nCache) -> {
+            double surfaceHeight = nCache.compute(x, y, z, surfaceHeightComputer);
             double value = y - surfaceHeight;
+            double caves = nCache.compute(x, y, z, caveComputer);
+            value = Math.max(value, caves);
+
             List<WorldFeature> worldFeatures = ((MetaChunkMapHolder) (Object) randomState).clinker$metaChunkMap()
                     .getWorldFeatures(chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());
             for (WorldFeature worldFeature : worldFeatures) {
@@ -77,7 +97,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         Heightmap heightmapOceanFloor = chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.OCEAN_FLOOR_WG);
         Heightmap heightmapWorldSurface = chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.WORLD_SURFACE_WG);
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
-        for (int yi = 0; yi < chunk.getHeight(); yi++) {
+        for (int yi = 0; yi < chunk.getHeight() - 1; yi++) {
             pos.setY(yi + chunk.getMinBuildHeight());
             for (int xi = 0; xi < 16; xi++) {
                 pos.setX(xi + chunk.getPos().getMinBlockX());
