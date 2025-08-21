@@ -1,0 +1,8 @@
+package birsy.clinker.common.world.level.gen.noise;
+
+public enum CacheType {
+    NONE,
+    DIRECT, TWO_DIMENSIONAL,
+    INTERPOLATED_COARSE, INTERPOLATED_2D_COARSE,
+    INTERPOLATED_FINE, INTERPOLATED_2D_FINE;
+}

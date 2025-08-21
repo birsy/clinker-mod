@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.level.gen.noiseprovider;
+package birsy.clinker.common.world.level.gen.noise;
 
 public interface WorldSeedHolder {
     long clinker$getWorldSeed();

@@ -1,5 +1,9 @@
 package birsy.clinker.common.world.level.gen;
 
+import birsy.clinker.common.world.level.gen.noise.CacheType;
+import birsy.clinker.common.world.level.gen.noise.NoiseCache;
+import birsy.clinker.common.world.level.gen.noise.NoiseComputer;
+import birsy.clinker.common.world.level.gen.noise.WorldSeedHolder;
 import birsy.clinker.common.world.level.gen.worldfeature.MetaChunkMapHolder;
 import birsy.clinker.common.world.level.gen.worldfeature.WorldFeature;
 import birsy.clinker.core.Clinker;
@@ -7,6 +11,7 @@ import birsy.clinker.core.registry.ClinkerBlocks;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.NoiseColumn;
@@ -30,6 +35,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             obj -> obj.group(BiomeSource.CODEC.fieldOf("biome_source").forGetter(OthershoreChunkGenerator::getBiomeSource))
                       .apply(obj, obj.stable(OthershoreChunkGenerator::new))
     );
+    private static final ResourceLocation FINAL_DENSITY_KEY = Clinker.resource("final_density");
 
     public OthershoreChunkGenerator(BiomeSource biomeSource) {
         super(biomeSource);
@@ -50,34 +56,48 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
     @Override
     public CompletableFuture<ChunkAccess> fillFromNoise(Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunk) {
-        double[][][] noise = new double[16][chunk.getHeight()][16];
+//        double[][][] noise = new double[16][chunk.getHeight()][16];
+//
+//        for (int yi = 0; yi < chunk.getHeight(); yi++) {
+//            int y= yi + chunk.getMinBuildHeight();
+//            double value = y - 64;
+//            for (int xi = 0; xi < 16; xi++) {
+//                for (int zi = 0; zi < 16; zi++) {
+//                    noise[xi][yi][zi] = value * 0.1;
+//                }
+//            }
+//        }
+//
+//        List<WorldFeature> worldFeatures = ((MetaChunkMapHolder)(Object)randomState).clinker$metaChunkMap()
+//                .getWorldFeatures(chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());
+//        int count = worldFeatures.size();
+//        Clinker.LOGGER.info("this chunk contains {} world features", count);
+//        for (WorldFeature worldFeature : worldFeatures) {
+//            for (int yi = 0; yi < chunk.getHeight(); yi++) {
+//                int y= yi + chunk.getMinBuildHeight();
+//                for (int xi = 0; xi < 16; xi++) {
+//                    int x = xi + chunk.getPos().getMinBlockX();
+//                    for (int zi = 0; zi < 16; zi++) {
+//                        int z = zi + chunk.getPos().getMinBlockZ();
+//                        noise[xi][yi][zi] = worldFeature.modifyTerrain(x, y, z, noise[xi][yi][zi]);
+//                    }
+//                }
+//            }
+//        }
 
-        for (int yi = 0; yi < chunk.getHeight(); yi++) {
-            int y= yi + chunk.getMinBuildHeight();
-            double value = y - 64;
-            for (int xi = 0; xi < 16; xi++) {
-                for (int zi = 0; zi < 16; zi++) {
-                    noise[xi][yi][zi] = value * 0.1;
-                }
+        NoiseCache noiseCache = new NoiseCache(
+                chunk.getPos().getMinBlockX(), chunk.getMinBuildHeight(), chunk.getPos().getMinBlockZ(), chunk.getHeight(),
+                ((WorldSeedHolder)(Object)randomState).clinker$getWorldSeed()
+        );
+        NoiseComputer finalDensityComputer = new NoiseComputer(FINAL_DENSITY_KEY, CacheType.INTERPOLATED_FINE, (x, y, z, noise) -> {
+            double value = y - (64 + Math.sin(x * 0.1) * 10);
+            List<WorldFeature> worldFeatures = ((MetaChunkMapHolder) (Object) randomState).clinker$metaChunkMap()
+                    .getWorldFeatures(chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());
+            for (WorldFeature worldFeature : worldFeatures) {
+                value = worldFeature.modifyTerrain(x, y, z, value);
             }
-        }
-
-        List<WorldFeature> worldFeatures = ((MetaChunkMapHolder)(Object)randomState).clinker$metaChunkMap()
-                .getWorldFeatures(chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());
-        int count = worldFeatures.size();
-        Clinker.LOGGER.info("this chunk contains {} world features", count);
-        for (WorldFeature worldFeature : worldFeatures) {
-            for (int yi = 0; yi < chunk.getHeight(); yi++) {
-                int y= yi + chunk.getMinBuildHeight();
-                for (int xi = 0; xi < 16; xi++) {
-                    int x = xi + chunk.getPos().getMinBlockX();
-                    for (int zi = 0; zi < 16; zi++) {
-                        int z = zi + chunk.getPos().getMinBlockZ();
-                        noise[xi][yi][zi] = worldFeature.modifyTerrain(x, y, z, noise[xi][yi][zi]);
-                    }
-                }
-            }
-        }
+            return value * 0.1;
+        });
 
         Heightmap heightmapOceanFloor = chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.OCEAN_FLOOR_WG);
         Heightmap heightmapWorldSurface = chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.WORLD_SURFACE_WG);
@@ -88,9 +108,11 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                 pos.setX(xi + chunk.getPos().getMinBlockX());
                 for (int zi = 0; zi < 16; zi++) {
                     pos.setZ(zi + chunk.getPos().getMinBlockZ());
-                    double value = noise[xi][yi][zi];
+
+                    double value = noiseCache.compute(xi, yi, zi, finalDensityComputer);
                     BlockState state = value < 0 ? ClinkerBlocks.BRIMSTONE.get().defaultBlockState() : Blocks.AIR.defaultBlockState();
                     chunk.setBlockState(pos, state, false);
+
                     heightmapOceanFloor.update(xi, yi, zi, state);
                     heightmapWorldSurface.update(xi, yi, zi, state);
                 }

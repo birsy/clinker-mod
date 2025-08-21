@@ -1,6 +1,6 @@
 package birsy.clinker.mixin.common;
 
-import birsy.clinker.common.world.level.gen.noiseprovider.WorldSeedHolder;
+import birsy.clinker.common.world.level.gen.noise.WorldSeedHolder;
 import birsy.clinker.common.world.level.gen.worldfeature.MetaChunkMap;
 import birsy.clinker.common.world.level.gen.worldfeature.MetaChunkMapHolder;
 import net.minecraft.core.HolderGetter;

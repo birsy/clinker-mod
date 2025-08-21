@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.level.gen.noiseprovider;
+package birsy.clinker.common.world.level.gen.noise;
 
 import net.minecraft.util.Mth;
 
@@ -10,7 +10,7 @@ public class NoiseCache {
     private final int height;
     private final Map<NoiseComputer, NoiseMap> noiseProcessorCaches;
 
-    public NoiseCache(int minX, int minY, int minZ, long seed, int height) {
+    public NoiseCache(int minX, int minY, int minZ, int height, long seed) {
         this.minX = minX;
         this.minY = minY;
         this.minZ = minZ;
@@ -20,7 +20,7 @@ public class NoiseCache {
 
     public double compute(int x, int y, int z, NoiseComputer noiseProcessor) {
         if (noiseProcessor.cacheType() == CacheType.NONE) {
-            return noiseProcessor.compute(x, y, z, this);
+            return noiseProcessor.compute(x + minX, y + minY, z + minY, this);
         }
 
         if (!noiseProcessorCaches.containsKey(noiseProcessor)) {
@@ -28,11 +28,14 @@ public class NoiseCache {
                 case NONE -> null;
                 case DIRECT -> new DirectNoiseMap(this.height);
                 case TWO_DIMENSIONAL -> new TwoDimensionalNoiseMap();
-                case INTERPOLATED -> new InterpolatedNoiseMap(this.height);
-                case INTERPOLATED_TWO_DIMENSIONAL -> new InterpolatedTwoDimensionalNoiseMap();
+                case INTERPOLATED_COARSE -> new InterpolatedNoiseMap(this.height, 4, 8);
+                case INTERPOLATED_2D_COARSE -> new Interpolated2DNoiseMap(4);
+                case INTERPOLATED_FINE -> new InterpolatedNoiseMap(this.height, 2, 4);
+                case INTERPOLATED_2D_FINE -> new Interpolated2DNoiseMap(2);
             };
 
             noiseMap.fill(minX, minY, minZ, noiseProcessor, this);
+            noiseProcessorCaches.put(noiseProcessor, noiseMap);
         }
         return noiseProcessorCaches.get(noiseProcessor).retrieve(x, y, z);
     }
@@ -101,12 +104,14 @@ public class NoiseCache {
     }
 
     private class InterpolatedNoiseMap extends NoiseMap {
-        static int cellWidth = 4, cellHeight = 8;
-        static int horizontalResolution = 16 / cellWidth;
-        final int verticalResolution;
+        final int cellWidth, cellHeight;
+        final int horizontalResolution, verticalResolution;
         final double[] map;
 
-        private InterpolatedNoiseMap(int height) {
+        private InterpolatedNoiseMap(int height, int cellWidth, int cellHeight) {
+            this.cellWidth = cellWidth;
+            this.cellHeight = cellHeight;
+            this.horizontalResolution = 16 / cellWidth;
             this.verticalResolution = height / cellHeight;
             this.map = new double[
                     (horizontalResolution + 1) *
@@ -118,11 +123,11 @@ public class NoiseCache {
         @Override
         void fill(int minX, int minY, int minZ, NoiseComputer noiseProcessor, NoiseCache noiseProvider) {
             for (int x = 0; x < horizontalResolution + 1; x++) {
-                int blockX = x * horizontalResolution + minX;
+                int blockX = x * cellWidth + minX;
                 for (int z = 0; z < horizontalResolution + 1; z++) {
-                    int blockZ = z * horizontalResolution + minZ;
+                    int blockZ = z * cellWidth + minZ;
                     for (int y = 0; y < verticalResolution + 1; y++) {
-                        int blockY = y * verticalResolution + minY;
+                        int blockY = y * cellHeight + minY;
                         int i = index(x, y, z);
                         map[i] = noiseProcessor.compute(blockX, blockY, blockZ, noiseProvider);
                     }
@@ -155,17 +160,19 @@ public class NoiseCache {
             );
         }
 
-        private static int index(int x, int y, int z) {
+        private int index(int x, int y, int z) {
             return x + z * (horizontalResolution + 1) + y * (horizontalResolution + 1) * (horizontalResolution + 1);
         }
     }
     
-    private class InterpolatedTwoDimensionalNoiseMap extends NoiseMap {
-        static int cellWidth = 4;
-        static int horizontalResolution = 16 / cellWidth;
+    private class Interpolated2DNoiseMap extends NoiseMap {
+        final int cellWidth;
+        final int horizontalResolution;
         final double[] map;
 
-        private InterpolatedTwoDimensionalNoiseMap() {
+        private Interpolated2DNoiseMap(int cellWidth) {
+            this.cellWidth = cellWidth;
+            this.horizontalResolution = 16 / cellWidth;
             this.map = new double[
                     (horizontalResolution + 1) *
                     (horizontalResolution + 1)
@@ -175,9 +182,9 @@ public class NoiseCache {
         @Override
         void fill(int minX, int minY, int minZ, NoiseComputer noiseProcessor, NoiseCache noiseProvider) {
             for (int x = 0; x < horizontalResolution + 1; x++) {
-                int blockX = x * horizontalResolution + minX;
+                int blockX = x * cellWidth + minX;
                 for (int z = 0; z < horizontalResolution + 1; z++) {
-                    int blockZ = z * horizontalResolution + minZ;
+                    int blockZ = z * cellWidth + minZ;
                     int i = index(x, z);
                     map[i] = noiseProcessor.compute(blockX, 0, blockZ, noiseProvider);
                 }
@@ -199,7 +206,7 @@ public class NoiseCache {
             return Mth.lerp2(fracX, fracZ, n00, n10, n01, n11);
         }
 
-        private static int index(int x, int z) {
+        private int index(int x, int z) {
             return x + z * (horizontalResolution + 1);
         }
     }
