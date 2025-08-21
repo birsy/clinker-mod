@@ -1,9 +1,7 @@
 package birsy.clinker.common.world.level.gen.noise;
 
-import net.minecraft.resources.ResourceLocation;
-
-public record NoiseComputer(ResourceLocation identifier, CacheType cacheType, NoiseFunction noiseFunction) {
-    public NoiseComputer(ResourceLocation identifier, CacheType cacheType, NoiseComputer existingNoiseProcessor) {
+public record NoiseComputer(String identifier, CacheType cacheType, NoiseFunction noiseFunction) {
+    public NoiseComputer(String identifier, CacheType cacheType, NoiseComputer existingNoiseProcessor) {
         this(identifier, cacheType, existingNoiseProcessor.noiseFunction);
     }
 

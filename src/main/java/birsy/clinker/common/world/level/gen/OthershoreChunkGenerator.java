@@ -56,41 +56,16 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
     @Override
     public CompletableFuture<ChunkAccess> fillFromNoise(Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunk) {
-//        double[][][] noise = new double[16][chunk.getHeight()][16];
-//
-//        for (int yi = 0; yi < chunk.getHeight(); yi++) {
-//            int y= yi + chunk.getMinBuildHeight();
-//            double value = y - 64;
-//            for (int xi = 0; xi < 16; xi++) {
-//                for (int zi = 0; zi < 16; zi++) {
-//                    noise[xi][yi][zi] = value * 0.1;
-//                }
-//            }
-//        }
-//
-//        List<WorldFeature> worldFeatures = ((MetaChunkMapHolder)(Object)randomState).clinker$metaChunkMap()
-//                .getWorldFeatures(chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());
-//        int count = worldFeatures.size();
-//        Clinker.LOGGER.info("this chunk contains {} world features", count);
-//        for (WorldFeature worldFeature : worldFeatures) {
-//            for (int yi = 0; yi < chunk.getHeight(); yi++) {
-//                int y= yi + chunk.getMinBuildHeight();
-//                for (int xi = 0; xi < 16; xi++) {
-//                    int x = xi + chunk.getPos().getMinBlockX();
-//                    for (int zi = 0; zi < 16; zi++) {
-//                        int z = zi + chunk.getPos().getMinBlockZ();
-//                        noise[xi][yi][zi] = worldFeature.modifyTerrain(x, y, z, noise[xi][yi][zi]);
-//                    }
-//                }
-//            }
-//        }
-
         NoiseCache noiseCache = new NoiseCache(
                 chunk.getPos().getMinBlockX(), chunk.getMinBuildHeight(), chunk.getPos().getMinBlockZ(), chunk.getHeight(),
                 ((WorldSeedHolder)(Object)randomState).clinker$getWorldSeed()
         );
-        NoiseComputer finalDensityComputer = new NoiseComputer(FINAL_DENSITY_KEY, CacheType.INTERPOLATED_FINE, (x, y, z, noise) -> {
-            double value = y - (64 + Math.sin(x * 0.1) * 10);
+        NoiseComputer surfaceHeightComputer = new NoiseComputer("surface_height", CacheType.INTERPOLATED_2D_VERY_COARSE, (x, y, z, noise) -> {
+            return 64 + Math.sin(x * 0.1) * 4 + Math.cos(z * 0.12) * 1.5;
+        });
+        NoiseComputer finalDensityComputer = new NoiseComputer("final_density", CacheType.INTERPOLATED_FINE, (x, y, z, noise) -> {
+            double surfaceHeight = noise.compute(x, y, z, surfaceHeightComputer);
+            double value = y - surfaceHeight;
             List<WorldFeature> worldFeatures = ((MetaChunkMapHolder) (Object) randomState).clinker$metaChunkMap()
                     .getWorldFeatures(chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());
             for (WorldFeature worldFeature : worldFeatures) {
@@ -109,7 +84,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                 for (int zi = 0; zi < 16; zi++) {
                     pos.setZ(zi + chunk.getPos().getMinBlockZ());
 
-                    double value = noiseCache.compute(xi, yi, zi, finalDensityComputer);
+                    double value = noiseCache.compute(pos.getX(), pos.getY(), pos.getZ(), finalDensityComputer);
                     BlockState state = value < 0 ? ClinkerBlocks.BRIMSTONE.get().defaultBlockState() : Blocks.AIR.defaultBlockState();
                     chunk.setBlockState(pos, state, false);
 

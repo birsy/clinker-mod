@@ -1,5 +1,6 @@
 package birsy.clinker.common.world.level.gen.noise;
 
+import birsy.clinker.core.Clinker;
 import net.minecraft.util.Mth;
 
 import java.util.HashMap;
@@ -19,8 +20,9 @@ public class NoiseCache {
     }
 
     public double compute(int x, int y, int z, NoiseComputer noiseProcessor) {
+        int localX = x - minX, localY = y - minY, localZ = z - minZ;
         if (noiseProcessor.cacheType() == CacheType.NONE) {
-            return noiseProcessor.compute(x + minX, y + minY, z + minY, this);
+            return noiseProcessor.compute(x, y, z, this);
         }
 
         if (!noiseProcessorCaches.containsKey(noiseProcessor)) {
@@ -32,12 +34,14 @@ public class NoiseCache {
                 case INTERPOLATED_2D_COARSE -> new Interpolated2DNoiseMap(4);
                 case INTERPOLATED_FINE -> new InterpolatedNoiseMap(this.height, 2, 4);
                 case INTERPOLATED_2D_FINE -> new Interpolated2DNoiseMap(2);
+                case INTERPOLATED_VERY_COARSE -> new InterpolatedNoiseMap(this.height, 16, 16); // todo: get this working as 16x16
+                case INTERPOLATED_2D_VERY_COARSE -> new Interpolated2DNoiseMap(16);
             };
 
             noiseMap.fill(minX, minY, minZ, noiseProcessor, this);
             noiseProcessorCaches.put(noiseProcessor, noiseMap);
         }
-        return noiseProcessorCaches.get(noiseProcessor).retrieve(x, y, z);
+        return noiseProcessorCaches.get(noiseProcessor).retrieve(localX, localY, localZ);
     }
 
     private abstract class NoiseMap {
@@ -114,20 +118,21 @@ public class NoiseCache {
             this.horizontalResolution = 16 / cellWidth;
             this.verticalResolution = height / cellHeight;
             this.map = new double[
-                    (horizontalResolution + 1) *
-                    (horizontalResolution + 1) *
-                    (this.verticalResolution + 1)
+                    (horizontalResolution + 2) *
+                    (horizontalResolution + 2) *
+                    (verticalResolution + 2)
             ];
         }
 
         @Override
         void fill(int minX, int minY, int minZ, NoiseComputer noiseProcessor, NoiseCache noiseProvider) {
-            for (int x = 0; x < horizontalResolution + 1; x++) {
+            for (int x = 0; x < horizontalResolution + 2; x++) {
                 int blockX = x * cellWidth + minX;
-                for (int z = 0; z < horizontalResolution + 1; z++) {
+                for (int z = 0; z < horizontalResolution + 2; z++) {
                     int blockZ = z * cellWidth + minZ;
-                    for (int y = 0; y < verticalResolution + 1; y++) {
+                    for (int y = 0; y < verticalResolution + 2; y++) {
                         int blockY = y * cellHeight + minY;
+
                         int i = index(x, y, z);
                         map[i] = noiseProcessor.compute(blockX, blockY, blockZ, noiseProvider);
                     }
@@ -161,7 +166,7 @@ public class NoiseCache {
         }
 
         private int index(int x, int y, int z) {
-            return x + z * (horizontalResolution + 1) + y * (horizontalResolution + 1) * (horizontalResolution + 1);
+            return x + z * (horizontalResolution + 2) + y * (horizontalResolution + 2) * (horizontalResolution + 2);
         }
     }
     
@@ -173,17 +178,14 @@ public class NoiseCache {
         private Interpolated2DNoiseMap(int cellWidth) {
             this.cellWidth = cellWidth;
             this.horizontalResolution = 16 / cellWidth;
-            this.map = new double[
-                    (horizontalResolution + 1) *
-                    (horizontalResolution + 1)
-            ];
+            this.map = new double[(horizontalResolution + 2) * (horizontalResolution + 2)];
         }
 
         @Override
         void fill(int minX, int minY, int minZ, NoiseComputer noiseProcessor, NoiseCache noiseProvider) {
-            for (int x = 0; x < horizontalResolution + 1; x++) {
+            for (int x = 0; x < horizontalResolution + 2; x++) {
                 int blockX = x * cellWidth + minX;
-                for (int z = 0; z < horizontalResolution + 1; z++) {
+                for (int z = 0; z < horizontalResolution + 2; z++) {
                     int blockZ = z * cellWidth + minZ;
                     int i = index(x, z);
                     map[i] = noiseProcessor.compute(blockX, 0, blockZ, noiseProvider);
@@ -207,7 +209,7 @@ public class NoiseCache {
         }
 
         private int index(int x, int z) {
-            return x + z * (horizontalResolution + 1);
+            return x + z * (horizontalResolution + 2);
         }
     }
 }
