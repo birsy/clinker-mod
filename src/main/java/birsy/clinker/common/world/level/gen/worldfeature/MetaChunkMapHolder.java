@@ -1,5 +1,5 @@
 package birsy.clinker.common.world.level.gen.worldfeature;
 
-public interface MetaChunkMapOwner {
+public interface MetaChunkMapHolder {
     MetaChunkMap clinker$metaChunkMap();
 }

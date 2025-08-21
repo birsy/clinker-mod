@@ -1,31 +1,30 @@
 package birsy.clinker.common.world.level.gen.noiseprovider;
 
 import net.minecraft.util.Mth;
-import net.minecraft.world.level.levelgen.NoiseChunk;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class NoiseProvider {
+public class NoiseCache {
     private final int minX, minY, minZ;
     private final int height;
-    final private Map<Noise, NoiseMap> maps;
+    private final Map<NoiseComputer, NoiseMap> noiseProcessorCaches;
 
-    public NoiseProvider(int minX, int minY, int minZ, int height) {
+    public NoiseCache(int minX, int minY, int minZ, long seed, int height) {
         this.minX = minX;
         this.minY = minY;
         this.minZ = minZ;
         this.height = height;
-        this.maps = new HashMap<>(16);
+        this.noiseProcessorCaches = new HashMap<>(16);
     }
 
-    public double compute(int x, int y, int z, Noise noise) {
-        if (noise.cacheType == CacheType.NONE) {
-            return noise.noiseFunction.compute(x, y, z, this);
+    public double compute(int x, int y, int z, NoiseComputer noiseProcessor) {
+        if (noiseProcessor.cacheType() == CacheType.NONE) {
+            return noiseProcessor.compute(x, y, z, this);
         }
-        
-        if (!maps.containsKey(noise)) {
-            NoiseMap noiseMap = switch (noise.cacheType) {
+
+        if (!noiseProcessorCaches.containsKey(noiseProcessor)) {
+            NoiseMap noiseMap = switch (noiseProcessor.cacheType()) {
                 case NONE -> null;
                 case DIRECT -> new DirectNoiseMap(this.height);
                 case TWO_DIMENSIONAL -> new TwoDimensionalNoiseMap();
@@ -33,13 +32,13 @@ public class NoiseProvider {
                 case INTERPOLATED_TWO_DIMENSIONAL -> new InterpolatedTwoDimensionalNoiseMap();
             };
 
-            noiseMap.fill(minX, minY, minZ, noise, this);
+            noiseMap.fill(minX, minY, minZ, noiseProcessor, this);
         }
-        return maps.get(noise).retrieve(x, y, z);
+        return noiseProcessorCaches.get(noiseProcessor).retrieve(x, y, z);
     }
 
     private abstract class NoiseMap {
-        abstract void fill(int minX, int minY, int minZ, Noise noiseFunction, NoiseProvider noiseProvider);
+        abstract void fill(int minX, int minY, int minZ, NoiseComputer noiseProcessorFunction, NoiseCache noiseProvider);
         abstract double retrieve(int x, int y, int z);
     }
 
@@ -53,12 +52,12 @@ public class NoiseProvider {
         }
 
         @Override
-        void fill(int minX, int minY, int minZ, Noise noise, NoiseProvider noiseProvider) {
+        void fill(int minX, int minY, int minZ, NoiseComputer noiseProcessor, NoiseCache noiseProvider) {
             for (int x = 0; x < 16; x++) {
                 for (int z = 0; z < 16; z++) {
                     for (int y = 0; y < this.height; y++) {
                         int i = index(x, y, z);
-                        map[i] = noise.noiseFunction.compute(x + minX, y + minY, z + minZ, noiseProvider);
+                        map[i] = noiseProcessor.compute(x + minX, y + minY, z + minZ, noiseProvider);
                     }
                 }
             }
@@ -82,11 +81,11 @@ public class NoiseProvider {
         }
 
         @Override
-        void fill(int minX, int minY, int minZ, Noise noise, NoiseProvider noiseProvider) {
+        void fill(int minX, int minY, int minZ, NoiseComputer noiseProcessor, NoiseCache noiseProvider) {
             for (int x = 0; x < 16; x++) {
                 for (int z = 0; z < 16; z++) {
                     int i = index(x, z);
-                    map[i] = noise.noiseFunction.compute(x + minX, 0, z + minZ, noiseProvider);
+                    map[i] = noiseProcessor.compute(x + minX, 0, z + minZ, noiseProvider);
                 }
             }
         }
@@ -117,7 +116,7 @@ public class NoiseProvider {
         }
 
         @Override
-        void fill(int minX, int minY, int minZ, Noise noise, NoiseProvider noiseProvider) {
+        void fill(int minX, int minY, int minZ, NoiseComputer noiseProcessor, NoiseCache noiseProvider) {
             for (int x = 0; x < horizontalResolution + 1; x++) {
                 int blockX = x * horizontalResolution + minX;
                 for (int z = 0; z < horizontalResolution + 1; z++) {
@@ -125,7 +124,7 @@ public class NoiseProvider {
                     for (int y = 0; y < verticalResolution + 1; y++) {
                         int blockY = y * verticalResolution + minY;
                         int i = index(x, y, z);
-                        map[i] = noise.noiseFunction.compute(blockX, blockY, blockZ, noiseProvider);
+                        map[i] = noiseProcessor.compute(blockX, blockY, blockZ, noiseProvider);
                     }
                 }
             }
@@ -174,13 +173,13 @@ public class NoiseProvider {
         }
 
         @Override
-        void fill(int minX, int minY, int minZ, Noise noise, NoiseProvider noiseProvider) {
+        void fill(int minX, int minY, int minZ, NoiseComputer noiseProcessor, NoiseCache noiseProvider) {
             for (int x = 0; x < horizontalResolution + 1; x++) {
                 int blockX = x * horizontalResolution + minX;
                 for (int z = 0; z < horizontalResolution + 1; z++) {
                     int blockZ = z * horizontalResolution + minZ;
                     int i = index(x, z);
-                    map[i] = noise.noiseFunction.compute(blockX, 0, blockZ, noiseProvider);
+                    map[i] = noiseProcessor.compute(blockX, 0, blockZ, noiseProvider);
                 }
             }
         }
