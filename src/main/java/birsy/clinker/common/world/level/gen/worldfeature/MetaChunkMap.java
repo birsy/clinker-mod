@@ -64,6 +64,7 @@ public class MetaChunkMap {
     }
 
     void generateWorldFeatures(int depth, MetaChunk metaChunk) {
+        if (depth <= 0) return;
         RandomSource random = metaChunkRandom.at(metaChunk.minX(), depth, metaChunk.maxZ());
         WorldFeature feature = new TestWorldFeature(depth);
         feature.plan(metaChunk, random);

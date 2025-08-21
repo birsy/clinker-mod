@@ -120,8 +120,8 @@ public class NoiseCache {
             this.horizontalResolution = 16 / cellWidth;
             this.verticalResolution = height / cellHeight;
 
-            this.cellCountHorizontal = finalDensity ? horizontalResolution + 1 : horizontalResolution + 2;
-            this.cellCountVertical = finalDensity ? verticalResolution + 1 : verticalResolution + 2;
+            this.cellCountHorizontal = finalDensity ? horizontalResolution + 1 : horizontalResolution + 1;
+            this.cellCountVertical = finalDensity ? verticalResolution + 1 : verticalResolution + 1;
             this.map = new double[this.cellCountHorizontal * this.cellCountHorizontal * this.cellCountVertical];
         }
 
@@ -167,9 +167,11 @@ public class NoiseCache {
         }
 
         private int index(int x, int y, int z) {
-            x = Math.clamp(x, 0, this.cellCountHorizontal);
-            y = Math.clamp(y, 0, this.cellCountVertical);
-            z = Math.clamp(z, 0, this.cellCountHorizontal);
+            // clamp to valid range. this will cause some additional artifacting around chunk borders, but it shouldn't
+            // matter too much in practice? hopefully?
+            x = Math.clamp(x, 0, this.cellCountHorizontal - 1);
+            y = Math.clamp(y, 0, this.cellCountVertical - 1);
+            z = Math.clamp(z, 0, this.cellCountHorizontal - 1);
             int i = x + z * this.cellCountHorizontal + y * this.cellCountHorizontal * this.cellCountHorizontal;
             if (i >= this.map.length) Clinker.LOGGER.error("{}, {}, {}", x, y, z);
             return i;
@@ -185,7 +187,7 @@ public class NoiseCache {
         private Interpolated2DNoiseMap(int cellWidth, boolean finalDensity) {
             this.cellWidth = cellWidth;
             this.horizontalResolution = 16 / cellWidth;
-            this.cellCountHorizontal = finalDensity ? this.horizontalResolution + 1 : this.horizontalResolution + 2;
+            this.cellCountHorizontal = finalDensity ? this.horizontalResolution + 1 : this.horizontalResolution + 1;
             this.map = new double[this.cellCountHorizontal * this.cellCountHorizontal];
         }
 
@@ -217,8 +219,10 @@ public class NoiseCache {
         }
 
         private int index(int x, int z) {
-            x = Math.clamp(x, 0, this.cellCountHorizontal);
-            z = Math.clamp(z, 0, this.cellCountHorizontal);
+            // clamp to valid range. this will cause some additional artifacting around chunk borders, but it shouldn't
+            // matter too much in practice? hopefully?
+            x = Math.clamp(x, 0, this.cellCountHorizontal - 1);
+            z = Math.clamp(z, 0, this.cellCountHorizontal - 1);
             int i = x + z * this.cellCountHorizontal;
             if (i >= this.map.length) Clinker.LOGGER.error("{}, {}", x, z);
             return i;

@@ -14,6 +14,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.WorldGenRegion;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.NoiseColumn;
 import net.minecraft.world.level.StructureManager;
@@ -67,16 +68,16 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         NoiseCache noiseCache = new NoiseCache(chunk.getPos().getMinBlockX(), chunk.getMinBuildHeight(), chunk.getPos().getMinBlockZ(), chunk.getHeight(), seed);
 
         NoiseComputer surfaceHeightComputer = new NoiseComputer("surface_height", CacheType.INTERPOLATED_2D_VERY_COARSE, (x, y, z, nCache) -> {
-            return 64 + Math.sin(x * 0.1) * 4 + Math.cos(z * 0.12) * 1.5;
+            return Mth.map(noise.GetNoise(x / 64.0, z / 64.0), -1, 1, 40, 70);
         });
 
         NoiseComputer caveComputer = new NoiseComputer("caves", CacheType.INTERPOLATED_FINE, (x, y, z, nCache) -> {
-            double frequency = 1.0 / 64.0;
+            double frequency = 1.0 / 48.0;
             double caveNoiseA = noise.GetNoise(x * frequency, y * frequency, z * frequency);
             double caveNoiseB = noise.GetNoise(x * frequency, y * frequency + chunk.getHeight(), z * frequency);
 
             double val = Math.sqrt(caveNoiseA * caveNoiseA + caveNoiseB * caveNoiseB) / frequency;
-            val -= 8;
+            val -= 10;
             return -val;
         });
 
