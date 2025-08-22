@@ -38,6 +38,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                       .apply(obj, obj.stable(OthershoreChunkGenerator::new))
     );
     private static final FastNoiseLite noise = new FastNoiseLite();
+
     static {
         noise.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2S);
         noise.SetFractalOctaves(0);
@@ -68,7 +69,21 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         NoiseCache noiseCache = new NoiseCache(chunk.getPos().getMinBlockX(), chunk.getMinBuildHeight(), chunk.getPos().getMinBlockZ(), chunk.getHeight(), seed);
 
         NoiseComputer surfaceHeightComputer = new NoiseComputer("surface_height", CacheType.INTERPOLATED_2D_VERY_COARSE, (x, y, z, nCache) -> {
-            return Mth.map(noise.GetNoise(x / 64.0, z / 64.0), -1, 1, 40, 70);
+            double frequency = 1 / 512.0;
+            double val;
+            double plateaus = noise.GetNoise(x * frequency, 0, z * frequency) + 0.1;
+            plateaus = Math.pow(Math.abs(plateaus), 0.3) * Math.signum(plateaus);
+            val = Mth.clampedMap(plateaus, -1, 1, -0.8, 0.7);
+
+            double upperShelf = noise.GetNoise(x * frequency * 1.2, -1000, z * frequency * 1.2) - 0.7;
+            upperShelf = Math.pow(Math.abs(upperShelf), 0.2) * Math.signum(upperShelf);
+            val = Mth.clampedLerp(val, 1, upperShelf * 0.5 + 0.5);
+
+            double seas = noise.GetNoise(x * frequency * 0.5, 1000, z * frequency * 0.5) + 0.1;
+            seas = Math.pow(Math.abs(seas), 0.15) * Math.signum(seas);
+            val = Mth.clampedLerp(val, -1, seas * 0.5 + 0.5);
+
+            return Mth.clampedMap(val, -1, 1, 50, 256);
         });
 
         NoiseComputer caveComputer = new NoiseComputer("caves", CacheType.INTERPOLATED_FINE, (x, y, z, nCache) -> {
@@ -85,12 +100,12 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             double surfaceHeight = nCache.compute(x, y, z, surfaceHeightComputer);
             double value = y - surfaceHeight;
             double caves = nCache.compute(x, y, z, caveComputer);
-            value = Math.max(value, caves);
+            //value = Math.max(value, caves);
 
             List<WorldFeature> worldFeatures = ((MetaChunkMapHolder) (Object) randomState).clinker$metaChunkMap()
                     .getWorldFeatures(chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());
             for (WorldFeature worldFeature : worldFeatures) {
-                value = worldFeature.modifyTerrain(x, y, z, value);
+                //value = worldFeature.modifyTerrain(x, y, z, value);
             }
             return value * 0.1;
         });

@@ -7,7 +7,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.biome.Biome;
 
 public class ClinkerBiomes {
-    public static final ResourceKey<Biome> ASH_STEPPE = register("ash_steppe");
+    public static final ResourceKey<Biome> TEST_A = register("test_a");
+    public static final ResourceKey<Biome> TEST_B = register("test_b");
 
     private static ResourceKey<Biome> register(String pKey) {
         return ResourceKey.create(Registries.BIOME, name(pKey));
