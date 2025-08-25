@@ -11,6 +11,7 @@ import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.QuartPos;
+import net.minecraft.core.SectionPos;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.ChunkPos;
@@ -67,33 +68,34 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
     private ChunkAccess doBiomeFillTask(Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunk) {
         ChunkPos chunkpos = chunk.getPos();
-        int quartPosX = QuartPos.fromBlock(chunkpos.getMinBlockX());
-        int quartPosZ = QuartPos.fromBlock(chunkpos.getMinBlockZ());
         LevelHeightAccessor levelheightaccessor = chunk.getHeightAccessorForGeneration();
+        CachedNoiseComputerExecutor noiseExecutor = new CachedNoiseComputerExecutor(
+                chunk.getPos().getMinBlockX(), chunk.getMinBuildHeight(), chunk.getPos().getMinBlockZ(), chunk.getHeight(),
+                ((NoiseHolderHolder)(Object)randomState).clinker$noiseHolder());
 
         for (int section = levelheightaccessor.getMinSection(); section < levelheightaccessor.getMaxSection(); section++) {
             LevelChunkSection levelchunksection = chunk.getSection(chunk.getSectionIndexFromSectionY(section));
-            int quartPosY = QuartPos.fromSection(section);
-
-
-            levelchunksection.fillBiomesFromNoise(resolver, sampler, quartPosX, quartPosY, quartPosZ);
+            fillSectionBiomes(chunkpos.getMinBlockX(), section * SectionPos.SECTION_SIZE, chunkpos.getMinBlockZ(), levelchunksection, noiseExecutor);
         }
 
         return chunk;
     }
 
-    private void fillSectionBiomes(LevelChunkSection levelchunksection) {
+    private void fillSectionBiomes(int minX, int minY, int minZ, LevelChunkSection levelchunksection, NoiseComputerExecutor noiseExecutor) {
         PalettedContainer<Holder<Biome>> palettedcontainer = levelchunksection.getBiomes().recreate();
 
-        for (int x = 0; x < QuartPos.SIZE; x++) {
-            for (int y = 0; y < QuartPos.SIZE; y++) {
-                for (int z = 0; z < QuartPos.SIZE; z++) {
-                    palettedcontainer.getAndSetUnchecked(x, y, z, biomeResolver.getNoiseBiome(x + x, y + y, z + z, climateSampler));
+        for (int qX = 0; qX < SectionPos.SECTION_SIZE / QuartPos.SIZE; qX++) {
+            for (int qY = 0; qY < SectionPos.SECTION_SIZE / QuartPos.SIZE; qY++) {
+                for (int qZ = 0; qZ < SectionPos.SECTION_SIZE / QuartPos.SIZE; qZ++) {
+                    int x = qX * QuartPos.SIZE + minX,
+                        y = qY * QuartPos.SIZE + minY,
+                        z = qZ * QuartPos.SIZE + minZ;
+                    double surfaceNoise = noiseExecutor.compute(x, y, z, SURFACE_HEIGHT_COMPUTER);
+                    palettedcontainer.getAndSetUnchecked(qX, qY, qZ, biomeResolver.getNoiseBiome(qX + qX, qY + qY, qZ + qZ, climateSampler));
                 }
             }
         }
-
-        this.biomes = palettedcontainer;
+        levelchunksection.biomes = palettedcontainer;
     }
 
         @Override
@@ -103,62 +105,44 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         }), Util.backgroundExecutor());
     }
 
+    private static final NoiseComputer SURFACE_HEIGHT_COMPUTER = new NoiseComputer("surface_height", CacheType.INTERPOLATED_2D_VERY_COARSE, (x, y, z, context) -> {
+        NoiseHolder noise = context.noiseHolder();
+        noise.registerNoise("base_plateaus", 2, 4.0, 0.7, 0.0);
+        noise.registerNoise("base_upper_shelf");
+        noise.registerNoise("base_seas");
+        noise.registerNoise("base_erosion");
+
+        double scale = 1.0;
+        double frequency = (1 / 300.0) / scale;
+        double val;
+        double erosion = noise.sample("base_erosion", x * frequency, z * frequency);
+        erosion = Mth.clampedMap(erosion, -1, 1, 0.5, 1);
+
+        double plateaus = noise.sample("base_plateaus", x * frequency * 0.25, z * frequency * 0.25) + 0.2;
+        plateaus = plateaus * (1 / erosion);
+        plateaus = MathUtils.smoothMinExpo(plateaus, 1, 0.2);
+        plateaus = -MathUtils.smoothMinExpo(-plateaus, 1, 0.5);
+        val = plateaus;
+
+        double upperShelf = noise.sample("base_upper_shelf", x * frequency * 0.8, z * frequency * 0.8) - 0.5;
+        upperShelf = upperShelf * (1 / (erosion * 0.25));
+        upperShelf = Math.clamp(upperShelf, 0, 1);
+        upperShelf = upperShelf * 0.5 + 0.5;
+        val = Mth.clampedLerp(Mth.clampedMap(val, -1, 1, -1, -0.2), 1, upperShelf + Math.min(plateaus, 0) * 5);
+        val = Mth.clampedMap(val, -1, 1, -0.8, 1);
+
+        double seas = noise.sample("base_seas", x * frequency * 0.2, z * frequency * 0.2) - 0.7;
+        seas = seas * (1 / (erosion * 0.3));
+        seas = Math.clamp(seas, -1, 1);
+        val = Mth.clampedLerp(val, -1, (seas * 0.5 + 0.5));
+
+        return Mth.clampedMap(val, -1, 1, 50 * scale, 300 * scale);
+    });
+
     public ChunkAccess doNoiseFillTask(Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunk) {
-        CachedNoiseComputerExecutor cachedNoiseComputerExecutor = new CachedNoiseComputerExecutor(
+        CachedNoiseComputerExecutor noiseExecutor = new CachedNoiseComputerExecutor(
                 chunk.getPos().getMinBlockX(), chunk.getMinBuildHeight(), chunk.getPos().getMinBlockZ(), chunk.getHeight(),
                 ((NoiseHolderHolder)(Object)randomState).clinker$noiseHolder());
-
-        NoiseComputer surfaceHeightComputer = new NoiseComputer("surface_height", CacheType.INTERPOLATED_2D_VERY_COARSE, (x, y, z, context) -> {
-            NoiseHolder noise = context.noiseHolder();
-            noise.registerNoise("base_plateaus", 2, 4.0, 0.7, 0.0);
-            noise.registerNoise("base_upper_shelf");
-            noise.registerNoise("base_seas");
-            noise.registerNoise("base_erosion");
-            noise.registerNoise("base_elevation");
-
-            double scale = 1.0 / 1.0;
-            double frequency = (1 / 300.0) / scale;
-            double val;
-            double erosion = noise.sample("base_erosion", x * frequency, z * frequency);
-            erosion = Mth.clampedMap(erosion, -1, 1, 0.5, 1);
-
-            double plateaus = noise.sample("base_plateaus", x * frequency * 0.25, z * frequency * 0.25) + 0.2;
-            plateaus = plateaus * (1 / erosion);
-            plateaus = MathUtils.smoothMinExpo(plateaus, 1, 0.2);
-            plateaus = -MathUtils.smoothMinExpo(-plateaus, 1, 0.5);
-            val = plateaus;
-
-            double upperShelf = noise.sample("base_upper_shelf", x * frequency * 0.8, z * frequency * 0.8) - 0.5;
-            upperShelf = upperShelf * (1 / (erosion * 0.25));
-            upperShelf = Math.clamp(upperShelf, 0, 1);
-            upperShelf = upperShelf * 0.5 + 0.5;
-            val = Mth.clampedLerp(Mth.clampedMap(val, -1, 1, -1, -0.2), 1, upperShelf + Math.min(plateaus, 0) * 5);
-
-
-            double elevation = noise.sample("base_elevation", x * frequency * 0.2, z * frequency * 0.2);
-            elevation = Mth.clampedMap(elevation, -1, 1, 0.5, 1);
-            //val *= elevation;
-
-            val = Mth.clampedMap(val, -1, 1, -0.8, 1);
-
-//            double upperShelf = noise.sample("base_upper_shelf", x * frequency * 1.2, z * frequency * 1.2) - 0.7;
-//            upperShelf = Math.pow(Math.abs(upperShelf), 0.2) * Math.signum(upperShelf);
-//            val = Mth.clampedLerp(val, 1, (upperShelf * 0.5 + 0.5) + plateaus * 0.3);
-//           // val = Math.floor(val * 5) / 5.0;
-//
-            double seas = noise.sample("base_seas", x * frequency * 0.2, z * frequency * 0.2) - 0.7;
-            seas = seas * (1 / (erosion * 0.3));
-            seas = Math.clamp(seas, -1, 1);
-            val = Mth.clampedLerp(val, -1, (seas * 0.5 + 0.5));
-
-            //double roundedVal = Math.round(val * 5) / 5.0;
-            //roundedVal = Math.max(roundedVal, Math.round(val * 8) / 8.0);
-            //roundedVal = Math.max(roundedVal, Math.round(val * 3.1415) / 3.1415);
-
-            //val = roundedVal;
-
-            return Mth.clampedMap(val, -1, 1, 50 * scale, 300 * scale);
-        });
 
         NoiseComputer caveComputer = new NoiseComputer("caves", CacheType.INTERPOLATED_COARSE, (x, y, z, context) -> {
 //            NoiseHolder noise = context.noiseHolder();
@@ -211,7 +195,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                 for (int zi = 0; zi < 16; zi++) {
                     pos.setZ(zi + chunk.getPos().getMinBlockZ());
 
-                    double value = cachedNoiseComputerExecutor.compute(pos.getX(), pos.getY(), pos.getZ(), finalDensityComputer);
+                    double value = noiseExecutor.compute(pos.getX(), pos.getY(), pos.getZ(), finalDensityComputer);
                     BlockState state = value < 0 ? ClinkerBlocks.BRIMSTONE.get().defaultBlockState() : Blocks.AIR.defaultBlockState();
                     chunk.setBlockState(pos, state, false);
 
