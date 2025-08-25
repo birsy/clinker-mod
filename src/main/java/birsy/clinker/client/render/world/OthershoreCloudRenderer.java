@@ -27,7 +27,12 @@ public class OthershoreCloudRenderer {
     private VertexBuffer cloudLayerDownBuffer;
     private VertexBuffer cloudLayerUpBuffer;
 
-    public OthershoreCloudRenderer() {}
+    public OthershoreCloudRenderer() {
+        float radius = (Minecraft.getInstance().options.getEffectiveRenderDistance()+1) * 4.0F * 16.0F;
+        previousRadius = radius;
+        this.cloudLayerDownBuffer = buildCloudBuffer(cloudLayerDownBuffer, 64, 2, true, radius);
+        this.cloudLayerUpBuffer = buildCloudBuffer(cloudLayerUpBuffer, 64, 2, false, radius);
+    }
 
     private float previousRadius = -1.0F;
     public void render(ClientLevel level, int ticks, float partialTick, PoseStack poseStack, double camX, double camY, double camZ, Matrix4f projectionMatrix, Vector3fc skyColor) {

@@ -1,5 +1,7 @@
 package birsy.clinker.mixin.common;
 
+import birsy.clinker.common.world.level.gen.noise.NoiseHolder;
+import birsy.clinker.common.world.level.gen.noise.NoiseHolderHolder;
 import birsy.clinker.common.world.level.gen.noise.WorldSeedHolder;
 import birsy.clinker.common.world.level.gen.worldfeature.MetaChunkMap;
 import birsy.clinker.common.world.level.gen.worldfeature.MetaChunkMapHolder;
@@ -13,14 +15,18 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(RandomState.class)
-public class RandomStateMixin implements MetaChunkMapHolder, WorldSeedHolder {
+public class RandomStateMixin implements MetaChunkMapHolder, WorldSeedHolder, NoiseHolderHolder {
     @Unique MetaChunkMap clinker$metaChunkMap;
+    @Unique
+    NoiseHolder clinker$noiseHolder;
+
     @Unique long clinker$worldSeed;
 
     @Inject(method = "<init>",
             at = @At("TAIL"))
     private void clinker$initRandomState(NoiseGeneratorSettings settings, HolderGetter noiseParametersGetter, long levelSeed, CallbackInfo ci) {
-        clinker$metaChunkMap = new MetaChunkMap((RandomState)(Object) this);
+        clinker$metaChunkMap = new MetaChunkMap((RandomState)(Object)this);
+        clinker$noiseHolder = new NoiseHolder(((RandomState)(Object)this).random);
         clinker$worldSeed = levelSeed;
     }
 
@@ -31,4 +37,7 @@ public class RandomStateMixin implements MetaChunkMapHolder, WorldSeedHolder {
 
     @Override
     public long clinker$getWorldSeed() { return clinker$worldSeed; }
+
+    @Override
+    public NoiseHolder clinker$noiseHolder() { return clinker$noiseHolder; }
 }

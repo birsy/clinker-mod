@@ -1,6 +1,6 @@
 {
   "vertex": "veil:blit_screen",
-  "fragment": "clinker:volume/volume",
+  "fragment": "veil:blit_screen",
   "textures": {
     "DiffuseSampler": {
       "type": "framebuffer",

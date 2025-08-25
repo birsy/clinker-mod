@@ -1,16 +1,15 @@
 package birsy.clinker.common.world.level.gen;
 
+import birsy.clinker.common.world.level.gen.noise.CachedNoiseComputerExecutor;
+import birsy.clinker.common.world.level.gen.noise.NoiseComputerExecutor;
+import birsy.clinker.core.registry.world.ClinkerBiomes;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
-import net.minecraft.core.QuartPos;
-import net.minecraft.core.SectionPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.RegistryOps;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.*;
-import net.minecraft.world.level.levelgen.DensityFunction;
 
 import java.util.stream.Stream;
 
@@ -19,9 +18,13 @@ public class OthershoreBiomeSource extends BiomeSource {
             instance -> instance.group(RegistryOps.retrieveGetter(Registries.BIOME))
                         .apply(instance, instance.stable(OthershoreBiomeSource::new))
     );
+    protected NoiseComputerExecutor executor;
+    private Holder<Biome> voidBiome, testBiomeA, testBiomeB;
 
     public OthershoreBiomeSource(HolderGetter<Biome> biomeGetter) {
-
+        voidBiome = biomeGetter.getOrThrow(Biomes.THE_VOID);
+        testBiomeA = biomeGetter.getOrThrow(ClinkerBiomes.TEST_A);
+        testBiomeB = biomeGetter.getOrThrow(ClinkerBiomes.TEST_B);
     }
 
     @Override
@@ -31,27 +34,9 @@ public class OthershoreBiomeSource extends BiomeSource {
 
     @Override
     public Holder<Biome> getNoiseBiome(int x, int y, int z, Climate.Sampler sampler) {
-        int blockX = QuartPos.toBlock(x);
-        int blockY = QuartPos.toBlock(y);
-        int blockZ = QuartPos.toBlock(z);
-        int sectionX = SectionPos.blockToSectionCoord(blockX);
-        int sectionZ = SectionPos.blockToSectionCoord(blockZ);
-
-
-        if ((long)sectionX * (long)sectionX + (long)sectionZ * (long)sectionZ <= 4096L) {
-            return this.end;
-        } else {
-            int j1 = (SectionPos.blockToSectionCoord(blockX) * 2 + 1) * 8;
-            int k1 = (SectionPos.blockToSectionCoord(blockZ) * 2 + 1) * 8;
-            double d0 = sampler.erosion().compute(new DensityFunction.SinglePointContext(j1, blockY, k1));
-            if (d0 > 0.25) {
-                return this.highlands;
-            } else if (d0 >= -0.0625) {
-                return this.midlands;
-            } else {
-                return d0 < -0.21875 ? this.islands : this.barrens;
-            }
-        }
+//        if (noiseCache == null)
+//            return voidBiome;
+        return voidBiome;
     }
 
     @Override

@@ -5,11 +5,11 @@ public record NoiseComputer(String identifier, CacheType cacheType, NoiseFunctio
         this(identifier, cacheType, existingNoiseProcessor.noiseFunction);
     }
 
-    public double compute(int x, int y, int z, NoiseCache noiseCache) {
-        return this.noiseFunction.compute(x, y, z, noiseCache);
+    public double compute(int x, int y, int z, NoiseComputerContext context) {
+        return this.noiseFunction.compute(x, y, z, context);
     }
 
     public interface NoiseFunction {
-        double compute(int x, int y, int z, NoiseCache noiseCache);
+        double compute(int x, int y, int z, NoiseComputerContext context);
     }
 }

@@ -6,23 +6,26 @@ import net.minecraft.util.Mth;
 import java.util.HashMap;
 import java.util.Map;
 
-public class NoiseCache {
+public class CachedNoiseComputerExecutor implements NoiseComputerExecutor {
     private final int minX, minY, minZ;
     private final int height;
     private final Map<NoiseComputer, NoiseMap> noiseProcessorCaches;
+    private final NoiseComputerContext context;
 
-    public NoiseCache(int minX, int minY, int minZ, int height, long seed) {
+    public CachedNoiseComputerExecutor(int minX, int minY, int minZ, int height, NoiseHolder noiseHolder) {
         this.minX = minX;
         this.minY = minY;
         this.minZ = minZ;
         this.height = height;
         this.noiseProcessorCaches = new HashMap<>(16);
+        this.context = new NoiseComputerContext(this, noiseHolder);
     }
 
     public double compute(int x, int y, int z, NoiseComputer noiseProcessor) {
         int localX = x - minX, localY = y - minY, localZ = z - minZ;
+
         if (noiseProcessor.cacheType() == CacheType.NONE) {
-            return noiseProcessor.compute(x, y, z, this);
+            return noiseProcessor.compute(x, y, z, this.context);
         }
 
         if (!noiseProcessorCaches.containsKey(noiseProcessor)) {
@@ -39,14 +42,14 @@ public class NoiseCache {
                 case FINAL_DENSITY -> new InterpolatedNoiseMap(this.height, 2, 4, true);
             };
 
-            noiseMap.fill(minX, minY, minZ, noiseProcessor, this);
+            noiseMap.fill(minX, minY, minZ, noiseProcessor, this.context);
             noiseProcessorCaches.put(noiseProcessor, noiseMap);
         }
         return noiseProcessorCaches.get(noiseProcessor).retrieve(localX, localY, localZ);
     }
 
     private abstract class NoiseMap {
-        abstract void fill(int minX, int minY, int minZ, NoiseComputer noiseProcessorFunction, NoiseCache noiseProvider);
+        abstract void fill(int minX, int minY, int minZ, NoiseComputer noiseProcessorFunction, NoiseComputerContext context);
         abstract double retrieve(int x, int y, int z);
     }
 
@@ -60,12 +63,12 @@ public class NoiseCache {
         }
 
         @Override
-        void fill(int minX, int minY, int minZ, NoiseComputer noiseProcessor, NoiseCache noiseProvider) {
+        void fill(int minX, int minY, int minZ, NoiseComputer noiseProcessor, NoiseComputerContext context) {
             for (int x = 0; x < 16; x++) {
                 for (int z = 0; z < 16; z++) {
                     for (int y = 0; y < this.height; y++) {
                         int i = index(x, y, z);
-                        map[i] = noiseProcessor.compute(x + minX, y + minY, z + minZ, noiseProvider);
+                        map[i] = noiseProcessor.compute(x + minX, y + minY, z + minZ, context);
                     }
                 }
             }
@@ -89,11 +92,11 @@ public class NoiseCache {
         }
 
         @Override
-        void fill(int minX, int minY, int minZ, NoiseComputer noiseProcessor, NoiseCache noiseProvider) {
+        void fill(int minX, int minY, int minZ, NoiseComputer noiseProcessor, NoiseComputerContext context) {
             for (int x = 0; x < 16; x++) {
                 for (int z = 0; z < 16; z++) {
                     int i = index(x, z);
-                    map[i] = noiseProcessor.compute(x + minX, 0, z + minZ, noiseProvider);
+                    map[i] = noiseProcessor.compute(x + minX, 0, z + minZ, context);
                 }
             }
         }
@@ -120,13 +123,13 @@ public class NoiseCache {
             this.horizontalResolution = 16 / cellWidth;
             this.verticalResolution = height / cellHeight;
 
-            this.cellCountHorizontal = finalDensity ? horizontalResolution + 1 : horizontalResolution + 1;
-            this.cellCountVertical = finalDensity ? verticalResolution + 1 : verticalResolution + 1;
+            this.cellCountHorizontal = finalDensity ? horizontalResolution + 1 : horizontalResolution + 2;
+            this.cellCountVertical = finalDensity ? verticalResolution + 1 : verticalResolution + 2;
             this.map = new double[this.cellCountHorizontal * this.cellCountHorizontal * this.cellCountVertical];
         }
 
         @Override
-        void fill(int minX, int minY, int minZ, NoiseComputer noiseProcessor, NoiseCache noiseProvider) {
+        void fill(int minX, int minY, int minZ, NoiseComputer noiseProcessor, NoiseComputerContext context) {
             for (int x = 0; x < this.cellCountHorizontal; x++) {
                 int blockX = x * cellWidth + minX;
                 for (int z = 0; z < this.cellCountHorizontal; z++) {
@@ -135,7 +138,7 @@ public class NoiseCache {
                         int blockY = y * cellHeight + minY;
 
                         int i = index(x, y, z);
-                        map[i] = noiseProcessor.compute(blockX, blockY, blockZ, noiseProvider);
+                        map[i] = noiseProcessor.compute(blockX, blockY, blockZ, context);
                     }
                 }
             }
@@ -187,18 +190,18 @@ public class NoiseCache {
         private Interpolated2DNoiseMap(int cellWidth, boolean finalDensity) {
             this.cellWidth = cellWidth;
             this.horizontalResolution = 16 / cellWidth;
-            this.cellCountHorizontal = finalDensity ? this.horizontalResolution + 1 : this.horizontalResolution + 1;
+            this.cellCountHorizontal = finalDensity ? this.horizontalResolution + 1 : this.horizontalResolution + 2;
             this.map = new double[this.cellCountHorizontal * this.cellCountHorizontal];
         }
 
         @Override
-        void fill(int minX, int minY, int minZ, NoiseComputer noiseProcessor, NoiseCache noiseProvider) {
+        void fill(int minX, int minY, int minZ, NoiseComputer noiseProcessor, NoiseComputerContext context) {
             for (int x = 0; x < this.cellCountHorizontal; x++) {
                 int blockX = x * cellWidth + minX;
                 for (int z = 0; z < this.cellCountHorizontal; z++) {
                     int blockZ = z * cellWidth + minZ;
                     int i = index(x, z);
-                    map[i] = noiseProcessor.compute(blockX, 0, blockZ, noiseProvider);
+                    map[i] = noiseProcessor.compute(blockX, 0, blockZ, context);
                 }
             }
         }
