@@ -1,0 +1,42 @@
+package birsy.clinker.client.loc;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
+import net.minecraft.util.profiling.ProfilerFiller;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Map;
+
+public class LocalisationReloader extends SimpleJsonResourceReloadListener {
+    private static final Gson GSPOT = new GsonBuilder().create();
+    public LocalisationReloader() {
+        super(GSPOT, "lang");
+    }
+
+    @Override
+    protected void apply(Map<ResourceLocation, JsonElement> resourceLocationJsonElementMap, ResourceManager resourceManager, ProfilerFiller profilerFiller) {
+        for(ResourceLocation id : resourceLocationJsonElementMap.keySet()) {
+            String[] strings = id.getPath().split("/");
+            JsonObject jobj = resourceLocationJsonElementMap.get(id).getAsJsonObject();
+            if(strings.length > 1) {
+                String name = strings[strings.length-1].split("\\.")[0];
+                if(jobj.has("fated")) {
+                    name = jobj.getAsJsonPrimitive("fated").getAsString();
+                }
+                ResourceLocation rope_id = ResourceLocation.fromNamespaceAndPath(id.getNamespace(), name);
+                System.out.println(name);
+                System.out.println(id);
+            }
+        }
+    }
+
+    @Override
+    public @NotNull String getName() {
+        return "loc_authority";
+    }
+}
