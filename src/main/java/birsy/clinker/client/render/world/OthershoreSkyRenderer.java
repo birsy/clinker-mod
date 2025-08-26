@@ -189,7 +189,7 @@ public class OthershoreSkyRenderer {
         cloudR = Mth.lerp(delta, cloudR, fogR); cloudG = Mth.lerp(delta, cloudG, fogG); cloudB = Mth.lerp(delta, cloudB, fogB);
 
         poseStack.pushPose();
-        poseStack.translate(0, -(camY - 250.0F), 0);
+        poseStack.translate(0, -(camY - 320.0F), 0);
         float skyColMult = 0.8F;
 
         drawHorizon(poseStack.last().pose(), skyR * skyColMult, skyG * skyColMult, skyB * skyColMult, aboveCloudAlphaOffset);

@@ -23,6 +23,7 @@
     "common.ItemEntityMixin",
     "common.PlayerMixin",
     "common.RandomizableContainerBlockEntityMixin",
+    "common.RandomStateMixin",
     "common.ServerEntityMixin",
     "common.ServerLevelMixin"
   ]
