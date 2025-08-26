@@ -16,7 +16,7 @@ public class LadleItem extends Item {
     public LadleItem(Properties properties) {
         super(properties);
     }
-    private final ResourceLocation test = Clinker.resource("test_ladle");
+    private final ResourceLocation test = Clinker.resource("dialogue/test_ladle");
 
     /*
     @Override

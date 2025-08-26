@@ -10,6 +10,7 @@ import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import static birsy.clinker.client.loc.LocalisationAuthority.getLoc;
@@ -25,10 +26,10 @@ public class LocalisationReloader extends SimpleJsonResourceReloadListener {
         for(ResourceLocation id : resourceLocationJsonElementMap.keySet()) {
             String[] strings = id.getPath().split("/");
             JsonObject jobj = resourceLocationJsonElementMap.get(id).getAsJsonObject();
-            if(strings.length > 1) {
-                String name = strings[strings.length-1].split("\\.")[0];
+            if(strings.length > 2) {
+                String name = id.getPath().replaceFirst(strings[0] + "/", "").split("\\.")[0];
                 if(jobj.has("fated")) {
-                    name = jobj.getAsJsonPrimitive("fated").getAsString();
+                    name = name.replace(strings[strings.length-1].split("\\.")[0], jobj.getAsJsonPrimitive("fated").getAsString());
                 }
                 ResourceLocation rope_id = ResourceLocation.fromNamespaceAndPath(id.getNamespace(), name);
 
@@ -41,7 +42,7 @@ public class LocalisationReloader extends SimpleJsonResourceReloadListener {
                         }
                     }
                 }
-                getLoc().longStrings.forEach((s, resourceLocationStringHashMap) -> System.out.println(s + resourceLocationStringHashMap.toString()));
+                // debug getLoc().longStrings.forEach((s, resourceLocationStringHashMap) -> System.out.println(s + resourceLocationStringHashMap.toString()));
             }
         }
     }
