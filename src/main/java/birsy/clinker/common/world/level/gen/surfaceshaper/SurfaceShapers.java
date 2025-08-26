@@ -10,6 +10,8 @@ public class SurfaceShapers {
     private static final Map<ResourceKey<Biome>, SurfaceShaper> registry = new HashMap<>();
     private static final SurfaceShaper DEFAULT = (x, y, z, context) -> 0;
 
+
+
     public static SurfaceShaper register(ResourceKey<Biome> biome, SurfaceShaper surfaceShaper) {
         registry.put(biome, surfaceShaper);
         return surfaceShaper;

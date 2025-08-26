@@ -16,12 +16,10 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.QuartPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.util.Mth;
-import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.LevelHeightAccessor;
-import net.minecraft.world.level.NoiseColumn;
-import net.minecraft.world.level.StructureManager;
+import net.minecraft.world.level.*;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.level.biome.BiomeSource;
@@ -48,10 +46,10 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
     );
     private final Map<ResourceKey<Biome>, NoiseComputer> surfaceBiomeContributionComputers;
     private final NoiseComputer undergroundContributionComputer;
-
+    private final SurfaceBuilder surfaceBuilder;
     public OthershoreChunkGenerator(BiomeSource biomeSource) {
         super(biomeSource);
-
+        this.surfaceBuilder = new SurfaceBuilder(8, 0, ClinkerBlocks.BRIMSTONE.get().defaultBlockState());
         this.surfaceBiomeContributionComputers = HashMap.newHashMap(this.biomeSource.possibleBiomes().size());
         for (Holder<Biome> possibleBiome : this.biomeSource.possibleBiomes()) {
             NoiseComputer biomeComputer = new NoiseComputer(possibleBiome.toString(), CacheType.INTERPOLATED_2D_VERY_COARSE, (x, y, z, context) -> {
@@ -102,27 +100,26 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
         for (int section = levelheightaccessor.getMinSection(); section < levelheightaccessor.getMaxSection(); section++) {
             LevelChunkSection levelchunksection = chunk.getSection(chunk.getSectionIndexFromSectionY(section));
-            fillSectionBiomes(chunkpos.getMinBlockX(), section * SectionPos.SECTION_SIZE, chunkpos.getMinBlockZ(), othershoreBiomeSource, levelchunksection, noiseExecutor);
+            PalettedContainer<Holder<Biome>> palettedcontainer = levelchunksection.getBiomes().recreate();
+
+            for (int qX = 0; qX < SectionPos.SECTION_SIZE / QuartPos.SIZE; qX++) {
+                int x = qX * QuartPos.SIZE + chunkpos.getMinBlockX();
+                for (int qY = 0; qY < SectionPos.SECTION_SIZE / QuartPos.SIZE; qY++) {
+                    int y = qY * QuartPos.SIZE +section * SectionPos.SECTION_SIZE;
+                    for (int qZ = 0; qZ < SectionPos.SECTION_SIZE / QuartPos.SIZE; qZ++) {
+                        int z = qZ * QuartPos.SIZE + chunkpos.getMinBlockZ();
+
+                        Holder<Biome> biome = othershoreBiomeSource.getNoiseBiome(x, y, z, noiseExecutor);
+                        palettedcontainer.getAndSetUnchecked(qX, qY, qZ, biome);
+                    }
+                }
+            }
+            levelchunksection.biomes = palettedcontainer;
         }
 
         return chunk;
     }
 
-    private void fillSectionBiomes(int minX, int minY, int minZ, OthershoreBiomeSource othershoreBiomeSource, LevelChunkSection levelchunksection, NoiseComputerExecutor noiseExecutor) {
-        PalettedContainer<Holder<Biome>> palettedcontainer = levelchunksection.getBiomes().recreate();
-        for (int qX = 0; qX < SectionPos.SECTION_SIZE / QuartPos.SIZE; qX++) {
-            for (int qY = 0; qY < SectionPos.SECTION_SIZE / QuartPos.SIZE; qY++) {
-                for (int qZ = 0; qZ < SectionPos.SECTION_SIZE / QuartPos.SIZE; qZ++) {
-                    int x = qX * QuartPos.SIZE + minX,
-                        y = qY * QuartPos.SIZE + minY,
-                        z = qZ * QuartPos.SIZE + minZ;
-                    Holder<Biome> biome = othershoreBiomeSource.getNoiseBiome(x, y, z, noiseExecutor);
-                    palettedcontainer.getAndSetUnchecked(qX, qY, qZ, biome);
-                }
-            }
-        }
-        levelchunksection.biomes = palettedcontainer;
-    }
 
         @Override
     public CompletableFuture<ChunkAccess> fillFromNoise(Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunk) {
@@ -130,7 +127,6 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                 () -> this.doNoiseFillTask(blender, randomState, structureManager, chunk)), Util.backgroundExecutor()
         );
     }
-
 
     public ChunkAccess doNoiseFillTask(Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunk) {
         CachedNoiseComputerExecutor noiseExecutor = new CachedNoiseComputerExecutor(
@@ -150,8 +146,6 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             double val = Math.sqrt(caveNoiseA * caveNoiseA + caveNoiseB * caveNoiseB) / frequency;
             val -= 10;
             return -val;
-            //double undergroundContribution = cache.compute(x, y, z, undergroundContributionComputer);
-            //return Mth.lerp(undergroundContribution, -20, -val);
         });
 
         NoiseComputer surfaceComputer = new NoiseComputer("surface_density", CacheType.INTERPOLATED_COARSE, (x, y, z, context) -> {
@@ -168,8 +162,9 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         NoiseComputer finalDensityComputer = new NoiseComputer("final_density", CacheType.FINAL_DENSITY, (x, y, z, context) -> {
             NoiseComputerExecutor cache = context.noiseComputerExecutor();
             double surfaceNoise = cache.compute(x, y, z, surfaceComputer);
-            double caveNoise = cache.compute(x, y, z, caveComputer);
-            double density = Math.max(surfaceNoise, caveNoise);
+            double density = surfaceNoise;
+            //double caveNoise = cache.compute(x, y, z, caveComputer);
+            //double density = Math.max(surfaceNoise, caveNoise);
 
             List<WorldFeature> worldFeatures = ((MetaChunkMapHolder)(Object)randomState).clinker$metaChunkMap()
                     .getWorldFeatures(chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());
@@ -200,6 +195,13 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         }
 
         return chunk;
+    }
+
+    @Override
+    public void applyBiomeDecoration(WorldGenLevel level, ChunkAccess chunk, StructureManager structureManager) {
+        if (level.getChunkSource() instanceof ServerChunkCache chunkCache)
+            surfaceBuilder.applySurfaceDecorators(level, chunk, chunkCache.randomState());
+        super.applyBiomeDecoration(level, chunk, structureManager);
     }
 
     @Override
