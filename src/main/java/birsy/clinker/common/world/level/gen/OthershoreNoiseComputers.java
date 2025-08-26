@@ -7,7 +7,7 @@ import birsy.clinker.core.util.MathUtils;
 import net.minecraft.util.Mth;
 
 public class OthershoreNoiseComputers {
-    public static final NoiseComputer SURFACE_HEIGHT_COMPUTER = new NoiseComputer("surface_height", CacheType.INTERPOLATED_2D_VERY_COARSE, (x, y, z, context) -> {
+    public static final NoiseComputer SURFACE_HEIGHT_COMPUTER = new NoiseComputer("surface_height", CacheType.INTERPOLATED_2D_COARSE, (x, y, z, context) -> {
         NoiseHolder noise = context.noiseHolder();
         noise.registerNoise("base_plateaus", 2, 4.0, 0.7, 0.0);
         noise.registerNoise("base_upper_shelf");

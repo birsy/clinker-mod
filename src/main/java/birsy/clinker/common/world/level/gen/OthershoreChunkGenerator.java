@@ -4,6 +4,7 @@ import birsy.clinker.common.world.level.gen.noise.*;
 import birsy.clinker.common.world.level.gen.surfaceshaper.SurfaceShapers;
 import birsy.clinker.common.world.level.gen.worldfeature.MetaChunkMapHolder;
 import birsy.clinker.common.world.level.gen.worldfeature.WorldFeature;
+import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.world.ClinkerBiomes;
 import com.mojang.serialization.MapCodec;
@@ -44,22 +45,43 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
     private final Map<ResourceKey<Biome>, NoiseComputer> surfaceBiomeContributionComputers;
     private final NoiseComputer undergroundContributionComputer;
     private final SurfaceBuilder surfaceBuilder;
+    private static final int[][] biomeBlendOffsets =
+            {{-1, -1}, {0, -1}, {1, -1},
+             {-1,  0}, {0,  0}, {1,  0},
+             {-1,  1}, {0,  1}, {1,  1}};
+    private static final double[] biomeBlendWeights = {
+            1.0 / 16.0, 1.0 / 8.0, 1.0 / 16.0,
+            1.0 / 8.0,  1.0 / 4.0, 1.0 / 8.0,
+            1.0 / 16.0, 1.0 / 8.0, 1.0 / 16.0
+    };
+
     public OthershoreChunkGenerator(BiomeSource biomeSource) {
         super(biomeSource);
         this.surfaceBuilder = new SurfaceBuilder(8, 0, ClinkerBlocks.BRIMSTONE.get().defaultBlockState());
         this.surfaceBiomeContributionComputers = HashMap.newHashMap(this.biomeSource.possibleBiomes().size());
         for (Holder<Biome> possibleBiome : this.biomeSource.possibleBiomes()) {
-            NoiseComputer biomeComputer = new NoiseComputer(possibleBiome.toString(), CacheType.INTERPOLATED_2D_VERY_COARSE, (x, y, z, context) -> {
-                if (this.getBiomeSource() instanceof OthershoreBiomeSource othershoreBiomeSource)
-                    return othershoreBiomeSource.getNoiseBiome(x, context.chunk().getMaxBuildHeight() - 1, z, context.noiseComputerExecutor()) == possibleBiome ? 1 : 0;
+            NoiseComputer biomeComputer = new NoiseComputer(possibleBiome.toString(), CacheType.INTERPOLATED_2D_COARSE, (x, y, z, context) -> {
+                if (this.getBiomeSource() instanceof OthershoreBiomeSource othershoreBiomeSource) {
+                    double totalContribution = 0;
+                    for (int i = 0; i < biomeBlendOffsets.length; i++) {
+                        int offsetX = biomeBlendOffsets[i][0] * 4,
+                            offsetZ = biomeBlendOffsets[i][1] * 4;
+                        double weight = biomeBlendWeights[i];
+                        totalContribution += othershoreBiomeSource
+                                .getNoiseBiome(x + offsetX, context.chunk().getMaxBuildHeight() - 1, z + offsetZ, context.noiseComputerExecutor()) == possibleBiome ? weight : 0;
+                    }
+                    return totalContribution;
+                }
+
                 return 0;
             });
             this.surfaceBiomeContributionComputers.put(possibleBiome.getKey(), biomeComputer);
         }
 
         this.undergroundContributionComputer = new NoiseComputer("underground_contribution", CacheType.INTERPOLATED_VERY_COARSE, (x, y, z, context) -> {
-            if (this.getBiomeSource() instanceof OthershoreBiomeSource othershoreBiomeSource)
+            if (this.getBiomeSource() instanceof OthershoreBiomeSource othershoreBiomeSource) {
                 return othershoreBiomeSource.getNoiseBiome(x, context.chunk().getMaxBuildHeight() - 1, z, context.noiseComputerExecutor()).is(ClinkerBiomes.UNDERGROUND) ? 1 : 0;
+            }
             return 0;
         });
     }
@@ -145,16 +167,18 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             return -val;
         });
 
-        NoiseComputer surfaceComputer = new NoiseComputer("surface_density", CacheType.INTERPOLATED_FINE, (x, y, z, context) -> {
+        NoiseComputer surfaceComputer = new NoiseComputer("surface_density", CacheType.INTERPOLATED_COARSE, (x, y, z, context) -> {
             NoiseComputerExecutor cache = context.noiseComputerExecutor();
 
             double surfaceDensity = 0;
+            double totalContribution = 0;
             for (Holder<Biome> biome : this.biomeSource.possibleBiomes()) {
                 double contribution = cache.compute(x, y, z, surfaceBiomeContributionComputers.get(biome.getKey()));
+                totalContribution += contribution;
                 if (contribution > 0) surfaceDensity += SurfaceShapers.retrieve(biome.getKey()).surfaceDensity(x, y, z, contribution, context) * contribution;
             }
 
-            return surfaceDensity;
+            return surfaceDensity / totalContribution;
         });
 
         NoiseComputer finalDensityComputer = new NoiseComputer("final_density", CacheType.FINAL_DENSITY, (x, y, z, context) -> {
