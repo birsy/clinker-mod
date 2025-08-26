@@ -27,7 +27,7 @@ public class AshSteppeSurfaceDecorator extends SurfaceDecorator {
     public void buildSurface(ChunkAccess chunk, BlockPos.MutableBlockPos pos, int seaLevel, boolean canSeeSun, int depth, int maxElevationIncrease, int maxElevationDecrease, RandomSource random) {
         if (!canSeeSun && pos.getY() < 130) return;
 
-        float ditherRandom = (this.random.nextFloat() * 2) - 1;
+        float ditherRandom = (random.nextFloat() * 2) - 1;
         ditherRandom *= 0.3F;
 
 
@@ -42,7 +42,7 @@ public class AshSteppeSurfaceDecorator extends SurfaceDecorator {
                 chunk.setBlockState(pos, ClinkerBlocks.ASH.get().defaultBlockState(), false);
             }
             if (maxElevationIncrease > 0) {
-                float ditherRandomAshDuneAmount = this.random.nextFloat();
+                float ditherRandomAshDuneAmount = random.nextFloat();
                 ditherRandomAshDuneAmount *= -0.15F;
                 double noiseSample = noise.GetNoise(pos.getX() * 5, 0, pos.getZ() * 5) + ditherRandomAshDuneAmount;
                 int ashAmount = ((int) MathUtil.mapRange(-1.0, 1.0, -1, 6, noiseSample));

@@ -148,23 +148,24 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             return -val;
         });
 
-        NoiseComputer surfaceComputer = new NoiseComputer("surface_density", CacheType.INTERPOLATED_COARSE, (x, y, z, context) -> {
+        NoiseComputer surfaceComputer = new NoiseComputer("surface_density", CacheType.INTERPOLATED_FINE, (x, y, z, context) -> {
             NoiseComputerExecutor cache = context.noiseComputerExecutor();
 
             double surfaceDensity = 0;
             for (Holder<Biome> biome : this.biomeSource.possibleBiomes()) {
                 double contribution = cache.compute(x, y, z, surfaceBiomeContributionComputers.get(biome.getKey()));
-                if (contribution > 0) surfaceDensity += SurfaceShapers.retrieve(biome.getKey()).surfaceDensity(x, y, z, context);
+                if (contribution > 0) surfaceDensity += SurfaceShapers.retrieve(biome.getKey()).surfaceDensity(x, y, z, context) * contribution;
             }
+
             return surfaceDensity;
         });
 
         NoiseComputer finalDensityComputer = new NoiseComputer("final_density", CacheType.FINAL_DENSITY, (x, y, z, context) -> {
             NoiseComputerExecutor cache = context.noiseComputerExecutor();
             double surfaceNoise = cache.compute(x, y, z, surfaceComputer);
-            double density = surfaceNoise;
-            //double caveNoise = cache.compute(x, y, z, caveComputer);
-            //double density = Math.max(surfaceNoise, caveNoise);
+            //double density = surfaceNoise;
+            double caveNoise = cache.compute(x, y, z, caveComputer);
+            double density = Math.max(surfaceNoise, caveNoise);
 
             List<WorldFeature> worldFeatures = ((MetaChunkMapHolder)(Object)randomState).clinker$metaChunkMap()
                     .getWorldFeatures(chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());

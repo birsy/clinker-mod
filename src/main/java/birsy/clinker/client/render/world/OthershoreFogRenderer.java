@@ -33,8 +33,7 @@ public class OthershoreFogRenderer {
         event.setFogShape(FogShape.SPHERE);
         event.setNearPlaneDistance(0.0F);
         event.setFarPlaneDistance( event.getFarPlaneDistance() * Mth.lerp(surfaceFactor, 0.25F, 1.0F));
-        event.setFarPlaneDistance( 500.0F);
-
+        //event.setFarPlaneDistance( 500.0F);
     }
 
     @SubscribeEvent

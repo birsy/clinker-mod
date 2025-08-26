@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class SurfaceDecorators {
     private static final Map<ResourceKey<Biome>, SurfaceDecorator> registry = new HashMap<>();
-    private static final SurfaceDecorator DEFAULT = new DefaultSurfaceDecorator();
+    private static final SurfaceDecorator DEFAULT = new AshSteppeSurfaceDecorator();
 
     public static SurfaceDecorator register(ResourceKey<Biome> biome, SurfaceDecorator surfaceDecorator) {
         registry.put(biome, surfaceDecorator);

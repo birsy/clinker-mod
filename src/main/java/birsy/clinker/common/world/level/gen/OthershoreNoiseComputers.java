@@ -14,8 +14,8 @@ public class OthershoreNoiseComputers {
         noise.registerNoise("base_seas");
         noise.registerNoise("base_erosion");
 
-        double scale = 1.0;
-        double frequency = (1 / 300.0) / scale;
+        double scale = 1;
+        double frequency = (1 / 400.0) / scale;
         double val;
         double erosion = noise.sample("base_erosion", x * frequency, z * frequency);
         erosion = Mth.clampedMap(erosion, -1, 1, 0.5, 1);
@@ -26,7 +26,7 @@ public class OthershoreNoiseComputers {
         plateaus = -MathUtils.smoothMinExpo(-plateaus, 1, 0.5);
         val = plateaus;
 
-        double upperShelf = noise.sample("base_upper_shelf", x * frequency * 0.8, z * frequency * 0.8) - 0.5;
+        double upperShelf = noise.sample("base_upper_shelf", x * frequency, z * frequency) - 0.7;
         upperShelf = upperShelf * (1 / (erosion * 0.25));
         upperShelf = Math.clamp(upperShelf, 0, 1);
         upperShelf = upperShelf * 0.5 + 0.5;

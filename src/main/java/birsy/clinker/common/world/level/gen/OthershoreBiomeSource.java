@@ -46,7 +46,7 @@ public class OthershoreBiomeSource extends BiomeSource {
     public Holder<Biome> getNoiseBiome(int x, int y, int z, Climate.Sampler sampler) {return voidBiome;}
 
     public Holder<Biome> getNoiseBiome(int x, int y, int z, NoiseComputerExecutor noiseExecutor) {
-        double surfaceHeight = noiseExecutor.compute(x, y, z, OthershoreChunkGenerator.SURFACE_HEIGHT_COMPUTER);
+        double surfaceHeight = noiseExecutor.compute(x, y, z, OthershoreNoiseComputers.SURFACE_HEIGHT_COMPUTER);
         if (y < surfaceHeight - 20) return underground;
 
         if (surfaceHeight > UPPER_SHELF_HEIGHT) return plateau;
@@ -57,8 +57,8 @@ public class OthershoreBiomeSource extends BiomeSource {
             int gradientOffsetX = Math.floorMod(x, 16) < 15 ? 1 : -1;
             int gradientOffsetZ = Math.floorMod(z, 16) < 15 ? 1 : -1;
 
-            double gradientX = (surfaceHeight - noiseExecutor.compute(x + gradientOffsetX, y, z, OthershoreChunkGenerator.SURFACE_HEIGHT_COMPUTER)) / gradientOffsetX;
-            double gradientZ = (surfaceHeight - noiseExecutor.compute(x, y, z + gradientOffsetZ, OthershoreChunkGenerator.SURFACE_HEIGHT_COMPUTER)) / gradientOffsetZ;
+            double gradientX = (surfaceHeight - noiseExecutor.compute(x + gradientOffsetX, y, z, OthershoreNoiseComputers.SURFACE_HEIGHT_COMPUTER)) / gradientOffsetX;
+            double gradientZ = (surfaceHeight - noiseExecutor.compute(x, y, z + gradientOffsetZ, OthershoreNoiseComputers.SURFACE_HEIGHT_COMPUTER)) / gradientOffsetZ;
             double steepness = Math.sqrt(gradientX * gradientX + gradientZ * gradientZ);
 
             return steepness > 1.5 ? cliffside : lowerShelf;
