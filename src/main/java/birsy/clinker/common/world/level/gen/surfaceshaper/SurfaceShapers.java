@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class SurfaceShapers {
     private static final Map<ResourceKey<Biome>, SurfaceShaper> registry = new HashMap<>();
-    private static final SurfaceShaper DEFAULT = (x, y, z, context) -> y - context.noiseComputerExecutor().compute(x, y, z, OthershoreNoiseComputers.SURFACE_HEIGHT_COMPUTER);
+    private static final SurfaceShaper DEFAULT = (x, y, z, biomeContribution, context) -> y - context.noiseComputerExecutor().compute(x, y, z, OthershoreNoiseComputers.SURFACE_HEIGHT_COMPUTER);
 
     public static final SurfaceShaper ASH_STEPPE = register(ClinkerBiomes.ASH_STEPPE, new AshSteppeSurfaceShaper());
 

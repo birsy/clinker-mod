@@ -4,10 +4,8 @@ import birsy.clinker.common.world.level.gen.noise.*;
 import birsy.clinker.common.world.level.gen.surfaceshaper.SurfaceShapers;
 import birsy.clinker.common.world.level.gen.worldfeature.MetaChunkMapHolder;
 import birsy.clinker.common.world.level.gen.worldfeature.WorldFeature;
-import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.world.ClinkerBiomes;
-import birsy.clinker.core.util.MathUtils;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.Util;
@@ -18,7 +16,6 @@ import net.minecraft.core.SectionPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.WorldGenRegion;
-import net.minecraft.util.Mth;
 import net.minecraft.world.level.*;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeManager;
@@ -148,13 +145,13 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             return -val;
         });
 
-        NoiseComputer surfaceComputer = new NoiseComputer("surface_density", CacheType.INTERPOLATED_COARSE, (x, y, z, context) -> {
+        NoiseComputer surfaceComputer = new NoiseComputer("surface_density", CacheType.INTERPOLATED_FINE, (x, y, z, context) -> {
             NoiseComputerExecutor cache = context.noiseComputerExecutor();
 
             double surfaceDensity = 0;
             for (Holder<Biome> biome : this.biomeSource.possibleBiomes()) {
                 double contribution = cache.compute(x, y, z, surfaceBiomeContributionComputers.get(biome.getKey()));
-                if (contribution > 0) surfaceDensity += SurfaceShapers.retrieve(biome.getKey()).surfaceDensity(x, y, z, context) * contribution;
+                if (contribution > 0) surfaceDensity += SurfaceShapers.retrieve(biome.getKey()).surfaceDensity(x, y, z, contribution, context) * contribution;
             }
 
             return surfaceDensity;
@@ -165,7 +162,8 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             double surfaceNoise = cache.compute(x, y, z, surfaceComputer);
             //double density = surfaceNoise;
             double caveNoise = cache.compute(x, y, z, caveComputer);
-            double density = Math.max(surfaceNoise, caveNoise);
+
+            double density = surfaceNoise;//Math.max(surfaceNoise, caveNoise);
 
             List<WorldFeature> worldFeatures = ((MetaChunkMapHolder)(Object)randomState).clinker$metaChunkMap()
                     .getWorldFeatures(chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());
@@ -189,8 +187,8 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                     BlockState state = value < 0 ? ClinkerBlocks.BRIMSTONE.get().defaultBlockState() : Blocks.AIR.defaultBlockState();
                     chunk.setBlockState(pos, state, false);
 
-                    heightmapOceanFloor.update(xi, yi, zi, state);
-                    heightmapWorldSurface.update(xi, yi, zi, state);
+                    heightmapOceanFloor.update(xi, pos.getY(), zi, state);
+                    heightmapWorldSurface.update(xi, pos.getY(), zi, state);
                 }
             }
         }

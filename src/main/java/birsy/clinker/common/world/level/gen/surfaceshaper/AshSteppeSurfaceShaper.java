@@ -22,7 +22,7 @@ public class AshSteppeSurfaceShaper implements SurfaceShaper {
     });
 
     @Override
-    public double surfaceDensity(int x, int y, int z, NoiseComputerContext context) {
+    public double surfaceDensity(int x, int y, int z, double biomeContribution, NoiseComputerContext context) {
         NoiseComputerExecutor cache = context.noiseComputerExecutor();
         NoiseHolder noise = context.noiseHolder();
 
