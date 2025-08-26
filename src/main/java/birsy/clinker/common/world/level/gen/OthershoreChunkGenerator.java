@@ -1,6 +1,7 @@
 package birsy.clinker.common.world.level.gen;
 
 import birsy.clinker.common.world.level.gen.noise.*;
+import birsy.clinker.common.world.level.gen.surfaceshaper.SurfaceShapers;
 import birsy.clinker.common.world.level.gen.worldfeature.MetaChunkMapHolder;
 import birsy.clinker.common.world.level.gen.worldfeature.WorldFeature;
 import birsy.clinker.core.Clinker;
@@ -46,21 +47,26 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                       .apply(obj, obj.stable(OthershoreChunkGenerator::new))
     );
     private final Map<ResourceKey<Biome>, NoiseComputer> surfaceBiomeContributionComputers;
+    private final NoiseComputer undergroundContributionComputer;
 
     public OthershoreChunkGenerator(BiomeSource biomeSource) {
         super(biomeSource);
 
         this.surfaceBiomeContributionComputers = HashMap.newHashMap(this.biomeSource.possibleBiomes().size());
         for (Holder<Biome> possibleBiome : this.biomeSource.possibleBiomes()) {
-            NoiseComputer biomeComputer = new NoiseComputer(possibleBiome.toString(), CacheType.INTERPOLATED_VERY_COARSE, (x, y, z, context) -> {
-                // for some reason this doesn't work with just sampling the biome map?
-                // i might be getting my coordinates wrong... idk...
+            NoiseComputer biomeComputer = new NoiseComputer(possibleBiome.toString(), CacheType.INTERPOLATED_2D_VERY_COARSE, (x, y, z, context) -> {
                 if (this.getBiomeSource() instanceof OthershoreBiomeSource othershoreBiomeSource)
-                    return othershoreBiomeSource.getNoiseBiome(x, y, z, context.noiseComputerExecutor()) == possibleBiome ? 1 : 0;
+                    return othershoreBiomeSource.getNoiseBiome(x, context.chunk().getMaxBuildHeight() - 1, z, context.noiseComputerExecutor()) == possibleBiome ? 1 : 0;
                 return 0;
             });
             this.surfaceBiomeContributionComputers.put(possibleBiome.getKey(), biomeComputer);
         }
+
+        this.undergroundContributionComputer = new NoiseComputer("underground_contribution", CacheType.INTERPOLATED_VERY_COARSE, (x, y, z, context) -> {
+            if (this.getBiomeSource() instanceof OthershoreBiomeSource othershoreBiomeSource)
+                return othershoreBiomeSource.getNoiseBiome(x, context.chunk().getMaxBuildHeight() - 1, z, context.noiseComputerExecutor()).is(ClinkerBiomes.UNDERGROUND) ? 1 : 0;
+            return 0;
+        });
     }
 
     @Override
@@ -125,40 +131,6 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         );
     }
 
-    protected static final NoiseComputer SURFACE_HEIGHT_COMPUTER = new NoiseComputer("surface_height", CacheType.INTERPOLATED_2D_VERY_COARSE, (x, y, z, context) -> {
-        NoiseHolder noise = context.noiseHolder();
-        noise.registerNoise("base_plateaus", 2, 4.0, 0.7, 0.0);
-        noise.registerNoise("base_upper_shelf");
-        noise.registerNoise("base_seas");
-        noise.registerNoise("base_erosion");
-
-        double scale = 1.0;
-        double frequency = (1 / 300.0) / scale;
-        double val;
-        double erosion = noise.sample("base_erosion", x * frequency, z * frequency);
-        erosion = Mth.clampedMap(erosion, -1, 1, 0.5, 1);
-
-        double plateaus = noise.sample("base_plateaus", x * frequency * 0.25, z * frequency * 0.25) + 0.2;
-        plateaus = plateaus * (1 / erosion);
-        plateaus = MathUtils.smoothMinExpo(plateaus, 1, 0.2);
-        plateaus = -MathUtils.smoothMinExpo(-plateaus, 1, 0.5);
-        val = plateaus;
-
-        double upperShelf = noise.sample("base_upper_shelf", x * frequency * 0.8, z * frequency * 0.8) - 0.5;
-        upperShelf = upperShelf * (1 / (erosion * 0.25));
-        upperShelf = Math.clamp(upperShelf, 0, 1);
-        upperShelf = upperShelf * 0.5 + 0.5;
-        val = Mth.clampedLerp(Mth.clampedMap(val, -1, 1, -1, -0.2), 1, upperShelf + Math.min(plateaus, 0) * 5);
-        val = Mth.clampedMap(val, -1, 1, -0.8, 1);
-
-        double seas = noise.sample("base_seas", x * frequency * 0.2, z * frequency * 0.2) - 0.5;
-        seas = seas * (1 / (erosion * 0.2));
-        seas = Math.clamp(seas, -1, 1);
-        val = Mth.clampedLerp(val, -1, (seas * 0.5 + 0.5));
-
-        return Mth.clampedMap(val, -1, 1, 50 * scale, 300 * scale);
-    });
-
 
     public ChunkAccess doNoiseFillTask(Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunk) {
         CachedNoiseComputerExecutor noiseExecutor = new CachedNoiseComputerExecutor(
@@ -177,37 +149,34 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
             double val = Math.sqrt(caveNoiseA * caveNoiseA + caveNoiseB * caveNoiseB) / frequency;
             val -= 10;
-
-            double undergroundContribution = cache.compute(x, y, z, this.surfaceBiomeContributionComputers.get(ClinkerBiomes.UNDERGROUND));
-            return Mth.lerp(undergroundContribution, -20, -val);
+            return -val;
+            //double undergroundContribution = cache.compute(x, y, z, undergroundContributionComputer);
+            //return Mth.lerp(undergroundContribution, -20, -val);
         });
-
 
         NoiseComputer surfaceComputer = new NoiseComputer("surface_density", CacheType.INTERPOLATED_COARSE, (x, y, z, context) -> {
             NoiseComputerExecutor cache = context.noiseComputerExecutor();
-            NoiseHolder noise = context.noiseHolder();
-            noise.registerNoise("terrain_3d");
-            double surfaceHeight = cache.compute(x, y, z, SURFACE_HEIGHT_COMPUTER);
-            double biomeContribution = cache.compute(x, y, z, this.surfaceBiomeContributionComputers.get(ClinkerBiomes.ASH_STEPPE));
-            double worldNoise = noise.sample("terrain_3d", x / 48.0, 0, z / 48.0);
-            worldNoise = (1-Math.abs(worldNoise)) * 2 - 1;
-            worldNoise *= biomeContribution;
-            return y - (surfaceHeight + worldNoise * 8);
+
+            double surfaceDensity = 0;
+            for (Holder<Biome> biome : this.biomeSource.possibleBiomes()) {
+                double contribution = cache.compute(x, y, z, surfaceBiomeContributionComputers.get(biome.getKey()));
+                if (contribution > 0) surfaceDensity += SurfaceShapers.retrieve(biome.getKey()).surfaceDensity(x, y, z, context);
+            }
+            return surfaceDensity;
         });
 
         NoiseComputer finalDensityComputer = new NoiseComputer("final_density", CacheType.FINAL_DENSITY, (x, y, z, context) -> {
             NoiseComputerExecutor cache = context.noiseComputerExecutor();
             double surfaceNoise = cache.compute(x, y, z, surfaceComputer);
             double caveNoise = cache.compute(x, y, z, caveComputer);
-
-            surfaceNoise = Math.max(surfaceNoise, caveNoise);
+            double density = Math.max(surfaceNoise, caveNoise);
 
             List<WorldFeature> worldFeatures = ((MetaChunkMapHolder)(Object)randomState).clinker$metaChunkMap()
                     .getWorldFeatures(chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());
             for (WorldFeature worldFeature : worldFeatures) {
-                value = worldFeature.modifyTerrain(x, y, z, value);
+                //density = worldFeature.modifyTerrain(x, y, z, density);
             }
-            return surfaceNoise;
+            return density;
         });
 
         Heightmap heightmapOceanFloor = chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.OCEAN_FLOOR_WG);
