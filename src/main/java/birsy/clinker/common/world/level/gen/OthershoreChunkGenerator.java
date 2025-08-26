@@ -148,7 +148,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             return -val;
         });
 
-        NoiseComputer surfaceComputer = new NoiseComputer("surface_density", CacheType.INTERPOLATED_FINE, (x, y, z, context) -> {
+        NoiseComputer surfaceComputer = new NoiseComputer("surface_density", CacheType.INTERPOLATED_COARSE, (x, y, z, context) -> {
             NoiseComputerExecutor cache = context.noiseComputerExecutor();
 
             double surfaceDensity = 0;

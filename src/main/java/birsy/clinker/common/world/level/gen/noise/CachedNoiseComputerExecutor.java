@@ -34,7 +34,7 @@ public class CachedNoiseComputerExecutor implements NoiseComputerExecutor {
                 case NONE -> null;
                 case DIRECT -> new DirectNoiseMap(this.height);
                 case TWO_DIMENSIONAL -> new TwoDimensionalNoiseMap();
-                case INTERPOLATED_COARSE -> new InterpolatedNoiseMap(this.height, 4, 8, false);
+                case INTERPOLATED_COARSE -> new InterpolatedNoiseMap(this.height, 4, 4, false);
                 case INTERPOLATED_2D_COARSE -> new Interpolated2DNoiseMap(4, false);
                 case INTERPOLATED_FINE -> new InterpolatedNoiseMap(this.height, 2, 4, false);
                 case INTERPOLATED_2D_FINE -> new Interpolated2DNoiseMap(2, false);
