@@ -42,6 +42,7 @@ public class Clinker {
         ClinkerBlocks.BLOCKS.register(modEventBus);
         ClinkerBlocks.BLOCK_ITEMS.register(modEventBus);
         ClinkerWorld.CHUNK_GENERATORS.register(modEventBus);
+        ClinkerWorld.BIOME_SOURCES.register(modEventBus);
         ClinkerBlockEntities.BLOCK_ENTITY_TYPES.register(modEventBus);
 
         ClinkerMemoryModules.MEMORY_MODULE_TYPES.register(modEventBus);
