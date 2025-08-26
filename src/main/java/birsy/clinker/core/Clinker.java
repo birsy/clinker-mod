@@ -1,11 +1,10 @@
 package birsy.clinker.core;
 
+import birsy.clinker.client.loc.LocalisationReloader;
 import birsy.clinker.client.render.GUIRenderer;
 import birsy.clinker.client.gui.AlchemyBundleGUIRenderer;
 import birsy.clinker.client.render.debug.ClinkerDebugRenderers;
-import birsy.clinker.client.render.world.gas.GasRenderer;
 import birsy.clinker.client.render.world.item.AlchemistsCrossbowInHandRenderer;
-import birsy.clinker.common.world.item.AlchemistsCrossbowItem;
 import birsy.clinker.core.registry.*;
 import birsy.clinker.core.registry.entity.ClinkerBlockEntities;
 import birsy.clinker.core.registry.entity.ClinkerEntities;
@@ -13,22 +12,23 @@ import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import birsy.clinker.core.registry.entity.ClinkerSensors;
 import birsy.clinker.core.registry.world.ClinkerFeatures;
 import birsy.clinker.core.registry.world.ClinkerWorld;
-import birsy.clinker.core.util.MathUtils;
-import foundry.veil.api.client.render.VeilRenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.CrossbowItem;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import net.minecraft.client.renderer.RenderType;
 
+@EventBusSubscriber(bus=EventBusSubscriber.Bus.MOD)
 @Mod(Clinker.MOD_ID)
 public class Clinker {
     public static final String MOD_ID = "clinker";
@@ -65,6 +65,11 @@ public class Clinker {
 
     private void setup(final FMLCommonSetupEvent event) {
 //        DispenserBlock.registerBehavior(ClinkerItems.ORDNANCE.get(), new ProjectileDispenseBehavior(ClinkerItems.ORDNANCE.get()));
+    }
+
+    @SubscribeEvent
+    public static void registerListeners(RegisterClientReloadListenersEvent event) {
+        event.registerReloadListener(new LocalisationReloader());
     }
 
     private void doClientStuff(final FMLClientSetupEvent event) {
