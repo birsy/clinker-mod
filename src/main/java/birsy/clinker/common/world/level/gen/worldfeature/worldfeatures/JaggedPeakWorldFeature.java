@@ -1,0 +1,44 @@
+package birsy.clinker.common.world.level.gen.worldfeature.worldfeatures;
+
+import birsy.clinker.common.world.level.gen.OthershoreNoiseComputers;
+import birsy.clinker.common.world.level.gen.noise.NoiseComputerContext;
+import birsy.clinker.common.world.level.gen.noise.NoiseComputerExecutor;
+import birsy.clinker.common.world.level.gen.noise.NoiseHolder;
+import birsy.clinker.common.world.level.gen.worldfeature.MetaChunk;
+import birsy.clinker.common.world.level.gen.worldfeature.WorldFeature;
+import net.minecraft.util.RandomSource;
+
+public class JaggedPeakWorldFeature extends WorldFeature {
+    int centerX, centerZ;
+    int radius = 16;
+
+    public JaggedPeakWorldFeature(int depth) {
+        super(depth);
+    }
+
+    @Override
+    public boolean within(int minX, int minZ, int maxX, int maxZ) {
+        return centerX > minX - this.radius &&
+               centerX < maxX + this.radius &&
+               centerZ > minZ - this.radius &&
+               centerZ < maxZ + this.radius;
+    }
+
+    @Override
+    public void plan(MetaChunk metaChunk, RandomSource randomSource, NoiseComputerContext context) {
+        this.radius = (depth + 1) * 3;
+        this.centerX = randomSource.nextInt(metaChunk.minX(), metaChunk.maxX());
+        this.centerZ = randomSource.nextInt(metaChunk.minZ(), metaChunk.maxZ());
+    }
+
+    @Override
+    public double modifyTerrain(int x, int y, int z, double currentNoiseValue, NoiseComputerContext context) {
+        NoiseHolder noise = context.noiseHolder();
+        NoiseComputerExecutor executor = context.noiseComputerExecutor();
+
+        double surfaceHeight = executor.compute(x, y, z, OthershoreNoiseComputers.SURFACE_HEIGHT_COMPUTER);
+        double horizontalDistance = Math.sqrt((x - centerX) * (x - centerX) + (z - centerZ) * (z - centerZ));
+
+        return Math.min(currentNoiseValue, horizontalDistance - radius);
+    }
+}

@@ -4,7 +4,6 @@ import birsy.clinker.common.world.level.gen.noise.*;
 import birsy.clinker.common.world.level.gen.surfaceshaper.SurfaceShapers;
 import birsy.clinker.common.world.level.gen.worldfeature.MetaChunkMapHolder;
 import birsy.clinker.common.world.level.gen.worldfeature.WorldFeature;
-import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.world.ClinkerBiomes;
 import com.mojang.serialization.MapCodec;
@@ -64,11 +63,11 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                 if (this.getBiomeSource() instanceof OthershoreBiomeSource othershoreBiomeSource) {
                     double totalContribution = 0;
                     for (int i = 0; i < biomeBlendOffsets.length; i++) {
-                        int offsetX = biomeBlendOffsets[i][0] * 4,
-                            offsetZ = biomeBlendOffsets[i][1] * 4;
+                        int offsetX = biomeBlendOffsets[i][0] * 8,
+                            offsetZ = biomeBlendOffsets[i][1] * 8;
                         double weight = biomeBlendWeights[i];
                         totalContribution += othershoreBiomeSource
-                                .getNoiseBiome(x + offsetX, context.chunk().getMaxBuildHeight() - 1, z + offsetZ, context.noiseComputerExecutor()) == possibleBiome ? weight : 0;
+                                .getNoiseBiome(x + offsetX,  440, z + offsetZ, context.noiseComputerExecutor()) == possibleBiome ? weight : 0;
                     }
                     return totalContribution;
                 }
@@ -80,7 +79,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
         this.undergroundContributionComputer = new NoiseComputer("underground_contribution", CacheType.INTERPOLATED_VERY_COARSE, (x, y, z, context) -> {
             if (this.getBiomeSource() instanceof OthershoreBiomeSource othershoreBiomeSource) {
-                return othershoreBiomeSource.getNoiseBiome(x, context.chunk().getMaxBuildHeight() - 1, z, context.noiseComputerExecutor()).is(ClinkerBiomes.UNDERGROUND) ? 1 : 0;
+                return othershoreBiomeSource.getNoiseBiome(x, y, z, context.noiseComputerExecutor()).is(ClinkerBiomes.UNDERGROUND) ? 1 : 0;
             }
             return 0;
         });
@@ -114,7 +113,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         LevelHeightAccessor levelheightaccessor = chunk.getHeightAccessorForGeneration();
         CachedNoiseComputerExecutor noiseExecutor = new CachedNoiseComputerExecutor(
                 chunk.getPos().getMinBlockX(), chunk.getMinBuildHeight(), chunk.getPos().getMinBlockZ(), chunk.getHeight(),
-                ((NoiseHolderHolder)(Object)randomState).clinker$noiseHolder(), chunk
+                ((NoiseHolderHolder)(Object)randomState).clinker$noiseHolder()
         );
 
         for (int section = levelheightaccessor.getMinSection(); section < levelheightaccessor.getMaxSection(); section++) {
@@ -150,7 +149,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
     public ChunkAccess doNoiseFillTask(Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunk) {
         CachedNoiseComputerExecutor noiseExecutor = new CachedNoiseComputerExecutor(
                 chunk.getPos().getMinBlockX(), chunk.getMinBuildHeight(), chunk.getPos().getMinBlockZ(), chunk.getHeight(),
-                ((NoiseHolderHolder)(Object)randomState).clinker$noiseHolder(), chunk
+                ((NoiseHolderHolder)(Object)randomState).clinker$noiseHolder()
         );
 
         NoiseComputer caveComputer = new NoiseComputer("caves", CacheType.INTERPOLATED_FINE, (x, y, z, context) -> {
@@ -192,7 +191,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             List<WorldFeature> worldFeatures = ((MetaChunkMapHolder)(Object)randomState).clinker$metaChunkMap()
                     .getWorldFeatures(chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());
             for (WorldFeature worldFeature : worldFeatures) {
-                //density = worldFeature.modifyTerrain(x, y, z, density);
+                density = worldFeature.modifyTerrain(x, y, z, density, context);
             }
             return density;
         });

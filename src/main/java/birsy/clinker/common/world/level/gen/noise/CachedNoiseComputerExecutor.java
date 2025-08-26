@@ -2,7 +2,6 @@ package birsy.clinker.common.world.level.gen.noise;
 
 import birsy.clinker.core.Clinker;
 import net.minecraft.util.Mth;
-import net.minecraft.world.level.chunk.ChunkAccess;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,13 +12,13 @@ public class CachedNoiseComputerExecutor implements NoiseComputerExecutor {
     private final Map<NoiseComputer, NoiseMap> noiseProcessorCaches;
     private final NoiseComputerContext context;
 
-    public CachedNoiseComputerExecutor(int minX, int minY, int minZ, int height, NoiseHolder noiseHolder, ChunkAccess chunk) {
+    public CachedNoiseComputerExecutor(int minX, int minY, int minZ, int height, NoiseHolder noiseHolder) {
         this.minX = minX;
         this.minY = minY;
         this.minZ = minZ;
         this.height = height;
         this.noiseProcessorCaches = new HashMap<>(16);
-        this.context = new NoiseComputerContext(this, noiseHolder, chunk);
+        this.context = new NoiseComputerContext(this, noiseHolder);
     }
 
     public double compute(int x, int y, int z, NoiseComputer noiseProcessor) {

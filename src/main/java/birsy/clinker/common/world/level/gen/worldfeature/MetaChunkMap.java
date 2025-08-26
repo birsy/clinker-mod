@@ -1,5 +1,7 @@
 package birsy.clinker.common.world.level.gen.worldfeature;
 
+import birsy.clinker.common.world.level.gen.noise.*;
+import birsy.clinker.common.world.level.gen.worldfeature.worldfeatures.TestWorldFeature;
 import birsy.clinker.core.Clinker;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.levelgen.PositionalRandomFactory;
@@ -14,9 +16,15 @@ public class MetaChunkMap {
     private final RandomState randomState;
     private final PositionalRandomFactory metaChunkRandom;
     private final Map<Long, MetaChunk>[] metaChunkCache;
+    private final NoiseComputerContext noiseContext;
 
     public MetaChunkMap(RandomState randomState) {
         this.randomState = randomState;
+
+        NoiseHolder noiseHolder = ((NoiseHolderHolder)(Object)randomState).clinker$noiseHolder();
+        NoiseComputerExecutor noiseComputerExecutor = new UncachedNoiseComputerExecutor(noiseHolder);
+        this.noiseContext = new NoiseComputerContext(noiseComputerExecutor, noiseHolder);
+
         this.metaChunkRandom = randomState.random.fromHashOf(Clinker.resource("meta_chunk")).forkPositional();
 
         this.metaChunkCache = new ConcurrentHashMap[MAX_DEPTH];
@@ -67,7 +75,7 @@ public class MetaChunkMap {
         if (depth <= 0) return;
         RandomSource random = metaChunkRandom.at(metaChunk.minX(), depth, metaChunk.maxZ());
         WorldFeature feature = new TestWorldFeature(depth);
-        feature.plan(metaChunk, random);
+        feature.plan(metaChunk, random, this.noiseContext);
 
         metaChunk.worldFeatures.add(feature);
     }

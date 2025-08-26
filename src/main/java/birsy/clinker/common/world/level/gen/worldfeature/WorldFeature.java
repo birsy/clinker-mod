@@ -1,25 +1,26 @@
 package birsy.clinker.common.world.level.gen.worldfeature;
 
+import birsy.clinker.common.world.level.gen.noise.NoiseComputerContext;
 import net.minecraft.core.Holder;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.biome.Biome;
 
 public abstract class WorldFeature {
-    final int depth;
+    public final int depth;
 
-    protected WorldFeature(int depth) {
+    public WorldFeature(int depth) {
         this.depth = depth;
     }
 
-    abstract boolean within(int minX, int minZ, int maxX, int maxZ);
+    public abstract boolean within(int minX, int minZ, int maxX, int maxZ);
 
-    abstract void plan(MetaChunk metaChunk, RandomSource randomSource);
+    public abstract void plan(MetaChunk metaChunk, RandomSource randomSource, NoiseComputerContext context);
 
-    public double modifyTerrain(int x, int y, int z, double currentNoiseValue) {
+    public double modifyTerrain(int x, int y, int z, double currentNoiseValue, NoiseComputerContext context) {
         return currentNoiseValue;
     }
 
-    public Holder<Biome> modifyBiome(int x, int y, int z, Holder<Biome> currentBiome) {
+    public Holder<Biome> modifyBiome(int x, int y, int z, Holder<Biome> currentBiome, NoiseComputerContext context) {
         return currentBiome;
     }
 }

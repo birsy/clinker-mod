@@ -41,8 +41,9 @@ public class OthershoreCloudRenderer {
     public OthershoreCloudRenderer() {
         float radius = (Minecraft.getInstance().options.getEffectiveRenderDistance()+1) * 4.0F * 16.0F;
         previousRadius = radius;
-        this.cloudLayerDownBuffer = buildCloudBuffer(cloudLayerDownBuffer, 64, 2, true, radius);
-        this.cloudLayerUpBuffer = buildCloudBuffer(cloudLayerUpBuffer, 64, 2, false, radius);
+        //VertexBuffer vbo, int resolution, int layers, boolean down, float radius, float thickness
+        this.cloudLayerDownBuffer = buildCloudBuffer(cloudLayerDownBuffer, 64, 2, true, radius, CLOUD_LAYER_THICKNESS);
+        this.cloudLayerUpBuffer = buildCloudBuffer(cloudLayerUpBuffer, 64, 2, false, radius, CLOUD_LAYER_THICKNESS);
     }
 
     private float previousRadius = -1.0F;
