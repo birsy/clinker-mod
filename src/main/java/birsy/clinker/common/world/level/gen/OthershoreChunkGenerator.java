@@ -4,6 +4,7 @@ import birsy.clinker.common.world.level.gen.noise.*;
 import birsy.clinker.common.world.level.gen.surfaceshaper.SurfaceShapers;
 import birsy.clinker.common.world.level.gen.worldfeature.MetaChunkMapHolder;
 import birsy.clinker.common.world.level.gen.worldfeature.WorldFeature;
+import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.world.ClinkerBiomes;
 import com.mojang.serialization.MapCodec;
@@ -147,24 +148,22 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
     }
 
     public ChunkAccess doNoiseFillTask(Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunk) {
+        NoiseHolder noiseHolder = ((NoiseHolderHolder)(Object)randomState).clinker$noiseHolder();
         CachedNoiseComputerExecutor noiseExecutor = new CachedNoiseComputerExecutor(
                 chunk.getPos().getMinBlockX(), chunk.getMinBuildHeight(), chunk.getPos().getMinBlockZ(), chunk.getHeight(),
-                ((NoiseHolderHolder)(Object)randomState).clinker$noiseHolder()
+                noiseHolder
         );
 
-        NoiseComputer caveComputer = new NoiseComputer("caves", CacheType.INTERPOLATED_FINE, (x, y, z, context) -> {
-            NoiseComputerExecutor cache = context.noiseComputerExecutor();
+        LocalFluidLevelMap fluidMap = new LocalFluidLevelMap(chunk, randomState, (x, y, z, context) -> {
             NoiseHolder noise = context.noiseHolder();
-            noise.registerNoise("cave_a");
-            noise.registerNoise("cave_b");
-            double frequency = 1.0 / 48.0;
-            double caveNoiseA = noise.sample("cave_a", x * frequency, y * frequency, z * frequency);
-            double caveNoiseB = noise.sample("cave_b", x * frequency, y * frequency, z * frequency);
-
-            double val = Math.sqrt(caveNoiseA * caveNoiseA + caveNoiseB * caveNoiseB) / frequency;
-            val -= 10;
-            return -val;
+            NoiseComputerExecutor executor = context.noiseComputerExecutor();
+            double surfaceHeight = executor.compute(x, y, z, OthershoreNoiseComputers.SURFACE_HEIGHT_COMPUTER);
+            if (y > surfaceHeight - 20) {
+                return new LocalFluidLevelMap.FluidLevel(Blocks.WATER.defaultBlockState(), 64);
+            }
+            return new LocalFluidLevelMap.FluidLevel(Blocks.AIR.defaultBlockState(), -1000);
         });
+        fluidMap.fillFluidMap(noiseExecutor, noiseHolder);
 
         NoiseComputer surfaceComputer = new NoiseComputer("surface_density", CacheType.INTERPOLATED_COARSE, (x, y, z, context) -> {
             NoiseComputerExecutor cache = context.noiseComputerExecutor();
@@ -183,12 +182,10 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         NoiseComputer finalDensityComputer = new NoiseComputer("final_density", CacheType.FINAL_DENSITY, (x, y, z, context) -> {
             NoiseComputerExecutor cache = context.noiseComputerExecutor();
             double surfaceNoise = cache.compute(x, y, z, surfaceComputer);
-            //double density = surfaceNoise;
-            double caveNoise = cache.compute(x, y, z, caveComputer);
+            double density = surfaceNoise;
+            density = Math.min(density, cache.compute(x, y, z, fluidMap.noiseComputer));
 
-            double density = surfaceNoise;//Math.max(surfaceNoise, caveNoise);
-
-            List<WorldFeature> worldFeatures = ((MetaChunkMapHolder)(Object)randomState).clinker$metaChunkMap()
+            List<WorldFeature> worldFeatures = ((MetaChunkMapHolder)(Object) randomState).clinker$metaChunkMap()
                     .getWorldFeatures(chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());
             for (WorldFeature worldFeature : worldFeatures) {
                 density = worldFeature.modifyTerrain(x, y, z, density, context);
@@ -206,8 +203,11 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                 for (int zi = 0; zi < 16; zi++) {
                     pos.setZ(zi + chunk.getPos().getMinBlockZ());
 
-                    double value = noiseExecutor.compute(pos.getX(), pos.getY(), pos.getZ(), finalDensityComputer);
-                    BlockState state = value < 0 ? ClinkerBlocks.BRIMSTONE.get().defaultBlockState() : Blocks.AIR.defaultBlockState();
+                    double terrainDensity = noiseExecutor.compute(pos.getX(), pos.getY(), pos.getZ(), finalDensityComputer);
+                    BlockState state = terrainDensity < 0 ?
+                            ClinkerBlocks.BRIMSTONE.get().defaultBlockState() :
+                            fluidMap.getFluidState(xi, yi, zi);
+
                     chunk.setBlockState(pos, state, false);
 
                     heightmapOceanFloor.update(xi, pos.getY(), zi, state);
