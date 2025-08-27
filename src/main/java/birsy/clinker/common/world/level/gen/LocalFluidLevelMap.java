@@ -68,7 +68,7 @@ public class LocalFluidLevelMap {
                     RandomSource aquiferRandom = random.at(blockX, blockY, blockZ);
 
                     int centerOffsetX = cellWidth/2 + aquiferRandom.nextInt(-2, 2),
-                        centerOffsetY = cellHeight/2, //+ aquiferRandom.nextInt(-2, 2),
+                        centerOffsetY = cellHeight/2 + aquiferRandom.nextInt(-2, 2),
                         centerOffsetZ = cellWidth/2 + aquiferRandom.nextInt(-2, 2);
                     int cellCenterX = blockX + centerOffsetX,
                         cellCenterY = blockY + centerOffsetY,

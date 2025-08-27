@@ -17,6 +17,7 @@ import net.minecraft.core.SectionPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.WorldGenRegion;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.*;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeManager;
@@ -59,17 +60,33 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         super(biomeSource);
         this.surfaceBuilder = new SurfaceBuilder(8, 0, ClinkerBlocks.BRIMSTONE.get().defaultBlockState());
         this.surfaceBiomeContributionComputers = HashMap.newHashMap(this.biomeSource.possibleBiomes().size());
+
+        // compute a blur kernel
+        int kernelSize = 5;
+        double kernelCenter = kernelSize * 0.5;
+        double[] kernel = new double[kernelSize * kernelSize];
+        for (int kX = 0; kX < kernelSize; kX++) {
+            double kernelX = kX + 0.5;
+            for (int kZ = 0; kZ < kernelSize; kZ++) {
+                double kernelZ = kZ + 0.5;
+                double distanceToCenter = Math.sqrt((kernelX - kernelCenter) * (kernelX - kernelCenter) + (kernelZ - kernelCenter) * (kernelZ - kernelCenter));
+                double gamma = kernelCenter / 3.0;
+                kernel[kX + kZ * kernelSize] = (1.0 / Math.sqrt(2 * Math.PI * gamma)) * Math.exp(-((distanceToCenter * distanceToCenter) / (2 * gamma * gamma)));
+            }
+        }
+
         for (Holder<Biome> possibleBiome : this.biomeSource.possibleBiomes()) {
             NoiseComputer biomeComputer = new NoiseComputer(possibleBiome.toString(), CacheType.INTERPOLATED_2D_COARSE, (x, y, z, context) -> {
                 if (this.getBiomeSource() instanceof OthershoreBiomeSource othershoreBiomeSource) {
                     double totalContribution = 0;
-                    for (int i = 0; i < biomeBlendOffsets.length; i++) {
-                        int offsetX = biomeBlendOffsets[i][0] * 8,
-                            offsetZ = biomeBlendOffsets[i][1] * 8;
-                        double weight = biomeBlendWeights[i];
+                    for (int i = 0; i < kernel.length; i++) {
+                        double weight = kernel[i];
+                        int offsetX = (Math.floorMod(i, kernelSize) - (int) Math.floor(kernelCenter)) * 4,
+                            offsetZ = (Math.floorDiv(i, kernelSize) - (int) Math.floor(kernelCenter)) * 4;
                         totalContribution += othershoreBiomeSource
                                 .getNoiseBiome(x + offsetX,  440, z + offsetZ, context.noiseComputerExecutor()) == possibleBiome ? weight : 0;
                     }
+
                     return totalContribution;
                 }
 
@@ -115,10 +132,8 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                 .getWorldFeatures(chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());
 
         LevelHeightAccessor levelheightaccessor = chunk.getHeightAccessorForGeneration();
-        NoiseHolder noiseHolder = ((NoiseHolderHolder)(Object)randomState).clinker$noiseHolder()
-        CachedNoiseComputerExecutor noiseExecutor = new CachedNoiseComputerExecutor(
-                chunk.getPos().getMinBlockX(), chunk.getMinBuildHeight(), chunk.getPos().getMinBlockZ(), chunk.getHeight(), noiseHolder
-        );
+        NoiseHolder noiseHolder = ((NoiseHolderHolder)(Object)randomState).clinker$noiseHolder();
+        CachedNoiseComputerExecutor noiseExecutor = new CachedNoiseComputerExecutor(chunk.getPos().getMinBlockX(), chunk.getMinBuildHeight(), chunk.getPos().getMinBlockZ(), chunk.getHeight(), noiseHolder);
         NoiseComputerContext context = new NoiseComputerContext(noiseExecutor, noiseHolder);
 
         for (int section = levelheightaccessor.getMinSection(); section < levelheightaccessor.getMaxSection(); section++) {
@@ -162,7 +177,6 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         );
 
         LocalFluidLevelMap fluidMap = new LocalFluidLevelMap(chunk, randomState, (x, y, z, context) -> {
-            NoiseHolder noise = context.noiseHolder();
             NoiseComputerExecutor executor = context.noiseComputerExecutor();
             double surfaceHeight = executor.compute(x, y, z, OthershoreNoiseComputers.SURFACE_HEIGHT_COMPUTER);
             if (y > surfaceHeight - 20) {
@@ -179,10 +193,13 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             double totalContribution = 0;
             for (Holder<Biome> biome : this.biomeSource.possibleBiomes()) {
                 double contribution = cache.compute(x, y, z, surfaceBiomeContributionComputers.get(biome.getKey()));
-                totalContribution += contribution;
-                if (contribution > 0) surfaceDensity += SurfaceShapers.retrieve(biome.getKey()).surfaceDensity(x, y, z, contribution, context) * contribution;
+                if (contribution > 0) {
+                    surfaceDensity += SurfaceShapers.retrieve(biome.getKey()).surfaceDensity(x, y, z, contribution, context) * contribution;
+                    totalContribution += contribution;
+                }
             }
-
+            //surfaceDensity = cache.compute(x, y, z, surfaceBiomeContributionComputers.get(ClinkerBiomes.ASH_STEPPE)) * 2 - 1;
+            //totalContribution = 1;
             return surfaceDensity / totalContribution;
         });
 
@@ -190,6 +207,11 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             NoiseComputerExecutor cache = context.noiseComputerExecutor();
             double surfaceNoise = cache.compute(x, y, z, surfaceComputer);
             double density = surfaceNoise;
+
+            double caveNoise = cache.compute(x, y, z, OthershoreNoiseComputers.CAVE_NOODLES);
+            caveNoise = Mth.lerp(cache.compute(x, y, z, undergroundContributionComputer), -10, caveNoise);
+            density = Math.max(density, caveNoise);
+
             density = Math.min(density, cache.compute(x, y, z, fluidMap.noiseComputer));
 
             List<WorldFeature> worldFeatures = ((MetaChunkMapHolder)(Object) randomState).clinker$metaChunkMap()
