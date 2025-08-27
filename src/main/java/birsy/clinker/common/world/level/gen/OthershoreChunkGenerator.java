@@ -111,11 +111,15 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
     private ChunkAccess doBiomeFillTask(OthershoreBiomeSource othershoreBiomeSource, Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunk) {
         ChunkPos chunkpos = chunk.getPos();
+        List<WorldFeature> worldFeatures = ((MetaChunkMapHolder)(Object) randomState).clinker$metaChunkMap()
+                .getWorldFeatures(chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());
+
         LevelHeightAccessor levelheightaccessor = chunk.getHeightAccessorForGeneration();
+        NoiseHolder noiseHolder = ((NoiseHolderHolder)(Object)randomState).clinker$noiseHolder()
         CachedNoiseComputerExecutor noiseExecutor = new CachedNoiseComputerExecutor(
-                chunk.getPos().getMinBlockX(), chunk.getMinBuildHeight(), chunk.getPos().getMinBlockZ(), chunk.getHeight(),
-                ((NoiseHolderHolder)(Object)randomState).clinker$noiseHolder()
+                chunk.getPos().getMinBlockX(), chunk.getMinBuildHeight(), chunk.getPos().getMinBlockZ(), chunk.getHeight(), noiseHolder
         );
+        NoiseComputerContext context = new NoiseComputerContext(noiseExecutor, noiseHolder);
 
         for (int section = levelheightaccessor.getMinSection(); section < levelheightaccessor.getMaxSection(); section++) {
             LevelChunkSection levelchunksection = chunk.getSection(chunk.getSectionIndexFromSectionY(section));
@@ -129,6 +133,9 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                         int z = qZ * QuartPos.SIZE + chunkpos.getMinBlockZ();
 
                         Holder<Biome> biome = othershoreBiomeSource.getNoiseBiome(x, y, z, noiseExecutor);
+                        for (WorldFeature worldFeature : worldFeatures) {
+                            worldFeature.modifyBiome(x, y, z, biome, context);
+                        }
                         palettedcontainer.getAndSetUnchecked(qX, qY, qZ, biome);
                     }
                 }
