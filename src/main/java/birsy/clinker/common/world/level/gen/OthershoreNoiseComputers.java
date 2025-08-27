@@ -5,6 +5,7 @@ import birsy.clinker.common.world.level.gen.noise.NoiseComputer;
 import birsy.clinker.common.world.level.gen.noise.NoiseComputerExecutor;
 import birsy.clinker.common.world.level.gen.noise.NoiseHolder;
 import birsy.clinker.core.util.MathUtils;
+import birsy.clinker.core.util.noise.FastNoiseLite;
 import net.minecraft.util.Mth;
 
 public class OthershoreNoiseComputers {
@@ -51,7 +52,7 @@ public class OthershoreNoiseComputers {
         return value;
     });
 
-    public static final NoiseComputer CAVE_NOODLES  = new NoiseComputer("cave_noodles", CacheType.INTERPOLATED_FINE,  (x, y, z, context) -> {
+    private static final NoiseComputer CAVE_NOODLES  = new NoiseComputer("cave_noodles", CacheType.INTERPOLATED_FINE,  (x, y, z, context) -> {
         NoiseHolder noise = context.noiseHolder();
         NoiseComputerExecutor executor = context.noiseComputerExecutor();
 
@@ -73,5 +74,74 @@ public class OthershoreNoiseComputers {
 
         double bedrockDistance = y;
         return  MathUtils.smoothMinExpo(sumOfSquares + speleothem * 5, bedrockDistance, 5);//Math.min(speleothem, sumOfSquares);
+    });
+
+    private static final NoiseComputer AQUIFER_CEILING_HEIGHT = new NoiseComputer("cave_aquifer_ceiling_height", CacheType.INTERPOLATED_2D_COARSE, (x, y, z, context) -> {
+        NoiseHolder noise = context.noiseHolder();
+        noise.registerNoise("aquifer_ceiling_height");
+        return Mth.clampedMap(noise.sample("aquifer_ceiling_height", x / 64.0, z / 64.0), -1, 1, -20, -3);
+    });
+    private static final NoiseComputer AQUIFER_ISLANDS = new NoiseComputer("cave_aquifer_islands", CacheType.INTERPOLATED_2D_COARSE, (x, y, z, context) -> {
+        NoiseHolder noise = context.noiseHolder();
+        noise.registerNoise("aquifer_islands", 2, 2.5, 1, 0.5);
+        return noise.sample("aquifer_islands", x / 128.0, z / 128.0);
+    });
+    private static final NoiseComputer AQUIFER_WALLS = new NoiseComputer("cave_aquifer_islands", CacheType.INTERPOLATED_2D_COARSE, (x, y, z, context) -> {
+        NoiseHolder noise = context.noiseHolder();
+        noise.registerNoise("aquifer_wall");
+        noise.registerNoise("aquifer_wall_holes");
+        noise.registerNoise("aquifer_wall_holes_small");
+
+        double frequency = 1.0 / 190.0;
+        double aquiferWall = Math.abs(noise.sample("aquifer_wall", x * frequency, z * frequency)) / frequency - 30;
+        frequency = 1.0 / 128.0;
+        double aquiferWallHoles = noise.sample("aquifer_wall_holes", x * frequency, z * frequency) / frequency;
+        aquiferWallHoles = 30 - Math.abs(aquiferWallHoles);
+        double aquiferWallHolesSmall = noise.sample("aquifer_wall_holes_small", x * frequency * 2, z * frequency * 2) / (frequency * 2);
+        aquiferWallHolesSmall = Math.max(0, 20 - Math.abs(aquiferWallHolesSmall));
+
+        aquiferWallHoles = aquiferWallHoles + aquiferWallHolesSmall * 8;
+
+        return Math.max(aquiferWall, aquiferWallHoles);
+    });
+
+    private static final NoiseComputer CAVE_AQUIFER = new NoiseComputer("cave_aquifer", CacheType.INTERPOLATED_COARSE, (x, y, z, context) -> {
+        if (y > 0) return -64;
+        NoiseHolder noise = context.noiseHolder();
+        NoiseComputerExecutor executor = context.noiseComputerExecutor();
+
+        noise.registerNoise("aquifer_wall");
+        noise.registerNoise("aquifer_wall_holes");
+
+        double seaLevel = -40;
+        double ceilingHeight = executor.compute(x, y, z, AQUIFER_CEILING_HEIGHT);
+
+        double heightDensity = y > seaLevel ?
+                Mth.map(y, seaLevel, ceilingHeight, 40, 0) :
+                Mth.map(y, -55, seaLevel, 0, 40);
+
+        double islands = executor.compute(x, y, z, AQUIFER_ISLANDS) * 12 + 6;
+        double density = Math.min(heightDensity, y - (seaLevel - islands));
+
+        double aquiferWall = executor.compute(x, y, z, AQUIFER_WALLS);
+
+        density = MathUtils.smoothMinExpo(density, aquiferWall, 5);
+
+        double speleothem = executor.compute(x, y, z, SPELEOTHEMS) - 1;
+        speleothem = MathUtils.smoothMinExpo(speleothem, 0, 3);
+        double ceilingSpeleothems = speleothem * Mth.clampedMap(y, seaLevel, ceilingHeight, Math.max(0, -islands), 1);
+        double floorSpeleothems = speleothem * Mth.clampedMap(y, -55, seaLevel - 2, 1, 0);
+
+        return density + ceilingSpeleothems * 5 + floorSpeleothems * 5;
+    });
+
+    public static final NoiseComputer CAVES = new NoiseComputer("caves", CacheType.INTERPOLATED_FINE, (x, y, z, context) -> {
+        NoiseHolder noise = context.noiseHolder();
+        NoiseComputerExecutor executor = context.noiseComputerExecutor();
+
+        double noodleCaves = executor.compute(x, y, z, CAVE_NOODLES);
+        double aquifer = executor.compute(x, y, z, CAVE_AQUIFER);
+
+        return Math.max(noodleCaves, aquifer);
     });
 }

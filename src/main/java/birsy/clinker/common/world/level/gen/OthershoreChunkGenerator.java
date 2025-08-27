@@ -179,9 +179,15 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         LocalFluidLevelMap fluidMap = new LocalFluidLevelMap(chunk, randomState, (x, y, z, context) -> {
             NoiseComputerExecutor executor = context.noiseComputerExecutor();
             double surfaceHeight = executor.compute(x, y, z, OthershoreNoiseComputers.SURFACE_HEIGHT_COMPUTER);
-            if (y > surfaceHeight - 20) {
+            // sea level
+            if (y > surfaceHeight - 10) {
                 return new LocalFluidLevelMap.FluidLevel(Blocks.WATER.defaultBlockState(), 64);
             }
+            // the aquifer
+            if (y < 0) {
+                return new LocalFluidLevelMap.FluidLevel(Blocks.WATER.defaultBlockState(), -40);
+            }
+
             return new LocalFluidLevelMap.FluidLevel(Blocks.AIR.defaultBlockState(), -1000);
         });
         fluidMap.fillFluidMap(noiseExecutor, noiseHolder);
@@ -208,7 +214,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             double surfaceNoise = cache.compute(x, y, z, surfaceComputer);
             double density = surfaceNoise;
 
-            double caveNoise = cache.compute(x, y, z, OthershoreNoiseComputers.CAVE_NOODLES);
+            double caveNoise = cache.compute(x, y, z, OthershoreNoiseComputers.CAVES);
             caveNoise = Mth.lerp(cache.compute(x, y, z, undergroundContributionComputer), -10, caveNoise);
             density = Math.max(density, caveNoise);
 
