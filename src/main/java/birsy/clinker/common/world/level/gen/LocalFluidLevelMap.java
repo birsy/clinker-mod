@@ -15,13 +15,14 @@ import net.minecraft.world.level.levelgen.RandomState;
 import java.util.List;
 
 public class LocalFluidLevelMap {
-    private static final int cellWidth = 4, cellHeight = 8;
+    private static final int cellWidth = 8, cellHeight = 12;
     private static final int borderRadius = 5;
     private static final int[][] borderOffsets = {
             {-1, 0, 0},
             {1, 0, 0},
             {0, 0, -1},
             {0, 0, 1},
+            {0, 1, 0},
             {0, -1, 0}
     };
     final int cellsH, cellsV;
@@ -29,6 +30,7 @@ public class LocalFluidLevelMap {
 
     final int minX, minY, minZ;
     final FluidLevel[] cellMap;
+    final boolean[] homogenousnessMap;
     final int[] cellCenterOffsets;
     final PositionalRandomFactory random;
     final MetaChunkMap metaChunkMap;
@@ -47,6 +49,7 @@ public class LocalFluidLevelMap {
         this.mapSizeV = this.cellsV;
         this.cellMap = new FluidLevel[this.mapSizeH * this.mapSizeH * this.mapSizeV];
         this.cellCenterOffsets = new int[this.cellMap.length * 3];
+        this.homogenousnessMap = new boolean[this.cellMap.length];
         this.random = randomState.aquiferRandom();
         this.metaChunkMap = ((MetaChunkMapHolder)(Object) randomState).clinker$metaChunkMap();
         this.noiseComputer = new NoiseComputer("aquifer_border", CacheType.INTERPOLATED_FINE, this::computeFluidBorderDensity);
@@ -67,9 +70,9 @@ public class LocalFluidLevelMap {
                     int blockZ = cellZ * cellWidth + minZ;
                     RandomSource aquiferRandom = random.at(blockX, blockY, blockZ);
 
-                    int centerOffsetX = cellWidth/2 + aquiferRandom.nextInt(-2, 2),
+                    int centerOffsetX = cellWidth/2 + aquiferRandom.nextInt(-4, 4),
                         centerOffsetY = cellHeight/2 + aquiferRandom.nextInt(-2, 2),
-                        centerOffsetZ = cellWidth/2 + aquiferRandom.nextInt(-2, 2);
+                        centerOffsetZ = cellWidth/2 + aquiferRandom.nextInt(-4, 4);
                     int cellCenterX = blockX + centerOffsetX,
                         cellCenterY = blockY + centerOffsetY,
                         cellCenterZ = blockZ + centerOffsetZ;
@@ -88,6 +91,53 @@ public class LocalFluidLevelMap {
                 }
             }
         }
+
+        for (int cellX = -1; cellX < this.cellsH + 1; cellX++) {
+            for (int cellY = 0; cellY < this.cellsV; cellY++) {
+                for (int cellZ = -1; cellZ < this.cellsH + 1; cellZ++) {
+                    int index = getIndexFromCell(cellX, cellY, cellZ);
+                    this.homogenousnessMap[index] = calculateHomogenousness(cellX, cellY, cellZ);
+                }
+            }
+        }
+    }
+
+    // todo: make this for each direction? might be much faster.
+    private boolean calculateHomogenousness(int cellX, int cellY, int cellZ) {
+        int index = getIndexFromCell(cellX, cellY, cellZ);
+        FluidLevel centerFluid = this.cellMap[index];
+        boolean isCenterEmpty = centerFluid.height < ((cellY - 1) * cellHeight + minY);
+        boolean isCenterFull = centerFluid.height > ((cellY + 1) * cellHeight + minY);
+        for (int xCellOffset = -1; xCellOffset <= 1; xCellOffset++) {
+            int offsetCellX = cellX + xCellOffset;
+            for (int yCellOffset = -1; yCellOffset <= 1; yCellOffset++) {
+                int offsetCellY = cellY + yCellOffset;
+                for (int zCellOffset = -1; zCellOffset <= 1; zCellOffset++) {
+                    int offsetCellZ = cellZ + zCellOffset;
+                    int offsetCellIndex = getIndexFromCell(offsetCellX, offsetCellY, offsetCellZ);
+
+                    FluidLevel offsetFluid = this.cellMap[offsetCellIndex];
+
+                    boolean isOffsetEmpty = offsetFluid.height < ((offsetCellY - 1) * cellHeight + minY);
+                    boolean isCenterOffsetFull = centerFluid.height > ((cellY + 1) * cellHeight + minY);
+
+                    // if they're both empty, it is homogenous.
+                    if (isCenterEmpty == isOffsetEmpty)
+                        continue;
+                    // if they're not empty and have different fluids, they are not homogenous.
+                    if (centerFluid.fluid() != offsetFluid.fluid())
+                        return false;
+                    // if they're both totally full, it is homogenous.
+                    if (isCenterFull == isCenterOffsetFull)
+                        continue;
+                    // if they have different fluid levels, then it is not homogenous
+                    if (centerFluid.height() != offsetFluid.height())
+                        return false;
+                }
+            }
+        }
+
+        return false;
     }
 
     private FluidLevel getFluidLevel(int localX, int localY, int localZ) {
@@ -127,16 +177,25 @@ public class LocalFluidLevelMap {
     }
 
     private double computeFluidBorderDensity(int x, int y, int z, NoiseComputerContext context) {
+        int localX = x - minX, localY = y - minY, localZ = z - minZ;
+        int cellX = Math.floorDiv(localX, cellWidth), cellY = Math.floorDiv(localY, cellHeight), cellZ = Math.floorDiv(localZ, cellWidth);
+        int cellIndex = getIndexFromCell(cellX, cellY, cellZ);
+        // don't bother calculating borders if the fluid is completely homogenous
+        if (homogenousnessMap[cellIndex])
+            return borderRadius - 3;
+
         FluidLevel currentFluidLevel = getFluidLevel(x - minX, y - minY, z - minZ);
         BlockState currentFluidState = currentFluidLevel.resolveFluid(x, y, z);
         // don't check downwards if we're at the bottom of the world.
-        int finalIndex = y > -63 + borderRadius ? borderOffsets.length : borderOffsets.length - 1;
+        //int finalIndex = y > -63 + borderRadius ? borderOffsets.length : borderOffsets.length - 1;
         for (int distance = 0; distance < borderRadius; distance++) {
-            for (int i = 0; i < finalIndex; i++) {
+            for (int i = 0; i < borderOffsets.length; i++) {
+                // only check upwards if the current state is air.
+                if (i == 4 && !currentFluidState.isAir()) continue;
                 int xOffset = borderOffsets[i][0] * distance,
                     yOffset = borderOffsets[i][1] * distance,
                     zOffset = borderOffsets[i][2] * distance;
-                FluidLevel neighboringFluid = getFluidLevel(x - minX + xOffset, y - minY + yOffset, z - minZ + zOffset);
+                FluidLevel neighboringFluid = getFluidLevel(localX + xOffset, localY + yOffset, localZ + zOffset);
                 BlockState neighboringFluidState = neighboringFluid.resolveFluid(x + xOffset, y + yOffset, z + zOffset);
                 if (currentFluidState.getBlock() != neighboringFluidState.getBlock())
                     return distance - 3;
