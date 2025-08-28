@@ -102,14 +102,8 @@ public class LocalFluidLevelMap {
         }
     }
 
+    // todo: make this for each direction? might be much faster.
     private boolean calculateHomogenousness(int cellX, int cellY, int cellZ) {
-        int minXCellOffset = cellX >= 0 ? -1 : 0,
-            maxXCellOffset = cellX < cellsH ? 1 : 0;
-        int minYCellOffset = cellY > 0 ? -1 : 0,
-            maxYCellOffset = cellY < mapSizeV ? 1 : 0;
-        int minZCellOffset = cellZ >= 0 ? -1 : 0,
-            maxZCellOffset = cellZ < cellsH ? 1 : 0;
-
         int index = getIndexFromCell(cellX, cellY, cellZ);
         FluidLevel centerFluid = this.cellMap[index];
         boolean isCenterEmpty = centerFluid.height < ((cellY - 1) * cellHeight + minY);
@@ -123,9 +117,7 @@ public class LocalFluidLevelMap {
                     int offsetCellIndex = getIndexFromCell(offsetCellX, offsetCellY, offsetCellZ);
 
                     FluidLevel offsetFluid = this.cellMap[offsetCellIndex];
-//                    if (offsetFluid != centerFluid) {
-//                        return false;
-//                    }
+
                     boolean isOffsetEmpty = offsetFluid.height < ((offsetCellY - 1) * cellHeight + minY);
                     boolean isCenterOffsetFull = centerFluid.height > ((cellY + 1) * cellHeight + minY);
 
