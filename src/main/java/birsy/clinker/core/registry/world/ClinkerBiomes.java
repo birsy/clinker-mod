@@ -13,6 +13,7 @@ public class ClinkerBiomes {
     public static final ResourceKey<Biome> LOWER_SHELF = register("lower_shelf");
     public static final ResourceKey<Biome> BRINE_SWAMP = register("brine_swamp");
     public static final ResourceKey<Biome> UNDERGROUND = register("underground");
+    public static final ResourceKey<Biome> AQUIFER = register("aquifer");
 
     private static ResourceKey<Biome> register(String pKey) {
         return ResourceKey.create(Registries.BIOME, name(pKey));

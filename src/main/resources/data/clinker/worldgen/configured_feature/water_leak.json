@@ -1,0 +1,11 @@
+{
+  "type": "clinker:fluid_leak",
+  "config": {
+    "state": {
+      "Name": "minecraft:water",
+      "Properties": {
+        "falling": "true"
+      }
+    }
+  }
+}

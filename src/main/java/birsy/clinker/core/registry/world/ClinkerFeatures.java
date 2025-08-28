@@ -4,6 +4,7 @@ import birsy.clinker.common.world.level.gen.feature.*;
 import birsy.clinker.core.Clinker;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.configurations.BlockStateConfiguration;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -19,4 +20,7 @@ public class ClinkerFeatures {
 
     public static final Supplier<Feature<NoneFeatureConfiguration>> SURFACE_DRIED_CLOVERS = FEATURES.register("surface_dried_clovers", () -> new SurfaceDriedCloversFeature(NoneFeatureConfiguration.CODEC));
     public static final Supplier<Feature<NoneFeatureConfiguration>> MUD_REEDS_PATCH = FEATURES.register("mud_reeds_patch", () -> new MudReedsPatchFeature(NoneFeatureConfiguration.CODEC));
+
+    public static final Supplier<Feature<BlockStateConfiguration>> FLUID_LEAK = FEATURES.register("fluid_leak", () -> new FluidLeakFeature(BlockStateConfiguration.CODEC));
+
 }

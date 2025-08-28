@@ -22,7 +22,7 @@ public class OthershoreBiomeSource extends BiomeSource {
             SEA_HEIGHT = 60;
 
     private Holder<Biome> voidBiome;
-    private Holder<Biome> plateau, ashSteppe, cliffside, lowerShelf, brineSwamp, underground;
+    private Holder<Biome> plateau, ashSteppe, cliffside, lowerShelf, brineSwamp, underground, aquifer;
 
 
     public OthershoreBiomeSource(HolderGetter<Biome> biomeGetter) {
@@ -34,11 +34,12 @@ public class OthershoreBiomeSource extends BiomeSource {
         lowerShelf = biomeGetter.getOrThrow(ClinkerBiomes.LOWER_SHELF);
         brineSwamp = biomeGetter.getOrThrow(ClinkerBiomes.BRINE_SWAMP);
         underground = biomeGetter.getOrThrow(ClinkerBiomes.UNDERGROUND);
+        aquifer = biomeGetter.getOrThrow(ClinkerBiomes.AQUIFER);
     }
 
     @Override
     protected Stream<Holder<Biome>> collectPossibleBiomes() {
-        return Stream.of(voidBiome, plateau, ashSteppe, cliffside, lowerShelf, brineSwamp, underground);
+        return Stream.of(voidBiome, plateau, ashSteppe, cliffside, lowerShelf, brineSwamp, underground, aquifer);
     }
 
     // todo: find a way to create a temporary noise executor for this
@@ -47,7 +48,11 @@ public class OthershoreBiomeSource extends BiomeSource {
 
     public Holder<Biome> getNoiseBiome(int x, int y, int z, NoiseComputerExecutor noiseExecutor) {
         double surfaceHeight = noiseExecutor.compute(x, y, z, OthershoreNoiseComputers.SURFACE_HEIGHT_COMPUTER);
-        if (y < surfaceHeight - 20) return underground;
+
+        if (y < surfaceHeight - 20) {
+            if (y < 0) return aquifer;
+            return underground;
+        }
 
         if (surfaceHeight > UPPER_SHELF_HEIGHT) return plateau;
         if (surfaceHeight > MIDDLE_SHELF_HEIGHT) return ashSteppe;

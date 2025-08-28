@@ -7,6 +7,7 @@ import birsy.clinker.common.world.level.gen.worldfeature.WorldFeature;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.world.ClinkerBiomes;
+import birsy.clinker.core.util.MathUtils;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.Util;
@@ -180,7 +181,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             NoiseComputerExecutor executor = context.noiseComputerExecutor();
             double surfaceHeight = executor.compute(x, y, z, OthershoreNoiseComputers.SURFACE_HEIGHT_COMPUTER);
             // sea level
-            if (y > surfaceHeight - 10) {
+            if (y > surfaceHeight || Math.abs(y - surfaceHeight) < 15) {
                 return new LocalFluidLevelMap.FluidLevel(Blocks.WATER.defaultBlockState(), 64);
             }
             // the aquifer
@@ -215,10 +216,9 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             double density = surfaceNoise;
 
             double caveNoise = cache.compute(x, y, z, OthershoreNoiseComputers.CAVES);
-            caveNoise = Mth.lerp(cache.compute(x, y, z, undergroundContributionComputer), -10, caveNoise);
+            //caveNoise = Mth.lerp(cache.compute(x, y, z, undergroundContributionComputer), -10, caveNoise);
             density = Math.max(density, caveNoise);
-
-            density = Math.min(density, cache.compute(x, y, z, fluidMap.noiseComputer));
+            density = MathUtils.smoothMinExpo(density, cache.compute(x, y, z, fluidMap.noiseComputer), 1.5);
 
             List<WorldFeature> worldFeatures = ((MetaChunkMapHolder)(Object) randomState).clinker$metaChunkMap()
                     .getWorldFeatures(chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());
