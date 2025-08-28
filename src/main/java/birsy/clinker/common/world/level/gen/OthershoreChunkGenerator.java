@@ -187,7 +187,6 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             if (y < 0) {
                 return new LocalFluidLevelMap.FluidLevel(Blocks.WATER.defaultBlockState(), -40);
             }
-
             return new LocalFluidLevelMap.FluidLevel(Blocks.AIR.defaultBlockState(), -1000);
         });
         fluidMap.fillFluidMap(noiseExecutor, noiseHolder);
@@ -215,7 +214,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             double density = surfaceNoise;
 
             double caveNoise = cache.compute(x, y, z, OthershoreNoiseComputers.CAVES);
-            caveNoise = Mth.lerp(cache.compute(x, y, z, undergroundContributionComputer), -10, caveNoise);
+            double clampedCaveNoise = Mth.lerp(cache.compute(x, y, z, undergroundContributionComputer), -10, caveNoise);
             density = Math.max(density, caveNoise);
 
             density = Math.min(density, cache.compute(x, y, z, fluidMap.noiseComputer));
