@@ -2,6 +2,7 @@ package birsy.clinker.datagen.providers;
 
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlocks;
+import birsy.clinker.core.registry.ClinkerTags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.IntrinsicHolderTagsProvider;
@@ -33,5 +34,17 @@ public class ClinkerBlockTagProvider extends BlockTagsProvider {
             if (entry.get() instanceof FenceGateBlock fenceGateBlock) fenceGateTags.add(fenceGateBlock);
             if (entry.get() instanceof WallBlock wall) wallTags.add(wall);
         }
+
+        IntrinsicHolderTagsProvider.IntrinsicTagAppender othershoreSoil = this.tag(ClinkerTags.OTHERSHORE_SOIL).replace(false);
+        othershoreSoil.add(ClinkerBlocks.ASH.get());
+        othershoreSoil.add(ClinkerBlocks.ASHEN_REGOLITH.get());
+        othershoreSoil.add(ClinkerBlocks.BRIMSTONE.get());
+
+        IntrinsicHolderTagsProvider.IntrinsicTagAppender climbables = this.tag(BlockTags.CLIMBABLE).replace(false);
+        climbables.add(ClinkerBlocks.THORNY_STEM.get());
+
+        IntrinsicHolderTagsProvider.IntrinsicTagAppender thornyStemsConnect = this.tag(ClinkerTags.THORNY_STEMS_CONNECT).replace(false);
+        thornyStemsConnect.add(ClinkerBlocks.THORNY_STEM.get());
+        thornyStemsConnect.add(ClinkerBlocks.BRAMBLE_BLOSSOM.get());
     }
 }

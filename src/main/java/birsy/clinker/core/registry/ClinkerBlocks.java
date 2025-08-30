@@ -200,7 +200,35 @@ public class ClinkerBlocks
 
     public static final DeferredBlock<Block> DRIED_CLOVERS = createBlock("dried_clovers", () -> new DriedCloversBlock(BlockBehaviour.Properties.of().noOcclusion().mapColor(MapColor.COLOR_ORANGE).ignitedByLava().strength(0.1F).sound(SoundType.HANGING_ROOTS).replaceable().pushReaction(PushReaction.DESTROY).noCollission()));
 
-    public static final DeferredBlock<Block> FULMINA_FLOWER = createBlock("fulmina_flower", () -> new FulminaFlowerBlock(BlockBehaviour.Properties.of().noOcclusion().mapColor(MapColor.COLOR_GRAY).strength(0.1F).sound(SoundType.HANGING_ROOTS).pushReaction(PushReaction.DESTROY).offsetType(BlockBehaviour.OffsetType.XZ).dynamicShape()));
+    public static final DeferredBlock<Block> FULMINA_FLOWER = createBlock("fulmina_flower",
+            () -> new FulminaFlowerBlock(BlockBehaviour.Properties.of()
+                    .noOcclusion()
+                    .mapColor(MapColor.COLOR_GRAY)
+                    .instabreak()
+                    .sound(SoundType.HANGING_ROOTS)
+                    .pushReaction(PushReaction.DESTROY)
+                    .offsetType(BlockBehaviour.OffsetType.XZ)
+                    .dynamicShape())
+    );
+
+    public static final DeferredBlock<Block> THORNY_STEM = createBlock("thorny_stem", () ->
+            new ThornyStemBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CORNFLOWER)
+                .mapColor(MapColor.COLOR_GRAY)
+                .sound(SoundType.HANGING_ROOTS)
+                .speedFactor(0.5F)
+                .offsetType(BlockBehaviour.OffsetType.NONE)
+            )
+    );
+
+    public static final DeferredBlock<Block> BRAMBLE_BLOSSOM = createBlock("bramble_blossom", () ->
+            new BrambleBlossomBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CORNFLOWER)
+                    .mapColor(MapColor.QUARTZ)
+                    .sound(SoundType.HANGING_ROOTS)
+                    .speedFactor(0.5F)
+                    .offsetType(BlockBehaviour.OffsetType.NONE)
+            )
+    );
+
 
     //Special
 

@@ -6,11 +6,13 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.properties.*;
 import net.neoforged.neoforge.client.model.generators.*;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
+import java.util.Objects;
 import java.util.function.Function;
 
 public class ClinkerBlockStateProvider extends BlockStateProvider {
@@ -176,6 +178,32 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
                     this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_capstone_wall_bottom")
             );
         }
+
+        // plants
+        {
+            ResourceLocation brambleBlossomTexture = this.modLoc(ModelProvider.BLOCK_FOLDER + "/bramble_blossom");
+            simpleBlock(ClinkerBlocks.BRAMBLE_BLOSSOM.get(), this.models().cross("bramble_blossom", brambleBlossomTexture).renderType("cutout"));
+            this.basicItem(ClinkerBlocks.BRAMBLE_BLOSSOM.get().asItem());
+            this.basicItem(ClinkerBlocks.THORNY_STEM.get().asItem(), Clinker.resource("item/thorny_stem"));
+        }
+    }
+
+    public ItemModelBuilder basicItem(Item item) {
+        return basicItem(Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(item)));
+    }
+
+    public ItemModelBuilder basicItem(ResourceLocation item) {
+        return this.basicItem(item, ResourceLocation.fromNamespaceAndPath(item.getNamespace(), "block/" + item.getPath()));
+    }
+
+    public ItemModelBuilder basicItem(Item item, ResourceLocation texture) {
+        return basicItem(Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(item)), texture);
+    }
+
+    public ItemModelBuilder basicItem(ResourceLocation item, ResourceLocation texture) {
+        return this.itemModels().getBuilder(item.toString())
+                .parent(new ModelFile.UncheckedModelFile("item/generated"))
+                .texture("layer0", texture);
     }
 
     private void simpleBlockWithVariation(Block block, int variations) {

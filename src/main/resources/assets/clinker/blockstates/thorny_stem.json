@@ -1,0 +1,60 @@
+{
+    "multipart": [
+        {
+            "when": {
+                "north": "true"
+            },
+            "apply": {
+                "model": "clinker:block/thorny_stem_down",
+                "x": -90
+            }
+        },
+        {
+            "when": {
+                "south": "true"
+            },
+            "apply": {
+                "model": "clinker:block/thorny_stem_up",
+                "x": -90
+            }
+        },
+
+        {
+            "when": {
+                "east": "true"
+            },
+            "apply": {
+                "model": "clinker:block/thorny_stem_down",
+                "y": -90,
+                "x": 90
+            }
+        },
+        {
+            "when": {
+                "west": "true"
+            },
+            "apply": {
+                "model": "clinker:block/thorny_stem_up",
+                "y": -90,
+                "x": 90
+            }
+        },
+
+        {
+            "when": {
+                "up": "true"
+            },
+            "apply": {
+                "model": "clinker:block/thorny_stem_up"
+            }
+        },
+        {
+            "when": {
+                "down": "true"
+            },
+            "apply": {
+                "model": "clinker:block/thorny_stem_down"
+            }
+        }
+    ]
+}
