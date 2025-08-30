@@ -98,7 +98,8 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
         this.undergroundContributionComputer = new NoiseComputer("underground_contribution", CacheType.INTERPOLATED_VERY_COARSE, (x, y, z, context) -> {
             if (this.getBiomeSource() instanceof OthershoreBiomeSource othershoreBiomeSource) {
-                return othershoreBiomeSource.getNoiseBiome(x, y, z, context.noiseComputerExecutor()).is(ClinkerBiomes.UNDERGROUND) ? 1 : 0;
+                Holder<Biome> currentBiome = othershoreBiomeSource.getNoiseBiome(x, y, z, context.noiseComputerExecutor());
+                return currentBiome.is(ClinkerBiomes.UNDERGROUND) || currentBiome.is(ClinkerBiomes.AQUIFER) ? 1 : 0;
             }
             return 0;
         });
@@ -204,8 +205,10 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                     totalContribution += contribution;
                 }
             }
-            //surfaceDensity = cache.compute(x, y, z, surfaceBiomeContributionComputers.get(ClinkerBiomes.ASH_STEPPE)) * 2 - 1;
+
+            //surfaceDensity =  y - context.noiseComputerExecutor().compute(x, y, z, OthershoreNoiseComputers.SURFACE_HEIGHT_COMPUTER);
             //totalContribution = 1;
+
             return surfaceDensity / totalContribution;
         });
 

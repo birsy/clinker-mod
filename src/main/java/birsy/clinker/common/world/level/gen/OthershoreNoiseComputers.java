@@ -4,11 +4,34 @@ import birsy.clinker.common.world.level.gen.noise.CacheType;
 import birsy.clinker.common.world.level.gen.noise.NoiseComputer;
 import birsy.clinker.common.world.level.gen.noise.NoiseComputerExecutor;
 import birsy.clinker.common.world.level.gen.noise.NoiseHolder;
+import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.core.util.noise.FastNoiseLite;
 import net.minecraft.util.Mth;
 
 public class OthershoreNoiseComputers {
+    private static NoiseComputer baseNoise(int index, double horizontalFrequency, double verticalFrequency, boolean twoDimensional) {
+        String name = "base_noise_" + index;
+        return new NoiseComputer(name, twoDimensional ? CacheType.INTERPOLATED_2D_COARSE : CacheType.INTERPOLATED_COARSE, (x, y, z, context) -> {
+            NoiseHolder noise = context.noiseHolder();
+            noise.registerNoise(name);
+            return noise.sample(name, x * horizontalFrequency, y * verticalFrequency, z * horizontalFrequency);
+        });
+    }
+    private static NoiseComputer[] noiseComputerArray(int offset, int length, boolean twoDimensional) {
+        NoiseComputer[] noiseComputers = new NoiseComputer[length];
+        for (int i = 0; i < length; i++) {
+            int size = 1 << i;
+            noiseComputers[i] = baseNoise(i + offset, 1.0 / size, 0.5 / size, twoDimensional);
+        }
+        return noiseComputers;
+    }
+
+    public static final NoiseComputer[] BASE_NOISE = noiseComputerArray(0, 10, false);
+    public static final NoiseComputer[] BASE_NOISE_ALT = noiseComputerArray(4, 10, false);
+    public static final NoiseComputer[] BASE_NOISE_2D = noiseComputerArray(0, 10, true);
+    public static final NoiseComputer[] BASE_NOISE_2D_ALT = noiseComputerArray(4, 10, true);
+
     public static final NoiseComputer SURFACE_HEIGHT_COMPUTER = new NoiseComputer("surface_height", CacheType.INTERPOLATED_2D_COARSE, (x, y, z, context) -> {
         NoiseHolder noise = context.noiseHolder();
         noise.registerNoise("base_plateaus", 2, 4.0, 0.7, 0.0);
@@ -59,13 +82,9 @@ public class OthershoreNoiseComputers {
         noise.registerNoise("cave_a");
         noise.registerNoise("cave_b");
 
-        double adjustedY = Math.floorMod(y, 16) / 16.0;
-        adjustedY = Mth.lerp(0.25, adjustedY, Mth.smoothstep(adjustedY));
-        adjustedY = adjustedY * 16 + Math.floor(y / 16.0) * 16.0;
-
         double frequency = 1.0 / 150.0;
-        double caveNoiseA = noise.sample("cave_a", x * frequency, adjustedY * frequency, z * frequency);
-        double caveNoiseB = noise.sample("cave_b", x * frequency, adjustedY * frequency * 2, z * frequency);
+        double caveNoiseA = noise.sample("cave_a", x * frequency, y * frequency, z * frequency);
+        double caveNoiseB = noise.sample("cave_b", x * frequency, y * frequency * 2, z * frequency);
         double sumOfSquares = Math.sqrt(caveNoiseA * caveNoiseA + caveNoiseB * caveNoiseB) / frequency;
         sumOfSquares = 30 - sumOfSquares;
 
@@ -132,7 +151,7 @@ public class OthershoreNoiseComputers {
         double ceilingSpeleothems = speleothem * Mth.clampedMap(y, seaLevel, ceilingHeight, Math.max(0, -islands), 1);
         double floorSpeleothems = speleothem * Mth.clampedMap(y, -55, seaLevel - 2, 1, 0);
 
-        return density + ceilingSpeleothems * 5 + floorSpeleothems * 5;
+        return density + ceilingSpeleothems * 7 + floorSpeleothems * 5;
     });
 
     public static final NoiseComputer CAVES = new NoiseComputer("caves", CacheType.INTERPOLATED_FINE, (x, y, z, context) -> {
