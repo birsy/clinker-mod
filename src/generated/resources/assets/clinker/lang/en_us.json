@@ -1,4 +1,11 @@
 {
+  "biome.clinker.aquifer": "Aquifer",
+  "biome.clinker.ash_steppe": "Ash Steppe",
+  "biome.clinker.brine_swamp": "Brine Swamp",
+  "biome.clinker.cliffside": "Cliffside",
+  "biome.clinker.lower_shelf": "Lower Shelf",
+  "biome.clinker.plateau": "Plateau",
+  "biome.clinker.underground": "Underground",
   "block.clinker.ash": "Ash",
   "block.clinker.ash_layers": "Ash Layers",
   "block.clinker.ashen_regolith": "Ashen Regolith",
@@ -84,6 +91,8 @@
   "block.clinker.tall_mud_reeds": "Tall Mud Reeds",
   "block.clinker.thorny_stem": "Thorny Stem",
   "block.clinker.trimmed_locust_log": "Trimmed Locust Log",
+  "block.clinker.vitriol": "Vitriol",
+  "block.clinker.withering_bramble_blossom": "Withering Bramble Blossom",
   "entity.clinker.ai_test": "Ai Test",
   "entity.clinker.collider": "Collider",
   "entity.clinker.flechette": "Flechette",
@@ -122,7 +131,7 @@
   "item.clinker.ordnance.detonation_oil": "Bursts into Oil",
   "item.clinker.ordnance.electrified": "Electrified",
   "item.clinker.ordnance.fuse_duration": "Fuse lasts %s seconds",
-  "item.clinker.ordnance.potion": "Potion:",
+  "item.clinker.ordnance.potion": "Potion: %s",
   "item.clinker.ordnance.touch_bounce": "Bouncy",
   "item.clinker.ordnance.touch_detonate": "Detonates on Impact",
   "item.clinker.ordnance.touch_stick": "Sticky",
@@ -134,5 +143,6 @@
   "item.clinker.salt": "Salt",
   "item.clinker.sulfur": "Sulfur",
   "item.clinker.transmogrifying_flask": "Transmogrifying Flask",
+  "item.clinker.vitriol_bucket": "Vitriol Bucket",
   "itemGroup.clinker": "Clinker"
 }

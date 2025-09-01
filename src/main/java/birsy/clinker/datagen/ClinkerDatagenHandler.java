@@ -1,10 +1,7 @@
 package birsy.clinker.datagen;
 
 import birsy.clinker.core.Clinker;
-import birsy.clinker.datagen.providers.ClinkerBlockStateProvider;
-import birsy.clinker.datagen.providers.ClinkerBlockTagProvider;
-import birsy.clinker.datagen.providers.ClinkerEnglishLanguageProvider;
-import birsy.clinker.datagen.providers.ClinkerItemTagProvider;
+import birsy.clinker.datagen.providers.*;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -27,8 +24,11 @@ public class ClinkerDatagenHandler {
         ClinkerBlockTagProvider blockTags = new ClinkerBlockTagProvider(output, lookupProvider, existingFileHelper);
         generator.addProvider(true, blockTags);
         generator.addProvider(true, new ClinkerItemTagProvider(output, lookupProvider, blockTags.contentsGetter(), existingFileHelper));
+        generator.addProvider(true, new ClinkerEntityTagProvider(output, lookupProvider, existingFileHelper));
+        generator.addProvider(true, new ClinkerDamageTypeTagProvider(output, lookupProvider, existingFileHelper));
 
         generator.addProvider(event.includeClient(), new ClinkerBlockStateProvider(output, existingFileHelper));
+        generator.addProvider(event.includeClient(), new ClinkerItemModelProvider(output, existingFileHelper));
         generator.addProvider(event.includeClient(), new ClinkerEnglishLanguageProvider(output));
     }
 }

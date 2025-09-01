@@ -3,10 +3,14 @@ package birsy.clinker.core.registry.world;
 import birsy.clinker.core.Clinker;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.biome.Biome;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ClinkerBiomes {
+    public static final List<ResourceKey<Biome>> BIOMES = new ArrayList<>();
+
     public static final ResourceKey<Biome> PLATEAU = register("plateau");
     public static final ResourceKey<Biome> ASH_STEPPE = register("ash_steppe");
     public static final ResourceKey<Biome> CLIFFSIDE = register("cliffside");
@@ -16,10 +20,8 @@ public class ClinkerBiomes {
     public static final ResourceKey<Biome> AQUIFER = register("aquifer");
 
     private static ResourceKey<Biome> register(String pKey) {
-        return ResourceKey.create(Registries.BIOME, name(pKey));
-    }
-
-    private static ResourceLocation name(String name) {
-        return Clinker.resource(name);
+        ResourceKey<Biome> key = ResourceKey.create(Registries.BIOME, Clinker.resource(pKey));
+        BIOMES.add(key);
+        return key;
     }
 }

@@ -1,6 +1,7 @@
 package birsy.clinker.core;
 
 import birsy.clinker.client.loc.LocalisationReloader;
+import birsy.clinker.client.render.ClinkerRenderTypes;
 import birsy.clinker.client.render.GUIRenderer;
 import birsy.clinker.client.gui.AlchemyBundleGUIRenderer;
 import birsy.clinker.client.render.debug.ClinkerDebugRenderers;
@@ -12,10 +13,13 @@ import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import birsy.clinker.core.registry.entity.ClinkerSensors;
 import birsy.clinker.core.registry.world.ClinkerFeatures;
 import birsy.clinker.core.registry.world.ClinkerWorld;
+import com.google.common.collect.ImmutableList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.FireBlock;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -38,6 +42,8 @@ public class Clinker {
     public Clinker(IEventBus modEventBus) throws InterruptedException {
         ClinkerSounds.SOUNDS.register(modEventBus);
         ClinkerDataComponents.DATA_COMPONENT_TYPES.register(modEventBus);
+        ClinkerFluids.FLUID_TYPES.register(modEventBus);
+        ClinkerFluids.FLUIDS.register(modEventBus);
         ClinkerItems.ITEMS.register(modEventBus);
         ClinkerBlocks.BLOCKS.register(modEventBus);
         ClinkerBlocks.BLOCK_ITEMS.register(modEventBus);
@@ -66,6 +72,7 @@ public class Clinker {
 
     private void setup(final FMLCommonSetupEvent event) {
 //        DispenserBlock.registerBehavior(ClinkerItems.ORDNANCE.get(), new ProjectileDispenseBehavior(ClinkerItems.ORDNANCE.get()));
+        ClinkerBlocks.defineFlammability((FireBlock) Blocks.FIRE);
     }
 
     @SubscribeEvent
@@ -80,6 +87,9 @@ public class Clinker {
         ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.SHORT_MUD_REEDS.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.MUD_REEDS.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(ClinkerBlocks.TALL_MUD_REEDS.get(), RenderType.cutout());
+
+        //ItemBlockRenderTypes.setRenderLayer(ClinkerFluids.VITRIOL.get(), ClinkerRenderTypes.VITRIOL);
+        ItemBlockRenderTypes.setRenderLayer(ClinkerFluids.VITRIOL.get(), RenderType.translucent());
 
         GUIRenderer.alchemyBundleGUIRenderer = new AlchemyBundleGUIRenderer(Minecraft.getInstance());
 

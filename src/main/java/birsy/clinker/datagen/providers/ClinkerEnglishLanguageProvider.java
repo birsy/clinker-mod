@@ -2,11 +2,15 @@ package birsy.clinker.datagen.providers;
 
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlocks;
+import birsy.clinker.core.registry.ClinkerFluids;
 import birsy.clinker.core.registry.ClinkerItems;
 import birsy.clinker.core.registry.entity.ClinkerEntities;
+import birsy.clinker.core.registry.world.ClinkerBiomes;
 import net.minecraft.data.PackOutput;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -32,6 +36,9 @@ public class ClinkerEnglishLanguageProvider extends LanguageProvider {
         for (DeferredHolder<EntityType<?>, ? extends EntityType> entry : ClinkerEntities.ENTITY_TYPES.getEntries()) {
             this.addEntityType(entry, localizedNameFromRegistryName(entry.getId().getPath()));
         }
+        for (ResourceKey<Biome> biome : ClinkerBiomes.BIOMES) {
+            this.add("biome.clinker." + biome.location().getPath(), localizedNameFromRegistryName(biome.location().getPath()));
+        }
 
         this.add("item.clinker.ordnance.fuse_duration", "Fuse lasts %s seconds");
 
@@ -45,7 +52,7 @@ public class ClinkerEnglishLanguageProvider extends LanguageProvider {
 
         this.add("item.clinker.ordnance.electrified", "Electrified");
         this.add("item.clinker.ordnance.trail", "Smoke Trail");
-        this.add("item.clinker.ordnance.potion", "Potion:");
+        this.add("item.clinker.ordnance.potion", "Potion: %s");
 
         this.add("item.clinker.alchemists_crossbow.no_ammo", "Hold ammunition in opposite hand to load.");
         this.add("item.clinker.alchemists_crossbow.primed", "Primed");

@@ -5,6 +5,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -12,7 +13,7 @@ import net.minecraft.world.level.gameevent.GameEvent;
 
 public class ClinkerTags {
     public static final TagKey<Block> WORKSTATION = BlockTags.create(Clinker.resource("valid_workstation_blocks"));
-    public static final TagKey<Block> THORNY_STEMS_CONNECT = BlockTags.create(Clinker.resource("thorny_stems_connect"));
+    public static final TagKey<Block> BRAMBLE_FLOWERS = BlockTags.create(Clinker.resource("bramble_flowers"));
     public static final TagKey<Block> OTHERSHORE_SOIL = BlockTags.create(Clinker.resource("othershore_soil"));
 
     public static final TagKey<GameEvent> GNOMAD_CALLOUTS = TagKey.create(Registries.GAME_EVENT, Clinker.resource("gnomad_callouts"));
@@ -20,6 +21,10 @@ public class ClinkerTags {
     public static final TagKey<EntityType<?>> DOESNT_SCARE_GNOMAD_RUNTS = TagKey.create(Registries.ENTITY_TYPE, Clinker.resource("doesnt_scare_gnomad_runts"));
     public static final TagKey<EntityType<?>> GNOMADS = TagKey.create(Registries.ENTITY_TYPE, Clinker.resource("gnomads"));
     public static final TagKey<EntityType<?>> BIRTHABLE_HOMUNCULOIDS = TagKey.create(Registries.ENTITY_TYPE, Clinker.resource("birthable_homunculoids"));
+    public static final TagKey<EntityType<?>> THORN_IMMUNE = TagKey.create(Registries.ENTITY_TYPE, Clinker.resource("thorn_immune"));
+
+    public static final TagKey<DamageType> THORNY = TagKey.create(Registries.DAMAGE_TYPE, Clinker.resource("thorny"));
+
 
     public static final TagKey<Item> NOT_BUOYANT = ItemTags.create(Clinker.resource("not_buoyant"));
     public static final TagKey<Item> ALCHEMISTS_CROSSBOW_REPAIRABLE = ItemTags.create(Clinker.resource("alchemists_crossbow_repairable"));

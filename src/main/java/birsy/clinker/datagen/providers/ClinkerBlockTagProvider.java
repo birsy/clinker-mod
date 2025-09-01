@@ -43,8 +43,8 @@ public class ClinkerBlockTagProvider extends BlockTagsProvider {
         IntrinsicHolderTagsProvider.IntrinsicTagAppender climbables = this.tag(BlockTags.CLIMBABLE).replace(false);
         climbables.add(ClinkerBlocks.THORNY_STEM.get());
 
-        IntrinsicHolderTagsProvider.IntrinsicTagAppender thornyStemsConnect = this.tag(ClinkerTags.THORNY_STEMS_CONNECT).replace(false);
-        thornyStemsConnect.add(ClinkerBlocks.THORNY_STEM.get());
-        thornyStemsConnect.add(ClinkerBlocks.BRAMBLE_BLOSSOM.get());
+        IntrinsicHolderTagsProvider.IntrinsicTagAppender brambleFlowers = this.tag(ClinkerTags.BRAMBLE_FLOWERS).replace(false);
+        brambleFlowers.add(ClinkerBlocks.BRAMBLE_BLOSSOM.get());
+        brambleFlowers.add(ClinkerBlocks.WITHERING_BRAMBLE_BLOSSOM.get());
     }
 }

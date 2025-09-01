@@ -1,20 +1,28 @@
 package birsy.clinker.client.render;
 
+import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import foundry.veil.forge.event.ForgeVeilRegisterBlockLayersEvent;
+import foundry.veil.forge.event.ForgeVeilRegisterFixedBuffersEvent;
 import net.minecraft.Util;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.ClientHooks;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static net.minecraft.client.renderer.RenderStateShard.*;
 
+@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, modid = Clinker.MOD_ID, value = Dist.CLIENT)
 public class ClinkerRenderTypes {
     private static final RenderStateShard.ShaderStateShard ENTITY_UNLIT_TRANSLUCENT_SHADER =
             new RenderStateShard.ShaderStateShard(ClientHooks.ClientEvents::getEntityTranslucentUnlitShader);
@@ -109,4 +117,26 @@ public class ClinkerRenderTypes {
     });
     public static RenderType canvasTextured(ResourceLocation pLocation) { return CANVAS_TEXTURED.apply(pLocation); }
 
+    private static final RenderStateShard.ShaderStateShard VITRIOL_SHADER =
+            new RenderStateShard.ShaderStateShard(ClinkerShaders::getVitriolShader);
+    public static final RenderType VITRIOL = Util.make(() -> {
+        RenderType.CompositeState compositeState = RenderType.CompositeState.builder()
+                .setLightmapState(LIGHTMAP)
+                .setShaderState(VITRIOL_SHADER)
+                .setTextureState(BLOCK_SHEET_MIPPED)
+                .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                .setOutputState(TRANSLUCENT_TARGET)
+                .createCompositeState(true);
+        return RenderType.create("vitriol",
+                DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 1024, true, false, compositeState);
+    });
+
+    @SubscribeEvent
+    public static void registerBlockLayers(ForgeVeilRegisterBlockLayersEvent event) {
+        //event.registerBlockLayer(VITRIOL);
+    }
+    @SubscribeEvent
+    public static void registerFixedBuffers(ForgeVeilRegisterFixedBuffersEvent event) {
+        //event.register(RenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS, VITRIOL);
+    }
 }

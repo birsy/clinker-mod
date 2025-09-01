@@ -15,85 +15,78 @@ import java.util.Objects;
 
 @EventBusSubscriber(value = Dist.CLIENT, modid = Clinker.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public class ClinkerShaders {
-
+    // veil shaders
     public static final ResourceLocation LIGHT_GREASE = Clinker.resource("light/grease");
     public static final ResourceLocation LIGHT_RIM = Clinker.resource("light/rim");
-
     public static final ResourceLocation PAGE_TEXTURE = Clinker.resource("page/texture");
-
     public static final ResourceLocation VOLUME = Clinker.resource("volume/volume");
-
     public static final ResourceLocation CLOUD_DENSITY = Clinker.resource("cloud/cloud_density");
-
     public static final ResourceLocation CLOUD = Clinker.resource("cloud/cloud");
 
-    @Nullable
-    private static ShaderInstance skyCloudShader;
-    @Nullable
+    // vanilla shaders
     private static ShaderInstance rendertypeEntityCutoutUnlitShader;
-    @Nullable
-    private static ShaderInstance rendertypeEntityCutoutNoCullUnlitShader;
-    @Nullable
-    private static ShaderInstance positionColorTextureUnclampedShader;
-    @Nullable
-    private static ShaderInstance positionColorUnclampedShader;
-    @Nullable
-    private static ShaderInstance chainLightningShader;
-    @Nullable
-    private static ShaderInstance fireSpewShader;
-
-    @Nullable
-    private static ShaderInstance skyOuterShader;
-    @Nullable
-    private static ShaderInstance skyOuterCloudShader;
-    @Nullable
-    private static ShaderInstance skyOuterStarShader;
-    @Nullable
-    private static ShaderInstance skyStarShader;
-
-    @Nullable
-    private static ShaderInstance cloudShader;
-
-    //@Nullable
-    //private static ShaderInstance skinnedEntityShader;
-
     public static ShaderInstance getEntityCutoutUnlitShader() {
         return Objects.requireNonNull(rendertypeEntityCutoutUnlitShader, "Attempted to call getEntityCutoutUnlitShader before shaders have finished loading.");
     }
+
+    private static ShaderInstance rendertypeEntityCutoutNoCullUnlitShader;
     public static ShaderInstance getEntityCutoutNoCullUnlitShader() {
         return Objects.requireNonNull(rendertypeEntityCutoutNoCullUnlitShader, "Attempted to call getEntityCutoutNoCullUnlitShader before shaders have finished loading.");
     }
+
+    private static ShaderInstance positionColorTextureUnclampedShader;
     public static ShaderInstance getPositionColorTextureUnclampedShader() {
         return Objects.requireNonNull(positionColorTextureUnclampedShader, "Attempted to call getPositionColorTextureUnclampedShader before shaders have finished loading.");
     }
+
+    private static ShaderInstance positionColorUnclampedShader;
     public static ShaderInstance getPositionColorUnclampedShader() {
         return Objects.requireNonNull(positionColorUnclampedShader, "Attempted to call getPositionColorUnclampedShader before shaders have finished loading.");
     }
+
+    private static ShaderInstance chainLightningShader;
     public static ShaderInstance getChainLightningShader() {
         return Objects.requireNonNull(chainLightningShader, "Attempted to call getChainLightningShader before shaders have finished loading.");
     }
+
+    private static ShaderInstance fireSpewShader;
     public static ShaderInstance getFireSpewShader() {
         return Objects.requireNonNull(fireSpewShader, "Attempted to call getFireSpewShader before shaders have finished loading.");
     }
 
+    private static ShaderInstance skyCloudShader;
     public static ShaderInstance getSkyCloudShader() {
         return Objects.requireNonNull(skyCloudShader, "Attempted to call getSkyCloudShader before shaders have finished loading.");
     }
-    public static ShaderInstance getSkyStarShader() {
-        return Objects.requireNonNull(skyStarShader, "Attempted to call getSkyStarShader before shaders have finished loading.");
-    }
+
+    private static ShaderInstance skyOuterShader;
     public static ShaderInstance getSkyOuterShader() {
         return Objects.requireNonNull(skyOuterShader, "Attempted to call getSkyOuterShader before shaders have finished loading.");
     }
+
+    private static ShaderInstance skyOuterCloudShader;
     public static ShaderInstance getSkyOuterCloudShader() {
         return Objects.requireNonNull(skyOuterCloudShader, "Attempted to call getSkyOuterCloudShader before shaders have finished loading.");
     }
+
+    private static ShaderInstance skyOuterStarShader;
     public static ShaderInstance getSkyOuterStarShader() {
         return Objects.requireNonNull(skyOuterStarShader, "Attempted to call getSkyOuterStarShader before shaders have finished loading.");
     }
 
+    private static ShaderInstance skyStarShader;
+    public static ShaderInstance getSkyStarShader() {
+        return Objects.requireNonNull(skyStarShader, "Attempted to call getSkyStarShader before shaders have finished loading.");
+    }
+
+    private static ShaderInstance cloudShader;
     public static ShaderInstance getCloudShader() {
         return Objects.requireNonNull(cloudShader, "Attempted to call getCloudShader before shaders have finished loading.");
+    }
+
+    private static ShaderInstance vitriolShader;
+    public static ShaderInstance getVitriolShader() {
+        return Objects.requireNonNull(vitriolShader, "Attempted to call getVitriolShader before shaders have finished loading.");
     }
 
     @SubscribeEvent
@@ -116,7 +109,7 @@ public class ClinkerShaders {
 
         event.registerShader(new ShaderInstance(event.getResourceProvider(), Clinker.resource("cloud"), DefaultVertexFormat.POSITION_TEX_COLOR), (shader) -> cloudShader = shader);
 
-        //event.registerShader(new ShaderInstance(event.getResourceProvider(), Clinker.resource("skinned_entity"), NecromancerVertexFormat.SKINNED_ENTITY), (shader) -> skinnedEntityShader = shader);
+        event.registerShader(new ShaderInstance(event.getResourceProvider(), Clinker.resource("vitriol"), DefaultVertexFormat.BLOCK), (shader) -> vitriolShader = shader);
     }
 
 

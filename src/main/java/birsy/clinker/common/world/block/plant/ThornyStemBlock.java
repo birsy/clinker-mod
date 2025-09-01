@@ -1,7 +1,6 @@
 package birsy.clinker.common.world.block.plant;
 
 import birsy.clinker.common.world.block.AbstractDirectionalStemBlock;
-import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.ClinkerTags;
 import com.mojang.serialization.MapCodec;
@@ -12,8 +11,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.ChorusPlantBlock;
-import net.minecraft.world.level.block.LadderBlock;
 import net.minecraft.world.level.block.SupportType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
@@ -33,9 +30,9 @@ public class ThornyStemBlock extends AbstractDirectionalStemBlock implements ISh
 
     @Override
     public boolean shouldConnect(LevelAccessor level, BlockPos pos, BlockState currentState, Direction neighborDirection, BlockPos neighborPos, BlockState neighborState) {
-        if (neighborState.is(ClinkerBlocks.BRAMBLE_BLOSSOM.get()))
+        if (neighborState.is(ClinkerTags.BRAMBLE_FLOWERS))
             return neighborDirection == Direction.UP;
-        return neighborState.is(ClinkerTags.THORNY_STEMS_CONNECT);
+        return neighborState.is(this);
     }
 
     @Override

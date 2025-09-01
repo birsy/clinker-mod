@@ -187,7 +187,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             }
             // the aquifer
             if (y < 0) {
-                return new LocalFluidLevelMap.FluidLevel(Blocks.WATER.defaultBlockState(), -40);
+                return new LocalFluidLevelMap.FluidLevel(ClinkerBlocks.VITRIOL_BLOCK.get().defaultBlockState(), -40);
             }
             return new LocalFluidLevelMap.FluidLevel(Blocks.AIR.defaultBlockState(), -1000);
         });

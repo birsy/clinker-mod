@@ -15,6 +15,7 @@
     "client.EntityRenderDispatcherMixin",
     "client.GameRendererMixin",
     "client.GuiMixin",
+    "client.ItemBlockRenderTypesMixin",
     "client.LevelRendererMixin"
   ],
   "mixins": [

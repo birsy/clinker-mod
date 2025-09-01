@@ -184,6 +184,14 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
             ResourceLocation brambleBlossomTexture = this.modLoc(ModelProvider.BLOCK_FOLDER + "/bramble_blossom");
             simpleBlock(ClinkerBlocks.BRAMBLE_BLOSSOM.get(), this.models().cross("bramble_blossom", brambleBlossomTexture).renderType("cutout"));
             this.basicItem(ClinkerBlocks.BRAMBLE_BLOSSOM.get().asItem());
+
+            this.simpleBlockWithVariation(ClinkerBlocks.WITHERING_BRAMBLE_BLOSSOM.get(), (i) -> {
+                String suffix = i == 0 ? "" : "_" + i;
+                String name = "withering_bramble_blossom" + suffix;
+                return this.models().cross(name, this.modLoc(ModelProvider.BLOCK_FOLDER + "/withering_bramble_blossom" + suffix)).renderType("cutout");
+            }, 2);
+            this.basicItem(ClinkerBlocks.WITHERING_BRAMBLE_BLOSSOM.get().asItem());
+
             this.basicItem(ClinkerBlocks.THORNY_STEM.get().asItem(), Clinker.resource("item/thorny_stem"));
         }
     }

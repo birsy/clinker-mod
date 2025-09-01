@@ -1,0 +1,14 @@
+{
+  "values": [
+    "minecraft:wither_skeleton",
+    "minecraft:wither",
+    "minecraft:skeleton",
+    "minecraft:skeleton_horse",
+    "minecraft:blaze",
+    "minecraft:magma_cube",
+    "minecraft:slime",
+    "minecraft:iron_golem",
+    "minecraft:armadillo",
+    "minecraft:shulker"
+  ]
+}

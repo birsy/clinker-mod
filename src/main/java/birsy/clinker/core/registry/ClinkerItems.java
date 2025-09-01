@@ -96,13 +96,19 @@ public class ClinkerItems
     public static final DeferredItem<Item> LADLE = ITEMS.register("ladle", () -> new LadleItem(new Item.Properties()));
 
     public static final DeferredItem<Item> MOGUL_WARHOOK = ITEMS.register("mogul_warhook", () -> 
-            new MogulWarhookItem(
-                    new Item.Properties()
-                            .stacksTo(1)
-                            .durability(10430)
-                            .rarity(Rarity.UNCOMMON)
+            new MogulWarhookItem(new Item.Properties()
+                    .stacksTo(1)
+                    .durability(10430)
+                    .rarity(Rarity.UNCOMMON)
             )
     );
+
+    public static final DeferredItem<BucketItem> VITRIOL_BUCKET = ITEMS.register("vitriol_bucket", () ->
+            new BucketItem(ClinkerFluids.VITRIOL.get(), new Item.Properties()
+                    .craftRemainder(Items.BUCKET)
+                    .stacksTo(1))
+    );
+
 
     @SubscribeEvent
     public static void registerClientItemExtensions(RegisterClientExtensionsEvent event) {

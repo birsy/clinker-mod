@@ -5,6 +5,9 @@ import birsy.clinker.common.world.block.plant.*;
 import birsy.clinker.common.world.block.plant.aspen.SwampAspenLogBlock;
 import birsy.clinker.core.Clinker;
 import net.minecraft.core.Direction;
+import net.minecraft.util.Mth;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.item.component.SuspiciousStewEffects;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
@@ -12,6 +15,7 @@ import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 public class ClinkerBlocks
@@ -208,26 +212,37 @@ public class ClinkerBlocks
                     .sound(SoundType.HANGING_ROOTS)
                     .pushReaction(PushReaction.DESTROY)
                     .offsetType(BlockBehaviour.OffsetType.XZ)
-                    .dynamicShape())
-    );
+                    .dynamicShape()));
 
     public static final DeferredBlock<Block> THORNY_STEM = createBlock("thorny_stem", () ->
             new ThornyStemBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CORNFLOWER)
-                .mapColor(MapColor.COLOR_GRAY)
-                .sound(SoundType.HANGING_ROOTS)
-                .speedFactor(0.5F)
-                .offsetType(BlockBehaviour.OffsetType.NONE)
-            )
-    );
+                    .mapColor(MapColor.COLOR_GRAY).sound(SoundType.HANGING_ROOTS).speedFactor(0.5F).offsetType(BlockBehaviour.OffsetType.NONE)
+            ));
 
     public static final DeferredBlock<Block> BRAMBLE_BLOSSOM = createBlock("bramble_blossom", () ->
-            new BrambleBlossomBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CORNFLOWER)
-                    .mapColor(MapColor.QUARTZ)
-                    .sound(SoundType.HANGING_ROOTS)
-                    .speedFactor(0.5F)
-                    .offsetType(BlockBehaviour.OffsetType.NONE)
-            )
+            new BrambleBlossomBlock(
+                    new SuspiciousStewEffects(List.of(new SuspiciousStewEffects.Entry(MobEffects.SATURATION, Mth.floor(30 * 20.0F)))),
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.CORNFLOWER)
+                            .mapColor(MapColor.QUARTZ).sound(SoundType.HANGING_ROOTS).speedFactor(0.5F).offsetType(BlockBehaviour.OffsetType.NONE)
+            ));
+
+    public static final DeferredBlock<Block> WITHERING_BRAMBLE_BLOSSOM = createBlock("withering_bramble_blossom", () ->
+            new WitheringBrambleBlossomBlock(
+                    BlockBehaviour.Properties.ofFullCopy(ClinkerBlocks.BRAMBLE_BLOSSOM.get())
+                            .mapColor(MapColor.COLOR_BLACK)
+            ));
+
+
+    // fluids
+    public static DeferredBlock<LiquidBlock> VITRIOL_BLOCK = BLOCKS.register("vitriol", () -> new LiquidBlock(
+            ClinkerFluids.VITRIOL.get(), BlockBehaviour.Properties.ofFullCopy(Blocks.WATER).mapColor(MapColor.DIRT))
     );
+
+    public static void defineFlammability(FireBlock fire) {
+        fire.setFlammable(THORNY_STEM.get(), 60, 5);
+        fire.setFlammable(BRAMBLE_BLOSSOM.get(), 60, 5);
+        fire.setFlammable(WITHERING_BRAMBLE_BLOSSOM.get(), 60, 5);
+    }
 
 
     //Special

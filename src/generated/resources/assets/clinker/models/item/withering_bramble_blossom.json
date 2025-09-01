@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "clinker:block/withering_bramble_blossom"
+  }
+}
