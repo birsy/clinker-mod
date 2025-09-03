@@ -17,7 +17,7 @@ public class OthershoreBiomeSource extends BiomeSource {
             instance -> instance.group(RegistryOps.retrieveGetter(Registries.BIOME))
                         .apply(instance, instance.stable(OthershoreBiomeSource::new))
     );
-    private static final int UPPER_SHELF_HEIGHT = 280,
+    public static final int UPPER_SHELF_HEIGHT = 280,
             MIDDLE_SHELF_HEIGHT = 200,
             SEA_HEIGHT = 60;
 

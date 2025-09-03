@@ -15,7 +15,9 @@ public class OthershoreNoiseComputers {
         return new NoiseComputer(name, twoDimensional ? CacheType.INTERPOLATED_2D_COARSE : CacheType.INTERPOLATED_COARSE, (x, y, z, context) -> {
             NoiseHolder noise = context.noiseHolder();
             noise.registerNoise(name);
-            return noise.sample(name, x * horizontalFrequency, y * verticalFrequency, z * horizontalFrequency);
+            return twoDimensional ?
+                    noise.sample(name, x * horizontalFrequency, z * horizontalFrequency) : // 2D noise samples are faster
+                    noise.sample(name, x * horizontalFrequency, y * verticalFrequency, z * horizontalFrequency);
         });
     }
     private static NoiseComputer[] noiseComputerArray(int offset, int length, boolean twoDimensional) {
