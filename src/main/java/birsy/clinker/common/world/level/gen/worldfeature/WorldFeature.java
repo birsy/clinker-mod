@@ -15,7 +15,7 @@ public abstract class WorldFeature {
 
     public abstract boolean within(int minX, int minZ, int maxX, int maxZ);
 
-    public abstract void plan(MetaChunk metaChunk, RandomSource randomSource, NoiseComputerContext context);
+    public abstract boolean plan(MetaChunk metaChunk, RandomSource randomSource, NoiseComputerContext context);
 
     public double modifyTerrain(int x, int y, int z, double currentNoiseValue, NoiseComputerContext context) {
         return currentNoiseValue;

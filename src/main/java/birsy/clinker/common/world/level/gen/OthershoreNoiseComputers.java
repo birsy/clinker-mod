@@ -34,7 +34,7 @@ public class OthershoreNoiseComputers {
     public static final NoiseComputer[] BASE_NOISE_2D = noiseComputerArray(0, 10, true);
     public static final NoiseComputer[] BASE_NOISE_2D_ALT = noiseComputerArray(4, 10, true);
 
-    public static final NoiseComputer SURFACE_HEIGHT_COMPUTER = new NoiseComputer("surface_height", CacheType.INTERPOLATED_2D_COARSE, (x, y, z, context) -> {
+    public static final NoiseComputer SURFACE_HEIGHT_COMPUTER = new NoiseComputer("surface_height", CacheType.INTERPOLATED_2D_VERY_COARSE, (x, y, z, context) -> {
         NoiseHolder noise = context.noiseHolder();
         noise.registerNoise("base_plateaus", 2, 4.0, 0.7, 0.0);
         noise.registerNoise("base_upper_shelf");
@@ -66,6 +66,8 @@ public class OthershoreNoiseComputers {
         val = Mth.clampedLerp(val, -1, (seas * 0.5 + 0.5));
 
         return Mth.clampedMap(val, -1, 1, 50 * scale, 300 * scale);
+
+        //return 100;
     });
 
     public static final NoiseComputer SPELEOTHEMS = new NoiseComputer("speleothems", CacheType.INTERPOLATED_FINE,  (x, y, z, context) -> {

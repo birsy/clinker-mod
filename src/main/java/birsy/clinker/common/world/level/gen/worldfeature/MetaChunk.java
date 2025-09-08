@@ -3,12 +3,14 @@ package birsy.clinker.common.world.level.gen.worldfeature;
 import net.minecraft.world.level.ChunkPos;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class MetaChunk {
     final int size;
     final int metaChunkX, metaChunkZ;
-    List<WorldFeature> worldFeatures = new ArrayList<>(16);
+    Set<WorldFeature> worldFeatures = new HashSet<>(16);
 
     public MetaChunk(int size, int metaChunkX, int metaChunkZ) {
         this.size = size;

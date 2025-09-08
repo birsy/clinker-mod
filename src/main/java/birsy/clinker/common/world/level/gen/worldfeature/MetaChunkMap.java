@@ -1,12 +1,15 @@
 package birsy.clinker.common.world.level.gen.worldfeature;
 
 import birsy.clinker.common.world.level.gen.noise.*;
+import birsy.clinker.common.world.level.gen.worldfeature.worldfeatures.JaggedPeakWorldFeature;
 import birsy.clinker.common.world.level.gen.worldfeature.worldfeatures.TestWorldFeature;
+import birsy.clinker.common.world.level.gen.worldfeature.worldfeatures.UndergroundLakeWorldFeature;
 import birsy.clinker.core.Clinker;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.levelgen.PositionalRandomFactory;
 import net.minecraft.world.level.levelgen.RandomState;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,14 +19,9 @@ public class MetaChunkMap {
     private final RandomState randomState;
     private final PositionalRandomFactory metaChunkRandom;
     private final Map<Long, MetaChunk>[] metaChunkCache;
-    private final NoiseComputerContext noiseContext;
 
     public MetaChunkMap(RandomState randomState) {
         this.randomState = randomState;
-
-        NoiseHolder noiseHolder = ((NoiseHolderHolder)(Object)randomState).clinker$noiseHolder();
-        NoiseComputerExecutor noiseComputerExecutor = new UncachedNoiseComputerExecutor(noiseHolder);
-        this.noiseContext = new NoiseComputerContext(noiseComputerExecutor, noiseHolder);
 
         this.metaChunkRandom = randomState.random.fromHashOf(Clinker.resource("meta_chunk")).forkPositional();
 
@@ -40,47 +38,63 @@ public class MetaChunkMap {
     MetaChunk getMetaChunk(int depth, int blockX, int blockZ) {
         int size = getMetaChunkSizeForDepth(depth);
         int metaChunkX = Math.floorDiv(blockX, size), metaChunkZ = Math.floorDiv(blockZ, size);
-
         long key = MetaChunk.asLong(metaChunkX, metaChunkZ);
 
-        // if contained in cache, return cached meta-chunk.
-        if (metaChunkCache[depth].containsKey(key))
-            return metaChunkCache[depth].get(key);
+        return metaChunkCache[depth].computeIfAbsent(key, (param) -> {
+            // create a new meta-chunk.
+            MetaChunk newChunk = new MetaChunk(size, metaChunkX, metaChunkZ);
 
-        // otherwise, create a new meta-chunk.
-        MetaChunk newChunk = new MetaChunk(size, metaChunkX, metaChunkZ);
-
-        // generate "parents"
-        if (depth < MAX_DEPTH-1) {
-            int parentSize = getMetaChunkSizeForDepth(depth + 1);
-            for (int xOffset = -1; xOffset <= 1; xOffset++) {
-                for (int zOffset = -1; zOffset <= 1; zOffset++) {
-                    MetaChunk parent = getMetaChunk(
-                            depth + 1,
-                            (Math.floorDiv(blockX, parentSize) + xOffset) * parentSize,
-                            (Math.floorDiv(blockZ, parentSize) + zOffset) * parentSize
-                    );
-                    // propagate features "downward" to "child"
-                    parent.propagateFeatures(newChunk);
+            // generate "parents"
+            if (depth < MAX_DEPTH-1) {
+                int parentSize = getMetaChunkSizeForDepth(depth + 1);
+                for (int xOffset = -1; xOffset <= 1; xOffset++) {
+                    for (int zOffset = -1; zOffset <= 1; zOffset++) {
+                        MetaChunk parent = getMetaChunk(
+                                depth + 1,
+                                (Math.floorDiv(blockX, parentSize) + xOffset) * parentSize,
+                                (Math.floorDiv(blockZ, parentSize) + zOffset) * parentSize
+                        );
+                        // propagate features "downward" to "child"
+                        parent.propagateFeatures(newChunk);
+                    }
                 }
             }
-        }
 
-        generateWorldFeatures(depth, newChunk);
-        metaChunkCache[depth].put(key, newChunk);
-        return newChunk;
+            generateWorldFeatures(depth, newChunk);
+            return newChunk;
+        });
     }
 
     void generateWorldFeatures(int depth, MetaChunk metaChunk) {
         if (depth <= 0) return;
+        NoiseHolder noiseHolder = ((NoiseHolderHolder)(Object)this.randomState).clinker$noiseHolder();
+        NoiseComputerExecutor noiseComputerExecutor = new UncachedNoiseComputerExecutor(noiseHolder);
+        NoiseComputerContext context = new NoiseComputerContext(noiseComputerExecutor, noiseHolder);
+
         RandomSource random = metaChunkRandom.at(metaChunk.minX(), depth, metaChunk.maxZ());
         WorldFeature feature = new TestWorldFeature(depth);
-        feature.plan(metaChunk, random, this.noiseContext);
+        if (feature.plan(metaChunk, random, context))
+            metaChunk.worldFeatures.add(feature);
 
-        metaChunk.worldFeatures.add(feature);
+        if (depth == 5) {
+            WorldFeature mountain = new JaggedPeakWorldFeature(depth);
+            if (mountain.plan(metaChunk, random, context))
+                metaChunk.worldFeatures.add(mountain);
+
+
+        }
+
+        if (depth == 3) {
+            int aquiferCount = random.nextInt(0, 16);
+            for (int i = 0; i < aquiferCount; i++) {
+                WorldFeature aquifer = new UndergroundLakeWorldFeature(depth);
+                if (aquifer.plan(metaChunk, random, context))
+                    metaChunk.worldFeatures.add(aquifer);
+            }
+        }
     }
 
-    public List<WorldFeature> getWorldFeatures(int blockX, int blockZ) {
+    public Collection<WorldFeature> getWorldFeatures(int blockX, int blockZ) {
         return getMetaChunk(0, blockX, blockZ).worldFeatures;
     }
 }

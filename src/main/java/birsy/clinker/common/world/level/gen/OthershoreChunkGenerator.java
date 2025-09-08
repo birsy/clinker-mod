@@ -4,7 +4,6 @@ import birsy.clinker.common.world.level.gen.noise.*;
 import birsy.clinker.common.world.level.gen.surfaceshaper.SurfaceShapers;
 import birsy.clinker.common.world.level.gen.worldfeature.MetaChunkMapHolder;
 import birsy.clinker.common.world.level.gen.worldfeature.WorldFeature;
-import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.world.ClinkerBiomes;
 import birsy.clinker.core.util.MathUtils;
@@ -34,6 +33,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraft.world.level.levelgen.blending.Blender;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -130,13 +130,15 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
     private ChunkAccess doBiomeFillTask(OthershoreBiomeSource othershoreBiomeSource, Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunk) {
         ChunkPos chunkpos = chunk.getPos();
-        List<WorldFeature> worldFeatures = ((MetaChunkMapHolder)(Object) randomState).clinker$metaChunkMap()
-                .getWorldFeatures(chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());
+
 
         LevelHeightAccessor levelheightaccessor = chunk.getHeightAccessorForGeneration();
         NoiseHolder noiseHolder = ((NoiseHolderHolder)(Object)randomState).clinker$noiseHolder();
         CachedNoiseComputerExecutor noiseExecutor = new CachedNoiseComputerExecutor(chunk.getPos().getMinBlockX(), chunk.getMinBuildHeight(), chunk.getPos().getMinBlockZ(), chunk.getHeight(), noiseHolder);
         NoiseComputerContext context = new NoiseComputerContext(noiseExecutor, noiseHolder);
+
+        Collection<WorldFeature> worldFeatures = ((MetaChunkMapHolder)(Object) randomState).clinker$metaChunkMap()
+                .getWorldFeatures(chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());
 
         for (int section = levelheightaccessor.getMinSection(); section < levelheightaccessor.getMaxSection(); section++) {
             LevelChunkSection levelchunksection = chunk.getSection(chunk.getSectionIndexFromSectionY(section));
@@ -221,9 +223,10 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             caveNoise = Mth.lerp(cache.compute(x, y, z, undergroundContributionComputer), -10, caveNoise);
             density = Math.max(density, caveNoise);
 
-            density = MathUtils.smoothMinExpo(density, cache.compute(x, y, z, fluidMap.noiseComputer), 1.5);
+            if (density > 0)
+                density = MathUtils.smoothMinExpo(density, cache.compute(x, y, z, fluidMap.borderDensityComputer), 1.5);
 
-            List<WorldFeature> worldFeatures = ((MetaChunkMapHolder)(Object) randomState).clinker$metaChunkMap()
+            Collection<WorldFeature> worldFeatures = ((MetaChunkMapHolder)(Object) randomState).clinker$metaChunkMap()
                     .getWorldFeatures(chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());
             for (WorldFeature worldFeature : worldFeatures) {
                 density = worldFeature.modifyTerrain(x, y, z, density, context);
@@ -231,6 +234,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             return density;
         });
 
+        NoiseComputerContext aquiferWallContext = new NoiseComputerContext(noiseExecutor, noiseHolder);
         Heightmap heightmapOceanFloor = chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.OCEAN_FLOOR_WG);
         Heightmap heightmapWorldSurface = chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.WORLD_SURFACE_WG);
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
@@ -242,6 +246,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                     pos.setZ(zi + chunk.getPos().getMinBlockZ());
 
                     double terrainDensity = noiseExecutor.compute(pos.getX(), pos.getY(), pos.getZ(), finalDensityComputer);
+                    //terrainDensity =  MathUtils.smoothMinExpo(terrainDensity, fluidMap.borderDensityComputer.compute(pos.getX(), pos.getY(), pos.getZ(), aquiferWallContext), 2);
                     BlockState state = terrainDensity < 0 ?
                             ClinkerBlocks.BRIMSTONE.get().defaultBlockState() :
                             fluidMap.getFluidState(xi, yi, zi);

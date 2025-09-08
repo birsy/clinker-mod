@@ -22,10 +22,11 @@ public class TestWorldFeature extends WorldFeature {
     }
 
     @Override
-    public void plan(MetaChunk metaChunk, RandomSource randomSource, NoiseComputerContext context) {
+    public boolean plan(MetaChunk metaChunk, RandomSource randomSource, NoiseComputerContext context) {
         this.radius = (depth + 1) * 3;
         this.centerX = randomSource.nextInt(metaChunk.minX(), metaChunk.maxX());
         this.centerZ = randomSource.nextInt(metaChunk.minZ(), metaChunk.maxZ());
+        return true;
     }
 
     @Override
