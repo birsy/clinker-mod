@@ -90,7 +90,7 @@ public class OthershoreNoiseComputers {
         double caveNoiseA = noise.sample("cave_a", x * frequency, y * frequency, z * frequency);
         double caveNoiseB = noise.sample("cave_b", x * frequency, y * frequency * 2, z * frequency);
         double sumOfSquares = Math.sqrt(caveNoiseA * caveNoiseA + caveNoiseB * caveNoiseB) / frequency;
-        sumOfSquares = 30 - sumOfSquares;
+        sumOfSquares = 130 - sumOfSquares;
 
         double speleothem = executor.compute(x, y, z, SPELEOTHEMS);
         speleothem = MathUtils.smoothMinExpo(speleothem, 0, 3);

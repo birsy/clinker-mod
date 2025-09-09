@@ -18,12 +18,12 @@ public class UndergroundLakeWorldFeature extends WorldFeature {
     private static final NoiseComputer SEA_OFFSET_X =
             new NoiseComputer("underground_sea_offset_x", CacheType.INTERPOLATED_2D_COARSE, (x, y, z, context) -> {
                context.noiseHolder().registerNoise("underground_sea_offset_x");
-               return context.noiseHolder().sample("underground_sea_offset_x", x / 32.0, z / 32.0);
+               return context.noiseHolder().sample("underground_sea_offset_x", x / 64.0, z / 64.0);
             });
     private static final NoiseComputer SEA_OFFSET_Z =
             new NoiseComputer("underground_sea_offset_z", CacheType.INTERPOLATED_2D_COARSE, (x, y, z, context) -> {
                 context.noiseHolder().registerNoise("underground_sea_offset_z");
-                return context.noiseHolder().sample("underground_sea_offset_z", x / 32.0, z / 32.0);
+                return context.noiseHolder().sample("underground_sea_offset_z", x / 64.0, z / 64.0);
             });
 
     public UndergroundLakeWorldFeature(int depth) {
@@ -41,7 +41,7 @@ public class UndergroundLakeWorldFeature extends WorldFeature {
 
     @Override
     public boolean plan(MetaChunk metaChunk, RandomSource randomSource, NoiseComputerContext context) {
-        this.radius = randomSource.nextInt(5, 20);
+        this.radius = randomSource.nextInt(20, 70);
         this.centerX = randomSource.nextInt(metaChunk.minX(), metaChunk.maxX());
         this.centerZ = randomSource.nextInt(metaChunk.minZ(), metaChunk.maxZ());
 
@@ -63,10 +63,10 @@ public class UndergroundLakeWorldFeature extends WorldFeature {
         if (y > surfaceY - 20)
             return currentFluidLevel;
 
-        double offsetX = executor.compute(x, y, z, SEA_OFFSET_X) * this.radius * 0.25,
-               offsetZ = executor.compute(x, y, z, SEA_OFFSET_Z) * this.radius * 0.25;
+        double offsetX = x + executor.compute(x, y, z, SEA_OFFSET_X) * this.radius * 0.25,
+               offsetZ = z + executor.compute(x, y, z, SEA_OFFSET_Z) * this.radius * 0.25;
         double horizontalDistance = Math.sqrt((offsetX - centerX) * (offsetX - centerX) + (offsetZ - centerZ) * (offsetZ - centerZ));
-        if (horizontalDistance - radius < 0)
+        if (horizontalDistance - radius > 0)
             return currentFluidLevel;
 
         double minY = Mth.clampedMap(horizontalDistance, 0, radius, this.waterLevel - 20, this.waterLevel - 5);

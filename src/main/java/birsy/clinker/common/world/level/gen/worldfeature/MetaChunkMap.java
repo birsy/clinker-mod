@@ -85,7 +85,7 @@ public class MetaChunkMap {
         }
 
         if (depth == 3) {
-            int aquiferCount = random.nextInt(0, 16);
+            int aquiferCount = random.nextInt(0, 8);
             for (int i = 0; i < aquiferCount; i++) {
                 WorldFeature aquifer = new UndergroundLakeWorldFeature(depth);
                 if (aquifer.plan(metaChunk, random, context))

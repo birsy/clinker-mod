@@ -4,6 +4,7 @@ import birsy.clinker.common.world.level.gen.noise.*;
 import birsy.clinker.common.world.level.gen.surfaceshaper.SurfaceShapers;
 import birsy.clinker.common.world.level.gen.worldfeature.MetaChunkMapHolder;
 import birsy.clinker.common.world.level.gen.worldfeature.WorldFeature;
+import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.world.ClinkerBiomes;
 import birsy.clinker.core.util.MathUtils;
@@ -223,9 +224,6 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             caveNoise = Mth.lerp(cache.compute(x, y, z, undergroundContributionComputer), -10, caveNoise);
             density = Math.max(density, caveNoise);
 
-            if (density > 0)
-                density = MathUtils.smoothMinExpo(density, cache.compute(x, y, z, fluidMap.borderDensityComputer), 1.5);
-
             Collection<WorldFeature> worldFeatures = ((MetaChunkMapHolder)(Object) randomState).clinker$metaChunkMap()
                     .getWorldFeatures(chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());
             for (WorldFeature worldFeature : worldFeatures) {
@@ -246,7 +244,9 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                     pos.setZ(zi + chunk.getPos().getMinBlockZ());
 
                     double terrainDensity = noiseExecutor.compute(pos.getX(), pos.getY(), pos.getZ(), finalDensityComputer);
-                    //terrainDensity =  MathUtils.smoothMinExpo(terrainDensity, fluidMap.borderDensityComputer.compute(pos.getX(), pos.getY(), pos.getZ(), aquiferWallContext), 2);
+                    // fluid walls
+                        terrainDensity = noiseExecutor.compute(pos.getX(), pos.getY(), pos.getZ(), fluidMap.borderDensityComputer);
+                    //Clinker.LOGGER.info(terrainDensity);
                     BlockState state = terrainDensity < 0 ?
                             ClinkerBlocks.BRIMSTONE.get().defaultBlockState() :
                             fluidMap.getFluidState(xi, yi, zi);
