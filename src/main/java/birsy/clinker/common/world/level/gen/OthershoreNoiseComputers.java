@@ -1,13 +1,17 @@
 package birsy.clinker.common.world.level.gen;
 
+import birsy.clinker.common.world.level.gen.fluid.FluidFiller;
+import birsy.clinker.common.world.level.gen.fluid.FluidLevel;
 import birsy.clinker.common.world.level.gen.noise.CacheType;
 import birsy.clinker.common.world.level.gen.noise.NoiseComputer;
 import birsy.clinker.common.world.level.gen.noise.NoiseComputerExecutor;
 import birsy.clinker.common.world.level.gen.noise.NoiseHolder;
 import birsy.clinker.core.Clinker;
+import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.core.util.noise.FastNoiseLite;
 import net.minecraft.util.Mth;
+import net.minecraft.world.level.block.Blocks;
 
 public class OthershoreNoiseComputers {
     private static NoiseComputer baseNoise(int index, double horizontalFrequency, double verticalFrequency, boolean twoDimensional) {
@@ -167,4 +171,18 @@ public class OthershoreNoiseComputers {
 
         return Math.max(noodleCaves, aquifer);
     });
+
+    public static final FluidFiller FLUID_FILLER = (x, y, z, context) -> {
+        NoiseComputerExecutor executor = context.noiseComputerExecutor();
+        double surfaceHeight = executor.compute(x, y, z, OthershoreNoiseComputers.SURFACE_HEIGHT_COMPUTER);
+        // sea level
+        if (y > surfaceHeight || Math.abs(y - surfaceHeight) < 15) {
+            return new FluidLevel(64, Blocks.WATER.defaultBlockState());
+        }
+        // the aquifer
+        if (y < 0) {
+            return new FluidLevel(-40, Blocks.WATER.defaultBlockState());
+        }
+        return FluidLevel.EMPTY;
+    };
 }

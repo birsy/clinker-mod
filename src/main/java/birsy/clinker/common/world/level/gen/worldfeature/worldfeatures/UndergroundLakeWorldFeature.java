@@ -1,12 +1,11 @@
 package birsy.clinker.common.world.level.gen.worldfeature.worldfeatures;
 
-import birsy.clinker.common.world.level.gen.LocalFluidLevelMap;
+import birsy.clinker.common.world.level.gen.fluid.FluidLevel;
 import birsy.clinker.common.world.level.gen.OthershoreNoiseComputers;
 import birsy.clinker.common.world.level.gen.noise.*;
 import birsy.clinker.common.world.level.gen.worldfeature.MetaChunk;
 import birsy.clinker.common.world.level.gen.worldfeature.WorldFeature;
 import birsy.clinker.core.Clinker;
-import birsy.clinker.core.util.MathUtils;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Blocks;
@@ -54,7 +53,7 @@ public class UndergroundLakeWorldFeature extends WorldFeature {
     }
 
     @Override
-    public LocalFluidLevelMap.FluidLevel modifyFluidLevel(int x, int y, int z, LocalFluidLevelMap.FluidLevel currentFluidLevel, NoiseComputerContext context) {
+    public FluidLevel modifyFluidLevel(int x, int y, int z, FluidLevel currentFluidLevel, NoiseComputerContext context) {
         if (currentFluidLevel.height() > this.waterLevel)
             return currentFluidLevel;
 
@@ -73,6 +72,6 @@ public class UndergroundLakeWorldFeature extends WorldFeature {
         if (y > this.waterLevel + 15 || y < minY - 5)
             return currentFluidLevel;
 
-        return new LocalFluidLevelMap.FluidLevel(Blocks.WATER.defaultBlockState(), this.waterLevel);
+        return new FluidLevel(this.waterLevel, Blocks.WATER.defaultBlockState());
     }
 }

@@ -1,6 +1,6 @@
 package birsy.clinker.common.world.level.gen.worldfeature;
 
-import birsy.clinker.common.world.level.gen.LocalFluidLevelMap;
+import birsy.clinker.common.world.level.gen.fluid.FluidLevel;
 import birsy.clinker.common.world.level.gen.noise.NoiseComputerContext;
 import net.minecraft.core.Holder;
 import net.minecraft.util.RandomSource;
@@ -25,7 +25,7 @@ public abstract class WorldFeature {
         return currentBiome;
     }
 
-    public LocalFluidLevelMap.FluidLevel modifyFluidLevel(int x, int y, int z, LocalFluidLevelMap.FluidLevel currentFluidLevel, NoiseComputerContext context) {
+    public FluidLevel modifyFluidLevel(int x, int y, int z, FluidLevel currentFluidLevel, NoiseComputerContext context) {
         return currentFluidLevel;
     }
 }
