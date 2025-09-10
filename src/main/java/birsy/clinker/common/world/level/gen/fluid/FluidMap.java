@@ -17,6 +17,7 @@ import java.util.Collection;
 public class FluidMap {
     private static final int cellPadding = 1;
     private static final int cellWidth = 16, cellHeight = 16;
+    private static final int cellCenterOffsetXZ = Math.floorDiv(cellWidth, 2), cellCenterOffsetY = Math.floorDiv(cellHeight, 2);
 
     final int minCellX, minCellY, minCellZ;
     final int cellCountXZ, cellCountY;
@@ -98,9 +99,9 @@ public class FluidMap {
     private FluidCell createNewCell(int cellX, int cellY, int cellZ) {
         RandomSource cellRandom = aquiferRandom.at(cellX * cellWidth, cellY * cellHeight, cellZ * cellWidth);
         // offset the cell center randomly, in order for more natural results.
-        int cellCenterX = cellX * cellWidth +  Math.floorDiv(cellWidth, 2) + cellRandom.nextIntBetweenInclusive(-Math.floorDiv(cellWidth, 2), Math.floorDiv(cellWidth, 2)),
-            cellCenterY = cellY * cellHeight + Math.floorDiv(cellHeight,2) + cellRandom.nextIntBetweenInclusive(-Math.floorDiv(cellHeight,2), Math.floorDiv(cellHeight, 2)),
-            cellCenterZ = cellZ * cellWidth +  Math.floorDiv(cellWidth, 2) + cellRandom.nextIntBetweenInclusive(-Math.floorDiv(cellWidth, 2), Math.floorDiv(cellWidth, 2));
+        int cellCenterX = cellX * cellWidth + cellCenterOffsetXZ + cellRandom.nextIntBetweenInclusive(-cellCenterOffsetXZ,cellCenterOffsetXZ),
+            cellCenterY = cellY * cellHeight + cellCenterOffsetY + cellRandom.nextIntBetweenInclusive(-cellCenterOffsetY, cellCenterOffsetY),
+            cellCenterZ = cellZ * cellWidth + cellCenterOffsetXZ + cellRandom.nextIntBetweenInclusive(-cellCenterOffsetXZ,cellCenterOffsetXZ);
         FluidLevel fluidLevel = this.baseFluidFiller.compute(cellCenterX, cellCenterY, cellCenterZ, this.noiseContext);
         for (WorldFeature worldFeature : this.worldFeatures)
             fluidLevel = worldFeature.modifyFluidLevel(cellCenterX, cellCenterY, cellCenterZ, fluidLevel, noiseContext);
