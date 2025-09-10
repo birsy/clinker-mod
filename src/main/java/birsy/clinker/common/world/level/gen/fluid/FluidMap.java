@@ -48,13 +48,17 @@ public class FluidMap {
             cellZ = Math.floorDiv(z, cellWidth);
         // check the neighboring cells of each block for the closest cell center,
         // use that as the fluid.
-        FluidCell closestCell = null;
-        int closestCellDistance = Integer.MAX_VALUE;
-        for (int xOffset = -1; xOffset < 1; xOffset++) {
+        FluidCell closestCell = getCell(cellX, cellY, cellZ);
+        int closestCellDistance = (x - closestCell.centerX) * (x - closestCell.centerX) +
+                                  (y - closestCell.centerY) * (y - closestCell.centerY) +
+                                  (z - closestCell.centerZ) * (z - closestCell.centerZ);
+        for (int xOffset = -1; xOffset <= 1; xOffset++) {
             int offsetCellX = cellX + xOffset;
             for (int yOffset = -1; yOffset <= 1; yOffset++) {
                 int offsetCellY = cellY + yOffset;
                 for (int zOffset = -1; zOffset <= 1; zOffset++) {
+                    if (xOffset == 0 && yOffset == 0 && zOffset == 0) continue;
+
                     int offsetCellZ = cellZ + zOffset;
                     FluidCell offsetCell = getCell(offsetCellX, offsetCellY, offsetCellZ);
                     int offsetCellDistance = (x - offsetCell.centerX) * (x - offsetCell.centerX) +
@@ -94,9 +98,9 @@ public class FluidMap {
     private FluidCell createNewCell(int cellX, int cellY, int cellZ) {
         RandomSource cellRandom = aquiferRandom.at(cellX * cellWidth, cellY * cellHeight, cellZ * cellWidth);
         // offset the cell center randomly, in order for more natural results.
-        int cellCenterX = cellX * cellWidth +  Math.floorDiv(cellWidth, 2),// + cellRandom.nextIntBetweenInclusive(-2, 2),
-            cellCenterY = cellY * cellHeight + Math.floorDiv(cellHeight, 2),// + cellRandom.nextIntBetweenInclusive(-2, 2),
-            cellCenterZ = cellZ * cellWidth +  Math.floorDiv(cellWidth, 2);// + cellRandom.nextIntBetweenInclusive(-2, 2);
+        int cellCenterX = cellX * cellWidth +  Math.floorDiv(cellWidth, 2) + cellRandom.nextIntBetweenInclusive(-Math.floorDiv(cellWidth, 2), Math.floorDiv(cellWidth, 2)),
+            cellCenterY = cellY * cellHeight + Math.floorDiv(cellHeight,2) + cellRandom.nextIntBetweenInclusive(-Math.floorDiv(cellHeight,2), Math.floorDiv(cellHeight, 2)),
+            cellCenterZ = cellZ * cellWidth +  Math.floorDiv(cellWidth, 2) + cellRandom.nextIntBetweenInclusive(-Math.floorDiv(cellWidth, 2), Math.floorDiv(cellWidth, 2));
         FluidLevel fluidLevel = this.baseFluidFiller.compute(cellCenterX, cellCenterY, cellCenterZ, this.noiseContext);
         for (WorldFeature worldFeature : this.worldFeatures)
             fluidLevel = worldFeature.modifyFluidLevel(cellCenterX, cellCenterY, cellCenterZ, fluidLevel, noiseContext);
