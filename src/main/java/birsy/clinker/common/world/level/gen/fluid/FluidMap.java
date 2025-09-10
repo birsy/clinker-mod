@@ -49,7 +49,7 @@ public class FluidMap {
         // check the neighboring cells of each block for the closest cell center,
         // use that as the fluid.
         FluidCell closestCell = null;
-        double closestCellDistance = Double.MAX_VALUE;
+        int closestCellDistance = Integer.MAX_VALUE;
         for (int xOffset = -1; xOffset < 1; xOffset++) {
             int offsetCellX = cellX + xOffset;
             for (int yOffset = -1; yOffset <= 1; yOffset++) {
@@ -57,9 +57,9 @@ public class FluidMap {
                 for (int zOffset = -1; zOffset <= 1; zOffset++) {
                     int offsetCellZ = cellZ + zOffset;
                     FluidCell offsetCell = getCell(offsetCellX, offsetCellY, offsetCellZ);
-                    double offsetCellDistance = (x - offsetCell.centerX) * (x - offsetCell.centerX) +
-                                                (y - offsetCell.centerY) * (y - offsetCell.centerY) +
-                                                (z - offsetCell.centerZ) * (z - offsetCell.centerZ);
+                    int offsetCellDistance = (x - offsetCell.centerX) * (x - offsetCell.centerX) +
+                                             (y - offsetCell.centerY) * (y - offsetCell.centerY) +
+                                             (z - offsetCell.centerZ) * (z - offsetCell.centerZ);
                     if (offsetCellDistance < closestCellDistance) {
                         closestCell = offsetCell;
                         closestCellDistance = offsetCellDistance;
@@ -97,8 +97,6 @@ public class FluidMap {
         int cellCenterX = cellX * cellWidth +  Math.floorDiv(cellWidth, 2),// + cellRandom.nextIntBetweenInclusive(-2, 2),
             cellCenterY = cellY * cellHeight + Math.floorDiv(cellHeight, 2),// + cellRandom.nextIntBetweenInclusive(-2, 2),
             cellCenterZ = cellZ * cellWidth +  Math.floorDiv(cellWidth, 2);// + cellRandom.nextIntBetweenInclusive(-2, 2);
-        Clinker.LOGGER.info("{}, {}, {}", (cellCenterX) % 16, (cellCenterY) % 16, (cellCenterZ) % 16);
-
         FluidLevel fluidLevel = this.baseFluidFiller.compute(cellCenterX, cellCenterY, cellCenterZ, this.noiseContext);
         for (WorldFeature worldFeature : this.worldFeatures)
             fluidLevel = worldFeature.modifyFluidLevel(cellCenterX, cellCenterY, cellCenterZ, fluidLevel, noiseContext);
