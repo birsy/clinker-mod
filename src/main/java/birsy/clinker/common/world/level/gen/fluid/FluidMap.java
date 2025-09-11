@@ -1,5 +1,6 @@
 package birsy.clinker.common.world.level.gen.fluid;
 
+import birsy.clinker.common.world.level.gen.OthershoreNoiseComputers;
 import birsy.clinker.common.world.level.gen.noise.NoiseComputerContext;
 import birsy.clinker.common.world.level.gen.worldfeature.MetaChunkMap;
 import birsy.clinker.common.world.level.gen.worldfeature.MetaChunkMapHolder;
@@ -11,12 +12,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.PositionalRandomFactory;
 import net.minecraft.world.level.levelgen.RandomState;
+import net.minecraft.world.level.levelgen.SurfaceRules;
 
 import java.util.Collection;
 
 public class FluidMap {
-    private static final int cellPadding = 1;
-    private static final int cellWidth = 16, cellHeight = 16;
+    private static final int cellPadding = 2;
+    private static final int cellWidth = 8, cellHeight = 16;
     private static final int cellCenterOffsetXZ = Math.floorDiv(cellWidth, 2), cellCenterOffsetY = Math.floorDiv(cellHeight, 2);
 
     final int minCellX, minCellY, minCellZ;
@@ -54,14 +56,10 @@ public class FluidMap {
                                   (y - closestCell.centerY) * (y - closestCell.centerY) +
                                   (z - closestCell.centerZ) * (z - closestCell.centerZ);
         for (int xOffset = -1; xOffset <= 1; xOffset++) {
-            int offsetCellX = cellX + xOffset;
             for (int yOffset = -1; yOffset <= 1; yOffset++) {
-                int offsetCellY = cellY + yOffset;
                 for (int zOffset = -1; zOffset <= 1; zOffset++) {
-                    if (xOffset == 0 && yOffset == 0 && zOffset == 0) continue;
-
-                    int offsetCellZ = cellZ + zOffset;
-                    FluidCell offsetCell = getCell(offsetCellX, offsetCellY, offsetCellZ);
+                    if (xOffset == 0 && yOffset == 0 && zOffset == 0) continue; // skip the center cell, as we already check it first by default.
+                    FluidCell offsetCell = getCell(cellX + xOffset, cellY + yOffset, cellZ + zOffset);
                     int offsetCellDistance = (x - offsetCell.centerX) * (x - offsetCell.centerX) +
                                              (y - offsetCell.centerY) * (y - offsetCell.centerY) +
                                              (z - offsetCell.centerZ) * (z - offsetCell.centerZ);
@@ -98,10 +96,12 @@ public class FluidMap {
 
     private FluidCell createNewCell(int cellX, int cellY, int cellZ) {
         RandomSource cellRandom = aquiferRandom.at(cellX * cellWidth, cellY * cellHeight, cellZ * cellWidth);
+
         // offset the cell center randomly, in order for more natural results.
         int cellCenterX = cellX * cellWidth + cellCenterOffsetXZ + cellRandom.nextIntBetweenInclusive(-cellCenterOffsetXZ,cellCenterOffsetXZ),
             cellCenterY = cellY * cellHeight + cellCenterOffsetY + cellRandom.nextIntBetweenInclusive(-cellCenterOffsetY, cellCenterOffsetY),
             cellCenterZ = cellZ * cellWidth + cellCenterOffsetXZ + cellRandom.nextIntBetweenInclusive(-cellCenterOffsetXZ,cellCenterOffsetXZ);
+        //FluidLevel fluidLevel = new FluidLevel(OthershoreNoiseComputers.BASE_NOISE_2D[3].compute(cellX, cellY, cellZ, this.noiseContext) > 0 ? 64 : 100, Blocks.WATER.defaultBlockState());
         FluidLevel fluidLevel = this.baseFluidFiller.compute(cellCenterX, cellCenterY, cellCenterZ, this.noiseContext);
         for (WorldFeature worldFeature : this.worldFeatures)
             fluidLevel = worldFeature.modifyFluidLevel(cellCenterX, cellCenterY, cellCenterZ, fluidLevel, noiseContext);

@@ -31,7 +31,7 @@ public class UndergroundLakeWorldFeature extends WorldFeature {
 
     @Override
     public boolean within(int minX, int minZ, int maxX, int maxZ) {
-        int checkRadius = this.radius * 2;
+        int checkRadius = this.radius * 3;
         return centerX > minX - checkRadius &&
                centerX < maxX + checkRadius &&
                centerZ > minZ - checkRadius &&
@@ -62,8 +62,8 @@ public class UndergroundLakeWorldFeature extends WorldFeature {
         if (y > surfaceY - 20)
             return currentFluidLevel;
 
-        double offsetX = x + executor.compute(x, y, z, SEA_OFFSET_X) * this.radius * 0.25,
-               offsetZ = z + executor.compute(x, y, z, SEA_OFFSET_Z) * this.radius * 0.25;
+        double offsetX = x,// + executor.compute(x, y, z, SEA_OFFSET_X) * this.radius * 0.25,
+               offsetZ = z;// + executor.compute(x, y, z, SEA_OFFSET_Z) * this.radius * 0.25;
         double horizontalDistance = Math.sqrt((offsetX - centerX) * (offsetX - centerX) + (offsetZ - centerZ) * (offsetZ - centerZ));
         if (horizontalDistance - radius > 0)
             return currentFluidLevel;
