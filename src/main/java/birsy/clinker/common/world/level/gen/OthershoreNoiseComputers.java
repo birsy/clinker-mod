@@ -38,6 +38,8 @@ public class OthershoreNoiseComputers {
     public static final NoiseComputer[] BASE_NOISE_2D = noiseComputerArray(0, 10, true);
     public static final NoiseComputer[] BASE_NOISE_2D_ALT = noiseComputerArray(4, 10, true);
 
+    public static final NoiseComputer EMPTY = new NoiseComputer("empty", CacheType.NONE, (x, y, z, context) -> 1);
+
     public static final NoiseComputer SURFACE_HEIGHT_COMPUTER = new NoiseComputer("surface_height", CacheType.INTERPOLATED_2D_VERY_COARSE, (x, y, z, context) -> {
         NoiseHolder noise = context.noiseHolder();
         noise.registerNoise("base_plateaus", 2, 4.0, 0.7, 0.0);
@@ -94,7 +96,7 @@ public class OthershoreNoiseComputers {
         double caveNoiseA = noise.sample("cave_a", x * frequency, y * frequency, z * frequency);
         double caveNoiseB = noise.sample("cave_b", x * frequency, y * frequency * 2, z * frequency);
         double sumOfSquares = Math.sqrt(caveNoiseA * caveNoiseA + caveNoiseB * caveNoiseB) / frequency;
-        sumOfSquares = 130 - sumOfSquares;
+        sumOfSquares = 30 - sumOfSquares;
 
         double speleothem = executor.compute(x, y, z, SPELEOTHEMS);
         speleothem = MathUtils.smoothMinExpo(speleothem, 0, 3);

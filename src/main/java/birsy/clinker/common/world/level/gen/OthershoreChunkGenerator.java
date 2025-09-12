@@ -1,5 +1,6 @@
 package birsy.clinker.common.world.level.gen;
 
+import birsy.clinker.common.world.level.gen.fluid.AxialBlurBorderFluidMap;
 import birsy.clinker.common.world.level.gen.fluid.FluidMap;
 import birsy.clinker.common.world.level.gen.noise.*;
 import birsy.clinker.common.world.level.gen.surfaceshaper.SurfaceShapers;
@@ -8,6 +9,7 @@ import birsy.clinker.common.world.level.gen.worldfeature.WorldFeature;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.world.ClinkerBiomes;
+import birsy.clinker.core.util.MathUtils;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.Util;
@@ -48,15 +50,6 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
     private final Map<ResourceKey<Biome>, NoiseComputer> surfaceBiomeContributionComputers;
     private final NoiseComputer undergroundContributionComputer;
     private final SurfaceBuilder surfaceBuilder;
-    private static final int[][] biomeBlendOffsets =
-            {{-1, -1}, {0, -1}, {1, -1},
-             {-1,  0}, {0,  0}, {1,  0},
-             {-1,  1}, {0,  1}, {1,  1}};
-    private static final double[] biomeBlendWeights = {
-            1.0 / 16.0, 1.0 / 8.0, 1.0 / 16.0,
-            1.0 / 8.0,  1.0 / 4.0, 1.0 / 8.0,
-            1.0 / 16.0, 1.0 / 8.0, 1.0 / 16.0
-    };
 
     public OthershoreChunkGenerator(BiomeSource biomeSource) {
         super(biomeSource);
@@ -182,7 +175,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                 noiseHolder
         );
 
-        FluidMap fluidMap = new FluidMap(randomState, chunk, new NoiseComputerContext(noiseExecutor, noiseHolder), OthershoreNoiseComputers.FLUID_FILLER);
+        FluidMap fluidMap = new AxialBlurBorderFluidMap(randomState, chunk, new NoiseComputerContext(noiseExecutor, noiseHolder), OthershoreNoiseComputers.FLUID_FILLER);
 
         NoiseComputer surfaceComputer = new NoiseComputer("surface_density", CacheType.INTERPOLATED_COARSE, (x, y, z, context) -> {
             NoiseComputerExecutor cache = context.noiseComputerExecutor();
@@ -217,6 +210,10 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             return density;
         });
 
+        NoiseComputer flattenedFinalDensity = new NoiseComputer("final_density_flattened", CacheType.DIRECT, finalDensityComputer::compute);
+        //flattenedFinalDensity = OthershoreNoiseComputers.EMPTY;
+        fluidMap.precomputeValues(flattenedFinalDensity);
+
         Heightmap heightmapOceanFloor = chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.OCEAN_FLOOR_WG);
         Heightmap heightmapWorldSurface = chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.WORLD_SURFACE_WG);
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
@@ -227,12 +224,14 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                 for (int zi = 0; zi < 16; zi++) {
                     pos.setZ(zi + chunk.getPos().getMinBlockZ());
 
-                    //double terrainDensity = noiseExecutor.compute(pos.getX(), pos.getY(), pos.getZ(), finalDensityComputer);
-//                    BlockState state = terrainDensity < 0 ?
-//                            ClinkerBlocks.BRIMSTONE.get().defaultBlockState() :
-//                            fluidMap.getFluidState(xi, yi, zi);
+                    double terrainDensity = noiseExecutor.compute(pos.getX(), pos.getY(), pos.getZ(), flattenedFinalDensity);
+                    if (terrainDensity >= 0)
+                        terrainDensity = MathUtils.smoothMinExpo(terrainDensity, fluidMap.getBorderDensity(xi, yi, zi), 3);
 
-                    BlockState state = fluidMap.getFluidState(xi + chunk.getPos().x * 16, yi + chunk.getMinBuildHeight(), zi + chunk.getPos().z * 16);
+                    BlockState state = terrainDensity < 0 ?
+                            ClinkerBlocks.BRIMSTONE.get().defaultBlockState() :
+                            fluidMap.getFluidState(pos.getX(), pos.getY(), pos.getZ());
+
                     chunk.setBlockState(pos, state, false);
 
                     heightmapOceanFloor.update(xi, pos.getY(), zi, state);
