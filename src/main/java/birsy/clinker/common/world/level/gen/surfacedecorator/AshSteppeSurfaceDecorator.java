@@ -1,6 +1,7 @@
 package birsy.clinker.common.world.level.gen.surfacedecorator;
 
-import birsy.clinker.common.world.block.AshLayerBlock;
+import birsy.clinker.common.world.block.FallingLayerBlock;
+import birsy.clinker.common.world.level.gen.noise.NoiseComputerContext;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.util.MathUtil;
 import birsy.clinker.core.util.noise.FastNoiseLite;
@@ -24,7 +25,7 @@ public class AshSteppeSurfaceDecorator extends SurfaceDecorator {
     public AshSteppeSurfaceDecorator() {}
 
     @Override
-    public void buildSurface(ChunkAccess chunk, BlockPos.MutableBlockPos pos, int seaLevel, boolean canSeeSun, int depth, int maxElevationIncrease, int maxElevationDecrease, RandomSource random) {
+    public void buildSurface(ChunkAccess chunk, BlockPos.MutableBlockPos pos, int seaLevel, boolean canSeeSun, int depth, int maxElevationIncrease, int maxElevationDecrease, NoiseComputerContext noiseContext, RandomSource random) {
         if (!canSeeSun && pos.getY() < 130) return;
 
         float ditherRandom = (random.nextFloat() * 2) - 1;
@@ -46,7 +47,7 @@ public class AshSteppeSurfaceDecorator extends SurfaceDecorator {
                 ditherRandomAshDuneAmount *= -0.15F;
                 double noiseSample = noise.GetNoise(pos.getX() * 5, 0, pos.getZ() * 5) + ditherRandomAshDuneAmount;
                 int ashAmount = ((int) MathUtil.mapRange(-1.0, 1.0, -1, 6, noiseSample));
-                if (ashAmount > 1) chunk.setBlockState(pos.above(), ClinkerBlocks.ASH_LAYER.get().defaultBlockState().setValue(AshLayerBlock.LAYERS, ashAmount), false);
+                if (ashAmount > 1) chunk.setBlockState(pos.above(), ClinkerBlocks.ASH_LAYER.get().defaultBlockState().setValue(FallingLayerBlock.LAYERS, ashAmount), false);
             }
         }
     }

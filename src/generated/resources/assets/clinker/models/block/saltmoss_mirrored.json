@@ -1,0 +1,11 @@
+{
+  "parent": "minecraft:block/cube_mirrored",
+  "textures": {
+    "down": "clinker:block/calc",
+    "east": "clinker:block/saltmoss_side",
+    "north": "clinker:block/saltmoss_side",
+    "south": "clinker:block/saltmoss_side",
+    "up": "clinker:block/saltmoss",
+    "west": "clinker:block/saltmoss_side"
+  }
+}

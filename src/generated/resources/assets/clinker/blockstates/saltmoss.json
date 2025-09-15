@@ -1,0 +1,36 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "clinker:block/saltmoss"
+      },
+      {
+        "model": "clinker:block/saltmoss_mirrored"
+      },
+      {
+        "model": "clinker:block/saltmoss",
+        "y": 90
+      },
+      {
+        "model": "clinker:block/saltmoss_mirrored",
+        "y": 90
+      },
+      {
+        "model": "clinker:block/saltmoss",
+        "y": 180
+      },
+      {
+        "model": "clinker:block/saltmoss_mirrored",
+        "y": 180
+      },
+      {
+        "model": "clinker:block/saltmoss",
+        "y": 270
+      },
+      {
+        "model": "clinker:block/saltmoss_mirrored",
+        "y": 270
+      }
+    ]
+  }
+}

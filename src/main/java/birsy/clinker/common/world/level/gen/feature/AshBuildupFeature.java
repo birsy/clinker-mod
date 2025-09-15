@@ -1,6 +1,6 @@
 package birsy.clinker.common.world.level.gen.feature;
 
-import birsy.clinker.common.world.block.AshLayerBlock;
+import birsy.clinker.common.world.block.FallingLayerBlock;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
@@ -31,7 +31,7 @@ public class AshBuildupFeature extends Feature<NoneFeatureConfiguration> {
                 for (Direction direction : Direction.Plane.HORIZONTAL) {
                     //Second clause ensures that it doesn't happen on steeper cliffsides, only smooth plains.
                     if (level.getBlockState(pos.relative(direction)).isFaceSturdy(level, pos.relative(direction), direction.getOpposite()) && !level.getBlockState(pos.relative(direction).above()).isFaceSturdy(level, pos.relative(direction).above(), direction.getOpposite())) {
-                        level.setBlock(pos, ClinkerBlocks.ASH_LAYER.get().defaultBlockState().setValue(AshLayerBlock.LAYERS, featureContext.random().nextInt(3) + 1), 2);
+                        level.setBlock(pos, ClinkerBlocks.ASH_LAYER.get().defaultBlockState().setValue(FallingLayerBlock.LAYERS, featureContext.random().nextInt(3) + 1), 2);
                         break;
                     }
                 }

@@ -43,9 +43,11 @@ void main() {
 	alpha = smoothstep(0.0, 1.0, alpha);
 	alpha *= distanceFade * closeFade * nearGeometryFade;
 	
-	vec3 color = mix(FogCol * 1.4, mix(FogCol, SkyCol, 0.4), vertexColor.a);
+	vec3 color = mix(FogCol * (1.0 + density * 0.4), mix(FogCol, SkyCol, 0.4), vertexColor.a);
     fragColor = vec4(color, alpha);
 }
+
+
 
 
 

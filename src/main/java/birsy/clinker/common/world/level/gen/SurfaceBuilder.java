@@ -1,5 +1,6 @@
 package birsy.clinker.common.world.level.gen;
 
+import birsy.clinker.common.world.level.gen.noise.NoiseComputerContext;
 import birsy.clinker.common.world.level.gen.surfacedecorator.SurfaceDecorator;
 import birsy.clinker.common.world.level.gen.surfacedecorator.SurfaceDecorators;
 import birsy.clinker.core.Clinker;
@@ -20,15 +21,15 @@ public class SurfaceBuilder {
     protected final int maxElevationDifference;
     protected final int seaLevel;
     protected final BlockState defaultBlock;
-    private PositionalRandomFactory surfaceBuilderRandomFactory;
+
     public SurfaceBuilder(int maxElevationDifference, int seaLevel, BlockState defaultBlock) {
         this.maxElevationDifference = maxElevationDifference;
         this.seaLevel = seaLevel;
         this.defaultBlock = defaultBlock;
     }
 
-    void applySurfaceDecorators(WorldGenLevel level, ChunkAccess chunk, RandomState randomState) {
-        this.surfaceBuilderRandomFactory = randomState.getOrCreateRandomFactory(SURFACE_BUILDER_RANDOM);
+    void applySurfaceDecorators(WorldGenLevel level, ChunkAccess chunk, NoiseComputerContext context, RandomState randomState) {
+        PositionalRandomFactory surfaceBuilderRandomFactory = randomState.getOrCreateRandomFactory(SURFACE_BUILDER_RANDOM);
 
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         BlockPos.MutableBlockPos neighborPos = new BlockPos.MutableBlockPos().set(pos);
@@ -75,7 +76,7 @@ public class SurfaceBuilder {
                             }
                         }
 
-                        decorator.buildSurface(chunk, new BlockPos.MutableBlockPos().set(pos), seaLevel, visibleToSun, depth, maxElevationIncrease, maxElevationDecrease, this.surfaceBuilderRandomFactory.at(pos));
+                        decorator.buildSurface(chunk, new BlockPos.MutableBlockPos().set(pos), seaLevel, visibleToSun, depth, maxElevationIncrease, maxElevationDecrease, context, surfaceBuilderRandomFactory.at(pos));
 
                         visibleToSun = false;
 

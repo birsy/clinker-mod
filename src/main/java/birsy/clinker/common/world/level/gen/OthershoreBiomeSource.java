@@ -17,9 +17,9 @@ public class OthershoreBiomeSource extends BiomeSource {
             instance -> instance.group(RegistryOps.retrieveGetter(Registries.BIOME))
                         .apply(instance, instance.stable(OthershoreBiomeSource::new))
     );
-    public static final int UPPER_SHELF_HEIGHT = 280,
-            MIDDLE_SHELF_HEIGHT = 200,
-            SEA_HEIGHT = 60;
+    public static final int UPPER_SHELF_HEIGHT = 230,
+            MIDDLE_SHELF_HEIGHT = 180,
+            SEA_HEIGHT = 64;
 
     private Holder<Biome> voidBiome;
     private Holder<Biome> plateau, ashSteppe, cliffside, lowerShelf, brineSwamp, underground, aquifer;

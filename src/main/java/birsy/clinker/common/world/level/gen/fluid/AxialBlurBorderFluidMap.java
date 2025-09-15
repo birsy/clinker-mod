@@ -4,7 +4,6 @@ import birsy.clinker.common.world.level.gen.noise.NoiseComputer;
 import birsy.clinker.common.world.level.gen.noise.NoiseComputerContext;
 import birsy.clinker.common.world.level.gen.worldfeature.MetaChunkMapHolder;
 import birsy.clinker.common.world.level.gen.worldfeature.WorldFeature;
-import birsy.clinker.core.Clinker;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Blocks;
@@ -103,13 +102,20 @@ public class AxialBlurBorderFluidMap implements FluidMap {
     private void fillBorderArray(NoiseComputer finalDensityComputer) {
         for (int indexX = 0; indexX < 16 + maxBorderDistance * 2; indexX++) {
             int localX = indexX - maxBorderDistance,
-                     x = localX + this.minX;
+                     x = localX + this.minX,
+                 cellX = Math.floorDiv(x, cellWidth);
             for (int indexY = 0; indexY < this.chunkHeight + maxBorderDistance * 2; indexY++) {
                 int localY = indexY - maxBorderDistance,
-                         y = localY + this.minY;
+                         y = localY + this.minY,
+                     cellY = Math.floorDiv(y, cellHeight);
                 for (int indexZ = 0; indexZ < 16 + maxBorderDistance * 2; indexZ++) {
                     int localZ = indexZ - maxBorderDistance,
-                             z = localZ + this.minZ;
+                             z = localZ + this.minZ,
+                         cellZ = Math.floorDiv(z, cellWidth);
+                    // skip homogenous cells
+                    if (isHomogenous(cellX, cellY, cellZ))
+                        continue;
+
                     // skip full values, if the index is in range.
                     if (localX > 0 && localX < 16 && localY > 0 && localY < this.chunkHeight && localZ > 0 && localZ < 16 &&
                         this.noiseContext.noiseComputerExecutor().compute(x, y, z, finalDensityComputer) < 0)
@@ -144,13 +150,19 @@ public class AxialBlurBorderFluidMap implements FluidMap {
             offsetY = axis.choose(0, 1, 0),
             offsetZ = axis.choose(0, 0, 1);
         for (int indexX = maxBorderDistance; indexX < 16 + maxBorderDistance; indexX++) {
-            int x = indexX - maxBorderDistance + this.minX;
+            int x = indexX - maxBorderDistance + this.minX,
+                    cellX = Math.floorDiv(x, cellWidth);
             for (int indexY = maxBorderDistance; indexY < this.chunkHeight + maxBorderDistance; indexY++) {
-                int y = indexX - maxBorderDistance + this.minY;
+                int y = indexX - maxBorderDistance + this.minY,
+                        cellY = Math.floorDiv(y, cellHeight);
                 for (int indexZ = maxBorderDistance; indexZ < 16 + maxBorderDistance; indexZ++) {
-                    int z = indexX - maxBorderDistance + this.minZ;
+                    int z = indexX - maxBorderDistance + this.minZ,
+                            cellZ = Math.floorDiv(z, cellWidth);
+                    // skip homogenous cells
+//                    if (isHomogenous(cellX, cellY, cellZ))
+//                        continue;
                     // skip full values.
-//                    if (this.noiseContext.noiseComputerExecutor().compute(x, y, z, finalDensityComputer) <= 0)
+//                    if (this.noiseContext.noiseComputerExecutor().compute(x, y, z, finalDensityComputer) < 0)
 //                        continue;
                     int index = indexX +
                                 indexY * (16 + maxBorderDistance * 2) +
@@ -165,6 +177,7 @@ public class AxialBlurBorderFluidMap implements FluidMap {
                         minBorderDistance = Math.min(minBorderDistance, neighborBorderDistance + (int)(Math.abs(i) * (axis == Direction.Axis.Y ? 1.5 : 1)));
                         if (neighborBorderDistance == 0) break;
                     }
+
                     borderDistances[index] = minBorderDistance;
                 }
             }
@@ -175,6 +188,9 @@ public class AxialBlurBorderFluidMap implements FluidMap {
         int cellX = Math.floorDiv(x, cellWidth),
             cellY = Math.floorDiv(y, cellHeight),
             cellZ = Math.floorDiv(z, cellWidth);
+        if (isHomogenous(cellX, cellY, cellZ))
+            return getCell(cellX, cellY, cellZ).resolve(x, y, z);
+
         // check the neighboring cells of each block for the closest cell center,
         // use that as the fluid.
         FluidCell closestCell = getCell(cellX, cellY, cellZ);
@@ -220,6 +236,37 @@ public class AxialBlurBorderFluidMap implements FluidMap {
         }
     }
 
+    private boolean isHomogenous(int cellX, int cellY, int cellZ) {
+        FluidCell cell = getCell(cellX, cellY, cellZ);
+        if (cell.homogenous == 0) {
+            for (int xOffset = -1; xOffset <= 1; xOffset++) {
+                for (int yOffset = -1; yOffset <= 1; yOffset++) {
+                    for (int zOffset = -1; zOffset <= 1; zOffset++) {
+                        if (xOffset == 0 && yOffset == 0 && zOffset == 0) continue;
+                        FluidCell offsetCell = getCell(cellX + xOffset, cellY + yOffset, cellZ + zOffset);
+
+                        if (cell.isEmpty() && offsetCell.isEmpty()) continue;
+                        if (cell.isEmpty() && offsetCell.fluidLevel.height() < cell.centerY - cellHeight) continue;
+                        if (offsetCell.isEmpty() && cell.fluidLevel.height() < offsetCell.centerY - cellHeight) continue;
+                        if (cell.fluidLevel.fluid() == offsetCell.fluidLevel.fluid()) {
+                            if (cell.isFull() && offsetCell.isFull()) continue;
+                            if (cell.isFull() && offsetCell.fluidLevel.height() > cell.centerY + cellHeight) continue;
+                            if (cell.fluidLevel.height() == offsetCell.fluidLevel.height()) continue;
+                        }
+
+                        cell.homogenous = 2;
+                        offsetCell.homogenous = 2;
+                        return false;
+                    }
+                }
+            }
+
+            cell.homogenous = 1;
+        }
+
+        return cell.homogenous == 1;
+    }
+
     private FluidCell createNewCell(int cellX, int cellY, int cellZ) {
         RandomSource cellRandom = aquiferRandom.at(cellX * cellWidth, cellY * cellHeight, cellZ * cellWidth);
         // offset the cell center randomly, in order for more natural results.
@@ -232,9 +279,28 @@ public class AxialBlurBorderFluidMap implements FluidMap {
         return new FluidCell(cellCenterX, cellCenterY, cellCenterZ, fluidLevel);
     }
 
-    private record FluidCell(int centerX, int centerY, int centerZ, FluidLevel fluidLevel) {
+    private static final class FluidCell {
+        private final int centerX, centerY, centerZ;
+        private final FluidLevel fluidLevel;
+        private byte homogenous;
+
+        private FluidCell(int centerX, int centerY, int centerZ, FluidLevel fluidLevel) {
+            this.centerX = centerX;
+            this.centerY = centerY;
+            this.centerZ = centerZ;
+            this.fluidLevel = fluidLevel;
+        }
+
         BlockState resolve(int x, int y, int z) {
-            return y < this.fluidLevel.height() ? fluidLevel.fluid() : Blocks.AIR.defaultBlockState();
+                return y < this.fluidLevel.height() ? fluidLevel.fluid() : Blocks.AIR.defaultBlockState();
+        }
+
+        boolean isEmpty() {
+            return fluidLevel.fluid().isAir() || fluidLevel.height() < this.centerY - cellHeight;
+        }
+
+        boolean isFull() {
+            return !fluidLevel.fluid().isAir() && fluidLevel.height() > this.centerY + cellHeight;
         }
     }
 }

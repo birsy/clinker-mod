@@ -16,12 +16,16 @@ import net.minecraft.world.level.block.Blocks;
 public class OthershoreNoiseComputers {
     private static NoiseComputer baseNoise(int index, double horizontalFrequency, double verticalFrequency, boolean twoDimensional) {
         String name = "base_noise_" + index;
-        return new NoiseComputer(name, twoDimensional ? CacheType.INTERPOLATED_2D_COARSE : CacheType.INTERPOLATED_COARSE, (x, y, z, context) -> {
-            NoiseHolder noise = context.noiseHolder();
-            noise.registerNoise(name);
-            return twoDimensional ?
-                    noise.sample(name, x * horizontalFrequency, z * horizontalFrequency) : // 2D noise samples are faster
-                    noise.sample(name, x * horizontalFrequency, y * verticalFrequency, z * horizontalFrequency);
+        boolean useHighResCache = horizontalFrequency < 4;
+        return new NoiseComputer(name,
+                twoDimensional ? useHighResCache ? CacheType.INTERPOLATED_2D_FINE : CacheType.INTERPOLATED_2D_COARSE :
+                                 useHighResCache ? CacheType.INTERPOLATED_FINE : CacheType.INTERPOLATED_COARSE,
+                (x, y, z, context) -> {
+                    NoiseHolder noise = context.noiseHolder();
+                    noise.registerNoise(name);
+                    return twoDimensional ?
+                            noise.sample(name, x * horizontalFrequency, z * horizontalFrequency) : // 2D noise samples are faster
+                            noise.sample(name, x * horizontalFrequency, y * verticalFrequency, z * horizontalFrequency);
         });
     }
     private static NoiseComputer[] noiseComputerArray(int offset, int length, boolean twoDimensional) {
@@ -41,39 +45,41 @@ public class OthershoreNoiseComputers {
     public static final NoiseComputer EMPTY = new NoiseComputer("empty", CacheType.NONE, (x, y, z, context) -> 1);
 
     public static final NoiseComputer SURFACE_HEIGHT_COMPUTER = new NoiseComputer("surface_height", CacheType.INTERPOLATED_2D_VERY_COARSE, (x, y, z, context) -> {
+        if (true)
+            return OthershoreBiomeSource.SEA_HEIGHT - 3;
+
         NoiseHolder noise = context.noiseHolder();
-        noise.registerNoise("base_plateaus", 2, 4.0, 0.7, 0.0);
+        noise.registerNoise("base_middle_shelf", 2, 4.0, 0.7, 0.0);
         noise.registerNoise("base_upper_shelf");
         noise.registerNoise("base_seas");
         noise.registerNoise("base_erosion");
 
-        double scale = 1;
+        double scale = 1;//1 / 10.0;
         double frequency = (1 / 400.0) / scale;
         double val;
         double erosion = noise.sample("base_erosion", x * frequency, z * frequency);
-        erosion = Mth.clampedMap(erosion, -1, 1, 0.5, 1);
+        erosion = Mth.clampedMap(erosion, -1, 1, 0, 1);
 
-        double plateaus = noise.sample("base_plateaus", x * frequency * 0.25, z * frequency * 0.25) + 0.2;
-        plateaus = plateaus * (1 / erosion);
-        plateaus = MathUtils.smoothMinExpo(plateaus, 1, 0.2);
-        plateaus = -MathUtils.smoothMinExpo(-plateaus, 1, 0.5);
-        val = plateaus;
+        double middleShelf = noise.sample("base_middle_shelf", x * frequency * 0.25, z * frequency * 0.25);
+        middleShelf = middleShelf * (1 / Mth.clampedMap(erosion, 0, 1, 0.5, 1));
+        middleShelf = Mth.clampedMap(middleShelf, -1, -0.1, 0, 1);
 
-        double upperShelf = noise.sample("base_upper_shelf", x * frequency, z * frequency) - 0.7;
-        upperShelf = upperShelf * (1 / (erosion * 0.25));
-        upperShelf = Math.clamp(upperShelf, 0, 1);
-        upperShelf = upperShelf * 0.5 + 0.5;
-        val = Mth.clampedLerp(Mth.clampedMap(val, -1, 1, -1, -0.2), 1, upperShelf + Math.min(plateaus, 0) * 5);
-        val = Mth.clampedMap(val, -1, 1, -0.8, 1);
 
+//        double upperShelf = noise.sample("base_upper_shelf", x * frequency, z * frequency) - 0.7;
+//        upperShelf = upperShelf * (1 / (erosion * 0.25));
+//        upperShelf = Math.clamp(upperShelf, 0, 1);
+//        upperShelf = upperShelf * 0.5 + 0.5;
+//        val = Mth.clampedLerp(Mth.clampedMap(val, -1, 1, -1, -0.2), 1, upperShelf + Math.min(plateaus, 0) * 5);
+//        val = Mth.clampedMap(val, -1, 1, -0.8, 1);
+//
         double seas = noise.sample("base_seas", x * frequency * 0.2, z * frequency * 0.2) - 0.5;
-        seas = seas * (1 / (erosion * 0.2));
-        seas = Math.clamp(seas, -1, 1);
-        val = Mth.clampedLerp(val, -1, (seas * 0.5 + 0.5));
+        seas = seas * (1 / Mth.clampedMap(erosion, 0, 1, 0.1, 0.2));
+        seas = Math.clamp(seas / 2.0 + 0.5, 0, 1);
 
-        return Mth.clampedMap(val, -1, 1, 50 * scale, 300 * scale);
+        val = Mth.clampedMap(middleShelf, 0, 1, 25 + OthershoreBiomeSource.SEA_HEIGHT, 5 + OthershoreBiomeSource.MIDDLE_SHELF_HEIGHT);
+        val = Mth.lerp(seas, val, OthershoreBiomeSource.SEA_HEIGHT - 3);
 
-        //return 100;
+        return ((val - OthershoreBiomeSource.SEA_HEIGHT) * scale) + OthershoreBiomeSource.SEA_HEIGHT;//Mth.clampedMap(val, -1, 1, 50 * scale, 300 * scale);
     });
 
     public static final NoiseComputer SPELEOTHEMS = new NoiseComputer("speleothems", CacheType.INTERPOLATED_FINE,  (x, y, z, context) -> {
@@ -179,7 +185,7 @@ public class OthershoreNoiseComputers {
         double surfaceHeight = executor.compute(x, y, z, OthershoreNoiseComputers.SURFACE_HEIGHT_COMPUTER);
         // sea level
         if (y > surfaceHeight || Math.abs(y - surfaceHeight) < 15) {
-            return new FluidLevel(64, Blocks.WATER.defaultBlockState());
+            return new FluidLevel(OthershoreBiomeSource.SEA_HEIGHT, Blocks.WATER.defaultBlockState());
         }
         // the aquifer
         if (y < 0) {

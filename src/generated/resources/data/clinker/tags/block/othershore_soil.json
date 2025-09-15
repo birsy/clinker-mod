@@ -1,7 +1,12 @@
 {
   "values": [
     "clinker:ash",
+    "clinker:ash_layers",
     "clinker:ashen_regolith",
-    "clinker:brimstone"
+    "clinker:brimstone",
+    "clinker:saltmoss",
+    "clinker:calc",
+    "clinker:mud",
+    "clinker:salt_gravel"
   ]
 }

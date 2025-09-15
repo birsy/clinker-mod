@@ -19,7 +19,7 @@ float map(float value, float min1, float max1, float min2, float max2) {
 }
 
 void main() {
-    vec4 texture = texture(Sampler0, texCoord0*0.35 + WindOffset);
+    vec4 txture = texture(Sampler0, texCoord0*0.35 + WindOffset);
     float heightFactor = 1.0 - vertexColor.a;
 //    if (heightFactor > 0.5) {
 //        heightFactor = (1.0 - heightFactor) * 2;
@@ -27,7 +27,7 @@ void main() {
 //        heightFactor = heightFactor * 2;
 //    }
     //heightFactor = smoothstep(0.0, 1.0, heightFactor);
-    float cloudFactor = clamp(map(texture.b * texture.b, 0.0, 1.0, -0.5, 1.0), 0.0, 1.0);
+    float cloudFactor = clamp(map(txture.b * txture.b, 0.0, 1.0, -0.5, 1.0), 0.0, 1.0);
     // todo: this sucks ass
     //if (heightFactor < cloudFactor) discard;
     float alpha = map(heightFactor, cloudFactor, 1.0, 0.0, 1.0) * cloudFactor;

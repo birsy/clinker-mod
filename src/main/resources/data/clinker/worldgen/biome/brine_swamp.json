@@ -26,10 +26,10 @@
       "probability": 0.01
     },
     "ambient_sound": "clinker:ambient.ash_plains.loop",
-    "sky_color": 4209726,
-    "fog_color": 9139549,
-    "water_color": 6578522,
-    "water_fog_color": 723467
+    "sky_color": 4796985,
+    "fog_color": 8213856,
+    "water_color": 9738853,
+    "water_fog_color": 9738853
   },
   "spawners": {},
   "spawn_costs": {},
@@ -44,7 +44,9 @@
     [],
     [],
     [],
-    [],
+    [
+      "clinker:patch_saltmoss_sprouts"
+    ],
     []
   ]
 }

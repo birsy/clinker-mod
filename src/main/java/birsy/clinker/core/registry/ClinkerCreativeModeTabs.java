@@ -90,6 +90,18 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(ClinkerBlocks.SMALL_SHALE_BRICKS_SLAB.get());
         pOutput.accept(ClinkerBlocks.SMALL_SHALE_BRICKS_STAIRS.get());
         pOutput.accept(ClinkerBlocks.SMALL_SHALE_BRICKS_FENCE.get());
+
+        pOutput.accept(ClinkerBlocks.CALC.get());
+        pOutput.accept(ClinkerBlocks.CALC_SLAB.get());
+        pOutput.accept(ClinkerBlocks.CALC_STAIRS.get());
+        pOutput.accept(ClinkerBlocks.CALC_WALL.get());
+        pOutput.accept(ClinkerBlocks.SALT_GRAVEL.get());
+
+        pOutput.accept(ClinkerBlocks.SALTMOSS.get());
+        pOutput.accept(ClinkerBlocks.SALTMOSS_SPROUTS.get());
+        pOutput.accept(ClinkerBlocks.DRIED_SALTMOSS_SPROUTS.get());
+        pOutput.accept(ClinkerBlocks.SALTMOSS_BLOOM.get());
+
         pOutput.accept(ClinkerBlocks.LEAD_ORE.get());
         pOutput.accept(ClinkerBlocks.LOCUST_LOG.get());
         pOutput.accept(ClinkerBlocks.TRIMMED_LOCUST_LOG.get());
@@ -105,6 +117,8 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(ClinkerBlocks.CAVE_FIG_STEM.get());
         pOutput.accept(ClinkerBlocks.CAVE_FIG_ROOTS.get());
         pOutput.accept(ClinkerBlocks.DRIED_CLOVERS.get());
+        pOutput.accept(ClinkerBlocks.THORNY_STEM.get());
+        pOutput.accept(ClinkerBlocks.BRAMBLE_BLOSSOM.get());
     }
 
     public static void addItems(CreativeModeTab.ItemDisplayParameters pParameters, CreativeModeTab.Output pOutput) {

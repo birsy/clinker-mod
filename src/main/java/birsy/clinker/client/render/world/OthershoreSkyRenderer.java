@@ -59,7 +59,7 @@ public class OthershoreSkyRenderer {
     public void render(ClientLevel level, int ticks, float partialTick, PoseStack poseStack, Camera camera, Matrix4f projectionMatrix, Vector3fc skyColor) {
         Minecraft mc = Minecraft.getInstance();
         Vec3 cameraPos = camera.getPosition();
-        cameraPos = cameraPos.add(0, 160, 0);
+        //cameraPos = cameraPos.add(0, 160, 0);
         Matrix4f projMatrix = new Matrix4f(projectionMatrix);
         RenderSystem.setProjectionMatrix(projMatrix.setPerspective(
                 (float)(mc.gameRenderer.getFov(camera, partialTick, true) * (float) (Math.PI / 180.0)),
@@ -87,6 +87,7 @@ public class OthershoreSkyRenderer {
         poseStack.pushPose();
 
         poseStack.pushPose();
+
         float scale = 4990.0F;
         poseStack.scale(scale, scale, scale);
 
@@ -108,6 +109,7 @@ public class OthershoreSkyRenderer {
         }
 
         poseStack.popPose();
+        poseStack.translate(0, -160, 0);
 
         drawCloudRings(level, ticks, partialTick, projMatrix, poseStack,
                 (float) cameraPos.y,

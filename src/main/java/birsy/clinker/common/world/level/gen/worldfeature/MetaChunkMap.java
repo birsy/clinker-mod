@@ -72,16 +72,14 @@ public class MetaChunkMap {
         NoiseComputerContext context = new NoiseComputerContext(noiseComputerExecutor, noiseHolder);
 
         RandomSource random = metaChunkRandom.at(metaChunk.minX(), depth, metaChunk.maxZ());
-        WorldFeature feature = new TestWorldFeature(depth);
-        if (feature.plan(metaChunk, random, context))
-            metaChunk.worldFeatures.add(feature);
+//        WorldFeature feature = new TestWorldFeature(depth);
+//        if (feature.plan(metaChunk, random, context))
+//            metaChunk.worldFeatures.add(feature);
 
-        if (depth == 5) {
+        if (depth == 6) {
             WorldFeature mountain = new JaggedPeakWorldFeature(depth);
             if (mountain.plan(metaChunk, random, context))
                 metaChunk.worldFeatures.add(mountain);
-
-
         }
 
         if (depth == 3) {

@@ -1,6 +1,6 @@
 package birsy.clinker.common.world.level.gen.feature;
 
-import birsy.clinker.common.world.block.AshLayerBlock;
+import birsy.clinker.common.world.block.FallingLayerBlock;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.util.MathUtil;
 import com.mojang.serialization.Codec;
@@ -50,7 +50,7 @@ public class AshPileFeature extends Feature<NoneFeatureConfiguration> {
                             }
 
                             if (ashHeight > 0) {
-                                level.setBlock(pos, ClinkerBlocks.ASH_LAYER.get().defaultBlockState().setValue(AshLayerBlock.LAYERS, Mth.clamp(ashHeight, 1, 8)), 2);
+                                level.setBlock(pos, ClinkerBlocks.ASH_LAYER.get().defaultBlockState().setValue(FallingLayerBlock.LAYERS, Mth.clamp(ashHeight, 1, 8)), 2);
                             }
                         }
                     }

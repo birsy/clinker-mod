@@ -1,0 +1,66 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "clinker:block/calc"
+      },
+      {
+        "model": "clinker:block/calc_mirrored"
+      },
+      {
+        "model": "clinker:block/calc",
+        "y": 90
+      },
+      {
+        "model": "clinker:block/calc_mirrored",
+        "y": 90
+      },
+      {
+        "model": "clinker:block/calc",
+        "y": 180
+      },
+      {
+        "model": "clinker:block/calc_mirrored",
+        "y": 180
+      },
+      {
+        "model": "clinker:block/calc",
+        "y": 270
+      },
+      {
+        "model": "clinker:block/calc_mirrored",
+        "y": 270
+      },
+      {
+        "model": "clinker:block/calc_1"
+      },
+      {
+        "model": "clinker:block/calc_1_mirrored"
+      },
+      {
+        "model": "clinker:block/calc_1",
+        "y": 90
+      },
+      {
+        "model": "clinker:block/calc_1_mirrored",
+        "y": 90
+      },
+      {
+        "model": "clinker:block/calc_1",
+        "y": 180
+      },
+      {
+        "model": "clinker:block/calc_1_mirrored",
+        "y": 180
+      },
+      {
+        "model": "clinker:block/calc_1",
+        "y": 270
+      },
+      {
+        "model": "clinker:block/calc_1_mirrored",
+        "y": 270
+      }
+    ]
+  }
+}

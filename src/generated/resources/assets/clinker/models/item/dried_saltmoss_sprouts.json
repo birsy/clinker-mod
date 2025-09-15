@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "clinker:block/dried_saltmoss_sprouts"
+  }
+}

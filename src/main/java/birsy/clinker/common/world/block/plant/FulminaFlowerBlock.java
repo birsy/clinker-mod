@@ -1,6 +1,6 @@
 package birsy.clinker.common.world.block.plant;
 
-import birsy.clinker.common.world.block.AshLayerBlock;
+import birsy.clinker.common.world.block.FallingLayerBlock;
 import birsy.clinker.common.world.block.blockentity.FulminaFlowerBlockEntity;
 import birsy.clinker.core.registry.entity.ClinkerBlockEntities;
 import birsy.clinker.core.registry.ClinkerBlocks;
@@ -36,7 +36,7 @@ public class FulminaFlowerBlock extends DoublePlantBlock implements EntityBlock 
         return pState.is(ClinkerBlocks.MUD.get())
                 || pState.is(ClinkerBlocks.BRIMSTONE.get())
                 || pState.is(ClinkerBlocks.ASH.get())
-                || pState == ClinkerBlocks.ASH_LAYER.get().defaultBlockState().setValue(AshLayerBlock.LAYERS, 8);
+                || pState == ClinkerBlocks.ASH_LAYER.get().defaultBlockState().setValue(FallingLayerBlock.LAYERS, 8);
     }
 
     @Override

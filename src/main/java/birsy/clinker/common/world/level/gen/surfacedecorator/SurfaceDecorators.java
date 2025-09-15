@@ -10,7 +10,10 @@ import java.util.Map;
 
 public class SurfaceDecorators {
     private static final Map<ResourceKey<Biome>, SurfaceDecorator> registry = new HashMap<>();
-    private static final SurfaceDecorator DEFAULT = new AshSteppeSurfaceDecorator();
+    private static final SurfaceDecorator DEFAULT = new DefaultSurfaceDecorator();
+
+    public static final SurfaceDecorator ASH_STEPPE = register(ClinkerBiomes.ASH_STEPPE, new AshSteppeSurfaceDecorator());
+    public static final SurfaceDecorator BRINE_SWAMP = register(ClinkerBiomes.BRINE_SWAMP, new BrineSwampSurfaceDecorator());
 
     public static final SurfaceDecorator UNDERGROUND = register(ClinkerBiomes.UNDERGROUND, new DefaultSurfaceDecorator());
     public static final SurfaceDecorator AQUIFER = register(ClinkerBiomes.AQUIFER, new DefaultSurfaceDecorator());

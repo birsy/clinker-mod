@@ -1,0 +1,28 @@
+{
+  "variants": {
+    "type=bottom": [
+      {
+        "model": "clinker:block/calc_slab"
+      },
+      {
+        "model": "clinker:block/calc_slab_1"
+      }
+    ],
+    "type=double": [
+      {
+        "model": "clinker:block/calc"
+      },
+      {
+        "model": "clinker:block/calc_1"
+      }
+    ],
+    "type=top": [
+      {
+        "model": "clinker:block/calc_slab_top"
+      },
+      {
+        "model": "clinker:block/calc_slab_top_1"
+      }
+    ]
+  }
+}

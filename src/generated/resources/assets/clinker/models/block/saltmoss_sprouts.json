@@ -1,0 +1,7 @@
+{
+  "parent": "clinker:block/thick_grass",
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "cross": "clinker:block/saltmoss_sprouts"
+  }
+}

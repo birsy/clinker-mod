@@ -179,39 +179,104 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
             );
         }
 
+        // calc
+        {
+            ResourceLocation CALC = this.modLoc(ModelProvider.BLOCK_FOLDER + "/calc");
+            String blockName = name(ClinkerBlocks.CALC.get());
+            this.simpleBlockWithVariationAndTransformation(
+                    ClinkerBlocks.CALC.get(), (i) -> {
+                        String suffix = i == 0 ? "" : "_" + i;
+                        return this.models().cubeAll(
+                                blockName + suffix,
+                                this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + blockName + suffix)
+                        );
+                    }, (i) -> {
+                        String suffix = i == 0 ? "" : "_" + i;
+                        return this.models().singleTexture(
+                                blockName + suffix + "_mirrored",
+                                this.mcLoc(ModelProvider.BLOCK_FOLDER + "/cube_mirrored_all"),
+                                "all",
+                                this.modLoc( ModelProvider.BLOCK_FOLDER + "/" + blockName + suffix)
+                        );
+                    },
+                    2, false, true
+            );
+            this.simpleBlockItem(ClinkerBlocks.CALC.get(), this.models().getExistingFile(CALC));
+
+            this.slabBlockWithVariation(ClinkerBlocks.CALC_SLAB.get(),
+                    (i) -> this.modLoc(ModelProvider.BLOCK_FOLDER + "/calc" + (i == 0 ? "" : "_" + i)),
+                    (i) -> this.modLoc(ModelProvider.BLOCK_FOLDER + "/calc" + (i == 0 ? "" : "_" + i)),
+                    2);
+            this.simpleBlockItem(ClinkerBlocks.CALC_SLAB.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/calc_slab")));
+
+            this.stairsBlockWithVariation(ClinkerBlocks.CALC_STAIRS.get(),
+                    (i) -> this.modLoc(ModelProvider.BLOCK_FOLDER + "/calc" + (i == 0 ? "" : "_" + i)),
+                    2);
+            this.simpleBlockItem(ClinkerBlocks.CALC_STAIRS.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/calc_stairs")));
+
+            this.wallBlock(ClinkerBlocks.CALC_WALL.get(), CALC);
+            this.simpleBlockItem(ClinkerBlocks.CALC_WALL.get(), this.models().wallInventory("calc_wall_inventory", CALC));
+        }
+
+        // salt moss
+        {
+            ResourceLocation SALTMOSS = this.modLoc(ModelProvider.BLOCK_FOLDER + "/saltmoss");
+            ResourceLocation SALTMOSS_SIDE = this.modLoc(ModelProvider.BLOCK_FOLDER + "/saltmoss_side");
+            ResourceLocation CALC = this.modLoc(ModelProvider.BLOCK_FOLDER + "/calc");
+            String name = name(ClinkerBlocks.SALTMOSS.get());
+
+            this.simpleBlockWithVariationAndTransformation(
+                    ClinkerBlocks.SALTMOSS.get(),
+                    (i) -> this.models().cubeBottomTop(name, SALTMOSS_SIDE, CALC, SALTMOSS),
+                    (i) -> this.cubeBottomTopMirrored(name + "_mirrored", SALTMOSS_SIDE, CALC, SALTMOSS),
+                    1, false, true
+            );
+            this.simpleBlockItem(ClinkerBlocks.SALTMOSS.get(), this.models().getExistingFile(SALTMOSS));
+
+            this.simpleBlock(ClinkerBlocks.SALTMOSS_SPROUTS.get(), denseCross(ClinkerBlocks.SALTMOSS_SPROUTS.get()).renderType("cutout"));
+            this.flatBlockItem(ClinkerBlocks.SALTMOSS_SPROUTS.get());
+
+            this.simpleBlock(ClinkerBlocks.DRIED_SALTMOSS_SPROUTS.get(), cross(ClinkerBlocks.DRIED_SALTMOSS_SPROUTS.get()).renderType("cutout"));
+            this.flatBlockItem(ClinkerBlocks.DRIED_SALTMOSS_SPROUTS.get());
+
+            this.simpleBlock(ClinkerBlocks.SALTMOSS_BLOOM.get(), cross(ClinkerBlocks.SALTMOSS_BLOOM.get()).renderType("cutout"));
+            this.flatBlockItem(ClinkerBlocks.SALTMOSS_BLOOM.get());
+        }
+
+        this.simpleBlockWithVariationAndTransformation(
+                ClinkerBlocks.SALT_GRAVEL.get(), (i) -> this.models().cubeAll(
+                        name(ClinkerBlocks.SALT_GRAVEL.get()),
+                        this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(ClinkerBlocks.SALT_GRAVEL.get()))
+                ), (i) -> this.models().singleTexture(
+                        name(ClinkerBlocks.SALT_GRAVEL.get()) + "_mirrored",
+                        this.mcLoc(ModelProvider.BLOCK_FOLDER + "/cube_mirrored_all"),
+                        "all",
+                        this.modLoc( ModelProvider.BLOCK_FOLDER + "/" + name(ClinkerBlocks.SALT_GRAVEL.get()))
+                ),
+                1, true, true
+        );
+        this.simpleBlockItem(ClinkerBlocks.SALT_GRAVEL.get(), this.models().getExistingFile(this.modLoc( ModelProvider.BLOCK_FOLDER + "/" + name(ClinkerBlocks.SALT_GRAVEL.get()))));
+
         // plants
         {
             ResourceLocation brambleBlossomTexture = this.modLoc(ModelProvider.BLOCK_FOLDER + "/bramble_blossom");
             simpleBlock(ClinkerBlocks.BRAMBLE_BLOSSOM.get(), this.models().cross("bramble_blossom", brambleBlossomTexture).renderType("cutout"));
-            this.basicItem(ClinkerBlocks.BRAMBLE_BLOSSOM.get().asItem());
+            this.flatBlockItem(ClinkerBlocks.BRAMBLE_BLOSSOM.get());
 
             this.simpleBlockWithVariation(ClinkerBlocks.WITHERING_BRAMBLE_BLOSSOM.get(), (i) -> {
                 String suffix = i == 0 ? "" : "_" + i;
                 String name = "withering_bramble_blossom" + suffix;
                 return this.models().cross(name, this.modLoc(ModelProvider.BLOCK_FOLDER + "/withering_bramble_blossom" + suffix)).renderType("cutout");
             }, 2);
-            this.basicItem(ClinkerBlocks.WITHERING_BRAMBLE_BLOSSOM.get().asItem());
-
-            this.basicItem(ClinkerBlocks.THORNY_STEM.get().asItem(), Clinker.resource("item/thorny_stem"));
+            this.flatBlockItem(ClinkerBlocks.WITHERING_BRAMBLE_BLOSSOM.get());
+            this.itemModels().basicItem(ClinkerBlocks.THORNY_STEM.get().asItem());
         }
     }
 
-    public ItemModelBuilder basicItem(Item item) {
-        return basicItem(Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(item)));
-    }
-
-    public ItemModelBuilder basicItem(ResourceLocation item) {
-        return this.basicItem(item, ResourceLocation.fromNamespaceAndPath(item.getNamespace(), "block/" + item.getPath()));
-    }
-
-    public ItemModelBuilder basicItem(Item item, ResourceLocation texture) {
-        return basicItem(Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(item)), texture);
-    }
-
-    public ItemModelBuilder basicItem(ResourceLocation item, ResourceLocation texture) {
-        return this.itemModels().getBuilder(item.toString())
+    public void flatBlockItem(Block block) {
+        this.itemModels().getBuilder(key(block).getPath())
                 .parent(new ModelFile.UncheckedModelFile("item/generated"))
-                .texture("layer0", texture);
+                .texture("layer0", this.modLoc( "block/" + name(block)));
     }
 
     private void simpleBlockWithVariation(Block block, int variations) {
@@ -409,6 +474,33 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
                 .texture("wall_top", wallTop)
         );
     }
+
+    public ModelBuilder cubeBottomTopMirrored(String name, ResourceLocation side, ResourceLocation bottom, ResourceLocation top) {
+        return this.cubeMirrored(name, bottom, top, side, side, side, side);
+    }
+
+    public ModelBuilder cubeMirrored(String name, ResourceLocation down, ResourceLocation up, ResourceLocation north, ResourceLocation south, ResourceLocation east, ResourceLocation west) {
+        return this.models().withExistingParent(name, "cube_mirrored")
+                .texture("down", down)
+                .texture("up", up)
+                .texture("north", north)
+                .texture("south", south)
+                .texture("east", east)
+                .texture("west", west);
+    }
+
+    public ModelBuilder cross(Block block) {
+        return this.models().cross(name(block), this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(block)));
+    }
+
+    public ModelBuilder denseCross(Block block) {
+        return this.denseCross(name(block), this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(block)));
+    }
+
+    public ModelBuilder denseCross(String name, ResourceLocation cross) {
+        return this.models().singleTexture(name, this.modLoc(ModelProvider.BLOCK_FOLDER + "/thick_grass"), "cross", cross);
+    }
+
 
     private ResourceLocation key(Block block) {
         return BuiltInRegistries.BLOCK.getKey(block);

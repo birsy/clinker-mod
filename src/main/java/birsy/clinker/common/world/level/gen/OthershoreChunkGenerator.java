@@ -53,7 +53,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
     public OthershoreChunkGenerator(BiomeSource biomeSource) {
         super(biomeSource);
-        this.surfaceBuilder = new SurfaceBuilder(8, 0, ClinkerBlocks.BRIMSTONE.get().defaultBlockState());
+        this.surfaceBuilder = new SurfaceBuilder(8, OthershoreBiomeSource.SEA_HEIGHT, ClinkerBlocks.BRIMSTONE.get().defaultBlockState());
         this.surfaceBiomeContributionComputers = HashMap.newHashMap(this.biomeSource.possibleBiomes().size());
 
         // compute a blur kernel
@@ -124,7 +124,6 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
     private ChunkAccess doBiomeFillTask(OthershoreBiomeSource othershoreBiomeSource, Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunk) {
         ChunkPos chunkpos = chunk.getPos();
-
 
         LevelHeightAccessor levelheightaccessor = chunk.getHeightAccessorForGeneration();
         NoiseHolder noiseHolder = ((NoiseHolderHolder)(Object)randomState).clinker$noiseHolder();
@@ -202,7 +201,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             caveNoise = Mth.lerp(cache.compute(x, y, z, undergroundContributionComputer), -10, caveNoise);
             density = Math.max(density, caveNoise);
 
-            Collection<WorldFeature> worldFeatures = ((MetaChunkMapHolder)(Object) randomState).clinker$metaChunkMap()
+            Collection<WorldFeature> worldFeatures = ((MetaChunkMapHolder) (Object) randomState).clinker$metaChunkMap()
                     .getWorldFeatures(chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());
             for (WorldFeature worldFeature : worldFeatures) {
                 density = worldFeature.modifyTerrain(x, y, z, density, context);
@@ -211,11 +210,11 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         });
 
         NoiseComputer flattenedFinalDensity = new NoiseComputer("final_density_flattened", CacheType.DIRECT, finalDensityComputer::compute);
-        //flattenedFinalDensity = OthershoreNoiseComputers.EMPTY;
         fluidMap.precomputeValues(flattenedFinalDensity);
 
         Heightmap heightmapOceanFloor = chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.OCEAN_FLOOR_WG);
         Heightmap heightmapWorldSurface = chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.WORLD_SURFACE_WG);
+
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         for (int yi = 0; yi < chunk.getHeight() - 1; yi++) {
             pos.setY(yi + chunk.getMinBuildHeight());
@@ -245,8 +244,13 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
     @Override
     public void applyBiomeDecoration(WorldGenLevel level, ChunkAccess chunk, StructureManager structureManager) {
-        if (level.getChunkSource() instanceof ServerChunkCache chunkCache)
-            surfaceBuilder.applySurfaceDecorators(level, chunk, chunkCache.randomState());
+        if (level.getChunkSource() instanceof ServerChunkCache chunkCache) {
+            NoiseHolder noiseHolder = ((NoiseHolderHolder)(Object)chunkCache.randomState()).clinker$noiseHolder();
+            NoiseComputerExecutor executor = new CachedNoiseComputerExecutor(chunk.getPos().getMinBlockX(), chunk.getMinBuildHeight(), chunk.getPos().getMinBlockZ(), chunk.getHeight(), noiseHolder);
+            NoiseComputerContext context = new NoiseComputerContext(executor, noiseHolder);
+
+            surfaceBuilder.applySurfaceDecorators(level, chunk, context, chunkCache.randomState());
+        }
         super.applyBiomeDecoration(level, chunk, structureManager);
     }
 

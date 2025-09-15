@@ -5,6 +5,7 @@ import birsy.clinker.common.world.block.plant.*;
 import birsy.clinker.common.world.block.plant.aspen.SwampAspenLogBlock;
 import birsy.clinker.core.Clinker;
 import net.minecraft.core.Direction;
+import net.minecraft.util.ColorRGBA;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.component.SuspiciousStewEffects;
@@ -38,8 +39,8 @@ public class ClinkerBlocks
     public static final DeferredBlock<Block> RAW_LEAD_BLOCK = createBlock("raw_lead_block", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GRAY).strength(2.5f, 3.0f).sound(SoundType.ANCIENT_DEBRIS)));
     
     //Soils
-    public static final DeferredBlock<Block> ASH = createBlock("ash", () -> new AshBlock(Block.Properties.of().mapColor(MapColor.COLOR_GRAY).strength(0.5F).sound(SoundType.SNOW)));
-    public static final DeferredBlock<Block> ASH_LAYER = createBlock("ash_layers", () -> new AshLayerBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SNOW).mapColor(MapColor.COLOR_GRAY)));
+    public static final DeferredBlock<Block> ASH = createBlock("ash", () -> new ColoredFallingBlock(new ColorRGBA(8616308), Block.Properties.of().mapColor(MapColor.COLOR_GRAY).strength(0.5F).sound(SoundType.SNOW)));
+    public static final DeferredBlock<Block> ASH_LAYER = createBlock("ash_layers", () -> new FallingLayerBlock(new ColorRGBA(8616308), BlockBehaviour.Properties.ofFullCopy(Blocks.SNOW).mapColor(MapColor.COLOR_GRAY)));
 
     public static final DeferredBlock<Block> ASHEN_REGOLITH = createBlock("ashen_regolith", () -> new MudBlock(Block.Properties.of().mapColor(MapColor.COLOR_GRAY).strength(0.5F).sound(SoundType.NYLIUM)));
 
@@ -78,6 +79,22 @@ public class ClinkerBlocks
 
 
     public static final DeferredBlock<Block> SMOOTH_BRIMSTONE = createBlock("smooth_brimstone", () -> new Block(getBrimstoneProperties()));
+
+
+    public static final DeferredBlock<Block> CALC = createBlock("calc", () -> new Block(
+            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GRAY)
+            .strength(1.5F, 1.0F)
+            .sound(SoundType.PACKED_MUD).requiresCorrectToolForDrops())
+    );
+    public static final DeferredBlock<SlabBlock> CALC_SLAB = createBlock("calc_slab", () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(CALC.get())));
+    public static final DeferredBlock<StairBlock> CALC_STAIRS = createBlock("calc_stairs", () -> new StairBlock(CALC.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(CALC.get())));
+    public static final DeferredBlock<WallBlock> CALC_WALL = createBlock("calc_wall", () -> new WallBlock(BlockBehaviour.Properties.ofFullCopy(CALC.get())));
+
+    public static final DeferredBlock<SaltmossBlock> SALTMOSS = createBlock("saltmoss", () -> new SaltmossBlock(BlockBehaviour.Properties.ofFullCopy(CALC.get()).sound(SoundType.MOSS).mapColor(MapColor.COLOR_RED)));
+
+    public static final DeferredBlock<ColoredFallingBlock> SALT_GRAVEL = createBlock("salt_gravel",
+            () -> new ColoredFallingBlock(new ColorRGBA(0x777472), BlockBehaviour.Properties.ofFullCopy(Blocks.GRAVEL))
+    );
 
 
     //Calamine
@@ -232,6 +249,10 @@ public class ClinkerBlocks
                             .mapColor(MapColor.COLOR_BLACK)
             ));
 
+    public static final DeferredBlock<Block> SALTMOSS_SPROUTS = createBlock("saltmoss_sprouts", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_RED).sound(SoundType.HANGING_ROOTS)));
+    public static final DeferredBlock<Block> DRIED_SALTMOSS_SPROUTS = createBlock("dried_saltmoss_sprouts", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_RED).sound(SoundType.HANGING_ROOTS)));
+    public static final DeferredBlock<Block> SALTMOSS_BLOOM = createBlock("saltmoss_bloom", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_RED).sound(SoundType.HANGING_ROOTS)));
+
 
     // fluids
     public static DeferredBlock<LiquidBlock> VITRIOL_BLOCK = BLOCKS.register("vitriol", () -> new LiquidBlock(
@@ -247,8 +268,8 @@ public class ClinkerBlocks
 
     //Special
 
-    public static DeferredBlock<Block> createBlock(String name, final Supplier<? extends Block> supplier) {
-        DeferredBlock<Block> block = BLOCKS.register(name, supplier);
+    public static <T extends Block> DeferredBlock<T> createBlock(String name, final Supplier<T> supplier) {
+        DeferredBlock<T> block = BLOCKS.register(name, supplier);
         ClinkerBlocks.BLOCK_ITEMS.registerSimpleBlockItem(name, block);
         return block;
     }

@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/outer_stairs",
+  "textures": {
+    "bottom": "clinker:block/calc",
+    "side": "clinker:block/calc",
+    "top": "clinker:block/calc"
+  }
+}

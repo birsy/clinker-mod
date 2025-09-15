@@ -63,20 +63,23 @@ void main() {
     float noisevalue = mix(bubble, streak, mixNoise);
 
     //gradient
-    vec2 guv0 = uvRez(uv, resolution) * vec2(1.0, 2.0);
+    vec2 guv0 = uvRez(uv, resolution) * vec2(1.0, 2.0) + vec2(GameTime * speed * 0.11, 0);
     float gradientstreak = streaks(guv0);
-    float streakStrength = 0.2;
+    float streakStrength = 0.8;
 
-    float gradientTop = 0.85;
-    float gradientMiddle = 0.5;
-    float gradientBottom = 0.05;
-    float gradientOffset = 0.2;
+    float upperGradientStart = 0.75;
+    float upperGradientEnd = 0.65;
+    float middleGradientStart = 0.7;
+    float middleGradientMiddle = 0.5;
+    float middleGradientEnd = 0.2;
+    float lowerGradientStart = 0.05;
+    float lowerGradientEnd = 0.0;
 
     vec2 gradientUV = uvRez(texCoord0.xy, resolution * size);
-    float g1 = map(gradientUV.y, 1.0, gradientTop, 0.0, 1.0);
-    float g2 = map(gradientUV.y, gradientTop - gradientOffset, gradientMiddle - gradientstreak * streakStrength, 1.0, 0.0);
-    float g3 = map(gradientUV.y, gradientMiddle - gradientstreak * streakStrength, gradientBottom + gradientOffset, 0.0, 1.0);
-    float g4 = map(gradientUV.y, gradientBottom, 0.0, 1.0, 0.0);
+    float g1 = map(gradientUV.y, upperGradientStart, upperGradientEnd, 0.0, 1.0);
+    float g2 = map(gradientUV.y, middleGradientStart, middleGradientMiddle - gradientstreak * (middleGradientStart - middleGradientMiddle) * streakStrength, 1.0, 0.0);
+    float g3 = map(gradientUV.y, middleGradientMiddle - gradientstreak * (middleGradientMiddle - middleGradientEnd) * streakStrength, middleGradientEnd, 0.0, 1.0);
+    float g4 = map(gradientUV.y, lowerGradientStart, lowerGradientEnd, 1.0, 0.0);
     float gradient = g1 * g2 + g3 * g4;
     gradient = smoothstep(0.0, 1.0, gradient);
     gradient = smoothstep(0.0, 1.0, gradient);
@@ -88,5 +91,6 @@ void main() {
     value = clamp(value, 0.0, 1.0);
 
     noisevalue *= (1.0 - gradient) * (1 - RingDistance) * 0.5;
+    if (value < 0.01) discard;
     fragColor = vertexColor * vec4(1.0 + noisevalue, 1.0 + noisevalue, 1.0 + noisevalue, value);
 }

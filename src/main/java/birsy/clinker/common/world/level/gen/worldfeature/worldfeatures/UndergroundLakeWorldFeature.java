@@ -45,9 +45,9 @@ public class UndergroundLakeWorldFeature extends WorldFeature {
         this.centerZ = randomSource.nextInt(metaChunk.minZ(), metaChunk.maxZ());
 
         double surfaceHeight = context.noiseComputerExecutor().compute(this.centerX, 0, this.centerZ, OthershoreNoiseComputers.SURFACE_HEIGHT_COMPUTER);
-        this.waterLevel = randomSource.nextInt(0, (int) surfaceHeight - 20);
-
-        Clinker.LOGGER.info("Underground Lake generated at {} {} {}", this.centerX, this.waterLevel, this.centerZ);
+        int maxFluidLevel = (int) surfaceHeight - 20;
+        if (maxFluidLevel <= 0) return false;
+        this.waterLevel = randomSource.nextInt(0, maxFluidLevel);
 
         return true;
     }

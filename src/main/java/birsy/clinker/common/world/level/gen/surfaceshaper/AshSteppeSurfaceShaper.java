@@ -32,12 +32,12 @@ public class AshSteppeSurfaceShaper implements SurfaceShaper {
 
         double cliffDensity = Double.MAX_VALUE;
         for (int i = 0; i < 3; i++) {
-            double stepHeight = 5 + i * 3;
+            double stepHeight = 5 + i * 6;
             int terracedY = (int) (Math.floor(y / stepHeight) * stepHeight);
             terracedY = (int)(terracedY + ashDunes * 2);
             double terraceShape = (y - terracedY) / stepHeight;//Mth.frac(y / (double)stepHeight);
             terraceShape *= terraceShape;
-            double terracedCliffHeight = Mth.map(terracedY + terraceShape * stepHeight * 0.5, ashDunesHeight, ashDunesHeight + 20, 0, 1);
+            double terracedCliffHeight = Mth.map(terracedY + terraceShape * stepHeight * 0.5, ashDunesHeight, ashDunesHeight + 40, 0, 1);
             terracedCliffHeight *= biomeContribution;
             terracedCliffHeight = Mth.map(terracedCliffHeight, 0, 1, -1, 0);
 

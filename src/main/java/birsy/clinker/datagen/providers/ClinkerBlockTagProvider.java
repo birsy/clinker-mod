@@ -37,8 +37,13 @@ public class ClinkerBlockTagProvider extends BlockTagsProvider {
 
         IntrinsicHolderTagsProvider.IntrinsicTagAppender othershoreSoil = this.tag(ClinkerTags.OTHERSHORE_SOIL).replace(false);
         othershoreSoil.add(ClinkerBlocks.ASH.get());
+        othershoreSoil.add(ClinkerBlocks.ASH_LAYER.get());
         othershoreSoil.add(ClinkerBlocks.ASHEN_REGOLITH.get());
         othershoreSoil.add(ClinkerBlocks.BRIMSTONE.get());
+        othershoreSoil.add(ClinkerBlocks.SALTMOSS.get());
+        othershoreSoil.add(ClinkerBlocks.CALC.get());
+        othershoreSoil.add(ClinkerBlocks.MUD.get());
+        othershoreSoil.add(ClinkerBlocks.SALT_GRAVEL.get());
 
         IntrinsicHolderTagsProvider.IntrinsicTagAppender climbables = this.tag(BlockTags.CLIMBABLE).replace(false);
         climbables.add(ClinkerBlocks.THORNY_STEM.get());

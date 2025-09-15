@@ -1,0 +1,126 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "clinker:block/salt_gravel"
+      },
+      {
+        "model": "clinker:block/salt_gravel_mirrored"
+      },
+      {
+        "model": "clinker:block/salt_gravel",
+        "x": 90
+      },
+      {
+        "model": "clinker:block/salt_gravel_mirrored",
+        "x": 90
+      },
+      {
+        "model": "clinker:block/salt_gravel",
+        "x": 90,
+        "y": 90
+      },
+      {
+        "model": "clinker:block/salt_gravel_mirrored",
+        "x": 90,
+        "y": 90
+      },
+      {
+        "model": "clinker:block/salt_gravel",
+        "x": 90,
+        "y": 180
+      },
+      {
+        "model": "clinker:block/salt_gravel_mirrored",
+        "x": 90,
+        "y": 180
+      },
+      {
+        "model": "clinker:block/salt_gravel",
+        "x": 90,
+        "y": 270
+      },
+      {
+        "model": "clinker:block/salt_gravel_mirrored",
+        "x": 90,
+        "y": 270
+      },
+      {
+        "model": "clinker:block/salt_gravel",
+        "x": 180
+      },
+      {
+        "model": "clinker:block/salt_gravel_mirrored",
+        "x": 180
+      },
+      {
+        "model": "clinker:block/salt_gravel",
+        "x": 180,
+        "y": 90
+      },
+      {
+        "model": "clinker:block/salt_gravel_mirrored",
+        "x": 180,
+        "y": 90
+      },
+      {
+        "model": "clinker:block/salt_gravel",
+        "x": 180,
+        "y": 180
+      },
+      {
+        "model": "clinker:block/salt_gravel_mirrored",
+        "x": 180,
+        "y": 180
+      },
+      {
+        "model": "clinker:block/salt_gravel",
+        "x": 180,
+        "y": 270
+      },
+      {
+        "model": "clinker:block/salt_gravel_mirrored",
+        "x": 180,
+        "y": 270
+      },
+      {
+        "model": "clinker:block/salt_gravel",
+        "x": 270
+      },
+      {
+        "model": "clinker:block/salt_gravel_mirrored",
+        "x": 270
+      },
+      {
+        "model": "clinker:block/salt_gravel",
+        "x": 270,
+        "y": 90
+      },
+      {
+        "model": "clinker:block/salt_gravel_mirrored",
+        "x": 270,
+        "y": 90
+      },
+      {
+        "model": "clinker:block/salt_gravel",
+        "x": 270,
+        "y": 180
+      },
+      {
+        "model": "clinker:block/salt_gravel_mirrored",
+        "x": 270,
+        "y": 180
+      },
+      {
+        "model": "clinker:block/salt_gravel",
+        "x": 270,
+        "y": 270
+      },
+      {
+        "model": "clinker:block/salt_gravel_mirrored",
+        "x": 270,
+        "y": 270
+      }
+    ]
+  }
+}
