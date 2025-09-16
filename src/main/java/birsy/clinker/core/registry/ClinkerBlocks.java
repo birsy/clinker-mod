@@ -84,13 +84,17 @@ public class ClinkerBlocks
     public static final DeferredBlock<Block> CALC = createBlock("calc", () -> new Block(
             BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GRAY)
             .strength(1.5F, 1.0F)
-            .sound(SoundType.PACKED_MUD).requiresCorrectToolForDrops())
-    );
+            .sound(SoundType.NETHERRACK).requiresCorrectToolForDrops()));
     public static final DeferredBlock<SlabBlock> CALC_SLAB = createBlock("calc_slab", () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(CALC.get())));
     public static final DeferredBlock<StairBlock> CALC_STAIRS = createBlock("calc_stairs", () -> new StairBlock(CALC.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(CALC.get())));
     public static final DeferredBlock<WallBlock> CALC_WALL = createBlock("calc_wall", () -> new WallBlock(BlockBehaviour.Properties.ofFullCopy(CALC.get())));
 
-    public static final DeferredBlock<SaltmossBlock> SALTMOSS = createBlock("saltmoss", () -> new SaltmossBlock(BlockBehaviour.Properties.ofFullCopy(CALC.get()).sound(SoundType.MOSS).mapColor(MapColor.COLOR_RED)));
+    public static final DeferredBlock<Block> CALC_BRICKS = createBlock("calc_bricks", () -> new Block(BlockBehaviour.Properties.ofFullCopy(CALC.get()).sound(SoundType.TUFF_BRICKS)));
+    public static final DeferredBlock<SlabBlock> CALC_BRICK_SLAB = createBlock("calc_brick_slab", () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(CALC_BRICKS.get())));
+    public static final DeferredBlock<StairBlock> CALC_BRICK_STAIRS = createBlock("calc_brick_stairs", () -> new StairBlock(CALC.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(CALC_BRICKS.get())));
+    public static final DeferredBlock<WallBlock> CALC_BRICK_WALL = createBlock("calc_brick_wall", () -> new WallBlock(BlockBehaviour.Properties.ofFullCopy(CALC_BRICKS.get())));
+
+    public static final DeferredBlock<SaltmossBlock> SALTMOSS = createBlock("saltmoss", () -> new SaltmossBlock(BlockBehaviour.Properties.ofFullCopy(CALC.get()).sound(SoundType.NYLIUM).mapColor(MapColor.COLOR_RED)));
 
     public static final DeferredBlock<ColoredFallingBlock> SALT_GRAVEL = createBlock("salt_gravel",
             () -> new ColoredFallingBlock(new ColorRGBA(0x777472), BlockBehaviour.Properties.ofFullCopy(Blocks.GRAVEL))

@@ -45,7 +45,8 @@
     [],
     [],
     [
-      "clinker:patch_saltmoss_sprouts"
+      "clinker:patch_saltmoss_sprouts",
+      "clinker:saltmoss_bloom"
     ],
     []
   ]

@@ -1,9 +1,13 @@
 {
-  "feature": "clinker:patch_saltmoss_sprouts",
+  "feature": "clinker:saltmoss_bloom",
   "placement": [
     {
       "type": "minecraft:count",
-      "count": 25
+      "count": {
+        "type": "minecraft:uniform",
+        "min_inclusive": 0,
+        "max_inclusive": 3
+      }
     },
     {
       "type": "minecraft:in_square"

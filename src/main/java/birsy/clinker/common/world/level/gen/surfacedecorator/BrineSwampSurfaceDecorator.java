@@ -27,6 +27,7 @@ public class BrineSwampSurfaceDecorator extends SurfaceDecorator {
         double dither2 = random.nextDouble() * 2 - 1;
 
         boolean placedSand = false;
+
         if (pos.getY() == seaLevel - 1 && waterloggingNoise > 0.2 && maxElevationIncrease <= 0) {
             chunk.setBlockState(pos, Blocks.WATER.defaultBlockState(), false);
             pos.move(Direction.DOWN);
@@ -48,6 +49,7 @@ public class BrineSwampSurfaceDecorator extends SurfaceDecorator {
             placedSand = true;
             offset++;
         } else {
+            boolean canPlaceGrass = !chunk.getBlockState(pos.above()).canOcclude();
             if (pos.getY() < seaLevel + 5 + noise5 * 3) {
                 boolean isBorder = Math.max(maxElevationDecrease, maxElevationDecrease) >= 1;
                 isBorder = (isBorder && noise3 > 0) || Math.max(maxElevationDecrease, maxElevationDecrease) >= 2;
@@ -58,9 +60,9 @@ public class BrineSwampSurfaceDecorator extends SurfaceDecorator {
                     double grassNoise = waterloggingNoise + dither * 0.05;
 
                     boolean placeGrass = grassNoise < 0.9 && pos.getY() >= seaLevel+1;
-                    placeGrass &= maxElevationDecrease == 0;
+                    if (pos.getY() == seaLevel + 1) placeGrass &= maxElevationDecrease == 0;
 
-                    if (placeGrass) {
+                    if (placeGrass && canPlaceGrass) {
                         chunk.setBlockState(pos, ClinkerBlocks.SALTMOSS.get().defaultBlockState(), false);
 //                    } else if (grassNoise < -0.9) {
 //                        chunk.setBlockState(pos, ClinkerBlocks.CALC.get().defaultBlockState(), false);
@@ -70,7 +72,7 @@ public class BrineSwampSurfaceDecorator extends SurfaceDecorator {
                     }
                 }
             } else {
-                boolean shouldPlaceGrass = !chunk.getBlockState(pos.above()).canOcclude() && noise5 + dither * 0.1 > -0.5;
+                boolean shouldPlaceGrass = canPlaceGrass && noise5 + dither * 0.1 > -0.5;
 
                 shouldPlaceGrass &= maxElevationDecrease < 1 || noise5 > -0.2;
                 shouldPlaceGrass &= maxElevationDecrease < 2;

@@ -37,9 +37,13 @@ public class OthershorePlantBlock extends BushBlock implements BonemealableBlock
         return null;
     }
 
+    public static boolean canPlaceOn(BlockState pState, BlockGetter pLevel, BlockPos pPos) {
+        return pState.is(ClinkerTags.OTHERSHORE_SOIL) && pState.isFaceSturdy(pLevel, pPos, Direction.UP);
+    }
+
     @Override
     protected boolean mayPlaceOn(BlockState pState, BlockGetter pLevel, BlockPos pPos) {
-        return pState.is(ClinkerTags.OTHERSHORE_SOIL) && pState.isFaceSturdy(pLevel, pPos, Direction.UP);
+        return canPlaceOn(pState, pLevel, pPos);
     }
 
     public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {

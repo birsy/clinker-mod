@@ -218,6 +218,28 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
             this.simpleBlockItem(ClinkerBlocks.CALC_WALL.get(), this.models().wallInventory("calc_wall_inventory", CALC));
         }
 
+        // calc bricks
+        {
+            ResourceLocation CALC_BRICKS = this.modLoc(ModelProvider.BLOCK_FOLDER + "/calc_bricks");
+
+            this.simpleBlockWithVariationNoFolder(ClinkerBlocks.CALC_BRICKS.get(), 6);
+            this.simpleBlockItem(ClinkerBlocks.CALC_BRICKS.get(), this.models().getExistingFile(CALC_BRICKS));
+
+            this.slabBlockWithVariation(ClinkerBlocks.CALC_BRICK_SLAB.get(),
+                    (i) -> this.modLoc(ModelProvider.BLOCK_FOLDER + "/calc_bricks" + (i == 0 ? "" : "_" + i)),
+                    (i) -> this.modLoc(ModelProvider.BLOCK_FOLDER + "/calc_bricks" + (i == 0 ? "" : "_" + i)),
+                    6);
+            this.simpleBlockItem(ClinkerBlocks.CALC_BRICK_SLAB.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/calc_brick_slab")));
+
+            this.stairsBlockWithVariation(ClinkerBlocks.CALC_BRICK_STAIRS.get(),
+                    (i) -> this.modLoc(ModelProvider.BLOCK_FOLDER + "/calc_bricks" + (i == 0 ? "" : "_" + i)),
+                    6);
+            this.simpleBlockItem(ClinkerBlocks.CALC_BRICK_STAIRS.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/calc_brick_stairs")));
+
+            this.wallBlock(ClinkerBlocks.CALC_BRICK_WALL.get(), CALC_BRICKS);
+            this.simpleBlockItem(ClinkerBlocks.CALC_BRICK_WALL.get(), this.models().wallInventory("calc_brick_wall_inventory", CALC_BRICKS));
+        }
+
         // salt moss
         {
             ResourceLocation SALTMOSS = this.modLoc(ModelProvider.BLOCK_FOLDER + "/saltmoss");
@@ -285,6 +307,14 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
             String suffix = i == 0 ? "" : "_" + i;
             String name = blockName + suffix;
             return this.models().cubeAll(name, this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + blockName + "/" + name));
+        }, variations);
+    }
+    private void simpleBlockWithVariationNoFolder(Block block, int variations) {
+        String blockName = name(block);
+        this.simpleBlockWithVariation(block, (i) -> {
+            String suffix = i == 0 ? "" : "_" + i;
+            String name = blockName + suffix;
+            return this.models().cubeAll(name, this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name));
         }, variations);
     }
     private void simpleBlockWithVariation(Block block, Function<Integer, ModelBuilder> modelFactory, int variations) {

@@ -95,6 +95,13 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(ClinkerBlocks.CALC_SLAB.get());
         pOutput.accept(ClinkerBlocks.CALC_STAIRS.get());
         pOutput.accept(ClinkerBlocks.CALC_WALL.get());
+
+        pOutput.accept(ClinkerBlocks.CALC_BRICKS.get());
+        pOutput.accept(ClinkerBlocks.CALC_BRICK_SLAB.get());
+        pOutput.accept(ClinkerBlocks.CALC_BRICK_STAIRS.get());
+        pOutput.accept(ClinkerBlocks.CALC_BRICK_WALL.get());
+
+
         pOutput.accept(ClinkerBlocks.SALT_GRAVEL.get());
 
         pOutput.accept(ClinkerBlocks.SALTMOSS.get());

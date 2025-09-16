@@ -21,6 +21,8 @@ public class ClinkerFeatures {
     public static final Supplier<Feature<NoneFeatureConfiguration>> SURFACE_DRIED_CLOVERS = FEATURES.register("surface_dried_clovers", () -> new SurfaceDriedCloversFeature(NoneFeatureConfiguration.CODEC));
     public static final Supplier<Feature<NoneFeatureConfiguration>> MUD_REEDS_PATCH = FEATURES.register("mud_reeds_patch", () -> new MudReedsPatchFeature(NoneFeatureConfiguration.CODEC));
 
+    public static final Supplier<Feature<NoneFeatureConfiguration>> SALTMOSS_BLOOM = FEATURES.register("saltmoss_bloom", () -> new SaltmossBloomFeature(NoneFeatureConfiguration.CODEC));
+
     public static final Supplier<Feature<BlockStateConfiguration>> FLUID_LEAK = FEATURES.register("fluid_leak", () -> new FluidLeakFeature(BlockStateConfiguration.CODEC));
 
 }
