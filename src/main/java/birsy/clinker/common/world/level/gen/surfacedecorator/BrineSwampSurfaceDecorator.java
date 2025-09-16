@@ -2,6 +2,7 @@ package birsy.clinker.common.world.level.gen.surfacedecorator;
 
 import birsy.clinker.common.world.level.gen.OthershoreNoiseComputers;
 import birsy.clinker.common.world.level.gen.noise.NoiseComputerContext;
+import birsy.clinker.common.world.level.gen.noise.NoiseComputerExecutor;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -17,9 +18,11 @@ public class BrineSwampSurfaceDecorator extends SurfaceDecorator {
 
     @Override
     public void buildSurface(ChunkAccess chunk, BlockPos.MutableBlockPos pos, int seaLevel, boolean canSeeSun, int depth, int maxElevationIncrease, int maxElevationDecrease, NoiseComputerContext noiseContext, RandomSource random) {
+        NoiseComputerExecutor executor = noiseContext.noiseComputerExecutor();
+
         int offset = 0;
-        double noise3 = noiseContext.noiseComputerExecutor().compute(pos.getX(), pos.getY(), pos.getZ(), OthershoreNoiseComputers.BASE_NOISE_2D[3]);
-        double noise5 = noiseContext.noiseComputerExecutor().compute(pos.getX(), pos.getY(), pos.getZ(), OthershoreNoiseComputers.BASE_NOISE_2D[5]);
+        double noise3 = executor.compute(pos.getX(), pos.getY(), pos.getZ(), OthershoreNoiseComputers.BASE_NOISE_2D[3]);
+        double noise5 = executor.compute(pos.getX(), pos.getY(), pos.getZ(), OthershoreNoiseComputers.BASE_NOISE_2D[5]);
 
         double waterloggingNoise = noise5 + noise3 * 0.5;
 
@@ -64,8 +67,6 @@ public class BrineSwampSurfaceDecorator extends SurfaceDecorator {
 
                     if (placeGrass && canPlaceGrass) {
                         chunk.setBlockState(pos, ClinkerBlocks.SALTMOSS.get().defaultBlockState(), false);
-//                    } else if (grassNoise < -0.9) {
-//                        chunk.setBlockState(pos, ClinkerBlocks.CALC.get().defaultBlockState(), false);
                     } else {
                         chunk.setBlockState(pos, ClinkerBlocks.SALT_GRAVEL.get().defaultBlockState(), false);
                         placedSand = true;

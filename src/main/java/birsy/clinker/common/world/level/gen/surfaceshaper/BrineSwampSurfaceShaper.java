@@ -5,8 +5,6 @@ import birsy.clinker.common.world.level.gen.OthershoreNoiseComputers;
 import birsy.clinker.common.world.level.gen.noise.NoiseComputerContext;
 import birsy.clinker.common.world.level.gen.noise.NoiseComputerExecutor;
 import birsy.clinker.common.world.level.gen.noise.NoiseHolder;
-import birsy.clinker.core.Clinker;
-import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.util.MathUtils;
 import net.minecraft.util.Mth;
 
@@ -32,6 +30,7 @@ public class BrineSwampSurfaceShaper implements SurfaceShaper {
         cragHeight = Mth.clampedMap(cragHeight, -1, 1, 0, 1);
         cragHeight *= cragHeight;
         cragHeight = Mth.lerp(cragHeight, -5, 15);
+        double cragHeightDensity = Math.max(0, y - (OthershoreBiomeSource.SEA_HEIGHT + cragHeight));
 
         double erosion = Math.abs(y - (OthershoreBiomeSource.SEA_HEIGHT + cragHeight * 0.5));
         erosion = Mth.clampedMap(erosion, 0, 5, 11, 0);
@@ -45,12 +44,12 @@ public class BrineSwampSurfaceShaper implements SurfaceShaper {
         craggyIslandNoise += executor.compute(x, y, z, OthershoreNoiseComputers.BASE_NOISE_2D[6]) * 0.5;
         craggyIslandNoise = Mth.map(craggyIslandNoise, -1.0, -0.8, -1.0, 0.0);
         double craggyIslands = craggyIslandNoise * 20;
-        craggyIslands += Math.max(0, y - (OthershoreBiomeSource.SEA_HEIGHT + cragHeight)) * 35;
+        craggyIslands += cragHeightDensity * 35;
         craggyIslands += erosion * 4;
 
         double craggyWall = Math.abs(executor.compute(x, y, z, OthershoreNoiseComputers.BASE_NOISE_2D[8])) * 80;
         craggyWall -= 4;
-        craggyWall += Math.max(0, y - (OthershoreBiomeSource.SEA_HEIGHT + cragHeight)) * 2.2;
+        craggyWall += cragHeightDensity * 2.2;
         craggyWall += Mth.clampedMap(craggyIslandNoise, 1.0, 1.2, 0, 12);
         craggyWall += erosion;
 
