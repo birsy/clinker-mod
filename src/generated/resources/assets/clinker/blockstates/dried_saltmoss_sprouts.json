@@ -1,7 +1,18 @@
 {
   "variants": {
-    "": {
-      "model": "clinker:block/dried_saltmoss_sprouts"
-    }
+    "": [
+      {
+        "model": "clinker:block/dried_saltmoss_sprouts"
+      },
+      {
+        "model": "clinker:block/dried_saltmoss_sprouts_mirrored"
+      },
+      {
+        "model": "clinker:block/dried_saltmoss_sprouts_1"
+      },
+      {
+        "model": "clinker:block/dried_saltmoss_sprouts_1_mirrored"
+      }
+    ]
   }
 }

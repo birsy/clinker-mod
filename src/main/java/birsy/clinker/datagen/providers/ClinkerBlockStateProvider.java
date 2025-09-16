@@ -255,13 +255,44 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
             );
             this.simpleBlockItem(ClinkerBlocks.SALTMOSS.get(), this.models().getExistingFile(SALTMOSS));
 
-            this.simpleBlock(ClinkerBlocks.SALTMOSS_SPROUTS.get(), denseCross(ClinkerBlocks.SALTMOSS_SPROUTS.get()).renderType("cutout"));
+            //        return this.crossMirrored(name(block), this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(block)));
+            String saltmossName = name(ClinkerBlocks.SALTMOSS_SPROUTS.get());
+            this.simpleBlockWithVariationAndTransformation(
+                    ClinkerBlocks.SALTMOSS_SPROUTS.get(),
+                    (i) -> this.denseCross(saltmossName,
+                            this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + saltmossName))
+                            .renderType("cutout"),
+                    (i) -> this.denseCrossMirrored(saltmossName + "_mirrored",
+                            this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + saltmossName))
+                            .renderType("cutout"),
+                    1, false, false
+            );
             this.flatBlockItem(ClinkerBlocks.SALTMOSS_SPROUTS.get());
 
-            this.simpleBlock(ClinkerBlocks.DRIED_SALTMOSS_SPROUTS.get(), cross(ClinkerBlocks.DRIED_SALTMOSS_SPROUTS.get()).renderType("cutout"));
+            String driedSaltmossName = name(ClinkerBlocks.DRIED_SALTMOSS_SPROUTS.get());
+            this.simpleBlockWithVariationAndTransformation(
+                    ClinkerBlocks.DRIED_SALTMOSS_SPROUTS.get(),
+                    (i) -> this.models().cross(driedSaltmossName + (i == 0 ? "" : "_" + i),
+                            this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + driedSaltmossName + (i == 0 ? "" : "_" + i)))
+                            .renderType("cutout"),
+                    (i) -> this.crossMirrored(driedSaltmossName + (i == 0 ? "" : "_" + i) + "_mirrored",
+                            this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + driedSaltmossName + (i == 0 ? "" : "_" + i)))
+                            .renderType("cutout"),
+                    2, false, false
+            );
             this.flatBlockItem(ClinkerBlocks.DRIED_SALTMOSS_SPROUTS.get());
 
-            this.simpleBlock(ClinkerBlocks.SALTMOSS_BLOOM.get(), cross(ClinkerBlocks.SALTMOSS_BLOOM.get()).renderType("cutout"));
+            String saltmossBloomName = name(ClinkerBlocks.SALTMOSS_BLOOM.get());
+            this.simpleBlockWithVariationAndTransformation(
+                    ClinkerBlocks.SALTMOSS_BLOOM.get(),
+                    (i) -> this.models().cross(saltmossBloomName + (i == 0 ? "" : "_" + i),
+                            this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + saltmossBloomName + (i == 0 ? "" : "_" + i)))
+                            .renderType("cutout"),
+                    (i) -> this.crossMirrored(saltmossBloomName + (i == 0 ? "" : "_" + i) + "_mirrored",
+                            this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + saltmossBloomName + (i == 0 ? "" : "_" + i)))
+                            .renderType("cutout"),
+                    2, false, false
+            );
             this.flatBlockItem(ClinkerBlocks.SALTMOSS_BLOOM.get());
         }
 
@@ -523,13 +554,26 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
         return this.models().cross(name(block), this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(block)));
     }
 
+    public ModelBuilder crossMirrored(Block block) {
+        return this.crossMirrored(name(block), this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(block)));
+    }
+
+    public ModelBuilder crossMirrored(String name, ResourceLocation cross) {
+        return this.models().singleTexture(name, this.modLoc(ModelProvider.BLOCK_FOLDER + "/cross_mirrored"), "cross", cross);
+    }
+
     public ModelBuilder denseCross(Block block) {
         return this.denseCross(name(block), this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(block)));
     }
 
     public ModelBuilder denseCross(String name, ResourceLocation cross) {
-        return this.models().singleTexture(name, this.modLoc(ModelProvider.BLOCK_FOLDER + "/thick_grass"), "cross", cross);
+        return this.models().singleTexture(name, this.modLoc(ModelProvider.BLOCK_FOLDER + "/cross_dense"), "cross", cross);
     }
+
+    public ModelBuilder denseCrossMirrored(String name, ResourceLocation cross) {
+        return this.models().singleTexture(name, this.modLoc(ModelProvider.BLOCK_FOLDER + "/cross_dense_mirrored"), "cross", cross);
+    }
+
 
 
     private ResourceLocation key(Block block) {

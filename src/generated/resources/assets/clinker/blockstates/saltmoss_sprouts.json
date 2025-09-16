@@ -1,7 +1,12 @@
 {
   "variants": {
-    "": {
-      "model": "clinker:block/saltmoss_sprouts"
-    }
+    "": [
+      {
+        "model": "clinker:block/saltmoss_sprouts"
+      },
+      {
+        "model": "clinker:block/saltmoss_sprouts_mirrored"
+      }
+    ]
   }
 }

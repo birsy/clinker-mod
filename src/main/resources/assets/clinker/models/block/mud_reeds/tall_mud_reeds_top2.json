@@ -1,5 +1,5 @@
 {
-  "parent": "clinker:block/thick_grass",
+  "parent": "clinker:block/cross_dense",
   "textures": {
     "cross": "clinker:block/mud_reeds/tall_mud_reeds_top2"
   }
