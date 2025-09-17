@@ -330,21 +330,22 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
             this.models().singleTexture(name(ClinkerBlocks.SHEET_MOSS.get()),
                     this.modLoc(ModelProvider.BLOCK_FOLDER + "/template_sheet_moss"), "texture",
                     this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(ClinkerBlocks.SHEET_MOSS.get()))
-            )
+            ).renderType("cutout")
         );
         this.flatBlockItem(ClinkerBlocks.SHEET_MOSS.get());
 
         this.getVariantBuilder(ClinkerBlocks.LONG_SHEET_MOSS.get())
                 .partialState().with(DoubleSheetMossBlock.HALF, DoubleBlockHalf.UPPER)
-                    .addModels(new ConfiguredModel(this.models().singleTexture(name(ClinkerBlocks.SHEET_MOSS.get()),
+                    .addModels(new ConfiguredModel(this.models().singleTexture(name(ClinkerBlocks.LONG_SHEET_MOSS.get()) + "_top",
                             this.modLoc(ModelProvider.BLOCK_FOLDER + "/template_sheet_moss"), "texture",
                             this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(ClinkerBlocks.LONG_SHEET_MOSS.get()) + "_top")
-                    )))
-                .partialState().with(DoubleSheetMossBlock.HALF, DoubleBlockHalf.LOWER)
-                    .addModels(new ConfiguredModel(this.models().singleTexture(name(ClinkerBlocks.SHEET_MOSS.get()),
+                    ).renderType("cutout"))
+                ).partialState().with(DoubleSheetMossBlock.HALF, DoubleBlockHalf.LOWER)
+                    .addModels(new ConfiguredModel(this.models().singleTexture(name(ClinkerBlocks.LONG_SHEET_MOSS.get()) + "_top",
                             this.modLoc(ModelProvider.BLOCK_FOLDER + "/template_sheet_moss"), "texture",
                             this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(ClinkerBlocks.LONG_SHEET_MOSS.get()) + "_bottom")
-                    )));
+                    ).renderType("cutout"))
+                );
         this.flatBlockItem(ClinkerBlocks.LONG_SHEET_MOSS.get(),
                 this.modLoc( "block/" + name(ClinkerBlocks.LONG_SHEET_MOSS.get()) + "_bottom")
         );
