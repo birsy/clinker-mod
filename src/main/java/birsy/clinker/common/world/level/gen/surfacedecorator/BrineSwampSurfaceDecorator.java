@@ -1,5 +1,6 @@
 package birsy.clinker.common.world.level.gen.surfacedecorator;
 
+import birsy.clinker.common.world.level.gen.OthershoreBiomeSource;
 import birsy.clinker.common.world.level.gen.OthershoreNoiseComputers;
 import birsy.clinker.common.world.level.gen.noise.NoiseComputerContext;
 import birsy.clinker.common.world.level.gen.noise.NoiseComputerExecutor;
@@ -27,7 +28,6 @@ public class BrineSwampSurfaceDecorator extends SurfaceDecorator {
         double waterloggingNoise = noise5 + noise3 * 0.5;
 
         double dither = random.nextDouble() * 2 - 1;
-        double dither2 = random.nextDouble() * 2 - 1;
 
         boolean placedSand = false;
 
@@ -97,5 +97,10 @@ public class BrineSwampSurfaceDecorator extends SurfaceDecorator {
             }
             pos.move(Direction.DOWN);
         }
+    }
+
+    @Override
+    public boolean shouldCalculateElevationChange(boolean canSeeSun, int y) {
+        return canSeeSun || y >= OthershoreBiomeSource.SEA_HEIGHT - 2;
     }
 }

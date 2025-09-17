@@ -1,5 +1,6 @@
 package birsy.clinker.datagen.providers;
 
+import birsy.clinker.common.world.block.plant.DoubleSheetMossBlock;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import net.minecraft.core.Direction;
@@ -324,12 +325,39 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
             this.flatBlockItem(ClinkerBlocks.WITHERING_BRAMBLE_BLOSSOM.get());
             this.itemModels().basicItem(ClinkerBlocks.THORNY_STEM.get().asItem());
         }
+
+        this.simpleBlock(ClinkerBlocks.SHEET_MOSS.get(),
+            this.models().singleTexture(name(ClinkerBlocks.SHEET_MOSS.get()),
+                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/template_sheet_moss"), "texture",
+                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(ClinkerBlocks.SHEET_MOSS.get()))
+            )
+        );
+        this.flatBlockItem(ClinkerBlocks.SHEET_MOSS.get());
+
+        this.getVariantBuilder(ClinkerBlocks.LONG_SHEET_MOSS.get())
+                .partialState().with(DoubleSheetMossBlock.HALF, DoubleBlockHalf.UPPER)
+                    .addModels(new ConfiguredModel(this.models().singleTexture(name(ClinkerBlocks.SHEET_MOSS.get()),
+                            this.modLoc(ModelProvider.BLOCK_FOLDER + "/template_sheet_moss"), "texture",
+                            this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(ClinkerBlocks.LONG_SHEET_MOSS.get()) + "_top")
+                    )))
+                .partialState().with(DoubleSheetMossBlock.HALF, DoubleBlockHalf.LOWER)
+                    .addModels(new ConfiguredModel(this.models().singleTexture(name(ClinkerBlocks.SHEET_MOSS.get()),
+                            this.modLoc(ModelProvider.BLOCK_FOLDER + "/template_sheet_moss"), "texture",
+                            this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(ClinkerBlocks.LONG_SHEET_MOSS.get()) + "_bottom")
+                    )));
+        this.flatBlockItem(ClinkerBlocks.LONG_SHEET_MOSS.get(),
+                this.modLoc( "block/" + name(ClinkerBlocks.LONG_SHEET_MOSS.get()) + "_bottom")
+        );
     }
 
     public void flatBlockItem(Block block) {
+        this.flatBlockItem(block, this.modLoc( "block/" + name(block)));
+    }
+
+    public void flatBlockItem(Block block, ResourceLocation texture) {
         this.itemModels().getBuilder(key(block).getPath())
                 .parent(new ModelFile.UncheckedModelFile("item/generated"))
-                .texture("layer0", this.modLoc( "block/" + name(block)));
+                .texture("layer0", texture);
     }
 
     private void simpleBlockWithVariation(Block block, int variations) {

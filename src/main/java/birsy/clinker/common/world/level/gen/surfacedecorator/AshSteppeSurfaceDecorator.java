@@ -1,6 +1,7 @@
 package birsy.clinker.common.world.level.gen.surfacedecorator;
 
 import birsy.clinker.common.world.block.FallingLayerBlock;
+import birsy.clinker.common.world.level.gen.OthershoreBiomeSource;
 import birsy.clinker.common.world.level.gen.OthershoreNoiseComputers;
 import birsy.clinker.common.world.level.gen.noise.NoiseComputerContext;
 import birsy.clinker.common.world.level.gen.noise.NoiseComputerExecutor;
@@ -51,6 +52,6 @@ public class AshSteppeSurfaceDecorator extends SurfaceDecorator {
 
     @Override
     public boolean shouldCalculateElevationChange(boolean canSeeSun, int y) {
-        return canSeeSun || y >= 130;
+        return canSeeSun || y >= OthershoreBiomeSource.MIDDLE_SHELF_HEIGHT - 20;
     }
 }

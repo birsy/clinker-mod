@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "half=lower": {
+      "model": "clinker:block/sheet_moss"
+    },
+    "half=upper": {
+      "model": "clinker:block/sheet_moss"
+    }
+  }
+}

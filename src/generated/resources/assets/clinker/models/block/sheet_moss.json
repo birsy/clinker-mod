@@ -1,0 +1,6 @@
+{
+  "parent": "clinker:block/template_sheet_moss",
+  "textures": {
+    "texture": "clinker:block/long_sheet_moss_bottom"
+  }
+}

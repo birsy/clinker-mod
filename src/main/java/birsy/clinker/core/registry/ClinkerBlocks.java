@@ -257,6 +257,8 @@ public class ClinkerBlocks
     public static final DeferredBlock<Block> DRIED_SALTMOSS_SPROUTS = createBlock("dried_saltmoss_sprouts", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_RED).sound(SoundType.HANGING_ROOTS)));
     public static final DeferredBlock<Block> SALTMOSS_BLOOM = createBlock("saltmoss_bloom", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_RED).sound(SoundType.HANGING_ROOTS)));
 
+    public static final DeferredBlock<Block> SHEET_MOSS = createBlock("sheet_moss", () -> new SheetMossBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.HANGING_ROOTS).mapColor(MapColor.COLOR_GRAY).sound(SoundType.HANGING_ROOTS)));
+    public static final DeferredBlock<Block> LONG_SHEET_MOSS = createBlock("long_sheet_moss", () -> new DoubleSheetMossBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.HANGING_ROOTS).mapColor(MapColor.COLOR_GRAY).sound(SoundType.HANGING_ROOTS)));
 
     // fluids
     public static DeferredBlock<LiquidBlock> VITRIOL_BLOCK = BLOCKS.register("vitriol", () -> new LiquidBlock(
