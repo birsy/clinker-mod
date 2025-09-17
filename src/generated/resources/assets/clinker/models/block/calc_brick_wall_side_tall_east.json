@@ -1,0 +1,8 @@
+{
+  "parent": "clinker:block/template_wall_extended_side_tall_east",
+  "textures": {
+    "wall_bottom_tall": "clinker:block/calc_brick_wall",
+    "wall_side_tall": "clinker:block/calc_brick_wall",
+    "wall_top_tall": "clinker:block/calc_brick_wall"
+  }
+}

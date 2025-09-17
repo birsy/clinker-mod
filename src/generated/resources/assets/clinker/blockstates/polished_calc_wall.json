@@ -2,7 +2,7 @@
   "multipart": [
     {
       "apply": {
-        "model": "clinker:block/calc_brick_wall_post"
+        "model": "clinker:block/polished_calc_wall_post"
       },
       "when": {
         "up": "true"
@@ -10,7 +10,7 @@
     },
     {
       "apply": {
-        "model": "clinker:block/calc_brick_wall_side_east"
+        "model": "clinker:block/polished_calc_wall_side_east"
       },
       "when": {
         "east": "low"
@@ -18,7 +18,7 @@
     },
     {
       "apply": {
-        "model": "clinker:block/calc_brick_wall_side_tall_east"
+        "model": "clinker:block/polished_calc_wall_side_tall_east"
       },
       "when": {
         "east": "tall"
@@ -26,7 +26,7 @@
     },
     {
       "apply": {
-        "model": "clinker:block/calc_brick_wall_side_north"
+        "model": "clinker:block/polished_calc_wall_side_north"
       },
       "when": {
         "north": "low"
@@ -34,7 +34,7 @@
     },
     {
       "apply": {
-        "model": "clinker:block/calc_brick_wall_side_tall_north"
+        "model": "clinker:block/polished_calc_wall_side_tall_north"
       },
       "when": {
         "north": "tall"
@@ -42,7 +42,7 @@
     },
     {
       "apply": {
-        "model": "clinker:block/calc_brick_wall_side_south"
+        "model": "clinker:block/polished_calc_wall_side_south"
       },
       "when": {
         "south": "low"
@@ -50,7 +50,7 @@
     },
     {
       "apply": {
-        "model": "clinker:block/calc_brick_wall_side_tall_south"
+        "model": "clinker:block/polished_calc_wall_side_tall_south"
       },
       "when": {
         "south": "tall"
@@ -58,7 +58,7 @@
     },
     {
       "apply": {
-        "model": "clinker:block/calc_brick_wall_side_west"
+        "model": "clinker:block/polished_calc_wall_side_west"
       },
       "when": {
         "west": "low"
@@ -66,7 +66,7 @@
     },
     {
       "apply": {
-        "model": "clinker:block/calc_brick_wall_side_tall_west"
+        "model": "clinker:block/polished_calc_wall_side_tall_west"
       },
       "when": {
         "west": "tall"

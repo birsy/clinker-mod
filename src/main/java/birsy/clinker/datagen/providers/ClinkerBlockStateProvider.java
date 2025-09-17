@@ -237,8 +237,48 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
                     6);
             this.simpleBlockItem(ClinkerBlocks.CALC_BRICK_STAIRS.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/calc_brick_stairs")));
 
-            this.wallBlock(ClinkerBlocks.CALC_BRICK_WALL.get(), CALC_BRICKS);
-            this.simpleBlockItem(ClinkerBlocks.CALC_BRICK_WALL.get(), this.models().wallInventory("calc_brick_wall_inventory", CALC_BRICKS));
+            //this.wallBlock(ClinkerBlocks.CALC_BRICK_WALL.get(), CALC_BRICKS);
+            //this.simpleBlockItem(ClinkerBlocks.CALC_BRICK_WALL.get(), this.models().wallInventory("calc_brick_wall_inventory", CALC_BRICKS));
+
+            ResourceLocation CALC_BRICK_WALL = this.modLoc(ModelProvider.BLOCK_FOLDER + "/calc_brick_wall");
+            ResourceLocation CALC_BRICK_WALL_SIDE = this.modLoc(ModelProvider.BLOCK_FOLDER + "/calc_brick_wall_side");
+            ResourceLocation CALC_BRICK_WALL_TOP = this.modLoc(ModelProvider.BLOCK_FOLDER + "/calc_brick_wall_top");
+
+            this.wallExtended(ClinkerBlocks.CALC_BRICK_WALL.get(),
+                    CALC_BRICK_WALL,
+                    CALC_BRICK_WALL_SIDE, CALC_BRICK_WALL_TOP, CALC_BRICK_WALL,
+                    CALC_BRICK_WALL, CALC_BRICK_WALL, CALC_BRICK_WALL
+            );
+        }
+
+        // polished calc
+        {
+            ResourceLocation POLISHED_CALC = this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_calc");
+            ResourceLocation POLISHED_CALC_TOP = this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_calc_top");
+            ResourceLocation POLISHED_CALC_BOTTOM = this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_calc_bottom");
+            ResourceLocation POLISHED_CALC_STAIRS = this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_calc_stairs");
+
+            this.simpleBlockWithItem(ClinkerBlocks.POLISHED_CALC.get(), this.models().cubeBottomTop("polished_calc", POLISHED_CALC, POLISHED_CALC_BOTTOM, POLISHED_CALC_TOP));
+
+            this.models().cubeColumn("polished_calc_double_slab", POLISHED_CALC_STAIRS, POLISHED_CALC_BOTTOM);
+            this.slabBlock(ClinkerBlocks.POLISHED_CALC_SLAB.get(),
+                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_calc_double_slab"),
+                    POLISHED_CALC_STAIRS, POLISHED_CALC_BOTTOM, POLISHED_CALC_BOTTOM);
+            this.simpleBlockItem(ClinkerBlocks.POLISHED_CALC_SLAB.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_calc_slab")));
+
+            this.stairsBlock(ClinkerBlocks.POLISHED_CALC_STAIRS.get(), POLISHED_CALC_STAIRS, POLISHED_CALC_BOTTOM, POLISHED_CALC_BOTTOM);
+            this.simpleBlockItem(ClinkerBlocks.POLISHED_CALC_STAIRS.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_calc_stairs")));
+
+            ResourceLocation POLISHED_CALC_WALL_SIDE = this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_calc_wall_side");
+            ResourceLocation POLISHED_CALC_WALL_POST = this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_calc_wall_post");
+            ResourceLocation POLISHED_CALC_WALL_BOTTOM = this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_calc_wall_bottom");
+            ResourceLocation POLISHED_CALC_WALL_TOP = this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_calc_wall_top");
+
+            this.wallExtended(ClinkerBlocks.POLISHED_CALC_WALL.get(),
+                    POLISHED_CALC_WALL_POST,
+                    POLISHED_CALC_WALL_SIDE, POLISHED_CALC_WALL_TOP, POLISHED_CALC_WALL_BOTTOM,
+                    POLISHED_CALC_TOP, POLISHED_CALC_WALL_BOTTOM, POLISHED_CALC_WALL_BOTTOM
+            );
         }
 
         // salt moss

@@ -1,7 +1,7 @@
 {
-  "parent": "clinker:block/template_wall_extended_inventory",
+  "parent": "clinker:block/template_wall_extended_side_west",
   "textures": {
-    "wall_post": "clinker:block/calc_brick_wall",
+    "wall_bottom": "clinker:block/calc_brick_wall",
     "wall_side": "clinker:block/calc_brick_wall_side",
     "wall_top": "clinker:block/calc_brick_wall_top"
   }

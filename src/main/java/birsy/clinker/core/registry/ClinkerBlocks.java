@@ -94,6 +94,11 @@ public class ClinkerBlocks
     public static final DeferredBlock<StairBlock> CALC_BRICK_STAIRS = createBlock("calc_brick_stairs", () -> new StairBlock(CALC.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(CALC_BRICKS.get())));
     public static final DeferredBlock<WallBlock> CALC_BRICK_WALL = createBlock("calc_brick_wall", () -> new WallBlock(BlockBehaviour.Properties.ofFullCopy(CALC_BRICKS.get())));
 
+    public static final DeferredBlock<Block> POLISHED_CALC = createBlock("polished_calc", () -> new Block(BlockBehaviour.Properties.ofFullCopy(CALC_BRICKS.get())));
+    public static final DeferredBlock<SlabBlock> POLISHED_CALC_SLAB = createBlock("polished_calc_slab", () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(POLISHED_CALC.get())));
+    public static final DeferredBlock<StairBlock> POLISHED_CALC_STAIRS = createBlock("polished_calc_stairs", () -> new StairBlock(CALC.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(POLISHED_CALC.get())));
+    public static final DeferredBlock<WallBlock> POLISHED_CALC_WALL = createBlock("polished_calc_wall", () -> new WallBlock(BlockBehaviour.Properties.ofFullCopy(POLISHED_CALC.get())));
+
     public static final DeferredBlock<SaltmossBlock> SALTMOSS = createBlock("saltmoss", () -> new SaltmossBlock(BlockBehaviour.Properties.ofFullCopy(CALC.get()).sound(SoundType.NYLIUM).mapColor(MapColor.COLOR_RED)));
 
     public static final DeferredBlock<ColoredFallingBlock> SALT_GRAVEL = createBlock("salt_gravel",
