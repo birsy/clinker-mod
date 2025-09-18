@@ -1,10 +1,32 @@
 {
   "variants": {
-    "half=lower": {
-      "model": "clinker:block/long_sheet_moss_top"
-    },
-    "half=upper": {
-      "model": "clinker:block/long_sheet_moss_top"
-    }
+    "half=lower": [
+      {
+        "model": "clinker:block/long_sheet_moss_bottom"
+      },
+      {
+        "model": "clinker:block/long_sheet_moss_bottom_1"
+      },
+      {
+        "model": "clinker:block/long_sheet_moss_bottom_mirrored"
+      },
+      {
+        "model": "clinker:block/long_sheet_moss_bottom_1_mirrored"
+      }
+    ],
+    "half=upper": [
+      {
+        "model": "clinker:block/long_sheet_moss_top"
+      },
+      {
+        "model": "clinker:block/long_sheet_moss_top_1"
+      },
+      {
+        "model": "clinker:block/long_sheet_moss_top_mirrored"
+      },
+      {
+        "model": "clinker:block/long_sheet_moss_top_1_mirrored"
+      }
+    ]
   }
 }

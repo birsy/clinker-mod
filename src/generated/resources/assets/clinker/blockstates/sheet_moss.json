@@ -1,7 +1,21 @@
 {
   "variants": {
-    "": {
-      "model": "clinker:block/sheet_moss"
-    }
+    "": [
+      {
+        "model": "clinker:block/sheet_moss"
+      },
+      {
+        "model": "clinker:block/sheet_moss"
+      },
+      {
+        "model": "clinker:block/sheet_moss_mirrored"
+      },
+      {
+        "model": "clinker:block/sheet_moss_1"
+      },
+      {
+        "model": "clinker:block/sheet_moss_1_mirrored"
+      }
+    ]
   }
 }

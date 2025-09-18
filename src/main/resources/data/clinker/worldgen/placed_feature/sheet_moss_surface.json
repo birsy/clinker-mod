@@ -1,0 +1,30 @@
+{
+  "feature": "clinker:sheet_moss",
+  "placement": [
+    {
+      "type": "minecraft:count",
+      "count": 20
+    },
+    {
+      "type": "minecraft:in_square"
+    },
+    {
+      "type": "minecraft:heightmap",
+      "heightmap": "MOTION_BLOCKING_NO_LEAVES"
+    },
+    {
+      "type": "minecraft:random_offset",
+      "xz_spread": 0,
+      "y_spread": {
+        "type": "minecraft:clamped_normal",
+        "min_inclusive": -15,
+        "max_inclusive": 15,
+        "mean": 0,
+        "deviation": 6
+      }
+    },
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}

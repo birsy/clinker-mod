@@ -2,6 +2,6 @@
   "parent": "clinker:block/template_sheet_moss",
   "render_type": "minecraft:cutout",
   "textures": {
-    "texture": "clinker:block/long_sheet_moss_top"
+    "texture": "clinker:block/long_sheet_moss_top_1"
   }
 }

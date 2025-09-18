@@ -4,6 +4,8 @@ import birsy.clinker.common.world.block.*;
 import birsy.clinker.common.world.block.plant.*;
 import birsy.clinker.common.world.block.plant.aspen.SwampAspenLogBlock;
 import birsy.clinker.core.Clinker;
+import birsy.clinker.mixin.common.BlockBehavior$PropertiesAccessor;
+import net.minecraft.Util;
 import net.minecraft.core.Direction;
 import net.minecraft.util.ColorRGBA;
 import net.minecraft.util.Mth;
@@ -13,6 +15,7 @@ import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -77,7 +80,6 @@ public class ClinkerBlocks
 
     public static final DeferredBlock<Block> CHISELED_BRIMSTONE = createBlock("chiseled_brimstone", () -> new GlazedTerracottaBlock(getBrimstoneProperties()));
 
-
     public static final DeferredBlock<Block> SMOOTH_BRIMSTONE = createBlock("smooth_brimstone", () -> new Block(getBrimstoneProperties()));
 
 
@@ -102,7 +104,7 @@ public class ClinkerBlocks
     public static final DeferredBlock<SaltmossBlock> SALTMOSS = createBlock("saltmoss", () -> new SaltmossBlock(BlockBehaviour.Properties.ofFullCopy(CALC.get()).sound(SoundType.NYLIUM).mapColor(MapColor.COLOR_RED)));
 
     public static final DeferredBlock<ColoredFallingBlock> SALT_GRAVEL = createBlock("salt_gravel",
-            () -> new ColoredFallingBlock(new ColorRGBA(0x777472), BlockBehaviour.Properties.ofFullCopy(Blocks.GRAVEL))
+            () -> new ColoredFallingBlock(new ColorRGBA(0x777472), BlockBehaviour.Properties.ofFullCopy(Blocks.GRAVEL).sound(SoundType.SOUL_SOIL))
     );
 
 
@@ -245,25 +247,36 @@ public class ClinkerBlocks
                     .mapColor(MapColor.COLOR_GRAY).sound(SoundType.HANGING_ROOTS).speedFactor(0.5F).offsetType(BlockBehaviour.OffsetType.NONE)
             ));
 
-    public static final DeferredBlock<Block> BRAMBLE_BLOSSOM = createBlock("bramble_blossom", () ->
+    public static final DeferredBlock<BrambleBlossomBlock> BRAMBLE_BLOSSOM = createBlock("bramble_blossom", () ->
             new BrambleBlossomBlock(
                     new SuspiciousStewEffects(List.of(new SuspiciousStewEffects.Entry(MobEffects.SATURATION, Mth.floor(30 * 20.0F)))),
                     BlockBehaviour.Properties.ofFullCopy(Blocks.CORNFLOWER)
                             .mapColor(MapColor.QUARTZ).sound(SoundType.HANGING_ROOTS).speedFactor(0.5F).offsetType(BlockBehaviour.OffsetType.NONE)
             ));
 
-    public static final DeferredBlock<Block> WITHERING_BRAMBLE_BLOSSOM = createBlock("withering_bramble_blossom", () ->
+    public static final DeferredBlock<WitheringBrambleBlossomBlock> WITHERING_BRAMBLE_BLOSSOM = createBlock("withering_bramble_blossom", () ->
             new WitheringBrambleBlossomBlock(
                     BlockBehaviour.Properties.ofFullCopy(ClinkerBlocks.BRAMBLE_BLOSSOM.get())
                             .mapColor(MapColor.COLOR_BLACK)
             ));
 
-    public static final DeferredBlock<Block> SALTMOSS_SPROUTS = createBlock("saltmoss_sprouts", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_RED).sound(SoundType.HANGING_ROOTS)));
-    public static final DeferredBlock<Block> DRIED_SALTMOSS_SPROUTS = createBlock("dried_saltmoss_sprouts", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_RED).sound(SoundType.HANGING_ROOTS)));
-    public static final DeferredBlock<Block> SALTMOSS_BLOOM = createBlock("saltmoss_bloom", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_RED).sound(SoundType.HANGING_ROOTS)));
+    public static final DeferredBlock<OthershorePlantBlock> SALTMOSS_SPROUTS = createBlock("saltmoss_sprouts", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_RED).sound(SoundType.HANGING_ROOTS)));
+    public static final DeferredBlock<OthershorePlantBlock> DRIED_SALTMOSS_SPROUTS = createBlock("dried_saltmoss_sprouts", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_RED).sound(SoundType.HANGING_ROOTS)));
+    public static final DeferredBlock<OthershorePlantBlock> SALTMOSS_BLOOM = createBlock("saltmoss_bloom", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_RED).sound(SoundType.HANGING_ROOTS)));
 
-    public static final DeferredBlock<Block> SHEET_MOSS = createBlock("sheet_moss", () -> new SheetMossBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.HANGING_ROOTS).mapColor(MapColor.COLOR_GRAY).sound(SoundType.HANGING_ROOTS)));
-    public static final DeferredBlock<Block> LONG_SHEET_MOSS = createBlock("long_sheet_moss", () -> new DoubleSheetMossBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.HANGING_ROOTS).mapColor(MapColor.COLOR_GRAY).sound(SoundType.HANGING_ROOTS)));
+    private static Supplier<BlockBehaviour.Properties> SHEET_MOSS_PROPERTIES = () -> {
+        BlockBehaviour.Properties props = BlockBehaviour.Properties.ofFullCopy(Blocks.HANGING_ROOTS).mapColor(MapColor.COLOR_GRAY).sound(SoundType.PINK_PETALS);
+        ((BlockBehavior$PropertiesAccessor) props).setOffsetFunction((state, level, pos) -> {
+            long seed = Mth.getSeed(pos.getX(), 0, pos.getZ());
+            double xOffset = (((seed >>  0 & 63L) / 64F) - 0.5) * (4.0F / 16.0F);
+            double yOffset =  ((seed >>  8 & 63L) / 64F) * (4.0F / 16.0F);
+            double zOffset = (((seed >> 16 & 63L) / 64F) - 0.5) * (4.0F / 16.0F);
+            return new Vec3(xOffset, yOffset, zOffset);
+        });
+        return props;
+    };
+    public static final DeferredBlock<SheetMossBlock> SHEET_MOSS = createBlock("sheet_moss", () -> new SheetMossBlock(SHEET_MOSS_PROPERTIES.get()));
+    public static final DeferredBlock<DoubleSheetMossBlock> LONG_SHEET_MOSS = createBlock("long_sheet_moss", () -> new DoubleSheetMossBlock(SHEET_MOSS_PROPERTIES.get()));
 
     // fluids
     public static DeferredBlock<LiquidBlock> VITRIOL_BLOCK = BLOCKS.register("vitriol", () -> new LiquidBlock(

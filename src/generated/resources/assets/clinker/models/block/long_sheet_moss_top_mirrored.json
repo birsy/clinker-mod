@@ -1,5 +1,5 @@
 {
-  "parent": "clinker:block/template_sheet_moss",
+  "parent": "clinker:block/template_sheet_moss_mirrored",
   "render_type": "minecraft:cutout",
   "textures": {
     "texture": "clinker:block/long_sheet_moss_top"

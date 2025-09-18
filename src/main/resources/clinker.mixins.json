@@ -19,6 +19,7 @@
     "client.LevelRendererMixin"
   ],
   "mixins": [
+    "common.BlockBehavior$PropertiesAccessor",
     "common.ChunkStatusTasksMixin",
     "common.EntityMixin",
     "common.ItemEntityMixin",

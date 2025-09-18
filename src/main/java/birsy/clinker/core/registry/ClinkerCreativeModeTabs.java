@@ -130,6 +130,9 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(ClinkerBlocks.DRIED_CLOVERS.get());
         pOutput.accept(ClinkerBlocks.THORNY_STEM.get());
         pOutput.accept(ClinkerBlocks.BRAMBLE_BLOSSOM.get());
+
+        pOutput.accept(ClinkerBlocks.SHEET_MOSS.get());
+        pOutput.accept(ClinkerBlocks.LONG_SHEET_MOSS.get());
     }
 
     public static void addItems(CreativeModeTab.ItemDisplayParameters pParameters, CreativeModeTab.Output pOutput) {

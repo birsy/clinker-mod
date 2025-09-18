@@ -23,6 +23,8 @@ public class ClinkerFeatures {
 
     public static final Supplier<Feature<NoneFeatureConfiguration>> SALTMOSS_BLOOM = FEATURES.register("saltmoss_bloom", () -> new SaltmossBloomFeature(NoneFeatureConfiguration.CODEC));
 
+    public static final Supplier<Feature<NoneFeatureConfiguration>> SHEET_MOSS = FEATURES.register("sheet_moss", () -> new SheetMossFeature(NoneFeatureConfiguration.CODEC));
+
     public static final Supplier<Feature<BlockStateConfiguration>> FLUID_LEAK = FEATURES.register("fluid_leak", () -> new FluidLeakFeature(BlockStateConfiguration.CODEC));
 
 }

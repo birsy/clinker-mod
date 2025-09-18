@@ -372,20 +372,65 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
                     this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(ClinkerBlocks.SHEET_MOSS.get()))
             ).renderType("cutout")
         );
+
+        this.simpleBlockWithVariationAndTransformation(ClinkerBlocks.SHEET_MOSS.get(),
+                (i) -> {
+                    String suffix = i == 0 ? "" : "_" + i;
+                    return this.models().singleTexture(name(ClinkerBlocks.SHEET_MOSS.get()) + suffix,
+                            this.modLoc(ModelProvider.BLOCK_FOLDER + "/template_sheet_moss"), "texture",
+                            this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(ClinkerBlocks.SHEET_MOSS.get()) + suffix)
+                    ).renderType("cutout");
+                },
+                (i) -> {
+                    String suffix = i == 0 ? "" : "_" + i;
+                    return this.models().singleTexture(name(ClinkerBlocks.SHEET_MOSS.get()) + suffix + "_mirrored",
+                            this.modLoc(ModelProvider.BLOCK_FOLDER + "/template_sheet_moss_mirrored"), "texture",
+                            this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(ClinkerBlocks.SHEET_MOSS.get()) + suffix)
+                    ).renderType("cutout");
+                },
+                2, false, false
+        );
         this.flatBlockItem(ClinkerBlocks.SHEET_MOSS.get());
 
         this.getVariantBuilder(ClinkerBlocks.LONG_SHEET_MOSS.get())
                 .partialState().with(DoubleSheetMossBlock.HALF, DoubleBlockHalf.UPPER)
-                    .addModels(new ConfiguredModel(this.models().singleTexture(name(ClinkerBlocks.LONG_SHEET_MOSS.get()) + "_top",
-                            this.modLoc(ModelProvider.BLOCK_FOLDER + "/template_sheet_moss"), "texture",
-                            this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(ClinkerBlocks.LONG_SHEET_MOSS.get()) + "_top")
-                    ).renderType("cutout"))
-                ).partialState().with(DoubleSheetMossBlock.HALF, DoubleBlockHalf.LOWER)
-                    .addModels(new ConfiguredModel(this.models().singleTexture(name(ClinkerBlocks.LONG_SHEET_MOSS.get()) + "_top",
-                            this.modLoc(ModelProvider.BLOCK_FOLDER + "/template_sheet_moss"), "texture",
-                            this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(ClinkerBlocks.LONG_SHEET_MOSS.get()) + "_bottom")
-                    ).renderType("cutout"))
-                );
+                    .addModels(
+                            new ConfiguredModel(this.models().singleTexture(name(ClinkerBlocks.LONG_SHEET_MOSS.get()) + "_top",
+                                this.modLoc(ModelProvider.BLOCK_FOLDER + "/template_sheet_moss"), "texture",
+                                this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(ClinkerBlocks.LONG_SHEET_MOSS.get()) + "_top")
+                            ).renderType("cutout")),
+                            new ConfiguredModel(this.models().singleTexture(name(ClinkerBlocks.LONG_SHEET_MOSS.get()) + "_top_1",
+                                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/template_sheet_moss"), "texture",
+                                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(ClinkerBlocks.LONG_SHEET_MOSS.get()) + "_top_1")
+                            ).renderType("cutout")),
+                            new ConfiguredModel(this.models().singleTexture(name(ClinkerBlocks.LONG_SHEET_MOSS.get()) + "_top_mirrored",
+                                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/template_sheet_moss_mirrored"), "texture",
+                                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(ClinkerBlocks.LONG_SHEET_MOSS.get()) + "_top")
+                            ).renderType("cutout")),
+                            new ConfiguredModel(this.models().singleTexture(name(ClinkerBlocks.LONG_SHEET_MOSS.get()) + "_top_1_mirrored",
+                                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/template_sheet_moss_mirrored"), "texture",
+                                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(ClinkerBlocks.LONG_SHEET_MOSS.get()) + "_top_1")
+                            ).renderType("cutout"))
+                    )
+                .partialState().with(DoubleSheetMossBlock.HALF, DoubleBlockHalf.LOWER)
+                    .addModels(
+                            new ConfiguredModel(this.models().singleTexture(name(ClinkerBlocks.LONG_SHEET_MOSS.get()) + "_bottom",
+                                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/template_sheet_moss"), "texture",
+                                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(ClinkerBlocks.LONG_SHEET_MOSS.get()) + "_bottom")
+                            ).renderType("cutout")),
+                            new ConfiguredModel(this.models().singleTexture(name(ClinkerBlocks.LONG_SHEET_MOSS.get()) + "_bottom_1",
+                                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/template_sheet_moss"), "texture",
+                                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(ClinkerBlocks.LONG_SHEET_MOSS.get()) + "_bottom_1")
+                            ).renderType("cutout")),
+                            new ConfiguredModel(this.models().singleTexture(name(ClinkerBlocks.LONG_SHEET_MOSS.get()) + "_bottom_mirrored",
+                                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/template_sheet_moss_mirrored"), "texture",
+                                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(ClinkerBlocks.LONG_SHEET_MOSS.get()) + "_bottom")
+                            ).renderType("cutout")),
+                            new ConfiguredModel(this.models().singleTexture(name(ClinkerBlocks.LONG_SHEET_MOSS.get()) + "_bottom_1_mirrored",
+                                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/template_sheet_moss_mirrored"), "texture",
+                                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(ClinkerBlocks.LONG_SHEET_MOSS.get()) + "_bottom_1")
+                            ).renderType("cutout"))
+                    );
         this.flatBlockItem(ClinkerBlocks.LONG_SHEET_MOSS.get(),
                 this.modLoc( "block/" + name(ClinkerBlocks.LONG_SHEET_MOSS.get()) + "_bottom")
         );

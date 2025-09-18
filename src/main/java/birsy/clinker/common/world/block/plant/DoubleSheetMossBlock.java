@@ -50,25 +50,33 @@ public class DoubleSheetMossBlock extends OthershorePlantBlock implements IShear
     @Override
     protected BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor level, BlockPos currentPos, BlockPos facingPos) {
         DoubleBlockHalf half = state.getValue(HALF);
-        if (facing.getAxis() == Direction.Axis.Y) {
-            if (half == DoubleBlockHalf.LOWER && facing == Direction.UP) {
-                return facingState.is(this) && facingState.getValue(HALF) == DoubleBlockHalf.UPPER ?
-                        Blocks.AIR.defaultBlockState() :
-                        super.updateShape(state, facing, facingState, level, currentPos, facingPos);
-            } else {
-                if (facing == Direction.DOWN) {
-                    return !state.canSurvive(level, currentPos) ?
-                            Blocks.AIR.defaultBlockState() :
-                            super.updateShape(state, facing, facingState, level, currentPos, facingPos);
-                } else {
-                    return facingState.is(this) && facingState.getValue(HALF) == DoubleBlockHalf.LOWER ?
-                            Blocks.AIR.defaultBlockState() :
-                            super.updateShape(state, facing, facingState, level, currentPos, facingPos);
-                }
-            }
+        if (facing.getAxis() != Direction.Axis.Y || half == DoubleBlockHalf.LOWER != (facing == Direction.UP) || facingState.is(this) && facingState.getValue(HALF) != half) {
+            return half == DoubleBlockHalf.LOWER && facing == Direction.DOWN && !state.canSurvive(level, currentPos)
+                    ? Blocks.AIR.defaultBlockState()
+                    : super.updateShape(state, facing, facingState, level, currentPos, facingPos);
+        } else {
+            return Blocks.AIR.defaultBlockState();
         }
-
-        return super.updateShape(state, facing, facingState, level, currentPos, facingPos);
+//        DoubleBlockHalf half = state.getValue(HALF);
+//        if (facing.getAxis() == Direction.Axis.Y) {
+//            if (half == DoubleBlockHalf.LOWER && facing == Direction.UP) {
+//                return facingState.is(this) && facingState.getValue(HALF) == DoubleBlockHalf.UPPER ?
+//                        Blocks.AIR.defaultBlockState() :
+//                        super.updateShape(state, facing, facingState, level, currentPos, facingPos);
+//            } else {
+//                if (facing == Direction.DOWN) {
+//                    return facingState.is(this) && facingState.getValue(HALF) == DoubleBlockHalf.LOWER ?
+//                            Blocks.AIR.defaultBlockState() :
+//                            super.updateShape(state, facing, facingState, level, currentPos, facingPos);
+//                } else {
+//                    return !state.canSurvive(level, currentPos) ?
+//                            Blocks.AIR.defaultBlockState() :
+//                            super.updateShape(state, facing, facingState, level, currentPos, facingPos);
+//                }
+//            }
+//        }
+//
+//        return super.updateShape(state, facing, facingState, level, currentPos, facingPos);
     }
 
     @Nullable

@@ -1,5 +1,6 @@
 package birsy.clinker.client;
 
+import birsy.clinker.core.registry.world.ClinkerBiomes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColor;
 import net.minecraft.client.color.item.ItemColor;
@@ -33,12 +34,12 @@ public class SheetMossTintHandler implements ColorResolver, BlockColor, ItemColo
     private static final Map<Biome, Optional<ResourceKey<Biome>>> biomeHashMap = new ConcurrentHashMap<>();
 
     private static final int WHITE = FastColor.ARGB32.colorFromFloat(1, 1, 1, 1);
-    private static final int DEFAULT_COLOR = FastColor.ARGB32.colorFromFloat(1, 1, 0, 0);
+    private static final int DEFAULT_COLOR = 0xFF776f55;
 
     public static void register(ResourceKey<Biome> biome, int color) { colorRegistry.put(biome, color); }
 
     static {
-
+        register(ClinkerBiomes.BRINE_SWAMP, 0xFF6b6969);
     }
 
     private SheetMossTintHandler() {}
@@ -85,9 +86,8 @@ public class SheetMossTintHandler implements ColorResolver, BlockColor, ItemColo
             return Optional.empty();
         });
 
-        if (keyOptional.isEmpty()) {
+        if (keyOptional.isEmpty())
             return DEFAULT_COLOR;
-        }
 
         return colorRegistry.getOrDefault(keyOptional.get(), DEFAULT_COLOR);
     }
