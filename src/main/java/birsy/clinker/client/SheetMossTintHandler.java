@@ -65,7 +65,23 @@ public class SheetMossTintHandler implements ColorResolver, BlockColor, ItemColo
 
     @Override
     public int getColor(Biome biome, double x, double z) {
-        // i despise this
+        // Because i can't easily add new json parameters, i have to add the hanging moss biome colors
+        // to a list of my own making (colorRegistry.) buuuttt i can't actually do a direct association
+        // between the colors and the biomes, because the biomes aren't actually loaded yet when i make
+        // the list.
+        // i instead use the biome's registry name (e.g. minecraft:plains) directly.
+        // this is fine, actually - its how i do most worldgen stuff, too.
+        //
+        // BUUTTTT...
+        // this function doesn't actually provide to me the biome's registry name, nor any kind of way
+        // to retrieve it!
+        // so what i have to do is ask the server for a list of all biomes and their registry names.
+        // then, when i want to get the color of a block, i loop through each biome registry name + biome
+        // pair and check to see if it matches with the current Biome provided by the actual function...
+        // finally, if one matches, i cache that association so i don't have to do that again.
+        //
+        // this is a horrendously inefficient and terrible solution to a problem that should not exist
+        // this is why data driven biomes suck ass
         Optional<ResourceKey<Biome>> keyOptional = biomeHashMap.computeIfAbsent(biome, (actualBiome) -> {
             ClientPacketListener connection = Minecraft.getInstance().getConnection();
             if (connection == null)
