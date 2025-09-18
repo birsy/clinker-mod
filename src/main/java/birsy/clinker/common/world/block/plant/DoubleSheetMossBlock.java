@@ -19,6 +19,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.*;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.IShearable;
@@ -28,6 +29,8 @@ import javax.annotation.Nullable;
 public class DoubleSheetMossBlock extends OthershorePlantBlock implements IShearable {
     public static final MapCodec<DoubleSheetMossBlock> CODEC = simpleCodec(DoubleSheetMossBlock::new);
     public static final EnumProperty<DoubleBlockHalf> HALF = BlockStateProperties.DOUBLE_BLOCK_HALF;
+    public static final VoxelShape SHAPE_TOP = Block.box(2.0, 0.0, 2.0, 14.0, 16.0, 14.0);
+    public static final VoxelShape SHAPE_BOTTOM = Block.box(2.0, 4.0, 2.0, 14.0, 16.0, 14.0);
 
     public DoubleSheetMossBlock(Properties properties) {
         super(properties);
@@ -35,7 +38,8 @@ public class DoubleSheetMossBlock extends OthershorePlantBlock implements IShear
     }
 
     public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
-        return SheetMossBlock.SHAPE;
+        Vec3 offset = pState.getOffset(pLevel, pPos);
+        return (pState.getValue(HALF) == DoubleBlockHalf.UPPER ? SHAPE_TOP : SHAPE_BOTTOM).move(offset.x, 0, offset.z);
     }
 
     public static boolean canPlaceOn(BlockState pState, BlockGetter pLevel, BlockPos pPos) {

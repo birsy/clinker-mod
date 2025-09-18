@@ -39,8 +39,8 @@ public class SheetMossFeature extends Feature<NoneFeatureConfiguration> {
 
         MOSS:
         for (int i = 0; i < count; i++) {
-            int xOffset = (int) Math.clamp(random.nextGaussian() * 4, -8, 8),
-                zOffset = (int) Math.clamp(random.nextGaussian() * 4, -8, 8);
+            int xOffset = (int) Math.clamp(random.nextGaussian() * 3, -8, 8),
+                zOffset = (int) Math.clamp(random.nextGaussian() * 3, -8, 8);
             pos.set(origin).move(xOffset, random.nextInt(-3, 0), zOffset);
 
             for (int j = 0; j < 6; j++) {

@@ -268,9 +268,9 @@ public class ClinkerBlocks
         BlockBehaviour.Properties props = BlockBehaviour.Properties.ofFullCopy(Blocks.HANGING_ROOTS).mapColor(MapColor.COLOR_GRAY).sound(SoundType.PINK_PETALS);
         ((BlockBehavior$PropertiesAccessor) props).setOffsetFunction((state, level, pos) -> {
             long seed = Mth.getSeed(pos.getX(), 0, pos.getZ());
-            double xOffset = (((seed >>  0 & 63L) / 64F) - 0.5) * (4.0F / 16.0F);
+            double xOffset = (((seed >>  0 & 63L) / 64F) - 0.5) * (6.0F / 16.0F);
             double yOffset =  ((seed >>  8 & 63L) / 64F) * (4.0F / 16.0F);
-            double zOffset = (((seed >> 16 & 63L) / 64F) - 0.5) * (4.0F / 16.0F);
+            double zOffset = (((seed >> 16 & 63L) / 64F) - 0.5) * (6.0F / 16.0F);
             return new Vec3(xOffset, yOffset, zOffset);
         });
         return props;
