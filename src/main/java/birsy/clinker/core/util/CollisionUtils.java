@@ -34,7 +34,7 @@ public class CollisionUtils {
         aabb = aabb.inflate(radius);
         if (aabb.contains(position.x(), position.y(), position.z())) {
             //we are colliding!
-            Vector3d pointOnSurface = MathUtil.closestPointOnAABB(position, aabb);
+            Vector3d pointOnSurface = MathUtils.closestPointOnAABB(position, aabb);
 
             Vector3d point = position.sub(pointOnSurface).normalize().mul(radius);
             Vector3d adjustment = pointOnSurface.sub(position);

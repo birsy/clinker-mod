@@ -5,7 +5,6 @@ import birsy.clinker.common.world.block.plant.*;
 import birsy.clinker.common.world.block.plant.aspen.SwampAspenLogBlock;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.mixin.common.BlockBehavior$PropertiesAccessor;
-import net.minecraft.Util;
 import net.minecraft.core.Direction;
 import net.minecraft.util.ColorRGBA;
 import net.minecraft.util.Mth;
@@ -262,7 +261,7 @@ public class ClinkerBlocks
 
     public static final DeferredBlock<OthershorePlantBlock> SALTMOSS_SPROUTS = createBlock("saltmoss_sprouts", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_RED).sound(SoundType.HANGING_ROOTS)));
     public static final DeferredBlock<OthershorePlantBlock> DRIED_SALTMOSS_SPROUTS = createBlock("dried_saltmoss_sprouts", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_RED).sound(SoundType.HANGING_ROOTS)));
-    public static final DeferredBlock<OthershorePlantBlock> SALTMOSS_BLOOM = createBlock("saltmoss_bloom", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_RED).sound(SoundType.HANGING_ROOTS)));
+    public static final DeferredBlock<SaltmossBlossomBlock> SALTMOSS_BLOSSOM = createBlock("saltmoss_blossom", () -> new SaltmossBlossomBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_RED).sound(SoundType.HANGING_ROOTS)));
 
     private static Supplier<BlockBehaviour.Properties> SHEET_MOSS_PROPERTIES = () -> {
         BlockBehaviour.Properties props = BlockBehaviour.Properties.ofFullCopy(Blocks.HANGING_ROOTS).mapColor(MapColor.COLOR_GRAY).sound(SoundType.PINK_PETALS);

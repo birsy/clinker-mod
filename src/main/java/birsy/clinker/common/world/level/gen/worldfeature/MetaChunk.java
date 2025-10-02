@@ -2,18 +2,17 @@ package birsy.clinker.common.world.level.gen.worldfeature;
 
 import net.minecraft.world.level.ChunkPos;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class MetaChunk {
-    final int size;
+    final int size, depth;
     final int metaChunkX, metaChunkZ;
     Set<WorldFeature> worldFeatures = new HashSet<>(16);
 
-    public MetaChunk(int size, int metaChunkX, int metaChunkZ) {
+    public MetaChunk(int size, int depth, int metaChunkX, int metaChunkZ) {
         this.size = size;
+        this.depth = depth;
         this.metaChunkX = metaChunkX;
         this.metaChunkZ = metaChunkZ;
     }
@@ -22,6 +21,7 @@ public class MetaChunk {
         for (WorldFeature worldFeature : worldFeatures) {
             if (worldFeature.within(chunk.minX(), chunk.minZ(), chunk.maxX(), chunk.maxZ())) {
                 chunk.worldFeatures.add(worldFeature);
+                worldFeature.addChildFeatures(chunk.depth, chunk.worldFeatures);
             }
         }
     }

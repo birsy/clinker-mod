@@ -25,8 +25,18 @@ public class UndergroundLakeWorldFeature extends WorldFeature {
                 return context.noiseHolder().sample("underground_sea_offset_z", x / 64.0, z / 64.0);
             });
 
-    public UndergroundLakeWorldFeature(int depth) {
-        super(depth);
+    public UndergroundLakeWorldFeature(int depth, int separationRadius) {
+        super(depth, separationRadius);
+    }
+
+    @Override
+    public int getCenterX() {
+        return centerX;
+    }
+
+    @Override
+    public int getCenterZ() {
+        return centerZ;
     }
 
     @Override

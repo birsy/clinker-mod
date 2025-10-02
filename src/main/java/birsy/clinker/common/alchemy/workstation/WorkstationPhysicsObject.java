@@ -1,7 +1,7 @@
 package birsy.clinker.common.alchemy.workstation;
 
 import birsy.clinker.core.util.JomlConversions;
-import birsy.clinker.core.util.MathUtil;
+import birsy.clinker.core.util.MathUtils;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
@@ -41,7 +41,7 @@ public class WorkstationPhysicsObject {
         this.torque = new Quaterniond();
 
         //MathUtils.min(sizeX, sizeY, sizeZ) * 0.5
-        this.collider = new SphereBoxCollider(sizeX, sizeY, sizeZ, MathUtil.min(sizeX, sizeY, sizeZ) * 0.25);
+        this.collider = new SphereBoxCollider(sizeX, sizeY, sizeZ, MathUtils.min(sizeX, sizeY, sizeZ) * 0.25);
     }
 
     public void integrate() {
@@ -186,7 +186,7 @@ public class WorkstationPhysicsObject {
             for (SphereCollider sphere : this.spheres) {
                 if (aabb.contains(sphere.position)) {
                     //we are colliding!
-                    Vec3 pointOnSurface = MathUtil.closestPointOnAABB(sphere.position, aabb);
+                    Vec3 pointOnSurface = MathUtils.closestPointOnAABB(sphere.position, aabb);
 
                     Vec3 point = sphere.position.subtract(pointOnSurface).normalize().scale(sphere.radius);
                     Vec3 adjustment = pointOnSurface.subtract(sphere.position);

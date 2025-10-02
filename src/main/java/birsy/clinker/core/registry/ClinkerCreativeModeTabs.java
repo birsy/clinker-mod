@@ -1,11 +1,9 @@
 package birsy.clinker.core.registry;
 
 import birsy.clinker.core.Clinker;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextColor;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
@@ -111,7 +109,7 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(ClinkerBlocks.SALTMOSS.get());
         pOutput.accept(ClinkerBlocks.SALTMOSS_SPROUTS.get());
         pOutput.accept(ClinkerBlocks.DRIED_SALTMOSS_SPROUTS.get());
-        pOutput.accept(ClinkerBlocks.SALTMOSS_BLOOM.get());
+        pOutput.accept(ClinkerBlocks.SALTMOSS_BLOSSOM.get());
 
         pOutput.accept(ClinkerBlocks.LEAD_ORE.get());
         pOutput.accept(ClinkerBlocks.LOCUST_LOG.get());

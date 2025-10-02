@@ -50,7 +50,6 @@ public class ExplosionLightParticle extends Particle {
     public ParticleRenderType getRenderType() {
         return ParticleRenderType.CUSTOM;
     }
-
     
     public static class Provider implements ParticleProvider<SimpleParticleType> {
         public Provider(SpriteSet spriteSet) {}

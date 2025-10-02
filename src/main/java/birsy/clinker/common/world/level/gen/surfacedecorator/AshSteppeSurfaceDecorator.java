@@ -6,9 +6,7 @@ import birsy.clinker.common.world.level.gen.OthershoreNoiseComputers;
 import birsy.clinker.common.world.level.gen.noise.NoiseComputerContext;
 import birsy.clinker.common.world.level.gen.noise.NoiseComputerExecutor;
 import birsy.clinker.core.registry.ClinkerBlocks;
-import birsy.clinker.core.util.MathUtil;
-import birsy.clinker.core.util.noise.FastNoiseLite;
-import net.minecraft.Util;
+import birsy.clinker.core.util.MathUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -44,7 +42,7 @@ public class AshSteppeSurfaceDecorator extends SurfaceDecorator {
                 double ashNoiseSample = executor.compute(pos.getX(), pos.getY(), pos.getZ(), OthershoreNoiseComputers.BASE_NOISE_2D[3]);
                 ashNoiseSample += ditherRandomAshDuneAmount;
                 
-                int ashAmount = ((int) MathUtil.mapRange(-1.0, 1.0, -1, 6, ashNoiseSample));
+                int ashAmount = ((int) MathUtils.mapRange(-1.0, 1.0, -1, 6, ashNoiseSample));
                 if (ashAmount > 1) chunk.setBlockState(pos.above(), ClinkerBlocks.ASH_LAYER.get().defaultBlockState().setValue(FallingLayerBlock.LAYERS, ashAmount), false);
             }
         }

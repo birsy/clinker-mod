@@ -1,8 +1,6 @@
 package birsy.clinker.core.util;
 
-import birsy.clinker.core.Clinker;
 import com.ibm.icu.impl.Pair;
-import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -18,7 +16,6 @@ import org.joml.Vector3f;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Random;
 import java.util.function.Function;
 
@@ -52,7 +49,7 @@ public class MathUtils {
      * moves A towards B by amount
      * @param a the value
      * @param b the value to approach
-     * @param c the amount to approach by
+     * @param amount the amount to approach by
      * @return a, moved towards b
      */
     public static float approach(float a, float b, float amount) {
@@ -64,7 +61,7 @@ public class MathUtils {
      * moves A towards B by amount
      * @param a the value
      * @param b the value to approach
-     * @param c the amount to approach by
+     * @param amount the amount to approach by
      * @return a, moved towards b
      */
     public static double approach(double a, double b, double amount) {

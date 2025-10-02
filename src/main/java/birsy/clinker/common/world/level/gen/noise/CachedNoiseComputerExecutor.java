@@ -10,7 +10,7 @@ public class CachedNoiseComputerExecutor implements NoiseComputerExecutor {
     private final int minX, minY, minZ;
     private final int height;
     private final Map<NoiseComputer, NoiseMap> noiseProcessorCaches;
-    private final NoiseComputerContext context;
+    private final NoiseComputerContext context, uncachedContext;
 
     public CachedNoiseComputerExecutor(int minX, int minY, int minZ, int height, NoiseHolder noiseHolder) {
         this.minX = minX;
@@ -19,8 +19,10 @@ public class CachedNoiseComputerExecutor implements NoiseComputerExecutor {
         this.height = height;
         this.noiseProcessorCaches = new HashMap<>(16);
         this.context = new NoiseComputerContext(this, noiseHolder);
+        this.uncachedContext = new NoiseComputerContext(new UncachedNoiseComputerExecutor(noiseHolder), noiseHolder);
     }
 
+    @Override
     public double compute(int x, int y, int z, NoiseComputer noiseProcessor) {
         int localX = x - minX, localY = y - minY, localZ = z - minZ;
 
@@ -46,6 +48,11 @@ public class CachedNoiseComputerExecutor implements NoiseComputerExecutor {
             noiseProcessorCaches.put(noiseProcessor, noiseMap);
         }
         return noiseProcessorCaches.get(noiseProcessor).retrieve(localX, localY, localZ);
+    }
+
+    @Override
+    public double computeDirect(int x, int y, int z, NoiseComputer noiseProcessor) {
+        return noiseProcessor.compute(x, y, z, this.uncachedContext);
     }
 
     private abstract class NoiseMap {

@@ -1,6 +1,6 @@
 package birsy.clinker.client.particle;
 
-import birsy.clinker.core.util.MathUtil;
+import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.core.util.noise.FastNoiseLite;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -230,7 +230,7 @@ public class MothParticle extends Particle {
             posestack.mulPose(Axis.YP.rotation(tilt));
         }
         float totalLife = (this.age + pPartialTicks) / this.lifetime;
-        float scale = Mth.clamp(MathUtil.mapRange(0.95F, 1.0F, 1, 0, totalLife), 0, 1);
+        float scale = Mth.clamp(MathUtils.mapRange(0.95F, 1.0F, 1, 0, totalLife), 0, 1);
         scale *= Mth.sqrt(scale);
         posestack.scale(scale, scale, scale);
         int packedLight = getLightColor(pPartialTicks);

@@ -1,7 +1,7 @@
 package birsy.clinker.common.world.entity.mold;
 
 import birsy.clinker.common.networking.packet.ClientboundMoldGrowthPacket;
-import birsy.clinker.core.util.MathUtil;
+import birsy.clinker.core.util.MathUtils;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -204,7 +204,7 @@ public class MoldCell {
     }
 
     public float getGrowthAmount(float partialTicks) {
-        return MathUtil.ease(Mth.clamp(Mth.lerp(partialTicks, this.previousGrowthAmount, this.growthAmount), 0, 1), MathUtil.EasingType.easeInOutQuad);
+        return MathUtils.ease(Mth.clamp(Mth.lerp(partialTicks, this.previousGrowthAmount, this.growthAmount), 0, 1), MathUtils.EasingType.easeInOutQuad);
     }
 
     protected void tick() {

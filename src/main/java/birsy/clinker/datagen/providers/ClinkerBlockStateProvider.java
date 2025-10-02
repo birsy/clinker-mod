@@ -7,13 +7,11 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.properties.*;
 import net.neoforged.neoforge.client.model.generators.*;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
-import java.util.Objects;
 import java.util.function.Function;
 
 public class ClinkerBlockStateProvider extends BlockStateProvider {
@@ -323,9 +321,9 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
             );
             this.flatBlockItem(ClinkerBlocks.DRIED_SALTMOSS_SPROUTS.get());
 
-            String saltmossBloomName = name(ClinkerBlocks.SALTMOSS_BLOOM.get());
+            String saltmossBloomName = name(ClinkerBlocks.SALTMOSS_BLOSSOM.get());
             this.simpleBlockWithVariationAndTransformation(
-                    ClinkerBlocks.SALTMOSS_BLOOM.get(),
+                    ClinkerBlocks.SALTMOSS_BLOSSOM.get(),
                     (i) -> this.models().cross(saltmossBloomName + (i == 0 ? "" : "_" + i),
                             this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + saltmossBloomName + (i == 0 ? "" : "_" + i)))
                             .renderType("cutout"),
@@ -334,7 +332,7 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
                             .renderType("cutout"),
                     2, false, false
             );
-            this.flatBlockItem(ClinkerBlocks.SALTMOSS_BLOOM.get());
+            this.flatBlockItem(ClinkerBlocks.SALTMOSS_BLOSSOM.get());
         }
 
         this.simpleBlockWithVariationAndTransformation(

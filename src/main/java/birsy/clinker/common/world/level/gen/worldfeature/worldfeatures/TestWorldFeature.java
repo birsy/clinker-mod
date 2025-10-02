@@ -9,8 +9,18 @@ public class TestWorldFeature extends WorldFeature {
     int centerX, centerZ;
     int radius = 16;
 
-    public TestWorldFeature(int depth) {
-        super(depth);
+    public TestWorldFeature(int depth, int separationRadius) {
+        super(depth, separationRadius);
+    }
+
+    @Override
+    public int getCenterX() {
+        return centerX;
+    }
+
+    @Override
+    public int getCenterZ() {
+        return centerZ;
     }
 
     @Override

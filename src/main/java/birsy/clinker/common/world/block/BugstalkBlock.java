@@ -1,6 +1,6 @@
 package birsy.clinker.common.world.block;
 
-import birsy.clinker.core.util.MathUtil;
+import birsy.clinker.core.util.MathUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
@@ -64,7 +64,7 @@ public class BugstalkBlock extends RotatedPillarBlock implements SimpleWaterlogg
     public void animateTick(BlockState pState, Level pLevel, BlockPos pPos, RandomSource pRandom) {
         super.animateTick(pState, pLevel, pPos, pRandom);
         for (int i = 0; i < 3; i++) {
-            Vec3 particlePosition = MathUtil.cubeNormalize(
+            Vec3 particlePosition = MathUtils.cubeNormalize(
                     new Vec3(pRandom.nextDouble(), pRandom.nextDouble(), (pRandom.nextDouble())).multiply(2.0, 2.0, 2.0).subtract(1.0, 1.0, 1.0))
                     .multiply(0.5, 0.5, 0.5)
                     .multiply(1.1, 1.1, 1.1);

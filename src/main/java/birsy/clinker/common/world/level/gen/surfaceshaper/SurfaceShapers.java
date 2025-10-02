@@ -15,8 +15,8 @@ public class SurfaceShapers {
     public static final SurfaceShaper ASH_STEPPE = register(ClinkerBiomes.ASH_STEPPE, new AshSteppeSurfaceShaper());
     public static final SurfaceShaper BRINE_SWAMP = register(ClinkerBiomes.BRINE_SWAMP, new BrineSwampSurfaceShaper());
 
-    //public static final SurfaceShaper CLIFFSIDE = register(ClinkerBiomes.CLIFFSIDE, new CliffSurfaceShaper());
-    //public static final SurfaceShaper LOWER_SHELF = register(ClinkerBiomes.LOWER_SHELF, new CliffSurfaceShaper());
+    public static final SurfaceShaper CLIFFSIDE = register(ClinkerBiomes.CLIFFSIDE, new LowerShelfSurfaceShaper());
+    public static final SurfaceShaper LOWER_SHELF = register(ClinkerBiomes.LOWER_SHELF, new LowerShelfSurfaceShaper());
 
     public static SurfaceShaper register(ResourceKey<Biome> biome, SurfaceShaper surfaceShaper) {
         registry.put(biome, surfaceShaper);

@@ -16,8 +16,18 @@ public class JaggedPeakWorldFeature extends WorldFeature {
 
     private NoiseComputer tiltedNoiseComputer;
 
-    public JaggedPeakWorldFeature(int depth) {
-        super(depth);
+    public JaggedPeakWorldFeature(int depth, int separationRadius) {
+        super(depth, separationRadius);
+    }
+
+    @Override
+    public int getCenterX() {
+        return centerX;
+    }
+
+    @Override
+    public int getCenterZ() {
+        return centerZ;
     }
 
     @Override

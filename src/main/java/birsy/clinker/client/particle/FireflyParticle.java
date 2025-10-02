@@ -1,6 +1,6 @@
 package birsy.clinker.client.particle;
 
-import birsy.clinker.core.util.MathUtil;
+import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.core.util.noise.FastNoiseLite;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import foundry.veil.api.client.render.VeilRenderSystem;
@@ -64,7 +64,7 @@ public class FireflyParticle extends TextureSheetParticle {
 
         super.tick();
         float updateSpeed = (float) ((seed * 10000) + age * 2.0F);
-        float speed = (float) MathUtil.mapRange(-1F, 1F, 0.1F, 1.0F, noise.GetNoise(updateSpeed, updateSpeed, updateSpeed));
+        float speed = (float) MathUtils.mapRange(-1F, 1F, 0.1F, 1.0F, noise.GetNoise(updateSpeed, updateSpeed, updateSpeed));
         Vector3d movement = new Vector3d(noise.GetNoise(updateSpeed, 0), noise.GetNoise(updateSpeed, updateSpeed) * 0.1, noise.GetNoise(0, updateSpeed)).mul(speed);
         this.move(movement.x, movement.y, movement.z);
         double xA = this.x;

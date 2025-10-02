@@ -32,7 +32,7 @@ import java.util.List;
 
 public class ChainLightningParticle extends Particle {
     protected TextureAtlasSprite sprite;
-    private final RenderType renderType = ClinkerRenderTypes.CHAIN_LIGHTNING;
+    // private final RenderType renderType = ClinkerRenderTypes.CHAIN_LIGHTNING;
 
     Vec3 startPos, endPos;
     private List<Vec3> boltPositions;
@@ -86,18 +86,15 @@ public class ChainLightningParticle extends Particle {
     }
 
     public ParticleRenderType getRenderType() {
-        return ParticleRenderType.CUSTOM;
+        return ClinkerParticleRenderTypes.CHAIN_LIGHTNING;
     }
 
     public void render(VertexConsumer pBuffer, Camera camera, float pPartialTicks) {
-        float time = (float)this.age / (float)this.lifetime;
+        float time = this.age / (float) this.lifetime;
 
         Vec3 camPos = camera.getPosition();
         PoseStack posestack = new PoseStack();
         posestack.translate(-camPos.x, -camPos.y, -camPos.z);
-
-        MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
-        VertexConsumer vertexconsumer = bufferSource.getBuffer(this.renderType);
 
         for (int i = 0; i < boltPositions.size() - 1; i++) {
             Vec3 pos1 = boltPositions.get(i);
@@ -118,11 +115,9 @@ public class ChainLightningParticle extends Particle {
             float v1 = Mth.lerp(1.0f - d1, sprite.getV0(), sprite.getV1());
             float v2 = Mth.lerp(1.0f - d2, sprite.getV0(), sprite.getV1());
 
-            RenderUtils.drawFaceBetweenPoints(vertexconsumer, posestack, 0.05f, pos1, tangent1, biTangent1, normal1, sprite.getU0(), v1, 1, 1, 1, time,
+            RenderUtils.drawFaceBetweenPoints(pBuffer, posestack, 0.05f, pos1, tangent1, biTangent1, normal1, sprite.getU0(), v1, 1, 1, 1, time,
                                                                                        pos2, tangent2, biTangent2, normal2, sprite.getU1(), v2, 1, 1, 1, time);
         }
-
-        bufferSource.endBatch();
     }
 
     

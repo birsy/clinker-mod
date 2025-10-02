@@ -6,7 +6,6 @@ import birsy.clinker.common.world.level.gen.noise.*;
 import birsy.clinker.common.world.level.gen.surfaceshaper.SurfaceShapers;
 import birsy.clinker.common.world.level.gen.worldfeature.MetaChunkMapHolder;
 import birsy.clinker.common.world.level.gen.worldfeature.WorldFeature;
-import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.world.ClinkerBiomes;
 import birsy.clinker.core.util.MathUtils;

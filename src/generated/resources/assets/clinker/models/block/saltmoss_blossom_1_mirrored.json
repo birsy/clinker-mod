@@ -2,6 +2,6 @@
   "parent": "clinker:block/cross_mirrored",
   "render_type": "minecraft:cutout",
   "textures": {
-    "cross": "clinker:block/saltmoss_bloom_1"
+    "cross": "clinker:block/saltmoss_blossom_1"
   }
 }

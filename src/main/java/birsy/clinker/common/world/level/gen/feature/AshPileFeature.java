@@ -2,7 +2,7 @@ package birsy.clinker.common.world.level.gen.feature;
 
 import birsy.clinker.common.world.block.FallingLayerBlock;
 import birsy.clinker.core.registry.ClinkerBlocks;
-import birsy.clinker.core.util.MathUtil;
+import birsy.clinker.core.util.MathUtils;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -40,7 +40,7 @@ public class AshPileFeature extends Feature<NoneFeatureConfiguration> {
                         pos.set(x, y, z);
 
                         if (level.getBlockState(pos.below()).isFaceSturdy(level, pos.below(), Direction.UP) && level.getBlockState(pos).isAir()) {
-                            int ashHeight = (int) MathUtil.mapRange(0, range, maxHeight, 0, pos.distManhattan(origin));
+                            int ashHeight = (int) MathUtils.mapRange(0, range, maxHeight, 0, pos.distManhattan(origin));
                             ashHeight += featureContext.random().nextGaussian();
 
                             for (Direction direction : Direction.Plane.HORIZONTAL) {

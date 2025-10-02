@@ -1,6 +1,6 @@
 package birsy.clinker.client.particle;
 
-import birsy.clinker.core.util.MathUtil;
+import birsy.clinker.core.util.MathUtils;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -28,9 +28,9 @@ public class SnoozeParticle extends SimpleAnimatedParticle {
         this.setColor(0x50A59f5B);
         this.quadSize *= 0.75F;
         this.lifetime = 100 + this.random.nextInt(60);
-        this.spiralStrength = MathUtil.getRandomFloatBetween(this.random, 9.0F, 11.0F);
-        this.particleSpeed = MathUtil.getRandomFloatBetween(this.random, 6.0F, 10.0F);
-        this.snoozeHeight = MathUtil.getRandomFloatBetween(this.random, 0.1F, 0.3F);
+        this.spiralStrength = MathUtils.getRandomFloatBetween(this.random, 9.0F, 11.0F);
+        this.particleSpeed = MathUtils.getRandomFloatBetween(this.random, 6.0F, 10.0F);
+        this.snoozeHeight = MathUtils.getRandomFloatBetween(this.random, 0.1F, 0.3F);
         this.setSpriteFromAge(pSprites);
     }
 

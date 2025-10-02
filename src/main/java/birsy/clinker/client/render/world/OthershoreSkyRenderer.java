@@ -2,24 +2,20 @@ package birsy.clinker.client.render.world;
 
 import birsy.clinker.client.render.ClinkerShaders;
 import birsy.clinker.core.Clinker;
-import birsy.clinker.core.util.MathUtil;
 import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.shaders.Uniform;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
-import foundry.veil.api.client.render.framebuffer.AdvancedFbo;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.ShaderInstance;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.joml.*;
 
@@ -94,7 +90,7 @@ public class OthershoreSkyRenderer {
 
         float aboveCloudsDarken = 0.7F;
         aboveCloudsDarken = Mth.lerp(
-                Mth.clamp(MathUtil.mapRange(OthershoreCloudRenderer.CLOUDS_END - OthershoreCloudRenderer.CLOUD_LAYER_THICKNESS*0.5F, OthershoreCloudRenderer.CLOUDS_END, 0F, 1F, (float)cameraPos.y), 0, 1),
+                Mth.clamp(MathUtils.mapRange(OthershoreCloudRenderer.CLOUDS_END - OthershoreCloudRenderer.CLOUD_LAYER_THICKNESS*0.5F, OthershoreCloudRenderer.CLOUDS_END, 0F, 1F, (float)cameraPos.y), 0, 1),
                 1.0F,
                 aboveCloudsDarken
         );
@@ -179,7 +175,7 @@ public class OthershoreSkyRenderer {
                                 float camY,
                                 float fogR, float fogG, float fogB,
                                 float skyR, float skyG, float skyB) {
-        float aboveCloudAlphaOffset = Mth.clamp(MathUtil.mapRange(400F, 450F, 1.0F, 0.0F, camY), 0.0F, 1.0F);
+        float aboveCloudAlphaOffset = Mth.clamp(MathUtils.mapRange(400F, 450F, 1.0F, 0.0F, camY), 0.0F, 1.0F);
 
 
         float time = ticks + partialTick;
@@ -222,7 +218,7 @@ public class OthershoreSkyRenderer {
             RenderSystem.setShader(ClinkerShaders::getSkyCloudShader);
             RenderSystem.setShaderGameTime(ticks, partialTick);
 
-            float smoothRingDist = MathUtil.ease(ringDist, MathUtil.EasingType.easeOutCirc);
+            float smoothRingDist = MathUtils.ease(ringDist, MathUtils.EasingType.easeOutCirc);
             float ringR = fogR, ringG = fogG, ringB = fogB;
             //delta = smoothRingDist * 0.7F;
             //ringR = Mth.lerp(delta, ringR, cloudR); ringG = Mth.lerp(delta, ringG, cloudG); ringB = Mth.lerp(delta, ringB, cloudB);

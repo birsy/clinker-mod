@@ -1,6 +1,6 @@
 package birsy.clinker.client.particle;
 
-import birsy.clinker.core.util.MathUtil;
+import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
@@ -36,11 +36,11 @@ public class AshCloudParticle extends TextureSheetParticle {
         this.oRoll = this.roll;
         float progress = (float)(this.age) / (float)(this.lifetime);
         float fadeStart = 0.2F;
-        this.alpha = progress < fadeStart ? MathUtil.mapRange(0, fadeStart, 0, 1, progress) : MathUtil.mapRange(fadeStart, 1, 1, 0, progress);
+        this.alpha = progress < fadeStart ? MathUtils.mapRange(0, fadeStart, 0, 1, progress) : MathUtils.mapRange(fadeStart, 1, 1, 0, progress);
         this.alpha *= this.pAlpha;
         this.roll += this.zd;
         this.zd += random.nextGaussian() * 0.005;
-        this.move(0, 0, 0.5 * MathUtil.bias(progress, -0.5));
+        this.move(0, 0, 0.5 * MathUtils.bias(progress, -0.5));
     }
 
 

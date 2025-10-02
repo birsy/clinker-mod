@@ -1,0 +1,18 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "clinker:block/saltmoss_blossom"
+      },
+      {
+        "model": "clinker:block/saltmoss_blossom_mirrored"
+      },
+      {
+        "model": "clinker:block/saltmoss_blossom_1"
+      },
+      {
+        "model": "clinker:block/saltmoss_blossom_1_mirrored"
+      }
+    ]
+  }
+}

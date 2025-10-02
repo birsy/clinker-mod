@@ -1,7 +1,7 @@
 package birsy.clinker.common.world.entity.ai;
 
 import birsy.clinker.common.world.entity.GroundLocomoteEntity;
-import birsy.clinker.core.util.MathUtil;
+import birsy.clinker.core.util.MathUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.BlockTags;
@@ -83,9 +83,9 @@ public class GroundMoveControl extends MoveControl {
         }
 
         me.walk(
-                (float) MathUtil.approach(me.previousWalk.x, walkVector.x, acceleration),
+                (float) MathUtils.approach(me.previousWalk.x, walkVector.x, acceleration),
                 (float) 0,
-                (float) MathUtil.approach(me.previousWalk.z, walkVector.z, acceleration)
+                (float) MathUtils.approach(me.previousWalk.z, walkVector.z, acceleration)
         );
     }
 }

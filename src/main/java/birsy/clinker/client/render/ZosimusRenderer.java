@@ -1,7 +1,7 @@
 package birsy.clinker.client.render;
 
 import birsy.clinker.core.Clinker;
-import birsy.clinker.core.util.MathUtil;
+import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
@@ -207,18 +207,18 @@ public class ZosimusRenderer {
 
             float depthMultiplier = 0.3F;
             float yRotation = this.getTotalYRot();
-            float rotationMultiplier = MathUtil.smoothAbs(Mth.cos(yRotation), 0.1F) * 1
-                                     + MathUtil.smoothAbs(Mth.sin(yRotation), 0.1F) * depthMultiplier;
-            float rotatedCloakWidthL = MathUtil.smoothAbs(Mth.cos(yRotation), 0.1F) * (cloakWidth - leftElbowOffset)
-                    + MathUtil.smoothAbs(Mth.sin(yRotation), 0.1F) * (cloakWidth * depthMultiplier);
-            float rotatedCloakWidthR = MathUtil.smoothAbs(Mth.cos(yRotation), 0.1F) * (cloakWidth + rightElbowOffset)
-                    + MathUtil.smoothAbs(Mth.sin(yRotation), 0.1F) * (cloakWidth * depthMultiplier);
+            float rotationMultiplier = MathUtils.smoothAbs(Mth.cos(yRotation), 0.1F) * 1
+                                     + MathUtils.smoothAbs(Mth.sin(yRotation), 0.1F) * depthMultiplier;
+            float rotatedCloakWidthL = MathUtils.smoothAbs(Mth.cos(yRotation), 0.1F) * (cloakWidth - leftElbowOffset)
+                    + MathUtils.smoothAbs(Mth.sin(yRotation), 0.1F) * (cloakWidth * depthMultiplier);
+            float rotatedCloakWidthR = MathUtils.smoothAbs(Mth.cos(yRotation), 0.1F) * (cloakWidth + rightElbowOffset)
+                    + MathUtils.smoothAbs(Mth.sin(yRotation), 0.1F) * (cloakWidth * depthMultiplier);
 
             float xRotation = this.getTotalXRot();
-            float rotatedShoulderHeight = MathUtil.smoothAbs(Mth.cos(xRotation), 0.1F) * (shoulderHeight)
-                    + MathUtil.smoothAbs(Mth.sin(xRotation), 0.1F) * (shoulderWidth * depthMultiplier);
-            float rotatedNeckHeight = MathUtil.smoothAbs(Mth.cos(xRotation), 0.1F) * (neckHeight)
-                    + MathUtil.smoothAbs(Mth.sin(xRotation), 0.1F) * (shoulderWidth * depthMultiplier);
+            float rotatedShoulderHeight = MathUtils.smoothAbs(Mth.cos(xRotation), 0.1F) * (shoulderHeight)
+                    + MathUtils.smoothAbs(Mth.sin(xRotation), 0.1F) * (shoulderWidth * depthMultiplier);
+            float rotatedNeckHeight = MathUtils.smoothAbs(Mth.cos(xRotation), 0.1F) * (neckHeight)
+                    + MathUtils.smoothAbs(Mth.sin(xRotation), 0.1F) * (shoulderWidth * depthMultiplier);
 
             Matrix4f matrix = stack.last().pose();
             // left side

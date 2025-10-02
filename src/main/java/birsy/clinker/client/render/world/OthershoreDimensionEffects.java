@@ -1,6 +1,6 @@
 package birsy.clinker.client.render.world;
 
-import birsy.clinker.core.util.MathUtil;
+import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
@@ -125,7 +125,7 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
         float b2 = blockL;
         b2 = (float) Math.pow(b2, 15.0F);
         // torch flicker
-        float flicker = 1.0F + MathUtil.awfulRandom(((level.getGameTime() + partialTicks) % 20000.0F)) * 0.1F;
+        float flicker = 1.0F + MathUtils.awfulRandom(((level.getGameTime() + partialTicks) % 20000.0F)) * 0.1F;
         b2 *= flicker;
         b2 *= 8.0;
         blockLightColor.add(b2, b2, b2 * 0.5F);

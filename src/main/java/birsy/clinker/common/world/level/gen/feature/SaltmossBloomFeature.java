@@ -44,7 +44,7 @@ public class SaltmossBloomFeature extends Feature<NoneFeatureConfiguration> {
         pos.set(origin);
         belowPos.set(origin).move(0, -1, 1);
         if (level.getBlockState(pos).canBeReplaced() && OthershorePlantBlock.canPlaceOn(level.getBlockState(belowPos), level, belowPos)) {
-            level.setBlock(pos, ClinkerBlocks.SALTMOSS_BLOOM.get().defaultBlockState(), 2);
+            level.setBlock(pos, ClinkerBlocks.SALTMOSS_BLOSSOM.get().defaultBlockState(), 2);
             placed = true;
         }
 

@@ -1,6 +1,6 @@
 package birsy.clinker.client.particle;
 
-import birsy.clinker.core.util.MathUtil;
+import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -93,19 +93,19 @@ public class FireSpewParticle extends Particle {
     private void updateColor() {
         float offset = 0;
         float factor = (this.age + offset) / (this.lifetime);
-        this.alpha = MathUtil.smoothstep(1.0F - factor);
+        this.alpha = MathUtils.smoothstep(1.0F - factor);
 
         //factor = (float) Math.pow(factor, 0.5);
         float transitionFac = 0.1F;
         if (factor < transitionFac) {
             factor = factor / transitionFac;
-            factor = MathUtil.smoothstep(factor);
+            factor = MathUtils.smoothstep(factor);
             this.rCol = Mth.lerp(factor, START_COLOR.x(), MID_COLOR.x());
             this.gCol = Mth.lerp(factor, START_COLOR.y(), MID_COLOR.y());
             this.bCol = Mth.lerp(factor, START_COLOR.z(), MID_COLOR.z());
         } else {
             factor = (factor - transitionFac) / (1-transitionFac);
-            factor = MathUtil.smoothstep(factor);
+            factor = MathUtils.smoothstep(factor);
             this.rCol = Mth.lerp(factor, MID_COLOR.x(), END_COLOR.x());
             this.gCol = Mth.lerp(factor, MID_COLOR.y(), END_COLOR.y());
             this.bCol = Mth.lerp(factor, MID_COLOR.z(), END_COLOR.z());

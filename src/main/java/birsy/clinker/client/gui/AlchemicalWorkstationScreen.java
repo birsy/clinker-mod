@@ -6,7 +6,7 @@ import birsy.clinker.common.alchemy.workstation.Workstation;
 import birsy.clinker.common.alchemy.workstation.WorkstationPhysicsObject;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.JomlConversions;
-import birsy.clinker.core.util.MathUtil;
+import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
@@ -384,7 +384,7 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
     }
 
     public float getScreenTransition(float partialTicks) {
-        return MathUtil.ease(Mth.lerp(partialTicks, prevScreenTransition, screenTransition), isClosing ? MathUtil.EasingType.easeInCubic : MathUtil.EasingType.easeInOutCubic);
+        return MathUtils.ease(Mth.lerp(partialTicks, prevScreenTransition, screenTransition), isClosing ? MathUtils.EasingType.easeInCubic : MathUtils.EasingType.easeInOutCubic);
     }
 
     public Vec3 getCamPos(float partialTick) {
@@ -423,7 +423,7 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
             int skyLight = entity.level().getBrightness(LightLayer.SKY, entity.blockPosition());
 
             int decimalColor = Minecraft.getInstance().gameRenderer.lightTexture().lightPixels.getPixelRGBA(blockLight, skyLight);
-            Vec3 color = MathUtil.convertColorToVec3(decimalColor);
+            Vec3 color = MathUtils.convertColorToVec3(decimalColor);
 
             if (updateCurrent) lightColor = color;
             desiredLightColor = color;
@@ -619,7 +619,7 @@ public class AlchemicalWorkstationScreen extends GuiElementParent {
         }
 
         private float getWiggle(float partialTick) {
-            return MathUtil.ease(Mth.lerp(partialTick, wiggle, pWiggle), MathUtil.EasingType.easeOutBack);
+            return MathUtils.ease(Mth.lerp(partialTick, wiggle, pWiggle), MathUtils.EasingType.easeOutBack);
         }
 
         private float getParentVelocity(float partialTick) {

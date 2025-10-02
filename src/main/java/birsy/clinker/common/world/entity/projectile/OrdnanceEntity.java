@@ -8,7 +8,7 @@ import birsy.clinker.common.world.item.components.OrdnanceEffects;
 import birsy.clinker.core.registry.entity.ClinkerEntities;
 import birsy.clinker.core.registry.ClinkerParticles;
 import birsy.clinker.core.registry.ClinkerSounds;
-import birsy.clinker.core.util.MathUtil;
+import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.core.util.VectorUtil;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -38,12 +38,11 @@ import net.minecraft.world.phys.*;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpawn {
-    private static final Vec3[] FLECHETTE_POINTS = MathUtil.generateSpherePoints(128);
-    private static final Vec3[] PARTICLE_POINTS = MathUtil.generateSpherePoints(500);
+    private static final Vec3[] FLECHETTE_POINTS = MathUtils.generateSpherePoints(128);
+    private static final Vec3[] PARTICLE_POINTS = MathUtils.generateSpherePoints(500);
 
     private static final EntityDataAccessor<Integer> DATA_FUSE_TIME = SynchedEntityData.defineId(OrdnanceEntity.class, EntityDataSerializers.INT);
     protected OrdnanceEffects effects = OrdnanceEffects.DEFAULT;

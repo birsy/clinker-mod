@@ -16,12 +16,15 @@ import java.util.Objects;
 @EventBusSubscriber(value = Dist.CLIENT, modid = Clinker.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public class ClinkerShaders {
     // veil shaders
-    public static final ResourceLocation LIGHT_GREASE = Clinker.resource("light/grease");
-    public static final ResourceLocation LIGHT_RIM = Clinker.resource("light/rim");
     public static final ResourceLocation PAGE_TEXTURE = Clinker.resource("page/texture");
     public static final ResourceLocation VOLUME = Clinker.resource("volume/volume");
     public static final ResourceLocation CLOUD_DENSITY = Clinker.resource("cloud/cloud_density");
     public static final ResourceLocation CLOUD = Clinker.resource("cloud/cloud");
+
+    public static final ResourceLocation LIGHT_GREASE = Clinker.resource("light/grease");
+    public static final ResourceLocation LIGHT_RIM = Clinker.resource("light/rim");
+
+    public static final ResourceLocation PARTICLE_BLOSSOM_BUG = Clinker.resource("particle/blossom_bug");
 
     // vanilla shaders
     private static ShaderInstance rendertypeEntityCutoutUnlitShader;

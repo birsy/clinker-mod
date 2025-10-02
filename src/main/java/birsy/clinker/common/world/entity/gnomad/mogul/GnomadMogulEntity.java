@@ -10,7 +10,7 @@ import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.*;
 import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.GnomadSquadSensor;
 import birsy.clinker.common.world.entity.gnomad.gnomind.squad.squadtasks.RestWithFriendsTask;
 import birsy.clinker.core.registry.ClinkerTags;
-import birsy.clinker.core.util.MathUtil;
+import birsy.clinker.core.util.MathUtils;
 import foundry.veil.api.client.necromancer.SkeletonParent;
 import foundry.veil.api.client.necromancer.animation.Animator;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -246,7 +246,7 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
         double height = (result.getLocation().y + this.getY()) / 2.0F;
         this.smoothedHeight = Mth.lerp(0.3F, this.smoothedHeight, height);
         if (this.smoothedHeight > this.getY()) this.smoothedHeight = this.getY();
-        this.smoothedHeight = MathUtil.clampDifference(this.smoothedHeight, this.getY(), this.maxUpStep());
+        this.smoothedHeight = MathUtils.clampDifference(this.smoothedHeight, this.getY(), this.maxUpStep());
     }
     
     public float getHeightOffset(float partialTick) {

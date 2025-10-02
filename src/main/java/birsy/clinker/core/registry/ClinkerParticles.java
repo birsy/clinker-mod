@@ -49,6 +49,11 @@ public class ClinkerParticles
             type -> ChainLightningParticle.ChainLightningParticleOptions.CODEC,
             type -> ChainLightningParticle.ChainLightningParticleOptions.STREAM_CODEC);
 
+    public static final Supplier<ParticleType<BlossomBugParticle.BlossomBugParticleOptions>> BLOSSOM_BUG = register("blossom_bug",
+            true,
+            type -> BlossomBugParticle.BlossomBugParticleOptions.CODEC,
+            type -> BlossomBugParticle.BlossomBugParticleOptions.STREAM_CODEC);
+
     public static Supplier<SimpleParticleType> register(String name) {
         Supplier<SimpleParticleType> particle = PARTICLES.register(name, () -> new SimpleParticleType(false));
         return particle;
@@ -85,5 +90,6 @@ public class ClinkerParticles
         event.registerSpriteSet(EXPLOSION_LIGHT.get(), ExplosionLightParticle.Provider::new);
         event.registerSpriteSet(CHAIN_LIGHTNING.get(), ChainLightningParticle.Provider::new);
         event.registerSpriteSet(FIRE_SPEW.get(), FireSpewParticle.Provider::new);
+        event.registerSpriteSet(BLOSSOM_BUG.get(), BlossomBugParticle.Provider::new);
     }
 }
