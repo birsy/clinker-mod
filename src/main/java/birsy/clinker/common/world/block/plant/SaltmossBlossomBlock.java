@@ -17,9 +17,9 @@ public class SaltmossBlossomBlock extends OthershorePlantBlock {
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
         super.animateTick(state, level, pos, random);
 
-        if (random.nextInt(5) == 0) {
-            double x = pos.getX() + 0.5 + Mth.lerp(random.nextDouble(), -3.0, 3.0),
-                    z = pos.getZ() + 0.5 + Mth.lerp(random.nextDouble(), -3.0, 3.0),
+        if (random.nextInt(4) == 0) {
+            double x = pos.getX() + 0.5 + random.nextGaussian() * 2.5, //Mth.lerp(random.nextDouble(), -4.0, 4.0),
+                    z = pos.getZ() + 0.5 + random.nextGaussian() * 2.5, //Mth.lerp(random.nextDouble(), -4.0, 4.0),
                     y = pos.getY() + 0.5 + Mth.lerp(random.nextDouble(), -0.25, 1.5);
 
             level.addParticle(

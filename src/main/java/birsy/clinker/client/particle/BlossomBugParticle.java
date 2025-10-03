@@ -30,13 +30,14 @@ public class BlossomBugParticle extends SingleQuadParticle {
     protected BlossomBugParticle(ClientLevel level, BlockPos home, double x, double y, double z) {
         super(level, x, y, z);
         this.home = new Vector3d(home.getX() + 0.5, home.getY() + 0.4, home.getZ() + 0.5);
-        this.quadSize = 0.5F;
-        this.lifetime = level.random.nextInt(3, 10) * 20;
+        this.quadSize = Mth.lerp(this.random.nextFloat(), 0.3F, 0.55F);
+        this.lifetime = level.random.nextInt(6, 12) * 20;
 
         this.gravity = 0;
         this.friction = 1;
         this.setAlpha(0);
-        this.setColor(0.67F, 0.75F, 0.35F);
+        float brightness = this.random.nextFloat();
+        this.setColor(0.67F * brightness, 0.75F * brightness, 0.35F * brightness);
     }
 
     @Override protected float getU0() { return 0; }
@@ -47,24 +48,25 @@ public class BlossomBugParticle extends SingleQuadParticle {
     @Override
     public void tick() {
         super.tick();
-        double ageFactor = (float) this.age / this.lifetime;
+        double ageFactor = (float) this.age / (this.lifetime - 1);
+        double flicker = Mth.map(Math.sin(this.age / 7.0), -1, 1, 0.5, 1);
         this.setAlpha((float) (Mth.clampedMap(ageFactor, 0.0, 0.1, 0, 1) *
-                               Mth.clampedMap(ageFactor, 0.5, 1.0, 1, 0)));
+                               Mth.clampedMap(ageFactor, 0.5, 1.0, 1, 0) * flicker));
         this.home.sub(this.x, this.y, this.z, this.directionToHome).normalize();
         double towardsHomeX = this.directionToHome.x,
                towardsHomeZ = this.directionToHome.z;
 
         this.directionToHome.cross(0, 1, 0);
 
-        double orbitSpeed = (orbitReversed ? -1 : 1) * getNoise(0.1, 0, 0.03);
-        double towardsHomeSpeed = getNoise(0.1, 10, 0.05);
+        double orbitSpeed = (orbitReversed ? -1 : 1) * (getNoise(0.02, 0, 0.5) + 0.5) * 0.06;
+        double towardsHomeSpeed = getNoise(0.03, 10, 0.05);
         this.xd = directionToHome.x * orbitSpeed + towardsHomeSpeed * towardsHomeX;
         this.zd = directionToHome.z * orbitSpeed + towardsHomeSpeed * towardsHomeZ;
-        this.yd = directionToHome.y * orbitSpeed + getNoise(0.1, 20, 0.05);
+        this.yd = directionToHome.y * orbitSpeed + getNoise(0.05, 20, 0.02);
     }
 
     private double getNoise(double changeSpeed, double sampleOffset, double maxSpeed) {
-        return Mth.map(noise.GetNoise(this.age * changeSpeed, sampleOffset + this.sampleOffset), -1, 1, -maxSpeed, maxSpeed);
+        return noise.GetNoise(this.age * changeSpeed, sampleOffset + this.sampleOffset) * maxSpeed;
     }
 
     @Override

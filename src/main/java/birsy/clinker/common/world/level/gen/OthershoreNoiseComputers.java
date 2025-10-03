@@ -42,8 +42,8 @@ public class OthershoreNoiseComputers {
     public static final NoiseComputer EMPTY = new NoiseComputer("empty", CacheType.NONE, (x, y, z, context) -> 1);
 
     public static final NoiseComputer SURFACE_HEIGHT_COMPUTER = new NoiseComputer("surface_height", CacheType.INTERPOLATED_2D_VERY_COARSE, (x, y, z, context) -> {
-        //if (true)
-        //    return OthershoreBiomeSource.SEA_HEIGHT - 3;
+        if (true)
+            return OthershoreBiomeSource.SEA_HEIGHT - 3;
 
         NoiseHolder noise = context.noiseHolder();
         noise.registerNoise("base_middle_shelf", 2, 4.0, 0.7, 0.0);
