@@ -111,6 +111,8 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(ClinkerBlocks.DRIED_SALTMOSS_SPROUTS.get());
         pOutput.accept(ClinkerBlocks.SALTMOSS_BLOSSOM.get());
 
+        pOutput.accept(ClinkerBlocks.STROMATOLITE.get());
+
         pOutput.accept(ClinkerBlocks.LEAD_ORE.get());
         pOutput.accept(ClinkerBlocks.LOCUST_LOG.get());
         pOutput.accept(ClinkerBlocks.TRIMMED_LOCUST_LOG.get());

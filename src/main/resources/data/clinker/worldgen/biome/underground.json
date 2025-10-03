@@ -43,7 +43,9 @@
     [],
     [],
     [],
-    [],
+    [
+      "clinker:sheet_moss_underground"
+    ],
     []
   ]
 }

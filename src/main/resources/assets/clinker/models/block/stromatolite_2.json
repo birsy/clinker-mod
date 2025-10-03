@@ -1,0 +1,64 @@
+{
+    "parent": "block/block",
+    "render_type": "cutout",
+    "textures": {
+        "top": "clinker:block/stromatolite_top",
+        "side": "clinker:block/stromatolite_side",
+        "particle": "clinker:block/stromatolite_inside_side",
+        "inside_side": "clinker:block/stromatolite_inside_side",
+        "inside_bottom": "clinker:block/stromatolite_inside_bottom"
+    },
+    "elements": [
+        {
+            "from": [3, 0, 3],
+            "to": [13, 16, 13],
+            "faces": {
+                "north": {"uv": [3, 0, 13, 16], "texture": "#inside_side"},
+                "east": {"uv": [3, 0, 13, 16], "texture": "#inside_side"},
+                "south": {"uv": [3, 0, 13, 16], "texture": "#inside_side"},
+                "west": {"uv": [3, 0, 13, 16], "texture": "#inside_side"},
+                "down": {"uv": [3, 3, 13, 13], "texture": "#inside_bottom", "cullface": "down"}
+            }
+        },
+        {
+            "from": [2, 0, 2],
+            "to": [14, 16, 2],
+            "faces": {
+                "north": {"uv": [2, 0, 14, 16], "texture": "#side"},
+                "south": {"uv": [2, 0, 14, 16], "texture": "#side"}
+            }
+        },
+        {
+            "from": [2, 0, 14],
+            "to": [14, 16, 14],
+            "faces": {
+                "north": {"uv": [2, 0, 14, 16], "texture": "#side"},
+                "south": {"uv": [2, 0, 14, 16], "texture": "#side"}
+            }
+        },
+        {
+            "from": [2, 0, 2],
+            "to": [2, 16, 14],
+            "faces": {
+                "east": {"uv": [2, 0, 14, 16], "texture": "#side"},
+                "west": {"uv": [2, 0, 14, 16], "texture": "#side"}
+            }
+        },
+        {
+            "from": [14, 0, 2],
+            "to": [14, 16, 14],
+            "faces": {
+                "east": {"uv": [2, 0, 14, 16], "texture": "#side"},
+                "west": {"uv": [2, 0, 14, 16], "texture": "#side"}
+            }
+        },
+        {
+            "from": [2, 16, 2],
+            "to": [14, 16, 14],
+            "faces": {
+                "up": {"uv": [2, 2, 14, 14], "texture": "#top", "cullface": "up"},
+                "down": {"uv": [2, 2, 14, 14], "texture": "#top"}
+            }
+        }
+    ]
+}

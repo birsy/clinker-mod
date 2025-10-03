@@ -36,7 +36,9 @@
   "carvers": {},
   "features": [
     [],
-    [],
+    [
+      "clinker:calc_rock"
+    ],
     [],
     [],
     [],

@@ -1,6 +1,7 @@
 package birsy.clinker.datagen.providers;
 
 import birsy.clinker.common.world.block.plant.DoubleSheetMossBlock;
+import birsy.clinker.common.world.block.plant.StromatoliteBlock;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import net.minecraft.core.Direction;
@@ -432,6 +433,25 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
         this.flatBlockItem(ClinkerBlocks.LONG_SHEET_MOSS.get(),
                 this.modLoc( "block/" + name(ClinkerBlocks.LONG_SHEET_MOSS.get()) + "_bottom")
         );
+
+        // stromatolites
+        {
+            VariantBlockStateBuilder stromatoliteBuilder = this.getVariantBuilder(ClinkerBlocks.STROMATOLITE.get());
+            String stromatoliteName = name(ClinkerBlocks.STROMATOLITE.get());
+            for (int i = 0; i <= StromatoliteBlock.MAX_SIZE_INCLUSIVE; i++) {
+                stromatoliteBuilder.partialState().with(StromatoliteBlock.SIZE, i).addModels(
+                        new ConfiguredModel(
+                                this.models().getExistingFile(
+                                        this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + stromatoliteName + "_" + i)
+                                )
+                        )
+                );
+            }
+
+            this.simpleBlockItem(ClinkerBlocks.STROMATOLITE.get(), this.models().getExistingFile(
+                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + stromatoliteName + "_" + StromatoliteBlock.MAX_SIZE_INCLUSIVE)
+            ));
+        }
     }
 
     public void flatBlockItem(Block block) {

@@ -100,7 +100,7 @@ public class ClinkerBlocks
     public static final DeferredBlock<StairBlock> POLISHED_CALC_STAIRS = createBlock("polished_calc_stairs", () -> new StairBlock(CALC.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(POLISHED_CALC.get())));
     public static final DeferredBlock<WallBlock> POLISHED_CALC_WALL = createBlock("polished_calc_wall", () -> new WallBlock(BlockBehaviour.Properties.ofFullCopy(POLISHED_CALC.get())));
 
-    public static final DeferredBlock<SaltmossBlock> SALTMOSS = createBlock("saltmoss", () -> new SaltmossBlock(BlockBehaviour.Properties.ofFullCopy(CALC.get()).sound(SoundType.NYLIUM).mapColor(MapColor.COLOR_RED)));
+    public static final DeferredBlock<SaltmossBlock> SALTMOSS = createBlock("saltmoss", () -> new SaltmossBlock(BlockBehaviour.Properties.ofFullCopy(CALC.get()).sound(SoundType.NYLIUM).mapColor(MapColor.COLOR_RED).randomTicks()));
 
     public static final DeferredBlock<ColoredFallingBlock> SALT_GRAVEL = createBlock("salt_gravel",
             () -> new ColoredFallingBlock(new ColorRGBA(0x777472), BlockBehaviour.Properties.ofFullCopy(Blocks.GRAVEL).sound(SoundType.SOUL_SOIL))
@@ -262,6 +262,23 @@ public class ClinkerBlocks
     public static final DeferredBlock<OthershorePlantBlock> SALTMOSS_SPROUTS = createBlock("saltmoss_sprouts", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_RED).sound(SoundType.HANGING_ROOTS)));
     public static final DeferredBlock<OthershorePlantBlock> DRIED_SALTMOSS_SPROUTS = createBlock("dried_saltmoss_sprouts", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_RED).sound(SoundType.HANGING_ROOTS)));
     public static final DeferredBlock<SaltmossBlossomBlock> SALTMOSS_BLOSSOM = createBlock("saltmoss_blossom", () -> new SaltmossBlossomBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_RED).sound(SoundType.HANGING_ROOTS)));
+
+    private static Supplier<BlockBehaviour.Properties> STROMATOLITE_PROPERTIES = () -> {
+        BlockBehaviour.Properties props = BlockBehaviour.Properties.ofFullCopy(Blocks.CRIMSON_HYPHAE)
+                .mapColor(MapColor.COLOR_LIGHT_GRAY)
+                .dynamicShape()
+                .randomTicks();
+        ((BlockBehavior$PropertiesAccessor) props).setOffsetFunction((state, level, pos) -> {
+            long seed = Mth.getSeed(pos.getX(), 0, pos.getZ());
+            int maxOffsetXZ = StromatoliteBlock.MAX_SIZE_INCLUSIVE - state.getValue(StromatoliteBlock.SIZE);
+            double xOffset = (((seed >>  0 & 63L) / 64F) - 0.5) * 2 * (0.5F / 16.0F);
+            double yOffset =  ((seed >>  8 & 63L) / 64F) * (-1.95F / 16.0F);
+            double zOffset = (((seed >> 16 & 63L) / 64F) - 0.5) * 2 * (0.5F / 16.0F);
+            return new Vec3(xOffset, yOffset, zOffset);
+        });
+        return props;
+    };
+    public static final DeferredBlock<StromatoliteBlock> STROMATOLITE = createBlock("stromatolite", () -> new StromatoliteBlock(STROMATOLITE_PROPERTIES.get()));
 
     private static Supplier<BlockBehaviour.Properties> SHEET_MOSS_PROPERTIES = () -> {
         BlockBehaviour.Properties props = BlockBehaviour.Properties.ofFullCopy(Blocks.HANGING_ROOTS).mapColor(MapColor.COLOR_GRAY).sound(SoundType.PINK_PETALS);

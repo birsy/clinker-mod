@@ -41,10 +41,10 @@ public class BrineSwampSurfaceShaper implements SurfaceShaper {
         erosion *= Mth.clampedMap(executor.compute(x, y, z, OthershoreNoiseComputers.BASE_NOISE_2D_ALT[7]), -1, 1, 0.5, 1);
 
         double craggyIslandNoise = executor.compute(x, y, z, OthershoreNoiseComputers.BASE_NOISE_2D[7]);
-        craggyIslandNoise += executor.compute(x, y, z, OthershoreNoiseComputers.BASE_NOISE_2D[6]) * 0.5;
+        craggyIslandNoise += executor.compute(x, y, z, OthershoreNoiseComputers.BASE_NOISE_2D[6]) * 0.7;
         craggyIslandNoise = Mth.map(craggyIslandNoise, -1.0, -0.8, -1.0, 0.0);
         double craggyIslands = craggyIslandNoise * 20;
-        craggyIslands += cragHeightDensity * 35;
+        craggyIslands += cragHeightDensity * 20;
         craggyIslands += erosion * 4;
 
         double craggyWall = Math.abs(executor.compute(x, y, z, OthershoreNoiseComputers.BASE_NOISE_2D[8])) * 80;
@@ -54,6 +54,14 @@ public class BrineSwampSurfaceShaper implements SurfaceShaper {
         craggyWall += erosion;
 
         craggyIslands = MathUtils.smoothMinExpo(craggyIslands, craggyWall, 3);
+
+//        double funnyPillars = executor.compute(x, y, z, OthershoreNoiseComputers.BASE_NOISE_2D_ALT[7]);
+//        funnyPillars = Mth.map(funnyPillars, -0.95, -1.0, 0.0, -1.0);
+//        funnyPillars += Math.max(0, y - (OthershoreBiomeSource.SEA_HEIGHT + cragHeight * 1.5));
+//        funnyPillars *= 8;
+//        funnyPillars += erosion * 0.5;
+//
+//        craggyIslands = Math.min(craggyIslands, funnyPillars);
 
         density = MathUtils.smoothMinExpo(density, craggyIslands, 3);
 

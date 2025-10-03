@@ -1,0 +1,38 @@
+{
+  "feature": "clinker:calc_rock",
+  "placement": [
+    {
+      "type": "minecraft:count",
+      "count": {
+        "type": "minecraft:biased_to_bottom",
+        "min_inclusive": 0,
+        "max_inclusive": 2
+      }
+    },
+    {
+      "type": "minecraft:in_square"
+    },
+    {
+      "type": "minecraft:heightmap",
+      "heightmap": "MOTION_BLOCKING_NO_LEAVES"
+    },
+    {
+      "type": "clinker:height_filter",
+      "min_inclusive": {
+        "absolute": 67
+      },
+      "max_inclusive": {
+        "below_top": 0
+      }
+    },
+    {
+      "type": "clinker:heightmap_steepness_filter",
+      "heightmap": "MOTION_BLOCKING_NO_LEAVES",
+      "max_gradient_inclusive": 1,
+      "radius": 2
+    },
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}

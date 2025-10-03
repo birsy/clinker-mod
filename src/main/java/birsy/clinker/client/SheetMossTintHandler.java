@@ -34,7 +34,7 @@ public class SheetMossTintHandler implements ColorResolver, BlockColor, ItemColo
     private static final Map<Biome, Optional<ResourceKey<Biome>>> biomeHashMap = new ConcurrentHashMap<>();
 
     private static final int WHITE = FastColor.ARGB32.colorFromFloat(1, 1, 1, 1);
-    private static final int DEFAULT_COLOR = 0xFF776f55;
+    private static final int DEFAULT_COLOR = 0xFF6e6550;
 
     public static void register(ResourceKey<Biome> biome, int color) { colorRegistry.put(biome, color); }
 

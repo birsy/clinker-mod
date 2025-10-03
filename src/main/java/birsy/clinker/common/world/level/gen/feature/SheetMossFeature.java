@@ -20,6 +20,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
+import net.minecraft.world.level.material.Fluids;
 
 public class SheetMossFeature extends Feature<NoneFeatureConfiguration> {
     public SheetMossFeature(Codec<NoneFeatureConfiguration> config) {
@@ -64,7 +65,11 @@ public class SheetMossFeature extends Feature<NoneFeatureConfiguration> {
                     if (placeLong) {
                         DoubleSheetMossBlock.placeAt(level, ClinkerBlocks.LONG_SHEET_MOSS.get().defaultBlockState(), pos, 2);
                     } else {
-                        level.setBlock(pos, ClinkerBlocks.SHEET_MOSS.get().defaultBlockState(), 2);
+                        if (level.getFluidState(pos).is(Fluids.WATER)) {
+                            level.setBlock(pos, ClinkerBlocks.SHEET_MOSS.get().defaultBlockState().setValue(SheetMossBlock.WATERLOGGED, true), 2);
+                        } else {
+                            level.setBlock(pos, ClinkerBlocks.SHEET_MOSS.get().defaultBlockState(), 2);
+                        }
                     }
                     placed = true;
                     break;

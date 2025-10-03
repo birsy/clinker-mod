@@ -1,7 +1,6 @@
 package birsy.clinker.core;
 
 import birsy.clinker.client.loc.LocalisationReloader;
-import birsy.clinker.client.render.ClinkerRenderTypes;
 import birsy.clinker.client.render.GUIRenderer;
 import birsy.clinker.client.gui.AlchemyBundleGUIRenderer;
 import birsy.clinker.client.render.debug.ClinkerDebugRenderers;
@@ -12,8 +11,8 @@ import birsy.clinker.core.registry.entity.ClinkerEntities;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import birsy.clinker.core.registry.entity.ClinkerSensors;
 import birsy.clinker.core.registry.world.ClinkerFeatures;
+import birsy.clinker.core.registry.world.ClinkerPlacementModifierTypes;
 import birsy.clinker.core.registry.world.ClinkerWorld;
-import com.google.common.collect.ImmutableList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -36,7 +35,6 @@ import net.minecraft.client.renderer.RenderType;
 @Mod(Clinker.MOD_ID)
 public class Clinker {
     public static final String MOD_ID = "clinker";
-    public static boolean devmode = true;
     public static final Logger LOGGER = LogManager.getLogger(MOD_ID.toUpperCase());
 
     public Clinker(IEventBus modEventBus) throws InterruptedException {
@@ -47,15 +45,17 @@ public class Clinker {
         ClinkerItems.ITEMS.register(modEventBus);
         ClinkerBlocks.BLOCKS.register(modEventBus);
         ClinkerBlocks.BLOCK_ITEMS.register(modEventBus);
+        ClinkerBlockEntities.BLOCK_ENTITY_TYPES.register(modEventBus);
+
         ClinkerWorld.CHUNK_GENERATORS.register(modEventBus);
         ClinkerWorld.BIOME_SOURCES.register(modEventBus);
-        ClinkerBlockEntities.BLOCK_ENTITY_TYPES.register(modEventBus);
+        ClinkerPlacementModifierTypes.PLACEMENT_MODIFIER_TYPES.register(modEventBus);
+        ClinkerFeatures.FEATURES.register(modEventBus);
 
         ClinkerMemoryModules.MEMORY_MODULE_TYPES.register(modEventBus);
         ClinkerSensors.SENSOR_TYPES.register(modEventBus);
         ClinkerEntities.ENTITY_TYPES.register(modEventBus);
 
-        ClinkerFeatures.FEATURES.register(modEventBus);
         ClinkerParticles.PARTICLES.register(modEventBus);
         ClinkerDataAttachments.ATTACHMENT_TYPES.register(modEventBus);
         ClinkerCreativeModeTabs.TABS.register(modEventBus);

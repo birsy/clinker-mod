@@ -1,6 +1,7 @@
 package birsy.clinker.common.world.block;
 
 import birsy.clinker.core.registry.ClinkerBlocks;
+import birsy.clinker.core.registry.world.ClinkerConfiguredFeatures;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -57,31 +58,25 @@ public class SaltmossBlock extends Block implements BonemealableBlock {
 
     @Override
     public void performBonemeal(ServerLevel level, RandomSource random, BlockPos pos, BlockState state) {
-//        BlockState blockstate = level.getBlockState(pos);
-//        BlockPos blockpos = pos.above();
-//        ChunkGenerator chunkgenerator = level.getChunkSource().getGenerator();
-//        Registry<ConfiguredFeature<?, ?>> registry = level.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE);
-//        if (blockstate.is(Blocks.CRIMSON_NYLIUM)) {
-//            this.place(registry, NetherFeatures.CRIMSON_FOREST_VEGETATION_BONEMEAL, level, chunkgenerator, random, blockpos);
-//        } else if (blockstate.is(Blocks.WARPED_NYLIUM)) {
-//            this.place(registry, NetherFeatures.WARPED_FOREST_VEGETATION_BONEMEAL, level, chunkgenerator, random, blockpos);
-//            this.place(registry, NetherFeatures.NETHER_SPROUTS_BONEMEAL, level, chunkgenerator, random, blockpos);
-//            if (random.nextInt(8) == 0) {
-//                this.place(registry, NetherFeatures.TWISTING_VINES_BONEMEAL, level, chunkgenerator, random, blockpos);
-//            }
-//        }
+        BlockPos blockpos = pos.above();
+        ChunkGenerator chunkgenerator = level.getChunkSource().getGenerator();
+        Registry<ConfiguredFeature<?, ?>> registry = level.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE);
+
+        if (random.nextInt(8) == 0)
+            this.place(registry, ClinkerConfiguredFeatures.SALTMOSS_BLOOM, level, chunkgenerator, random, blockpos);
+        this.place(registry, ClinkerConfiguredFeatures.PATCH_SALTMOSS_SPROUTS, level, chunkgenerator, random, blockpos);
     }
 
-//    private void place(
-//            Registry<ConfiguredFeature<?, ?>> featureRegistry,
-//            ResourceKey<ConfiguredFeature<?, ?>> featureKey,
-//            ServerLevel level,
-//            ChunkGenerator chunkGenerator,
-//            RandomSource random,
-//            BlockPos pos
-//    ) {
-//        featureRegistry.getHolder(featureKey).ifPresent(p_255920_ -> p_255920_.value().place(level, chunkGenerator, random, pos));
-//    }
+    private void place(
+            Registry<ConfiguredFeature<?, ?>> featureRegistry,
+            ResourceKey<ConfiguredFeature<?, ?>> featureKey,
+            ServerLevel level,
+            ChunkGenerator chunkGenerator,
+            RandomSource random,
+            BlockPos pos
+    ) {
+        featureRegistry.getHolder(featureKey).ifPresent(holder -> holder.value().place(level, chunkGenerator, random, pos));
+    }
 
     @Override
     public BonemealableBlock.Type getType() {

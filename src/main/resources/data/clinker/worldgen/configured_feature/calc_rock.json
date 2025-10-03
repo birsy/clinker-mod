@@ -1,0 +1,8 @@
+{
+  "type": "clinker:boulder",
+  "config": {
+    "state": {
+      "Name": "clinker:calc"
+    }
+  }
+}
