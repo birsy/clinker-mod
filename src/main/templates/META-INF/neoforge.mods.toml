@@ -11,8 +11,8 @@ version="${mod_version}"
 displayName="${mod_name}"
 #updateJSONURL="https://change.me.example.invalid/updates.json" #optional
 #displayURL="https://change.me.to.your.mods.homepage.example.invalid/" #optional
-# (in the root of the mod JAR)
-logoFile="logo.png" #optional
+
+logoFile="logo.png"
 authors="${mod_authors}"
 description='''${mod_description}'''
 
