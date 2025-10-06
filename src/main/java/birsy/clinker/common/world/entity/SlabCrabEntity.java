@@ -1,6 +1,8 @@
 package birsy.clinker.common.world.entity;
 
+import birsy.clinker.common.world.entity.ai.GroundLookControl;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -8,6 +10,7 @@ import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.control.LookControl;
 import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
@@ -27,7 +30,7 @@ import net.tslat.smartbrainlib.api.core.sensor.vanilla.NearbyLivingEntitySensor;
 
 import java.util.List;
 
-public class SlabCrabEntity extends PathfinderMob implements SmartBrainOwner<SlabCrabEntity> {
+public class SlabCrabEntity extends GroundLocomoteEntity implements SmartBrainOwner<SlabCrabEntity> {
     public SlabCrabEntity(EntityType<? extends PathfinderMob> entityType, Level level) {
         super(entityType, level);
     }
@@ -86,5 +89,31 @@ public class SlabCrabEntity extends PathfinderMob implements SmartBrainOwner<Sla
     @Override
     public void push(Entity entity) {
         // don't
+    }
+
+    public static class CrabLookControl extends GroundLookControl {
+        public CrabLookControl(SlabCrabEntity pMob) {
+            super(pMob);
+        }
+
+        public SlabCrabEntity getEntity() {
+            return (SlabCrabEntity) this.mob;
+        }
+
+        @Override
+        public void tick() {
+            SlabCrabEntity me = this.getEntity();
+            
+            float desiredYAngle = this.getYRotD().orElse(me.yBodyRot);
+            float desiredXAngle = this.getXRotD().orElse(0.0F);
+
+            float lerpFactor = 0.05F;
+            if (me.isWatchingEntity()) lerpFactor = 0.8F;
+
+            me.yHeadRot = rotateTowards(me.yHeadRot, Mth.rotLerp(lerpFactor, me.yHeadRot, desiredYAngle), 5);
+            me.setXRot(   rotateTowards(me.getXRot(), Mth.rotLerp(lerpFactor, me.getXRot(), desiredXAngle), 5));
+
+            this.clampHeadRotationToBody();
+        }
     }
 }
