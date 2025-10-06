@@ -3,12 +3,14 @@ package birsy.clinker.datagen.providers;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.ClinkerTags;
+import birsy.clinker.core.registry.entity.ClinkerEntities;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.IntrinsicHolderTagsProvider;
 import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.FenceBlock;
@@ -35,6 +37,11 @@ public class ClinkerEntityTagProvider extends IntrinsicHolderTagsProvider<Entity
                 EntityType.SKELETON, EntityType.SKELETON_HORSE,
                 EntityType.BLAZE, EntityType.MAGMA_CUBE, EntityType.SLIME,
                 EntityType.IRON_GOLEM, EntityType.ARMADILLO, EntityType.SHULKER
+        );
+
+        IntrinsicHolderTagsProvider.IntrinsicTagAppender<EntityType<?>> arthropod = this.tag(EntityTypeTags.SENSITIVE_TO_BANE_OF_ARTHROPODS).replace(false);
+        arthropod.add(
+                ClinkerEntities.SLAB_CRAB.get()
         );
     }
 }

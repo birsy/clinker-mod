@@ -87,6 +87,11 @@ public class ClinkerEntities {
                     .sized(0.5F, 0.8F)
                     .build(Clinker.resource("ai_test").toString()));
 
+    public static final Supplier<EntityType<SlabCrabEntity>> SLAB_CRAB = ENTITY_TYPES.register("slab_crab", () ->
+            EntityType.Builder.of(SlabCrabEntity::new, MobCategory.CREATURE)
+                    .sized(1.0F, 0.5F)
+                    .build(Clinker.resource("slab_crab").toString()));
+
     @SubscribeEvent
     public static void registerEntityAttribute(EntityAttributeCreationEvent event) {
         event.put(GNOMAD_SOLDIER.get(), Zombie.createAttributes().build());
@@ -99,6 +104,7 @@ public class ClinkerEntities {
 
         event.put(AI_TEST.get(), Zombie.createAttributes().build());
 
+        event.put(SLAB_CRAB.get(), SlabCrabEntity.createAttributes().build());
     }
 
     @SubscribeEvent
@@ -120,5 +126,7 @@ public class ClinkerEntities {
         event.registerEntityRenderer(ClinkerEntities.SPITTER_HOMUNCULOID.get(), DebugEntityRenderer::new);
 
         event.registerEntityRenderer(ClinkerEntities.AI_TEST.get(), DebugEntityRenderer::new);
+
+        event.registerEntityRenderer(ClinkerEntities.SLAB_CRAB.get(), DebugEntityRenderer::new);
     }
 }
