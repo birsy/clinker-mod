@@ -1,5 +1,6 @@
 package birsy.clinker.client;
 
+import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.world.ClinkerBiomes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColor;
@@ -16,6 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.ColorResolver;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DoublePlantBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -27,19 +29,29 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class SheetMossTintHandler implements ColorResolver, BlockColor, ItemColor {
+public class SheetMossTintHandler implements BlockColor, ItemColor {
     public static final SheetMossTintHandler INSTANCE = new SheetMossTintHandler();
 
-    private static final Map<ResourceKey<Biome>, Integer> colorRegistry = new HashMap<>();
+    private static final Map<Block, Integer> colorRegistry = new HashMap<>();
     private static final Map<Biome, Optional<ResourceKey<Biome>>> biomeHashMap = new ConcurrentHashMap<>();
 
     private static final int WHITE = FastColor.ARGB32.colorFromFloat(1, 1, 1, 1);
     private static final int DEFAULT_COLOR = 0xFF6e6550;
 
-    public static void register(ResourceKey<Biome> biome, int color) { colorRegistry.put(biome, color); }
+    public static void register(Block biome, int color) { colorRegistry.put(biome, color); }
 
     static {
-        register(ClinkerBiomes.BRINE_SWAMP, 0xFF6b6969);
+        int calcColor = 0xFF6b6969;
+        register(ClinkerBlocks.CALC.get(), calcColor);
+        register(ClinkerBlocks.CALC_SLAB.get(), calcColor);
+        register(ClinkerBlocks.CALC_STAIRS.get(), calcColor);
+        register(ClinkerBlocks.POLISHED_CALC.get(), calcColor);
+        register(ClinkerBlocks.POLISHED_CALC_SLAB.get(), calcColor);
+        register(ClinkerBlocks.POLISHED_CALC_STAIRS.get(), calcColor);
+        register(ClinkerBlocks.CALC_BRICKS.get(), calcColor);
+        register(ClinkerBlocks.CALC_BRICK_SLAB.get(), calcColor);
+        register(ClinkerBlocks.CALC_BRICK_STAIRS.get(), calcColor);
+        register(ClinkerBlocks.SALTMOSS.get(), calcColor);
     }
 
     private SheetMossTintHandler() {}
@@ -52,59 +64,20 @@ public class SheetMossTintHandler implements ColorResolver, BlockColor, ItemColo
         if (level == null || pos == null)
             return DEFAULT_COLOR;
 
-        if (state.hasProperty(BlockStateProperties.DOUBLE_BLOCK_HALF))
-            return BiomeColors.getAverageColor(level, state.getValue(DoublePlantBlock.HALF) == DoubleBlockHalf.LOWER ? pos.above() : pos, INSTANCE);
+        BlockPos offsetPos;
+        if (state.hasProperty(BlockStateProperties.DOUBLE_BLOCK_HALF)) {
+            offsetPos = pos.above(state.getValue(DoublePlantBlock.HALF) == DoubleBlockHalf.UPPER ? 1 : 2);
+        } else {
+            offsetPos = pos.above();
+        }
 
-        return BiomeColors.getAverageColor(level, pos, INSTANCE);
+        if (offsetPos.getY() > level.getMaxBuildHeight())
+            return DEFAULT_COLOR;
+        return colorRegistry.getOrDefault(level.getBlockState(offsetPos).getBlock(), DEFAULT_COLOR);
     }
 
     @Override
     public int getColor(ItemStack stack, int tintIndex) {
         return DEFAULT_COLOR;
-    }
-
-    @Override
-    public int getColor(Biome biome, double x, double z) {
-        // Because i can't easily add new json parameters, i have to add the hanging moss biome colors
-        // to a list of my own making (colorRegistry.) buuuttt i can't actually do a direct association
-        // between the colors and the biomes, because the biomes aren't actually loaded yet when i make
-        // the list.
-        // i instead use the biome's registry name (e.g. minecraft:plains) directly.
-        // this is fine, actually - its how i do most worldgen stuff, too.
-        //
-        // BUUTTTT...
-        // this function doesn't actually provide to me the biome's registry name, nor any kind of way
-        // to retrieve it!
-        // so what i have to do is ask the server for a list of all biomes and their registry names.
-        // then, when i want to get the color of a block, i loop through each biome registry name + biome
-        // pair and check to see if it matches with the current Biome provided by the actual function...
-        // finally, if one matches, i cache that association so i don't have to do that again.
-        //
-        // this is a horrendously inefficient and terrible solution to a problem that should not exist
-        // this is why data driven biomes suck ass
-        Optional<ResourceKey<Biome>> keyOptional = biomeHashMap.computeIfAbsent(biome, (actualBiome) -> {
-            ClientPacketListener connection = Minecraft.getInstance().getConnection();
-            if (connection == null)
-                return Optional.empty();
-
-            Optional<HolderLookup.RegistryLookup<Biome>> registryOptional = connection.registryAccess().lookup(Registries.BIOME);
-            if (registryOptional.isEmpty())
-                return Optional.empty();
-
-            for (ResourceKey<Biome> biomeResourceKey : colorRegistry.keySet()) {
-                Optional<Holder.Reference<Biome>> biomeOptional = registryOptional.get().get(biomeResourceKey);
-                if (biomeOptional.isEmpty())
-                    continue;
-                if (actualBiome.equals(biomeOptional.get().value()))
-                    return Optional.of(biomeResourceKey);
-            }
-
-            return Optional.empty();
-        });
-
-        if (keyOptional.isEmpty())
-            return DEFAULT_COLOR;
-
-        return colorRegistry.getOrDefault(keyOptional.get(), DEFAULT_COLOR);
     }
 }

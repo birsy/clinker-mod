@@ -12,7 +12,7 @@ public class ClinkerBlockAndItemColors {
 
     @SubscribeEvent
     public static void registerColorResolvers(RegisterColorHandlersEvent.ColorResolvers event) {
-        event.register(SheetMossTintHandler.INSTANCE);
+        //event.register(SheetMossTintHandler.INSTANCE);
     }
 
     @SubscribeEvent

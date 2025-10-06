@@ -33,12 +33,13 @@ public class SurfaceBuilder {
 
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         BlockPos.MutableBlockPos neighborPos = new BlockPos.MutableBlockPos().set(pos);
+        BlockPos.MutableBlockPos surfacePos = new BlockPos.MutableBlockPos();
 
-        int offset = 0;
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
-                int startHeight = chunk.getHeight(Heightmap.Types.WORLD_SURFACE_WG, x + offset, z + offset);
-                pos.set(x + chunk.getPos().getMinBlockX() + offset, startHeight, z + chunk.getPos().getMinBlockZ() + offset);
+                int startHeight = chunk.getHeight(Heightmap.Types.OCEAN_FLOOR_WG, x, z);
+                int surfaceHeight = (int) Math.round(context.noiseComputerExecutor().compute(x, startHeight, z, OthershoreNoiseComputers.SURFACE_HEIGHT_COMPUTER));
+                pos.set(x + chunk.getPos().getMinBlockX(), startHeight, z + chunk.getPos().getMinBlockZ());
 
                 boolean visibleToSun = true;
                 while (pos.getY() > chunk.getMinBuildHeight() + 1) {
@@ -76,7 +77,7 @@ public class SurfaceBuilder {
                             }
                         }
 
-                        decorator.buildSurface(chunk, new BlockPos.MutableBlockPos().set(pos), seaLevel, visibleToSun, depth, maxElevationIncrease, maxElevationDecrease, context, surfaceBuilderRandomFactory.at(pos));
+                        decorator.buildSurface(chunk, surfacePos.set(pos), seaLevel, visibleToSun, depth, maxElevationIncrease, maxElevationDecrease, surfaceHeight, context, surfaceBuilderRandomFactory.at(pos));
 
                         visibleToSun = false;
 
