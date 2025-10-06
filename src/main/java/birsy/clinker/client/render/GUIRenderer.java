@@ -10,7 +10,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 
-@EventBusSubscriber(modid = Clinker.MOD_ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
+@EventBusSubscriber(modid = Clinker.MOD_ID, value = Dist.CLIENT)
 public class GUIRenderer {
     public static AlchemyBundleGUIRenderer alchemyBundleGUIRenderer;
     public static ZosimusRenderer zosimusRenderer = new ZosimusRenderer();

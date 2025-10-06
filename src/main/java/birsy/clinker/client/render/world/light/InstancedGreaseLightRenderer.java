@@ -1,30 +1,39 @@
 package birsy.clinker.client.render.world.light;
 
 import birsy.clinker.client.render.ClinkerShaders;
+import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import foundry.veil.Veil;
 import foundry.veil.api.client.render.CullFrustum;
 import foundry.veil.api.client.render.VeilRenderSystem;
+import foundry.veil.api.client.render.light.data.PointLightData;
 import foundry.veil.api.client.render.light.renderer.InstancedLightRenderer;
+import foundry.veil.api.client.render.light.renderer.LightRenderHandle;
 import foundry.veil.api.client.render.light.renderer.LightRenderer;
 import foundry.veil.api.client.render.light.renderer.LightTypeRenderer;
+import foundry.veil.api.client.render.rendertype.VeilRenderType;
 import foundry.veil.api.client.render.vertex.VertexArrayBuilder;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class GreaseLightRenderer extends InstancedLightRenderer<GreaseLight> {
+public class InstancedGreaseLightRenderer extends InstancedLightRenderer<GreaseLightData> {
 
-    public GreaseLightRenderer() {
+    private static final ResourceLocation RENDER_TYPE = Clinker.resource("light/grease");
+
+    public InstancedGreaseLightRenderer() {
         super(Float.BYTES * 7);
     }
 
     @Override
     protected MeshData createMesh() {
-        Tesselator tesselator = RenderSystem.renderThreadTesselator();
-        BufferBuilder bufferBuilder = tesselator.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION);
-        LightTypeRenderer.createInvertedCube(bufferBuilder);
-        return bufferBuilder.buildOrThrow();
+        BufferBuilder builder = RenderSystem.renderThreadTesselator().begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION);
+        LightTypeRenderer.createInvertedCube(builder);
+        return builder.buildOrThrow();
     }
 
     @Override
@@ -35,17 +44,7 @@ public class GreaseLightRenderer extends InstancedLightRenderer<GreaseLight> {
     }
 
     @Override
-    protected void setupRenderState(@NotNull LightRenderer lightRenderer, @NotNull List<GreaseLight> lights) {
-        VeilRenderSystem.setShader(ClinkerShaders.LIGHT_GREASE)
-                .setFloat("GameTime", RenderSystem.getShaderGameTime());
-    }
-
-    @Override
-    protected void clearRenderState(@NotNull LightRenderer lightRenderer, @NotNull List<GreaseLight> lights) {
-    }
-
-    @Override
-    protected boolean isVisible(GreaseLight light, CullFrustum frustum) {
-        return frustum.testSphere(light.getPosition(), light.getRadius() * 1.4F);
+    protected @Nullable RenderType getRenderType(List<? extends LightRenderHandle<GreaseLightData>> lights) {
+        return VeilRenderType.get(RENDER_TYPE);
     }
 }

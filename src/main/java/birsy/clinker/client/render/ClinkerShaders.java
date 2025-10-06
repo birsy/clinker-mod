@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.Objects;
 
-@EventBusSubscriber(value = Dist.CLIENT, modid = Clinker.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(value = Dist.CLIENT, modid = Clinker.MOD_ID)
 public class ClinkerShaders {
     // veil shaders
     public static final ResourceLocation PAGE_TEXTURE = Clinker.resource("page/texture");

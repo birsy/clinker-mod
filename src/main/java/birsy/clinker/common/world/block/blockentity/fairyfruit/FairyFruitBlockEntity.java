@@ -2,7 +2,8 @@ package birsy.clinker.common.world.block.blockentity.fairyfruit;
 
 import birsy.clinker.core.registry.entity.ClinkerBlockEntities;
 import foundry.veil.api.client.render.VeilRenderSystem;
-import foundry.veil.api.client.render.light.PointLight;
+import foundry.veil.api.client.render.light.data.PointLightData;
+import foundry.veil.api.client.render.light.renderer.LightRenderHandle;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -14,7 +15,7 @@ public class FairyFruitBlockEntity extends BlockEntity {
     
     public float lengthOffset;
     
-    public PointLight light;
+    public LightRenderHandle<PointLightData> light;
 
     public FairyFruitBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(ClinkerBlockEntities.FAIRY_FRUIT.get(), pPos, pBlockState);
@@ -30,9 +31,7 @@ public class FairyFruitBlockEntity extends BlockEntity {
         }
 
         if (level.isClientSide()) {
-            this.light = new PointLight();
-            this.light.setColor(0xffaf59);
-            this.light.setRadius(12.0F);
+            this.light = VeilRenderSystem.renderer().getLightRenderer().addLight(new PointLightData().setColor(0xffaf59).setRadius(12.0F));;
             VeilRenderSystem.renderer().getLightRenderer().addLight(this.light);
         }
     }
@@ -42,7 +41,7 @@ public class FairyFruitBlockEntity extends BlockEntity {
         super.setRemoved();
         if (this.level.isClientSide) {
             if (this.light == null) return;
-            VeilRenderSystem.renderer().getLightRenderer().removeLight(this.light);
+            this.light.free();
         }
     }
 
@@ -51,7 +50,7 @@ public class FairyFruitBlockEntity extends BlockEntity {
         super.onChunkUnloaded();
         if (this.level.isClientSide) {
             if (this.light == null) return;
-            VeilRenderSystem.renderer().getLightRenderer().removeLight(this.light);
+            this.light.free();
         }
     }
 

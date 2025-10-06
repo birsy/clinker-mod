@@ -50,7 +50,7 @@ public class OthershoreCloudRenderer {
         cloudDensityShader.bind();
         cloudDensityShader.bindSamplers(0);
         cloudDensityShader.setDefaultUniforms(VertexFormat.Mode.TRIANGLE_STRIP);
-        cloudDensityShader.setFloat("GameTime", (ticks / 20.0F) + (partialTick / 20.0F));
+        cloudDensityShader.getUniform("GameTime").setFloat((ticks / 20.0F) + (partialTick / 20.0F));
         VeilRenderSystem.drawScreenQuad();
         ShaderProgram.unbind();
         AdvancedFbo.unbind();
@@ -80,11 +80,11 @@ public class OthershoreCloudRenderer {
         cloudShader.bind();
         cloudShader.bindSamplers(0);
         cloudShader.setDefaultUniforms(VertexFormat.Mode.TRIANGLES);
-        cloudShader.setVector("CameraPos", (float) camX, (float) camY, (float) camZ);
-        cloudShader.setVector("SkyCol", skyColor.x() * 0.8F, skyColor.y() * 0.8F, skyColor.z() * 0.8F);
+        cloudShader.getUniform("CameraPos").setVector((float) camX, (float) camY, (float) camZ);
+        cloudShader.getUniform("SkyCol").setVector(skyColor.x() * 0.8F, skyColor.y() * 0.8F, skyColor.z() * 0.8F);
         float[] fogColors = RenderSystem.getShaderFogColor();
-        cloudShader.setVector("FogCol", fogColors[0], fogColors[1], fogColors[2]);
-        cloudShader.setVector("ScreenResolution", AdvancedFbo.getMainFramebuffer().getWidth(), AdvancedFbo.getMainFramebuffer().getHeight());
+        cloudShader.getUniform("FogCol").setVector(fogColors[0], fogColors[1], fogColors[2]);
+        cloudShader.getUniform("ScreenResolution").setVector(AdvancedFbo.getMainFramebuffer().getWidth(), AdvancedFbo.getMainFramebuffer().getHeight());
         cloudShader.setSampler("CloudDensity", cloudDensityFBO.getId());
         cloudShader.setSampler("DiffuseDepthSampler", AdvancedFbo.getMainFramebuffer().getDepthTextureAttachment().getId());
 

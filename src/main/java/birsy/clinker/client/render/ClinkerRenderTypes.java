@@ -22,7 +22,7 @@ import java.util.function.Function;
 
 import static net.minecraft.client.renderer.RenderStateShard.*;
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, modid = Clinker.MOD_ID, value = Dist.CLIENT)
+@EventBusSubscriber(modid = Clinker.MOD_ID, value = Dist.CLIENT)
 public class ClinkerRenderTypes {
     private static final RenderStateShard.ShaderStateShard ENTITY_UNLIT_TRANSLUCENT_SHADER =
             new RenderStateShard.ShaderStateShard(ClientHooks.ClientEvents::getEntityTranslucentUnlitShader);

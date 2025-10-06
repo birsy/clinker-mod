@@ -19,7 +19,7 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.HandlerThread;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
-@EventBusSubscriber(modid = Clinker.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Clinker.MOD_ID)
 public class ClinkerPacketRegistry {
     @SubscribeEvent
     public static void register(RegisterPayloadHandlersEvent event) {

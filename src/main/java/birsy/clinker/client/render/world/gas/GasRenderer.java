@@ -24,7 +24,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 
 import static org.lwjgl.opengl.GL11.*;
 
-@EventBusSubscriber(modid = Clinker.MOD_ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
+@EventBusSubscriber(modid = Clinker.MOD_ID, value = Dist.CLIENT)
 public class GasRenderer {
     public static final ResourceLocation VOLUME_POST = Clinker.resource("volume");
 
@@ -65,7 +65,7 @@ public class GasRenderer {
         RenderSystem.depthMask(true);
 
         ShaderProgram shader = VeilRenderSystem.setShader(ClinkerShaders.VOLUME);
-        shader.setInt("BlueNoiseOffset", (int)(System.currentTimeMillis() % 512));
+        shader.getUniform("BlueNoiseOffset").setInt((int)(System.currentTimeMillis() % 512));
         bufferManager.bind();
         AbstractTexture abstracttexture = Minecraft.getInstance().getTextureManager()
                 .getTexture(Minecraft.getInstance().gameRenderer.lightTexture().lightTextureLocation);

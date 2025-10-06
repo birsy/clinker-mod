@@ -31,7 +31,7 @@ import org.apache.logging.log4j.Logger;
 
 import net.minecraft.client.renderer.RenderType;
 
-@EventBusSubscriber(bus=EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber
 @Mod(Clinker.MOD_ID)
 public class Clinker {
     public static final String MOD_ID = "clinker";

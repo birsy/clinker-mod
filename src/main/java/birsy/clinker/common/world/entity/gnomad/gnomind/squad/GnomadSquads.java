@@ -20,7 +20,7 @@ import java.util.*;
 
 // keeps track of squads in a given ServerLevel
 // not actually saved data - squads are ephemeral. just wanted an easy way to attach it to a serverlevel
-@EventBusSubscriber(modid = Clinker.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = Clinker.MOD_ID)
 public class GnomadSquads extends SavedData {
     private final HashMap<UUID, GnomadSquad> squadMap = Maps.newHashMap();
     private final ServerLevel level;

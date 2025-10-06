@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-@EventBusSubscriber(modid = Clinker.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = Clinker.MOD_ID)
 public class WorkstationManager {
     public static final Map<ServerLevel, WorkstationManager> managerByLevel = new HashMap<>();
     public static final Map<ResourceKey<Level>, WorkstationManager> managerByDimension = new HashMap<>();

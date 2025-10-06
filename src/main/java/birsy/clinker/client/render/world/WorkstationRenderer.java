@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-@EventBusSubscriber(modid = Clinker.MOD_ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
+@EventBusSubscriber(modid = Clinker.MOD_ID, value = Dist.CLIENT)
 public class WorkstationRenderer {
     @SubscribeEvent
     public static void onRenderLevel(RenderLevelStageEvent event) {

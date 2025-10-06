@@ -42,7 +42,7 @@ public class ClinkerParticleRenderTypes {
             RenderSystem.depthMask(false); // no writing depth
             ShaderProgram shader = VeilRenderSystem.setShader(ClinkerShaders.PARTICLE_BLOSSOM_BUG); // blossom bug shader
             if (shader != null) {
-                shader.setVector("ScreenResolution", AdvancedFbo.getMainFramebuffer().getWidth(), AdvancedFbo.getMainFramebuffer().getHeight());
+                shader.getUniform("ScreenResolution").setVector(AdvancedFbo.getMainFramebuffer().getWidth(), AdvancedFbo.getMainFramebuffer().getHeight());
                 shader.setSampler("DiffuseDepthSampler", AdvancedFbo.getMainFramebuffer().getDepthTextureAttachment().getId());
             }
             RenderSystem.setShaderTexture(0, TEXTURE); // particle texture

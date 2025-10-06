@@ -57,8 +57,8 @@ public class FairyFruitRenderer<T extends FairyFruitBlockEntity> implements Bloc
         if (pBlockEntity.vine == null) return;
         if (pBlockEntity.vine.segments.isEmpty()) return;
 
-        pBlockEntity.light.setPosition(JomlConversions.toJOML(pBlockEntity.vine.getEndPosition()));
-        pBlockEntity.light.setRadius(10);
+        pBlockEntity.light.getLightData().setPosition(JomlConversions.toJOML(pBlockEntity.vine.getEndPosition()));
+        pBlockEntity.light.getLightData().setRadius(10);
 
         Vec3 parentPosition = new Vec3(pBlockEntity.getBlockPos().getX(), pBlockEntity.getBlockPos().getY(), pBlockEntity.getBlockPos().getZ());
         List<FairyFruitVine.FairyFruitVineSegment> segments = pBlockEntity.vine.segments;

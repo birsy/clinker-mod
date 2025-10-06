@@ -11,7 +11,7 @@ import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
 import net.neoforged.neoforge.registries.RegistryBuilder;
 
-@EventBusSubscriber(modid = Clinker.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Clinker.MOD_ID)
 public class ClinkerDynamicRegistries {
     public static final ResourceKey<Registry<WorldFeatureSpawnSet>> WORLD_FEATURE_REGISTRY_KEY =
             ResourceKey.createRegistryKey(Clinker.resource("worldgen/world_feature"));

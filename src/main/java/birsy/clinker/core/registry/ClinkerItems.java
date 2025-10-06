@@ -21,7 +21,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.List;
 
-@EventBusSubscriber(modid = Clinker.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Clinker.MOD_ID, value = Dist.CLIENT)
 public class ClinkerItems
 {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Clinker.MOD_ID);

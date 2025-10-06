@@ -12,7 +12,7 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 
 import java.util.concurrent.CompletableFuture;
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, modid = Clinker.MOD_ID)
+@EventBusSubscriber(modid = Clinker.MOD_ID)
 public class ClinkerDatagenHandler {
     @SubscribeEvent
     public static void gatherData(GatherDataEvent event) {

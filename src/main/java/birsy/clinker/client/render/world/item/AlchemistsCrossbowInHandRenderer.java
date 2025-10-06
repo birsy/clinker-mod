@@ -29,7 +29,7 @@ import org.joml.Quaternionf;
 
 import javax.annotation.Nullable;
 
-@EventBusSubscriber(modid = Clinker.MOD_ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
+@EventBusSubscriber(modid = Clinker.MOD_ID, value = Dist.CLIENT)
 public class AlchemistsCrossbowInHandRenderer {
     float handMoveDown = 0;
     public static float getPullPercentage(ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity entity, int seed) {

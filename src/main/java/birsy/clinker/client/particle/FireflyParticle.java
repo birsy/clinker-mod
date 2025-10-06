@@ -3,8 +3,6 @@ package birsy.clinker.client.particle;
 import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.core.util.noise.FastNoiseLite;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import foundry.veil.api.client.render.VeilRenderSystem;
-import foundry.veil.api.client.render.light.PointLight;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
@@ -26,7 +24,7 @@ public class FireflyParticle extends TextureSheetParticle {
     private final Quaternionf rotation = new Quaternionf();
     private Vector3f movementDirection = new Vector3f(), pMovementDirection = new Vector3f();
 
-    private final PointLight light;
+    //private final PointLight light;
 
     private final double seed;
 
@@ -44,15 +42,15 @@ public class FireflyParticle extends TextureSheetParticle {
         this.gCol = level.random.nextFloat();
         this.bCol = level.random.nextFloat();
 
-        this.light = new PointLight();
-        VeilRenderSystem.renderer().getLightRenderer().addLight(this.light);
+        //this.light = new PointLight();
+        //VeilRenderSystem.renderer().getLightRenderer().addLight(this.light);
 
         this.seed = level.random.nextDouble();
     }
 
     @Override
     public void remove() {
-        if (this.light != null) VeilRenderSystem.renderer().getLightRenderer().removeLight(this.light);
+        //if (this.light != null) VeilRenderSystem.renderer().getLightRenderer().removeLight(this.light);
         super.remove();
     }
 
@@ -120,13 +118,13 @@ public class FireflyParticle extends TextureSheetParticle {
     }
 
     private void updateLight(float partialTick) {
-        float fadeFactor = (this.age + partialTick) / (this.lifetime + 1);
-        fadeFactor *= fadeFactor * fadeFactor * fadeFactor;
-        fadeFactor = 1 - fadeFactor;
-        this.light.setPosition(Mth.lerp(partialTick, this.xo, this.x), Mth.lerp(partialTick, this.yo, this.y), Mth.lerp(partialTick, this.zo, this.z));
-        float brightness = 2.0F;
-        this.light.setColor(this.rCol * brightness, this.gCol * brightness, this.bCol * brightness);
-        this.light.setRadius(4.0F * fadeFactor);
+//        float fadeFactor = (this.age + partialTick) / (this.lifetime + 1);
+//        fadeFactor *= fadeFactor * fadeFactor * fadeFactor;
+//        fadeFactor = 1 - fadeFactor;
+//        this.light.setPosition(Mth.lerp(partialTick, this.xo, this.x), Mth.lerp(partialTick, this.yo, this.y), Mth.lerp(partialTick, this.zo, this.z));
+//        float brightness = 2.0F;
+//        this.light.setColor(this.rCol * brightness, this.gCol * brightness, this.bCol * brightness);
+//        this.light.setRadius(4.0F * fadeFactor);
     }
 
     @Override

@@ -1,10 +1,9 @@
 package birsy.clinker.client.ambience;
 
-import birsy.clinker.client.render.world.light.GreaseLight;
-import org.joml.Vector3d;
+import birsy.clinker.client.render.world.light.GreaseLightData;
 
 import java.util.List;
 
 public class GreaseLights {
-    List<GreaseLight> lights;
+    List<GreaseLightData> lights;
 }

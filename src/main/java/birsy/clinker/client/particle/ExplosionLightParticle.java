@@ -2,7 +2,8 @@ package birsy.clinker.client.particle;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import foundry.veil.api.client.render.VeilRenderSystem;
-import foundry.veil.api.client.render.light.PointLight;
+import foundry.veil.api.client.render.light.data.PointLightData;
+import foundry.veil.api.client.render.light.renderer.LightRenderHandle;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
@@ -14,7 +15,7 @@ import net.minecraft.util.Mth;
 
 
 public class ExplosionLightParticle extends Particle {
-    private final PointLight light;
+    private final LightRenderHandle<PointLightData> light;
 
     protected ExplosionLightParticle(ClientLevel level, double x, double y, double z) {
         super(level, x, y, z);
@@ -22,17 +23,18 @@ public class ExplosionLightParticle extends Particle {
         this.hasPhysics = false;
         this.gravity = 0.0F;
 
-        this.light = new PointLight();
-        this.light.setPosition(x, y, z);
-        this.light.setRadius(0);
-        light.setColor(0, 0, 0);
-        VeilRenderSystem.renderer().getLightRenderer().addLight(this.light);
+        PointLightData lightData = new PointLightData();
+        lightData.setPosition(x, y, z);
+        lightData.setRadius(0);
+        lightData.setColor(0, 0, 0);
+        this.light = VeilRenderSystem.renderer().getLightRenderer().addLight(lightData);
+        this.light.markDirty();
     }
 
     @Override
     public void remove() {
         super.remove();
-        if (this.light != null) VeilRenderSystem.renderer().getLightRenderer().removeLight(this.light);
+        if (this.light != null) this.light.free();
     }
 
     @Override
@@ -40,10 +42,10 @@ public class ExplosionLightParticle extends Particle {
         if (this.light == null) return;
 
         float brightness = (0.6F - ((float)this.age + partialTicks - 1.0F) * 0.25F * 0.5F) * 10;
-        light.setColor(brightness, brightness * 0.9F, brightness * 0.5F);
+        light.getLightData().setColor(brightness, brightness * 0.9F, brightness * 0.5F);
 
         float radius = Math.max(0, 7.1F * Mth.sin(((float)this.age + partialTicks - 1.0F) * 0.25F * (float) Math.PI));
-        light.setRadius(radius * 3);
+        light.getLightData().setRadius(radius * 3);
     }
 
     @Override

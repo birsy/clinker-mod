@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-@EventBusSubscriber(modid = Clinker.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = Clinker.MOD_ID)
 public class ChainLightningHandler {
     private static final List<LivingEntity> chainLightningAffectedEntities = new ArrayList<>();
     private static final List<LivingEntity> entitiesToAdd = new ArrayList<>();
