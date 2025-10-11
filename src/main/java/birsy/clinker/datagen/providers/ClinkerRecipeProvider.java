@@ -16,6 +16,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
+import static birsy.clinker.core.registry.ClinkerBlocks.*;
+
 public class ClinkerRecipeProvider extends RecipeProvider {
     public ClinkerRecipeProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
         super(output, registries);
@@ -25,18 +27,18 @@ public class ClinkerRecipeProvider extends RecipeProvider {
     protected void buildRecipes(RecipeOutput output) {
         // brimstone
         stoneSet(output,
-                ClinkerBlocks.BRIMSTONE, ClinkerBlocks.BRIMSTONE_SLAB, ClinkerBlocks.BRIMSTONE_STAIRS, ClinkerBlocks.BRIMSTONE_WALL,
-                ClinkerBlocks.POLISHED_BRIMSTONE, ClinkerBlocks.POLISHED_BRIMSTONE_SLAB, ClinkerBlocks.POLISHED_BRIMSTONE_STAIRS, ClinkerBlocks.POLISHED_BRIMSTONE_WALL,
-                ClinkerBlocks.BRIMSTONE_BRICKS, ClinkerBlocks.BRIMSTONE_BRICK_SLAB, ClinkerBlocks.BRIMSTONE_BRICK_STAIRS, ClinkerBlocks.BRIMSTONE_BRICK_WALL,
-                ClinkerBlocks.COBBLED_BRIMSTONE, ClinkerBlocks.COBBLED_BRIMSTONE_SLAB, ClinkerBlocks.COBBLED_BRIMSTONE_STAIRS, ClinkerBlocks.COBBLED_BRIMSTONE_WALL,
-                ClinkerBlocks.BRIMSTONE_PILLAR, ClinkerBlocks.CHISELED_BRIMSTONE
+                BRIMSTONE, BRIMSTONE_SLAB, BRIMSTONE_STAIRS, BRIMSTONE_WALL,
+                POLISHED_BRIMSTONE, POLISHED_BRIMSTONE_SLAB, POLISHED_BRIMSTONE_STAIRS, POLISHED_BRIMSTONE_WALL,
+                BRIMSTONE_BRICKS, BRIMSTONE_BRICK_SLAB, BRIMSTONE_BRICK_STAIRS, BRIMSTONE_BRICK_WALL,
+                COBBLED_BRIMSTONE, COBBLED_BRIMSTONE_SLAB, COBBLED_BRIMSTONE_STAIRS, COBBLED_BRIMSTONE_WALL,
+                BRIMSTONE_PILLAR, CHISELED_BRIMSTONE
         );
 
         // calc
         stoneSet(output,
-                ClinkerBlocks.CALC, ClinkerBlocks.CALC_SLAB, ClinkerBlocks.CALC_STAIRS, ClinkerBlocks.CALC_WALL,
-                ClinkerBlocks.POLISHED_CALC, ClinkerBlocks.POLISHED_CALC_SLAB, ClinkerBlocks.POLISHED_CALC_STAIRS, ClinkerBlocks.POLISHED_CALC_WALL,
-                ClinkerBlocks.CALC_BRICKS, ClinkerBlocks.CALC_BRICK_SLAB, ClinkerBlocks.CALC_BRICK_STAIRS, ClinkerBlocks.CALC_BRICK_WALL,
+                CALC, CALC_SLAB, CALC_STAIRS, CALC_WALL,
+                POLISHED_CALC, POLISHED_CALC_SLAB, POLISHED_CALC_STAIRS, POLISHED_CALC_WALL,
+                CALC_BRICKS, CALC_BRICK_SLAB, CALC_BRICK_STAIRS, CALC_BRICK_WALL,
                 null, null
         );
     }
