@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": [
+      {
+        "item": "clinker:brimstone"
+      },
+      {
+        "item": "clinker:polished_brimstone"
+      },
+      {
+        "item": "clinker:brimstone_bricks"
+      },
+      {
+        "item": "clinker:cobbled_brimstone"
+      }
+    ]
+  },
+  "pattern": [
+    "#",
+    "#"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clinker:brimstone_pillar"
+  }
+}

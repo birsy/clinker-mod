@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": [
+      {
+        "item": "clinker:brimstone_slab"
+      },
+      {
+        "item": "clinker:polished_brimstone_slab"
+      },
+      {
+        "item": "clinker:brimstone_brick_slab"
+      },
+      {
+        "item": "clinker:cobbled_brimstone_slab"
+      }
+    ]
+  },
+  "pattern": [
+    "#",
+    "#"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clinker:chiseled_brimstone"
+  }
+}

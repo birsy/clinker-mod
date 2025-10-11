@@ -2,14 +2,19 @@ package birsy.clinker.datagen;
 
 import birsy.clinker.core.Clinker;
 import birsy.clinker.datagen.providers.*;
+import birsy.clinker.datagen.providers.loottable.ClinkerBlockLootTableProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
+import net.minecraft.data.loot.LootTableProvider;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 @EventBusSubscriber(modid = Clinker.MOD_ID)
@@ -27,8 +32,16 @@ public class ClinkerDatagenHandler {
         generator.addProvider(true, new ClinkerEntityTagProvider(output, lookupProvider, existingFileHelper));
         generator.addProvider(true, new ClinkerDamageTypeTagProvider(output, lookupProvider, existingFileHelper));
 
+        generator.addProvider(true, new ClinkerRecipeProvider(output, lookupProvider));
+
         generator.addProvider(event.includeClient(), new ClinkerBlockStateProvider(output, existingFileHelper));
         generator.addProvider(event.includeClient(), new ClinkerItemModelProvider(output, existingFileHelper));
         generator.addProvider(event.includeClient(), new ClinkerEnglishLanguageProvider(output));
+
+        event.createProvider((providerOutput, providerLookupProvider) -> new LootTableProvider(providerOutput, Set.of(),
+                List.of(
+                        new LootTableProvider.SubProviderEntry(ClinkerBlockLootTableProvider::new, LootContextParamSets.BLOCK)
+                ), providerLookupProvider)
+        );
     }
 }

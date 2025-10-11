@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_calc": {
+      "conditions": {
+        "items": [
+          {
+            "items": "clinker:calc"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "minecraft:calc_stairs_from_calc_stonecutting"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_calc"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "minecraft:calc_stairs_from_calc_stonecutting"
+    ]
+  }
+}

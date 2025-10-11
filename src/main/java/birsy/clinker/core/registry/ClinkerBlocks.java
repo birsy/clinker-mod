@@ -242,20 +242,25 @@ public class ClinkerBlocks
                     .dynamicShape()));
 
     public static final DeferredBlock<Block> THORNY_STEM = createBlock("thorny_stem", () ->
-            new ThornyStemBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CORNFLOWER)
-                    .mapColor(MapColor.COLOR_GRAY).sound(SoundType.HANGING_ROOTS).speedFactor(0.5F).offsetType(BlockBehaviour.OffsetType.NONE)
+            new ThornyStemBlock(
+                    BlockBehaviour.Properties.of()
+                            .strength(4.0F)
+                            .mapColor(MapColor.TERRACOTTA_BLACK)
+                            .sound(SoundType.HANGING_ROOTS)
+                            .speedFactor(0.5F)
+                            .pushReaction(PushReaction.DESTROY)
             ));
 
     public static final DeferredBlock<BrambleBlossomBlock> BRAMBLE_BLOSSOM = createBlock("bramble_blossom", () ->
             new BrambleBlossomBlock(
                     new SuspiciousStewEffects(List.of(new SuspiciousStewEffects.Entry(MobEffects.SATURATION, Mth.floor(30 * 20.0F)))),
-                    BlockBehaviour.Properties.ofFullCopy(Blocks.CORNFLOWER)
-                            .mapColor(MapColor.QUARTZ).sound(SoundType.HANGING_ROOTS).speedFactor(0.5F).offsetType(BlockBehaviour.OffsetType.NONE)
+                    BlockBehaviour.Properties.ofFullCopy(ClinkerBlocks.THORNY_STEM.get())
+                            .mapColor(MapColor.QUARTZ)
             ));
 
     public static final DeferredBlock<WitheringBrambleBlossomBlock> WITHERING_BRAMBLE_BLOSSOM = createBlock("withering_bramble_blossom", () ->
             new WitheringBrambleBlossomBlock(
-                    BlockBehaviour.Properties.ofFullCopy(ClinkerBlocks.BRAMBLE_BLOSSOM.get())
+                    BlockBehaviour.Properties.ofFullCopy(ClinkerBlocks.THORNY_STEM.get())
                             .mapColor(MapColor.COLOR_BLACK)
             ));
 

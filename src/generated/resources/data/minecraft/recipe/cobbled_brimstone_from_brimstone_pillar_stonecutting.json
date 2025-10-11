@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "clinker:brimstone_pillar"
+  },
+  "result": {
+    "count": 1,
+    "id": "clinker:cobbled_brimstone"
+  }
+}

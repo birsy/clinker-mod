@@ -1,0 +1,41 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_any_brimstone": {
+      "conditions": {
+        "items": [
+          {
+            "items": "clinker:brimstone"
+          },
+          {
+            "items": "clinker:polished_brimstone"
+          },
+          {
+            "items": "clinker:brimstone_bricks"
+          },
+          {
+            "items": "clinker:cobbled_brimstone"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "clinker:chiseled_brimstone"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_any_brimstone"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "clinker:chiseled_brimstone"
+    ]
+  }
+}
