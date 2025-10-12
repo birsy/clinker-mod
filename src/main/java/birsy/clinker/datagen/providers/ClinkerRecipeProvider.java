@@ -25,6 +25,7 @@ public class ClinkerRecipeProvider extends RecipeProvider {
 
     @Override
     protected void buildRecipes(RecipeOutput output) {
+
         // brimstone
         stoneSet(output,
                 BRIMSTONE, BRIMSTONE_SLAB, BRIMSTONE_STAIRS, BRIMSTONE_WALL,
@@ -41,6 +42,12 @@ public class ClinkerRecipeProvider extends RecipeProvider {
                 CALC_BRICKS, CALC_BRICK_SLAB, CALC_BRICK_STAIRS, CALC_BRICK_WALL,
                 null, null
         );
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, SALTMOSS)
+                .define('C', CALC).define('S', SALTMOSS_SPROUTS)
+                .pattern("S")
+                .pattern("C")
+                .unlockedBy(getHasName(SALTMOSS_SPROUTS), has(SALTMOSS_SPROUTS)).save(output);
     }
 
     protected static void stoneSet(RecipeOutput recipeOutput,
@@ -65,19 +72,27 @@ public class ClinkerRecipeProvider extends RecipeProvider {
 
         Set<ItemLike> mutuallyStonecuttable = new HashSet<>();
         Collections.addAll(mutuallyStonecuttable, raw, polished, brick);
-        if (pillar != null) {
-            chiseled(recipeOutput, RecipeCategory.BUILDING_BLOCKS, pillar, raw);
-            chiseled(recipeOutput, RecipeCategory.BUILDING_BLOCKS, pillar, polished);
-            chiseled(recipeOutput, RecipeCategory.BUILDING_BLOCKS, pillar, brick);
 
+        Criterion<InventoryChangeTrigger.TriggerInstance> hasAnyTrigger = inventoryTrigger(
+                ItemPredicate.Builder.item().of(raw),
+                ItemPredicate.Builder.item().of(polished),
+                ItemPredicate.Builder.item().of(brick)
+        );
+        if (pillar != null) {
+            Ingredient material = Ingredient.of(raw, polished, brick);
+            ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, pillar).define('#', material)
+                    .pattern("#")
+                    .pattern("#")
+                    .unlockedBy("has_any_" + getItemName(raw), hasAnyTrigger).save(recipeOutput);
             mutuallyStonecuttable.add(pillar);
         }
 
         if (chiseled != null) {
-            chiseled(recipeOutput, RecipeCategory.BUILDING_BLOCKS, chiseled, rawSlab);
-            chiseled(recipeOutput, RecipeCategory.BUILDING_BLOCKS, chiseled, polishedSlab);
-            chiseled(recipeOutput, RecipeCategory.BUILDING_BLOCKS, chiseled, brickSlab);
-
+            Ingredient slabMaterial = Ingredient.of(rawSlab, polishedSlab, brickSlab);
+            ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, chiseled).define('#', slabMaterial)
+                    .pattern("#")
+                    .pattern("#")
+                    .unlockedBy("has_any_" + getItemName(raw), hasAnyTrigger).save(recipeOutput);
             mutuallyStonecuttable.add(chiseled);
         }
 

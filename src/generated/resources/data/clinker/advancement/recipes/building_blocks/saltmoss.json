@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_saltmoss_sprouts": {
+      "conditions": {
+        "items": [
+          {
+            "items": "clinker:saltmoss_sprouts"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "clinker:saltmoss"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_saltmoss_sprouts"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "clinker:saltmoss"
+    ]
+  }
+}
