@@ -42,7 +42,7 @@ public class ClinkerRecipeProvider extends RecipeProvider {
                 CALC_BRICKS, CALC_BRICK_SLAB, CALC_BRICK_STAIRS, CALC_BRICK_WALL,
                 null, null
         );
-
+        // silly saltmoss recipe
         ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, SALTMOSS)
                 .define('C', CALC).define('S', SALTMOSS_SPROUTS)
                 .pattern("S")

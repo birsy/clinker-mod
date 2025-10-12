@@ -3,9 +3,7 @@ package birsy.clinker.core.registry;
 import birsy.clinker.client.particle.ExplosionLightParticle;
 import birsy.clinker.client.particle.*;
 import birsy.clinker.core.Clinker;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.core.Registry;
 import net.minecraft.core.particles.DustColorTransitionOptions;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
@@ -55,8 +53,7 @@ public class ClinkerParticles
             type -> BlossomBugParticle.BlossomBugParticleOptions.STREAM_CODEC);
 
     public static Supplier<SimpleParticleType> register(String name) {
-        Supplier<SimpleParticleType> particle = PARTICLES.register(name, () -> new SimpleParticleType(false));
-        return particle;
+        return PARTICLES.register(name, () -> new SimpleParticleType(false));
     }
 
     private static <T extends ParticleOptions> Supplier<ParticleType<T>> register(
