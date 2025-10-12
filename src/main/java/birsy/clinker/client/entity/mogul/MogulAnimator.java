@@ -1,11 +1,14 @@
 package birsy.clinker.client.entity.mogul;
 
 import birsy.clinker.common.world.entity.gnomad.mogul.MogulAttackHandler;
+import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.common.world.entity.gnomad.mogul.GnomadMogulEntity;
 import foundry.veil.api.client.necromancer.animation.Animation;
 import foundry.veil.api.client.necromancer.animation.Animator;
 import net.minecraft.core.Direction;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.tslat.smartbrainlib.util.RandomUtil;
 import org.joml.Vector3f;
@@ -68,8 +71,21 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
         }
         float normalizedTime = (float) this.maskShakeTime / this.maskShakeDuration;
         float shakeAmount = Mth.clamp(-4.0F*normalizedTime*normalizedTime + 4.0F*normalizedTime, 0, 1);
-        this.maskAnim.setMixFactor(shakeAmount * shakeAmount * shakeAmount * shakeAmount * 0.5F);
+        shakeAmount = shakeAmount * shakeAmount * shakeAmount * shakeAmount * 0.5F;
+        this.maskAnim.setMixFactor(shakeAmount);
         this.maskAnim.setTime(entity.tickCount);
+
+        // mask shake noise
+        // todo: make some kind of "woosh-y" noise for this
+//        if (shakeAmount > 0.05) {
+//            float maskShakeTime = 0.5F + entity.tickCount * 0.44F, prevMaskShakeTime = 0.5F + (entity.tickCount - 1) * 0.44F;
+//            float maskShakeDeriv = Mth.cos(maskShakeTime * 0.5F), previousMaskShakeDeriv = Mth.cos(prevMaskShakeTime * 0.5F);
+//            if (Math.signum(maskShakeDeriv) != Math.signum(previousMaskShakeDeriv)) {
+//                entity.level().playLocalSound(entity, SoundEvents.BAT_TAKEOFF, SoundSource.HOSTILE,
+//                        shakeAmount * 0.25F, (shakeAmount * 1.5F + (float)RandomUtil.randomValueBetween(0.0, 0.25)) * 0.1F
+//                );
+//            }
+//        }
 
         // locomotion
         float moveTime = entity.getCumulativeWalk() * 2.3F;

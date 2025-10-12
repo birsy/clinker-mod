@@ -13,8 +13,12 @@
         "mipmap": false
       },
       {
+        "type": "minecraft:cull",
+        "face": "none"
+      },
+      {
         "type": "veil:shader",
-        "name": "clinker:entity/skinned_mesh"
+        "name": "veil:necromancer/skinned_mesh"
       },
       {
         "type": "minecraft:lightmap"

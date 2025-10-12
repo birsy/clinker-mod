@@ -1,5 +1,6 @@
 package birsy.clinker.client.entity.mogul;
 
+import birsy.clinker.client.entity.mogul.layer.MogulWeaponRenderLayer;
 import birsy.clinker.common.world.entity.gnomad.mogul.GnomadMogulEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -16,15 +17,19 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4x3f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 public class MogulRenderer extends NecromancerEntityRenderer<GnomadMogulEntity, MogulSkeleton> {
-    private static final ResourceLocation RENDERTYPE = Clinker.resource("mogul_entity");
+    public static final ResourceLocation RENDERTYPE = Clinker.resource("mogul_entity");
     private static final ResourceLocation CLOAK_RENDERTYPE = Clinker.resource("mogul_entity_cloak");
     private static final ResourceLocation TEXTURE_LOCATION = Clinker.resource("textures/entity/gnomad/mogul/gnomad_mogul.png");
     private static final ResourceLocation ROBE_TEXTURE_LOCATION = Clinker.resource("textures/entity/gnomad/mogul/gnomad_mogul_robes.png");
 
     public MogulRenderer(EntityRendererProvider.Context context) {
         super(context, 2.0F);
+
         this.addLayer(new NecromancerSkinEntityRenderLayer<>(this) {
             @Override
             public RenderType getRenderType(GnomadMogulEntity entity) {
@@ -36,10 +41,11 @@ public class MogulRenderer extends NecromancerEntityRenderer<GnomadMogulEntity, 
             }
             @Override
             protected void renderSkin(GnomadMogulEntity parent, MogulSkeleton skeleton, Skin skin, RenderType renderType, NecromancerRenderer renderer, MatrixStack matrixStack, int packedLight, float partialTicks) {
-                if (parent.hurtTime > 0) renderer.setOverlay(OverlayTexture.RED_OVERLAY_V);
+                if (parent.hurtTime > 0 || !parent.isAlive()) renderer.setOverlay(OverlayTexture.RED_OVERLAY_V);
                 super.renderSkin(parent, skeleton, skin, renderType, renderer, matrixStack, packedLight, partialTicks);
             }
         });
+
         this.addLayer(new NecromancerSkinEntityRenderLayer<>(this) {
             @Override
             public RenderType getRenderType(GnomadMogulEntity entity) {
@@ -51,12 +57,14 @@ public class MogulRenderer extends NecromancerEntityRenderer<GnomadMogulEntity, 
             }
             @Override
             protected void renderSkin(GnomadMogulEntity parent, MogulSkeleton skeleton, Skin skin, RenderType renderType, NecromancerRenderer renderer, MatrixStack matrixStack, int packedLight, float partialTicks) {
-                if (parent.hurtTime > 0) renderer.setOverlay(OverlayTexture.RED_OVERLAY_V);
+                if (parent.hurtTime > 0 || !parent.isAlive()) renderer.setOverlay(OverlayTexture.RED_OVERLAY_V);
                 Vec3 robeColor = Vec3.fromRGB24(parent.getRobeColor());
                 renderer.setColor((float) robeColor.x, (float) robeColor.y, (float) robeColor.z, 1.0F);
                 super.renderSkin(parent, skeleton, skin, renderType, renderer, matrixStack, packedLight, partialTicks);
             }
         });
+
+        this.addLayer(new MogulWeaponRenderLayer(this));
     }
 
     @Override

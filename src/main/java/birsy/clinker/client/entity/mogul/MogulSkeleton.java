@@ -7,6 +7,7 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 public class MogulSkeleton extends Skeleton {
+    public static MogulSkeleton STATIC_INSTANCE = new MogulSkeleton();
     protected Bone MogulRoot, MogulBody, MogulFrontRobe, MogulBackRobe, MogulLeftRobe, MogulRightRobe, MogulRightArm, MogulRightLeg, MogulLeftLeg, MogulLeftArm, MogulNeck, MogulHead, MogulFace, MogulNose, MogulHelmetBase, MogulHelmetUpper, MogulHelmetOrnament, MogulBackHelmetFlap, MogulLeftHelmetFlap, MogulRightHelmetFlap;
     public Bone MogulRightArmGrasp, MogulLeftArmGrasp;
 

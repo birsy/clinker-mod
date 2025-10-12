@@ -1,12 +1,11 @@
 package birsy.clinker.client.entity.mogul;
 
-
 import foundry.veil.api.client.necromancer.render.Skin;
 
 public class MogulSkin {
     protected static final Skin MOGUL_SKIN;
     static {
-        Skin.Builder builder = Skin.builder(256, 256);
+        Skin.Builder builder = Skin.builder(MogulSkeleton.STATIC_INSTANCE, 256, 256);
         builder.startBone("MogulRoot");
 
         builder.startBone("MogulBody");
