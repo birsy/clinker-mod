@@ -24,39 +24,40 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
     protected void registerStatesAndModels() {
         //brimstone
         {
-            ResourceLocation BRIMSTONE_TOP = this.modLoc(ModelProvider.BLOCK_FOLDER + "/brimstone/brimstone_end");
+            ResourceLocation BRIMSTONE_TOP = this.modLoc(ModelProvider.BLOCK_FOLDER + "/brimstone_end");
+            String brimstoneName = name(ClinkerBlocks.BRIMSTONE.get());
             this.simpleBlockWithVariationAndTransformation(ClinkerBlocks.BRIMSTONE.get(), (i) -> {
                 String suffix = i == 0 ? "" : "_" + i;
                 return this.models().cubeColumn(
                         "brimstone" + suffix,
-                        this.modLoc(ModelProvider.BLOCK_FOLDER + "/brimstone/brimstone" + suffix),
+                        this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + brimstoneName + suffix),
                         BRIMSTONE_TOP
                 );
             }, (i) -> {
                 String suffix = i == 0 ? "" : "_" + i;
                 return this.models().withExistingParent(
                                 "brimstone" + suffix + "_mirrored", ModelProvider.BLOCK_FOLDER + "/cube_column_mirrored")
-                        .texture("side", this.modLoc(ModelProvider.BLOCK_FOLDER + "/brimstone/brimstone" + suffix))
+                        .texture("side", this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + brimstoneName + suffix))
                         .texture("end", BRIMSTONE_TOP
                         );
             }, 4, false, true);
-            this.simpleBlockItem(ClinkerBlocks.BRIMSTONE.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/brimstone")));
+            this.simpleBlockItem(ClinkerBlocks.BRIMSTONE.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + brimstoneName)));
             this.slabBlockWithVariation(ClinkerBlocks.BRIMSTONE_SLAB.get(),
-                    (i) -> this.modLoc(ModelProvider.BLOCK_FOLDER + "/brimstone" + (i == 0 ? "" : "_" + i)),
-                    (i) -> this.modLoc(ModelProvider.BLOCK_FOLDER + "/brimstone/brimstone" + (i == 0 ? "" : "_" + i)),
+                    (i) -> this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + brimstoneName + (i == 0 ? "" : "_" + i)),
+                    (i) -> this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + brimstoneName + (i == 0 ? "" : "_" + i)),
                     (i) -> BRIMSTONE_TOP,
                     (i) -> BRIMSTONE_TOP, 4
             );
             this.simpleBlockItem(ClinkerBlocks.BRIMSTONE_SLAB.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/brimstone_slab")));
             this.stairsBlockWithVariation(ClinkerBlocks.BRIMSTONE_STAIRS.get(),
-                    (i) -> this.modLoc(ModelProvider.BLOCK_FOLDER + "/brimstone/brimstone" + (i == 0 ? "" : "_" + i)),
+                    (i) -> this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + brimstoneName + (i == 0 ? "" : "_" + i)),
                     (i) -> BRIMSTONE_TOP,
                     (i) -> BRIMSTONE_TOP, 4
             );
             this.simpleBlockItem(ClinkerBlocks.BRIMSTONE_STAIRS.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/brimstone_stairs")));
 
-            this.wallBlock((WallBlock) ClinkerBlocks.BRIMSTONE_WALL.get(), this.modLoc(ModelProvider.BLOCK_FOLDER + "/brimstone/brimstone"));
-            this.simpleBlockItem(ClinkerBlocks.BRIMSTONE_WALL.get(), this.models().wallInventory("brimstone_wall_inventory", this.modLoc(ModelProvider.BLOCK_FOLDER + "/brimstone/brimstone")));
+            this.wallBlock((WallBlock) ClinkerBlocks.BRIMSTONE_WALL.get(), this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + brimstoneName));
+            this.simpleBlockItem(ClinkerBlocks.BRIMSTONE_WALL.get(), this.models().wallInventory("brimstone_wall_inventory", this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + brimstoneName)));
         }
 
         // brimstone pillar
@@ -80,20 +81,45 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
 
         // brimstone bricks
         {
+            String brimstoneBricksName = name(ClinkerBlocks.BRIMSTONE_BRICKS.get());
+
             this.simpleBlockWithVariation(ClinkerBlocks.BRIMSTONE_BRICKS.get(), 4);
-            this.simpleBlockItem(ClinkerBlocks.BRIMSTONE_BRICKS.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/brimstone_bricks")));
+            this.simpleBlockItem(ClinkerBlocks.BRIMSTONE_BRICKS.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + brimstoneBricksName)));
 
             this.slabBlockWithVariation(ClinkerBlocks.BRIMSTONE_BRICK_SLAB.get(),
-                    (i) -> this.modLoc(ModelProvider.BLOCK_FOLDER + "/brimstone_bricks" + (i == 0 ? "" : "_" + i)),
-                    (i) -> this.modLoc(ModelProvider.BLOCK_FOLDER + "/brimstone_bricks/brimstone_bricks" + (i == 0 ? "" : "_" + i)),
+                    (i) -> this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + brimstoneBricksName + (i == 0 ? "" : "_" + i)),
+                    (i) -> this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + brimstoneBricksName + (i == 0 ? "" : "_" + i)),
                     4);
             this.simpleBlockItem(ClinkerBlocks.BRIMSTONE_BRICK_SLAB.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/brimstone_brick_slab")));
 
-            this.stairsBlockWithVariation(ClinkerBlocks.BRIMSTONE_BRICK_STAIRS.get(), (i) -> this.modLoc(ModelProvider.BLOCK_FOLDER + "/brimstone_bricks/brimstone_bricks" + (i == 0 ? "" : "_" + i)), 4);
+            this.stairsBlockWithVariation(ClinkerBlocks.BRIMSTONE_BRICK_STAIRS.get(), (i) -> this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + brimstoneBricksName + (i == 0 ? "" : "_" + i)), 4);
             this.simpleBlockItem(ClinkerBlocks.BRIMSTONE_BRICK_STAIRS.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/brimstone_brick_stairs")));
 
-            this.wallBlock((WallBlock) ClinkerBlocks.BRIMSTONE_BRICK_WALL.get(), this.modLoc(ModelProvider.BLOCK_FOLDER + "/brimstone_bricks/brimstone_bricks"));
-            this.simpleBlockItem(ClinkerBlocks.BRIMSTONE_BRICK_WALL.get(), this.models().wallInventory("brimstone_brick_wall_inventory", this.modLoc(ModelProvider.BLOCK_FOLDER + "/brimstone_bricks/brimstone_bricks")));
+            this.wallBlock((WallBlock) ClinkerBlocks.BRIMSTONE_BRICK_WALL.get(), this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + brimstoneBricksName));
+            this.simpleBlockItem(ClinkerBlocks.BRIMSTONE_BRICK_WALL.get(), this.models().wallInventory("brimstone_brick_wall_inventory", this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + brimstoneBricksName)));
+        }
+
+        // cracked brimstone bricks
+        {
+            String crackedBrimstoneBricksName = name(ClinkerBlocks.CRACKED_BRIMSTONE_BRICKS.get());
+
+            this.simpleBlockWithVariation(ClinkerBlocks.CRACKED_BRIMSTONE_BRICKS.get(), 4);
+            this.simpleBlockItem(ClinkerBlocks.CRACKED_BRIMSTONE_BRICKS.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + crackedBrimstoneBricksName)));
+
+            this.slabBlockWithVariation(ClinkerBlocks.CRACKED_BRIMSTONE_BRICK_SLAB.get(),
+                    (i) -> this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + crackedBrimstoneBricksName + (i == 0 ? "" : "_" + i)),
+                    (i) -> this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + crackedBrimstoneBricksName + (i == 0 ? "" : "_" + i)),
+                    4);
+            this.simpleBlockItem(ClinkerBlocks.CRACKED_BRIMSTONE_BRICK_SLAB.get(),
+                    this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/cracked_brimstone_brick_slab")));
+
+            this.stairsBlockWithVariation(ClinkerBlocks.CRACKED_BRIMSTONE_BRICK_STAIRS.get(), (i) -> this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + crackedBrimstoneBricksName + (i == 0 ? "" : "_" + i)), 4);
+            this.simpleBlockItem(ClinkerBlocks.CRACKED_BRIMSTONE_BRICK_STAIRS.get(),
+                    this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/cracked_brimstone_brick_stairs")));
+
+            this.wallBlock((WallBlock) ClinkerBlocks.CRACKED_BRIMSTONE_BRICK_WALL.get(), this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + crackedBrimstoneBricksName));
+            this.simpleBlockItem(ClinkerBlocks.CRACKED_BRIMSTONE_BRICK_WALL.get(),
+                    this.models().wallInventory("cracked_brimstone_brick_wall_inventory", this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + crackedBrimstoneBricksName)));
         }
 
         // polished brimstone
@@ -140,15 +166,15 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
 
             this.slabBlockWithVariation(ClinkerBlocks.CAPSTONE_BRICK_SLAB.get(),
                     (i) -> this.modLoc(ModelProvider.BLOCK_FOLDER + "/capstone_bricks" + (i == 0 ? "" : "_" + i)),
-                    (i) -> this.modLoc(ModelProvider.BLOCK_FOLDER + "/capstone_bricks/capstone_bricks" + (i == 0 ? "" : "_" + i)),
+                    (i) -> this.modLoc(ModelProvider.BLOCK_FOLDER + "/capstone_bricks" + (i == 0 ? "" : "_" + i)),
                     4);
             this.simpleBlockItem(ClinkerBlocks.CAPSTONE_BRICK_SLAB.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/capstone_brick_slab")));
 
-            this.stairsBlockWithVariation(ClinkerBlocks.CAPSTONE_BRICK_STAIRS.get(), (i) -> this.modLoc(ModelProvider.BLOCK_FOLDER + "/capstone_bricks/capstone_bricks" + (i == 0 ? "" : "_" + i)), 4);
+            this.stairsBlockWithVariation(ClinkerBlocks.CAPSTONE_BRICK_STAIRS.get(), (i) -> this.modLoc(ModelProvider.BLOCK_FOLDER + "/capstone_bricks" + (i == 0 ? "" : "_" + i)), 4);
             this.simpleBlockItem(ClinkerBlocks.CAPSTONE_BRICK_STAIRS.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/capstone_brick_stairs")));
 
-            this.wallBlock((WallBlock) ClinkerBlocks.CAPSTONE_BRICK_WALL.get(), this.modLoc(ModelProvider.BLOCK_FOLDER + "/capstone_bricks/capstone_bricks"));
-            this.simpleBlockItem(ClinkerBlocks.CAPSTONE_BRICK_WALL.get(), this.models().wallInventory("capstone_brick_wall_inventory", this.modLoc(ModelProvider.BLOCK_FOLDER + "/capstone_bricks/capstone_bricks")));
+            this.wallBlock((WallBlock) ClinkerBlocks.CAPSTONE_BRICK_WALL.get(), this.modLoc(ModelProvider.BLOCK_FOLDER + "/capstone_bricks"));
+            this.simpleBlockItem(ClinkerBlocks.CAPSTONE_BRICK_WALL.get(), this.models().wallInventory("capstone_brick_wall_inventory", this.modLoc(ModelProvider.BLOCK_FOLDER + "/capstone_bricks")));
         }
 
         // polished capstone
@@ -222,7 +248,7 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
         {
             ResourceLocation CALC_BRICKS = this.modLoc(ModelProvider.BLOCK_FOLDER + "/calc_bricks");
 
-            this.simpleBlockWithVariationNoFolder(ClinkerBlocks.CALC_BRICKS.get(), 6);
+            this.simpleBlockWithVariation(ClinkerBlocks.CALC_BRICKS.get(), 6);
             this.simpleBlockItem(ClinkerBlocks.CALC_BRICKS.get(), this.models().getExistingFile(CALC_BRICKS));
 
             this.slabBlockWithVariation(ClinkerBlocks.CALC_BRICK_SLAB.get(),
@@ -469,14 +495,6 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
         this.simpleBlockWithVariation(block, (i) -> {
             String suffix = i == 0 ? "" : "_" + i;
             String name = blockName + suffix;
-            return this.models().cubeAll(name, this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + blockName + "/" + name));
-        }, variations);
-    }
-    private void simpleBlockWithVariationNoFolder(Block block, int variations) {
-        String blockName = name(block);
-        this.simpleBlockWithVariation(block, (i) -> {
-            String suffix = i == 0 ? "" : "_" + i;
-            String name = blockName + suffix;
             return this.models().cubeAll(name, this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name));
         }, variations);
     }
@@ -495,7 +513,7 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
                     String suffix = i == 0 ? "" : "_" + i;
                     return this.models().cubeAll(
                             blockName + suffix,
-                            this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + blockName + "/" + blockName + suffix)
+                            this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + blockName + suffix)
                     );
                 }, (i) -> {
                     String suffix = i == 0 ? "" : "_" + i;
@@ -503,7 +521,7 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
                             blockName + suffix + "_mirrored",
                             this.mcLoc(ModelProvider.BLOCK_FOLDER + "/cube_mirrored_all"),
                             "all",
-                            this.modLoc( ModelProvider.BLOCK_FOLDER + "/" + blockName + "/" + blockName + suffix)
+                            this.modLoc( ModelProvider.BLOCK_FOLDER + "/" + blockName + suffix)
                     );
                 },
                 variations, rotateX, rotateY

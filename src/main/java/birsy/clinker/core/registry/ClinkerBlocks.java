@@ -31,7 +31,6 @@ public class ClinkerBlocks
     public static final DeferredBlock<Block> FERMENTATION_BARREL = createBlock("fermentation_barrel", FermentationBarrelBlock::new);
     public static final DeferredBlock<Block> COUNTER = createBlock("counter", () -> new CounterBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GRAY).strength(1.0f, 2.0f).sound(SoundType.WOOD)));
     
-    public static final DeferredBlock<Block> BLANK_SARCOPHAGUS = createBlock("blank_sarcophagus", () -> new SarcophagusBlock(getBrimstoneProperties().noOcclusion()));
     public static final DeferredBlock<Block> STOVE = createBlock("stove", () -> new StoveControllerBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BRICKS).sound(SoundType.NETHER_BRICKS)));
     public static final DeferredBlock<Block> STOVE_DUMMY = createBlockNoItem("stove_dummy", () -> new StoveBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BRICKS).sound(SoundType.NETHER_BRICKS)));
     public static final DeferredBlock<Block> STOVE_CHIMNEY = createBlockNoItem("stove_chimney", () -> new StoveChimneyBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BRICKS).sound(SoundType.NETHER_BRICKS).noOcclusion()));
@@ -39,7 +38,7 @@ public class ClinkerBlocks
     //Material Blocks
     public static final DeferredBlock<Block> LEAD_BLOCK = createBlock("lead_block", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GRAY).strength(5.0f, 6.0f).sound(SoundType.NETHERITE_BLOCK)));
     public static final DeferredBlock<Block> RAW_LEAD_BLOCK = createBlock("raw_lead_block", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GRAY).strength(2.5f, 3.0f).sound(SoundType.ANCIENT_DEBRIS)));
-    
+
     //Soils
     public static final DeferredBlock<Block> ASH = createBlock("ash", () -> new ColoredFallingBlock(new ColorRGBA(8616308), Block.Properties.of().mapColor(MapColor.COLOR_GRAY).strength(0.5F).sound(SoundType.SNOW)));
     public static final DeferredBlock<Block> ASH_LAYER = createBlock("ash_layers", () -> new FallingLayerBlock(new ColorRGBA(8616308), BlockBehaviour.Properties.ofFullCopy(Blocks.SNOW).mapColor(MapColor.COLOR_GRAY)));
@@ -49,37 +48,40 @@ public class ClinkerBlocks
     public static final DeferredBlock<Block> MUD = createBlock("mud", () -> new SulfricMudBlock(Block.Properties.of().mapColor(MapColor.TERRACOTTA_BROWN).strength(0.5F).sound(SoundType.WET_GRASS)));
 
     //Brimstone
-    public static BlockBehaviour.Properties getBrimstoneProperties() {
-        return BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BROWN)
-                  .strength(2.75F, 75.0F)
-                  .sound(SoundType.DRIPSTONE_BLOCK).requiresCorrectToolForDrops();
-    }
+    public static final DeferredBlock<Block> BRIMSTONE = createBlock("brimstone", () -> new Block(
+            BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BROWN)
+            .strength(2.75F, 75.0F)
+            .sound(SoundType.DRIPSTONE_BLOCK).requiresCorrectToolForDrops())
+    );
+    public static final DeferredBlock<Block> BRIMSTONE_SLAB = createBlock("brimstone_slab", () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(BRIMSTONE.get())));
+    public static final DeferredBlock<Block> BRIMSTONE_STAIRS = createBlock("brimstone_stairs", () -> new StairBlock(BRIMSTONE.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(BRIMSTONE.get())));
+    public static final DeferredBlock<Block> BRIMSTONE_WALL = createBlock("brimstone_wall", () -> new WallBlock(BlockBehaviour.Properties.ofFullCopy(BRIMSTONE.get())));
 
-    public static final DeferredBlock<Block> BRIMSTONE = createBlock("brimstone", () -> new Block(getBrimstoneProperties()));
-    public static final DeferredBlock<Block> BRIMSTONE_SLAB = createBlock("brimstone_slab", () -> new SlabBlock(getBrimstoneProperties()));
-    public static final DeferredBlock<Block> BRIMSTONE_STAIRS = createBlock("brimstone_stairs", () -> new StairBlock(BRIMSTONE.get().defaultBlockState(), getBrimstoneProperties()));
-    public static final DeferredBlock<Block> BRIMSTONE_WALL = createBlock("brimstone_wall", () -> new WallBlock(getBrimstoneProperties()));
-    
-    public static final DeferredBlock<Block> BRIMSTONE_PILLAR = createBlock("brimstone_pillar", () -> new RotatedPillarBlock(getBrimstoneProperties()));
-    
-    public static final DeferredBlock<Block> COBBLED_BRIMSTONE = createBlock("cobbled_brimstone", () -> new Block(getBrimstoneProperties().sound(SoundType.GILDED_BLACKSTONE)));
-    public static final DeferredBlock<Block> COBBLED_BRIMSTONE_SLAB = createBlock("cobbled_brimstone_slab", () -> new SlabBlock(getBrimstoneProperties().sound(SoundType.GILDED_BLACKSTONE)));
-    public static final DeferredBlock<Block> COBBLED_BRIMSTONE_STAIRS = createBlock("cobbled_brimstone_stairs", () -> new StairBlock(COBBLED_BRIMSTONE.get().defaultBlockState(), getBrimstoneProperties().sound(SoundType.GILDED_BLACKSTONE)));
-    public static final DeferredBlock<Block> COBBLED_BRIMSTONE_WALL = createBlock("cobbled_brimstone_wall", () -> new WallBlock(getBrimstoneProperties().sound(SoundType.GILDED_BLACKSTONE)));
-    
-    public static final DeferredBlock<Block> POLISHED_BRIMSTONE = createBlock("polished_brimstone", () -> new Block(getBrimstoneProperties()));
-    public static final DeferredBlock<Block> POLISHED_BRIMSTONE_SLAB = createBlock("polished_brimstone_slab", () -> new SlabBlock(getBrimstoneProperties()));
-    public static final DeferredBlock<Block> POLISHED_BRIMSTONE_STAIRS = createBlock("polished_brimstone_stairs", () -> new StairBlock(POLISHED_BRIMSTONE.get().defaultBlockState(), getBrimstoneProperties()));
-    public static final DeferredBlock<Block> POLISHED_BRIMSTONE_WALL = createBlock("polished_brimstone_wall", () -> new WallBlock(getBrimstoneProperties()));
-    
-    public static final DeferredBlock<Block> BRIMSTONE_BRICKS = createBlock("brimstone_bricks", () -> new Block(getBrimstoneProperties()));
-    public static final DeferredBlock<Block> BRIMSTONE_BRICK_SLAB = createBlock("brimstone_brick_slab", () -> new SlabBlock(getBrimstoneProperties()));
-    public static final DeferredBlock<Block> BRIMSTONE_BRICK_STAIRS = createBlock("brimstone_brick_stairs", () -> new StairBlock(BRIMSTONE_BRICKS.get().defaultBlockState(), getBrimstoneProperties()));
-    public static final DeferredBlock<Block> BRIMSTONE_BRICK_WALL = createBlock("brimstone_brick_wall", () -> new WallBlock(getBrimstoneProperties()));
+    public static final DeferredBlock<Block> BRIMSTONE_PILLAR = createBlock("brimstone_pillar", () -> new RotatedPillarBlock(BlockBehaviour.Properties.ofFullCopy(BRIMSTONE.get())));
 
-    public static final DeferredBlock<Block> CHISELED_BRIMSTONE = createBlock("chiseled_brimstone", () -> new GlazedTerracottaBlock(getBrimstoneProperties()));
+    public static final DeferredBlock<Block> COBBLED_BRIMSTONE = createBlock("cobbled_brimstone", () -> new Block(BlockBehaviour.Properties.ofFullCopy(BRIMSTONE.get()).sound(SoundType.GILDED_BLACKSTONE)));
+    public static final DeferredBlock<Block> COBBLED_BRIMSTONE_SLAB = createBlock("cobbled_brimstone_slab", () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(BRIMSTONE.get()).sound(SoundType.GILDED_BLACKSTONE)));
+    public static final DeferredBlock<Block> COBBLED_BRIMSTONE_STAIRS = createBlock("cobbled_brimstone_stairs", () -> new StairBlock(COBBLED_BRIMSTONE.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(BRIMSTONE.get()).sound(SoundType.GILDED_BLACKSTONE)));
+    public static final DeferredBlock<Block> COBBLED_BRIMSTONE_WALL = createBlock("cobbled_brimstone_wall", () -> new WallBlock(BlockBehaviour.Properties.ofFullCopy(BRIMSTONE.get()).sound(SoundType.GILDED_BLACKSTONE)));
 
-    public static final DeferredBlock<Block> SMOOTH_BRIMSTONE = createBlock("smooth_brimstone", () -> new Block(getBrimstoneProperties()));
+    public static final DeferredBlock<Block> POLISHED_BRIMSTONE = createBlock("polished_brimstone", () -> new Block(BlockBehaviour.Properties.ofFullCopy(BRIMSTONE.get())));
+    public static final DeferredBlock<Block> POLISHED_BRIMSTONE_SLAB = createBlock("polished_brimstone_slab", () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(BRIMSTONE.get())));
+    public static final DeferredBlock<Block> POLISHED_BRIMSTONE_STAIRS = createBlock("polished_brimstone_stairs", () -> new StairBlock(POLISHED_BRIMSTONE.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(BRIMSTONE.get())));
+    public static final DeferredBlock<Block> POLISHED_BRIMSTONE_WALL = createBlock("polished_brimstone_wall", () -> new WallBlock(BlockBehaviour.Properties.ofFullCopy(BRIMSTONE.get())));
+
+    public static final DeferredBlock<Block> BRIMSTONE_BRICKS = createBlock("brimstone_bricks", () -> new Block(BlockBehaviour.Properties.ofFullCopy(BRIMSTONE.get())));
+    public static final DeferredBlock<Block> BRIMSTONE_BRICK_SLAB = createBlock("brimstone_brick_slab", () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(BRIMSTONE_BRICKS.get())));
+    public static final DeferredBlock<Block> BRIMSTONE_BRICK_STAIRS = createBlock("brimstone_brick_stairs", () -> new StairBlock(BRIMSTONE_BRICKS.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(BRIMSTONE_BRICKS.get())));
+    public static final DeferredBlock<Block> BRIMSTONE_BRICK_WALL = createBlock("brimstone_brick_wall", () -> new WallBlock(BlockBehaviour.Properties.ofFullCopy(BRIMSTONE_BRICKS.get())));
+
+    public static final DeferredBlock<Block> CRACKED_BRIMSTONE_BRICKS = createBlock("cracked_brimstone_bricks", () -> new Block(BlockBehaviour.Properties.ofFullCopy(BRIMSTONE_BRICKS.get())));
+    public static final DeferredBlock<Block> CRACKED_BRIMSTONE_BRICK_SLAB = createBlock("cracked_brimstone_brick_slab", () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(BRIMSTONE_BRICKS.get())));
+    public static final DeferredBlock<Block> CRACKED_BRIMSTONE_BRICK_STAIRS = createBlock("cracked_brimstone_brick_stairs", () -> new StairBlock(BRIMSTONE_BRICKS.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(BRIMSTONE_BRICKS.get())));
+    public static final DeferredBlock<Block> CRACKED_BRIMSTONE_BRICK_WALL = createBlock("cracked_brimstone_brick_wall", () -> new WallBlock(BlockBehaviour.Properties.ofFullCopy(BRIMSTONE_BRICKS.get())));
+
+    public static final DeferredBlock<Block> CHISELED_BRIMSTONE = createBlock("chiseled_brimstone", () -> new GlazedTerracottaBlock(BlockBehaviour.Properties.ofFullCopy(BRIMSTONE.get())));
+
+    public static final DeferredBlock<Block> SMOOTH_BRIMSTONE = createBlock("smooth_brimstone", () -> new Block(BlockBehaviour.Properties.ofFullCopy(BRIMSTONE.get())));
 
 
     public static final DeferredBlock<Block> CALC = createBlock("calc", () -> new Block(
@@ -124,7 +126,11 @@ public class ClinkerBlocks
                 .sound(SoundType.NETHER_BRICKS);
     }
 
-    public static final DeferredBlock<Block> CAPSTONE = createBlock("capstone", () -> new Block(getCapstoneProperties()));
+    public static final DeferredBlock<Block> CAPSTONE = createBlock("capstone", () -> new Block(BlockBehaviour.Properties.of()
+            .mapColor(MapColor.TERRACOTTA_LIGHT_GRAY)
+            .strength(1.5F, 3.0F)
+            .sound(SoundType.NETHER_BRICKS))
+    );
     public static final DeferredBlock<Block> CAPSTONE_SLAB = createBlock("capstone_slab", () -> new SlabBlock(getCapstoneProperties()));
     public static final DeferredBlock<Block> CAPSTONE_STAIRS = createBlock("capstone_stairs", () -> new StairBlock(CAPSTONE.get().defaultBlockState(), getCapstoneProperties()));
     public static final DeferredBlock<Block> CAPSTONE_WALL = createBlock("capstone_wall", () -> new WallBlock(getCapstoneProperties()));
@@ -154,7 +160,7 @@ public class ClinkerBlocks
                   .strength(2.75F, 10.0F)
                   .sound(SoundType.ANCIENT_DEBRIS);
     }
-    
+
     public static final DeferredBlock<Block> SHALE = createBlock("shale", () -> new RotatedPillarBlock(getShaleProperties()));
     public static final DeferredBlock<Block> SHALE_PILLAR = createBlock("shale_pillar", () -> new RotatedPillarBlock(getShaleProperties()));
 
@@ -162,17 +168,17 @@ public class ClinkerBlocks
     public static final DeferredBlock<Block> SMOOTH_SHALE_SLAB = createBlock("smooth_shale_slab", () -> new SlabBlock(getShaleProperties()));
     public static final DeferredBlock<Block> SMOOTH_SHALE_STAIRS = createBlock("smooth_shale_stairs", () -> new StairBlock(SMOOTH_SHALE.get().defaultBlockState(), getShaleProperties()));
     public static final DeferredBlock<Block> SMOOTH_SHALE_WALL = createBlock("smooth_shale_wall", () -> new WallBlock(getShaleProperties()));
-    
+
     public static final DeferredBlock<Block> POLISHED_SHALE = createBlock("polished_shale", () -> new Block(getShaleProperties()));
     public static final DeferredBlock<Block> POLISHED_SHALE_SLAB = createBlock("polished_shale_slab", () -> new SlabBlock(getShaleProperties()));
     public static final DeferredBlock<Block> POLISHED_SHALE_STAIRS = createBlock("polished_shale_stairs", () -> new StairBlock(SMOOTH_SHALE.get().defaultBlockState(), getShaleProperties()));
     public static final DeferredBlock<Block> POLISHED_SHALE_WALL = createBlock("polished_shale_wall", () -> new WallBlock(getShaleProperties()));
-    
+
     public static final DeferredBlock<Block> SHALE_BRICKS = createBlock("shale_bricks", () -> new Block(getShaleProperties()));
     public static final DeferredBlock<Block> SHALE_BRICKS_SLAB = createBlock("shale_bricks_slab", () -> new SlabBlock(getShaleProperties()));
     public static final DeferredBlock<Block> SHALE_BRICKS_STAIRS = createBlock("shale_bricks_stairs", () -> new StairBlock(SMOOTH_SHALE.get().defaultBlockState(), getShaleProperties()));
     public static final DeferredBlock<Block> SHALE_BRICKS_WALL = createBlock("shale_bricks_wall", () -> new WallBlock(getShaleProperties()));
-    
+
     public static final DeferredBlock<Block> SMALL_SHALE_BRICKS = createBlock("small_shale_bricks", () -> new Block(getShaleProperties()));
     public static final DeferredBlock<Block> SMALL_SHALE_BRICKS_SLAB = createBlock("small_shale_bricks_slab", () -> new SlabBlock(getShaleProperties()));
     public static final DeferredBlock<Block> SMALL_SHALE_BRICKS_STAIRS = createBlock("small_shale_bricks_stairs", () -> new StairBlock(SMOOTH_SHALE.get().defaultBlockState(), getShaleProperties()));
@@ -189,9 +195,9 @@ public class ClinkerBlocks
 //    public static final DeferredBlock<Block> ANCIENT_BRICK_FLAT = createBlock("ancient_brick_flat", AncientBrickFlatBlock::new);
 //    public static final DeferredBlock<Block> ANCIENT_RUNE = createBlock("ancient_rune", AncientBrickRunesBlock::new);
 
-    
+
     //Metal Ores
-    public static final DeferredBlock<Block> LEAD_ORE = createBlock("lead_ore", () -> new Block(getBrimstoneProperties()));
+    public static final DeferredBlock<Block> LEAD_ORE = createBlock("lead_ore", () -> new Block(BlockBehaviour.Properties.ofFullCopy(BRIMSTONE.get())));
     
     
     //Wood Types
@@ -304,14 +310,14 @@ public class ClinkerBlocks
             ClinkerFluids.VITRIOL.get(), BlockBehaviour.Properties.ofFullCopy(Blocks.WATER).mapColor(MapColor.DIRT))
     );
 
+    //Special
+    public static final DeferredBlock<Block> BLANK_SARCOPHAGUS = createBlock("blank_sarcophagus", () -> new SarcophagusBlock(BlockBehaviour.Properties.ofFullCopy(BRIMSTONE.get()).noOcclusion()));
+
     public static void defineFlammability(FireBlock fire) {
         fire.setFlammable(THORNY_STEM.get(), 60, 5);
         fire.setFlammable(BRAMBLE_BLOSSOM.get(), 60, 5);
         fire.setFlammable(WITHERING_BRAMBLE_BLOSSOM.get(), 60, 5);
     }
-
-
-    //Special
 
     public static <T extends Block> DeferredBlock<T> createBlock(String name, final Supplier<T> supplier) {
         DeferredBlock<T> block = BLOCKS.register(name, supplier);

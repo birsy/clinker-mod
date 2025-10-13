@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_cobbled_brimstone": {
+    "has_brimstone": {
       "conditions": {
         "items": [
           {
-            "items": "clinker:cobbled_brimstone"
+            "items": "clinker:brimstone"
           }
         ]
       },
@@ -21,7 +21,7 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_cobbled_brimstone"
+      "has_brimstone"
     ]
   ],
   "rewards": {

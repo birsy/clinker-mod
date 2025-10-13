@@ -5,16 +5,70 @@
       "conditions": {
         "items": [
           {
-            "items": "clinker:brimstone"
+            "items": "clinker:polished_brimstone"
           },
           {
-            "items": "clinker:polished_brimstone"
+            "items": "clinker:polished_brimstone_slab"
+          },
+          {
+            "items": "clinker:polished_brimstone_stairs"
+          },
+          {
+            "items": "clinker:polished_brimstone_wall"
           },
           {
             "items": "clinker:brimstone_bricks"
           },
           {
+            "items": "clinker:brimstone_brick_slab"
+          },
+          {
+            "items": "clinker:brimstone_brick_stairs"
+          },
+          {
+            "items": "clinker:brimstone_brick_wall"
+          },
+          {
+            "items": "clinker:cracked_brimstone_bricks"
+          },
+          {
+            "items": "clinker:cracked_brimstone_brick_slab"
+          },
+          {
+            "items": "clinker:cracked_brimstone_brick_stairs"
+          },
+          {
+            "items": "clinker:cracked_brimstone_brick_wall"
+          },
+          {
+            "items": "clinker:brimstone"
+          },
+          {
+            "items": "clinker:brimstone_slab"
+          },
+          {
+            "items": "clinker:brimstone_stairs"
+          },
+          {
+            "items": "clinker:brimstone_wall"
+          },
+          {
             "items": "clinker:cobbled_brimstone"
+          },
+          {
+            "items": "clinker:cobbled_brimstone_slab"
+          },
+          {
+            "items": "clinker:cobbled_brimstone_stairs"
+          },
+          {
+            "items": "clinker:cobbled_brimstone_wall"
+          },
+          {
+            "items": "clinker:brimstone_pillar"
+          },
+          {
+            "items": "clinker:chiseled_brimstone"
           }
         ]
       },

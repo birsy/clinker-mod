@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "clinker:cracked_brimstone_bricks"
+  },
+  "result": {
+    "count": 1,
+    "id": "clinker:polished_brimstone"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/stairs",
+  "textures": {
+    "bottom": "clinker:block/cracked_brimstone_bricks",
+    "side": "clinker:block/cracked_brimstone_bricks",
+    "top": "clinker:block/cracked_brimstone_bricks"
+  }
+}

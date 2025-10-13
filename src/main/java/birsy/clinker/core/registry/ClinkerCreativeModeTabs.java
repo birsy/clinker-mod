@@ -34,6 +34,7 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(ClinkerBlocks.ASH_LAYER.get());
         pOutput.accept(ClinkerBlocks.ASHEN_REGOLITH.get());
         pOutput.accept(ClinkerBlocks.MUD.get());
+
         pOutput.accept(ClinkerBlocks.BRIMSTONE.get());
         pOutput.accept(ClinkerBlocks.BRIMSTONE_SLAB.get());
         pOutput.accept(ClinkerBlocks.BRIMSTONE_STAIRS.get());
@@ -51,6 +52,11 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(ClinkerBlocks.BRIMSTONE_BRICK_SLAB.get());
         pOutput.accept(ClinkerBlocks.BRIMSTONE_BRICK_STAIRS.get());
         pOutput.accept(ClinkerBlocks.BRIMSTONE_BRICK_WALL.get());
+        pOutput.accept(ClinkerBlocks.CRACKED_BRIMSTONE_BRICKS.get());
+        pOutput.accept(ClinkerBlocks.CRACKED_BRIMSTONE_BRICK_SLAB.get());
+        pOutput.accept(ClinkerBlocks.CRACKED_BRIMSTONE_BRICK_STAIRS.get());
+        pOutput.accept(ClinkerBlocks.CRACKED_BRIMSTONE_BRICK_WALL.get());
+
         pOutput.accept(ClinkerBlocks.CHISELED_BRIMSTONE.get());
         pOutput.accept(ClinkerBlocks.SMOOTH_BRIMSTONE.get());
         pOutput.accept(ClinkerBlocks.CALAMINE.get());

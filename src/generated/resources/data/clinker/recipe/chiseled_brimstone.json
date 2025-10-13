@@ -4,13 +4,16 @@
   "key": {
     "#": [
       {
-        "item": "clinker:brimstone_slab"
-      },
-      {
         "item": "clinker:polished_brimstone_slab"
       },
       {
         "item": "clinker:brimstone_brick_slab"
+      },
+      {
+        "item": "clinker:cracked_brimstone_brick_slab"
+      },
+      {
+        "item": "clinker:brimstone_slab"
       },
       {
         "item": "clinker:cobbled_brimstone_slab"

@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab_top",
+  "textures": {
+    "bottom": "clinker:block/cracked_brimstone_bricks_1",
+    "side": "clinker:block/cracked_brimstone_bricks_1",
+    "top": "clinker:block/cracked_brimstone_bricks_1"
+  }
+}
