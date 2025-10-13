@@ -178,7 +178,6 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
     public BrainActivityGroup<GnomadMogulEntity> getCoreTasks() {
         return BrainActivityGroup.coreTasks(
                 new LookAtTarget<>(),
-                new SetWatchingEntity<>(),
                 new InvalidateLookAtTarget<>(),
                 new InvalidateCurrentSquadTask<>(),
                 new MoveToWalkTarget<GnomadMogulEntity>().startCondition(mob -> !mob.isSitting()),
@@ -190,28 +189,29 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
     public BrainActivityGroup<GnomadMogulEntity> getIdleTasks() {
         return BrainActivityGroup.idleTasks(
                 // look behaviors
-                new FirstApplicableBehaviour(
-                        new SetRandomLookTargetImproved<>()
-                                .lookTime(mob -> RandomUtil.randomNumberBetween(0, 16 * 20))
-                                .lookChance(ConstantFloat.of(0.2F)),
-                        new LookAtNearestPlayerExpiring<>()
-                                .expirationTime(mob -> RandomUtil.randomNumberBetween(0, 8 * 20))
-                                .startCondition(mob -> RandomUtil.fiftyFifty()), // 50/50 chance of looking at player or a friend.
-                        new LookAtNearestEntity<>()
-                                .expirationTime(mob -> RandomUtil.randomNumberBetween(0, 8 * 20))
-                                .predicate((entity, mob) -> entity.getType().is(ClinkerTags.GNOMADS))
-                ),
+//                new FirstApplicableBehaviour(
+//                        new SetRandomLookTargetImproved<>()
+//                                .lookTime(mob -> RandomUtil.randomNumberBetween(0, 16 * 20))
+//                                .lookChance(ConstantFloat.of(0.2F)),
+//                        new LookAtNearestPlayerExpiring<>()
+//                                .expirationTime(mob -> RandomUtil.randomNumberBetween(0, 8 * 20))
+//                                .startCondition(mob -> RandomUtil.fiftyFifty()), // 50/50 chance of looking at player or a friend.
+//                        new LookAtNearestEntity<>()
+//                                .expirationTime(mob -> RandomUtil.randomNumberBetween(0, 8 * 20))
+//                                .predicate((entity, mob) -> entity.getType().is(ClinkerTags.GNOMADS))
+//                ),
                 // walking behaviors
-                new FirstApplicableBehaviour(
-                        // if we have a rest task, run that!
-                        RestWithFriendsTask.createBehavior(),
-                        new CustomBehaviour<GnomadMogulEntity>(mob -> mob.setSitting(false)).startCondition(GnomadEntity::isSitting),
-                        new StayNearSquad().radius(16, 16),
-                        new OneRandomBehaviour(
-                                new SetRandomWalkTarget<>().speedModifier(0.7F),
-                                new Idle<>().runFor(mob -> RandomUtil.randomNumberBetween(30, 120))
-                        )
-                ),
+//                new FirstApplicableBehaviour(
+//                        // if we have a rest task, run that!
+//                        RestWithFriendsTask.createBehavior(),
+//                        new CustomBehaviour<GnomadMogulEntity>(mob -> mob.setSitting(false)).startCondition(GnomadEntity::isSitting),
+//                        new StayNearSquad().radius(16, 16),
+//                        new OneRandomBehaviour(
+//                                new SetRandomWalkTarget<>().speedModifier(0.7F),
+//                                new Idle<>().runFor(mob -> RandomUtil.randomNumberBetween(30, 120))
+//                        )
+//                ),
+                new MogulCombatStateMachine(),
                 new VolunteerForSquadTask<>()
                         .shouldVolunteer((mob, task) -> task instanceof RestWithFriendsTask)
                         .startCondition((mob) -> RandomUtil.oneInNChance(15 * 20)),

@@ -107,8 +107,7 @@ public class SlabCrabEntity extends GroundLocomoteEntity implements SmartBrainOw
             float desiredYAngle = this.getYRotD().orElse(me.yBodyRot);
             float desiredXAngle = this.getXRotD().orElse(0.0F);
 
-            float lerpFactor = 0.05F;
-            if (me.isWatchingEntity()) lerpFactor = 0.8F;
+            float lerpFactor = this.rotationLerpSpeed.value();
 
             me.yHeadRot = rotateTowards(me.yHeadRot, Mth.rotLerp(lerpFactor, me.yHeadRot, desiredYAngle), 5);
             me.setXRot(   rotateTowards(me.getXRot(), Mth.rotLerp(lerpFactor, me.getXRot(), desiredXAngle), 5));

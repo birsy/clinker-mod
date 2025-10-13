@@ -14,6 +14,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
+import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
@@ -37,8 +38,6 @@ public class GroundLocomoteEntity extends PathfinderMob {
     
     Vector3f smoothedWalk = new Vector3f();
 
-    private static final EntityDataAccessor<Boolean> DATA_WATCHING_ENTITY = SynchedEntityData.defineId(GroundLocomoteEntity.class, EntityDataSerializers.BOOLEAN);
-
     float cumulativeWalkGoal = 0;
     float cumulativeWalk = 0;
     protected final Scheduler scheduler = new Scheduler();
@@ -60,10 +59,17 @@ public class GroundLocomoteEntity extends PathfinderMob {
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(DATA_WATCHING_ENTITY, false);
+    public GroundMoveControl getMoveControl() {
+        return (GroundMoveControl) super.getMoveControl();
     }
+    @Override
+    public GroundLookControl getLookControl() {
+        return (GroundLookControl) super.getLookControl();
+    }
+    public GroundBodyRotationControl getBodyRotationControl() {
+        return (GroundBodyRotationControl) this.bodyRotationControl;
+    }
+
 
     @Override
     public void tick() {
@@ -123,14 +129,6 @@ public class GroundLocomoteEntity extends PathfinderMob {
 
     public float getCumulativeWalk() {
         return cumulativeWalk;
-    }
-
-    public void setWatchingEntity(boolean watchingEntity) {
-        entityData.set(DATA_WATCHING_ENTITY, watchingEntity);
-    }
-
-    public boolean isWatchingEntity() {
-        return entityData.get(DATA_WATCHING_ENTITY);
     }
 
     private void debugMove() {
