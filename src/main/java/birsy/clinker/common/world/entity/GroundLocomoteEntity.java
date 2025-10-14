@@ -70,7 +70,6 @@ public class GroundLocomoteEntity extends PathfinderMob {
         return (GroundBodyRotationControl) this.bodyRotationControl;
     }
 
-
     @Override
     public void tick() {
         this.previousWalk.set(walk);

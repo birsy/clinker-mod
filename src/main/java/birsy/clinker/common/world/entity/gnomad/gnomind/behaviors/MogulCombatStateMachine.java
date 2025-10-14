@@ -62,7 +62,7 @@ public class MogulCombatStateMachine extends StateMachineBehavior<GnomadMogulEnt
             progress += angleDelta;
             double lookTargetX = entity.getX() + Math.cos((angle + 90) * Mth.DEG_TO_RAD) * 2,
                    lookTargetZ = entity.getZ() + Math.sin((angle + 90) * Mth.DEG_TO_RAD) * 2;
-            entity.getLookControl().setLookAt(lookTargetX, entity.getEyeY(), lookTargetZ, angleDelta, angleDelta);
+            entity.getLookControl().setLookAt(lookTargetX, entity.getEyeY(), lookTargetZ);
             entity.yBodyRot = (float) angle;
             if (progress >= 360)
                 stateMachine.transition(new StrafeState());
@@ -73,6 +73,10 @@ public class MogulCombatStateMachine extends StateMachineBehavior<GnomadMogulEnt
             entity.getLookControl().rotationLerpSpeed.popModifier("twirl");
             entity.getBodyRotationControl().rotationLerpSpeed.popModifier("twirl");
             Clinker.LOGGER.info("ending angle {}", entity.getYHeadRot());
+
+            double lookTargetX = entity.getX() + Math.cos((entity.getYHeadRot() + 90) * Mth.DEG_TO_RAD) * 2,
+                   lookTargetZ = entity.getZ() + Math.sin((entity.getYHeadRot() + 90) * Mth.DEG_TO_RAD) * 2;
+            entity.getLookControl().setLookAt(lookTargetX, entity.getEyeY(), lookTargetZ);
         }
     }
 }

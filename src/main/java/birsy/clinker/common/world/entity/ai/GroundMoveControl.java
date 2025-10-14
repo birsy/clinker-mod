@@ -5,6 +5,7 @@ import birsy.clinker.core.util.MathUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.level.block.state.BlockState;
@@ -59,7 +60,10 @@ public class GroundMoveControl extends MoveControl {
         }
 
         if (this.operation == Operation.STRAFE) {
-            Vec3 forwardDirection = me.getLookAngle().multiply(1,0,1).normalize();
+            if (this.strafeForwards == 0 && this.strafeRight == 0) {
+                this.operation = Operation.WAIT;
+            }
+            Vec3 forwardDirection = new Vec3(Math.sin(me.getYRot() * Mth.RAD_TO_DEG), 0, Math.cos(me.getYRot() * Mth.RAD_TO_DEG));
             Vec3 perpendicularDirection = forwardDirection.cross(new Vec3(0, 1, 0)).normalize();
             walkVector.set(
                     (perpendicularDirection.x * this.strafeRight + forwardDirection.x * this.strafeForwards) * speed, 0,

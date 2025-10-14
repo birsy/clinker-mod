@@ -9,8 +9,8 @@ public class MogulWeaponSkins {
     public static final ResourceLocation WARHOOK_TEXTURE_LOCATION = Clinker.resource("textures/entity/mogul_warhook.png");
     public static final ResourceLocation WARHOOK_CHAIN_TEXTURE_LOCATION = Clinker.resource("textures/entity/mogul_warhook_chain.png");
 
-    public static Skin createWarhookModel(String parentName, Skeleton parentSkeleton) {
-        Skin.Builder builder = Skin.builder(parentSkeleton, 32, 32);
+    public static Skin createWarhookModel(String parentName) {
+        Skin.Builder builder = Skin.builder(32, 32);
 
         builder.startBone(parentName);
         builder.addCube(1F, 4F, 2F, 0F, 16.5F, -6F, 0F, 0F, 0F, 6F, 23F, false);
