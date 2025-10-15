@@ -1,6 +1,7 @@
 package birsy.clinker.common.world.entity.ai;
 
 import birsy.clinker.common.world.entity.GroundLocomoteEntity;
+import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.PropertyModifierStack;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
@@ -9,7 +10,7 @@ import net.minecraft.world.entity.ai.control.LookControl;
 import java.util.Optional;
 
 public class GroundLookControl extends LookControl {
-    protected LookTargetType lookTargetType;
+    protected LookTargetType lookTargetType = LookTargetType.NONE;
     protected float wantedPitch, wantedYaw;
 
     public final PropertyModifierStack<Float> rotationLerpSpeed = new PropertyModifierStack<>(0.05F, 8);
@@ -32,8 +33,8 @@ public class GroundLookControl extends LookControl {
         this.wantedX = x;
         this.wantedY = y;
         this.wantedZ = z;
-        this.yMaxRotSpeed = deltaYaw;
-        this.xMaxRotAngle = deltaPitch;
+        //this.yMaxRotSpeed = deltaYaw;
+        //this.xMaxRotAngle = deltaPitch;
         this.lookAtCooldown = 2;
 
         this.lookTargetType = LookTargetType.POSITION;
@@ -77,16 +78,11 @@ public class GroundLookControl extends LookControl {
     @Override
     public void tick() {
         GroundLocomoteEntity me = this.getEntity();
-
-        float desiredYAngle = Mth.wrapDegrees(this.getYRotD().orElse(me.getYRot()));
+        float desiredYAngle = Mth.wrapDegrees(this.getYRotD().orElse(me.yHeadRot));
         float desiredXAngle = Mth.wrapDegrees(this.getXRotD().orElse(me.getXRot()));
-
         float lerpFactor = rotationLerpSpeed.value();
-
-        me.yHeadRot = Mth.wrapDegrees(rotateTowards(me.yHeadRot, Mth.rotLerp(lerpFactor, me.yHeadRot, desiredYAngle), this.yMaxRotSpeed));
-        me.setXRot(   Mth.wrapDegrees(rotateTowards(me.getXRot(), Mth.rotLerp(lerpFactor, me.getXRot(), desiredXAngle), this.xMaxRotAngle)));
-
-        this.clampHeadRotationToBody();
+        me.yHeadRot = Mth.wrapDegrees(Mth.rotLerp(lerpFactor, me.yHeadRot, desiredYAngle));
+        me.setXRot(   Mth.wrapDegrees(Mth.rotLerp(lerpFactor, me.getXRot(), desiredXAngle)));
     }
 
     enum LookTargetType {

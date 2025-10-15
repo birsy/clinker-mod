@@ -129,6 +129,7 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
             axis = axis.normalize().cross(0, 1, 0);
             skeleton.MogulRoot.rotation.rotateAxis(angle * 2, axis);
         }
+
 //
 //        if (smoothedAcceleration.y() < 0) {
 //            skeleton.MogulRoot.ySize = Mth.lerp(Mth.clamp(smoothedAcceleration.y() * -5, 0, 1), 1, 0.5F);
@@ -155,9 +156,12 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
 
         @Override
         public void apply(GnomadMogulEntity entity, MogulSkeleton skeleton, float mixFactor, float time) {
-            float bodyYaw = 180 - entity.yBodyRot;
-            float netHeadYaw = -(entity.yHeadRot - entity.yBodyRot);
-            float headPitch =  -entity.getViewXRot(1.0F);
+            float bodyYaw = Mth.wrapDegrees(180 - entity.yBodyRot);
+
+            float headYaw = Mth.wrapDegrees(180 - entity.yHeadRot);
+            float netHeadYaw = Mth.degreesDifference(bodyYaw, headYaw);
+            netHeadYaw = Mth.clamp(netHeadYaw, -80, 80);
+            float headPitch = -entity.getViewXRot(1.0F);
 
             float globalSpeed = 1.0F;
 

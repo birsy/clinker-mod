@@ -4,13 +4,9 @@ import birsy.clinker.client.entity.mogul.MogulAnimator;
 import birsy.clinker.client.entity.mogul.MogulSkeleton;
 import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
 import birsy.clinker.common.world.entity.ai.behaviors.*;
-import birsy.clinker.common.world.entity.ai.behaviors.LookAtNearestEntity;
-import birsy.clinker.common.world.entity.ai.behaviors.SetRandomLookTargetImproved;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.*;
 import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.GnomadSquadSensor;
 import birsy.clinker.common.world.entity.gnomad.gnomind.squad.squadtasks.RestWithFriendsTask;
-import birsy.clinker.core.registry.ClinkerTags;
-import birsy.clinker.core.util.MathUtils;
 import foundry.veil.api.client.necromancer.SkeletonParent;
 import foundry.veil.api.client.necromancer.animation.Animator;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -20,7 +16,6 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
-import net.minecraft.util.valueproviders.ConstantFloat;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
@@ -30,23 +25,16 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 import net.tslat.smartbrainlib.api.SmartBrainOwner;
 import net.tslat.smartbrainlib.api.core.BrainActivityGroup;
 import net.tslat.smartbrainlib.api.core.SmartBrainProvider;
-import net.tslat.smartbrainlib.api.core.behaviour.FirstApplicableBehaviour;
-import net.tslat.smartbrainlib.api.core.behaviour.OneRandomBehaviour;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.look.LookAtTarget;
-import net.tslat.smartbrainlib.api.core.behaviour.custom.misc.CustomBehaviour;
-import net.tslat.smartbrainlib.api.core.behaviour.custom.misc.Idle;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.move.FloatToSurfaceOfFluid;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.move.MoveToWalkTarget;
-import net.tslat.smartbrainlib.api.core.behaviour.custom.path.SetRandomWalkTarget;
 import net.tslat.smartbrainlib.api.core.navigation.SmoothGroundNavigation;
 import net.tslat.smartbrainlib.api.core.sensor.ExtendedSensor;
 import net.tslat.smartbrainlib.api.core.sensor.custom.GenericAttackTargetSensor;
@@ -66,6 +54,9 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
     private static final int[] ROBE_COLORS = new int[]{0x4d423c, 0x513337, 0x4a4751, 0x505049, 0x4f4c4b};
     private static final EntityDataAccessor<Integer> DATA_ROBE_COLOR = SynchedEntityData.defineId(GnomadMogulEntity.class, EntityDataSerializers.INT);
     private final MogulAttackHandler attackHandler;
+
+    private final double maxYOffset = 1;
+    private double smoothedY, prevSmoothedY;
 
     public GnomadMogulEntity(EntityType<? extends GnomadEntity> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -147,7 +138,7 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
     @Override
     public void tick() {
         super.tick();
-        if (this.level().isClientSide()) this.computeHeightOffset();
+        if (this.level().isClientSide()) this.computeSmoothedHeight();
         if (!this.level().isClientSide()) {
 //            this.attackHandler.tick();
 //            if (this.tickCount % 100 == 0) {
@@ -234,23 +225,20 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
         this.entityData.set(DATA_ROBE_COLOR, robeColor);
     }
 
-    protected double prevSmoothedHeight = 0;
     
-    protected double smoothedHeight = 0;
-    
-    protected void computeHeightOffset() {
-        this.prevSmoothedHeight = this.smoothedHeight;
-        Vec3 samplePosition = this.getPosition(1.0F).add(0, 0.1F, 0);
-        Vec3 to = samplePosition.add(0, -this.maxUpStep() - 0.1F, 0);
-        HitResult result = this.level().clip(new ClipContext(samplePosition, to, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, this));
-        double height = (result.getLocation().y + this.getY()) / 2.0F;
-        this.smoothedHeight = Mth.lerp(0.3F, this.smoothedHeight, height);
-        if (this.smoothedHeight > this.getY()) this.smoothedHeight = this.getY();
-        this.smoothedHeight = MathUtils.clampDifference(this.smoothedHeight, this.getY(), this.maxUpStep());
+    protected void computeSmoothedHeight() {
+        this.prevSmoothedY = this.smoothedY;
+        double currentHeight = this.getY();
+        if (currentHeight < this.smoothedY) {
+            this.smoothedY = currentHeight;
+            return;
+        }
+        this.smoothedY = Mth.approach((float) this.smoothedY, (float) currentHeight, 1 / 10.0F);
+        this.smoothedY = Mth.clamp(this.smoothedY, currentHeight - maxYOffset, currentHeight + maxYOffset);
     }
     
     public float getHeightOffset(float partialTick) {
-        return (float) (Mth.lerp(partialTick, prevSmoothedHeight, smoothedHeight) - this.getPosition(partialTick).y);
+        return (float) (Mth.lerp(partialTick, prevSmoothedY, smoothedY) - Mth.lerp(partialTick, this.yOld, this.getY()));
     }
 
     MogulSkeleton skeleton;
@@ -259,7 +247,6 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
     public void setSkeleton(MogulSkeleton skeleton) {
         this.skeleton = skeleton;
     }
-
 
     @Override
     public MogulSkeleton getSkeleton() {

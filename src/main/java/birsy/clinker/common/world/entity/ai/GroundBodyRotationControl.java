@@ -23,23 +23,22 @@ public class GroundBodyRotationControl extends BodyRotationControl {
     @Override
     public void clientTick() {
         //float bodyRotLerpFactor = rotationLerpSpeed.value();
-        if (this.isMoving()) {
-//            float dX = me.walk.x;
-//            float dZ = me.walk.z;
-            desiredBodyRot = me.yHeadRot;//((float) Mth.atan2(dZ, dX) * Mth.RAD_TO_DEG) - 90;
-        } else {
-            // occasionally do a big correction...
-            if (RandomUtil.oneInNChance(50)) {
-                desiredBodyRot = me.yHeadRot;
-            } else {
-                desiredBodyRot = Mth.rotateIfNecessary(desiredBodyRot, me.yHeadRot, (float)me.getMaxHeadYRot());
-            }
-            //bodyRotLerpFactor = Mth.lerp(Mth.sin(me.tickCount * 0.5F)*0.5F+0.5F, 0.05F, 0.1F);
-        }
+//        if (this.isMoving()) {
+////            float dX = me.walk.x;
+////            float dZ = me.walk.z;
+//            desiredBodyRot = me.yHeadRot;//((float) Mth.atan2(dZ, dX) * Mth.RAD_TO_DEG) - 90;
+//        } else {
+//            // occasionally do a big correction...
+//            if (RandomUtil.oneInNChance(50)) {
+//                desiredBodyRot = me.yHeadRot;
+//            } else {
+//                desiredBodyRot = Mth.rotateIfNecessary(desiredBodyRot, me.yHeadRot, (float)me.getMaxHeadYRot());
+//            }
+//            //bodyRotLerpFactor = Mth.lerp(Mth.sin(me.tickCount * 0.5F)*0.5F+0.5F, 0.05F, 0.1F);
+//        }
         float bodyRotLerpFactor = rotationLerpSpeed.value();
-        //me.yHeadRot = Mth.rotateIfNecessary(me.yHeadRot, me.yBodyRot, (float)me.getMaxHeadYRot());
-        //me.yBodyRot = Mth.rotLerp(bodyRotLerpFactor, me.yBodyRot, desiredBodyRot);
-        me.yBodyRot = me.yHeadRot;
+        desiredBodyRot = me.yHeadRot;
+        me.yBodyRot = Mth.rotLerp(bodyRotLerpFactor, me.yBodyRot, desiredBodyRot);
     }
 
     protected boolean isMoving() {
