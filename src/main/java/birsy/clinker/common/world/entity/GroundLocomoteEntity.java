@@ -2,7 +2,6 @@ package birsy.clinker.common.world.entity;
 
 import birsy.clinker.common.networking.packet.ClientboundGroundLocomotorSyncPacket;
 import birsy.clinker.common.world.entity.ai.*;
-import birsy.clinker.core.Clinker;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
@@ -11,10 +10,10 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
-import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
@@ -25,15 +24,15 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.neoforged.api.distmarker.Dist;
 
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.tslat.smartbrainlib.util.EntityRetrievalUtil;
-import org.joml.Vector3d;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
 public class GroundLocomoteEntity extends PathfinderMob {
+    private static final EntityDataAccessor<Float> DATA_SYNCED_BODY_ROTATION =
+            SynchedEntityData.defineId(GroundLocomoteEntity.class, EntityDataSerializers.FLOAT);
     public final Vector3f walk = new Vector3f(), previousWalk = new Vector3f();
     
     Vector3f smoothedWalk = new Vector3f();
@@ -45,7 +44,21 @@ public class GroundLocomoteEntity extends PathfinderMob {
     protected GroundLocomoteEntity(EntityType<? extends PathfinderMob> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         this.moveControl = new GroundMoveControl(this);
-        this.lookControl = new GroundLookControl(this);
+        this.lookControl = new GroundLookAngleControl(this);
+    }
+
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_SYNCED_BODY_ROTATION, 0.0F);
+    }
+
+    public void setSyncedBodyRotation(float rotation) {
+        this.getEntityData().set(DATA_SYNCED_BODY_ROTATION, rotation);
+    }
+
+    public float getSyncedBodyRotation() {
+        return this.getEntityData().get(DATA_SYNCED_BODY_ROTATION);
     }
 
     @Override
@@ -55,7 +68,7 @@ public class GroundLocomoteEntity extends PathfinderMob {
 
     @Override
     protected BodyRotationControl createBodyControl() {
-        return new GroundBodyRotationControl(this);
+        return new GroundBodyAngleControl(this);
     }
 
     @Override
@@ -63,11 +76,11 @@ public class GroundLocomoteEntity extends PathfinderMob {
         return (GroundMoveControl) super.getMoveControl();
     }
     @Override
-    public GroundLookControl getLookControl() {
-        return (GroundLookControl) super.getLookControl();
+    public GroundLookAngleControl getLookControl() {
+        return (GroundLookAngleControl) super.getLookControl();
     }
-    public GroundBodyRotationControl getBodyRotationControl() {
-        return (GroundBodyRotationControl) this.bodyRotationControl;
+    public GroundBodyAngleControl getBodyRotationControl() {
+        return (GroundBodyAngleControl) this.bodyRotationControl;
     }
 
     @Override
@@ -78,6 +91,8 @@ public class GroundLocomoteEntity extends PathfinderMob {
         if (this.level().isClientSide()) {
             this.smoothedWalk.lerp(this.walk,0.1F);
             this.cumulativeWalk = Mth.lerp(0.5F, this.cumulativeWalk, this.cumulativeWalkGoal);
+        } else {
+            this.getBodyRotationControl().tick();
         }
     }
 

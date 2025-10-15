@@ -130,6 +130,7 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
             skeleton.MogulRoot.rotation.rotateAxis(angle * 2, axis);
         }
 
+
 //
 //        if (smoothedAcceleration.y() < 0) {
 //            skeleton.MogulRoot.ySize = Mth.lerp(Mth.clamp(smoothedAcceleration.y() * -5, 0, 1), 1, 0.5F);

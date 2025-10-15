@@ -1,5 +1,6 @@
 package birsy.clinker.common.world.entity.gnomad.gnomind.behaviors;
 
+import birsy.clinker.common.world.entity.ai.LookTargetController;
 import birsy.clinker.common.world.entity.ai.behaviors.StateMachineBehavior;
 import birsy.clinker.common.world.entity.gnomad.mogul.GnomadMogulEntity;
 import birsy.clinker.core.Clinker;
@@ -23,7 +24,7 @@ public class MogulCombatStateMachine extends StateMachineBehavior<GnomadMogulEnt
 
     public MogulCombatStateMachine() {
         super();
-        this.initialState((entity) -> new StrafeState());
+        this.initialState((entity) -> new StrafeState(entity));
         this.noTimeout();
     }
 
@@ -33,52 +34,74 @@ public class MogulCombatStateMachine extends StateMachineBehavior<GnomadMogulEnt
     }
 
     private static class StrafeState implements StateMachineBehavior.State<GnomadMogulEntity> {
+        final LookTargetController.LookTargetHandle headLookTarget, bodyLookTarget;
+
+        protected StrafeState(GnomadMogulEntity mogul) {
+            this.headLookTarget = mogul.getLookControl().lookTargetController
+                    .createHandle(1.0F, 1);
+            this.bodyLookTarget = mogul.getBodyRotationControl().lookTargetController
+                    .createHandle(0.05F, 1);
+        }
+
         @Override
         public void tick(StateMachine<GnomadMogulEntity> stateMachine, GnomadMogulEntity entity) {
             // just walk from side to side
             entity.getMoveControl().strafe(0, (float) Math.sin(entity.tickCount / 20.0F) * 3);
+
+            // face the mob
             Optional<Entity> nearestEntity = EntityRetrievalUtil.getNearestEntity(entity, 10);
             if (nearestEntity.isPresent()) {
-                entity.getLookControl().setLookAt(nearestEntity.get());
+                this.headLookTarget.setActive(true);
+                this.headLookTarget.face(nearestEntity.get());
+
+                this.bodyLookTarget.setActive(true);
+                this.bodyLookTarget.face(nearestEntity.get());
             } else {
-                entity.getLookControl().clearLookTarget();
+                this.headLookTarget.setActive(false);
+                this.bodyLookTarget.setActive(false);
             }
 
+            // sometimes do a little spin
             if (RandomUtil.oneInNChance(100))
-                stateMachine.transition(new DoALittleTwirlState());
+                stateMachine.transition(new DoALittleTwirlState(entity));
         }
 
         @Override
         public void onExit(StateMachine<GnomadMogulEntity> stateMachine, GnomadMogulEntity entity) {
+            this.headLookTarget.remove(); this.bodyLookTarget.remove();
             entity.getMoveControl().strafe(0, 0);
-            entity.getLookControl().clearLookTarget();
         }
     }
     private static class DoALittleTwirlState implements StateMachineBehavior.State<GnomadMogulEntity> {
+        final LookTargetController.LookTargetHandle headLookTarget, bodyLookTarget;
         float angle, progress = 0;
+
+        protected DoALittleTwirlState(GnomadMogulEntity mogul) {
+            this.headLookTarget = mogul.getLookControl().lookTargetController.createHandle(1.0F, 99);
+            this.bodyLookTarget = mogul.getBodyRotationControl().lookTargetController.createHandle(0.1F, 99);
+        }
 
         @Override
         public void onEnter(StateMachine<GnomadMogulEntity> stateMachine, GnomadMogulEntity entity) {
             angle = entity.getYHeadRot();
-            entity.getLookControl().rotationLerpSpeed.pushModifier("twirl", 999, 0.2F);
-            entity.getBodyRotationControl().rotationLerpSpeed.pushModifier("twirl", 999, 1.0F);
         }
 
         @Override
         public void tick(StateMachine<GnomadMogulEntity> stateMachine, GnomadMogulEntity entity) {
-            float angleDelta = 15;
+            float angleDelta = 5;
             angle = Mth.wrapDegrees(angle + angleDelta);
             progress += angleDelta;
-            entity.getLookControl().setLookAt(0, angle);
+
+            headLookTarget.face(Mth.sin(entity.tickCount / 3.0F) * 45, angle);
+            bodyLookTarget.face(0, angle);
+
             if (progress >= 360)
-                stateMachine.transition(new StrafeState());
+                stateMachine.transition(new StrafeState(entity));
         }
 
         @Override
         public void onExit(StateMachine<GnomadMogulEntity> stateMachine, GnomadMogulEntity entity) {
-            entity.getLookControl().rotationLerpSpeed.popModifier("twirl");
-            entity.getBodyRotationControl().rotationLerpSpeed.popModifier("twirl");
-            entity.getLookControl().clearLookTarget();
+            headLookTarget.remove(); bodyLookTarget.remove();
         }
     }
 }

@@ -1,6 +1,6 @@
 package birsy.clinker.common.world.entity;
 
-import birsy.clinker.common.world.entity.ai.GroundLookControl;
+import birsy.clinker.common.world.entity.ai.GroundLookAngleControl;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -10,9 +10,6 @@ import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.control.LookControl;
-import net.minecraft.world.entity.animal.Cow;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
 import net.tslat.smartbrainlib.api.SmartBrainOwner;
 import net.tslat.smartbrainlib.api.core.BrainActivityGroup;
@@ -91,28 +88,31 @@ public class SlabCrabEntity extends GroundLocomoteEntity implements SmartBrainOw
         // don't
     }
 
-    public static class CrabLookControl extends GroundLookControl {
-        public CrabLookControl(SlabCrabEntity pMob) {
-            super(pMob);
+    public static class CrabLookAngleControl extends GroundLookAngleControl {
+        public CrabLookAngleControl(GroundLocomoteEntity mob) {
+            super(mob);
         }
-
-        public SlabCrabEntity getEntity() {
-            return (SlabCrabEntity) this.mob;
-        }
-
-        @Override
-        public void tick() {
-            SlabCrabEntity me = this.getEntity();
-            
-            float desiredYAngle = this.getYRotD().orElse(me.yBodyRot);
-            float desiredXAngle = this.getXRotD().orElse(0.0F);
-
-            float lerpFactor = this.rotationLerpSpeed.value();
-
-            me.yHeadRot = rotateTowards(me.yHeadRot, Mth.rotLerp(lerpFactor, me.yHeadRot, desiredYAngle), 5);
-            me.setXRot(   rotateTowards(me.getXRot(), Mth.rotLerp(lerpFactor, me.getXRot(), desiredXAngle), 5));
-
-            this.clampHeadRotationToBody();
-        }
+//        public CrabLookAngleControl(SlabCrabEntity pMob) {
+//            super(pMob);
+//        }
+//
+//        public SlabCrabEntity getEntity() {
+//            return (SlabCrabEntity) this.mob;
+//        }
+//
+//        @Override
+//        public void tick() {
+//            SlabCrabEntity me = this.getEntity();
+//
+//            float desiredYAngle = this.getYRotD().orElse(me.yBodyRot);
+//            float desiredXAngle = this.getXRotD().orElse(0.0F);
+//
+//            float lerpFactor = this.rotationLerpSpeed.value();
+//
+//            me.yHeadRot = rotateTowards(me.yHeadRot, Mth.rotLerp(lerpFactor, me.yHeadRot, desiredYAngle), 5);
+//            me.setXRot(   rotateTowards(me.getXRot(), Mth.rotLerp(lerpFactor, me.getXRot(), desiredXAngle), 5));
+//
+//            this.clampHeadRotationToBody();
+//        }
     }
 }

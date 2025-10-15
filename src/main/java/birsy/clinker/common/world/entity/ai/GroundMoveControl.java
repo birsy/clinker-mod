@@ -63,7 +63,10 @@ public class GroundMoveControl extends MoveControl {
             if (this.strafeForwards == 0 && this.strafeRight == 0) {
                 this.operation = Operation.WAIT;
             }
-            Vec3 forwardDirection = new Vec3(Math.sin(me.getYRot() * Mth.RAD_TO_DEG), 0, Math.cos(me.getYRot() * Mth.RAD_TO_DEG));
+            Vec3 forwardDirection = new Vec3(
+                    Math.cos(me.getSyncedBodyRotation() * Mth.DEG_TO_RAD + Mth.HALF_PI), 0,
+                    Math.sin(me.getSyncedBodyRotation() * Mth.DEG_TO_RAD + Mth.HALF_PI)
+            );
             Vec3 perpendicularDirection = forwardDirection.cross(new Vec3(0, 1, 0)).normalize();
             walkVector.set(
                     (perpendicularDirection.x * this.strafeRight + forwardDirection.x * this.strafeForwards) * speed, 0,
