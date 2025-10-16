@@ -36,20 +36,20 @@ public class MogulCombatStateMachine extends StateMachineBehavior<GnomadMogulEnt
     private static class StrafeState implements StateMachineBehavior.State<GnomadMogulEntity> {
         final LookTargetController.LookTargetHandle headLookTarget, bodyLookTarget;
 
-        protected StrafeState(GnomadMogulEntity mogul) {
-            this.headLookTarget = mogul.getLookControl().lookTargetController
+        protected StrafeState(GnomadMogulEntity entity) {
+            this.headLookTarget = entity.getLookControl().lookTargetController
                     .createHandle(0.5F, 1);
-            this.bodyLookTarget = mogul.getBodyRotationControl().lookTargetController
+            this.bodyLookTarget = entity.getBodyRotationControl().lookTargetController
                     .createHandle(0.05F, 1);
 
-            Optional<Entity> nearestEntity = EntityRetrievalUtil.getNearestEntity(mogul, 10);
+            Optional<Entity> nearestEntity = EntityRetrievalUtil.getNearestEntity(entity, 10);
             if (nearestEntity.isPresent()) {
                 this.headLookTarget.setActive(true);
                 this.headLookTarget.face(nearestEntity.get());
             } else {
                 this.headLookTarget.setActive(false);
             }
-            this.bodyLookTarget.face(0, mogul.getYHeadRot());
+            this.bodyLookTarget.face(0, entity.getYHeadRot());
         }
 
         @Override
@@ -82,13 +82,10 @@ public class MogulCombatStateMachine extends StateMachineBehavior<GnomadMogulEnt
         final LookTargetController.LookTargetHandle headLookTarget, bodyLookTarget;
         float angle, progress = 0;
 
-        protected DoALittleTwirlState(GnomadMogulEntity mogul) {
-            this.headLookTarget = mogul.getLookControl().lookTargetController.createHandle(0.5F, 99);
-            this.bodyLookTarget = mogul.getBodyRotationControl().lookTargetController.createHandle(0.1F, 99);
-        }
+        protected DoALittleTwirlState(GnomadMogulEntity entity) {
+            this.headLookTarget = entity.getLookControl().lookTargetController.createHandle(0.5F, 99);
+            this.bodyLookTarget = entity.getBodyRotationControl().lookTargetController.createHandle(0.1F, 99);
 
-        @Override
-        public void onEnter(StateMachine<GnomadMogulEntity> stateMachine, GnomadMogulEntity entity) {
             angle = entity.getYHeadRot();
             headLookTarget.face(Mth.cos(progress * Mth.DEG_TO_RAD * 5) * 45, angle);
             bodyLookTarget.face(0, angle);

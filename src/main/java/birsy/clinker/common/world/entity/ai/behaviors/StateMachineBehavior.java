@@ -59,7 +59,6 @@ public abstract class StateMachineBehavior<E extends Mob> extends ExtendedBehavi
             if (currentState != null)
                 currentState.onExit(this, this.entity);
             if (newState != null) {
-                newState.onEnter(this, this.entity);
                 Clinker.LOGGER.info("transitioned to state {}", newState.getClass().getSimpleName());
             } else {
                 Clinker.LOGGER.info("transitioned to null state");
@@ -75,7 +74,6 @@ public abstract class StateMachineBehavior<E extends Mob> extends ExtendedBehavi
     }
 
     public interface State<E extends Mob> {
-        default void onEnter(StateMachine<E> stateMachine, E entity) {}
         default void tick(StateMachine<E> stateMachine, E entity) {}
         default void onExit(StateMachine<E> stateMachine, E entity) {}
     }
