@@ -7,6 +7,7 @@ import birsy.clinker.common.world.entity.ai.behaviors.*;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.*;
 import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.GnomadSquadSensor;
 import birsy.clinker.common.world.entity.gnomad.gnomind.squad.squadtasks.RestWithFriendsTask;
+import birsy.clinker.core.Clinker;
 import foundry.veil.api.client.necromancer.SkeletonParent;
 import foundry.veil.api.client.necromancer.animation.Animator;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -25,8 +26,10 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 import net.tslat.smartbrainlib.api.SmartBrainOwner;
@@ -53,10 +56,15 @@ import static net.minecraft.world.entity.monster.Monster.createMonsterAttributes
 public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<GnomadMogulEntity>, SkeletonParent<GnomadMogulEntity, MogulSkeleton> {
     private static final int[] ROBE_COLORS = new int[]{0x4d423c, 0x513337, 0x4a4751, 0x505049, 0x4f4c4b};
     private static final EntityDataAccessor<Integer> DATA_ROBE_COLOR = SynchedEntityData.defineId(GnomadMogulEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Boolean> DATA_FLOATING = SynchedEntityData.defineId(GnomadMogulEntity.class, EntityDataSerializers.BOOLEAN);
+
     private final MogulAttackHandler attackHandler;
 
     private final double maxYOffset = 1;
     private double smoothedY, prevSmoothedY;
+
+    private boolean canStartFloating = true;
+    private int ticksFloating = 0;
 
     public GnomadMogulEntity(EntityType<? extends GnomadEntity> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -102,6 +110,7 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(DATA_ROBE_COLOR, ROBE_COLORS[0]);
+        builder.define(DATA_FLOATING, false);
     }
 
     @Override
@@ -128,26 +137,77 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
         return new SmoothGroundNavigation(this, pLevel);
     }
 
+    private boolean canFallSafely() {
+        double safeFallDist = this.getAttributeValue(Attributes.SAFE_FALL_DISTANCE);
+        return this.level().clip(new ClipContext(
+                this.position(),
+                this.position().add(0, -safeFallDist, 0),
+                ClipContext.Block.COLLIDER,
+                ClipContext.Fluid.WATER, this
+        )).getType() == HitResult.Type.BLOCK;
+    }
+
     @Override
     protected void customServerAiStep() {
         tickBrain(this);
+
+        // update floating
+        boolean isFloating = this.isFloating();
+        boolean isMovingUp = this.getDeltaMovement().y > 0;
+        if (!this.onGround()) {
+            // we're in the air...
+            if (isFloating) {
+                // ...and floating!
+                this.resetFallDistance();
+                boolean shouldStop = false;
+
+                // if we're going up, ignore any checks to stop falling.
+                if (!isMovingUp) {
+                    // stop flying if we've been falling for a while
+                    if (this.ticksFloating++ > 100) shouldStop = true;
+                    // stop flying if we can safely drop down
+                    if (this.canFallSafely() && !shouldStop) shouldStop = true;
+                } else {
+                    this.ticksFloating = 0;
+                }
+
+                if (shouldStop) {
+                    this.setFloating(false);
+                    this.canStartFloating = false;
+                }
+            } else {
+                //...but not floating.
+                if (isMovingUp) {
+                    this.canStartFloating = true;
+                    this.ticksFloating = 0;
+                } else {
+                    // we're in freefall
+                    if (this.canStartFloating && !this.canFallSafely()) {
+                        // begin floating automatically if we could take fall damage in the future
+                        this.setFloating(true);
+                        this.ticksFloating = 0;
+                    }
+                }
+            }
+        } else {
+            // we're on the ground.
+            this.canStartFloating = true;
+
+            // we can't float if we're on the ground.
+            if (isFloating && !isMovingUp) this.setFloating(false);
+        }
+
         super.customServerAiStep();
-        //PacketDistributor.sendToPlayersTrackingEntity(this, new ClientboundBrainDebugPacket(this));
+    }
+
+    @Override
+    protected double getDefaultGravity() {
+        return this.isFloating() ? super.getDefaultGravity() * 0.07 : super.getDefaultGravity();
     }
 
     @Override
     public void tick() {
         super.tick();
-        if (this.level().isClientSide()) this.computeSmoothedHeight();
-        if (!this.level().isClientSide()) {
-//            this.attackHandler.tick();
-//            if (this.tickCount % 100 == 0) {
-//                int attack = this.random.nextIntBetweenInclusive(0, 2);
-//                if (attack == 0) this.attackHandler.beginAttack(MogulAttackHandler.SWING_UP);
-//                if (attack == 1) this.attackHandler.beginAttack(MogulAttackHandler.SWING_LEFT);
-//                if (attack == 2) this.attackHandler.beginAttack(MogulAttackHandler.SWING_RIGHT);
-//            }
-        }
     }
 
     @Override
@@ -225,21 +285,14 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
         this.entityData.set(DATA_ROBE_COLOR, robeColor);
     }
 
-    
-    protected void computeSmoothedHeight() {
-        this.prevSmoothedY = this.smoothedY;
-        double currentHeight = this.getY();
-        if (currentHeight < this.smoothedY) {
-            this.smoothedY = currentHeight;
-            return;
-        }
-        this.smoothedY = Mth.approach((float) this.smoothedY, (float) currentHeight, 1 / 10.0F);
-        this.smoothedY = Mth.clamp(this.smoothedY, currentHeight - maxYOffset, currentHeight + maxYOffset);
+    public boolean isFloating() {
+        return this.entityData.get(DATA_FLOATING);
     }
-    
-    public float getHeightOffset(float partialTick) {
-        return (float) (Mth.lerp(partialTick, prevSmoothedY, smoothedY) - Mth.lerp(partialTick, this.yOld, this.getY()));
+
+    public void setFloating(boolean floating) {
+        this.entityData.set(DATA_FLOATING, floating);
     }
+
 
     MogulSkeleton skeleton;
     MogulAnimator animator;
@@ -247,7 +300,6 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
     public void setSkeleton(MogulSkeleton skeleton) {
         this.skeleton = skeleton;
     }
-
     @Override
     public MogulSkeleton getSkeleton() {
         return this.skeleton;

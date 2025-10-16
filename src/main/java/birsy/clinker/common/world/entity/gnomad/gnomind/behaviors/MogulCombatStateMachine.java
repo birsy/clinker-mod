@@ -11,6 +11,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
+import net.minecraft.world.phys.Vec3;
 import net.tslat.smartbrainlib.util.EntityRetrievalUtil;
 import net.tslat.smartbrainlib.util.RandomUtil;
 
@@ -89,6 +90,11 @@ public class MogulCombatStateMachine extends StateMachineBehavior<GnomadMogulEnt
             angle = entity.getYHeadRot();
             headLookTarget.face(Mth.cos(progress * Mth.DEG_TO_RAD * 5) * 45, angle);
             bodyLookTarget.face(0, angle);
+
+            entity.setFloating(true);
+            entity.addDeltaMovement(entity.calculateViewVector(0, entity.yBodyRot).multiply(-1, 0, -1).normalize()
+                    .scale(0.25).add(0, 0.6, 0)
+            );
         }
 
         @Override
