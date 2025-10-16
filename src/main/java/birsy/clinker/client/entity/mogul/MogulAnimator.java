@@ -10,11 +10,12 @@ import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 import net.tslat.smartbrainlib.util.RandomUtil;
 import org.joml.Vector3f;
 
 public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
-    public final AnimationEntry<?, ?> idleAnim, maskAnim, walkAnim, strafeAnim;
+    public final AnimationEntry<?, ?> idleAnim, maskAnim, walkAnim, strafeAnim, floatAnim;
     public final Animator.TimedAnimationEntry<?, ?> upSwingAnim, leftSwingAnim, rightSwingAnim;
     private int maskShakeTime = 0, maskShakeDuration = 1;
     private boolean maskShaking = false;
@@ -32,6 +33,7 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
         this.walkAnim = this.addAnimation(WalkAnimation.INSTANCE, 1);
         this.maskAnim = this.addAnimation(MaskAnimation.INSTANCE, 0);
         this.idleAnim = this.addAnimation(IdleAnimation.INSTANCE, 0);
+        this.floatAnim = this.addAnimation(FloatAnimation.INSTANCE, 3);
     }
 
     private void updateAttackAnim(TimedAnimationEntry<?, ?> attack) {
@@ -88,15 +90,20 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
 //        }
 
         // locomotion
+        float floatMix = 0;//Mth.sin(entity.tickCount / 100.0F) * 0.5F + 0.5F;
+
         float moveTime = entity.getCumulativeWalk() * 2.3F;
 
-        float walkFac = Mth.clamp(5 * entity.getWalkAmount(1.0F), -0.8F, 0.8F);
+        float walkFac = Mth.clamp(5 * entity.getWalkAmount(1.0F), -0.8F, 0.8F) * (1 - floatMix);
         this.walkAnim.setMixFactor(walkFac);
         this.walkAnim.setTime(moveTime);
 
-        float strafeFac = Mth.clamp(8 * entity.getStrafeAmount(1.0F), -0.8F, 0.8F);
+        float strafeFac = Mth.clamp(8 * entity.getStrafeAmount(1.0F), -0.8F, 0.8F) * (1 - floatMix);
         this.strafeAnim.setMixFactor(strafeFac);
         this.strafeAnim.setTime(moveTime);
+
+        this.floatAnim.setMixFactor(floatMix);
+        this.floatAnim.setTime(entity.tickCount);
 
         // flinch
         if (entity.hurtDuration > 0) {
@@ -129,12 +136,6 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
             axis = axis.normalize().cross(0, 1, 0);
             skeleton.MogulRoot.rotation.rotateAxis(angle * 2, axis);
         }
-
-
-//
-//        if (smoothedAcceleration.y() < 0) {
-//            skeleton.MogulRoot.ySize = Mth.lerp(Mth.clamp(smoothedAcceleration.y() * -5, 0, 1), 1, 0.5F);
-//        }
     }
 
     private static class MaskAnimation extends Animation<GnomadMogulEntity, MogulSkeleton> {
@@ -308,6 +309,73 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
             skeleton.MogulRightArm.rotateDeg(Mth.lerp((sign + 1.0F) * 0.5F, 10, 20) * mixFactor * globalDegree, Direction.Axis.Z);
 
             skeleton.MogulNeck.rotateDeg(10 * mixFactor * globalDegree * sign, Direction.Axis.Z);
+        }
+    }
+
+    private static class FloatAnimation extends Animation<GnomadMogulEntity, MogulSkeleton> {
+        protected static FloatAnimation INSTANCE = new FloatAnimation();
+
+        private FloatAnimation() {
+            super();
+        }
+
+        @Override
+        public void apply(GnomadMogulEntity parent, MogulSkeleton skeleton, float mixFactor, float time) {
+            float globalDegree = 1.0F;
+            skeleton.MogulLeftRobe.rotateDeg(15 * mixFactor * globalDegree, Direction.Axis.X);
+            skeleton.MogulRightRobe.rotateDeg(15 * mixFactor * globalDegree, Direction.Axis.X);
+            skeleton.MogulFrontRobe.rotateDeg(18 * mixFactor * globalDegree, Direction.Axis.X);
+            skeleton.MogulBackRobe.rotateDeg(-18 * mixFactor * globalDegree, Direction.Axis.X);
+
+            skeleton.MogulLeftArm.rotateDeg(-15 * mixFactor * globalDegree, Direction.Axis.Z);
+            skeleton.MogulLeftArm.rotateDeg(5 * Mth.sin(time * 0.07F) * mixFactor * globalDegree, Direction.Axis.Z);
+            skeleton.MogulLeftArm.rotateDeg(5 * Mth.cos(time * 0.07F) * mixFactor * globalDegree, Direction.Axis.X);
+
+            skeleton.MogulRightArm.rotateDeg(15 * mixFactor * globalDegree, Direction.Axis.Z);
+            skeleton.MogulRightArm.rotateDeg(-5 * Mth.sin(time * 0.07F) * mixFactor * globalDegree, Direction.Axis.Z);
+            skeleton.MogulRightArm.rotateDeg(-5 * Mth.cos(time * 0.07F) * mixFactor * globalDegree, Direction.Axis.X);
+
+            skeleton.MogulLeftLeg.rotateDeg(-8 * mixFactor * globalDegree, Direction.Axis.Z);
+            skeleton.MogulLeftLeg.rotateDeg(8 * Mth.sin(time * 0.05F) * mixFactor * globalDegree, Direction.Axis.Z);
+            skeleton.MogulLeftLeg.rotateDeg(8 * Mth.cos(time * 0.05F) * mixFactor * globalDegree, Direction.Axis.X);
+
+            skeleton.MogulRightLeg.rotateDeg(8 * mixFactor * globalDegree, Direction.Axis.Z);
+            skeleton.MogulRightLeg.rotateDeg(-8 * Mth.sin(time * 0.05F) * mixFactor * globalDegree, Direction.Axis.Z);
+            skeleton.MogulRightLeg.rotateDeg(-8 * Mth.cos(time * 0.05F) * mixFactor * globalDegree, Direction.Axis.X);
+
+            Vec3 velocity = parent.getDeltaMovement();
+            float walkAmount = parent.getWalkAmount(1.0F), strafeAmount = parent.getStrafeAmount(1.0F);
+            if (velocity.x - strafeAmount != 0 || velocity.z - walkAmount != 0) {
+                velocity = velocity.multiply(1, 0, 1);
+                // rotate the velocity based off the body rot
+                float bodyRot = -parent.getPreciseBodyRotation(1.0F) * Mth.DEG_TO_RAD;
+                float xFac = (float) (velocity.x * Mth.cos(bodyRot) - velocity.z * Mth.sin(bodyRot)) * 0.5F - strafeAmount;
+                float zFac = (float) (velocity.x * Mth.sin(bodyRot) + velocity.z * Mth.cos(bodyRot)) * 0.5F - walkAmount;
+                velocity = new Vec3(xFac, 0, zFac);
+
+                float angle = (float) velocity.length() * 5 * mixFactor * globalDegree;
+                velocity = velocity.normalize().cross(new Vec3(0, 1, 0));
+
+                if (velocity.x != 0 || velocity.z != 0) {
+                    skeleton.MogulRoot.rotation.rotateAxis(angle, (float) velocity.x, 0, (float) velocity.z);
+
+                    angle = (float) (MathUtils.smoothClampExpo(angle * Mth.RAD_TO_DEG, -20F, 20F, 5.0F) * Mth.DEG_TO_RAD);
+                    skeleton.MogulLeftLeg.rotation.rotateAxis(angle, (float) velocity.x, (float) velocity.y, (float) velocity.z);
+                    skeleton.MogulRightLeg.rotation.rotateAxis(angle, (float) velocity.x, (float) velocity.y, (float) velocity.z);
+
+                    skeleton.MogulLeftArm.rotation.rotateAxis(angle * -0.5F, (float) velocity.x, (float) velocity.y, (float) velocity.z);
+                    skeleton.MogulRightArm.rotation.rotateAxis(angle * -0.5F, (float) velocity.x, (float) velocity.y, (float) velocity.z);
+                    skeleton.MogulNeck.rotation.rotateAxis(angle * -0.4F, (float) velocity.x, (float) velocity.y, (float) velocity.z);
+                    skeleton.MogulHead.rotation.rotateAxis(angle * -0.4F, (float) velocity.x, (float) velocity.y, (float) velocity.z);
+                }
+            }
+
+            float moveTime = parent.getCumulativeWalk() * 2.3F;
+            float walkFac = Mth.sqrt(walkAmount * walkAmount + strafeAmount * strafeAmount) * 10;
+            skeleton.MogulLeftLeg.rotateDeg(20 * Mth.sin(moveTime) * mixFactor * globalDegree * walkFac, Direction.Axis.X);
+            skeleton.MogulRightLeg.rotateDeg(20 * Mth.sin(moveTime + Mth.PI) * mixFactor * globalDegree * walkFac, Direction.Axis.X);
+
+            skeleton.MogulRoot.offsetY(Mth.sin(parent.tickCount * 0.1F) * 2 * mixFactor * globalDegree);
         }
     }
 
