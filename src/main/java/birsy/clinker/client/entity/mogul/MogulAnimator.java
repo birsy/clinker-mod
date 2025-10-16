@@ -328,7 +328,7 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
         @Override
         public void apply(GnomadMogulEntity parent, MogulSkeleton skeleton, float mixFactor, float time) {
             float globalDegree = 1.0F;
-            float robeRotationFactor = (float) Math.clamp(parent.getDeltaMovement().y / -0.2F, 0, 1);
+            float robeRotationFactor = (float) Math.clamp(parent.getDeltaMovement().y / -0.2F, -0.25, 1);
             skeleton.MogulLeftRobe.rotateDeg(15 * mixFactor * globalDegree * robeRotationFactor, Direction.Axis.X);
             skeleton.MogulRightRobe.rotateDeg(15 * mixFactor * globalDegree * robeRotationFactor, Direction.Axis.X);
             skeleton.MogulFrontRobe.rotateDeg(18 * mixFactor * globalDegree * robeRotationFactor, Direction.Axis.X);
@@ -599,4 +599,3 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
         }
     }
 }
-
