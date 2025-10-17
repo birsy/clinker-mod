@@ -96,7 +96,7 @@ public class TextPageElement extends PageElement {
             default -> {
                 if (tag.startsWith("color")) {
                     if (!isClosing) {
-                        int color = Integer.parseInt(tag.substring("color=".length()));
+                        int color = Integer.parseInt(tag.substring("color=".length()), 16);
                         colorStack.push(color);
                         style = style.withColor(color);
                     } else if (!colorStack.isEmpty()) {
