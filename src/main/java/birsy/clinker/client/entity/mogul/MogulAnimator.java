@@ -93,9 +93,9 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
 
         // locomotion
         if (entity.isFloating()) {
-            this.floatingTransition = Mth.lerp(0.2F, this.floatingTransition, 1.0F);
+            this.floatingTransition = Mth.lerp(0.8F, this.floatingTransition, 1.0F);
         } else {
-            this.floatingTransition = Mth.lerp(0.5F, this.floatingTransition,  0.0F);
+            this.floatingTransition = Mth.lerp(0.1F, this.floatingTransition,  0.0F);
         }
 
         float moveTime = entity.getCumulativeWalk() * 2.3F;
@@ -328,36 +328,40 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
         @Override
         public void apply(GnomadMogulEntity parent, MogulSkeleton skeleton, float mixFactor, float time) {
             float globalDegree = 1.0F;
-            float robeRotationFactor = (float) Math.clamp(parent.getDeltaMovement().y / -0.2F, -0.25, 1);
+            float robeRotationFactor = (float) Math.clamp(parent.getDeltaMovement().y / -0.05F, 0, 1);
             skeleton.MogulLeftRobe.rotateDeg(15 * mixFactor * globalDegree * robeRotationFactor, Direction.Axis.X);
             skeleton.MogulRightRobe.rotateDeg(15 * mixFactor * globalDegree * robeRotationFactor, Direction.Axis.X);
             skeleton.MogulFrontRobe.rotateDeg(18 * mixFactor * globalDegree * robeRotationFactor, Direction.Axis.X);
             skeleton.MogulBackRobe.rotateDeg(-18 * mixFactor * globalDegree * robeRotationFactor, Direction.Axis.X);
 
-            skeleton.MogulLeftArm.rotateDeg(-15 * mixFactor * globalDegree, Direction.Axis.Z);
+            skeleton.MogulLeftArm.rotateDeg(-15 * mixFactor * globalDegree * robeRotationFactor, Direction.Axis.Z);
+            skeleton.MogulLeftArm.rotateDeg(-22 * mixFactor * globalDegree, Direction.Axis.X);
             skeleton.MogulLeftArm.rotateDeg(5 * Mth.sin(time * 0.07F) * mixFactor * globalDegree, Direction.Axis.Z);
             skeleton.MogulLeftArm.rotateDeg(5 * Mth.cos(time * 0.07F) * mixFactor * globalDegree, Direction.Axis.X);
+            skeleton.MogulLeftArm.offsetY(-5 * mixFactor * globalDegree * (1 - robeRotationFactor));
 
-            skeleton.MogulRightArm.rotateDeg(15 * mixFactor * globalDegree, Direction.Axis.Z);
+            skeleton.MogulRightArm.rotateDeg(15 * mixFactor * globalDegree * robeRotationFactor, Direction.Axis.Z);
+            skeleton.MogulRightArm.rotateDeg(-22 * mixFactor * globalDegree, Direction.Axis.X);
             skeleton.MogulRightArm.rotateDeg(-5 * Mth.sin(time * 0.07F) * mixFactor * globalDegree, Direction.Axis.Z);
             skeleton.MogulRightArm.rotateDeg(-5 * Mth.cos(time * 0.07F) * mixFactor * globalDegree, Direction.Axis.X);
+            skeleton.MogulRightArm.offsetY(-5 * mixFactor * globalDegree * (1 - robeRotationFactor));
 
-            skeleton.MogulLeftLeg.rotateDeg(-8 * mixFactor * globalDegree, Direction.Axis.Z);
+            skeleton.MogulLeftLeg.rotateDeg(-8 * mixFactor * globalDegree * robeRotationFactor, Direction.Axis.Z);
             skeleton.MogulLeftLeg.rotateDeg(8 * Mth.sin(time * 0.05F) * mixFactor * globalDegree, Direction.Axis.Z);
             skeleton.MogulLeftLeg.rotateDeg(8 * Mth.cos(time * 0.05F) * mixFactor * globalDegree, Direction.Axis.X);
 
-            skeleton.MogulRightLeg.rotateDeg(8 * mixFactor * globalDegree, Direction.Axis.Z);
+            skeleton.MogulRightLeg.rotateDeg(8 * mixFactor * globalDegree * robeRotationFactor, Direction.Axis.Z);
             skeleton.MogulRightLeg.rotateDeg(-8 * Mth.sin(time * 0.05F) * mixFactor * globalDegree, Direction.Axis.Z);
             skeleton.MogulRightLeg.rotateDeg(-8 * Mth.cos(time * 0.05F) * mixFactor * globalDegree, Direction.Axis.X);
 
             Vec3 velocity = parent.getDeltaMovement();
             float walkAmount = parent.getWalkAmount(1.0F), strafeAmount = parent.getStrafeAmount(1.0F);
-            if (velocity.x - strafeAmount != 0 || velocity.z - walkAmount != 0) {
+            if (velocity.x - strafeAmount != 0 || velocity.z + walkAmount != 0) {
                 velocity = velocity.multiply(1, 0, 1);
                 // rotate the velocity based off the body rot
                 float bodyRot = -parent.getPreciseBodyRotation(1.0F) * Mth.DEG_TO_RAD;
                 float xFac = (float) (velocity.x * Mth.cos(bodyRot) - velocity.z * Mth.sin(bodyRot)) * 0.5F - strafeAmount;
-                float zFac = (float) (velocity.x * Mth.sin(bodyRot) + velocity.z * Mth.cos(bodyRot)) * 0.5F - walkAmount;
+                float zFac = (float) (velocity.x * Mth.sin(bodyRot) + velocity.z * Mth.cos(bodyRot)) * 0.5F + walkAmount;
                 velocity = new Vec3(xFac, 0, zFac);
 
                 float angle = (float) velocity.length() * 5 * mixFactor * globalDegree;
