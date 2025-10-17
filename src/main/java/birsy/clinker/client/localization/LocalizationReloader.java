@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
-import static birsy.clinker.client.localization.LocalizationAuthority.getLoc;
+import static birsy.clinker.client.localization.LocalizationAuthority.get;
 
 public class LocalizationReloader extends SimpleJsonResourceReloadListener {
     private static final Gson GSPOT = new GsonBuilder().create();
@@ -34,15 +34,15 @@ public class LocalizationReloader extends SimpleJsonResourceReloadListener {
                 ResourceLocation rope_id = ResourceLocation.fromNamespaceAndPath(id.getNamespace(), name);
 
                 if(jobj.has("text_single")) {
-                    getLoc().putLongString(strings[0], rope_id.withSuffix(".default"), jobj.getAsJsonPrimitive("text_single").getAsString());
+                    get().putLongString(strings[0], rope_id.withSuffix(".default"), jobj.getAsJsonPrimitive("text_single").getAsString());
                 } else {
                     if(jobj.has("text")) {
                         for(Map.Entry<String, JsonElement> elem : jobj.getAsJsonObject("text").asMap().entrySet()) {
-                            getLoc().putLongString(strings[0], rope_id.withSuffix("." + elem.getKey()), elem.getValue().getAsString());
+                            get().putLongString(strings[0], rope_id.withSuffix("." + elem.getKey()), elem.getValue().getAsString());
                         }
                     }
                 }
-                // debug getLoc().longStrings.forEach((s, resourceLocationStringHashMap) -> System.out.println(s + resourceLocationStringHashMap.toString()));
+                // debug get().longStrings.forEach((s, resourceLocationStringHashMap) -> System.out.println(s + resourceLocationStringHashMap.toString()));
             }
         }
     }

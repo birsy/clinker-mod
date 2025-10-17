@@ -49,5 +49,5 @@ public record LabeledString(String rawText, String text, ImmutableList<Label> la
         return new LabeledString(text, visible.toString(), labels.build());
     }
 
-    public record Label(String label, int index) {}
+    public record Label(String identifier, int index) {}
 }

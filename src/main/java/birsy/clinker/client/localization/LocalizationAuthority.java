@@ -8,7 +8,7 @@ import java.util.HashMap;
 public class LocalizationAuthority {
     private static final LocalizationAuthority INSTANCE = new LocalizationAuthority();
 
-    public static LocalizationAuthority getLoc() {
+    public static LocalizationAuthority get() {
         return INSTANCE;
     }
 

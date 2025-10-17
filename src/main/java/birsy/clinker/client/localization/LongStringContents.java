@@ -26,7 +26,7 @@ public class LongStringContents implements ComponentContents {
         id = LocalizationAuthority.validatePath(id);
         this.cloc = Minecraft.getInstance().getLanguageManager().getSelected();
         this.id = id;
-        this.render = LocalizationAuthority.getLoc().getLongString(id);
+        this.render = LocalizationAuthority.get().getLongString(id);
     }
 
     public static MutableComponent create(ResourceLocation id) {
@@ -52,7 +52,7 @@ public class LongStringContents implements ComponentContents {
     private String render() {
         if(!Objects.equals(this.cloc, Minecraft.getInstance().getLanguageManager().getSelected())) {
             this.cloc = Minecraft.getInstance().getLanguageManager().getSelected();
-            this.render = LocalizationAuthority.getLoc().getLongString(id);
+            this.render = LocalizationAuthority.get().getLongString(id);
         }
         return this.render;
     }
