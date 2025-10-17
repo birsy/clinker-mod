@@ -1,21 +1,15 @@
-package birsy.clinker.client.loc;
+package birsy.clinker.client.localization;
 
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.Minecraft;
-import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.ComponentContents;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -29,10 +23,10 @@ public class LongStringContents implements ComponentContents {
     private final ResourceLocation id;
 
     public LongStringContents(ResourceLocation id) {
-        id = LocalisationAuthority.validatePath(id);
+        id = LocalizationAuthority.validatePath(id);
         this.cloc = Minecraft.getInstance().getLanguageManager().getSelected();
         this.id = id;
-        this.render = LocalisationAuthority.getLoc().getLongString(id);
+        this.render = LocalizationAuthority.getLoc().getLongString(id);
     }
 
     public static MutableComponent create(ResourceLocation id) {
@@ -58,7 +52,7 @@ public class LongStringContents implements ComponentContents {
     private String render() {
         if(!Objects.equals(this.cloc, Minecraft.getInstance().getLanguageManager().getSelected())) {
             this.cloc = Minecraft.getInstance().getLanguageManager().getSelected();
-            this.render = LocalisationAuthority.getLoc().getLongString(id);
+            this.render = LocalizationAuthority.getLoc().getLongString(id);
         }
         return this.render;
     }

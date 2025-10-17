@@ -1,4 +1,4 @@
-package birsy.clinker.client.loc;
+package birsy.clinker.client.localization;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -10,14 +10,14 @@ import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.Map;
 
-import static birsy.clinker.client.loc.LocalisationAuthority.getLoc;
+import static birsy.clinker.client.localization.LocalizationAuthority.getLoc;
 
-public class LocalisationReloader extends SimpleJsonResourceReloadListener {
+public class LocalizationReloader extends SimpleJsonResourceReloadListener {
     private static final Gson GSPOT = new GsonBuilder().create();
-    public LocalisationReloader() {
+
+    public LocalizationReloader() {
         super(GSPOT, "lang");
     }
 

@@ -1,7 +1,6 @@
 package birsy.clinker.common.page.elements;
 
-import birsy.clinker.client.loc.LocalisationAuthority;
-import birsy.clinker.client.loc.LongStringContents;
+import birsy.clinker.client.localization.LocalizationAuthority;
 import birsy.clinker.common.page.PageElement;
 import birsy.clinker.common.page.PageElementType;
 import birsy.clinker.core.registry.ClinkerPageElementTypes;
@@ -44,7 +43,7 @@ public class TextPageElement extends PageElement {
 
     // todo: parsing codes and such idk
     private void resolveFormattedText() {
-        String rawText = LocalisationAuthority.getLoc().getLongString(this.text);
+        String rawText = LocalizationAuthority.getLoc().getLongString(this.text);
         this.formattedText = Minecraft.getInstance().font.split(FormattedText.of(rawText), (int) Math.round(this.width / this.textSize));
     }
 
