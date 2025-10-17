@@ -8,16 +8,16 @@ public abstract class PageElement {
             .byNameCodec()
             .dispatch(PageElement::type, PageElementType::codec);
 
-    final int renderOrder;
-    final double x, y, width, height, rotation;
+    public final int renderOrder;
+    public final double x, y, width, height, rotation;
 
-    public PageElement(int renderOrder, double x, double y, double width, double height, double rotation) {
-        this.renderOrder = renderOrder;
+    public PageElement(double x, double y, double width, double height, double rotation, int renderOrder) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
         this.rotation = rotation;
+        this.renderOrder = renderOrder;
     }
 
     public abstract PageElementType<?> type();
