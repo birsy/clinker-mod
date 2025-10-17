@@ -23,7 +23,8 @@ public class TextBox extends PageElement {
     }
 
     public void initializeText(FormattedText text) {
-        if (Minecraft.getInstance().font != null) this.textLines = Minecraft.getInstance().font.split(text, Math.round(this.getXPixelSize() / this.textSize));
+        if (Minecraft.getInstance().font != null)
+            this.textLines = Minecraft.getInstance().font.split(text, Math.round(this.getXPixelSize() / this.textSize));
     }
 
     @Override

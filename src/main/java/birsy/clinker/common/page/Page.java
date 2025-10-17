@@ -20,7 +20,7 @@ public class Page {
             Codec.unboundedMap(Codec.STRING, PageLayout.CODEC).fieldOf("layout_language_overrides")
                     .forGetter(page -> page.layoutByLanguage)
     ).apply(instance, Page::new));
-    
+
     public final PageLayout defaultLayout;
     public final ImmutableMap<String, PageLayout> layoutByLanguage;
 
@@ -75,14 +75,14 @@ public class Page {
         public PageLayout(int width, int height, List<PageElement> elements) {
             this.width = width;
             this.height = height;
-            this.elements = ImmutableList.sortedCopyOf(Comparator.comparingInt(element -> element.renderOrder), elements)
+            this.elements = ImmutableList.sortedCopyOf(Comparator.comparingInt(element -> element.renderOrder), elements);
         }
     }
 
     private record LayoutLanguageOverrideEntry(List<String> localizations, PageLayout layout) {
         private static final Codec<LayoutLanguageOverrideEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.STRING.listOf().fieldOf("languages").forGetter(entry -> entry.localizations),
-                PageLayout.CODEC.listOf().fieldOf("layout").forGetter(page -> page.layout)
-        ).apply(instance, PageLayout::new));
+                PageLayout.CODEC.fieldOf("layout").forGetter(page -> page.layout)
+        ).apply(instance, LayoutLanguageOverrideEntry::new));
     }
 }
