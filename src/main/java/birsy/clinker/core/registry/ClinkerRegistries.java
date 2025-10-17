@@ -1,10 +1,10 @@
 package birsy.clinker.core.registry;
 
+import birsy.clinker.common.page.PageElementType;
 import birsy.clinker.common.world.level.gen.worldfeature.WorldFeatureType;
 import birsy.clinker.core.Clinker;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
@@ -18,8 +18,16 @@ public class ClinkerRegistries {
             .sync(false)
             .create();
 
+    public static final ResourceKey<Registry<PageElementType<?>>> PAGE_ELEMENT_TYPES_REGISTRY_KEY =
+            ResourceKey.createRegistryKey(Clinker.resource("page_element_type"));
+    public static final Registry<PageElementType<?>> PAGE_ELEMENT_TYPE_REGISTRY =
+            new RegistryBuilder<>(PAGE_ELEMENT_TYPES_REGISTRY_KEY)
+            .sync(false)
+            .create();
+
     @SubscribeEvent
     public static void registerRegistries(NewRegistryEvent event) {
         event.register(WORLD_FEATURE_REGISTRY);
+        event.register(PAGE_ELEMENT_TYPE_REGISTRY);
     }
 }
