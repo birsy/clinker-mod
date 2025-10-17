@@ -60,7 +60,9 @@ public class TextPageElement extends PageElement {
         List<FormattedText> formattedTextSegments = new ArrayList<>();
         Style currentStyle = Style.EMPTY;
         Deque<Integer> colorStack = new ArrayDeque<>();
+        colorStack.add(currentStyle.getColor().getValue());
         Deque<ResourceLocation> fontStack = new ArrayDeque<>();
+        fontStack.add(currentStyle.getFont());
 
         int textSegmentIndex = 0;
         for (LabeledString.Label label : labels) {
