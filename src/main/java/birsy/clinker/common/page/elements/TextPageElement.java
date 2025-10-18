@@ -3,6 +3,7 @@ package birsy.clinker.common.page.elements;
 import birsy.clinker.client.localization.LabeledString;
 import birsy.clinker.client.localization.LocalizationAuthority;
 import birsy.clinker.common.page.PageElement;
+import birsy.clinker.common.page.PageElementTransform;
 import birsy.clinker.common.page.PageElementType;
 import birsy.clinker.core.registry.ClinkerPageElementTypes;
 import com.google.common.collect.ImmutableList;
@@ -21,13 +22,8 @@ public class TextPageElement extends PageElement {
     public static final MapCodec<TextPageElement> CODEC = RecordCodecBuilder.mapCodec(
             instance -> instance.group(
                     ResourceLocation.CODEC.fieldOf("text").forGetter(element -> element.text),
-                    Codec.DOUBLE.fieldOf("text_size").orElse(1.0).forGetter(element -> element.x),
-                    Codec.DOUBLE.fieldOf("x").forGetter(element -> element.x),
-                    Codec.DOUBLE.fieldOf("y").forGetter(element -> element.y),
-                    Codec.DOUBLE.fieldOf("width").forGetter(element -> element.width),
-                    Codec.DOUBLE.fieldOf("height").forGetter(element -> element.height),
-                    Codec.DOUBLE.fieldOf("rotation").orElse(0.0).forGetter(element -> element.rotation),
-                    Codec.INT.fieldOf("render_order").orElse(0).forGetter(element -> element.renderOrder)
+                    Codec.DOUBLE.optionalFieldOf("text_size", 1.0).forGetter(element -> element.textSize),
+                    PageElementTransform.CODEC.fieldOf("transform").forGetter(element -> element.transform)
             ).apply(instance, TextPageElement::new)
     );
 
@@ -35,16 +31,12 @@ public class TextPageElement extends PageElement {
     final double textSize;
     private List<FormattedCharSequence> formattedText;
 
-    public TextPageElement(ResourceLocation text, double textSize,
-                           double x, double y,
-                           double width, double height,
-                           double rotation, int renderOrder) {
-        super(x, y, width, height, rotation, renderOrder);
+    public TextPageElement(ResourceLocation text, double textSize, PageElementTransform transform) {
+        super(transform);
         this.text = text;
         this.textSize = textSize;
     }
 
-    // todo: parsing codes and such idk
     private void resolveFormattedText() {
         LabeledString labeledText = LocalizationAuthority.get().getLabelledLongString(this.text);
 
@@ -52,17 +44,17 @@ public class TextPageElement extends PageElement {
 
         // if there's no formatting labels, we're done here
         if (labels.isEmpty()) {
-            this.formattedText = Minecraft.getInstance().font.split(FormattedText.of(labeledText.text()), (int) Math.round(this.width / this.textSize));
+            this.formattedText = Minecraft.getInstance().font.split(FormattedText.of(labeledText.text()), (int) Math.round(this.transform.width() / this.textSize));
             return;
         }
 
         // otherwise, we're going to loop through all the labels and apply style changes accordingly.
         List<FormattedText> formattedTextSegments = new ArrayList<>();
-        Style currentStyle = Style.EMPTY;
+        Style currentStyle = Style.EMPTY.withColor(0);
         Deque<Integer> colorStack = new ArrayDeque<>();
-        colorStack.add(0); // black
+        colorStack.add(currentStyle.getColor().getValue());
         Deque<ResourceLocation> fontStack = new ArrayDeque<>();
-        fontStack.add(currentStyle.getFont());
+        fontStack.add(Style.DEFAULT_FONT);
 
         int textSegmentIndex = 0;
         for (LabeledString.Label label : labels) {
@@ -74,7 +66,7 @@ public class TextPageElement extends PageElement {
             textSegmentIndex = label.index();
 
             // parsing the label and update the style for the next text segment
-            String id = label.identifier();
+            String id = label.identifier().toLowerCase();
             boolean isClosing = id.startsWith("/");
             String tag = isClosing ? id.substring(1) : id;
             currentStyle = applyTag(currentStyle, tag, isClosing, colorStack, fontStack);
@@ -85,7 +77,7 @@ public class TextPageElement extends PageElement {
         if (!currentSubstring.isEmpty())
             formattedTextSegments.add(FormattedText.of(currentSubstring, currentStyle));
 
-        this.formattedText = Minecraft.getInstance().font.split(FormattedText.composite(formattedTextSegments), (int) Math.round(this.width / this.textSize));
+        this.formattedText = Minecraft.getInstance().font.split(FormattedText.composite(formattedTextSegments), (int) Math.round(this.transform.width() / this.textSize));
     }
 
     private static Style applyTag(Style style, String tag, boolean isClosing, Deque<Integer> colorStack, Deque<ResourceLocation> fontStack) {
@@ -101,7 +93,7 @@ public class TextPageElement extends PageElement {
                         int color = Integer.parseInt(tag.substring("color=".length()), 16);
                         colorStack.push(color);
                         style = style.withColor(color);
-                    } else if (!colorStack.isEmpty()) {
+                    } else if (colorStack.size() > 1) {
                         colorStack.pop();
                         style = style.withColor(colorStack.peek());
                     }
@@ -110,7 +102,7 @@ public class TextPageElement extends PageElement {
                         ResourceLocation font = ResourceLocation.parse(tag.substring("font=".length()));
                         fontStack.push(font);
                         style = style.withFont(font);
-                    } else if (!fontStack.isEmpty()) {
+                    } else if (fontStack.size() > 1) {
                         fontStack.pop();
                         style = style.withFont(fontStack.peek());
                     }

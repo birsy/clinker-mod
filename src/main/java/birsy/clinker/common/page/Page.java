@@ -1,5 +1,6 @@
 package birsy.clinker.common.page;
 
+import birsy.clinker.core.Clinker;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
@@ -32,6 +33,8 @@ public class Page {
                 builder.put(localization, layoutOverride.layout);
         }
         this.layoutByLanguage = builder.buildKeepingLast();
+
+        Clinker.LOGGER.info("PAGE LAYOUT: {}", this.defaultLayout);
     }
 
     public Page(PageLayout defaultLayout, Map<String, PageLayout> layoutByLanguage) {
@@ -62,20 +65,15 @@ public class Page {
         return list;
     }
 
-    public static class PageLayout {
+    public record PageLayout(int width, int height, ImmutableList<PageElement> elements) {
         public static final Codec<PageLayout> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.INT.fieldOf("width").forGetter(page -> page.width),
                 Codec.INT.fieldOf("height").forGetter(page -> page.height),
                 PageElement.CODEC.listOf().fieldOf("elements").forGetter(page -> page.elements)
         ).apply(instance, PageLayout::new));
 
-        private final int width, height;
-        public final ImmutableList<PageElement> elements;
-
         public PageLayout(int width, int height, List<PageElement> elements) {
-            this.width = width;
-            this.height = height;
-            this.elements = ImmutableList.sortedCopyOf(Comparator.comparingInt(element -> element.renderOrder), elements);
+            this(width, height, ImmutableList.sortedCopyOf(Comparator.comparingInt(element -> element.transform.renderOrder()), elements));
         }
     }
 

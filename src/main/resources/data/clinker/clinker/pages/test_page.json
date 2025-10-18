@@ -1,0 +1,29 @@
+{
+  "default_layout": {
+    "width": 256,
+    "height": 256,
+    "elements": [
+      {
+        "type": "clinker:image",
+        "texture": "clinker:test.png",
+        "transform": {
+          "x": 0,
+          "y": 0,
+          "width": 256,
+          "height": 256,
+          "rotation": 10
+        }
+      },
+      {
+        "type": "clinker:text",
+        "text": "clinker:page/test",
+        "transform": {
+          "x": 0,
+          "y": 0,
+          "width": 256,
+          "height": 256
+        }
+      }
+    ]
+  }
+}

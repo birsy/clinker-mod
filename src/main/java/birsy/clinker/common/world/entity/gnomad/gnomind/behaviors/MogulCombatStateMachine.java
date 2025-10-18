@@ -1,12 +1,16 @@
 package birsy.clinker.common.world.entity.gnomad.gnomind.behaviors;
 
+import birsy.clinker.common.page.Page;
 import birsy.clinker.common.world.entity.ai.LookTargetController;
 import birsy.clinker.common.world.entity.ai.behaviors.StateMachineBehavior;
 import birsy.clinker.common.world.entity.gnomad.mogul.GnomadMogulEntity;
 import birsy.clinker.core.Clinker;
+import birsy.clinker.core.registry.ClinkerDynamicRegistries;
+import birsy.clinker.core.registry.ClinkerRegistries;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;

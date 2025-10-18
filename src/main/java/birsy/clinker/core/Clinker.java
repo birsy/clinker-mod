@@ -62,6 +62,8 @@ public class Clinker {
 
         ClinkerLightTypes.LIGHT_TYPES.register(modEventBus);
 
+        ClinkerPageElementTypes.PAGE_ELEMENT_TYPES.register(modEventBus);
+
         modEventBus.addListener(this::setup);
         modEventBus.addListener(this::doClientStuff);
     }

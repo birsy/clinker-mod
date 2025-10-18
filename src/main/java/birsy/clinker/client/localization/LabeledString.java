@@ -22,7 +22,7 @@ public record LabeledString(String rawText, String text, ImmutableList<Label> la
                     i++;
                     continue;
 
-                    // tag start character '<'
+                // tag start character '<'
                 } else if (character == '<') {
                     // find the end of the tag
                     int end = text.indexOf('>', i);
