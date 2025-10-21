@@ -26,6 +26,7 @@ public class RenderUtils {
     public static void restoreGLState() {
         RenderSystem.restoreGlState(stateBackup);
         RenderSystem.getModelViewMatrix().set(modelViewMatrixBackup);
+        RenderSystem.applyModelViewMatrix();
         RenderSystem.restoreProjectionMatrix();
     }
 

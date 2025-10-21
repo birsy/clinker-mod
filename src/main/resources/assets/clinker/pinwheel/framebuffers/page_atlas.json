@@ -3,7 +3,6 @@
   "filter": {
     "wrapZ": "clamp_to_border"
   },
-  "levels": 3,
   "width": 512.0,
   "height": 512.0,
   "format": "RGBA4"

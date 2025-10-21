@@ -21,6 +21,7 @@ import net.minecraft.util.FormattedCharSequence;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.GlStateBackup;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import org.joml.Matrix4f;
 
@@ -38,15 +39,13 @@ public class PageRenderer {
         if (Minecraft.getInstance().level == null) return;
         if (Minecraft.getInstance().getConnection() == null) return;
 
-        RegistryAccess registryAccess = Minecraft.getInstance().getConnection().registryAccess();
-        Page testPage = registryAccess.registryOrThrow(ClinkerDynamicRegistries.PAGE_REGISTRY_KEY).get(TEST_PAGE_LOCATION);
+        // backup state
+        RenderSystem.backupProjectionMatrix();
 
-        Page.PageLayout layout = testPage.getLayout(Minecraft.getInstance().getLanguageManager().getSelected());
-
+        // set render state stuffs
         AdvancedFbo pageAtlasFBO = VeilRenderSystem.renderer().getFramebufferManager().getFramebuffer(ClinkerFramebuffers.PAGE_ATLAS);
         pageAtlasFBO.bind(true);
 
-        RenderUtils.backupGLState();
         RenderSystem.setProjectionMatrix(
                 RenderSystem.getProjectionMatrix().identity().setOrtho(0.0F, pageAtlasFBO.getWidth(), pageAtlasFBO.getHeight(), 0.0F, 0.1f, -0.1f),
                 VertexSorting.ORTHOGRAPHIC_Z
@@ -56,6 +55,13 @@ public class PageRenderer {
         RenderSystem.disableCull();
         RenderSystem.enableBlend();
 
+        // load layout
+        RegistryAccess registryAccess = Minecraft.getInstance().getConnection().registryAccess();
+        Page testPage = registryAccess.registryOrThrow(ClinkerDynamicRegistries.PAGE_REGISTRY_KEY).get(TEST_PAGE_LOCATION);
+
+        Page.PageLayout layout = testPage.getLayout(Minecraft.getInstance().getLanguageManager().getSelected());
+
+        // draw layout
         for (PageElement element : layout.elements()) {
             BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
             RenderSystem.setShader(GameRenderer::getPositionColorShader);
@@ -87,7 +93,7 @@ public class PageRenderer {
                             string,
                             0, lineHeight * i,
                             0xFFFFFFFF,
-                            false,
+                            true,
                             pageViewMatrix,
                             TEXT_BUFFER_SOURCE,
                             Font.DisplayMode.NORMAL,
@@ -97,12 +103,13 @@ public class PageRenderer {
                 }
             }
         }
+        ShaderProgram.unbind();
 
         TEXT_BUFFER_SOURCE.endBatch();
 
-
-        ShaderProgram.unbind();
         AdvancedFbo.unbind();
-        RenderUtils.restoreGLState();
+
+        RenderSystem.restoreProjectionMatrix();
+        RenderSystem.applyModelViewMatrix();
     }
 }

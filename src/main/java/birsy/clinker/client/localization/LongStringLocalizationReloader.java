@@ -11,6 +11,7 @@ import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Iterator;
 import java.util.Map;
 
 public class LongStringLocalizationReloader extends SimpleJsonResourceReloadListener {
@@ -42,21 +43,18 @@ public class LongStringLocalizationReloader extends SimpleJsonResourceReloadList
                     if (json.has("text")) {
                         JsonElement textElement = json.get("text");
 
-                        if (textElement.isJsonPrimitive()) {
-                            // single string
-                            LongStringLocalizationAuthority.get().putLongString(languageId, keyLocation, textElement.getAsJsonPrimitive().getAsString());
-                        } else if (textElement.isJsonObject()) {
-                            // map
+                        if (textElement.isJsonObject()) {
+                            // for map objects
                             for (Map.Entry<String, JsonElement> elementEntry : textElement.getAsJsonObject().asMap().entrySet()) {
-                                LongStringLocalizationAuthority.get().putLongString(languageId, keyLocation.withSuffix("." + elementEntry.getKey()), elementEntry.getValue().getAsString());
+                                String key = elementEntry.getKey();
+                                JsonElement element = elementEntry.getValue();
+                                String parsedText = parseJsonElementToText(element);
+                                LongStringLocalizationAuthority.get().putLongString(languageId, keyLocation.withSuffix("." + key), parsedText);
                             }
-                        } else if (textElement.isJsonArray()) {
-                            // array
-                            int index = 0;
-                            for (JsonElement element : textElement.getAsJsonArray()) {
-                                LongStringLocalizationAuthority.get().putLongString(languageId, keyLocation.withSuffix("." + index), element.getAsString());
-                                index++;
-                            }
+                        } else {
+                            // for primitive strings or arrays
+                            String parsedText = parseJsonElementToText(textElement);
+                            LongStringLocalizationAuthority.get().putLongString(languageId, keyLocation, parsedText);
                         }
                     } else {
                         throw new IllegalStateException("Long string must include valid 'text' component!");
@@ -66,6 +64,23 @@ public class LongStringLocalizationReloader extends SimpleJsonResourceReloadList
                 Clinker.LOGGER.error("Failed to load long string {}", id, e);
             }
         }
+    }
+
+    private String parseJsonElementToText(JsonElement textElement) {
+        if (textElement.isJsonPrimitive()) {
+            return textElement.getAsJsonPrimitive().getAsString();
+        } else if (textElement.isJsonArray()) {
+            StringBuilder string = new StringBuilder();
+            for (Iterator<JsonElement> iterator = textElement.getAsJsonArray().iterator(); iterator.hasNext(); ) {
+                JsonElement element = iterator.next();
+                string.append(element.getAsString());
+                if (iterator.hasNext()) string.append("\n");
+            }
+
+            return string.toString();
+        }
+
+        throw new IllegalStateException("Unable to parse text from component " + textElement);
     }
 
     @Override
