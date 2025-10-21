@@ -1,15 +1,34 @@
 package birsy.clinker.client.render;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.client.GlStateBackup;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
+import org.joml.Matrix4fStack;
 import org.joml.Vector3f;
 
 public class RenderUtils {
+
+    private static final GlStateBackup stateBackup = new GlStateBackup();
+    private static final Matrix4f modelViewMatrixBackup = new Matrix4f();
+
+    public static void backupGLState() {
+        RenderSystem.backupProjectionMatrix();
+        modelViewMatrixBackup.set(RenderSystem.getModelViewMatrix());
+        RenderSystem.backupGlState(stateBackup);
+    }
+
+    public static void restoreGLState() {
+        RenderSystem.restoreGlState(stateBackup);
+        RenderSystem.getModelViewMatrix().set(modelViewMatrixBackup);
+        RenderSystem.restoreProjectionMatrix();
+    }
+
     public static void drawFaceBetweenPoints(VertexConsumer consumer, PoseStack stack, float width, Vector3f pos1, Vector3f tangent1, Vector3f normal1, Vector3f biTangent1, int packedLight1, int overlay1, float u1, float v1,
                                              Vector3f pos2, Vector3f tangent2, Vector3f normal2, Vector3f biTangent2, int packedLight2, int overlay2, float u2, float v2) {
         PoseStack.Pose pose = stack.last();

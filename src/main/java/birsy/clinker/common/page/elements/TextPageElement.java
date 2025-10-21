@@ -1,7 +1,7 @@
 package birsy.clinker.common.page.elements;
 
 import birsy.clinker.client.localization.LabeledString;
-import birsy.clinker.client.localization.LocalizationAuthority;
+import birsy.clinker.client.localization.LongStringLocalizationAuthority;
 import birsy.clinker.common.page.PageElement;
 import birsy.clinker.common.page.PageElementTransform;
 import birsy.clinker.common.page.PageElementType;
@@ -22,23 +22,23 @@ public class TextPageElement extends PageElement {
     public static final MapCodec<TextPageElement> CODEC = RecordCodecBuilder.mapCodec(
             instance -> instance.group(
                     ResourceLocation.CODEC.fieldOf("text").forGetter(element -> element.text),
-                    Codec.DOUBLE.optionalFieldOf("text_size", 1.0).forGetter(element -> element.textSize),
+                    Codec.FLOAT.optionalFieldOf("text_size", 1.0F).forGetter(element -> element.textSize),
                     PageElementTransform.CODEC.fieldOf("transform").forGetter(element -> element.transform)
             ).apply(instance, TextPageElement::new)
     );
 
     final ResourceLocation text;
-    final double textSize;
-    private List<FormattedCharSequence> formattedText;
+    final float textSize;
+    public List<FormattedCharSequence> formattedText;
 
-    public TextPageElement(ResourceLocation text, double textSize, PageElementTransform transform) {
+    public TextPageElement(ResourceLocation text, float textSize, PageElementTransform transform) {
         super(transform);
         this.text = text;
         this.textSize = textSize;
     }
 
-    private void resolveFormattedText() {
-        LabeledString labeledText = LocalizationAuthority.get().getLabelledLongString(this.text);
+    public void resolveFormattedText() {
+        LabeledString labeledText = LongStringLocalizationAuthority.get().getLabelledLongString(this.text);
 
         ImmutableList<LabeledString.Label> labels = labeledText.labels();
 
