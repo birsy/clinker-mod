@@ -5,14 +5,18 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;
 
-public class LocalizationAuthority {
-    private static final LocalizationAuthority INSTANCE = new LocalizationAuthority();
+public class LongStringLocalizationAuthority {
+    private static final LongStringLocalizationAuthority INSTANCE = new LongStringLocalizationAuthority();
 
-    public static LocalizationAuthority get() {
+    public static LongStringLocalizationAuthority get() {
         return INSTANCE;
     }
 
-    public HashMap<String, HashMap<ResourceLocation, LabeledString>> longStrings = new HashMap<>(128);
+    private final HashMap<String, HashMap<ResourceLocation, LabeledString>> longStrings = new HashMap<>(128);
+
+    void clear() {
+        this.longStrings.clear();
+    }
 
     public void putLongString(String loc, ResourceLocation id, String str) {
         LabeledString parsedString = LabeledString.parse(str);
@@ -51,7 +55,7 @@ public class LocalizationAuthority {
         return rid;
     }
 
-    public LocalizationAuthority() {
+    public LongStringLocalizationAuthority() {
 
     }
 }

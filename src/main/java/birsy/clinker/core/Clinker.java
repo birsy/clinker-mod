@@ -1,6 +1,6 @@
 package birsy.clinker.core;
 
-import birsy.clinker.client.localization.LocalizationReloader;
+import birsy.clinker.client.localization.LongStringLocalizationReloader;
 import birsy.clinker.client.render.GUIRenderer;
 import birsy.clinker.client.gui.AlchemyBundleGUIRenderer;
 import birsy.clinker.client.render.debug.ClinkerDebugRenderers;
@@ -79,7 +79,7 @@ public class Clinker {
 
     @SubscribeEvent
     public static void registerListeners(RegisterClientReloadListenersEvent event) {
-        event.registerReloadListener(new LocalizationReloader());
+        event.registerReloadListener(new LongStringLocalizationReloader());
     }
 
     private void doClientStuff(final FMLClientSetupEvent event) {
