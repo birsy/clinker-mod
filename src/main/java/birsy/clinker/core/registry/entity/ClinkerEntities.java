@@ -32,7 +32,7 @@ import java.util.function.Supplier;
 public class ClinkerEntities {
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, Clinker.MOD_ID);
 
-    public static final Supplier<EntityType<GnomadSoldierEntity>> GNOMAD_SOLDIER = ENTITY_TYPES.register("gnomad_soldier", () ->
+    public static final Supplier<EntityType<GnomadSoldierEntity>> GNOMAD = ENTITY_TYPES.register("gnomad", () ->
             EntityType.Builder.of(GnomadSoldierEntity::new, MobCategory.MONSTER)
                     .sized(1.0f, 1.5f)
                     .build(Clinker.resource("gnomad").toString()));
@@ -94,7 +94,7 @@ public class ClinkerEntities {
 
     @SubscribeEvent
     public static void registerEntityAttribute(EntityAttributeCreationEvent event) {
-        event.put(GNOMAD_SOLDIER.get(), Zombie.createAttributes().build());
+        event.put(GNOMAD.get(), Zombie.createAttributes().build());
         event.put(GNOMAD_MOGUL.get(), GnomadMogulEntity.createAttributes().build());
         event.put(TEST_ROPE.get(), Zombie.createAttributes().build());
 
@@ -115,7 +115,7 @@ public class ClinkerEntities {
         event.registerEntityRenderer(ClinkerEntities.WARHOOK.get(), WarhookRenderer::new);
         event.registerEntityRenderer(ClinkerEntities.REROLL_FLASK.get(), ThrownItemRenderer::new);
 
-        event.registerEntityRenderer(ClinkerEntities.GNOMAD_SOLDIER.get(), DebugEntityRenderer::new);
+        event.registerEntityRenderer(ClinkerEntities.GNOMAD.get(), DebugEntityRenderer::new);
         event.registerEntityRenderer(ClinkerEntities.GNOMAD_MOGUL.get(), MogulRenderer::new);
 
         event.registerEntityRenderer(ClinkerEntities.MOLD.get(), MoldRenderer::new);
