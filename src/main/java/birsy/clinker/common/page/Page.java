@@ -1,15 +1,21 @@
 package birsy.clinker.common.page;
 
+import birsy.clinker.common.page.elements.ImagePageElement;
 import birsy.clinker.core.Clinker;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import foundry.veil.api.client.color.Color;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
 public class Page {
+    public static final PageLayout FALLBACK_LAYOUT = new PageLayout(256, 245, List.of(
+       new ImagePageElement(Clinker.resource("page/test.png"), List.of(0F, 0F, 1F, 1F), Color.WHITE, new PageElementTransform(0, 0, 256, 256, 0, 0))
+    ));
+
     public static final Codec<Page> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             PageLayout.CODEC.fieldOf("default_layout")
                     .forGetter(page -> page.defaultLayout),

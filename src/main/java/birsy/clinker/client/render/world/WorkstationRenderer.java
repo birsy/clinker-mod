@@ -1,6 +1,6 @@
 package birsy.clinker.client.render.world;
 
-import birsy.clinker.client.render.DebugRenderUtil;
+import birsy.clinker.client.render.utilities.DebugRenderUtil;
 import birsy.clinker.common.alchemy.workstation.Workstation;
 import birsy.clinker.common.alchemy.workstation.WorkstationManager;
 import birsy.clinker.common.alchemy.workstation.WorkstationPhysicsObject;

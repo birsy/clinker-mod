@@ -1,5 +1,6 @@
 {
   "depth": false,
+  "autoClear": false,
   "filter": {
     "wrapZ": "clamp_to_border"
   },

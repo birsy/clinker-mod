@@ -1,9 +1,7 @@
-package birsy.clinker.client.render;
+package birsy.clinker.client.render.page;
 
 import birsy.clinker.common.page.Page;
 import birsy.clinker.core.Clinker;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.VertexSorting;
 import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.api.client.render.framebuffer.AdvancedFbo;
 import foundry.veil.api.client.render.framebuffer.FramebufferAttachmentDefinition;
@@ -11,15 +9,14 @@ import foundry.veil.api.client.render.texture.TextureFilter;
 import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.system.NativeResource;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PageAtlas implements NativeResource {
+    public static final PageAtlas INSTANCE = new PageAtlas(8, 8);
+
     public static final ResourceLocation LOCATION = Clinker.resource("page_atlas");
     final int width, height;
-    final AdvancedFbo frameBuffer;
+    AdvancedFbo frameBuffer;
 
     final Page.PageLayout[] pageLayouts;
     final Map<Page.PageLayout, Integer> indexByLayout;
@@ -34,16 +31,28 @@ public class PageAtlas implements NativeResource {
         int size = width * height;
         this.pageLayouts = new Page.PageLayout[size];
         this.indexByLayout = new HashMap<>(size);
-        this.framesSinceLayoutRendered = new int[size];
-        this.layoutPriority = new int[size];
+        this.framesSinceLayoutRendered = new int[size]; Arrays.fill(this.framesSinceLayoutRendered, -1);
+        this.layoutPriority = new int[size]; Arrays.fill(this.layoutPriority, Integer.MIN_VALUE);
         this.indicesToRender = new ArrayList<>(size);
 
-        this.frameBuffer = AdvancedFbo.withSize(256 * width, 256 * height)
-                .setFormat(FramebufferAttachmentDefinition.Format.RGBA4)
-                .setFilter(TextureFilter.CLAMP)
-                .setDebugLabel("Page Atlas")
-                .build(true);
-        VeilRenderSystem.renderer().getFramebufferManager().setFramebuffer(LOCATION, this.frameBuffer);
+        // add the fallback page
+        pageLayouts[0] = Page.FALLBACK_LAYOUT;
+        indexByLayout.put(Page.FALLBACK_LAYOUT, 0);
+        framesSinceLayoutRendered[0] = 0;
+        layoutPriority[0] = Integer.MAX_VALUE;
+        indicesToRender.add(0);
+    }
+
+    private void initFrameBuffer() {
+        if (frameBuffer == null || frameBuffer.getWidth() != this.width || frameBuffer.getHeight() != this.height) {
+            free();
+            this.frameBuffer = AdvancedFbo.withSize(256 * this.width, 256 * this.height)
+                    .setFormat(FramebufferAttachmentDefinition.Format.RGBA4)
+                    .setFilter(TextureFilter.CLAMP)
+                    .setDebugLabel("Page Atlas")
+                    .addColorTextureBuffer()
+                    .build(true);
+        }
     }
 
     public void tryReserveLayoutLocation(Page.PageLayout layout, int priority, int[] coordinatesOut) {
@@ -52,6 +61,7 @@ public class PageAtlas implements NativeResource {
             int index = indexByLayout.get(layout);
             coordinatesOut[0] = Math.floorMod(index, width) * 256;
             coordinatesOut[1] = Math.floorDiv(index, height) * 256;
+            framesSinceLayoutRendered[index] = 0;
         } else {
             // otherwise, return the default location and add it to be rendered at the start of next frame.
             coordinatesOut[0] = 0;
@@ -73,7 +83,7 @@ public class PageAtlas implements NativeResource {
     private int findValidIndex(int priority) {
         int lowestPriorityIndex = -1, lowestPriority = Integer.MAX_VALUE;
         for (int i = 1; i < pageLayouts.length; i++) {
-            if (framesSinceLayoutRendered[i] > 2) {
+            if (framesSinceLayoutRendered[i] > 2 || framesSinceLayoutRendered[i] < 0) {
                 return i;
             }
             if (layoutPriority[i] <= lowestPriority) {
@@ -90,23 +100,34 @@ public class PageAtlas implements NativeResource {
 
     public void update() {
         // render anything we just added to the atlas.
-        PageRenderer.beginPageRenderBatch();
-        for (int index : this.indicesToRender) {
+        this.initFrameBuffer();
+        VeilRenderSystem.renderer().getFramebufferManager().setFramebuffer(LOCATION, this.frameBuffer);
+        PageRenderer.beginPageRenderBatch(this.frameBuffer);
+        for (int index = 0; index < this.pageLayouts.length; index++) {
+            if (pageLayouts[index] == null) continue;
             int x = Math.floorMod(index, width) * 256,
                 y = Math.floorDiv(index, height) * 256;
             PageRenderer.renderPageToAtlas(pageLayouts[index], x, y);
         }
+//        for (int index : this.indicesToRender) {
+//            int x = Math.floorMod(index, width) * 256,
+//                y = Math.floorDiv(index, height) * 256;
+//            PageRenderer.renderPageToAtlas(pageLayouts[index], x, y);
+//        }
         this.indicesToRender.clear();
         PageRenderer.endPageRenderBatch();
 
         // update frame times
         for (int i = 0; i < this.framesSinceLayoutRendered.length; i++) {
-            this.framesSinceLayoutRendered[i]++;
+            // only update frame times of set page layouts
+            if (this.framesSinceLayoutRendered[i] >= 0)
+                this.framesSinceLayoutRendered[i]++;
         }
     }
 
     @Override
     public void free() {
-        frameBuffer.free();
+        if (this.frameBuffer != null)
+            frameBuffer.free();
     }
 }

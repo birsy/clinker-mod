@@ -1,13 +1,9 @@
 package birsy.clinker.client.render.debug;
 
-import birsy.clinker.client.render.DebugRenderUtil;
+import birsy.clinker.client.render.utilities.DebugRenderUtil;
 import birsy.clinker.common.networking.packet.debug.GnomadSquadDebugPacket;
-import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
-import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import io.netty.util.collection.IntObjectHashMap;
-import io.netty.util.collection.IntObjectMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -17,7 +13,6 @@ import net.minecraft.network.protocol.game.DebugEntityNameGenerator;
 import net.minecraft.world.entity.Entity;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.UUID;
 
 public class GnomadSquadDebugRenderer implements DebugRenderer.SimpleDebugRenderer {

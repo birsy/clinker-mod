@@ -1,7 +1,6 @@
 package birsy.clinker.client.particle;
 
-import birsy.clinker.client.render.ClinkerRenderTypes;
-import birsy.clinker.client.render.RenderUtils;
+import birsy.clinker.client.render.utilities.RenderUtils;
 import birsy.clinker.common.alchemy.effects.ChainLightningHandler;
 import birsy.clinker.core.registry.ClinkerParticles;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -10,11 +9,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.Camera;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.particles.*;
 import net.minecraft.network.RegistryFriendlyByteBuf;

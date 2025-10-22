@@ -1,6 +1,6 @@
 package birsy.clinker.client.entity;
 
-import birsy.clinker.client.render.DebugRenderUtil;
+import birsy.clinker.client.render.utilities.DebugRenderUtil;
 import birsy.clinker.common.world.entity.rope.RopeEntity;
 import birsy.clinker.common.world.entity.rope.RopeEntitySegment;
 import com.mojang.blaze3d.vertex.PoseStack;

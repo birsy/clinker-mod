@@ -11,10 +11,14 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
+import org.joml.Matrix4f;
 
 import java.util.*;
 
@@ -122,5 +126,35 @@ public class TextPageElement extends PageElement {
     @Override
     public PageElementType<?> type() {
         return ClinkerPageElementTypes.TEXT.get();
+    }
+
+    @Override
+    public void drawToAtlas(MultiBufferSource bufferSource, Matrix4f matrix, int atlasOffsetX, int atlasOffsetY) {
+        this.resolveFormattedText();
+        float halfWidth  = this.transform.width() * 0.5F,
+              halfHeight = this.transform.height() * 0.5F;
+
+        matrix.identity();
+        matrix.translate(atlasOffsetX, atlasOffsetY, 0);
+        matrix.translate(this.transform.x() + halfWidth, this.transform.y() + halfHeight, this.transform.renderOrder());
+        matrix.rotateYXZ(0, 0, this.transform.rotation());
+        matrix.translate(-halfWidth, -halfHeight, 0);
+
+        List<FormattedCharSequence> text = this.formattedText;
+        int lineHeight = Minecraft.getInstance().font.lineHeight;
+        for (int i = 0; i < text.size(); i++) {
+            FormattedCharSequence string = text.get(i);
+            Minecraft.getInstance().font.drawInBatch(
+                    string,
+                    0, lineHeight * i,
+                    0xFFFFFFFF,
+                    false,
+                    matrix,
+                    bufferSource,
+                    Font.DisplayMode.NORMAL,
+                    0,
+                    LightTexture.FULL_BRIGHT
+            );
+        }
     }
 }
