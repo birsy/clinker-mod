@@ -2,6 +2,7 @@ package birsy.clinker.client.render;
 
 import birsy.clinker.common.page.Page;
 import birsy.clinker.common.page.PageElement;
+import birsy.clinker.common.page.PageElementType;
 import birsy.clinker.common.page.elements.TextPageElement;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerDynamicRegistries;
@@ -21,16 +22,17 @@ import net.minecraft.util.FormattedCharSequence;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.GlStateBackup;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import org.joml.Matrix4f;
 
 import java.util.List;
+import java.util.Map;
 
 @EventBusSubscriber(modid = Clinker.MOD_ID, value = Dist.CLIENT)
 public class PageRenderer {
     private static final ResourceLocation TEST_PAGE_LOCATION = Clinker.resource("test_page");
-    private static final MultiBufferSource.BufferSource TEXT_BUFFER_SOURCE = MultiBufferSource.immediate(new ByteBufferBuilder(1536));
+    private static final MultiBufferSource.BufferSource PAGE_BUFFER_SOURCE =
+            MultiBufferSource.immediate(new ByteBufferBuilder(1536));
 
     private static final Matrix4f pageViewMatrix = new Matrix4f();
 
@@ -95,7 +97,7 @@ public class PageRenderer {
                             0xFFFFFFFF,
                             true,
                             pageViewMatrix,
-                            TEXT_BUFFER_SOURCE,
+                            PAGE_BUFFER_SOURCE,
                             Font.DisplayMode.NORMAL,
                             0,
                             LightTexture.FULL_BRIGHT
@@ -105,11 +107,36 @@ public class PageRenderer {
         }
         ShaderProgram.unbind();
 
-        TEXT_BUFFER_SOURCE.endBatch();
+        PAGE_BUFFER_SOURCE.endBatch();
 
         AdvancedFbo.unbind();
 
         RenderSystem.restoreProjectionMatrix();
         RenderSystem.applyModelViewMatrix();
+    }
+
+    public static void beginPageRenderBatch() {
+        AdvancedFbo pageAtlasFBO = VeilRenderSystem.renderer().getFramebufferManager().getFramebuffer(PageAtlas.LOCATION);
+        pageAtlasFBO.bind(true);
+
+        RenderSystem.setProjectionMatrix(
+                RenderSystem.getProjectionMatrix().identity().setOrtho(
+                        0.0F, pageAtlasFBO.getWidth(),
+                        pageAtlasFBO.getHeight(), 0.0F,
+                        100f, -100f
+                ),
+                VertexSorting.ORTHOGRAPHIC_Z
+        );
+        RenderSystem.getModelViewMatrix().identity();
+    }
+
+    public static void renderPageToAtlas(Page.PageLayout layout, int atlasX, int atlasY) {
+        for (PageElement element : layout.elements())
+            element.drawToAtlas(PAGE_BUFFER_SOURCE, pageViewMatrix, atlasX, atlasY);
+    }
+
+    public static void endPageRenderBatch() {
+        PAGE_BUFFER_SOURCE.endBatch();
+        AdvancedFbo.unbind();
     }
 }

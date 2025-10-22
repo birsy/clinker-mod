@@ -1,5 +1,5 @@
 {
-  "format": "POSITION",
+  "format": "NEW_ENTITY",
   "mode": "QUADS",
   "bufferSize": "TRANSIENT",
   "sort": false,

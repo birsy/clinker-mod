@@ -41,16 +41,19 @@ public class TextPageElement extends PageElement {
         LabeledString labeledText = LongStringLocalizationAuthority.get().getLabelledLongString(this.text);
 
         ImmutableList<LabeledString.Label> labels = labeledText.labels();
+        Style currentStyle = Style.EMPTY.withColor(0);
 
         // if there's no formatting labels, we're done here
         if (labels.isEmpty()) {
-            this.formattedText = Minecraft.getInstance().font.split(FormattedText.of(labeledText.text()), (int) Math.round(this.transform.width() / this.textSize));
+            this.formattedText = Minecraft.getInstance().font.split(
+                    FormattedText.of(labeledText.text(), currentStyle),
+                    Math.round(this.transform.width() / this.textSize)
+            );
             return;
         }
 
         // otherwise, we're going to loop through all the labels and apply style changes accordingly.
         List<FormattedText> formattedTextSegments = new ArrayList<>();
-        Style currentStyle = Style.EMPTY.withColor(0);
         Deque<Integer> colorStack = new ArrayDeque<>();
         colorStack.add(currentStyle.getColor().getValue());
         Deque<ResourceLocation> fontStack = new ArrayDeque<>();
@@ -77,7 +80,10 @@ public class TextPageElement extends PageElement {
         if (!currentSubstring.isEmpty())
             formattedTextSegments.add(FormattedText.of(currentSubstring, currentStyle));
 
-        this.formattedText = Minecraft.getInstance().font.split(FormattedText.composite(formattedTextSegments), (int) Math.round(this.transform.width() / this.textSize));
+        this.formattedText = Minecraft.getInstance().font.split(
+                FormattedText.composite(formattedTextSegments),
+                Math.round(this.transform.width() / this.textSize)
+        );
     }
 
     private static Style applyTag(Style style, String tag, boolean isClosing, Deque<Integer> colorStack, Deque<ResourceLocation> fontStack) {

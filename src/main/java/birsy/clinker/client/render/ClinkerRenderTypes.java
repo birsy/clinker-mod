@@ -24,6 +24,8 @@ import static net.minecraft.client.renderer.RenderStateShard.*;
 
 @EventBusSubscriber(modid = Clinker.MOD_ID, value = Dist.CLIENT)
 public class ClinkerRenderTypes {
+    public static final ResourceLocation PAGE = Clinker.resource("page/page");
+
     private static final RenderStateShard.ShaderStateShard ENTITY_UNLIT_TRANSLUCENT_SHADER =
             new RenderStateShard.ShaderStateShard(ClientHooks.ClientEvents::getEntityTranslucentUnlitShader);
     private static final BiFunction<ResourceLocation, Boolean, RenderType> ENTITY_UNLIT_TRANSLUCENT = Util.memoize((resourceLocation, outline) -> {

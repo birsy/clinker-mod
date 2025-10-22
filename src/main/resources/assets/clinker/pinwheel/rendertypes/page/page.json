@@ -1,9 +1,9 @@
 {
-  "format": "NEW_ENTITY",
+  "format": "POSITION_TEX_COLOR",
   "mode": "QUADS",
   "bufferSize": "TRANSIENT",
   "sort": false,
-  "affectsCrumbling": true,
+  "affectsCrumbling": false,
   "outline": false,
   "layers": [
       {
@@ -18,13 +18,7 @@
       },
       {
         "type": "veil:shader",
-        "name": "veil:necromancer/skinned_mesh"
-      },
-      {
-        "type": "minecraft:lightmap"
-      },
-      {
-        "type": "minecraft:overlay"
+        "name": "clinker:page/texture"
       }
   ]
 }
