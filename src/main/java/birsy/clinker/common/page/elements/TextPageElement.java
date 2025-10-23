@@ -5,6 +5,7 @@ import birsy.clinker.client.localization.LongStringLocalizationAuthority;
 import birsy.clinker.common.page.PageElement;
 import birsy.clinker.common.page.PageElementTransform;
 import birsy.clinker.common.page.PageElementType;
+import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerPageElementTypes;
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
@@ -20,6 +21,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ColorRGBA;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.Mth;
 import org.joml.Matrix4f;
 
 import java.util.*;
@@ -29,6 +31,7 @@ public class TextPageElement extends PageElement {
             instance -> instance.group(
                     ResourceLocation.CODEC.fieldOf("text").forGetter(element -> element.text),
                     Codec.FLOAT.optionalFieldOf("text_size", 1.0F).forGetter(element -> element.textSize),
+                    Codec.FLOAT.optionalFieldOf("text_wiggle", 0.0F).forGetter(element -> element.textWiggle),
                     Codec.BOOL.optionalFieldOf("blended", true).forGetter(element -> element.blended),
                     PageElementTransform.CODEC.fieldOf("transform").forGetter(element -> element.transform)
             ).apply(instance, TextPageElement::new)
@@ -39,14 +42,15 @@ public class TextPageElement extends PageElement {
     };
 
     final ResourceLocation text;
-    final float textSize;
+    final float textSize, textWiggle;
     final boolean blended;
     public List<FormattedCharSequence> formattedText;
 
-    public TextPageElement(ResourceLocation text, float textSize, boolean blended, PageElementTransform transform) {
+    public TextPageElement(ResourceLocation text, float textSize, float textWiggle, boolean blended, PageElementTransform transform) {
         super(transform);
         this.text = text;
         this.textSize = textSize;
+        this.textWiggle = textWiggle;
         this.blended = blended;
     }
 
@@ -139,6 +143,8 @@ public class TextPageElement extends PageElement {
 
     @Override
     public void drawToAtlas(MultiBufferSource bufferSource, Matrix4f matrix, int atlasOffsetX, int atlasOffsetY) {
+        Clinker.FONT_WIGGLINESS = this.textWiggle;
+
         this.resolveFormattedText();
         float halfWidth  = this.transform.width() * 0.5F,
               halfHeight = this.transform.height() * 0.5F;
@@ -146,7 +152,7 @@ public class TextPageElement extends PageElement {
         matrix.identity();
         matrix.translate(atlasOffsetX, atlasOffsetY, 0);
         matrix.translate(this.transform.x() + halfWidth, this.transform.y() + halfHeight, this.transform.renderOrder());
-        matrix.rotateYXZ(0, 0, this.transform.rotation());
+        matrix.rotateYXZ(0, 0, this.transform.rotation() * Mth.DEG_TO_RAD);
         matrix.translate(-halfWidth, -halfHeight, 0);
 
         List<FormattedCharSequence> text = this.formattedText;
@@ -180,5 +186,7 @@ public class TextPageElement extends PageElement {
                 }
             }
         }
+
+        Clinker.FONT_WIGGLINESS = 0.0F;
     }
 }

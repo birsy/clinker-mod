@@ -34,6 +34,8 @@ import net.minecraft.client.renderer.RenderType;
 @EventBusSubscriber
 @Mod(Clinker.MOD_ID)
 public class Clinker {
+    // terrible, terrible hack
+    public static float FONT_WIGGLINESS = 0.0F;
     public static final String MOD_ID = "clinker";
     public static final Logger LOGGER = LogManager.getLogger(MOD_ID.toUpperCase());
 
