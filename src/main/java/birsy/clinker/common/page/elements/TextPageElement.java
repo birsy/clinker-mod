@@ -32,6 +32,7 @@ public class TextPageElement extends PageElement {
                     ResourceLocation.CODEC.fieldOf("text").forGetter(element -> element.text),
                     Codec.FLOAT.optionalFieldOf("text_size", 1.0F).forGetter(element -> element.textSize),
                     Codec.FLOAT.optionalFieldOf("text_wiggle", 0.0F).forGetter(element -> element.textWiggle),
+                    Codec.FLOAT.optionalFieldOf("line_height_multiplier", 1.0F).forGetter(element -> element.lineHeightMultiplier),
                     Codec.BOOL.optionalFieldOf("blended", true).forGetter(element -> element.blended),
                     PageElementTransform.CODEC.fieldOf("transform").forGetter(element -> element.transform)
             ).apply(instance, TextPageElement::new)
@@ -42,15 +43,16 @@ public class TextPageElement extends PageElement {
     };
 
     final ResourceLocation text;
-    final float textSize, textWiggle;
+    final float textSize, textWiggle, lineHeightMultiplier;
     final boolean blended;
     public List<FormattedCharSequence> formattedText;
 
-    public TextPageElement(ResourceLocation text, float textSize, float textWiggle, boolean blended, PageElementTransform transform) {
+    public TextPageElement(ResourceLocation text, float textSize, float textWiggle, float lineHeightMultiplier, boolean blended, PageElementTransform transform) {
         super(transform);
         this.text = text;
         this.textSize = textSize;
         this.textWiggle = textWiggle;
+        this.lineHeightMultiplier = lineHeightMultiplier;
         this.blended = blended;
     }
 
@@ -144,7 +146,6 @@ public class TextPageElement extends PageElement {
     @Override
     public void drawToAtlas(MultiBufferSource bufferSource, Matrix4f matrix, int atlasOffsetX, int atlasOffsetY) {
         Clinker.FONT_WIGGLINESS = this.textWiggle;
-
         this.resolveFormattedText();
         float halfWidth  = this.transform.width() * 0.5F,
               halfHeight = this.transform.height() * 0.5F;
@@ -154,9 +155,10 @@ public class TextPageElement extends PageElement {
         matrix.translate(this.transform.x() + halfWidth, this.transform.y() + halfHeight, this.transform.renderOrder());
         matrix.rotateYXZ(0, 0, this.transform.rotation() * Mth.DEG_TO_RAD);
         matrix.translate(-halfWidth, -halfHeight, 0);
+        matrix.scale(this.textSize);
 
         List<FormattedCharSequence> text = this.formattedText;
-        int lineHeight = Minecraft.getInstance().font.lineHeight;
+        float lineHeight = Minecraft.getInstance().font.lineHeight * this.lineHeightMultiplier;
         for (int i = 0; i < text.size(); i++) {
             FormattedCharSequence string = text.get(i);
             Minecraft.getInstance().font.drawInBatch(
@@ -175,7 +177,7 @@ public class TextPageElement extends PageElement {
                     Minecraft.getInstance().font.drawInBatch(
                             string,
                             blendedOffset[0], lineHeight * i + blendedOffset[1],
-                            FastColor.ARGB32.colorFromFloat(0.12F, 1, 1, 1),
+                            FastColor.ARGB32.colorFromFloat(0.2F, 1, 1, 1),
                             false,
                             matrix,
                             bufferSource,

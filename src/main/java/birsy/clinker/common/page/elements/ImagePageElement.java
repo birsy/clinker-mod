@@ -16,6 +16,7 @@ import foundry.veil.api.client.render.rendertype.VeilRenderType;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import org.joml.Matrix4f;
 
 import java.util.List;
@@ -49,7 +50,7 @@ public class ImagePageElement extends PageElement {
         matrix.identity();
         matrix.translate(atlasOffsetX, atlasOffsetY, 0);
         matrix.translate(this.transform.x() + halfWidth, this.transform.y() + halfHeight, this.transform.renderOrder());
-        matrix.rotateYXZ(0, 0, this.transform.rotation());
+        matrix.rotateYXZ(0, 0, this.transform.rotation() * Mth.DEG_TO_RAD);
 
         RenderType renderType = VeilRenderType.get(ClinkerRenderTypes.PAGE, this.texture);
         VertexConsumer vertexConsumer = bufferSource.getBuffer(renderType);
