@@ -36,7 +36,7 @@ public class ImagePageElement extends PageElement {
 
     public ImagePageElement(ResourceLocation texture, List<Float> textureCoordinates, Colorc color, PageElementTransform transform) {
         super(transform);
-        this.texture = texture.withPrefix("textures/page/");
+        this.texture = texture.getPath().startsWith("textures/") ? texture : texture.withPrefix("textures/page/");
         this.u1 = textureCoordinates.get(0); this.v1 = textureCoordinates.get(1);
         this.u2 = textureCoordinates.get(2); this.v2 = textureCoordinates.get(3);
         this.color = color;

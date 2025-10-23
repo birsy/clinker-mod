@@ -12,9 +12,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 public class Page {
-    public static final PageLayout FALLBACK_LAYOUT = new PageLayout(256, 245, List.of(
-       new ImagePageElement(Clinker.resource("page/test.png"), List.of(0F, 0F, 1F, 1F), Color.WHITE, new PageElementTransform(0, 0, 256, 256, 0, 0))
+    public static final PageLayout FALLBACK_LAYOUT = new PageLayout(List.of(
+       new ImagePageElement(Clinker.resource("textures/page/test.png"), List.of(0F, 0F, 1F, 1F), Color.WHITE, new PageElementTransform(0, 0, 256, 256, 0, 0))
     ));
+    public static final int PAGE_WIDTH = 300, PAGE_HEIGHT = 400;
 
     public static final Codec<Page> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             PageLayout.CODEC.fieldOf("default_layout")
@@ -72,15 +73,13 @@ public class Page {
         return list;
     }
 
-    public record PageLayout(int width, int height, ImmutableList<PageElement> elements) {
+    public record PageLayout(ImmutableList<PageElement> elements) {
         public static final Codec<PageLayout> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Codec.INT.fieldOf("width").forGetter(page -> page.width),
-                Codec.INT.fieldOf("height").forGetter(page -> page.height),
                 PageElement.CODEC.listOf().fieldOf("elements").forGetter(page -> page.elements)
         ).apply(instance, PageLayout::new));
 
-        public PageLayout(int width, int height, List<PageElement> elements) {
-            this(width, height, ImmutableList.sortedCopyOf(Comparator.comparingInt(element -> element.transform.renderOrder()), elements));
+        public PageLayout(List<PageElement> elements) {
+            this(ImmutableList.sortedCopyOf(Comparator.comparingInt(element -> element.transform.renderOrder()), elements));
         }
     }
 

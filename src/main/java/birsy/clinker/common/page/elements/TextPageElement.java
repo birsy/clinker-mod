@@ -17,6 +17,8 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ColorRGBA;
+import net.minecraft.util.FastColor;
 import net.minecraft.util.FormattedCharSequence;
 import org.joml.Matrix4f;
 
@@ -27,18 +29,25 @@ public class TextPageElement extends PageElement {
             instance -> instance.group(
                     ResourceLocation.CODEC.fieldOf("text").forGetter(element -> element.text),
                     Codec.FLOAT.optionalFieldOf("text_size", 1.0F).forGetter(element -> element.textSize),
+                    Codec.BOOL.optionalFieldOf("blended", true).forGetter(element -> element.blended),
                     PageElementTransform.CODEC.fieldOf("transform").forGetter(element -> element.transform)
             ).apply(instance, TextPageElement::new)
     );
 
+    private static final int[][] BLENDED_OFFSETS = {
+            {-1, 0}, {1, 0}, {0, 1}
+    };
+
     final ResourceLocation text;
     final float textSize;
+    final boolean blended;
     public List<FormattedCharSequence> formattedText;
 
-    public TextPageElement(ResourceLocation text, float textSize, PageElementTransform transform) {
+    public TextPageElement(ResourceLocation text, float textSize, boolean blended, PageElementTransform transform) {
         super(transform);
         this.text = text;
         this.textSize = textSize;
+        this.blended = blended;
     }
 
     public void resolveFormattedText() {
@@ -155,6 +164,21 @@ public class TextPageElement extends PageElement {
                     0,
                     LightTexture.FULL_BRIGHT
             );
+            if (blended) {
+                for (int[] blendedOffset : BLENDED_OFFSETS) {
+                    Minecraft.getInstance().font.drawInBatch(
+                            string,
+                            blendedOffset[0], lineHeight * i + blendedOffset[1],
+                            FastColor.ARGB32.colorFromFloat(0.12F, 1, 1, 1),
+                            false,
+                            matrix,
+                            bufferSource,
+                            Font.DisplayMode.SEE_THROUGH,
+                            0,
+                            LightTexture.FULL_BRIGHT
+                    );
+                }
+            }
         }
     }
 }

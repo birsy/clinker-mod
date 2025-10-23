@@ -1,26 +1,23 @@
 {
   "default_layout": {
-    "width": 256,
-    "height": 256,
     "elements": [
       {
         "type": "clinker:image",
-        "texture": "clinker:test.png",
+        "texture": "clinker:page_placeholder.png",
         "transform": {
           "x": 0,
-          "y": 0,
-          "width": 256,
-          "height": 256,
-          "rotation": 10
+          "y": 40,
+          "width": 300,
+          "height": 320
         }
       },
       {
         "type": "clinker:text",
         "text": "clinker:page/test",
         "transform": {
-          "x": 0,
-          "y": 0,
-          "width": 256,
+          "x": 20,
+          "y": 55,
+          "width": 260,
           "height": 256
         }
       }

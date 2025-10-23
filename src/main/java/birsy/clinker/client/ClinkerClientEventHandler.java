@@ -26,15 +26,13 @@ public class ClinkerClientEventHandler {
             //PageRenderer.drawPageTestStuffHaha();
             PageAtlas.INSTANCE.update();
             // upload test atlas
-//            {
-//                if (Minecraft.getInstance().getConnection() != null) {
-//                    Page.PageLayout testPage = Minecraft.getInstance().getConnection().registryAccess()
-//                            .registryOrThrow(ClinkerDynamicRegistries.PAGE_REGISTRY_KEY).get(TEST_PAGE_LOCATION)
-//                            .getLayout(Minecraft.getInstance().getLanguageManager().getSelected());
-//                    int[] coordinates = new int[2];
-//                    PageAtlas.INSTANCE.tryReserveLayoutLocation(testPage, 1, coordinates);
-//                }
-//            }
+                if (Minecraft.getInstance().getConnection() != null) {
+                    Page.PageLayout testPage = Minecraft.getInstance().getConnection().registryAccess()
+                            .registryOrThrow(ClinkerDynamicRegistries.PAGE_REGISTRY_KEY).get(TEST_PAGE_LOCATION)
+                            .getLayout(Minecraft.getInstance().getLanguageManager().getSelected());
+                    int[] coordinates = new int[2];
+                    PageAtlas.INSTANCE.tryReserveLayoutLocation(testPage, 1, coordinates);
+                }
 
             Minecraft.getInstance().getProfiler().pop();
         }

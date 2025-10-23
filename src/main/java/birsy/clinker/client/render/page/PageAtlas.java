@@ -12,7 +12,7 @@ import org.lwjgl.system.NativeResource;
 import java.util.*;
 
 public class PageAtlas implements NativeResource {
-    public static final PageAtlas INSTANCE = new PageAtlas(8, 8);
+    public static final PageAtlas INSTANCE = new PageAtlas(2, 2);
 
     public static final ResourceLocation LOCATION = Clinker.resource("page_atlas");
     final int width, height;
@@ -44,9 +44,9 @@ public class PageAtlas implements NativeResource {
     }
 
     private void initFrameBuffer() {
-        if (frameBuffer == null || frameBuffer.getWidth() != this.width || frameBuffer.getHeight() != this.height) {
+        if (frameBuffer == null || frameBuffer.getWidth() != Page.PAGE_WIDTH * this.width || frameBuffer.getHeight() != Page.PAGE_HEIGHT * this.height) {
             free();
-            this.frameBuffer = AdvancedFbo.withSize(256 * this.width, 256 * this.height)
+            this.frameBuffer = AdvancedFbo.withSize(Page.PAGE_WIDTH * this.width, Page.PAGE_HEIGHT * this.height)
                     .setFormat(FramebufferAttachmentDefinition.Format.RGBA4)
                     .setFilter(TextureFilter.CLAMP)
                     .setDebugLabel("Page Atlas")
@@ -59,8 +59,8 @@ public class PageAtlas implements NativeResource {
         if (indexByLayout.containsKey(layout)) {
             // if it's already included, return its location.
             int index = indexByLayout.get(layout);
-            coordinatesOut[0] = Math.floorMod(index, width) * 256;
-            coordinatesOut[1] = Math.floorDiv(index, height) * 256;
+            coordinatesOut[0] = Math.floorMod(index, width) * Page.PAGE_WIDTH;
+            coordinatesOut[1] = Math.floorDiv(index, height) * Page.PAGE_HEIGHT;
             framesSinceLayoutRendered[index] = 0;
         } else {
             // otherwise, return the default location and add it to be rendered at the start of next frame.
@@ -105,8 +105,8 @@ public class PageAtlas implements NativeResource {
         PageRenderer.beginPageRenderBatch(this.frameBuffer);
         for (int index = 0; index < this.pageLayouts.length; index++) {
             if (pageLayouts[index] == null) continue;
-            int x = Math.floorMod(index, width) * 256,
-                y = Math.floorDiv(index, height) * 256;
+            int x = Math.floorMod(index, width) * Page.PAGE_WIDTH,
+                y = Math.floorDiv(index, height) * Page.PAGE_HEIGHT;
             PageRenderer.renderPageToAtlas(pageLayouts[index], x, y);
         }
 //        for (int index : this.indicesToRender) {
