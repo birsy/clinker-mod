@@ -13,8 +13,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 
-// basically a per-player, per-world save file for clinker.
-// books contents are constructed based off the current Alchemical Knowledge
 public class AlchemyKnowledgeTracker extends SavedData {
     private final Map<UUID, AlchemyKnowledge> knowledgeByPlayer;
     private final Map<UUID, KnowledgeContract> contracts;
