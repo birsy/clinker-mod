@@ -22,7 +22,6 @@ public class ClinkerDynamicRegistries {
                 WORLD_FEATURE_REGISTRY_KEY,
                 WorldFeatureSpawnSet.CODEC
         );
-
         event.dataPackRegistry(
                 PAGE_REGISTRY_KEY,
                 Page.CODEC, Page.CODEC

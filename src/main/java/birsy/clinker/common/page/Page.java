@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import foundry.veil.api.client.color.Color;
+import net.minecraft.resources.ResourceKey;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -33,6 +34,8 @@ public class Page {
     public final PageLayout defaultLayout;
     public final ImmutableMap<String, PageLayout> layoutByLanguage;
 
+    public static final Map<Page, ResourceKey<Page>> KEY_LOOKUP = new HashMap<>();
+
     private Page(PageLayout defaultLayout, List<LayoutLanguageOverrideEntry> layoutOverrideEntries) {
         this.defaultLayout = defaultLayout;
         ImmutableMap.Builder<String, PageLayout> builder = ImmutableMap.builder();
@@ -52,6 +55,12 @@ public class Page {
 
     public PageLayout getLayout(String languageId) {
         return layoutByLanguage.getOrDefault(languageId, defaultLayout);
+    }
+
+    public ResourceKey<Page> getResourceKey() {
+        if (KEY_LOOKUP.isEmpty()) Clinker.LOGGER.error("Page - ResourceKey lookup has not yet been initialized!");
+        if (KEY_LOOKUP.get(this) == null) throw new RuntimeException("No ResourceKey loaded for page " + this);
+        return KEY_LOOKUP.get(this);
     }
 
     private List<LayoutLanguageOverrideEntry> makeLanguageLayoutEntryList() {
