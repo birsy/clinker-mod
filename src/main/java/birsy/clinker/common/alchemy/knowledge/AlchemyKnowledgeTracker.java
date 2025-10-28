@@ -4,6 +4,8 @@ import birsy.clinker.common.alchemy.knowledge.type.AlchemyKnowledgeData;
 import birsy.clinker.common.alchemy.knowledge.type.AlchemyKnowledgeType;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
 
 import java.util.HashMap;
@@ -148,4 +150,10 @@ public class AlchemyKnowledgeTracker extends SavedData {
 
         return tracker;
     }
+
+    private static final SavedData.Factory<AlchemyKnowledgeTracker> FACTORY =
+            new Factory<>(AlchemyKnowledgeTracker::new, AlchemyKnowledgeTracker::load);
+    // retrieves the knowledge tracker from the provided server or server level
+    public static AlchemyKnowledgeTracker get(MinecraftServer server) { return server.overworld().getDataStorage().get(FACTORY, "knowledge_tracker"); }
+    public static AlchemyKnowledgeTracker get(ServerLevel level) { return get(level.getServer()); }
 }

@@ -31,8 +31,10 @@ public class AlchemyKnowledge {
 
     // use this for updating data!
     public <D extends AlchemyKnowledgeData> void setData(AlchemyKnowledgeType<D> type, D data) {
-        dataMap.put(type, data);
+        if (data == this.dataMap.getOrDefault(type, null)) return;
+        this.dataMap.put(type, data);
         this.tracker.syncContractData(this.owner, type, data);
+        this.tracker.setDirty();
     }
 
     public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
