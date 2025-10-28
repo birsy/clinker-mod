@@ -30,7 +30,7 @@ public class AlchemyKnowledgeTracker extends SavedData {
     }
 
     // returns the UUID of the contract
-    public UUID createContract(UUID drafterUUID, KnowledgeContract.ContractType type) {
+    public UUID createContract(UUID drafterUUID, KnowledgeContract.ContractTerms type) {
         KnowledgeContract contract = new KnowledgeContract(this, UUID.randomUUID(), drafterUUID, new HashSet<>(), type);
         this.contracts.put(contract.uuid(), contract);
         return contract.uuid();
@@ -40,7 +40,7 @@ public class AlchemyKnowledgeTracker extends SavedData {
         if (!this.contracts.containsKey(contractUUID)) return false;
         KnowledgeContract contract = this.contracts.get(contractUUID);
 
-        if (contract.type() == KnowledgeContract.ContractType.SHARE_ALL && !contract.signatories().isEmpty()) {
+        if (contract.type() == KnowledgeContract.ContractTerms.SHARE_ALL && !contract.signatories().isEmpty()) {
             UUID signatoryUUID = contract.signatories().stream().findAny().get();
             AlchemyKnowledge sharedKnowledge = getOrCreateAlchemyKnowledge(signatoryUUID);
             AlchemyKnowledge newPlayerKnowledge = getOrCreateAlchemyKnowledge(playerUUID);
@@ -78,7 +78,7 @@ public class AlchemyKnowledgeTracker extends SavedData {
         return removed;
     }
 
-    public boolean breakContract(UUID contractUUID) {
+    public boolean voidContract(UUID contractUUID) {
         if (!this.contracts.containsKey(contractUUID)) return false;
         KnowledgeContract contract = this.contracts.get(contractUUID);
         for (UUID signatory : contract.signatories())
