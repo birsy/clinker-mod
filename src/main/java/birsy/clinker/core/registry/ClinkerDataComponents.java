@@ -1,9 +1,6 @@
 package birsy.clinker.core.registry;
 
-import birsy.clinker.common.world.item.components.CrossbowState;
-import birsy.clinker.common.world.item.components.FuseTimer;
-import birsy.clinker.common.world.item.components.LoadedItemStack;
-import birsy.clinker.common.world.item.components.OrdnanceEffects;
+import birsy.clinker.common.world.item.components.*;
 import birsy.clinker.core.Clinker;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
@@ -16,6 +13,11 @@ import java.util.function.Supplier;
 
 public class ClinkerDataComponents {
     public static final DeferredRegister.DataComponents DATA_COMPONENT_TYPES = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, Clinker.MOD_ID);
+
+    // page
+    public static final Supplier<DataComponentType<PageContents>> PAGE = DATA_COMPONENT_TYPES.registerComponentType(
+            "page", builder -> builder.networkSynchronized(PageContents.STREAM_CODEC).persistent(PageContents.CODEC).cacheEncoding()
+    );
 
     // ordnance
     public static final Supplier<DataComponentType<OrdnanceEffects>> ORDNANCE_EFFECTS = DATA_COMPONENT_TYPES.registerComponentType(

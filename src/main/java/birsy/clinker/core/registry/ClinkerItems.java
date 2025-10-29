@@ -4,6 +4,7 @@ import birsy.clinker.common.world.item.*;
 import birsy.clinker.common.world.item.components.FuseTimer;
 import birsy.clinker.common.world.item.components.LoadedItemStack;
 import birsy.clinker.common.world.item.components.OrdnanceEffects;
+import birsy.clinker.common.world.item.components.PageContents;
 import birsy.clinker.core.Clinker;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
@@ -74,6 +75,14 @@ public class ClinkerItems
                     .component(DataComponents.RARITY, Rarity.UNCOMMON)
                     .component(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)
                     .stacksTo(16)
+            )
+    );
+
+    public static final DeferredItem<PageItem> PAGE = ITEMS.register("page", () ->
+            new PageItem(new Item.Properties()
+                    .stacksTo(1)
+                    .component(DataComponents.RARITY, Rarity.UNCOMMON)
+                    .component(ClinkerDataComponents.PAGE.get(), PageContents.DEFAULT)
             )
     );
     

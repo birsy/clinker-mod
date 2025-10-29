@@ -120,8 +120,8 @@
   "entity.clinker.ai_test": "Ai Test",
   "entity.clinker.collider": "Collider",
   "entity.clinker.flechette": "Flechette",
+  "entity.clinker.gnomad": "Gnomad",
   "entity.clinker.gnomad_mogul": "Gnomad Mogul",
-  "entity.clinker.gnomad_soldier": "Gnomad Soldier",
   "entity.clinker.mold": "Mold",
   "entity.clinker.ordnance": "Ordnance",
   "entity.clinker.slab_crab": "Slab Crab",
@@ -161,6 +161,7 @@
   "item.clinker.ordnance.touch_detonate": "Detonates on Impact",
   "item.clinker.ordnance.touch_stick": "Sticky",
   "item.clinker.ordnance.trail": "Smoke Trail",
+  "item.clinker.page": "Page",
   "item.clinker.phosphor": "Phosphor",
   "item.clinker.pyrite": "Pyrite",
   "item.clinker.raw_lead": "Raw Lead",
@@ -169,5 +170,8 @@
   "item.clinker.sulfur": "Sulfur",
   "item.clinker.transmogrifying_flask": "Transmogrifying Flask",
   "item.clinker.vitriol_bucket": "Vitriol Bucket",
-  "itemGroup.clinker": "Clinker"
+  "itemGroup.clinker.clinker": "Clinker",
+  "itemGroup.clinker.pages": "Pages",
+  "page.clinker.title.blank": "Blank Page",
+  "page.clinker.title.test": "Testing Page"
 }

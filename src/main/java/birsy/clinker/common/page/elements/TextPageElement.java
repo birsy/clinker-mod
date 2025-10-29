@@ -15,8 +15,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ColorRGBA;
 import net.minecraft.util.FastColor;
@@ -37,10 +40,17 @@ public class TextPageElement extends PageElement {
                     PageElementTransform.CODEC.fieldOf("transform").forGetter(element -> element.transform)
             ).apply(instance, TextPageElement::new)
     );
+    public static final StreamCodec<RegistryFriendlyByteBuf, TextPageElement> STREAM_CODEC = StreamCodec.composite(
+            ResourceLocation.STREAM_CODEC, element -> element.text,
+            ByteBufCodecs.FLOAT, element -> element.textSize,
+            ByteBufCodecs.FLOAT, element -> element.textWiggle,
+            ByteBufCodecs.FLOAT, element -> element.lineHeightMultiplier,
+            ByteBufCodecs.BOOL, element -> element.blended,
+            PageElementTransform.STREAM_CODEC, element -> element.transform,
+            TextPageElement::new
+    );
 
-    private static final int[][] BLENDED_OFFSETS = {
-            {-1, 0}, {1, 0}, {0, 1}
-    };
+    private static final int[][] BLENDED_OFFSETS = {{-1, 0}, {1, 0}, {0, 1}};
 
     final ResourceLocation text;
     final float textSize, textWiggle, lineHeightMultiplier;
@@ -153,7 +163,7 @@ public class TextPageElement extends PageElement {
         matrix.identity();
         matrix.translate(atlasOffsetX, atlasOffsetY, 0);
         matrix.translate(this.transform.x() + halfWidth, this.transform.y() + halfHeight, this.transform.renderOrder());
-        matrix.rotateYXZ(0, 0, this.transform.rotation() * Mth.DEG_TO_RAD);
+        matrix.rotateYXZ(0, 0, (this.transform.rotation()) * Mth.DEG_TO_RAD);
         matrix.translate(-halfWidth, -halfHeight, 0);
         matrix.scale(this.textSize);
 

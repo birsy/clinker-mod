@@ -27,5 +27,6 @@ public class ClinkerItemModelProvider extends ItemModelProvider {
     @Override
     protected void registerModels() {
         this.basicItem(ClinkerItems.VITRIOL_BUCKET.get());
+        this.basicItem(ClinkerItems.PAGE.get());
     }
 }

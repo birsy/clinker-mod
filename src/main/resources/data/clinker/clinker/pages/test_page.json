@@ -1,4 +1,5 @@
 {
+  "title_translation_key": "page.clinker.title.test",
   "default_layout": {
     "elements": [
       {
@@ -14,9 +15,11 @@
       {
         "type": "clinker:text",
         "text": "clinker:page/test",
+        "text_wiggle": 0.5,
+        "line_height_multiplier": 1.15,
         "transform": {
           "x": 20,
-          "y": 55,
+          "y": 55.5,
           "width": 260,
           "height": 256
         }

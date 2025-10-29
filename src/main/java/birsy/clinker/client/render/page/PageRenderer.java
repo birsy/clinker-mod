@@ -32,30 +32,6 @@ public class PageRenderer {
             MultiBufferSource.immediate(new ByteBufferBuilder(1536));
     private static final Matrix4f pageViewMatrix = new Matrix4f();
 
-//    @SubscribeEvent
-    public static void drawPageTestStuffHaha() {
-        if (Minecraft.getInstance().level == null) return;
-        if (Minecraft.getInstance().getConnection() == null) return;
-
-        // load layout
-        RegistryAccess registryAccess = Minecraft.getInstance().getConnection().registryAccess();
-        Page testPage = registryAccess.registryOrThrow(ClinkerDynamicRegistries.PAGE_REGISTRY_KEY).get(TEST_PAGE_LOCATION);
-        Page.PageLayout layout = testPage.getLayout(Minecraft.getInstance().getLanguageManager().getSelected());
-
-        // draw layout
-        AdvancedFbo pageAtlasFBO = VeilRenderSystem.renderer().getFramebufferManager().getFramebuffer(ClinkerFramebuffers.PAGE_ATLAS);
-
-        beginPageRenderBatch(pageAtlasFBO);
-        renderPageToAtlas(layout, 0, 0);
-        renderPageToAtlas(layout, 256, 0);
-        endPageRenderBatch();
-
-        AdvancedFbo.unbind();
-
-        RenderSystem.restoreProjectionMatrix();
-        RenderSystem.applyModelViewMatrix();
-    }
-
     public static void beginPageRenderBatch(AdvancedFbo fbo) {
         fbo.bind(true);
         RenderSystem.backupProjectionMatrix();

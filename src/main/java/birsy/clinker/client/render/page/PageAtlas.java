@@ -2,17 +2,21 @@ package birsy.clinker.client.render.page;
 
 import birsy.clinker.common.page.Page;
 import birsy.clinker.core.Clinker;
+import com.mojang.blaze3d.systems.RenderSystem;
 import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.api.client.render.framebuffer.AdvancedFbo;
 import foundry.veil.api.client.render.framebuffer.FramebufferAttachmentDefinition;
 import foundry.veil.api.client.render.texture.TextureFilter;
+import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.system.NativeResource;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 public class PageAtlas implements NativeResource {
-    public static final PageAtlas INSTANCE = new PageAtlas(2, 2);
+    @Nullable
+    public static PageAtlas INSTANCE;
 
     public static final ResourceLocation LOCATION = Clinker.resource("page_atlas");
     final int width, height;
@@ -52,20 +56,26 @@ public class PageAtlas implements NativeResource {
                     .setDebugLabel("Page Atlas")
                     .addColorTextureBuffer()
                     .build(true);
+            Minecraft.getInstance().getTextureManager().register(LOCATION, this.frameBuffer.getColorTextureAttachment(0));
         }
     }
 
-    public void tryReserveLayoutLocation(Page.PageLayout layout, int priority, int[] coordinatesOut) {
+    public void tryReserveLayoutLocation(Page.PageLayout layout, int priority, float[] coordinatesOut) {
         if (indexByLayout.containsKey(layout)) {
             // if it's already included, return its location.
             int index = indexByLayout.get(layout);
-            coordinatesOut[0] = Math.floorMod(index, width) * Page.PAGE_WIDTH;
-            coordinatesOut[1] = Math.floorDiv(index, height) * Page.PAGE_HEIGHT;
+            int x = Math.floorMod(index, width), y = Math.floorDiv(index, height);
+            coordinatesOut[0] = (x * Page.PAGE_WIDTH) / (float)(this.width * Page.PAGE_WIDTH);
+            coordinatesOut[1] = (y * Page.PAGE_HEIGHT) / (float)(this.height * Page.PAGE_HEIGHT);
+            coordinatesOut[2] = ((x + 1) * Page.PAGE_WIDTH) / (float)(this.width * Page.PAGE_WIDTH);
+            coordinatesOut[3] = ((y + 1) * Page.PAGE_HEIGHT) / (float)(this.height * Page.PAGE_HEIGHT);
             framesSinceLayoutRendered[index] = 0;
         } else {
             // otherwise, return the default location and add it to be rendered at the start of next frame.
             coordinatesOut[0] = 0;
             coordinatesOut[1] = 0;
+            coordinatesOut[2] = Page.PAGE_WIDTH / (float)this.width;
+            coordinatesOut[3] = Page.PAGE_HEIGHT / (float)this.height;
 
             int index = findValidIndex(priority);
             // out of space!
@@ -103,17 +113,20 @@ public class PageAtlas implements NativeResource {
         this.initFrameBuffer();
         VeilRenderSystem.renderer().getFramebufferManager().setFramebuffer(LOCATION, this.frameBuffer);
         PageRenderer.beginPageRenderBatch(this.frameBuffer);
-        for (int index = 0; index < this.pageLayouts.length; index++) {
-            if (pageLayouts[index] == null) continue;
+        // first, clear out the old page atlas slots
+        for (int index : this.indicesToRender) {
+            int x = Math.floorMod(index, width) * Page.PAGE_WIDTH,
+                y = Math.floorDiv(index, height) * Page.PAGE_HEIGHT;
+            RenderSystem.enableScissor(x, y, Page.PAGE_WIDTH, Page.PAGE_HEIGHT);
+            this.frameBuffer.clear();
+        }
+        RenderSystem.disableScissor();
+        // then, render the new stuff
+        for (int index : this.indicesToRender) {
             int x = Math.floorMod(index, width) * Page.PAGE_WIDTH,
                 y = Math.floorDiv(index, height) * Page.PAGE_HEIGHT;
             PageRenderer.renderPageToAtlas(pageLayouts[index], x, y);
         }
-//        for (int index : this.indicesToRender) {
-//            int x = Math.floorMod(index, width) * 256,
-//                y = Math.floorDiv(index, height) * 256;
-//            PageRenderer.renderPageToAtlas(pageLayouts[index], x, y);
-//        }
         this.indicesToRender.clear();
         PageRenderer.endPageRenderBatch();
 

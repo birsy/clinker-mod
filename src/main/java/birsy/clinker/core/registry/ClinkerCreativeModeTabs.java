@@ -1,6 +1,9 @@
 package birsy.clinker.core.registry;
 
+import birsy.clinker.common.page.Page;
+import birsy.clinker.common.world.item.components.PageContents;
 import birsy.clinker.core.Clinker;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -14,12 +17,28 @@ public class ClinkerCreativeModeTabs {
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(BuiltInRegistries.CREATIVE_MODE_TAB, Clinker.MOD_ID);
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CLINKER = TABS.register("clinker", () -> CreativeModeTab.builder()
-            .title(Component.translatable("itemGroup.clinker").withStyle(Style.EMPTY.withFont(Clinker.resource("alchemical"))))
+            .title(Component.translatable("itemGroup.clinker.clinker").withStyle(Style.EMPTY.withFont(Clinker.resource("serif"))))
             .withTabsBefore(CreativeModeTabs.COMBAT)
-            .icon(() -> new ItemStack(ClinkerItems.ALCHEMY_BOOK.get().asItem()))
+            .icon(() -> new ItemStack(ClinkerItems.ORDNANCE.get().asItem()))
             .displayItems((parameters, output) -> {
                 ClinkerCreativeModeTabs.addItems(parameters, output);
                 ClinkerCreativeModeTabs.addBlocks(parameters, output);
+            }).build());
+
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CLINKER_PAGES = TABS.register("pages", () -> CreativeModeTab.builder()
+            .title(Component.translatable("itemGroup.clinker.pages").withStyle(Style.EMPTY.withFont(Clinker.resource("serif"))))
+            .withTabsBefore(CLINKER.getKey())
+            .icon(() -> new ItemStack(ClinkerItems.ALCHEMY_BOOK.get().asItem()))
+            .displayItems((parameters, output) -> {
+                output.accept(ClinkerItems.ALCHEMY_BOOK.get());
+                output.accept(PageContents.createItemStack(Holder.direct(Page.BLANK_PAGE)));
+                parameters.holders()
+                        .lookup(ClinkerDynamicRegistries.PAGE_REGISTRY_KEY)
+                        .ifPresent((holderLookup) -> {
+                            holderLookup.listElements()
+                                    .map(PageContents::createItemStack)
+                                    .forEach(output::accept);
+                        });
             }).build());
 
 

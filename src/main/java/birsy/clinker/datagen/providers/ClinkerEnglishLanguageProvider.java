@@ -22,7 +22,9 @@ public class ClinkerEnglishLanguageProvider extends LanguageProvider {
 
     @Override
     protected void addTranslations() {
-        this.add("itemGroup.clinker", "Clinker");
+        this.add("itemGroup.clinker.clinker", "Clinker");
+        this.add("itemGroup.clinker.pages", "Pages");
+
         for (DeferredHolder<Block, ? extends Block> entry : ClinkerBlocks.BLOCKS.getEntries()) {
             this.addBlock(entry, localizedNameFromRegistryName(entry.getId().getPath()));
         }
@@ -58,6 +60,10 @@ public class ClinkerEnglishLanguageProvider extends LanguageProvider {
         this.add("item.clinker.alchemists_crossbow.primed", "Primed");
         this.add("item.clinker.alchemists_crossbow.repeater", "Repeater Attachment");
         this.add("item.clinker.crossbow_repeater_attachment.instructions", "Attachment for an Alchemist's Crossbow.");
+
+        // pages
+        this.add("page.clinker.title.blank", "Blank Page");
+        this.add("page.clinker.title.test", "Testing Page");
     }
 
     private String localizedNameFromRegistryName(String registryName) {

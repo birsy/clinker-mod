@@ -4,6 +4,7 @@ import birsy.clinker.client.localization.LongStringLocalizationReloader;
 import birsy.clinker.client.render.GUIRenderer;
 import birsy.clinker.client.gui.AlchemyBundleGUIRenderer;
 import birsy.clinker.client.render.debug.ClinkerDebugRenderers;
+import birsy.clinker.client.render.page.PageAtlas;
 import birsy.clinker.client.render.world.item.AlchemistsCrossbowInHandRenderer;
 import birsy.clinker.core.registry.*;
 import birsy.clinker.core.registry.entity.ClinkerBlockEntities;
@@ -99,6 +100,8 @@ public class Clinker {
         GUIRenderer.alchemyBundleGUIRenderer = new AlchemyBundleGUIRenderer(Minecraft.getInstance());
 
         ItemProperties.register(ClinkerItems.ALCHEMISTS_CROSSBOW.get(), Clinker.resource("pull"), AlchemistsCrossbowInHandRenderer::getPullPercentage);
+
+        PageAtlas.INSTANCE = new PageAtlas(2, 2);
         //VeilRenderSystem.renderer().getPostProcessingManager().add(GasRenderer.VOLUME_POST);
     }
 }

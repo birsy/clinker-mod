@@ -2,6 +2,8 @@ package birsy.clinker.core.util.codecs;
 
 import com.mojang.datafixers.util.Function6;
 import com.mojang.datafixers.util.Function7;
+import foundry.veil.api.client.color.Color;
+import foundry.veil.api.client.color.Colorc;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -85,6 +87,8 @@ public class ExtraByteBufCodecs {
             path.writeToStream(new FriendlyByteBuf(buffer));
         }
     };
+
+    public static final StreamCodec<ByteBuf, Colorc> COLOR = StreamCodec.of((buf, col) -> buf.writeInt(col.argb()), (buf) -> new Color(buf.readInt(), true));
 
     public static <T> StreamCodec<ByteBuf, T[]> array(StreamCodec<ByteBuf, T> codec) {
         return new StreamCodec<>() {

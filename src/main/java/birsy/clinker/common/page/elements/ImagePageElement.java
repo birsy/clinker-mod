@@ -6,6 +6,7 @@ import birsy.clinker.common.page.PageElementTransform;
 import birsy.clinker.common.page.PageElementType;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerPageElementTypes;
+import birsy.clinker.core.util.codecs.ExtraByteBufCodecs;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -15,6 +16,9 @@ import foundry.veil.api.client.color.Colorc;
 import foundry.veil.api.client.render.rendertype.VeilRenderType;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.joml.Matrix4f;
@@ -30,16 +34,27 @@ public class ImagePageElement extends PageElement {
                     PageElementTransform.CODEC.fieldOf("transform").forGetter(element -> element.transform)
             ).apply(instance, ImagePageElement::new)
     );
+    public static final StreamCodec<RegistryFriendlyByteBuf, ImagePageElement> STREAM_CODEC = StreamCodec.composite(
+            ResourceLocation.STREAM_CODEC, element -> element.texture,
+            ByteBufCodecs.FLOAT.apply(ByteBufCodecs.list(4)), element -> List.of(element.u1, element.v1, element.u2, element.v2),
+            ExtraByteBufCodecs.COLOR, element -> element.color,
+            PageElementTransform.STREAM_CODEC, element -> element.transform,
+            ImagePageElement::new
+    );
 
     final ResourceLocation texture;
     final float u1, v1, u2, v2;
     final Colorc color;
 
     public ImagePageElement(ResourceLocation texture, List<Float> textureCoordinates, Colorc color, PageElementTransform transform) {
+        this(texture, textureCoordinates.get(0), textureCoordinates.get(1), textureCoordinates.get(2), textureCoordinates.get(3), color, transform);
+    }
+
+    public ImagePageElement(ResourceLocation texture, float u1, float v1, float u2, float v2, Colorc color, PageElementTransform transform) {
         super(transform);
         this.texture = texture.getPath().startsWith("textures/") ? texture : texture.withPrefix("textures/page/");
-        this.u1 = textureCoordinates.get(0); this.v1 = textureCoordinates.get(1);
-        this.u2 = textureCoordinates.get(2); this.v2 = textureCoordinates.get(3);
+        this.u1 = u1; this.v1 = v1;
+        this.u2 = u2; this.v2 = v2;
         this.color = color;
     }
 
