@@ -41,7 +41,10 @@ public class ClinkerItems
     public static final DeferredItem<Item> RUBY = ITEMS.registerSimpleItem("ruby", new Item.Properties());
     public static final DeferredItem<Item> CENTIPEDE_SHELL = ITEMS.registerSimpleItem("centipede_shell", new Item.Properties());
     public static final DeferredItem<Item> SALT = ITEMS.registerSimpleItem("salt", new Item.Properties());
-    
+    public static final DeferredItem<Item> FISTFUL_OF_MAGGOTS = ITEMS.register("fistful_of_maggots",
+            () -> new FistfulOfMaggotsItem(new Item.Properties().stacksTo(16))
+    );
+
     public static final DeferredItem<Item> FAIRY_FRUIT = ITEMS.register("fairy_fruit", () -> new ItemNameBlockItem(ClinkerBlocks.FAIRY_FRUIT_BLOCK.get(), new Item.Properties()));
 
     public static final DeferredItem<OrdnanceItem> ORDNANCE = ITEMS.register("ordnance", () ->

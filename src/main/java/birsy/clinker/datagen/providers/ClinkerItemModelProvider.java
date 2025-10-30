@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.state.properties.StairsShape;
 import net.minecraft.world.level.block.state.properties.WallSide;
 import net.neoforged.neoforge.client.model.generators.*;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.registries.DeferredItem;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -26,7 +27,12 @@ public class ClinkerItemModelProvider extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
-        this.basicItem(ClinkerItems.VITRIOL_BUCKET.get());
-        this.basicItem(ClinkerItems.PAGE.get());
+        this.basicItem(ClinkerItems.VITRIOL_BUCKET);
+        this.basicItem(ClinkerItems.PAGE);
+        this.basicItem(ClinkerItems.FISTFUL_OF_MAGGOTS);
+    }
+
+    public ItemModelBuilder basicItem(DeferredItem<? extends Item> item) {
+        return super.basicItem(item.get());
     }
 }

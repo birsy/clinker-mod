@@ -184,5 +184,6 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(ClinkerItems.ORDNANCE.get());
         pOutput.accept(ClinkerItems.ALCHEMISTS_CROSSBOW.get());
         pOutput.accept(ClinkerItems.MOGUL_WARHOOK.get());
+        pOutput.accept(ClinkerItems.FISTFUL_OF_MAGGOTS.get());
     }
 }

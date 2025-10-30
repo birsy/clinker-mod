@@ -31,6 +31,7 @@ public class ClinkerParticles
     public static final Supplier<SimpleParticleType> MOTH = register("moth");
     public static final Supplier<SimpleParticleType> FIREFLY = register("firefly");
     public static final Supplier<SimpleParticleType> FIRE_SPEW = register("fire_spew");
+    public static final Supplier<SimpleParticleType> WRITHING_MAGGOT = register("writhing_maggot");
 
     public static final Supplier<ParticleType<DustColorTransitionOptions>> ORDNANCE_TRAIL = register("ordnance_trail",
             false,
@@ -41,12 +42,10 @@ public class ClinkerParticles
             type -> DustColorTransitionOptions.CODEC,
             type -> DustColorTransitionOptions.STREAM_CODEC);
     public static final Supplier<SimpleParticleType> EXPLOSION_LIGHT = register("explosion_light");
-
     public static final Supplier<ParticleType<ChainLightningParticle.ChainLightningParticleOptions>> CHAIN_LIGHTNING = register("chain_lightning",
             true,
             type -> ChainLightningParticle.ChainLightningParticleOptions.CODEC,
             type -> ChainLightningParticle.ChainLightningParticleOptions.STREAM_CODEC);
-
     public static final Supplier<ParticleType<BlossomBugParticle.BlossomBugParticleOptions>> BLOSSOM_BUG = register("blossom_bug",
             true,
             type -> BlossomBugParticle.BlossomBugParticleOptions.CODEC,
@@ -88,5 +87,6 @@ public class ClinkerParticles
         event.registerSpriteSet(CHAIN_LIGHTNING.get(), ChainLightningParticle.Provider::new);
         event.registerSpriteSet(FIRE_SPEW.get(), FireSpewParticle.Provider::new);
         event.registerSpriteSet(BLOSSOM_BUG.get(), BlossomBugParticle.Provider::new);
+        event.registerSpriteSet(WRITHING_MAGGOT.get(), WrithingMaggotParticle.Provider::new);
     }
 }

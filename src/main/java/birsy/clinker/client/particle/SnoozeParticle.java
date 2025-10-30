@@ -45,6 +45,7 @@ public class SnoozeParticle extends SimpleAnimatedParticle {
         this.setPos(this.initialX + (Mth.cos(snoozeTime) * spiral), this.initialY + (snoozeTime * this.snoozeHeight), this.initialZ + (Mth.sin(snoozeTime) * spiral));
     }
 
+    @Override
     public int getLightColor(float pPartialTick) {
         BlockPos blockpos = BlockPos.containing(this.x, this.y, this.z);
         return this.level.hasChunkAt(blockpos) ? LevelRenderer.getLightColor(this.level, blockpos) : 0;

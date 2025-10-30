@@ -15,7 +15,7 @@ public abstract class PageElement {
             .byNameCodec()
             .dispatch(PageElement::type, PageElementType::codec);
     public static final StreamCodec<RegistryFriendlyByteBuf, PageElement> STREAM_CODEC =
-            ByteBufCodecs.registry(ClinkerRegistries.PAGE_ELEMENT_TYPES_REGISTRY_KEY)
+            ByteBufCodecs.registry(ClinkerRegistries.PAGE_ELEMENT_TYPE_REGISTRY_KEY)
                          .dispatch(PageElement::type, PageElementType::streamCodec);
     public final PageElementTransform transform;
     public PageElement(PageElementTransform transform) {
