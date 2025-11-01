@@ -18,7 +18,7 @@
       },
       {
         "type": "veil:shader",
-        "name": "veil:necromancer/skinned_mesh"
+        "name": "clinker:entity/skinned_mesh"
       },
       {
         "type": "minecraft:lightmap"

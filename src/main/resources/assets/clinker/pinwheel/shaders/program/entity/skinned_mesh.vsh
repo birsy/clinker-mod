@@ -42,11 +42,14 @@ void main() {
     BoneData data = Bones[BoneIndex + NecromancerBoneCount * gl_InstanceID];
     mat4 transform = mat4(data.Transform);
     transform[3] = vec4(0.0, 0.0, 0.0, 1.0);// Last column is color, so set it to identity
-    gl_Position = ProjMat * ModelViewMat * transpose(transform) * vec4(Position, 1.0);
 
-    vertexDistance = fog_distance(ModelViewMat, Position, FogShape);
+    vec4 transformedPos = transpose(transform) * vec4(Position, 1.0);
+    vec3 transformedNormal = normalize((vec4(Normal, 0.0) * transform).xyz);
 
-    vec3 transformedNormal = normalize((vec4(Normal, 0) * data.Transform).xyz);
+    gl_Position = ProjMat * ModelViewMat * transformedPos;
+
+    vertexDistance = fog_distance(ModelViewMat, transformedPos.xyz, FogShape);
+
     vertexColor = ModelColor * data.Transform[3] * minecraft_mix_light(Light0_Direction, Light1_Direction, transformedNormal);
 
     // #veil:light_uv
@@ -55,6 +58,7 @@ void main() {
 
     // #veil:light_color;
     lightMapColor = texelFetch(Sampler2, UV2, 0);
+
     overlayColor = texelFetch(Sampler1, UV1, 0);
 
     texCoord0 = UV0;
