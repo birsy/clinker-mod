@@ -1,7 +1,8 @@
 package birsy.clinker.common.world.item;
 
-import birsy.clinker.common.world.entity.projectile.RerollFlaskEntity;
 import birsy.clinker.core.registry.ClinkerParticles;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
@@ -23,6 +24,11 @@ public class FistfulOfMaggotsItem extends Item {
         if (true) {
             Vec3 facingDirection = player.getLookAngle();
             Vec3 eyePos = player.getEyePosition().add(0, -0.2F, 0);
+
+            // todo: make a custom sound for these
+            level.playSound(player, eyePos.x, eyePos.y, eyePos.z, SoundEvents.SLIME_ATTACK, SoundSource.PLAYERS);
+            level.playSound(player, eyePos.x, eyePos.y, eyePos.z, SoundEvents.SLIME_SQUISH, SoundSource.PLAYERS, 1.0F, 1.2F);
+            level.playSound(player, eyePos.x, eyePos.y, eyePos.z, SoundEvents.PLAYER_BURP, SoundSource.PLAYERS, 0.5F, 2.0F);
 
             double speed = 0.4;
             double posRandom = 0.2F;

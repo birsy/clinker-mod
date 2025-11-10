@@ -1,5 +1,6 @@
 package birsy.clinker.core.registry;
 
+import birsy.clinker.client.render.ClinkerFonts;
 import birsy.clinker.common.world.item.*;
 import birsy.clinker.common.world.item.components.FuseTimer;
 import birsy.clinker.common.world.item.components.LoadedItemStack;
@@ -28,7 +29,8 @@ public class ClinkerItems
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Clinker.MOD_ID);
     
     public static final DeferredItem<Item> ALCHEMY_BOOK = ITEMS.register("alchemy_book", () -> new AlchemyBookItem(new Item.Properties().fireResistant().rarity(Rarity.UNCOMMON)));
-    
+    public static final DeferredItem<Item> PECULIAR_MIRROR = ITEMS.registerSimpleItem("peculiar_mirror", new Item.Properties().fireResistant().rarity(Rarity.RARE));
+
     public static final DeferredItem<Item> RAW_LEAD = ITEMS.registerSimpleItem("raw_lead", new Item.Properties());
     public static final DeferredItem<Item> LEAD_INGOT = ITEMS.registerSimpleItem("lead_ingot", new Item.Properties());
     public static final DeferredItem<Item> LEAD_NUGGET = ITEMS.registerSimpleItem("lead_nugget", new Item.Properties());
@@ -44,6 +46,9 @@ public class ClinkerItems
     public static final DeferredItem<Item> FISTFUL_OF_MAGGOTS = ITEMS.register("fistful_of_maggots",
             () -> new FistfulOfMaggotsItem(new Item.Properties().stacksTo(16))
     );
+
+    public static final DeferredItem<Item> LEECH = ITEMS.registerSimpleItem("leech", new Item.Properties());
+
 
     public static final DeferredItem<Item> FAIRY_FRUIT = ITEMS.register("fairy_fruit", () -> new ItemNameBlockItem(ClinkerBlocks.FAIRY_FRUIT_BLOCK.get(), new Item.Properties()));
 
@@ -67,8 +72,8 @@ public class ClinkerItems
                     .component(DataComponents.RARITY, Rarity.RARE)
                     .component(DataComponents.LORE, new ItemLore(
                             List.of(Component.translatable("item.clinker.crossbow_repeater_attachment.instructions").withStyle(
-                                            Style.EMPTY.withColor(ChatFormatting.GRAY)
-                                                       .withFont(Clinker.resource("small"))))
+                                            Style.EMPTY.withColor(ChatFormatting.DARK_GRAY)
+                                                       .withFont(ClinkerFonts.SERIF)))
                     ))
     );
 

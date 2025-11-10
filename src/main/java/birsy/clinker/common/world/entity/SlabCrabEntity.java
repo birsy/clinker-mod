@@ -1,6 +1,13 @@
 package birsy.clinker.common.world.entity;
 
+import birsy.clinker.client.entity.mogul.MogulAnimator;
+import birsy.clinker.client.entity.mogul.MogulSkeleton;
+import birsy.clinker.client.entity.slabcrab.SlabCrabAnimator;
+import birsy.clinker.client.entity.slabcrab.SlabCrabSkeleton;
 import birsy.clinker.common.world.entity.ai.GroundLookAngleControl;
+import birsy.clinker.common.world.entity.gnomad.mogul.GnomadMogulEntity;
+import foundry.veil.api.client.necromancer.SkeletonParent;
+import foundry.veil.api.client.necromancer.animation.Animator;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -27,7 +34,7 @@ import net.tslat.smartbrainlib.api.core.sensor.vanilla.NearbyLivingEntitySensor;
 
 import java.util.List;
 
-public class SlabCrabEntity extends GroundLocomoteEntity implements SmartBrainOwner<SlabCrabEntity> {
+public class SlabCrabEntity extends GroundLocomoteEntity implements SmartBrainOwner<SlabCrabEntity>, SkeletonParent<SlabCrabEntity, SlabCrabSkeleton> {
     public SlabCrabEntity(EntityType<? extends PathfinderMob> entityType, Level level) {
         super(entityType, level);
     }
@@ -35,7 +42,7 @@ public class SlabCrabEntity extends GroundLocomoteEntity implements SmartBrainOw
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 10.0)
-                .add(Attributes.MOVEMENT_SPEED, 0.2F);
+                .add(Attributes.MOVEMENT_SPEED, 0.05F);
     }
 
     // ai
@@ -47,6 +54,7 @@ public class SlabCrabEntity extends GroundLocomoteEntity implements SmartBrainOw
     @Override
     protected void customServerAiStep() {
         tickBrain(this);
+        super.customServerAiStep();
     }
 
     @Override
@@ -88,6 +96,25 @@ public class SlabCrabEntity extends GroundLocomoteEntity implements SmartBrainOw
         // don't
     }
 
+    SlabCrabSkeleton skeleton;
+    SlabCrabAnimator animator;
+    @Override
+    public void setSkeleton(SlabCrabSkeleton skeleton) {
+        this.skeleton = skeleton;
+    }
+    @Override
+    public SlabCrabSkeleton getSkeleton() {
+        return this.skeleton;
+    }
+    @Override
+    public void setAnimator(Animator<SlabCrabEntity, SlabCrabSkeleton> animator) {
+        this.animator = (SlabCrabAnimator) animator;
+    }
+    @Override
+    public SlabCrabAnimator getAnimator() {
+        return animator;
+    }
+
     public static class CrabLookAngleControl extends GroundLookAngleControl {
         public CrabLookAngleControl(GroundLocomoteEntity mob) {
             super(mob);
@@ -115,4 +142,6 @@ public class SlabCrabEntity extends GroundLocomoteEntity implements SmartBrainOw
 //            this.clampHeadRotationToBody();
 //        }
     }
+
+
 }

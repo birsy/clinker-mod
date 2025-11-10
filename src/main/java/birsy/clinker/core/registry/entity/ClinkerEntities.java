@@ -2,6 +2,7 @@ package birsy.clinker.core.registry.entity;
 
 import birsy.clinker.client.entity.*;
 import birsy.clinker.client.entity.mogul.MogulRenderer;
+import birsy.clinker.client.entity.slabcrab.SlabCrabRenderer;
 import birsy.clinker.common.world.entity.*;
 import birsy.clinker.common.world.entity.gnomad.*;
 import birsy.clinker.common.world.entity.gnomad.mogul.GnomadMogulEntity;
@@ -127,6 +128,6 @@ public class ClinkerEntities {
 
         event.registerEntityRenderer(ClinkerEntities.AI_TEST.get(), DebugEntityRenderer::new);
 
-        event.registerEntityRenderer(ClinkerEntities.SLAB_CRAB.get(), DebugEntityRenderer::new);
+        event.registerEntityRenderer(ClinkerEntities.SLAB_CRAB.get(), SlabCrabRenderer::new);
     }
 }

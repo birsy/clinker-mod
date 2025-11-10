@@ -22,8 +22,9 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 public class MogulRenderer extends NecromancerEntityRenderer<GnomadMogulEntity, MogulSkeleton> {
-    public static final ResourceLocation RENDERTYPE = Clinker.resource("mogul_entity");
-    private static final ResourceLocation CLOAK_RENDERTYPE = Clinker.resource("mogul_entity_cloak");
+    public static final ResourceLocation RENDERTYPE = Clinker.resource("entity/clinker_entity");
+    private static final ResourceLocation CLOAK_RENDERTYPE = Clinker.resource("entity/clinker_entity_layer");
+
     private static final ResourceLocation TEXTURE_LOCATION = Clinker.resource("textures/entity/gnomad/mogul/gnomad_mogul.png");
     private static final ResourceLocation ROBE_TEXTURE_LOCATION = Clinker.resource("textures/entity/gnomad/mogul/gnomad_mogul_robes.png");
 

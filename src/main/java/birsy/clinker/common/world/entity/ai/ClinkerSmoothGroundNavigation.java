@@ -30,7 +30,6 @@ public class ClinkerSmoothGroundNavigation extends SmoothGroundNavigation {
         if (!attemptShortcut(shortcutNode, safeSurfacePos)) {
             if (isCloseToNextNode(0.5f) || isCloseToNextNode(getMaxDistanceToWaypoint())) {
                 this.path.advance();
-                Clinker.LOGGER.info("AAAA{}", this.mob.getRandom().nextFloat());
             }
 
         }

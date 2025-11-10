@@ -2,6 +2,7 @@ package birsy.clinker.common.world.entity;
 
 import birsy.clinker.common.networking.packet.ClientboundGroundLocomotorSyncPacket;
 import birsy.clinker.common.world.entity.ai.*;
+import birsy.clinker.core.Clinker;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
@@ -89,7 +90,7 @@ public class GroundLocomoteEntity extends PathfinderMob {
         this.scheduler.tick();
         super.tick();
         if (this.level().isClientSide()) {
-            this.smoothedWalk.lerp(this.walk,0.1F);
+            this.smoothedWalk.lerp(this.walk,0.3F);
             this.cumulativeWalk = Mth.lerp(0.5F, this.cumulativeWalk, this.cumulativeWalkGoal);
         } else {
             this.getBodyRotationControl().tick();
@@ -98,13 +99,15 @@ public class GroundLocomoteEntity extends PathfinderMob {
 
     @Override
     protected void customServerAiStep() {
-        //this.debugMove();
+        this.debugMove();
         Vec3 positionPriorToWalking = this.position();
         this.move(MoverType.SELF, new Vec3(walk.x, walk.y, walk.z));
         Vec3 walkedVector = this.position().subtract(positionPriorToWalking);
+        //if (!this.onGround()) walkedVector = walkedVector.scale(0);
 
         float distancedActuallyWalked = (float) walkedVector.length();
         this.cumulativeWalk += distancedActuallyWalked;
+
         PacketDistributor.sendToPlayersTrackingEntity(this, new ClientboundGroundLocomotorSyncPacket(this.getId(), walkedVector.toVector3f(), this.cumulativeWalk));
     }
 

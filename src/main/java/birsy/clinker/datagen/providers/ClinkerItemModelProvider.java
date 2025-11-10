@@ -30,6 +30,8 @@ public class ClinkerItemModelProvider extends ItemModelProvider {
         this.basicItem(ClinkerItems.VITRIOL_BUCKET);
         this.basicItem(ClinkerItems.PAGE);
         this.basicItem(ClinkerItems.FISTFUL_OF_MAGGOTS);
+        this.basicItem(ClinkerItems.CROSSBOW_REPEATER_ATTACHMENT);
+        this.handheldItem(ClinkerItems.PECULIAR_MIRROR.get());
     }
 
     public ItemModelBuilder basicItem(DeferredItem<? extends Item> item) {

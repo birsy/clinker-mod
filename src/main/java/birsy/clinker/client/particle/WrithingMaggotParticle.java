@@ -10,6 +10,8 @@ import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
@@ -61,10 +63,13 @@ public class WrithingMaggotParticle extends SimpleAnimatedParticle {
 
                 this.onGround = false;
                 this.stoppedByCollision = false;
+                if (this.random.nextInt(3) == 0)
+                    this.level.playLocalSound(this.x, this.y, this.z, SoundEvents.COD_FLOP, SoundSource.HOSTILE, 0.5F, this.random.nextFloat(), true);
             }
         } else {
             this.roll += this.rotationSpeed;
         }
+        this.setAlpha(1.0F);
     }
 
     @Override

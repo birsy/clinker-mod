@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "clinker:block/yarrow"
+      },
+      {
+        "model": "clinker:block/yarrow_mirrored"
+      }
+    ]
+  }
+}

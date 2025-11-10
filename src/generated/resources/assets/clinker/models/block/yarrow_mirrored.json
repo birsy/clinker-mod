@@ -1,0 +1,7 @@
+{
+  "parent": "clinker:block/cross_mirrored",
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "cross": "clinker:block/yarrow"
+  }
+}

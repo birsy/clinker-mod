@@ -135,6 +135,7 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(ClinkerBlocks.SALTMOSS_SPROUTS.get());
         pOutput.accept(ClinkerBlocks.DRIED_SALTMOSS_SPROUTS.get());
         pOutput.accept(ClinkerBlocks.SALTMOSS_BLOSSOM.get());
+        pOutput.accept(ClinkerBlocks.YARROW.get());
 
         pOutput.accept(ClinkerBlocks.STROMATOLITE.get());
 
@@ -162,6 +163,8 @@ public class ClinkerCreativeModeTabs {
 
     public static void addItems(CreativeModeTab.ItemDisplayParameters pParameters, CreativeModeTab.Output pOutput) {
         pOutput.accept(ClinkerItems.ALCHEMY_BOOK.get());
+        pOutput.accept(ClinkerItems.PECULIAR_MIRROR.get());
+
         pOutput.accept(ClinkerItems.RAW_LEAD.get());
         pOutput.accept(ClinkerItems.LEAD_INGOT.get());
         pOutput.accept(ClinkerItems.LEAD_NUGGET.get());
@@ -183,6 +186,7 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(ClinkerItems.LADLE.get());
         pOutput.accept(ClinkerItems.ORDNANCE.get());
         pOutput.accept(ClinkerItems.ALCHEMISTS_CROSSBOW.get());
+        pOutput.accept(ClinkerItems.CROSSBOW_REPEATER_ATTACHMENT.get());
         pOutput.accept(ClinkerItems.MOGUL_WARHOOK.get());
         pOutput.accept(ClinkerItems.FISTFUL_OF_MAGGOTS.get());
     }

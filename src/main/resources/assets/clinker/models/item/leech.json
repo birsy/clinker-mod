@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "clinker:item/leech"
+  },
+  "display": {
+    "gui": {
+      "translation": [0, -8, 32],
+      "scale": [ 2, 2, 2 ]
+    }
+  }
+}
