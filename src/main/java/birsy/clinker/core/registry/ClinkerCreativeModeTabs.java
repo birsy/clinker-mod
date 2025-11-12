@@ -43,6 +43,8 @@ public class ClinkerCreativeModeTabs {
 
 
     public static void addBlocks(CreativeModeTab.ItemDisplayParameters pParameters, CreativeModeTab.Output pOutput) {
+        pOutput.accept(ClinkerBlocks.SALTPETRE_LEACHED_DIRT.get());
+
         pOutput.accept(ClinkerBlocks.FERMENTATION_BARREL.get());
         pOutput.accept(ClinkerBlocks.COUNTER.get());
         pOutput.accept(ClinkerBlocks.BLANK_SARCOPHAGUS.get());
@@ -168,15 +170,10 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(ClinkerItems.RAW_LEAD.get());
         pOutput.accept(ClinkerItems.LEAD_INGOT.get());
         pOutput.accept(ClinkerItems.LEAD_NUGGET.get());
+
         pOutput.accept(ClinkerItems.SULFUR.get());
-        pOutput.accept(ClinkerItems.BISMUTH.get());
-        pOutput.accept(ClinkerItems.PYRITE.get());
-        pOutput.accept(ClinkerItems.IRON_PYRITE.get());
-        pOutput.accept(ClinkerItems.PHOSPHOR.get());
-        pOutput.accept(ClinkerItems.IMPURE_RUBY.get());
-        pOutput.accept(ClinkerItems.RUBY.get());
-        pOutput.accept(ClinkerItems.CENTIPEDE_SHELL.get());
-        pOutput.accept(ClinkerItems.SALT.get());
+        pOutput.accept(ClinkerItems.SALTPETRE.get());
+
         pOutput.accept(ClinkerItems.FAIRY_FRUIT.get());
         pOutput.accept(ClinkerItems.LEAD_SWORD.get());
         pOutput.accept(ClinkerItems.LEAD_AXE.get());

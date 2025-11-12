@@ -49,8 +49,6 @@ public class AlchemyBundleGUIRenderer {
         items.add(new BaggedItem(new ItemStack(Items.GLOWSTONE_DUST, rand.nextInt(512))));
         items.add(new BaggedItem(new ItemStack(Items.LAPIS_LAZULI, rand.nextInt(512))));
         items.add(new BaggedItem(new ItemStack(Items.FIRE_CHARGE, rand.nextInt(512))));
-        items.add(new BaggedItem(new ItemStack(ClinkerItems.IMPURE_RUBY.get(), rand.nextInt(512))));
-        items.add(new BaggedItem(new ItemStack(ClinkerItems.PHOSPHOR.get(), rand.nextInt(512))));
         items.add(new BaggedItem(new ItemStack(ClinkerItems.SULFUR.get(), rand.nextInt(512))));
         items.add(new BaggedItem(new ItemStack(ClinkerItems.RAW_LEAD.get(), rand.nextInt(512))));
         items.add(new BaggedItem(new ItemStack(Items.BONE_MEAL, rand.nextInt(512))));

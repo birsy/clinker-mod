@@ -3,6 +3,7 @@ package birsy.clinker.datagen;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.datagen.providers.*;
 import birsy.clinker.datagen.providers.loottable.ClinkerBlockLootTableProvider;
+import birsy.clinker.datagen.providers.loottable.ClinkerMiscLootTableProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -40,7 +41,8 @@ public class ClinkerDatagenHandler {
 
         event.createProvider((providerOutput, providerLookupProvider) -> new LootTableProvider(providerOutput, Set.of(),
                 List.of(
-                        new LootTableProvider.SubProviderEntry(ClinkerBlockLootTableProvider::new, LootContextParamSets.BLOCK)
+                        new LootTableProvider.SubProviderEntry(ClinkerBlockLootTableProvider::new, LootContextParamSets.BLOCK),
+                        new LootTableProvider.SubProviderEntry(ClinkerMiscLootTableProvider::new, LootContextParamSets.EMPTY)
                 ), providerLookupProvider)
         );
     }

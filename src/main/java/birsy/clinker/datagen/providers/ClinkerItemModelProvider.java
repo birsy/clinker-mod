@@ -1,24 +1,12 @@
 package birsy.clinker.datagen.providers;
 
 import birsy.clinker.core.Clinker;
-import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.ClinkerItems;
-import net.minecraft.core.Direction;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.state.properties.Half;
-import net.minecraft.world.level.block.state.properties.SlabType;
-import net.minecraft.world.level.block.state.properties.StairsShape;
-import net.minecraft.world.level.block.state.properties.WallSide;
 import net.neoforged.neoforge.client.model.generators.*;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.registries.DeferredItem;
-
-import java.util.Objects;
-import java.util.function.Function;
 
 public class ClinkerItemModelProvider extends ItemModelProvider {
     public ClinkerItemModelProvider(PackOutput output, ExistingFileHelper exFileHelper) {
@@ -31,6 +19,10 @@ public class ClinkerItemModelProvider extends ItemModelProvider {
         this.basicItem(ClinkerItems.PAGE);
         this.basicItem(ClinkerItems.FISTFUL_OF_MAGGOTS);
         this.basicItem(ClinkerItems.CROSSBOW_REPEATER_ATTACHMENT);
+
+        this.basicItem(ClinkerItems.SULFUR);
+        this.basicItem(ClinkerItems.SALTPETRE);
+
         this.handheldItem(ClinkerItems.PECULIAR_MIRROR.get());
     }
 

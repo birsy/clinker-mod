@@ -62,6 +62,10 @@ public class ClinkerPacketRegistry {
                 ClientboundInverseKinematicsStepPacket.STREAM_CODEC,
                 ClientboundInverseKinematicsStepPacket::handle);
 
+        registrar.playToClient(ClientboundSaltpetreLeachPacket.TYPE,
+                ClientboundSaltpetreLeachPacket.STREAM_CODEC,
+                ClientboundSaltpetreLeachPacket::handle);
+
         // server bound
         registrar.playToServer(ServerboundWorkstationLoadRequestPacket.TYPE,
                 ServerboundWorkstationLoadRequestPacket.STREAM_CODEC,

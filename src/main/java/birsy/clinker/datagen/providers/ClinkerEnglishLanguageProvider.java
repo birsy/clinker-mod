@@ -2,7 +2,6 @@ package birsy.clinker.datagen.providers;
 
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlocks;
-import birsy.clinker.core.registry.ClinkerFluids;
 import birsy.clinker.core.registry.ClinkerItems;
 import birsy.clinker.core.registry.entity.ClinkerEntities;
 import birsy.clinker.core.registry.world.ClinkerBiomes;
@@ -27,6 +26,7 @@ public class ClinkerEnglishLanguageProvider extends LanguageProvider {
 
         for (DeferredHolder<Block, ? extends Block> entry : ClinkerBlocks.BLOCKS.getEntries()) {
             this.addBlock(entry, localizedNameFromRegistryName(entry.getId().getPath()));
+
         }
         for (DeferredHolder<Item, ? extends Item> entry : ClinkerItems.ITEMS.getEntries()) {
             if (entry == ClinkerItems.ALCHEMISTS_CROSSBOW) {

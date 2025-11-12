@@ -34,15 +34,10 @@ public class ClinkerItems
     public static final DeferredItem<Item> RAW_LEAD = ITEMS.registerSimpleItem("raw_lead", new Item.Properties());
     public static final DeferredItem<Item> LEAD_INGOT = ITEMS.registerSimpleItem("lead_ingot", new Item.Properties());
     public static final DeferredItem<Item> LEAD_NUGGET = ITEMS.registerSimpleItem("lead_nugget", new Item.Properties());
+
     public static final DeferredItem<Item> SULFUR = ITEMS.registerSimpleItem("sulfur", new Item.Properties());
-    public static final DeferredItem<Item> BISMUTH = ITEMS.registerSimpleItem("bismuth",new Item.Properties());
-    public static final DeferredItem<Item> PYRITE = ITEMS.registerSimpleItem("pyrite", new Item.Properties());
-    public static final DeferredItem<Item> IRON_PYRITE = ITEMS.registerSimpleItem("iron_pyrite", new Item.Properties());
-    public static final DeferredItem<Item> PHOSPHOR = ITEMS.registerSimpleItem("phosphor", new Item.Properties());
-    public static final DeferredItem<Item> IMPURE_RUBY = ITEMS.registerSimpleItem("impure_ruby", new Item.Properties());
-    public static final DeferredItem<Item> RUBY = ITEMS.registerSimpleItem("ruby", new Item.Properties());
-    public static final DeferredItem<Item> CENTIPEDE_SHELL = ITEMS.registerSimpleItem("centipede_shell", new Item.Properties());
-    public static final DeferredItem<Item> SALT = ITEMS.registerSimpleItem("salt", new Item.Properties());
+    public static final DeferredItem<Item> SALTPETRE = ITEMS.registerSimpleItem("saltpetre", new Item.Properties());
+
     public static final DeferredItem<Item> FISTFUL_OF_MAGGOTS = ITEMS.register("fistful_of_maggots",
             () -> new FistfulOfMaggotsItem(new Item.Properties().stacksTo(16))
     );

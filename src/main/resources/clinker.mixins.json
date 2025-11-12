@@ -22,7 +22,10 @@
   "mixins": [
     "common.BlockBehavior$PropertiesAccessor",
     "common.ChunkStatusTasksMixin",
+    "common.ComposterBlockMixin",
+    "common.CropBlockMixin",
     "common.EntityMixin",
+    "common.FarmlandBlockMixin",
     "common.ItemEntityMixin",
     "common.PlayerMixin",
     "common.RandomizableContainerBlockEntityMixin",

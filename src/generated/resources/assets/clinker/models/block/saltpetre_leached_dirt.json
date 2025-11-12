@@ -1,0 +1,7 @@
+{
+  "parent": "clinker:block/cube_all_overlay",
+  "textures": {
+    "all": "clinker:block/saltpetre_leached_dirt",
+    "overlay": "clinker:block/saltpetre_leached_dirt_crystals"
+  }
+}

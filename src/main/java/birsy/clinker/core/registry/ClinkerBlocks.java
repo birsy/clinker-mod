@@ -35,6 +35,9 @@ public class ClinkerBlocks
     public static final DeferredBlock<Block> STOVE_DUMMY = createBlockNoItem("stove_dummy", () -> new StoveBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BRICKS).sound(SoundType.NETHER_BRICKS)));
     public static final DeferredBlock<Block> STOVE_CHIMNEY = createBlockNoItem("stove_chimney", () -> new StoveChimneyBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BRICKS).sound(SoundType.NETHER_BRICKS).noOcclusion()));
 
+    public static final DeferredBlock<Block> SALTPETRE_LEACHED_DIRT = createBlock("saltpetre_leached_dirt",
+            () -> new SaltpetreLeachedDirtBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.DIRT).sound(SoundType.ROOTED_DIRT)));
+
     //Material Blocks
     public static final DeferredBlock<Block> LEAD_BLOCK = createBlock("lead_block", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GRAY).strength(5.0f, 6.0f).sound(SoundType.NETHERITE_BLOCK)));
     public static final DeferredBlock<Block> RAW_LEAD_BLOCK = createBlock("raw_lead_block", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GRAY).strength(2.5f, 3.0f).sound(SoundType.ANCIENT_DEBRIS)));

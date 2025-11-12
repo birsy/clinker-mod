@@ -4,6 +4,8 @@ import birsy.clinker.client.particle.ExplosionLightParticle;
 import birsy.clinker.client.particle.*;
 import birsy.clinker.core.Clinker;
 import com.mojang.serialization.MapCodec;
+import net.minecraft.client.particle.ParticleProvider;
+import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.core.particles.DustColorTransitionOptions;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
@@ -51,6 +53,12 @@ public class ClinkerParticles
             type -> BlossomBugParticle.BlossomBugParticleOptions.CODEC,
             type -> BlossomBugParticle.BlossomBugParticleOptions.STREAM_CODEC);
 
+    public static final Supplier<SimpleParticleType> DRIPPING_SALTPETRE = register("dripping_saltpetre");
+    public static final Supplier<SimpleParticleType> FALLING_SALTPETRE = register("falling_saltpetre");
+    public static final Supplier<SimpleParticleType> LANDING_SALTPETRE = register("landing_saltpetre");
+    public static final Supplier<SimpleParticleType> SALTPETRE_LEACH = register("saltpetre_leach");
+
+
     public static Supplier<SimpleParticleType> register(String name) {
         return PARTICLES.register(name, () -> new SimpleParticleType(false));
     }
@@ -88,5 +96,17 @@ public class ClinkerParticles
         event.registerSpriteSet(FIRE_SPEW.get(), FireSpewParticle.Provider::new);
         event.registerSpriteSet(BLOSSOM_BUG.get(), BlossomBugParticle.Provider::new);
         event.registerSpriteSet(WRITHING_MAGGOT.get(), WrithingMaggotParticle.Provider::new);
+        event.registerSpriteSet(SALTPETRE_LEACH.get(), SaltpetreLeachParticle.Provider::new);
+        registerDripParticle(event, DRIPPING_SALTPETRE.get(), ClinkerDripParticles::createSaltPetreDripHangParticle);
+        registerDripParticle(event, FALLING_SALTPETRE.get(), ClinkerDripParticles::createSaltPetreDripFallParticle);
+        registerDripParticle(event, LANDING_SALTPETRE.get(), ClinkerDripParticles::createSaltPetreDripLandParticle);
+    }
+
+    private static <T extends ParticleOptions> void registerDripParticle(RegisterParticleProvidersEvent event, ParticleType<T> particleType, ParticleProvider.Sprite<T> sprite) {
+        event.registerSpriteSet(particleType, (sprites) -> (options, level, x, y, z, xSpeed, ySpeed, zSpeed) -> {
+            TextureSheetParticle texturesheetparticle = sprite.createParticle(options, level, x, y, z, xSpeed, ySpeed, zSpeed);
+            if (texturesheetparticle != null) texturesheetparticle.pickSprite(sprites);
+            return texturesheetparticle;
+        });
     }
 }

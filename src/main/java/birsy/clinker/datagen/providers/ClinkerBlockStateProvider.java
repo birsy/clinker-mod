@@ -3,7 +3,6 @@ package birsy.clinker.datagen.providers;
 import birsy.clinker.common.world.block.plant.DoubleSheetMossBlock;
 import birsy.clinker.common.world.block.plant.StromatoliteBlock;
 import birsy.clinker.core.Clinker;
-import birsy.clinker.core.registry.ClinkerBlocks;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
@@ -25,6 +24,12 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
+        // saltpetre leached dirt
+        {
+            String name = name(SALTPETRE_LEACHED_DIRT.get());
+            this.simpleBlockWithItem(SALTPETRE_LEACHED_DIRT.get(), cubeAllOverlay(name, modLoc("block/" + name), modLoc("block/" + name + "_crystals")));
+        }
+
         //brimstone
         {
             ResourceLocation brimstoneTop = this.modLoc(ModelProvider.BLOCK_FOLDER + "/brimstone_end");
@@ -740,6 +745,11 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
         return this.models().singleTexture(name, this.modLoc(ModelProvider.BLOCK_FOLDER + "/cross_dense_mirrored"), "cross", cross);
     }
 
+    public ModelBuilder cubeAllOverlay(String name, ResourceLocation all, ResourceLocation overlay) {
+        return this.models().withExistingParent(name, this.modLoc(ModelProvider.BLOCK_FOLDER + "/cube_all_overlay"))
+                .texture("all", all)
+                .texture("overlay", overlay);
+    }
 
 
     private ResourceLocation key(Block block) {

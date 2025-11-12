@@ -64,6 +64,7 @@ public class ClinkerBlockTagProvider extends BlockTagsProvider {
         usesPickaxe.add(ClinkerBlocks.SALTMOSS.get());
         usesShovel.add(ClinkerBlocks.SALTMOSS.get());
         usesShovel.add(ClinkerBlocks.SALT_GRAVEL.get());
+        usesShovel.add(ClinkerBlocks.SALTPETRE_LEACHED_DIRT.get());
         // stones
         for (DeferredHolder<Block, ? extends Block> block : ClinkerBlocks.BLOCKS.getEntries()) {
             String name = block.getRegisteredName().toLowerCase();
@@ -79,5 +80,8 @@ public class ClinkerBlockTagProvider extends BlockTagsProvider {
                 usesShovel.add(block.get());
             }
         }
+
+        IntrinsicTagAppender<Block> isDirt = this.tag(BlockTags.DIRT).replace(false);
+        isDirt.add(ClinkerBlocks.SALTPETRE_LEACHED_DIRT.get());
     }
 }
