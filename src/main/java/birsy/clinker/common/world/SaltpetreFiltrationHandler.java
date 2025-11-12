@@ -38,6 +38,7 @@ public class SaltpetreFiltrationHandler {
                 SoundEvents.GRAVEL_BREAK, SoundSource.BLOCKS,
                 0.05F, 0.5F,
                 false);
+
         for (BlockPos pos : positions) {
             ParticleUtils.spawnParticlesOnBlockFaces(level, pos, ClinkerParticles.SALTPETRE_LEACH.get(), UniformInt.of(3, 5));
         }
@@ -84,7 +85,9 @@ public class SaltpetreFiltrationHandler {
 
         // inform client for particles and such
         if (!leachedPositions.isEmpty()) {
-            PacketDistributor.sendToPlayersTrackingChunk(level, new ChunkPos(initialDirtPos), new ClientboundSaltpetreLeachPacket(initialDirtPos.above(), leachedPositions.stream().toList()));
+            BlockPos origin = initialDirtPos.above();
+            leachedPositions.add(origin);
+            PacketDistributor.sendToPlayersTrackingChunk(level, new ChunkPos(initialDirtPos), new ClientboundSaltpetreLeachPacket(origin, leachedPositions.stream().toList()));
         }
     }
 

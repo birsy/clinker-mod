@@ -1,9 +1,12 @@
 package birsy.clinker.mixin.common;
 
 import birsy.clinker.common.world.SaltpetreFiltrationHandler;
+import birsy.clinker.core.registry.ClinkerParticles;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -15,7 +18,11 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(FarmBlock.class)
-public class FarmlandBlockMixin {
+public abstract class FarmlandBlockMixin extends Block {
+    public FarmlandBlockMixin(Properties properties) {
+        super(properties);
+    }
+
     @ModifyArg(
             method = "<init>",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/FarmBlock;registerDefaultState(Lnet/minecraft/world/level/block/state/BlockState;)V"),
@@ -33,5 +40,27 @@ public class FarmlandBlockMixin {
     @Inject(method = "randomTick", at = @At("RETURN"))
     private void clinker$randomTickFarmland(BlockState state, ServerLevel level, BlockPos pos, RandomSource random, CallbackInfo ci) {
         SaltpetreFiltrationHandler.tickFarmland(state, level, pos, random);
+    }
+
+    @Override
+    public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
+        if (state.getValue(SaltpetreFiltrationHandler.SALTPETRE_LEACHED_PROPERTY) && random.nextInt(5) == 0) {
+            Direction direction = Direction.getRandom(random);
+            if (direction != Direction.UP) {
+                BlockPos blockpos = pos.relative(direction);
+                BlockState blockstate = level.getBlockState(blockpos);
+                if (!blockstate.isFaceSturdy(level, blockpos, direction.getOpposite()) &&
+                     blockstate.getFluidState().isEmpty()) {
+                    double x = direction.getStepX() == 0 ? random.nextDouble() : 0.5 + direction.getStepX() * 0.6;
+                    double y = direction.getStepY() == 0 ? random.nextDouble() * (14.0 / 16.0) : 0.5 + direction.getStepY() * 0.6;
+                    double z = direction.getStepZ() == 0 ? random.nextDouble() : 0.5 + direction.getStepZ() * 0.6;
+                    level.addParticle(
+                            ClinkerParticles.DRIPPING_SALTPETRE.get(),
+                            pos.getX() + x, pos.getY() + y, pos.getZ() + z,
+                            0.0, 0.0, 0.0
+                    );
+                }
+            }
+        }
     }
 }

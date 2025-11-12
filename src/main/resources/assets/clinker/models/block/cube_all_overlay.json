@@ -18,48 +18,48 @@
             }
         },
         {
-            "from": [0, 0, -0.5],
-            "to": [16, 16, -0.5],
+            "from": [0, 0, -1],
+            "to": [16, 16, -1],
             "rotation": {"angle": 0, "axis": "y", "origin": [8, 8, -0.5]},
             "faces": {
                 "north": {"uv": [0, 0, 16, 16], "texture": "#overlay", "cullface": "north"}
             }
         },
         {
-            "from": [0, 0, 16.5],
-            "to": [16, 16, 16.5],
+            "from": [0, 0, 17],
+            "to": [16, 16, 17],
             "rotation": {"angle": 0, "axis": "y", "origin": [8, 8, 16.5]},
             "faces": {
                 "south": {"uv": [0, 0, 16, 16], "texture": "#overlay", "cullface": "south"}
             }
         },
         {
-            "from": [16.5, 0, 0],
-            "to": [16.5, 16, 16],
+            "from": [17, 0, 0],
+            "to": [17, 16, 16],
             "rotation": {"angle": 0, "axis": "y", "origin": [16.5, 8, 8]},
             "faces": {
                 "east": {"uv": [0, 0, 16, 16], "texture": "#overlay", "cullface": "east"}
             }
         },
         {
-            "from": [-0.5, 0, 0],
-            "to": [-0.5, 16, 16],
+            "from": [-1, 0, 0],
+            "to": [-1, 16, 16],
             "rotation": {"angle": 0, "axis": "y", "origin": [-0.5, 8, 8]},
             "faces": {
                 "west": {"uv": [0, 0, 16, 16], "texture": "#overlay", "cullface": "west"}
             }
         },
         {
-            "from": [0, -0.5, 0],
-            "to": [16, -0.5, 16],
+            "from": [0, -1, 0],
+            "to": [16, -1, 16],
             "rotation": {"angle": 0, "axis": "y", "origin": [8, -0.5, 8]},
             "faces": {
                 "down": {"uv": [0, 0, 16, 16], "texture": "#overlay", "cullface": "down"}
             }
         },
         {
-            "from": [0, 16.5, 0],
-            "to": [16, 16.5, 16],
+            "from": [0, 17, 0],
+            "to": [16, 17, 16],
             "rotation": {"angle": 0, "axis": "y", "origin": [8, 16.5, 8]},
             "faces": {
                 "up": {"uv": [0, 0, 16, 16], "texture": "#overlay", "cullface": "up"}
