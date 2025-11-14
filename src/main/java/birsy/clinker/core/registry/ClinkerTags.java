@@ -28,4 +28,5 @@ public class ClinkerTags {
 
     public static final TagKey<Item> NOT_BUOYANT = ItemTags.create(Clinker.resource("not_buoyant"));
     public static final TagKey<Item> ALCHEMISTS_CROSSBOW_REPAIRABLE = ItemTags.create(Clinker.resource("alchemists_crossbow_repairable"));
+    public static final TagKey<Item> BASALT = ItemTags.create(Clinker.resource("basalt"));
 }

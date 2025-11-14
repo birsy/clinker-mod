@@ -24,6 +24,7 @@ public class ClinkerItemModelProvider extends ItemModelProvider {
         this.basicItem(ClinkerItems.SALTPETRE);
 
         this.handheldItem(ClinkerItems.PECULIAR_MIRROR.get());
+        this.handheldItem(ClinkerItems.PESTLE.get());
     }
 
     public ItemModelBuilder basicItem(DeferredItem<? extends Item> item) {

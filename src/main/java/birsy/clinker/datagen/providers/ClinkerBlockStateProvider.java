@@ -16,7 +16,6 @@ import java.util.function.Function;
 
 import static birsy.clinker.core.registry.ClinkerBlocks.*;
 
-
 public class ClinkerBlockStateProvider extends BlockStateProvider {
     public ClinkerBlockStateProvider(PackOutput output, ExistingFileHelper exFileHelper) {
         super(output, Clinker.MOD_ID, exFileHelper);
@@ -28,6 +27,12 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
         {
             String name = name(SALTPETRE_LEACHED_DIRT.get());
             this.simpleBlockWithItem(SALTPETRE_LEACHED_DIRT.get(), cubeAllOverlay(name, modLoc("block/" + name), modLoc("block/" + name + "_crystals")));
+        }
+
+        // mortar
+        {
+            this.simpleBlock(MORTAR.get(), this.models().getExistingFile(modLoc("block/mortar")));
+            this.flatBlockItem(MORTAR.get(), modLoc("item/mortar"));
         }
 
         //brimstone

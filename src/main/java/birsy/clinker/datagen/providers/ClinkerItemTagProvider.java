@@ -9,6 +9,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.FenceBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
@@ -16,6 +17,7 @@ import net.minecraft.world.level.block.WallBlock;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.common.data.internal.NeoForgeBlockTagsProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeItemTagsProvider;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import org.jetbrains.annotations.Nullable;
@@ -43,5 +45,9 @@ public class ClinkerItemTagProvider extends ItemTagsProvider {
         this.tag(ClinkerTags.ALCHEMISTS_CROSSBOW_REPAIRABLE)
                 .addTag(ItemTags.PLANKS)
                 .addTag(Tags.Items.RODS_WOODEN);
+        this.tag(ClinkerTags.BASALT)
+                .add(Items.BASALT,
+                     Items.POLISHED_BASALT,
+                     Items.SMOOTH_BASALT);
     }
 }

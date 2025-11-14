@@ -88,8 +88,9 @@ public class ClinkerItems
                     .component(ClinkerDataComponents.PAGE.get(), PageContents.DEFAULT)
             )
     );
-    
-    
+
+    public static final DeferredItem<Item> PESTLE = ITEMS.registerSimpleItem("pestle", new Item.Properties().stacksTo(1));
+
     public static final DeferredItem<SwordItem> LEAD_SWORD = ITEMS.register("lead_sword", () ->
     new SwordItem(Tiers.IRON, new Item.Properties()));
     

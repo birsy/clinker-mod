@@ -1,5 +1,6 @@
 package birsy.clinker.datagen.providers;
 
+import birsy.clinker.core.registry.ClinkerTags;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
@@ -11,12 +12,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 import static birsy.clinker.core.registry.ClinkerBlocks.*;
+import static birsy.clinker.core.registry.ClinkerItems.*;
 
 public class ClinkerRecipeProvider extends RecipeProvider {
     public ClinkerRecipeProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
@@ -46,6 +47,19 @@ public class ClinkerRecipeProvider extends RecipeProvider {
                 .pattern("S")
                 .pattern("C")
                 .unlockedBy(getHasName(SALTMOSS_SPROUTS), has(SALTMOSS_SPROUTS)).save(output);
+
+        // mortar & pestle
+        ShapedRecipeBuilder.shaped(RecipeCategory.BREWING, MORTAR)
+                .define('#', ClinkerTags.BASALT)
+                .pattern("# #")
+                .pattern("###")
+                .unlockedBy("has_any_basalt", has(ClinkerTags.BASALT)).save(output);
+        ShapedRecipeBuilder.shaped(RecipeCategory.BREWING, PESTLE)
+                .define('#', ClinkerTags.BASALT)
+                .pattern("#")
+                .pattern("#")
+                .pattern("#")
+                .unlockedBy("has_any_basalt", has(ClinkerTags.BASALT)).save(output);
     }
 
     protected static void stoneSlab(RecipeOutput recipeOutput, ItemLike slab, ItemLike material) {
