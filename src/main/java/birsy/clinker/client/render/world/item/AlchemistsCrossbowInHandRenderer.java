@@ -174,7 +174,7 @@ public class AlchemistsCrossbowInHandRenderer {
             Minecraft.getInstance().getItemRenderer()
                     .render(crossbow, ItemDisplayContext.FIXED, arm == HumanoidArm.LEFT, poseStack,
                             event.getMultiBufferSource(), event.getPackedLight(), OverlayTexture.NO_OVERLAY, bakedmodel);
-            // render items loaded into the crossbow
+            // render ingredients loaded into the crossbow
             LoadedItemStack loadedItemStack = AlchemistsCrossbowItem.getLoadedItems(crossbow);
             if (!loadedItemStack.isEmpty()) {
                 poseStack.scale(0.8F, 0.8F, 0.8F);

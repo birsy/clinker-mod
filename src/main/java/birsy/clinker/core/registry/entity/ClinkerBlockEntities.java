@@ -38,12 +38,16 @@ public class ClinkerBlockEntities {
     public static final Supplier<BlockEntityType<FulminaFlowerBlockEntity>> FULMINA_FLOWER = BLOCK_ENTITY_TYPES.register("fulmina_flower",
             () -> BlockEntityType.Builder.of(FulminaFlowerBlockEntity::new, ClinkerBlocks.FULMINA_FLOWER.get()).build(null));
 
+    public static final Supplier<BlockEntityType<MortarBlockEntity>> MORTAR = BLOCK_ENTITY_TYPES.register("mortar",
+            () -> BlockEntityType.Builder.of(MortarBlockEntity::new, ClinkerBlocks.MORTAR.get()).build(null));
+
     public static void registerTileEntityRenderers() {
         BlockEntityRenderers.register(ClinkerBlockEntities.FERMENTATION_BARREL.get(), FermentationBarrelRenderer::new);
         BlockEntityRenderers.register(ClinkerBlockEntities.SARCOPHAGUS_INNARDS.get(), SarcophagusInnardsRenderer::new);
         BlockEntityRenderers.register(ClinkerBlockEntities.COUNTER.get(), CounterRenderer::new);
         BlockEntityRenderers.register(ClinkerBlockEntities.STOVE.get(), StoveRenderer::new);
         BlockEntityRenderers.register(ClinkerBlockEntities.FAIRY_FRUIT.get(), FairyFruitRenderer::new);
+        BlockEntityRenderers.register(ClinkerBlockEntities.MORTAR.get(), MortarRenderer::new);
     }
 
     @SubscribeEvent
@@ -54,6 +58,5 @@ public class ClinkerBlockEntities {
         event.registerLayerDefinition(StoveRenderer.StoveChimneyModel.LAYER_LOCATION, StoveRenderer.StoveChimneyModel::createBodyLayer);
         event.registerLayerDefinition(StoveRenderer.DoubleStoveModel.LAYER_LOCATION, StoveRenderer.DoubleStoveModel::createBodyLayer);
         event.registerLayerDefinition(StoveRenderer.DoubleStoveChimneyModel.LAYER_LOCATION, StoveRenderer.DoubleStoveChimneyModel::createBodyLayer);
-
     }
 }

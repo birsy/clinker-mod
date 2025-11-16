@@ -47,7 +47,7 @@ public class SaltpetreLeachedDirtBlock extends Block {
         if (player.getAbilities().mayBuild) {
             level.setBlock(pos, Blocks.DIRT.defaultBlockState(), 11);
             level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
-            // resolve the loot table and spawn items
+            // resolve the loot table and spawn ingredients
             if (level.getServer() != null) {
                 LootTable loottable = level.getServer().reloadableRegistries().getLootTable(ClinkerLootTables.SALT_PETRE_LEACHED_DIRT_EXTRACTION);
                 if (player instanceof ServerPlayer)

@@ -24,7 +24,7 @@ public class CounterRenderer<T extends CounterBlockEntity> implements BlockEntit
 //        }
 
 
-//        int items = 0;
+//        int ingredients = 0;
 //        for (PhysicalItem item : pBlockEntity.workstation.getItems()) {
 //            pPoseStack.pushPose();
 //            float scale = 0.5F;
@@ -33,17 +33,17 @@ public class CounterRenderer<T extends CounterBlockEntity> implements BlockEntit
 //            pPoseStack.translate(position.x, position.y, position.z);
 //            pPoseStack.scale(scale, scale, scale);
 //            pPoseStack.mulPose(transform.getOrientation().toMojangQuaternion());
-//            //pPoseStack.mulPose(Vector3f.YP.rotationDegrees(items * 3312.53829F));
+//            //pPoseStack.mulPose(Vector3f.YP.rotationDegrees(ingredients * 3312.53829F));
 //
 //            int lightColor = 15728880;
 //            if (pBlockEntity.getLevel() != null) {
 //                lightColor = LevelRenderer.getLightColor(pBlockEntity.getLevel(), new BlockPos(item.getCenterOfMass().x(), item.getCenterOfMass().y(), item.getCenterOfMass().z()));
 //            }
 //
-//            itemRenderer.renderStatic(item.asItemStack(), ItemTransforms.TransformType.FIXED, lightColor, pPackedOverlay, pPoseStack, pBufferSource, items + ItemTransforms.TransformType.FIXED.ordinal());
+//            itemRenderer.renderStatic(item.asItemStack(), ItemTransforms.TransformType.FIXED, lightColor, pPackedOverlay, pPoseStack, pBufferSource, ingredients + ItemTransforms.TransformType.FIXED.ordinal());
 //
 //            pPoseStack.popPose();
-//            items++;
+//            ingredients++;
 //        }
 
        /*for (IBody body : pBlockEntity.workstation.bodies) {
