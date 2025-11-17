@@ -4,6 +4,7 @@ import birsy.clinker.common.world.level.gen.noise.*;
 import birsy.clinker.common.world.level.gen.worldfeature.worldfeatures.JaggedPeakWorldFeature;
 import birsy.clinker.common.world.level.gen.worldfeature.worldfeatures.TestWorldFeature;
 import birsy.clinker.common.world.level.gen.worldfeature.worldfeatures.UndergroundLakeWorldFeature;
+import birsy.clinker.common.world.level.gen.worldfeature.worldfeatures.UndergroundRiverWorldFeature;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerDynamicRegistries;
 import birsy.clinker.core.registry.ClinkerRegistries;
@@ -90,6 +91,12 @@ public class MetaChunkMap {
         NoiseComputerContext context = new NoiseComputerContext(noiseComputerExecutor, noiseHolder);
 
         RandomSource random = metaChunkRandom.at(metaChunk.minX(), depth, metaChunk.maxZ());
+
+//        if (depth == 4) {
+//            WorldFeature river = new UndergroundRiverWorldFeature(depth, 0);
+//            river.plan(metaChunk, random, context);
+//            metaChunk.worldFeatures.add(river);
+//        }
 
         List<WorldFeature> spawnSetFeatures = new ArrayList<>(16);
 
