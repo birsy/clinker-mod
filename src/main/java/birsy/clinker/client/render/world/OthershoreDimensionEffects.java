@@ -16,6 +16,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 import org.joml.*;
 
 import java.lang.Math;
@@ -66,6 +67,11 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
         }
 
         return skyColor.set(r, g, b);
+    }
+
+    @Override
+    public @Nullable float[] getSunriseColor(float timeOfDay, float partialTicks) {
+        return null;
     }
 
     @Override

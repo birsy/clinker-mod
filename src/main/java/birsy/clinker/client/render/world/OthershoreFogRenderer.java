@@ -38,28 +38,11 @@ public class OthershoreFogRenderer {
 
     @SubscribeEvent
     public static void renderFogColors(ViewportEvent.ComputeFogColor event) {
-        Entity player = event.getRenderer().getMainCamera().getEntity();
-        ClientLevel level = Minecraft.getInstance().level;
-
-        if (level.dimension() != ClinkerWorld.OTHERSHORE) return;
-        if (event.getRenderer().getMainCamera().getFluidInCamera() == FogType.LAVA || event.getRenderer().getMainCamera().getFluidInCamera() == FogType.POWDER_SNOW) return;
-
-        BiomeManager biomemanager = level.getBiomeManager();
-        Vec3 biomeSamplePos = event.getRenderer().getMainCamera().getPosition().subtract(2.0D, 2.0D, 2.0D).scale(0.25D);
-        Vec3 baseColor;
-        if (event.getRenderer().getMainCamera().getFluidInCamera() != FogType.WATER) {
-            baseColor = CubicSampler.gaussianSampleVec3(biomeSamplePos, (x, y, z) -> Vec3.fromRGB24(biomemanager.getNoiseBiomeAtQuart(x, y, z).value().getFogColor()));
-        } else {
-            baseColor = CubicSampler.gaussianSampleVec3(biomeSamplePos, (x, y, z) -> Vec3.fromRGB24(biomemanager.getNoiseBiomeAtQuart(x, y, z).value().getWaterFogColor()));
+        if (event.getRenderer().getMainCamera().getFluidInCamera() == FogType.NONE) {
+            float brightness = (float) Mth.lerp(Minecraft.getInstance().options.gamma().get(), 0.5F, 1.0F);
+            event.setRed(event.getRed() * brightness);
+            event.setGreen(event.getGreen() * brightness);
+            event.setBlue(event.getBlue() * brightness);
         }
-
-        float baseR = (float) baseColor.x, baseG = (float) baseColor.y, baseB = (float) baseColor.z;
-        float caveR = 0.204F, caveG = 0.276F, caveB = 0.168F;
-        float surfaceFactor = AmbienceHandler.SURFACE_AMBIENCE_HANDLER.getAboveGroundFactor(event.getPartialTick());
-        surfaceFactor = Mth.sqrt(surfaceFactor);
-        float deepDark = 0.6F;//Mth.clamp(MathUtils.mapRange(64.0F, 200.0F, 0.7F, 1.0F, (float)player.getEyePosition((float) event.getPartialTick()).y), 0.1F, 1.0F);
-        event.setRed  (baseR * Mth.lerp(surfaceFactor, caveR, 1.0F) * deepDark);
-        event.setGreen(baseG * Mth.lerp(surfaceFactor, caveG, 1.0F) * deepDark);
-        event.setBlue (baseB * Mth.lerp(surfaceFactor, caveB, 1.0F) * deepDark);
     }
 }
