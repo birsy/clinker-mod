@@ -15,19 +15,18 @@ import net.minecraft.world.level.block.Blocks;
 import java.util.*;
 
 public class UndergroundRiverWorldFeature extends WorldFeature {
-    private int radius = 10;
     private RiverSegment[] segments;
     private RiverBoundingBox boundingBoxHierarchy;
-    private NoiseComputer riverDistanceComputer, riverSurfaceHeightComputer, riverCeilingHeightComputer;
+    private NoiseComputer riverDistanceComputer, riverSurfaceHeightComputer, riverCeilingHeightComputer, riverRadiusComputer;
 
     public UndergroundRiverWorldFeature(int depth, int separationRadius) {
         super(depth, separationRadius);
     }
 
     @Override
-    public int getCenterX() { return (segments[0].startX() + segments[segments.length - 1].endX()) / 2; }
+    public int getCenterX() { return (segments[0].x(0) + segments[segments.length - 1].x(1)) / 2; }
     @Override
-    public int getCenterZ() { return (segments[0].startX() + segments[segments.length - 1].endX()) / 2; }
+    public int getCenterZ() { return (segments[0].z(0) + segments[segments.length - 1].z(1)) / 2; }
     @Override
     public boolean within(int minX, int minZ, int maxX, int maxZ) {
         return this.boundingBoxHierarchy.intersectsRecursive(minX, Integer.MIN_VALUE, minZ, maxX, Integer.MAX_VALUE, maxZ);
@@ -40,7 +39,7 @@ public class UndergroundRiverWorldFeature extends WorldFeature {
                 new BlockPos(randomSource.nextInt(metaChunk.minX(), metaChunk.maxX()), 10, randomSource.nextInt(metaChunk.minZ(), metaChunk.maxZ())),
                 64, metaChunk, randomSource, context
         );
-        List<RiverNode> riverNodes = resampleCurve(riverShape, 10);
+        List<RiverNode> riverNodes = resampleCurve(riverShape, 10, context);
 
         this.segments = new RiverSegment[riverNodes.size() - 1];
         for (int i = 0; i < riverNodes.size() - 1; i++) {
@@ -48,7 +47,7 @@ public class UndergroundRiverWorldFeature extends WorldFeature {
         }
 
         this.boundingBoxHierarchy = RiverBoundingBox.fromSegments(this.segments, 0, this.segments.length);
-        this.boundingBoxHierarchy.expand(radius * 2, radius * 2, radius * 2);
+        this.boundingBoxHierarchy.expand(20, 20, 20);
 
         this.riverDistanceComputer = new NoiseComputer("river_distance_" + randomSource.nextInt(), CacheType.INTERPOLATED_2D_COARSE,
                 (x, y, z, noiseContext) -> {
@@ -68,6 +67,12 @@ public class UndergroundRiverWorldFeature extends WorldFeature {
                     return coordinates.ceilingHeight();
                 }
         );
+        this.riverRadiusComputer = new NoiseComputer("river_radius_" + randomSource.nextInt(), CacheType.INTERPOLATED_2D_COARSE,
+                (x, y, z, noiseContext) -> {
+                    RiverSpaceCoordinates coordinates = this.getRiverSpaceCoordinates(x, y, z, true);
+                    return coordinates.riverRadius();
+                }
+        );
 
         Clinker.LOGGER.info("River generated starting at {} {} {} and ending at {} {} {}",
                 riverShape.getFirst().getX(), riverShape.getFirst().getY(), riverShape.getFirst().getZ(),
@@ -82,7 +87,7 @@ public class UndergroundRiverWorldFeature extends WorldFeature {
             perpRiverZ = -riverX;
         double riverLength = Mth.length(riverX, riverZ);
 
-        int frequency = (int) Math.round(riverLength / 60.0);
+        int frequency = (int) Math.round(riverLength / 100.0);
         List<BlockPos> nodePositions = new ArrayList<>(count);
 
         nodePositions.add(startPos);
@@ -119,7 +124,7 @@ public class UndergroundRiverWorldFeature extends WorldFeature {
         return nodePositions;
     }
 
-    private static List<RiverNode> resampleCurve(List<BlockPos> nodePositions, double step) {
+    private static List<RiverNode> resampleCurve(List<BlockPos> nodePositions, double step, NoiseComputerContext context) {
         if (nodePositions.size() < 2) return Collections.emptyList();
 
         // compute length
@@ -136,7 +141,6 @@ public class UndergroundRiverWorldFeature extends WorldFeature {
         int ceilingHeight = nodePositions.getFirst().getY();
         for (double targetLength = 0; targetLength <= totalLength; targetLength += step) {
             int x, y, z;
-
             int closestIndex = Arrays.binarySearch(lengths, targetLength);
             if (closestIndex < 0) closestIndex = -closestIndex - 1;
 
@@ -157,13 +161,20 @@ public class UndergroundRiverWorldFeature extends WorldFeature {
                 z = Mth.lerpDiscrete(f, a.getZ(), b.getZ());
             }
 
+            double riverRadius = OthershoreNoiseComputers.BASE_NOISE_2D[9].compute(x, y, z, context);
+            riverRadius = Mth.map(riverRadius, -1, 1, 0, 1);
+            riverRadius *= riverRadius;
+            riverRadius = Mth.lerp(riverRadius, 6, 20);
+
             ceilingHeight = MathUtils.approach(ceilingHeight, y, (int)(step / 8.0));
             double progress = targetLength / totalLength;
-            result.add(new RiverNode(progress, x, z, y, ceilingHeight,  true));
+            riverRadius *= Mth.clampedMap(progress, 0, 0.25, 0.3, 1);
+
+            result.add(new RiverNode(progress, x, z, y, ceilingHeight,  riverRadius));
         }
 
         BlockPos last = nodePositions.getLast();
-        result.add(new RiverNode(1.0, last.getX(), last.getZ(), last.getY(), ceilingHeight, true));
+        result.add(new RiverNode(1.0, last.getX(), last.getZ(), last.getY(), ceilingHeight, result.getLast().riverRadius()));
 
         return result;
     }
@@ -173,6 +184,7 @@ public class UndergroundRiverWorldFeature extends WorldFeature {
         double riverDistance = context.noiseComputerExecutor().compute(x, y, z, this.riverDistanceComputer) * 0.5;
         double waterHeight = context.noiseComputerExecutor().compute(x, y, z, this.riverSurfaceHeightComputer),
                ceilingHeight = context.noiseComputerExecutor().compute(x, y, z, this.riverCeilingHeightComputer);
+        double radius = context.noiseComputerExecutor().compute(x, y, z, this.riverRadiusComputer);
         // out of range
         if (waterHeight <= -9999 || ceilingHeight <= -9999 || riverDistance >= 9999)
             return currentNoiseValue;
@@ -189,6 +201,7 @@ public class UndergroundRiverWorldFeature extends WorldFeature {
     @Override
     public FluidLevel modifyFluidLevel(int x, int y, int z, FluidLevel currentFluidLevel, NoiseComputerContext context) {
         RiverSpaceCoordinates coordinates = this.getRiverSpaceCoordinates(x, y, z, true);
+        double radius = context.noiseComputerExecutor().compute(x, y, z, this.riverRadiusComputer);
         int yDiff = y - (int)coordinates.riverHeight();
         if (yDiff > radius * 3 || yDiff < -radius * 2) return currentFluidLevel;
         return new FluidLevel((int) coordinates.riverHeight, Blocks.WATER.defaultBlockState());
@@ -197,13 +210,14 @@ public class UndergroundRiverWorldFeature extends WorldFeature {
     @Override
     public double modifyWaterfallPresence(int x, int y, int z, double currentValue, NoiseComputerContext context) {
         RiverSpaceCoordinates coordinates = this.getRiverSpaceCoordinates(x, y, z, true);
+        double radius = context.noiseComputerExecutor().compute(x, y, z, this.riverRadiusComputer);
         int yDiff = y - (int) coordinates.riverHeight();
         if (yDiff > radius * 3 || yDiff < -radius * 2 || coordinates.horizontalDistance > radius) return currentValue;
         return Mth.clampedMap(coordinates.horizontalDistance, 0, radius, 1.5, 0.5);
     }
 
     public RiverSpaceCoordinates getRiverSpaceCoordinates(int x, int y, int z, boolean ignoreY) {
-        MutableRiverSpaceCoordinates best = new MutableRiverSpaceCoordinates(1000, -1000, -1000);
+        MutableRiverSpaceCoordinates best = new MutableRiverSpaceCoordinates(1000, -1000, -1000, 0);
         sampleDistanceFromRiverRecursive(this.boundingBoxHierarchy, x, y, z, ignoreY, best);
         return best.toImmutable();
     }
@@ -218,18 +232,23 @@ public class UndergroundRiverWorldFeature extends WorldFeature {
         if (box.riverSegmentIndex >= 0) {
             RiverSegment segment = this.segments[box.riverSegmentIndex];
 
-            int horizontalDistance = (int) lineSegmentDistance(x, z, segment.startX(), segment.startZ(), segment.endX(), segment.endZ());
+            int horizontalDistance = (int) lineSegmentDistance(
+                    x, z,
+                    segment.x(0), segment.z(0),
+                    segment.x(1), segment.z(1)
+            );
 
             if (horizontalDistance < best.horizontalDistance) {
                 best.horizontalDistance = horizontalDistance;
 
-                double gradient = (x - segment.endX()) * (segment.startX() - segment.endX()) +
-                                  (z - segment.endZ()) * (segment.startZ() - segment.endZ());
-                gradient /= (segment.startX() - segment.endX()) * (segment.startX() - segment.endX()) +
-                            (segment.startZ() - segment.endZ()) * (segment.startZ() - segment.endZ());
-                double ceilingHeight = Mth.clampedLerp(segment.endCeilingHeight(), segment.startCeilingHeight(), gradient);
-                best.surfaceHeight = segment.startWaterHeight();
-                best.ceilingHeight = ceilingHeight;
+                float gradient = (x - segment.x(1)) * (segment.x(0) - segment.x(1)) +
+                                 (z - segment.z(1)) * (segment.z(0) - segment.z(1));
+                gradient /= (segment.x(0) - segment.x(1)) * (segment.x(0) - segment.x(1)) +
+                            (segment.z(0) - segment.z(1)) * (segment.z(0) - segment.z(1));
+                gradient = 1 - gradient;
+                best.surfaceHeight = segment.waterHeight(0);
+                best.ceilingHeight = segment.ceilingHeight(gradient);
+                best.riverRadius = segment.riverRadius(gradient);
             }
         } else {
             sampleDistanceFromRiverRecursive(box.childA, x, y, z, ignoreY, best);
@@ -247,28 +266,41 @@ public class UndergroundRiverWorldFeature extends WorldFeature {
         return Math.sqrt(dx * dx + dy * dy);
     }
 
-    private record RiverSpaceCoordinates(int horizontalDistance, double riverHeight, double ceilingHeight) {}
+    private record RiverSpaceCoordinates(int horizontalDistance, double riverHeight, double ceilingHeight, double riverRadius) {}
     private static class MutableRiverSpaceCoordinates {
         int horizontalDistance;
-        double surfaceHeight, ceilingHeight;
-        MutableRiverSpaceCoordinates(int horiz, double surfaceHeight, double ceilingHeight) { this.horizontalDistance = horiz; this.surfaceHeight = surfaceHeight; this.ceilingHeight = ceilingHeight; }
-        RiverSpaceCoordinates toImmutable() { return new RiverSpaceCoordinates(horizontalDistance, surfaceHeight, ceilingHeight); }
+        double surfaceHeight, ceilingHeight, riverRadius;
+        MutableRiverSpaceCoordinates(int horiz, double surfaceHeight, double ceilingHeight, double riverRadius) {
+            this.horizontalDistance = horiz;
+            this.surfaceHeight = surfaceHeight;
+            this.ceilingHeight = ceilingHeight;
+            this.riverRadius = riverRadius;
+        }
+        RiverSpaceCoordinates toImmutable() {
+            return new RiverSpaceCoordinates(horizontalDistance, surfaceHeight, ceilingHeight, riverRadius);
+        }
     }
 
-    private record RiverNode(double progress, int x, int z, int waterHeight, int ceilingSurfaceHeight, boolean underground) {}
+    private record RiverNode(double progress, int x, int z, int waterHeight, int ceilingSurfaceHeight, double riverRadius) {}
     private record RiverSegment(RiverNode start, RiverNode end) {
-        double startProgress() { return start.progress(); }
-        double endProgress() { return end.progress(); }
-        int startX() { return start.x(); }
-        int endX() { return end.x(); }
-        int startZ() { return start.z(); }
-        int endZ() { return end.z(); }
-        int startWaterHeight() { return start.waterHeight(); }
-        int endWaterHeight() { return end.waterHeight(); }
-        int startCeilingHeight() { return start.ceilingSurfaceHeight(); }
-        int endCeilingHeight() { return end.ceilingSurfaceHeight(); }
-        boolean startUnderground() {return start.underground(); }
-        boolean endUnderground() { return end.underground(); }
+        double progress(float delta) {
+            return Mth.clampedLerp(delta, start.progress(), end.progress());
+        }
+        int x(float delta) {
+            return Mth.lerpDiscrete(Mth.clamp(delta, 0, 1), start.x(), end.x());
+        }
+        int z(float delta) {
+            return Mth.lerpDiscrete(Mth.clamp(delta, 0, 1), start.z(), end.z());
+        }
+        double waterHeight(float delta) {
+            return Mth.clampedLerp(delta, start.waterHeight(), end.waterHeight());
+        }
+        double ceilingHeight(float delta) {
+            return Mth.clampedLerp(delta, start.ceilingSurfaceHeight(), end.ceilingSurfaceHeight());
+        }
+        double riverRadius(float delta) {
+            return Mth.clampedLerp(delta, start.riverRadius(), end.riverRadius());
+        }
     }
 
     private static class RiverBoundingBox {
@@ -323,16 +355,23 @@ public class UndergroundRiverWorldFeature extends WorldFeature {
 
             for (int i = start; i < end; i++) {
                 RiverSegment seg = segments[i];
-                int minWaterHeight = Math.min(Mth.floor(seg.startWaterHeight()), Mth.floor(seg.endWaterHeight())),
-                    minCeilingHeight = Math.min(Mth.floor(seg.startCeilingHeight()), Mth.floor(seg.endCeilingHeight()));
-                int maxWaterHeight = Math.max(Mth.ceil(seg.startWaterHeight()), Mth.ceil(seg.endWaterHeight())),
-                    maxCeilingHeight = Math.max(Mth.ceil(seg.startCeilingHeight()), Mth.ceil(seg.endCeilingHeight()));
-                minX = Math.min(minX, Math.min(seg.startX(), seg.endX()));
+
+                int minWaterHeight = Math.min(Mth.floor(seg.waterHeight(0)), Mth.floor(seg.waterHeight(1))),
+                    minCeilingHeight = Math.min(Mth.floor(seg.ceilingHeight(0)), Mth.floor(seg.ceilingHeight(1)));
+                int maxWaterHeight = Math.max(Mth.ceil(seg.waterHeight(0)), Mth.ceil(seg.waterHeight(1))),
+                    maxCeilingHeight = Math.max(Mth.ceil(seg.ceilingHeight(0)), Mth.ceil(seg.ceilingHeight(1)));
+
+                int startRadius = (int) Math.ceil(seg.riverRadius(0)),
+                    endRadius = (int) Math.ceil(seg.riverRadius(1));
+                int maxRadius = Math.max(startRadius, endRadius);
+
+                minX = Math.min(minX, Math.min(seg.x(0), seg.x(1))) - maxRadius;
                 minY = Math.min(minY, Math.min(minCeilingHeight, minWaterHeight));
-                minZ = Math.min(minZ, Math.min(seg.startZ(), seg.endZ()));
-                maxX = Math.max(maxX, Math.max(seg.startX(), seg.endX()));
+                minZ = Math.min(minZ, Math.min(seg.z(0), seg.z(1))) - maxRadius;
+
+                maxX = Math.max(maxX, Math.max(seg.x(0), seg.x(1))) + maxRadius;
                 maxY = Math.max(maxY, Math.max(maxCeilingHeight, maxWaterHeight));
-                maxZ = Math.max(maxZ, Math.max(seg.startZ(), seg.endZ()));
+                maxZ = Math.max(maxZ, Math.max(seg.z(0), seg.z(1))) + maxRadius;
             }
 
             RiverBoundingBox box = new RiverBoundingBox(-1, minX, minY, minZ, maxX, maxY, maxZ);
