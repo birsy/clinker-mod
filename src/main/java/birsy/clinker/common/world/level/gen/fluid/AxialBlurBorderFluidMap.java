@@ -63,8 +63,8 @@ public class AxialBlurBorderFluidMap implements FluidMap {
     }
 
     @Override
-    public void precomputeValues(NoiseComputer finalDensityComputer) {
-        this.fillBorderArray(finalDensityComputer);
+    public void precomputeValues(NoiseComputer finalDensityComputer, NoiseComputer waterfallPresenceComputer) {
+        this.fillBorderArray(finalDensityComputer, waterfallPresenceComputer);
     }
 
     @Override
@@ -80,6 +80,9 @@ public class AxialBlurBorderFluidMap implements FluidMap {
 
     @Override
     public BlockState getFluidState(int x, int y, int z) {
+        // clamp y values such that they always lie inside
+        // used for waterfall border computation...
+        y = Math.clamp(y, minY, chunkHeight - minY);
         int indexX = (x - this.minX) + (maxBorderDistance + 1),
             indexY = (y - this.minY) + (maxBorderDistance + 1),
             indexZ = (z - this.minZ) + (maxBorderDistance + 1);
@@ -99,7 +102,7 @@ public class AxialBlurBorderFluidMap implements FluidMap {
         }
     }
 
-    private void fillBorderArray(NoiseComputer finalDensityComputer) {
+    private void fillBorderArray(NoiseComputer finalDensityComputer, NoiseComputer waterfallPresenceComputer) {
         for (int indexX = 0; indexX < 16 + maxBorderDistance * 2; indexX++) {
             int localX = indexX - maxBorderDistance,
                      x = localX + this.minX,
@@ -108,6 +111,7 @@ public class AxialBlurBorderFluidMap implements FluidMap {
                 int localY = indexY - maxBorderDistance,
                          y = localY + this.minY,
                      cellY = Math.floorDiv(y, cellHeight);
+                NEXT_CELL:
                 for (int indexZ = 0; indexZ < 16 + maxBorderDistance * 2; indexZ++) {
                     int localZ = indexZ - maxBorderDistance,
                              z = localZ + this.minZ,
@@ -117,11 +121,13 @@ public class AxialBlurBorderFluidMap implements FluidMap {
                         continue;
 
                     // skip full values, if the index is in range.
-                    if (localX > 0 && localX < 16 && localY > 0 && localY < this.chunkHeight && localZ > 0 && localZ < 16 &&
-                        this.noiseContext.noiseComputerExecutor().compute(x, y, z, finalDensityComputer) < 0)
-                        continue;
+//                    if (localX > 0 && localX < 16 && localY > 0 && localY < this.chunkHeight && localZ > 0 && localZ < 16 &&
+//                        this.noiseContext.noiseComputerExecutor().compute(x, y, z, finalDensityComputer) < 0)
+//                        continue;
 
                     BlockState state = getFluidState(x, y, z);
+
+                    CHECK_NEIGHBORS:
                     for (Direction.Axis axis : Direction.Axis.VALUES) {
                         if (!state.isAir() && axis == Direction.Axis.Y) continue;
                         BlockState neighborState = getFluidState(
@@ -130,6 +136,24 @@ public class AxialBlurBorderFluidMap implements FluidMap {
                                 z + axis.choose(0, 0, 1)
                         );
                         if (state != neighborState) {
+                            // waterfall stuffs
+                            // run only if waterfalls are requested for this block.
+                            double waterfallPresence = this.noiseContext.noiseComputerExecutor().compute(x, y, z, waterfallPresenceComputer);
+                            if (waterfallPresence > 0) {
+                                // search upwards for air blocks. if there's air along the way, this is a waterfall-affected block.
+                                BlockState previousState = !state.isAir() ? state : neighborState;
+                                for (int i = 1; i < 1 + waterfallPresence; i++) {
+                                    BlockState aboveState = !state.isAir() ?
+                                            getFluidState(x, y + i, z) :
+                                            getFluidState(
+                                                    x + axis.choose(1, 0, 0),
+                                                    y + axis.choose(0, 1, 0) + i,
+                                                    z + axis.choose(0, 0, 1)
+                                            );
+                                    if (!previousState.isAir() && aboveState.isAir()) break CHECK_NEIGHBORS;
+                                    previousState = aboveState;
+                                }
+                            }
                             int index = indexX +
                                         indexY * (16 + maxBorderDistance * 2) +
                                         indexZ * (16 + maxBorderDistance * 2) * (this.chunkHeight + maxBorderDistance * 2);
@@ -270,9 +294,9 @@ public class AxialBlurBorderFluidMap implements FluidMap {
     private FluidCell createNewCell(int cellX, int cellY, int cellZ) {
         RandomSource cellRandom = aquiferRandom.at(cellX * cellWidth, cellY * cellHeight, cellZ * cellWidth);
         // offset the cell center randomly, in order for more natural results.
-        int cellCenterX = cellX * cellWidth + cellCenterOffsetXZ + cellRandom.nextIntBetweenInclusive(-cellCenterOffsetXZ,cellCenterOffsetXZ),
-            cellCenterY = cellY * cellHeight + cellCenterOffsetY + cellRandom.nextIntBetweenInclusive(-cellCenterOffsetY, cellCenterOffsetY),
-            cellCenterZ = cellZ * cellWidth + cellCenterOffsetXZ + cellRandom.nextIntBetweenInclusive(-cellCenterOffsetXZ,cellCenterOffsetXZ);
+        int cellCenterX = cellX * cellWidth + cellCenterOffsetXZ + (int) Math.round(cellRandom.triangle(0, cellCenterOffsetXZ)),
+            cellCenterY = cellY * cellHeight + cellCenterOffsetY + (int) Math.round(cellRandom.triangle(0, cellCenterOffsetY)),
+            cellCenterZ = cellZ * cellWidth + cellCenterOffsetXZ + (int) Math.round(cellRandom.triangle(0, cellCenterOffsetXZ));
         FluidLevel fluidLevel = this.baseFluidFiller.compute(cellCenterX, cellCenterY, cellCenterZ, this.noiseContext);
         for (WorldFeature worldFeature : this.worldFeatures)
             fluidLevel = worldFeature.modifyFluidLevel(cellCenterX, cellCenterY, cellCenterZ, fluidLevel, noiseContext);

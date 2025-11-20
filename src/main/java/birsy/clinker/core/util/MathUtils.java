@@ -22,6 +22,11 @@ import java.util.function.Function;
 /* cappin's math utils
  * hope you find this useful :) */
 public class MathUtils {
+    public static int approach(int value, int limit, int stepSize) {
+        stepSize = Math.abs(stepSize);
+        return value < limit ? Math.clamp(value + stepSize, value, limit) : Math.clamp(value - stepSize, limit, value);
+    }
+
     public static double lerpSmoothing(double a, double b, double decayFactor, double deltaTime) {
         return b + (a - b) * Math.exp(- decayFactor * deltaTime);
     }

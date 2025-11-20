@@ -30,10 +30,12 @@ import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.chunk.PalettedContainer;
+import net.minecraft.world.level.levelgen.Aquifer;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraft.world.level.levelgen.blending.Blender;
+import net.minecraft.world.level.material.FluidState;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -208,8 +210,18 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             return density;
         });
 
+        NoiseComputer waterfallPresenceComputer = new NoiseComputer("waterfall_presence", CacheType.INTERPOLATED_COARSE, (x, y, z, context) -> {
+            double presence = -1;
+            Collection<WorldFeature> worldFeatures = ((MetaChunkMapHolder) (Object) randomState).clinker$metaChunkMap()
+                    .getWorldFeatures(chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());
+            for (WorldFeature worldFeature : worldFeatures) {
+                presence = worldFeature.modifyWaterfallPresence(x, y, z, presence, context);
+            }
+            return presence;
+        });
+
         NoiseComputer flattenedFinalDensity = new NoiseComputer("final_density_flattened", CacheType.DIRECT, finalDensityComputer::compute);
-        fluidMap.precomputeValues(flattenedFinalDensity);
+        fluidMap.precomputeValues(flattenedFinalDensity, waterfallPresenceComputer);
 
         Heightmap heightmapOceanFloor = chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.OCEAN_FLOOR_WG);
         Heightmap heightmapWorldSurface = chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.WORLD_SURFACE_WG);
@@ -229,11 +241,17 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                     BlockState state = terrainDensity < 0 ?
                             ClinkerBlocks.BRIMSTONE.get().defaultBlockState() :
                             fluidMap.getFluidState(pos.getX(), pos.getY(), pos.getZ());
+                    if (state != Blocks.AIR.defaultBlockState()) {
+                        chunk.setBlockState(pos, state, false);
 
-                    chunk.setBlockState(pos, state, false);
-
-                    heightmapOceanFloor.update(xi, pos.getY(), zi, state);
-                    heightmapWorldSurface.update(xi, pos.getY(), zi, state);
+                        // update any placed fluid blocks in waterfalls, so they flow!
+                        if (noiseExecutor.compute(pos.getX(), pos.getY(), pos.getZ(), waterfallPresenceComputer) > 0 &&
+                                !state.getFluidState().isEmpty()) {
+                            chunk.markPosForPostprocessing(pos);
+                        }
+                        heightmapOceanFloor.update(xi, pos.getY(), zi, state);
+                        heightmapWorldSurface.update(xi, pos.getY(), zi, state);
+                    }
                 }
             }
         }

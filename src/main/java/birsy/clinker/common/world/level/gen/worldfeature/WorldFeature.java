@@ -38,4 +38,8 @@ public abstract class WorldFeature {
     public FluidLevel modifyFluidLevel(int x, int y, int z, FluidLevel currentFluidLevel, NoiseComputerContext context) {
         return currentFluidLevel;
     }
+
+    public double modifyWaterfallPresence(int x, int y, int z, double currentValue, NoiseComputerContext context) {
+        return currentValue;
+    }
 }

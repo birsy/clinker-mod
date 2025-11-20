@@ -92,11 +92,11 @@ public class MetaChunkMap {
 
         RandomSource random = metaChunkRandom.at(metaChunk.minX(), depth, metaChunk.maxZ());
 
-//        if (depth == 4) {
-//            WorldFeature river = new UndergroundRiverWorldFeature(depth, 0);
-//            river.plan(metaChunk, random, context);
-//            metaChunk.worldFeatures.add(river);
-//        }
+        if (depth == 5) {
+            WorldFeature river = new UndergroundRiverWorldFeature(depth, 0);
+            river.plan(metaChunk, random, context);
+            metaChunk.worldFeatures.add(river);
+        }
 
         List<WorldFeature> spawnSetFeatures = new ArrayList<>(16);
 
