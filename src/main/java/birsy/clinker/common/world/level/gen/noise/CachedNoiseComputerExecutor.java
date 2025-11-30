@@ -114,7 +114,7 @@ public class CachedNoiseComputerExecutor implements NoiseComputerExecutor {
         }
 
         private static int index(int x, int z) {
-            return x + z * 16;
+            return Mth.clamp(x, 0, 15) + Mth.clamp(z, 0, 15) * 16;
         }
     }
 

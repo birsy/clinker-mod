@@ -55,7 +55,7 @@ public class AxialBlurBorderFluidMap implements FluidMap {
 
         this.aquiferRandom = randomState.aquiferRandom();
         this.worldFeatures = ((MetaChunkMapHolder) (Object) randomState).clinker$metaChunkMap()
-                .getWorldFeatures(chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());
+                .getWorldFeatures(chunk.getLevel(), chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());
 
         this.fluidStates = new BlockState[(16 + maxBorderDistance * 2 + 2) * (16 + maxBorderDistance * 2 + 2) * (this.chunkHeight + maxBorderDistance * 2 + 2)];
         this.borderDistances = new int[(16 + maxBorderDistance * 2) * (16 + maxBorderDistance * 2) * (this.chunkHeight + maxBorderDistance * 2)];

@@ -4,6 +4,8 @@ import birsy.clinker.common.world.level.gen.fluid.FluidLevel;
 import birsy.clinker.common.world.level.gen.noise.NoiseComputerContext;
 import net.minecraft.core.Holder;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.biome.Biome;
 
 import java.util.Set;
@@ -21,7 +23,7 @@ public abstract class WorldFeature {
 
     public abstract boolean within(int minX, int minZ, int maxX, int maxZ);
 
-    public abstract boolean plan(MetaChunk metaChunk, RandomSource randomSource, NoiseComputerContext context);
+    public abstract boolean plan(LevelAccessor level, MetaChunk metaChunk, RandomSource randomSource, NoiseComputerContext context);
 
     public void addChildFeatures(int childDepth, Set<WorldFeature> worldFeatures) {
 

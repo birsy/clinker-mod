@@ -5,9 +5,9 @@ import birsy.clinker.common.world.level.gen.OthershoreNoiseComputers;
 import birsy.clinker.common.world.level.gen.noise.*;
 import birsy.clinker.common.world.level.gen.worldfeature.MetaChunk;
 import birsy.clinker.common.world.level.gen.worldfeature.WorldFeature;
-import birsy.clinker.core.Clinker;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 
 public class UndergroundLakeWorldFeature extends WorldFeature {
@@ -49,7 +49,7 @@ public class UndergroundLakeWorldFeature extends WorldFeature {
     }
 
     @Override
-    public boolean plan(MetaChunk metaChunk, RandomSource randomSource, NoiseComputerContext context) {
+    public boolean plan(LevelAccessor level, MetaChunk metaChunk, RandomSource randomSource, NoiseComputerContext context) {
         this.radius = randomSource.nextInt(20, 70);
         this.centerX = randomSource.nextInt(metaChunk.minX(), metaChunk.maxX());
         this.centerZ = randomSource.nextInt(metaChunk.minZ(), metaChunk.maxZ());

@@ -8,6 +8,7 @@ import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.LevelAccessor;
 
 public class JaggedPeakWorldFeature extends WorldFeature {
     int centerX, centerZ;
@@ -40,7 +41,7 @@ public class JaggedPeakWorldFeature extends WorldFeature {
     }
 
     @Override
-    public boolean plan(MetaChunk metaChunk, RandomSource randomSource, NoiseComputerContext context) {
+    public boolean plan(LevelAccessor level, MetaChunk metaChunk, RandomSource randomSource, NoiseComputerContext context) {
         this.radius = randomSource.nextInt(100, 180);
         this.centerX = randomSource.nextInt(metaChunk.minX(), metaChunk.maxX());
         this.centerZ = randomSource.nextInt(metaChunk.minZ(), metaChunk.maxZ());

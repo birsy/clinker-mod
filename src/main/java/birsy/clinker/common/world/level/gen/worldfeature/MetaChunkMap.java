@@ -1,16 +1,13 @@
 package birsy.clinker.common.world.level.gen.worldfeature;
 
 import birsy.clinker.common.world.level.gen.noise.*;
-import birsy.clinker.common.world.level.gen.worldfeature.worldfeatures.JaggedPeakWorldFeature;
-import birsy.clinker.common.world.level.gen.worldfeature.worldfeatures.TestWorldFeature;
-import birsy.clinker.common.world.level.gen.worldfeature.worldfeatures.UndergroundLakeWorldFeature;
 import birsy.clinker.common.world.level.gen.worldfeature.worldfeatures.UndergroundRiverWorldFeature;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerDynamicRegistries;
-import birsy.clinker.core.registry.ClinkerRegistries;
 import net.minecraft.core.Holder;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.levelgen.PositionalRandomFactory;
 import net.minecraft.world.level.levelgen.RandomState;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
@@ -54,7 +51,7 @@ public class MetaChunkMap {
         return 16 << depth;
     }
 
-    MetaChunk getMetaChunk(int depth, int blockX, int blockZ) {
+    MetaChunk getMetaChunk(LevelAccessor level, int depth, int blockX, int blockZ) {
         int size = getMetaChunkSizeForDepth(depth);
         int metaChunkX = Math.floorDiv(blockX, size), metaChunkZ = Math.floorDiv(blockZ, size);
         long key = MetaChunk.asLong(metaChunkX, metaChunkZ);
@@ -69,6 +66,7 @@ public class MetaChunkMap {
                 for (int xOffset = -1; xOffset <= 1; xOffset++) {
                     for (int zOffset = -1; zOffset <= 1; zOffset++) {
                         MetaChunk parent = getMetaChunk(
+                                level,
                                 depth + 1,
                                 (Math.floorDiv(blockX, parentSize) + xOffset) * parentSize,
                                 (Math.floorDiv(blockZ, parentSize) + zOffset) * parentSize
@@ -79,12 +77,12 @@ public class MetaChunkMap {
                 }
             }
 
-            generateWorldFeatures(depth, newChunk);
+            generateWorldFeatures(level, depth, newChunk);
             return newChunk;
         });
     }
 
-    void generateWorldFeatures(int depth, MetaChunk metaChunk) {
+    void generateWorldFeatures(LevelAccessor level, int depth, MetaChunk metaChunk) {
         if (depth <= 0) return;
         NoiseHolder noiseHolder = ((NoiseHolderHolder)(Object)this.randomState).clinker$noiseHolder();
         NoiseComputerExecutor noiseComputerExecutor = new UncachedNoiseComputerExecutor(noiseHolder);
@@ -92,9 +90,9 @@ public class MetaChunkMap {
 
         RandomSource random = metaChunkRandom.at(metaChunk.minX(), depth, metaChunk.maxZ());
 
-        if (depth == 5) {
+        if (depth == 6) {
             WorldFeature river = new UndergroundRiverWorldFeature(depth, 0);
-            river.plan(metaChunk, random, context);
+            river.plan(level, metaChunk, random, context);
             metaChunk.worldFeatures.add(river);
         }
 
@@ -106,7 +104,7 @@ public class MetaChunkMap {
                 featureSet:
                 for (int i = 0; i < count; i++) {
                     WorldFeature realizedFeature = feature.feature().create(metaChunk, feature.spacingRadius());
-                    boolean placed = realizedFeature.plan(metaChunk, random, context);
+                    boolean placed = realizedFeature.plan(level, metaChunk, random, context);
                     int x = realizedFeature.getCenterX(), z = realizedFeature.getCenterZ();
                     int radius = realizedFeature.separationRadius;
                     if (placed) {
@@ -126,7 +124,7 @@ public class MetaChunkMap {
         }
     }
 
-    public Collection<WorldFeature> getWorldFeatures(int blockX, int blockZ) {
-        return getMetaChunk(0, blockX, blockZ).worldFeatures;
+    public Collection<WorldFeature> getWorldFeatures(LevelAccessor level, int blockX, int blockZ) {
+        return getMetaChunk(level, 0, blockX, blockZ).worldFeatures;
     }
 }

@@ -132,7 +132,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         NoiseComputerContext context = new NoiseComputerContext(noiseExecutor, noiseHolder);
 
         Collection<WorldFeature> worldFeatures = ((MetaChunkMapHolder)(Object) randomState).clinker$metaChunkMap()
-                .getWorldFeatures(chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());
+                .getWorldFeatures(chunk.getLevel(), chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());
 
         for (int section = levelheightaccessor.getMinSection(); section < levelheightaccessor.getMaxSection(); section++) {
             LevelChunkSection levelchunksection = chunk.getSection(chunk.getSectionIndexFromSectionY(section));
@@ -203,7 +203,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             density = Math.max(density, caveNoise);
 
             Collection<WorldFeature> worldFeatures = ((MetaChunkMapHolder) (Object) randomState).clinker$metaChunkMap()
-                    .getWorldFeatures(chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());
+                    .getWorldFeatures(chunk.getLevel(), chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());
             for (WorldFeature worldFeature : worldFeatures) {
                 density = worldFeature.modifyTerrain(x, y, z, density, context);
             }
@@ -213,7 +213,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         NoiseComputer waterfallPresenceComputer = new NoiseComputer("waterfall_presence", CacheType.INTERPOLATED_COARSE, (x, y, z, context) -> {
             double presence = -1;
             Collection<WorldFeature> worldFeatures = ((MetaChunkMapHolder) (Object) randomState).clinker$metaChunkMap()
-                    .getWorldFeatures(chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());
+                    .getWorldFeatures(chunk.getLevel(), chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());
             for (WorldFeature worldFeature : worldFeatures) {
                 presence = worldFeature.modifyWaterfallPresence(x, y, z, presence, context);
             }

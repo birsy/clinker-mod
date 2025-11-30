@@ -4,6 +4,7 @@ import birsy.clinker.common.world.level.gen.noise.NoiseComputerContext;
 import birsy.clinker.common.world.level.gen.worldfeature.MetaChunk;
 import birsy.clinker.common.world.level.gen.worldfeature.WorldFeature;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.LevelAccessor;
 
 public class TestWorldFeature extends WorldFeature {
     int centerX, centerZ;
@@ -32,7 +33,7 @@ public class TestWorldFeature extends WorldFeature {
     }
 
     @Override
-    public boolean plan(MetaChunk metaChunk, RandomSource randomSource, NoiseComputerContext context) {
+    public boolean plan(LevelAccessor level, MetaChunk metaChunk, RandomSource randomSource, NoiseComputerContext context) {
         this.radius = (depth + 1) * 3;
         this.centerX = randomSource.nextInt(metaChunk.minX(), metaChunk.maxX());
         this.centerZ = randomSource.nextInt(metaChunk.minZ(), metaChunk.maxZ());
