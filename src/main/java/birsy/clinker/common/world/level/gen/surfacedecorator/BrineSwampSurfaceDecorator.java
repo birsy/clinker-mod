@@ -29,7 +29,7 @@ public class BrineSwampSurfaceDecorator extends SurfaceDecorator {
 
         boolean placedSand = false;
 
-        if (pos.getY() > surfaceHeight) {
+        if (pos.getY() > surfaceHeight - 10) {
             if (pos.getY() == seaLevel - 1 && waterloggingNoise > 0.2 && maxElevationIncrease <= 0) {
                 chunk.setBlockState(pos, Blocks.WATER.defaultBlockState(), false);
                 pos.move(Direction.DOWN);
