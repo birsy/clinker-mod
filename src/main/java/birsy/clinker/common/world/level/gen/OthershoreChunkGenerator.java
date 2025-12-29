@@ -3,7 +3,7 @@ package birsy.clinker.common.world.level.gen;
 import birsy.clinker.common.world.level.gen.fluid.AxialBlurBorderFluidMap;
 import birsy.clinker.common.world.level.gen.fluid.FluidMap;
 import birsy.clinker.common.world.level.gen.noise.*;
-import birsy.clinker.common.world.level.gen.surfaceshaper.SurfaceShapers;
+import birsy.clinker.common.world.level.gen.biomeshaper.BiomeShapers;
 import birsy.clinker.common.world.level.gen.worldfeature.MetaChunkMapHolder;
 import birsy.clinker.common.world.level.gen.worldfeature.WorldFeature;
 import birsy.clinker.core.registry.ClinkerBlocks;
@@ -23,36 +23,31 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.*;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeManager;
-import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.chunk.PalettedContainer;
-import net.minecraft.world.level.levelgen.Aquifer;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraft.world.level.levelgen.blending.Blender;
-import net.minecraft.world.level.material.FluidState;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public class OthershoreChunkGenerator extends ChunkGenerator {
     public static final MapCodec<OthershoreChunkGenerator> CODEC = RecordCodecBuilder.mapCodec(
-            obj -> obj.group(BiomeSource.CODEC.fieldOf("biome_source").forGetter(OthershoreChunkGenerator::getBiomeSource))
+            obj -> obj.group(OthershoreBiomeSource.CODEC.fieldOf("biome_source")
+                            .forGetter(OthershoreChunkGenerator::getBiomeSource))
                       .apply(obj, obj.stable(OthershoreChunkGenerator::new))
     );
     private final Map<ResourceKey<Biome>, NoiseComputer> surfaceBiomeContributionComputers;
     private final NoiseComputer undergroundContributionComputer;
     private final SurfaceBuilder surfaceBuilder;
 
-    public OthershoreChunkGenerator(BiomeSource biomeSource) {
+    public OthershoreChunkGenerator(OthershoreBiomeSource biomeSource) {
         super(biomeSource);
         this.surfaceBuilder = new SurfaceBuilder(8, OthershoreBiomeSource.SEA_HEIGHT, ClinkerBlocks.BRIMSTONE.get().defaultBlockState());
         this.surfaceBiomeContributionComputers = HashMap.newHashMap(this.biomeSource.possibleBiomes().size());
@@ -73,31 +68,28 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
         for (Holder<Biome> possibleBiome : this.biomeSource.possibleBiomes()) {
             NoiseComputer biomeComputer = new NoiseComputer(possibleBiome.toString(), CacheType.INTERPOLATED_2D_COARSE, (x, y, z, context) -> {
-                if (this.getBiomeSource() instanceof OthershoreBiomeSource othershoreBiomeSource) {
-                    double totalContribution = 0;
-                    for (int i = 0; i < kernel.length; i++) {
-                        double weight = kernel[i];
-                        int offsetX = (Math.floorMod(i, kernelSize) - (int) Math.floor(kernelCenter)) * 4,
+                double totalContribution = 0;
+                for (int i = 0; i < kernel.length; i++) {
+                    double weight = kernel[i];
+                    int offsetX = (Math.floorMod(i, kernelSize) - (int) Math.floor(kernelCenter)) * 4,
                             offsetZ = (Math.floorDiv(i, kernelSize) - (int) Math.floor(kernelCenter)) * 4;
-                        totalContribution += othershoreBiomeSource
-                                .getNoiseBiome(x + offsetX,  440, z + offsetZ, context.noiseComputerExecutor()) == possibleBiome ? weight : 0;
-                    }
-
-                    return totalContribution;
+                    totalContribution += biomeSource
+                            .getNoiseBiome(x + offsetX,  440, z + offsetZ, context.noiseComputerExecutor()) == possibleBiome ? weight : 0;
                 }
-
-                return 0;
+                return totalContribution;
             });
             this.surfaceBiomeContributionComputers.put(possibleBiome.getKey(), biomeComputer);
         }
 
         this.undergroundContributionComputer = new NoiseComputer("underground_contribution", CacheType.INTERPOLATED_VERY_COARSE, (x, y, z, context) -> {
-            if (this.getBiomeSource() instanceof OthershoreBiomeSource othershoreBiomeSource) {
-                Holder<Biome> currentBiome = othershoreBiomeSource.getNoiseBiome(x, y, z, context.noiseComputerExecutor());
-                return currentBiome.is(ClinkerBiomes.UNDERGROUND) || currentBiome.is(ClinkerBiomes.AQUIFER) ? 1 : 0;
-            }
-            return 0;
+            Holder<Biome> currentBiome = biomeSource.getNoiseBiome(x, y, z, context.noiseComputerExecutor());
+            return currentBiome.is(ClinkerBiomes.UNDERGROUND) || currentBiome.is(ClinkerBiomes.AQUIFER) ? 1 : 0;
         });
+    }
+
+    @Override
+    public OthershoreBiomeSource getBiomeSource() {
+        return (OthershoreBiomeSource) super.getBiomeSource();
     }
 
     @Override
@@ -115,12 +107,9 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
     @Override
     public CompletableFuture<ChunkAccess> createBiomes(RandomState randomState, Blender blender, StructureManager structureManager, ChunkAccess chunk) {
-        if (this.biomeSource instanceof OthershoreBiomeSource othershoreBiomeSource) {
-            return CompletableFuture.supplyAsync(Util.wrapThreadWithTaskName("clinker_wgen_fill_biomes",
-                    () -> doBiomeFillTask(othershoreBiomeSource, blender, randomState, structureManager, chunk)), Util.backgroundExecutor()
-            );
-        }
-        return super.createBiomes(randomState, blender, structureManager, chunk);
+        return CompletableFuture.supplyAsync(Util.wrapThreadWithTaskName("clinker_wgen_fill_biomes",
+                () -> doBiomeFillTask(this.getBiomeSource(), blender, randomState, structureManager, chunk)), Util.backgroundExecutor()
+        );
     }
 
     private ChunkAccess doBiomeFillTask(OthershoreBiomeSource othershoreBiomeSource, Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunk) {
@@ -160,13 +149,12 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
     }
 
 
-        @Override
+    @Override
     public CompletableFuture<ChunkAccess> fillFromNoise(Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunk) {
         return CompletableFuture.supplyAsync(Util.wrapThreadWithTaskName("clinker_wgen_fill_noise",
                 () -> this.doNoiseFillTask(blender, randomState, structureManager, chunk)), Util.backgroundExecutor()
         );
     }
-
 
     public ChunkAccess doNoiseFillTask(Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunk) {
         NoiseHolder noiseHolder = ((NoiseHolderHolder)(Object)randomState).clinker$noiseHolder();
@@ -174,47 +162,55 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                 chunk.getPos().getMinBlockX(), chunk.getMinBuildHeight(), chunk.getPos().getMinBlockZ(), chunk.getHeight(),
                 noiseHolder
         );
-
         FluidMap fluidMap = new AxialBlurBorderFluidMap(randomState, chunk, new NoiseComputerContext(noiseExecutor, noiseHolder), OthershoreNoiseComputers.FLUID_FILLER);
 
-        NoiseComputer surfaceComputer = new NoiseComputer("surface_density", CacheType.INTERPOLATED_COARSE, (x, y, z, context) -> {
-            NoiseComputerExecutor cache = context.noiseComputerExecutor();
+        Set<Holder<Biome>> biomesInChunk = this.getBiomeSource()
+                .getBiomesWithin(chunk.getPos().getMinBlockX(), chunk.getMinBuildHeight(), chunk.getPos().getMinBlockZ(),
+                                 chunk.getPos().getMaxBlockX(), chunk.getMaxBuildHeight(), chunk.getPos().getMaxBlockZ(),
+                                 noiseExecutor);
+        Collection<WorldFeature> worldFeaturesInChunk =
+                ((MetaChunkMapHolder)(Object)randomState).clinker$metaChunkMap()
+                .getWorldFeatures(chunk.getLevel(), chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());
 
+        NoiseComputer baseDensityComputer = new NoiseComputer("base_density", CacheType.INTERPOLATED_COARSE, (x, y, z, context) -> {
+            NoiseComputerExecutor executor = context.noiseComputerExecutor();
             double surfaceDensity = 0;
             double totalContribution = 0;
-            for (Holder<Biome> biome : this.biomeSource.possibleBiomes()) {
-                double contribution = cache.compute(x, y, z, surfaceBiomeContributionComputers.get(biome.getKey()));
+            for (Holder<Biome> biome : biomesInChunk) {
+                double contribution = executor.compute(x, y, z, surfaceBiomeContributionComputers.get(biome.getKey()));
                 if (contribution > 0) {
-                    surfaceDensity += SurfaceShapers.retrieve(biome.getKey()).surfaceDensity(x, y, z, contribution, context) * contribution;
+                    surfaceDensity += BiomeShapers.retrieve(biome.getKey()).surfaceDensity(x, y, z, contribution, context) * contribution;
                     totalContribution += contribution;
                 }
             }
+            double density = surfaceDensity / totalContribution;
+            for (WorldFeature worldFeature : worldFeaturesInChunk)
+                density = worldFeature.modifyBaseTerrain(x, y, z, density, context);
+            return density;
+        });
 
-            return surfaceDensity / totalContribution;
+        NoiseComputer caveDensityComputer = new NoiseComputer("cave_density", CacheType.INTERPOLATED_COARSE, (x, y, z, context) -> {
+            NoiseComputerExecutor executor = context.noiseComputerExecutor();
+            double density = executor.compute(x, y, z, OthershoreNoiseComputers.CAVES);
+            density = Mth.lerp(executor.compute(x, y, z, undergroundContributionComputer), -10, density);
+            for (WorldFeature worldFeature : worldFeaturesInChunk)
+                density = worldFeature.modifyCaveTerrain(x, y, z, density, context);
+            return density;
         });
 
         NoiseComputer finalDensityComputer = new NoiseComputer("final_density", CacheType.FINAL_DENSITY, (x, y, z, context) -> {
-            NoiseComputerExecutor cache = context.noiseComputerExecutor();
-            double surfaceNoise = cache.compute(x, y, z, surfaceComputer);
-            double density = surfaceNoise;
-
-            double caveNoise = cache.compute(x, y, z, OthershoreNoiseComputers.CAVES);
-            caveNoise = Mth.lerp(cache.compute(x, y, z, undergroundContributionComputer), -10, caveNoise);
-            density = Math.max(density, caveNoise);
-
-            Collection<WorldFeature> worldFeatures = ((MetaChunkMapHolder) (Object) randomState).clinker$metaChunkMap()
-                    .getWorldFeatures(chunk.getLevel(), chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());
-            for (WorldFeature worldFeature : worldFeatures) {
-                density = worldFeature.modifyTerrain(x, y, z, density, context);
-            }
+            NoiseComputerExecutor executor = context.noiseComputerExecutor();
+            double density = executor.compute(x, y, z, baseDensityComputer);
+            double caveDensity = executor.compute(x, y, z, caveDensityComputer);
+            density = Math.max(density, caveDensity);
+            for (WorldFeature worldFeature : worldFeaturesInChunk)
+                density = worldFeature.modifyFinalTerrain(x, y, z, density, context);
             return density;
         });
 
         NoiseComputer waterfallPresenceComputer = new NoiseComputer("waterfall_presence", CacheType.INTERPOLATED_COARSE, (x, y, z, context) -> {
             double presence = -1;
-            Collection<WorldFeature> worldFeatures = ((MetaChunkMapHolder) (Object) randomState).clinker$metaChunkMap()
-                    .getWorldFeatures(chunk.getLevel(), chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());
-            for (WorldFeature worldFeature : worldFeatures) {
+            for (WorldFeature worldFeature : worldFeaturesInChunk) {
                 presence = worldFeature.modifyWaterfallPresence(x, y, z, presence, context);
             }
             return presence;
@@ -225,7 +221,6 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
         Heightmap heightmapOceanFloor = chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.OCEAN_FLOOR_WG);
         Heightmap heightmapWorldSurface = chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.WORLD_SURFACE_WG);
-
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         for (int yi = 0; yi < chunk.getHeight() - 1; yi++) {
             pos.setY(yi + chunk.getMinBuildHeight());

@@ -248,7 +248,7 @@ public class UndergroundRiverWorldFeature extends WorldFeature {
     }
 
     @Override
-    public double modifyTerrain(int x, int y, int z, double currentNoiseValue, NoiseComputerContext context) {
+    public double modifyCaveTerrain(int x, int y, int z, double currentNoiseValue, NoiseComputerContext context) {
         double riverDistance = context.noiseComputerExecutor().compute(x, y, z, this.riverDistanceComputer);
         double waterHeight = context.noiseComputerExecutor().compute(x, y, z, this.riverSurfaceHeightComputer),
                ceilingHeight = context.noiseComputerExecutor().compute(x, y, z, this.riverCeilingHeightComputer);
@@ -261,7 +261,7 @@ public class UndergroundRiverWorldFeature extends WorldFeature {
         double baseRiverRadius = context.noiseComputerExecutor().compute(x, y, z, this.riverRadiusComputer);
         double riverRadius = baseRiverRadius;
         double riverDepth = flow / riverRadius;
-        riverDepth = Math.max(riverDepth, 2.0);
+        riverDepth = Math.clamp(riverDepth, 2.0, 30.0);
 
         if (riverRadius <= 0)
             return currentNoiseValue;

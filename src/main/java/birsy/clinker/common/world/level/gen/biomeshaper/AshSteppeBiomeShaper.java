@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.level.gen.surfaceshaper;
+package birsy.clinker.common.world.level.gen.biomeshaper;
 
 import birsy.clinker.common.world.level.gen.OthershoreBiomeSource;
 import birsy.clinker.common.world.level.gen.OthershoreNoiseComputers;
@@ -7,7 +7,7 @@ import birsy.clinker.common.world.level.gen.noise.NoiseComputerExecutor;
 import birsy.clinker.common.world.level.gen.noise.NoiseHolder;
 import net.minecraft.util.Mth;
 
-public class AshSteppeSurfaceShaper implements SurfaceShaper {
+public class AshSteppeBiomeShaper implements BiomeShaper {
     @Override
     public double surfaceDensity(int x, int y, int z, double biomeContribution, NoiseComputerContext context) {
         NoiseHolder noise = context.noiseHolder();

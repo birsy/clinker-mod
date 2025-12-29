@@ -41,7 +41,7 @@ public class TestWorldFeature extends WorldFeature {
     }
 
     @Override
-    public double modifyTerrain(int x, int y, int z, double currentNoiseValue, NoiseComputerContext context) {
+    public double modifyFinalTerrain(int x, int y, int z, double currentNoiseValue, NoiseComputerContext context) {
         int centerY = 64;
         double distance = Math.sqrt((x - centerX) * (x - centerX) +
                 (y - centerY) * (y - centerY) +

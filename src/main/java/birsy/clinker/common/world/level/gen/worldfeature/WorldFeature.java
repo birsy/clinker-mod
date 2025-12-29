@@ -5,7 +5,6 @@ import birsy.clinker.common.world.level.gen.noise.NoiseComputerContext;
 import net.minecraft.core.Holder;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.biome.Biome;
 
 import java.util.Set;
@@ -29,7 +28,15 @@ public abstract class WorldFeature {
 
     }
 
-    public double modifyTerrain(int x, int y, int z, double currentNoiseValue, NoiseComputerContext context) {
+    public double modifyBaseTerrain(int x, int y, int z, double currentNoiseValue, NoiseComputerContext context) {
+        return currentNoiseValue;
+    }
+
+    public double modifyCaveTerrain(int x, int y, int z, double currentNoiseValue, NoiseComputerContext context) {
+        return currentNoiseValue;
+    }
+
+    public double modifyFinalTerrain(int x, int y, int z, double currentNoiseValue, NoiseComputerContext context) {
         return currentNoiseValue;
     }
 

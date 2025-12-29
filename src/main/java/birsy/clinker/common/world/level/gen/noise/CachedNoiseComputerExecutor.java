@@ -26,12 +26,12 @@ public class CachedNoiseComputerExecutor implements NoiseComputerExecutor {
     public double compute(int x, int y, int z, NoiseComputer noiseProcessor) {
         int localX = x - minX, localY = y - minY, localZ = z - minZ;
 
-        if (noiseProcessor.cacheType() == CacheType.NONE) {
+        if (noiseProcessor.cacheType() == CacheType.NONE)
             return noiseProcessor.compute(x, y, z, this.context);
-        }
 
-        if (!noiseProcessorCaches.containsKey(noiseProcessor)) {
-            NoiseMap noiseMap = switch (noiseProcessor.cacheType()) {
+        NoiseMap cache = noiseProcessorCaches.getOrDefault(noiseProcessor, null);
+        if (cache == null) {
+            cache = switch (noiseProcessor.cacheType()) {
                 case NONE -> null;
                 case DIRECT -> new DirectNoiseMap(this.height);
                 case TWO_DIMENSIONAL -> new TwoDimensionalNoiseMap();
@@ -43,11 +43,10 @@ public class CachedNoiseComputerExecutor implements NoiseComputerExecutor {
                 case INTERPOLATED_2D_VERY_COARSE -> new Interpolated2DNoiseMap(16, false);
                 case FINAL_DENSITY -> new InterpolatedNoiseMap(this.height, 2, 4, true);
             };
-
-            noiseMap.fill(minX, minY, minZ, noiseProcessor, this.context);
-            noiseProcessorCaches.put(noiseProcessor, noiseMap);
+            cache.fill(minX, minY, minZ, noiseProcessor, this.context);
+            noiseProcessorCaches.put(noiseProcessor, cache);
         }
-        return noiseProcessorCaches.get(noiseProcessor).retrieve(localX, localY, localZ);
+        return cache.retrieve(localX, localY, localZ);
     }
 
     @Override

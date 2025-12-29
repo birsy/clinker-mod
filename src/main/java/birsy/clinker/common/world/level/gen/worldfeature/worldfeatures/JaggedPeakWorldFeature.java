@@ -86,7 +86,7 @@ public class JaggedPeakWorldFeature extends WorldFeature {
     }
 
     @Override
-    public double modifyTerrain(int x, int y, int z, double currentNoiseValue, NoiseComputerContext context) {
+    public double modifyFinalTerrain(int x, int y, int z, double currentNoiseValue, NoiseComputerContext context) {
         NoiseComputerExecutor executor = context.noiseComputerExecutor();
         double centerY = executor.compute(x, y, z, OthershoreNoiseComputers.SURFACE_HEIGHT_COMPUTER);
         double verticalDistance = y - centerY;

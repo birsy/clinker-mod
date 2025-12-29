@@ -1,6 +1,5 @@
 package birsy.clinker.common.world.level.gen.surfacedecorator;
 
-import birsy.clinker.common.world.level.gen.surfaceshaper.SurfaceShaper;
 import birsy.clinker.core.registry.world.ClinkerBiomes;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.biome.Biome;
