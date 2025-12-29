@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class CachedNoiseComputerExecutor implements NoiseComputerExecutor {
     private final int minX, minY, minZ;
-    private final int height;
+    final int height;
     private final Map<NoiseComputer, NoiseMap> noiseProcessorCaches;
     private final NoiseComputerContext context, uncachedContext;
 
@@ -31,18 +31,7 @@ public class CachedNoiseComputerExecutor implements NoiseComputerExecutor {
 
         NoiseMap cache = noiseProcessorCaches.getOrDefault(noiseProcessor, null);
         if (cache == null) {
-            cache = switch (noiseProcessor.cacheType()) {
-                case NONE -> null;
-                case DIRECT -> new DirectNoiseMap(this.height);
-                case TWO_DIMENSIONAL -> new TwoDimensionalNoiseMap();
-                case INTERPOLATED_COARSE -> new InterpolatedNoiseMap(this.height, 4, 2, false);
-                case INTERPOLATED_2D_COARSE -> new Interpolated2DNoiseMap(4, false);
-                case INTERPOLATED_FINE -> new InterpolatedNoiseMap(this.height, 2, 4, false);
-                case INTERPOLATED_2D_FINE -> new Interpolated2DNoiseMap(2, false);
-                case INTERPOLATED_VERY_COARSE -> new InterpolatedNoiseMap(this.height, 16, 16, false);
-                case INTERPOLATED_2D_VERY_COARSE -> new Interpolated2DNoiseMap(16, false);
-                case FINAL_DENSITY -> new InterpolatedNoiseMap(this.height, 2, 4, true);
-            };
+            cache = noiseProcessor.cacheType().create(this);
             cache.fill(minX, minY, minZ, noiseProcessor, this.context);
             noiseProcessorCaches.put(noiseProcessor, cache);
         }
@@ -54,16 +43,16 @@ public class CachedNoiseComputerExecutor implements NoiseComputerExecutor {
         return noiseProcessor.compute(x, y, z, this.uncachedContext);
     }
 
-    private abstract class NoiseMap {
+    abstract class NoiseMap {
         abstract void fill(int minX, int minY, int minZ, NoiseComputer noiseProcessorFunction, NoiseComputerContext context);
         abstract double retrieve(int x, int y, int z);
     }
 
-    private class DirectNoiseMap extends NoiseMap {
+    static class DirectNoiseMap extends NoiseMap {
         final int height;
         final double[] map;
 
-        private DirectNoiseMap(int height) {
+        DirectNoiseMap(int height) {
             this.height = height;
             this.map = new double[16 * 16 * height];
         }
@@ -90,10 +79,10 @@ public class CachedNoiseComputerExecutor implements NoiseComputerExecutor {
         }
     }
 
-    private class TwoDimensionalNoiseMap extends NoiseMap {
+    static class TwoDimensionalNoiseMap extends NoiseMap {
         final double[] map;
 
-        private TwoDimensionalNoiseMap() {
+        TwoDimensionalNoiseMap() {
             this.map = new double[16 * 16];
         }
 
@@ -117,13 +106,13 @@ public class CachedNoiseComputerExecutor implements NoiseComputerExecutor {
         }
     }
 
-    private class InterpolatedNoiseMap extends NoiseMap {
+    static class InterpolatedNoiseMap extends NoiseMap {
         final int cellWidth, cellHeight;
         final int horizontalResolution, verticalResolution;
         final int cellCountHorizontal, cellCountVertical;
         final double[] map;
 
-        private InterpolatedNoiseMap(int height, int cellWidth, int cellHeight, boolean finalDensity) {
+        InterpolatedNoiseMap(int height, int cellWidth, int cellHeight, boolean finalDensity) {
             this.cellWidth = cellWidth;
             this.cellHeight = cellHeight;
             this.horizontalResolution = 16 / cellWidth;
@@ -187,13 +176,13 @@ public class CachedNoiseComputerExecutor implements NoiseComputerExecutor {
         }
     }
     
-    private class Interpolated2DNoiseMap extends NoiseMap {
+    static class Interpolated2DNoiseMap extends NoiseMap {
         final int cellWidth;
         final int horizontalResolution;
         final int cellCountHorizontal;
         final double[] map;
 
-        private Interpolated2DNoiseMap(int cellWidth, boolean finalDensity) {
+        Interpolated2DNoiseMap(int cellWidth, boolean finalDensity) {
             this.cellWidth = cellWidth;
             this.horizontalResolution = 16 / cellWidth;
             this.cellCountHorizontal = finalDensity ? this.horizontalResolution + 1 : this.horizontalResolution + 2;
