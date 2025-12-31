@@ -52,7 +52,7 @@ public class OthershoreNoiseComputers {
         noise.registerNoise("base_erosion");
 
         double scale = 1;//1 / 10.0;
-        double frequency = (1 / 400.0) / scale;
+        double frequency = (1 / 500.0) / scale;
         double val;
         double erosion = noise.sample("base_erosion", x * frequency, z * frequency);
         erosion = Mth.clampedMap(erosion, -1, 1, 0, 1);
@@ -61,14 +61,6 @@ public class OthershoreNoiseComputers {
         middleShelf = middleShelf * (1 / Mth.clampedMap(erosion, 0, 1, 0.5, 1));
         middleShelf = Mth.clampedMap(middleShelf, -1, -0.1, 0, 1);
 
-
-//        double upperShelf = noise.sample("base_upper_shelf", x * frequency, z * frequency) - 0.7;
-//        upperShelf = upperShelf * (1 / (erosion * 0.25));
-//        upperShelf = Math.clamp(upperShelf, 0, 1);
-//        upperShelf = upperShelf * 0.5 + 0.5;
-//        val = Mth.clampedLerp(Mth.clampedMap(val, -1, 1, -1, -0.2), 1, upperShelf + Math.min(plateaus, 0) * 5);
-//        val = Mth.clampedMap(val, -1, 1, -0.8, 1);
-//
         double seas = noise.sample("base_seas", x * frequency * 0.2, z * frequency * 0.2) - 0.5;
         seas = seas * (1 / Mth.clampedMap(erosion, 0, 1, 0.1, 0.2));
         seas = Math.clamp(seas / 2.0 + 0.5, 0, 1);
@@ -181,7 +173,7 @@ public class OthershoreNoiseComputers {
         NoiseComputerExecutor executor = context.noiseComputerExecutor();
         double surfaceHeight = executor.compute(x, y, z, OthershoreNoiseComputers.SURFACE_HEIGHT_COMPUTER);
         // sea level
-        if (y > surfaceHeight || Math.abs(y - surfaceHeight) < 15) {
+        if (y > (surfaceHeight - 15)) {
             return new FluidLevel(OthershoreBiomeSource.SEA_HEIGHT, Blocks.WATER.defaultBlockState());
         }
         // the aquifer
