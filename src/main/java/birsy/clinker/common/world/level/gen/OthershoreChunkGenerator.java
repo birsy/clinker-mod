@@ -1,6 +1,7 @@
 package birsy.clinker.common.world.level.gen;
 
-import birsy.clinker.common.world.level.gen.fluid.AxialBlurBorderFluidMap;
+import birsy.clinker.common.world.level.gen.fluid.BFSBorderFluidMap;
+import birsy.clinker.common.world.level.gen.fluid.CellularFluidMap;
 import birsy.clinker.common.world.level.gen.fluid.FluidMap;
 import birsy.clinker.common.world.level.gen.noise.*;
 import birsy.clinker.common.world.level.gen.biomeshaper.BiomeShapers;
@@ -162,15 +163,16 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                 chunk.getPos().getMinBlockX(), chunk.getMinBuildHeight(), chunk.getPos().getMinBlockZ(), chunk.getHeight(),
                 noiseHolder
         );
-        FluidMap fluidMap = new AxialBlurBorderFluidMap(randomState, chunk, new NoiseComputerContext(noiseExecutor, noiseHolder), OthershoreNoiseComputers.FLUID_FILLER);
-
-        Set<Holder<Biome>> biomesInChunk = this.getBiomeSource()
-                .getBiomesWithin(chunk.getPos().getMinBlockX(), chunk.getMinBuildHeight(), chunk.getPos().getMinBlockZ(),
-                                 chunk.getPos().getMaxBlockX(), chunk.getMaxBuildHeight(), chunk.getPos().getMaxBlockZ(),
-                                 noiseExecutor);
+        Set<Holder<Biome>> biomesInChunk = getBiomesInChunk(chunk);
         Collection<WorldFeature> worldFeaturesInChunk =
                 ((MetaChunkMapHolder)(Object)randomState).clinker$metaChunkMap()
-                .getWorldFeatures(chunk.getLevel(), chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());
+                        .getWorldFeatures(chunk.getLevel(), chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());
+        FluidMap fluidMap = new BFSBorderFluidMap(randomState, chunk,
+                new NoiseComputerContext(noiseExecutor, noiseHolder),
+                OthershoreNoiseComputers.FLUID_FILLER,
+                worldFeaturesInChunk,
+                4,16,1
+        );
 
         NoiseComputer baseDensityComputer = new NoiseComputer("base_density", CacheType.INTERPOLATED_COARSE, (x, y, z, context) -> {
             NoiseComputerExecutor executor = context.noiseComputerExecutor();
@@ -222,6 +224,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         Heightmap heightmapOceanFloor = chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.OCEAN_FLOOR_WG);
         Heightmap heightmapWorldSurface = chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.WORLD_SURFACE_WG);
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+
         for (int yi = 0; yi < chunk.getHeight() - 1; yi++) {
             pos.setY(yi + chunk.getMinBuildHeight());
             for (int xi = 0; xi < 16; xi++) {
@@ -251,7 +254,23 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             }
         }
 
+
         return chunk;
+    }
+
+    private static Set<Holder<Biome>> getBiomesInChunk(ChunkAccess chunkAccess) {
+        Set<Holder<Biome>> set = new HashSet<>(5);
+        int endH = QuartPos.fromBlock(16);
+        int startV = QuartPos.fromBlock(chunkAccess.getMinBuildHeight()),
+            endV = QuartPos.fromBlock(chunkAccess.getMaxBuildHeight());
+        for (int x = 0; x < endH; x++) {
+            for (int z = 0; z < endH; z++) {
+                for (int y = startV; y < endV; y++) {
+                    set.add(chunkAccess.getNoiseBiome(x, y, z));
+                }
+            }
+        }
+        return set;
     }
 
     @Override

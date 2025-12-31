@@ -2,6 +2,7 @@ package birsy.clinker.common.world.level.gen.noise;
 
 import java.util.function.Function;
 import birsy.clinker.common.world.level.gen.noise.CachedNoiseComputerExecutor.*;
+
 public enum CacheType {
     NONE((executor) -> null),
     DIRECT((executor) -> new DirectNoiseMap(executor.height)),

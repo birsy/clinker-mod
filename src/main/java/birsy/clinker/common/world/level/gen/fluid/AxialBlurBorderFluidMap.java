@@ -111,7 +111,6 @@ public class AxialBlurBorderFluidMap implements FluidMap {
                 int localY = indexY - maxBorderDistance,
                          y = localY + this.minY,
                      cellY = Math.floorDiv(y, cellHeight);
-                NEXT_CELL:
                 for (int indexZ = 0; indexZ < 16 + maxBorderDistance * 2; indexZ++) {
                     int localZ = indexZ - maxBorderDistance,
                              z = localZ + this.minZ,
@@ -119,11 +118,6 @@ public class AxialBlurBorderFluidMap implements FluidMap {
                     // skip homogenous cells
                     if (isHomogenous(cellX, cellY, cellZ))
                         continue;
-
-                    // skip full values, if the index is in range.
-//                    if (localX > 0 && localX < 16 && localY > 0 && localY < this.chunkHeight && localZ > 0 && localZ < 16 &&
-//                        this.noiseContext.noiseComputerExecutor().compute(x, y, z, finalDensityComputer) < 0)
-//                        continue;
 
                     BlockState state = getFluidState(x, y, z);
 
@@ -177,17 +171,11 @@ public class AxialBlurBorderFluidMap implements FluidMap {
             int x = indexX - maxBorderDistance + this.minX,
                     cellX = Math.floorDiv(x, cellWidth);
             for (int indexY = maxBorderDistance; indexY < this.chunkHeight + maxBorderDistance; indexY++) {
-                int y = indexX - maxBorderDistance + this.minY,
+                int y = indexY - maxBorderDistance + this.minY,
                         cellY = Math.floorDiv(y, cellHeight);
                 for (int indexZ = maxBorderDistance; indexZ < 16 + maxBorderDistance; indexZ++) {
-                    int z = indexX - maxBorderDistance + this.minZ,
+                    int z = indexZ - maxBorderDistance + this.minZ,
                             cellZ = Math.floorDiv(z, cellWidth);
-                    // skip homogenous cells
-//                    if (isHomogenous(cellX, cellY, cellZ))
-//                        continue;
-                    // skip full values.
-//                    if (this.noiseContext.noiseComputerExecutor().compute(x, y, z, finalDensityComputer) < 0)
-//                        continue;
                     int index = indexX +
                                 indexY * (16 + maxBorderDistance * 2) +
                                 indexZ * (16 + maxBorderDistance * 2) * (this.chunkHeight + maxBorderDistance * 2);

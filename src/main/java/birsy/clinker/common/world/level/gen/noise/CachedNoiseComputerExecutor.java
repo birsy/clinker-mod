@@ -25,10 +25,8 @@ public class CachedNoiseComputerExecutor implements NoiseComputerExecutor {
     @Override
     public double compute(int x, int y, int z, NoiseComputer noiseProcessor) {
         int localX = x - minX, localY = y - minY, localZ = z - minZ;
-
         if (noiseProcessor.cacheType() == CacheType.NONE)
             return noiseProcessor.compute(x, y, z, this.context);
-
         NoiseMap cache = noiseProcessorCaches.getOrDefault(noiseProcessor, null);
         if (cache == null) {
             cache = noiseProcessor.cacheType().create(this);
@@ -43,7 +41,7 @@ public class CachedNoiseComputerExecutor implements NoiseComputerExecutor {
         return noiseProcessor.compute(x, y, z, this.uncachedContext);
     }
 
-    abstract class NoiseMap {
+    static abstract class NoiseMap {
         abstract void fill(int minX, int minY, int minZ, NoiseComputer noiseProcessorFunction, NoiseComputerContext context);
         abstract double retrieve(int x, int y, int z);
     }
@@ -59,9 +57,9 @@ public class CachedNoiseComputerExecutor implements NoiseComputerExecutor {
 
         @Override
         void fill(int minX, int minY, int minZ, NoiseComputer noiseProcessor, NoiseComputerContext context) {
-            for (int x = 0; x < 16; x++) {
+            for (int y = 0; y < this.height; y++) {
                 for (int z = 0; z < 16; z++) {
-                    for (int y = 0; y < this.height; y++) {
+                    for (int x = 0; x < 16; x++) {
                         int i = index(x, y, z);
                         map[i] = noiseProcessor.compute(x + minX, y + minY, z + minZ, context);
                     }
@@ -88,8 +86,8 @@ public class CachedNoiseComputerExecutor implements NoiseComputerExecutor {
 
         @Override
         void fill(int minX, int minY, int minZ, NoiseComputer noiseProcessor, NoiseComputerContext context) {
-            for (int x = 0; x < 16; x++) {
-                for (int z = 0; z < 16; z++) {
+            for (int z = 0; z < 16; z++) {
+                for (int x = 0; x < 16; x++) {
                     int i = index(x, z);
                     map[i] = noiseProcessor.compute(x + minX, 0, z + minZ, context);
                 }
@@ -125,13 +123,12 @@ public class CachedNoiseComputerExecutor implements NoiseComputerExecutor {
 
         @Override
         void fill(int minX, int minY, int minZ, NoiseComputer noiseProcessor, NoiseComputerContext context) {
-            for (int x = 0; x < this.cellCountHorizontal; x++) {
-                int blockX = x * cellWidth + minX;
+            for (int y = 0; y < this.cellCountVertical; y++) {
+                int blockY = y * cellHeight + minY;
                 for (int z = 0; z < this.cellCountHorizontal; z++) {
                     int blockZ = z * cellWidth + minZ;
-                    for (int y = 0; y < this.cellCountVertical; y++) {
-                        int blockY = y * cellHeight + minY;
-
+                    for (int x = 0; x < this.cellCountHorizontal; x++) {
+                        int blockX = x * cellWidth + minX;
                         int i = index(x, y, z);
                         map[i] = noiseProcessor.compute(blockX, blockY, blockZ, context);
                     }
@@ -191,10 +188,10 @@ public class CachedNoiseComputerExecutor implements NoiseComputerExecutor {
 
         @Override
         void fill(int minX, int minY, int minZ, NoiseComputer noiseProcessor, NoiseComputerContext context) {
-            for (int x = 0; x < this.cellCountHorizontal; x++) {
-                int blockX = x * cellWidth + minX;
-                for (int z = 0; z < this.cellCountHorizontal; z++) {
-                    int blockZ = z * cellWidth + minZ;
+            for (int z = 0; z < this.cellCountHorizontal; z++) {
+                int blockZ = z * cellWidth + minZ;
+                for (int x = 0; x < this.cellCountHorizontal; x++) {
+                    int blockX = x * cellWidth + minX;
                     int i = index(x, z);
                     map[i] = noiseProcessor.compute(blockX, 0, blockZ, context);
                 }
@@ -222,7 +219,6 @@ public class CachedNoiseComputerExecutor implements NoiseComputerExecutor {
             x = Math.clamp(x, 0, this.cellCountHorizontal - 1);
             z = Math.clamp(z, 0, this.cellCountHorizontal - 1);
             int i = x + z * this.cellCountHorizontal;
-            if (i >= this.map.length) Clinker.LOGGER.error("{}, {}", x, z);
             return i;
         }
     }
