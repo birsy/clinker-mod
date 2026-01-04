@@ -4,6 +4,7 @@ import birsy.clinker.common.world.level.gen.noise.NoiseComputer;
 import birsy.clinker.common.world.level.gen.noise.NoiseComputerContext;
 import birsy.clinker.common.world.level.gen.worldfeature.WorldFeature;
 import birsy.clinker.core.Clinker;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -73,7 +74,6 @@ public class BFSBorderFluidMap extends CellularFluidMap {
                 }
             }
         }
-        //Clinker.LOGGER.info(maxDistance);
     }
 
     public void initializeFluidBorders(NoiseComputer finalDensityComputer, NoiseComputer waterfallPresenceComputer) {
@@ -176,46 +176,41 @@ public class BFSBorderFluidMap extends CellularFluidMap {
     }
 
     public void computeBorderDistances() {
-        // we propagate distances outward from all border blocks simultaneously.
-        // weird multi-source dijkstra??
-
+        // dial's algorithms dijkstra bfs
         // scaled by face cost
-        final int maxDistance = Math.min(this.paddingBlocksXZ, this.paddingBlocksY) * FACE_WEIGHT;
+        final int maxDistance = Math.min(this.paddingBlocksXZ, this.paddingBlocksY) * FACE_WEIGHT * 2 + 1;
 
-        PriorityQueue<Integer> queue = new PriorityQueue<>(Comparator.comparingInt(i -> this.borderDistances[i]));
-        for (int i = 0; i < this.borderDistances.length; i++) {
-            if (this.borderDistances[i] == 0) {
-                queue.add(i);
-            }
+        IntArrayList[] buckets = new IntArrayList[maxDistance];
+        for (int i = 0; i < maxDistance; i++) buckets[i] = new IntArrayList();
+
+        for (int i = 0; i < borderDistances.length; i++) {
+            if (borderDistances[i] == 0) buckets[0].add(i);
         }
 
-        while (!queue.isEmpty()) {
-            int currentIndex = queue.poll();
-            int currentDistance = this.borderDistances[currentIndex];
-            if (currentDistance >= maxDistance && currentDistance < 1000) continue;
+        for (short curDist = 0; curDist < maxDistance; curDist++) {
+            IntArrayList bucket = buckets[curDist];
+            for (int idx = 0; idx < bucket.size(); idx++) {
+                int currentIndex = bucket.getInt(idx);
+                int currentDistance = borderDistances[currentIndex];
+                if (currentDistance != curDist) continue; // out of date
 
-            int bX = currentIndex % this.blockCountXZ;
-            int temp = currentIndex / this.blockCountXZ;
-            int bY = temp % this.blockCountY;
-            int bZ = temp / this.blockCountY;
+                // decode from index
+                int bX = currentIndex % this.blockCountXZ;
+                int temp = currentIndex / this.blockCountXZ;
+                int bY = temp % this.blockCountY;
+                int bZ = temp / this.blockCountY;
 
-            for (int[] neighbor : BORDER_NEIGHBORS) {
-                int nX = bX + neighbor[0],
-                    nY = bY + neighbor[1],
-                    nZ = bZ + neighbor[2];
-
-                if (nX < 0 || nX >= this.blockCountXZ ||
-                    nY < 0 || nY >= this.blockCountY ||
-                    nZ < 0 || nZ >= this.blockCountXZ) {
-                    continue;
-                }
-
-                int neighborIndex = index(nX, nY, nZ, this.blockCountXZ, this.blockCountY);
-                int newDistance = currentDistance + neighbor[3];
-
-                if (newDistance < this.borderDistances[neighborIndex]) {
-                    this.borderDistances[neighborIndex] = newDistance;
-                    queue.add(neighborIndex);
+                for (int[] neighbor : BORDER_NEIGHBORS) {
+                    int nX = bX + neighbor[0], nY = bY + neighbor[1], nZ = bZ + neighbor[2];
+                    if (nX < 0 || nX >= this.blockCountXZ || nY < 0 || nY >= this.blockCountY || nZ < 0 || nZ >= this.blockCountXZ) {
+                        continue;
+                    }
+                    int neighborIndex = index(nX, nY, nZ, blockCountXZ, blockCountY);
+                    int newDistance = currentDistance + neighbor[3];
+                    if (newDistance < borderDistances[neighborIndex]) {
+                        borderDistances[neighborIndex] = newDistance;
+                        if (newDistance < maxDistance) buckets[newDistance].add(neighborIndex);
+                    }
                 }
             }
         }

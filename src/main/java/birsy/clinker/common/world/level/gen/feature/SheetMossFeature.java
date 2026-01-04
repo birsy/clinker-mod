@@ -47,8 +47,12 @@ public class SheetMossFeature extends Feature<NoneFeatureConfiguration> {
             for (int j = 0; j < 6; j++) {
                 BlockState state = level.getBlockState(pos);
 
+                boolean isWaterOrEmpty = state.getFluidState().isEmpty() || state.getFluidState().is(Fluids.WATER);
                 // there is already a block here, skip the column check.
-                if (!state.canBeReplaced() || state.is(ClinkerBlocks.SHEET_MOSS) || state.is(ClinkerBlocks.LONG_SHEET_MOSS))
+                if (!state.canBeReplaced() ||
+                    state.is(ClinkerBlocks.SHEET_MOSS) ||
+                    state.is(ClinkerBlocks.LONG_SHEET_MOSS) ||
+                    !isWaterOrEmpty)
                     continue MOSS;
 
                 pos.move(0, 1, 0);
@@ -58,12 +62,14 @@ public class SheetMossFeature extends Feature<NoneFeatureConfiguration> {
                     pos.move(0, -1, 0);
                     boolean placeLong = Math.sqrt((xOffset * xOffset) + (zOffset * zOffset)) + (random.nextDouble() * 2 - 1) < 2;
                     if (placeLong) {
-                        placeLong = level.getBlockState(pos.move(0, -1, 0)).canBeReplaced();
+                        BlockState belowState = level.getBlockState(pos.move(0, -1, 0));
+                        boolean isBelowWaterOrEmpty = belowState.getFluidState().isEmpty() || belowState.getFluidState().is(Fluids.WATER);
+                        placeLong = level.getBlockState(pos.move(0, -1, 0)).canBeReplaced() && isBelowWaterOrEmpty;
                         pos.move(0, 1, 0);
                     }
 
                     if (placeLong) {
-                        DoubleSheetMossBlock.placeAt(level, ClinkerBlocks.LONG_SHEET_MOSS.get().defaultBlockState(), pos, 2);
+                        DoubleSheetMossBlock.placeAt(level, ClinkerBlocks.LONG_SHEET_MOSS.get().defaultBlockState(), pos.above(), 2);
                     } else {
                         if (level.getFluidState(pos).is(Fluids.WATER)) {
                             level.setBlock(pos, ClinkerBlocks.SHEET_MOSS.get().defaultBlockState().setValue(SheetMossBlock.WATERLOGGED, true), 2);

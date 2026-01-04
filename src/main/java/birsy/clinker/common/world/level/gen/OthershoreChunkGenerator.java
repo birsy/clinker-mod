@@ -211,7 +211,8 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         });
 
         NoiseComputer waterfallPresenceComputer = new NoiseComputer("waterfall_presence", CacheType.INTERPOLATED_COARSE, (x, y, z, context) -> {
-            double presence = -1;
+            NoiseComputerExecutor executor = context.noiseComputerExecutor();
+            double presence = Math.clamp(executor.compute(x, y, z, OthershoreNoiseComputers.BASE_NOISE_2D[4]) - 0.3, 0, 1) * 2;
             for (WorldFeature worldFeature : worldFeaturesInChunk) {
                 presence = worldFeature.modifyWaterfallPresence(x, y, z, presence, context);
             }
@@ -219,6 +220,8 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         });
 
         NoiseComputer flattenedFinalDensity = new NoiseComputer("final_density_flattened", CacheType.DIRECT, finalDensityComputer::compute);
+        // initialize noise values
+        noiseExecutor.compute(chunk.getPos().getMinBlockX(), chunk.getMinBuildHeight(), chunk.getPos().getMinBlockZ(), flattenedFinalDensity);
         fluidMap.precomputeValues(flattenedFinalDensity, waterfallPresenceComputer);
 
         Heightmap heightmapOceanFloor = chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.OCEAN_FLOOR_WG);

@@ -6,6 +6,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public interface FluidMap {
     BlockState AIR = Blocks.AIR.defaultBlockState();
+
     default void precomputeValues(NoiseComputer finalDensityComputer, NoiseComputer waterfallPresenceComputer) {}
     double getBorderDensity(int localX, int localY, int localZ);
     BlockState getFluidState(int x, int y, int z);

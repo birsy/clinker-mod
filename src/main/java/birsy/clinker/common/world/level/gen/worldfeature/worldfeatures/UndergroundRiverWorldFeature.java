@@ -142,9 +142,9 @@ public class UndergroundRiverWorldFeature extends WorldFeature {
                 }
         );
 
-        Clinker.LOGGER.info("River generated starting at {} {} {} and ending at {} {} {}",
-                riverShape.getFirst().getX(), riverShape.getFirst().getY(), riverShape.getFirst().getZ(),
-                riverShape.getLast().getX(), riverShape.getLast().getY(), riverShape.getLast().getZ());
+//        Clinker.LOGGER.info("River generated starting at {} {} {} and ending at {} {} {}",
+//                riverShape.getFirst().getX(), riverShape.getFirst().getY(), riverShape.getFirst().getZ(),
+//                riverShape.getLast().getX(), riverShape.getLast().getY(), riverShape.getLast().getZ());
         return true;
     }
 
@@ -349,7 +349,7 @@ public class UndergroundRiverWorldFeature extends WorldFeature {
         double radius = context.noiseComputerExecutor().compute(x, y, z, this.riverRadiusComputer);
         int yDiff = y - (int) coordinates.riverHeight();
         if (yDiff > radius * 3 || yDiff < -radius * 2 || Math.abs(coordinates.signedHorizontalDistance) > radius) return currentValue;
-        return Mth.clampedMap(Math.abs(coordinates.signedHorizontalDistance), 0, radius, 2.5, 0.5);
+        return Math.max(Mth.clampedMap(Math.abs(coordinates.signedHorizontalDistance), 0, radius, 2.5, 0.5), currentValue);
     }
 
     public RiverSpaceCoordinates getRiverSpaceCoordinates(int x, int y, int z, boolean ignoreY) {

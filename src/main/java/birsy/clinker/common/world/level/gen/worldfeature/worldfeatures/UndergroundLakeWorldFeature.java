@@ -5,6 +5,7 @@ import birsy.clinker.common.world.level.gen.OthershoreNoiseComputers;
 import birsy.clinker.common.world.level.gen.noise.*;
 import birsy.clinker.common.world.level.gen.worldfeature.MetaChunk;
 import birsy.clinker.common.world.level.gen.worldfeature.WorldFeature;
+import birsy.clinker.core.Clinker;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelAccessor;
@@ -41,7 +42,7 @@ public class UndergroundLakeWorldFeature extends WorldFeature {
 
     @Override
     public boolean within(int minX, int minZ, int maxX, int maxZ) {
-        int checkRadius = this.radius * 3;
+        int checkRadius = Mth.ceil(this.radius * 1.5) + 32;
         return centerX > minX - checkRadius &&
                centerX < maxX + checkRadius &&
                centerZ > minZ - checkRadius &&
@@ -50,7 +51,7 @@ public class UndergroundLakeWorldFeature extends WorldFeature {
 
     @Override
     public boolean plan(LevelAccessor level, MetaChunk metaChunk, RandomSource randomSource, NoiseComputerContext context) {
-        this.radius = randomSource.nextInt(20, 70);
+        this.radius = randomSource.nextInt(10, 30) + randomSource.nextInt(10, 30);
         this.centerX = randomSource.nextInt(metaChunk.minX(), metaChunk.maxX());
         this.centerZ = randomSource.nextInt(metaChunk.minZ(), metaChunk.maxZ());
 
@@ -58,7 +59,7 @@ public class UndergroundLakeWorldFeature extends WorldFeature {
         int maxFluidLevel = (int) surfaceHeight - 20;
         if (maxFluidLevel <= 0) return false;
         this.waterLevel = randomSource.nextInt(0, maxFluidLevel);
-
+        //Clinker.LOGGER.info("Lake generated at {} {} {} with radius {}", this.centerX, this.waterLevel, this.centerZ, this.radius);
         return true;
     }
 
@@ -82,6 +83,6 @@ public class UndergroundLakeWorldFeature extends WorldFeature {
         if (y > this.waterLevel + 15 || y < minY - 5)
             return currentFluidLevel;
 
-        return new FluidLevel(this.waterLevel, Blocks.WATER.defaultBlockState());
+        return new FluidLevel(this.waterLevel, this.centerX % 2 == 0 ? Blocks.WATER.defaultBlockState() : Blocks.LAVA.defaultBlockState());
     }
 }
