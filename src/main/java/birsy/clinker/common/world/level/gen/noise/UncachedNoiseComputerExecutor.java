@@ -1,9 +1,10 @@
 package birsy.clinker.common.world.level.gen.noise;
 
-public class UncachedNoiseComputerExecutor implements NoiseComputerExecutor {
+public class UncachedNoiseComputerExecutor extends NoiseComputerExecutor {
     private final NoiseComputerContext context;
 
-    public UncachedNoiseComputerExecutor(NoiseHolder noiseHolder) {
+    public UncachedNoiseComputerExecutor(int minX, int minY, int minZ, int chunkHeight, NoiseHolder noiseHolder) {
+        super(minX, minY, minZ, chunkHeight);
         this.context = new NoiseComputerContext(this, noiseHolder);
     }
 

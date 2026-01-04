@@ -1,25 +1,19 @@
 package birsy.clinker.common.world.level.gen.noise;
 
 import birsy.clinker.core.Clinker;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.util.Mth;
 
-import java.util.HashMap;
-import java.util.Map;
-
-public class CachedNoiseComputerExecutor implements NoiseComputerExecutor {
-    private final int minX, minY, minZ;
-    final int height;
-    private final Map<NoiseComputer, NoiseMap> noiseProcessorCaches;
+public class CachedNoiseComputerExecutor extends NoiseComputerExecutor {
+    private final Long2ObjectMap<NoiseMap> noiseProcessorCaches;
     private final NoiseComputerContext context, uncachedContext;
 
-    public CachedNoiseComputerExecutor(int minX, int minY, int minZ, int height, NoiseHolder noiseHolder) {
-        this.minX = minX;
-        this.minY = minY;
-        this.minZ = minZ;
-        this.height = height;
-        this.noiseProcessorCaches = new HashMap<>(16);
+    public CachedNoiseComputerExecutor(int minX, int minY, int minZ, int chunkHeight, NoiseHolder noiseHolder) {
+        super(minX, minY, minZ, chunkHeight);
+        this.noiseProcessorCaches = new Long2ObjectOpenHashMap<>(NoiseComputer.atomicID.intValue() + 16);
         this.context = new NoiseComputerContext(this, noiseHolder);
-        this.uncachedContext = new NoiseComputerContext(new UncachedNoiseComputerExecutor(noiseHolder), noiseHolder);
+        this.uncachedContext = new NoiseComputerContext(new UncachedNoiseComputerExecutor(minX, minY, minZ, chunkHeight, noiseHolder), noiseHolder);
     }
 
     @Override
@@ -27,11 +21,11 @@ public class CachedNoiseComputerExecutor implements NoiseComputerExecutor {
         int localX = x - minX, localY = y - minY, localZ = z - minZ;
         if (noiseProcessor.cacheType() == CacheType.NONE)
             return noiseProcessor.compute(x, y, z, this.context);
-        NoiseMap cache = noiseProcessorCaches.getOrDefault(noiseProcessor, null);
+        NoiseMap cache = noiseProcessorCaches.getOrDefault(noiseProcessor.id(), null);
         if (cache == null) {
             cache = noiseProcessor.cacheType().create(this);
             cache.fill(minX, minY, minZ, noiseProcessor, this.context);
-            noiseProcessorCaches.put(noiseProcessor, cache);
+            noiseProcessorCaches.put(noiseProcessor.id(), cache);
         }
         return cache.retrieve(localX, localY, localZ);
     }
