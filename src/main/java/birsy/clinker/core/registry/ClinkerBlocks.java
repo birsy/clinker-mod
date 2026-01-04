@@ -280,7 +280,8 @@ public class ClinkerBlocks
     public static final DeferredBlock<OthershorePlantBlock> SALTMOSS_SPROUTS = createBlock("saltmoss_sprouts", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_RED).sound(SoundType.HANGING_ROOTS)));
     public static final DeferredBlock<OthershorePlantBlock> DRIED_SALTMOSS_SPROUTS = createBlock("dried_saltmoss_sprouts", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_RED).sound(SoundType.HANGING_ROOTS)));
     public static final DeferredBlock<SaltmossBlossomBlock> SALTMOSS_BLOSSOM = createBlock("saltmoss_blossom", () -> new SaltmossBlossomBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_RED).sound(SoundType.HANGING_ROOTS)));
-    public static final DeferredBlock<OthershorePlantBlock> YARROW = createBlock("yarrow", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_YELLOW).sound(SoundType.HANGING_ROOTS)));
+    public static final DeferredBlock<OthershorePlantBlock> YARROW = createBlock("yarrow", () -> new SaltmossBlossomBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_YELLOW).sound(SoundType.HANGING_ROOTS)));
+    public static final DeferredBlock<OthershorePlantBlock> CAVE_SPROUTS = createBlock("cave_sprouts", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_BROWN).sound(SoundType.AZALEA_LEAVES)));
 
     private static Supplier<BlockBehaviour.Properties> STROMATOLITE_PROPERTIES = () -> {
         BlockBehaviour.Properties props = BlockBehaviour.Properties.ofFullCopy(Blocks.CRIMSON_HYPHAE)

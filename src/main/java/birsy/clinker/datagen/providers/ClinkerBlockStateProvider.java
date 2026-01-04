@@ -484,6 +484,19 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
                     1, false, false
             );
             this.flatBlockItem(YARROW.get());
+
+            String caveSproutsName = name(CAVE_SPROUTS.get());
+            this.simpleBlockWithVariationAndTransformation(
+                    CAVE_SPROUTS.get(),
+                    (i) -> this.models().cross(caveSproutsName + (i == 0 ? "" : "_" + i),
+                                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + caveSproutsName + (i == 0 ? "" : "_" + i)))
+                            .renderType("cutout"),
+                    (i) -> this.crossMirrored(caveSproutsName + (i == 0 ? "" : "_" + i) + "_mirrored",
+                                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + caveSproutsName + (i == 0 ? "" : "_" + i)))
+                            .renderType("cutout"),
+                    2, false, false
+            );
+            this.flatBlockItem(CAVE_SPROUTS.get());
         }
 
         // stromatolites

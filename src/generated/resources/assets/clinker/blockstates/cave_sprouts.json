@@ -1,0 +1,18 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "clinker:block/cave_sprouts"
+      },
+      {
+        "model": "clinker:block/cave_sprouts_mirrored"
+      },
+      {
+        "model": "clinker:block/cave_sprouts_1"
+      },
+      {
+        "model": "clinker:block/cave_sprouts_1_mirrored"
+      }
+    ]
+  }
+}

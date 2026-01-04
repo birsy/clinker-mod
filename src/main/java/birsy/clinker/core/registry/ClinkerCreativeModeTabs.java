@@ -141,6 +141,7 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(DRIED_SALTMOSS_SPROUTS.get());
         pOutput.accept(SALTMOSS_BLOSSOM.get());
         pOutput.accept(YARROW.get());
+        pOutput.accept(CAVE_SPROUTS.get());
 
         pOutput.accept(STROMATOLITE.get());
 
