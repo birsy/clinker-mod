@@ -53,6 +53,15 @@ public class ClinkerBlocks
 
     public static final DeferredBlock<Block> MUD = createBlock("mud", () -> new SulfricMudBlock(Block.Properties.of().mapColor(MapColor.TERRACOTTA_BROWN).strength(0.5F).sound(SoundType.WET_GRASS)));
 
+    public static final DeferredBlock<Block> BARRIERROCK = createBlock("barrierrock", () -> new Block(
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.TERRACOTTA_BROWN)
+                    .strength(80.0F, 6.0F)
+                    .sound(SoundType.POLISHED_DEEPSLATE)
+                    .requiresCorrectToolForDrops()
+            )
+    );
+
     //Brimstone
     public static final DeferredBlock<Block> BRIMSTONE = createBlock("brimstone", () -> new Block(
             BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BROWN)

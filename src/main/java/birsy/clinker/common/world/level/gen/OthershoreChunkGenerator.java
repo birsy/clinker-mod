@@ -256,7 +256,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                                                int minSurfaceHeight, int maxSurfaceHeight,
                                                int minX, int minY, int minZ) {
 //        if (true) {
-//            NoiseField finalDensityField = new InterpolatedNoiseField(chunkHeight, 1, 1, 0);
+//            NoiseField finalDensityField = new InterpolatedNoiseField(chunk.getHeight(), 1, 1, 0);
 //            double[] finalDensityFieldArray = finalDensityField.array();
 //            Arrays.fill(finalDensityFieldArray, 100);
 //            return finalDensityField;
@@ -328,12 +328,36 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
     }
 
     @Override
-    public void buildSurface(WorldGenRegion level, StructureManager structureManager, RandomState random, ChunkAccess chunk) {
+    public void buildSurface(WorldGenRegion level, StructureManager structureManager, RandomState randomState, ChunkAccess chunk) {
         int minX = chunk.getPos().getMinBlockX(),
             minY = chunk.getMinBuildHeight(),
             minZ = chunk.getPos().getMinBlockZ();
+        int chunkHeight = chunk.getHeight();
+        SeededNoiseHolder noiseHolder = ((SeededNoiseHolderHolder) (Object) randomState).clinker$noiseHolder();
+        NoiseFieldCache noiseFieldCache = new NoiseFieldCache(minX, minY, minZ, chunkHeight, noiseHolder);
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(minX, minY, minZ);
-        createBedrockLayer(chunk, random, pos, minX, minY, minZ);
+
+        createBedrockLayer(chunk, randomState, pos, minX, minY, minZ);
+
+        NoiseField field = noiseFieldCache.fillNoiseField(ClinkerNoiseComputers.BASE_NOISE_2D[3]);
+        for (int x = 0; x < 16; x++) {
+            pos.setX(minX + x);
+            for (int z = 0; z < 16; z++) {
+                pos.setZ(minZ + z);
+                double noiseValue = Math.abs(field.retrieve(x, 0, z));
+                for (int y = -3; y <= 3; y++) {
+                    pos.setY(y);
+                    double mixFactor = 1.0 - (Math.abs(y) / 4.0);
+                    if (!chunk.getBlockState(pos).isSolid()) {
+                        mixFactor -= 0.5;
+                    }
+                    if (noiseValue < mixFactor) {
+                        chunk.setBlockState(pos, ClinkerBlocks.BARRIERROCK.get().defaultBlockState(), false);
+                    }
+                }
+            }
+        }
+
     }
 
     private void createBedrockLayer(ChunkAccess chunk, RandomState random, BlockPos.MutableBlockPos pos, int minX, int minY, int minZ) {

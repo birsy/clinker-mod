@@ -39,6 +39,7 @@ public class ClinkerBlockTagProvider extends BlockTagsProvider {
         othershoreSoil.add(ClinkerBlocks.ASH_LAYER.get());
         othershoreSoil.add(ClinkerBlocks.ASHEN_REGOLITH.get());
         othershoreSoil.add(ClinkerBlocks.BRIMSTONE.get());
+        othershoreSoil.add(ClinkerBlocks.BARRIERROCK.get());
         othershoreSoil.add(ClinkerBlocks.SALTMOSS.get());
         othershoreSoil.add(ClinkerBlocks.CALC.get());
         othershoreSoil.add(ClinkerBlocks.MUD.get());
@@ -65,21 +66,24 @@ public class ClinkerBlockTagProvider extends BlockTagsProvider {
         usesShovel.add(ClinkerBlocks.SALTMOSS.get());
         usesShovel.add(ClinkerBlocks.SALT_GRAVEL.get());
         usesShovel.add(ClinkerBlocks.SALTPETRE_LEACHED_DIRT.get());
-        // stones
+        
         for (DeferredHolder<Block, ? extends Block> block : ClinkerBlocks.BLOCKS.getEntries()) {
             String name = block.getRegisteredName().toLowerCase();
             if (name.contains("brimstone") ||
                 name.contains("calc") ||
                 name.contains("calamine") ||
                 name.contains("capstone") ||
-                name.contains("shale")) {
+                name.contains("shale") ||
+                name.contains("barrierrock")) {
                 usesPickaxe.add(block.get());
             }
-
             if (name.contains("ash")) {
                 usesShovel.add(block.get());
             }
         }
+
+        IntrinsicTagAppender<Block> needsDiamondTool = this.tag(BlockTags.NEEDS_DIAMOND_TOOL).replace(false);
+        needsDiamondTool.add(ClinkerBlocks.BARRIERROCK.get());
 
         IntrinsicTagAppender<Block> isDirt = this.tag(BlockTags.DIRT).replace(false);
         isDirt.add(ClinkerBlocks.SALTPETRE_LEACHED_DIRT.get());

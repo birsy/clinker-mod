@@ -6,6 +6,8 @@ import birsy.clinker.common.world.level.gen.system.noise.SeededNoiseHolder;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldTypes;
 import birsy.clinker.common.world.level.gen.system.worldfeature.WorldFeature;
+import birsy.clinker.core.Clinker;
+import birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.Util;
 import net.minecraft.core.Holder;
@@ -17,10 +19,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.chunk.ChunkAccess;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class SurfaceShaperSystem {
     static final int BIOME_BLUR_KERNEL_SIZE = 5;
@@ -113,35 +112,41 @@ public class SurfaceShaperSystem {
         });
 
         // determine bounds
-        int lowerBound = minY + chunkHeight, upperBound = minY;
+        int lowerBound = Integer.MAX_VALUE, upperBound = Integer.MIN_VALUE;
         for (Holder<Biome> biomeHolder : surfaceBiomesInChunk) {
             SurfaceShaper shaper = getSurfaceShaper(biomeHolder);
-            lowerBound = Math.min(lowerBound, minSurfaceHeight + shaper.lowerBound());
-            upperBound = Math.max(upperBound, maxSurfaceHeight + shaper.upperBound());
+            lowerBound = Math.min(lowerBound, shaper.lowerBound());
+            upperBound = Math.max(upperBound, shaper.upperBound());
         }
         // clamp
-        lowerBound = Math.max(lowerBound, minY);
-        upperBound = Math.min(lowerBound, chunkHeight-1);
+        lowerBound = Math.max(minSurfaceHeight + lowerBound, minY);
+        upperBound = Math.min(maxSurfaceHeight + lowerBound, chunkHeight-1);
 
         // initialize surface density field
         NoiseField surfaceDensityField = NoiseFieldTypes.COARSE.create(chunkHeight, 0);
         double[] surfaceDensityFieldArray = surfaceDensityField.array();
         // initialize surface density w/ estimate from base surface height
-        surfaceDensityField.byBlock(0, lowerBound-1,
+        Arrays.fill(surfaceDensityFieldArray, 0);
+
+        surfaceDensityField.byBlock(0, lowerBound - minY - 1,
                 (index, x, y, z) -> surfaceDensityFieldArray[index] = (y + minY) - baseSurfaceHeight.retrieve(x, y, z)
         );
-        surfaceDensityField.byBlock(upperBound+1, chunkHeight-1,
+        surfaceDensityField.byBlock(upperBound - minY + 1, chunkHeight - 1,
                 (index, x, y, z) -> surfaceDensityFieldArray[index] = (y + minY) - baseSurfaceHeight.retrieve(x, y, z)
         );
 
         // shape per biome
         for (Holder<Biome> biomeHolder : surfaceBiomesInChunk) {
             SurfaceShaper shaper = getSurfaceShaper(biomeHolder);
+            shaper.prefillNoiseFields(cache, lowerBound, upperBound);
+        }
+        for (Holder<Biome> biomeHolder : surfaceBiomesInChunk) {
+            SurfaceShaper shaper = getSurfaceShaper(biomeHolder);
             NoiseField biomeWeightField = biomeWeightFields[biomeToIndex.get(biomeHolder)];
             surfaceDensityField.byBlock(lowerBound - minY, upperBound - minY,
                     (index, x, y, z) -> {
                         double weight = biomeWeightField.retrieve(x, y, z) * totalWeightField.retrieve(x, y, z);
-                        surfaceDensityFieldArray[index] +=
+                        surfaceDensityFieldArray[index] =
                                 shaper.surfaceDensity(x + minX, y + minY, z + minZ, weight, cache.context);
                     }
             );

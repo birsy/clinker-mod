@@ -68,7 +68,7 @@ public class ClinkerBlockLootTableProvider extends BlockLootSubProvider {
                                 )
                 )
         );
-
+        this.add(ClinkerBlocks.BARRIERROCK.get(), createShearsOrSilkTouchOnlyTable(ClinkerBlocks.BARRIERROCK.get()));
 
         // autogenerate everything else!
         for (Block block : this.getKnownBlocks()) {

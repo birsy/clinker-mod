@@ -35,6 +35,28 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
             this.flatBlockItem(MORTAR.get(), modLoc("item/mortar"));
         }
 
+        // barrierrock
+        {
+            String barrierRockName = name(BARRIERROCK.get());
+            this.simpleBlockWithVariationAndTransformation(BARRIERROCK.get(),
+                    (i) -> this.models().cubeColumn(
+                        barrierRockName,
+                        this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + barrierRockName),
+                        this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + barrierRockName + "_end")
+                    ),
+                    (i) -> this.models().withExistingParent(
+                            barrierRockName + "_mirrored",
+                            ModelProvider.BLOCK_FOLDER + "/cube_column_mirrored")
+                            .texture("side", this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + barrierRockName))
+                            .texture("end",  this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + barrierRockName + "_end")),
+                    1, false, true
+            );
+            this.simpleBlockItem(
+                    BARRIERROCK.get(),
+                    this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + barrierRockName))
+            );
+        }
+
         //brimstone
         {
             ResourceLocation brimstoneTop = this.modLoc(ModelProvider.BLOCK_FOLDER + "/brimstone_end");

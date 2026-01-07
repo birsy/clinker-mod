@@ -3,6 +3,8 @@ package birsy.clinker.common.world.level.gen.system.noise;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
 import birsy.clinker.core.registry.ClinkerRegistries;
 
+import java.util.function.Supplier;
+
 public class NoiseFieldCache {
     final int minX, minY, minZ;
     final int chunkHeight;
@@ -20,6 +22,9 @@ public class NoiseFieldCache {
 
     public NoiseField fillNoiseField(NoiseComputer computer) {
         return fillNoiseField(minY, chunkHeight-1, computer);
+    }
+    public NoiseField fillNoiseField(Supplier<NoiseComputer> computer) {
+        return this.fillNoiseField(computer.get());
     }
 
     public NoiseField fillNoiseField(int startY, int endY, NoiseComputer computer) {
@@ -41,6 +46,9 @@ public class NoiseFieldCache {
         }
 
         return fieldCache[computer.id];
+    }
+    public NoiseField fillNoiseField(int startY, int endY, Supplier<NoiseComputer> computer) {
+        return this.fillNoiseField(startY, endY, computer.get());
     }
 
     protected NoiseField createNoiseField(NoiseComputer computer) {

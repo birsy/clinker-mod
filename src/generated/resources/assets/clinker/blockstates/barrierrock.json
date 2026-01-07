@@ -1,0 +1,36 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "clinker:block/barrierrock"
+      },
+      {
+        "model": "clinker:block/barrierrock_mirrored"
+      },
+      {
+        "model": "clinker:block/barrierrock",
+        "y": 90
+      },
+      {
+        "model": "clinker:block/barrierrock_mirrored",
+        "y": 90
+      },
+      {
+        "model": "clinker:block/barrierrock",
+        "y": 180
+      },
+      {
+        "model": "clinker:block/barrierrock_mirrored",
+        "y": 180
+      },
+      {
+        "model": "clinker:block/barrierrock",
+        "y": 270
+      },
+      {
+        "model": "clinker:block/barrierrock_mirrored",
+        "y": 270
+      }
+    ]
+  }
+}

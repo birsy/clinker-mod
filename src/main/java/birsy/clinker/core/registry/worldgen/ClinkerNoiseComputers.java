@@ -1,7 +1,9 @@
 package birsy.clinker.core.registry.worldgen;
 
+import birsy.clinker.common.world.level.gen.OthershoreBiomeSource;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseComputer;
-import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
+import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldFiller;
+import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldType;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldTypes;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerRegistries;
@@ -13,20 +15,6 @@ import java.util.function.Supplier;
 
 public class ClinkerNoiseComputers {
     public static final DeferredRegister<NoiseComputer> NOISE_COMPUTERS = DeferredRegister.create(ClinkerRegistries.NOISE_COMPUTER_REGISTRY, Clinker.MOD_ID);
-
-    public static final Supplier<NoiseComputer> DENSITY_TEST = NOISE_COMPUTERS.register(
-            "density_test",
-            () -> new NoiseComputer(
-                    () -> NoiseFieldTypes.FINE,
-                    (dependencies, registry) -> {
-                        registry.registerNoise("wobble");
-                    },
-                    (x, y, z, context) -> {
-                        double wobble = context.sample("wobble", x / 32.0, y / 64.0, z / 32.0);
-                        return y - 64 + wobble * 32;
-                    }
-            )
-    );
 
     public static final Supplier<NoiseComputer> WATERFALL_PRESENCE = NOISE_COMPUTERS.register(
             "waterfall_presence",
@@ -46,13 +34,73 @@ public class ClinkerNoiseComputers {
     public static final Supplier<NoiseComputer> BASE_SURFACE_HEIGHT = NOISE_COMPUTERS.register(
             "base_surface_height",
             () -> new NoiseComputer(
-                    () -> NoiseFieldTypes.COARSE_2D,
+                    () -> NoiseFieldTypes.VERY_COARSE_2D,
                     (dependencies, registry) -> {
-                        registry.registerNoise("elevation");
+                        registry.registerNoise("base_middle_shelf",
+                                2, 1.0, 4.0, 0.7, 0.0);
+                        registry.registerNoise("base_upper_shelf");
+                        registry.registerNoise("base_seas");
+                        registry.registerNoise("base_erosion");
                     },
                     (x, y, z, context) -> {
-                        double value = context.sample("elevation", x / 128.0, z / 128.0);
-                        return 64 + Mth.map(value, -1, 1, -10, 64);
+                        double scale = 1;
+                        double frequency = (1 / 500.0) / scale;
+                        double val;
+                        double erosion = context.sample("base_erosion", x * frequency, z * frequency);
+                        erosion = Mth.clampedMap(erosion, -1, 1, 0, 1);
+
+                        double middleShelf = context.sample("base_middle_shelf", x * frequency * 0.25, z * frequency * 0.25);
+                        middleShelf = middleShelf * (1 / Mth.clampedMap(erosion, 0, 1, 0.5, 1));
+                        middleShelf = Mth.clampedMap(middleShelf, -1, -0.1, 0, 1);
+
+                        double seas = context.sample("base_seas", x * frequency * 0.2, z * frequency * 0.2) - 0.5;
+                        seas = seas * (1 / Mth.clampedMap(erosion, 0, 1, 0.1, 0.2));
+                        seas = Math.clamp(seas / 2.0 + 0.5, 0, 1);
+
+                        val = Mth.clampedMap(middleShelf, 0, 1, 25 + OthershoreBiomeSource.SEA_HEIGHT, 5 + OthershoreBiomeSource.MIDDLE_SHELF_HEIGHT);
+                        val = Mth.lerp(seas, val, OthershoreBiomeSource.SEA_HEIGHT - 3);
+
+                        return ((val - OthershoreBiomeSource.SEA_HEIGHT) * scale) + OthershoreBiomeSource.SEA_HEIGHT;
+                    }
+            )
+    );
+
+    public static final Supplier<NoiseComputer> COHESION = NOISE_COMPUTERS.register(
+            "cohesion",
+            () -> new NoiseComputer(
+                    () -> NoiseFieldTypes.COARSE_2D,
+                    (dependencies, registry) -> {
+                        registry.registerNoise("cohesion");
+                    },
+                    (x, y, z, context) -> {
+                        double value = context.sample("cohesion", x / 150.0, z / 150.0);
+                        value = Mth.map(value, -1, 1, 0, 1);
+                        return value * value * value;
+                    }
+            )
+    );
+
+    public static final Supplier<NoiseComputer> TEST_SURFACE = NOISE_COMPUTERS.register(
+            "test_surface",
+            () -> new NoiseComputer(
+                    () -> NoiseFieldTypes.COARSE,
+                    (dependencies, registry) -> {
+                        dependencies.addDependency(BASE_SURFACE_HEIGHT);
+                        dependencies.addDependency(COHESION);
+                        registry.registerNoise("surface");
+                        registry.registerNoise("surface_detail");
+                    },
+                    (x, y, z, context) -> {
+                        double surfaceHeight = context.retrieve(BASE_SURFACE_HEIGHT, x, y, z);
+                        double cohesion = context.retrieve(COHESION, x, y, z);
+                        double surfaceNoise = context.sample("surface",
+                                x / 64.0, y / 128.0, z / 64.0
+                        );
+                        double surfaceDetailNoise = context.sample("surface_detail",
+                                x / 16.0, y / 8.0, z / 16.0
+                        );
+                        surfaceNoise += surfaceDetailNoise * 0.3;
+                        return y - surfaceHeight + surfaceNoise * 32 * cohesion;
                     }
             )
     );
@@ -195,4 +243,46 @@ public class ClinkerNoiseComputers {
                     }
             )
     );
+
+    // reusable noise arrays
+    public static final Supplier<NoiseComputer>[] BASE_NOISE = baseNoiseArray("base_noise", 10, false);
+    public static final Supplier<NoiseComputer>[] BASE_NOISE_ALT = baseNoiseArray("base_noise_alt", 10, false);
+    public static final Supplier<NoiseComputer>[] BASE_NOISE_2D = baseNoiseArray("base_noise_2d", 10, true);
+    public static final Supplier<NoiseComputer>[] BASE_NOISE_2D_ALT = baseNoiseArray("base_noise_2d_alt", 10, true);
+    private static Supplier<NoiseComputer> baseNoise(String name, int index, double horizontalFrequency, double verticalFrequency, boolean twoDimensional) {
+        String concatenatedName = name + "_" + index;
+        Supplier<NoiseFieldType> fieldType;
+        boolean useHighResCache = horizontalFrequency < 4;
+        if (twoDimensional) {
+            fieldType = useHighResCache ?
+                    (() -> NoiseFieldTypes.FINE_2D) :
+                    (() -> NoiseFieldTypes.COARSE_2D);
+        } else {
+            fieldType = useHighResCache ?
+                    (() -> NoiseFieldTypes.FINE) :
+                    (() -> NoiseFieldTypes.COARSE);
+        }
+        NoiseFieldFiller filler;
+        if (twoDimensional) {
+            filler = (x, y, z, context) ->
+                    context.sample(concatenatedName, x * horizontalFrequency, z * horizontalFrequency);
+        } else {
+            filler = (x, y, z, context) ->
+                    context.sample(concatenatedName, x * horizontalFrequency, y * verticalFrequency, z * horizontalFrequency);
+        }
+        return NOISE_COMPUTERS.register(
+                concatenatedName,
+                () -> new NoiseComputer(
+                        fieldType, (dependencies, registry) -> registry.registerNoise(concatenatedName), filler
+                )
+        );
+    }
+    private static Supplier<NoiseComputer>[] baseNoiseArray(String name, int length, boolean twoDimensional) {
+        Supplier<NoiseComputer>[] noiseComputers = new Supplier[length];
+        for (int i = 0; i < length; i++) {
+            int size = 1 << i;
+            noiseComputers[i] = baseNoise(name, i, 1.0 / size, 0.5 / size, twoDimensional);
+        }
+        return noiseComputers;
+    }
 }
