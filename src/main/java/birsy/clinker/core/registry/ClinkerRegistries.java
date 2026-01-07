@@ -3,27 +3,20 @@ package birsy.clinker.core.registry;
 import birsy.clinker.common.alchemy.knowledge.type.AlchemyKnowledgeType;
 import birsy.clinker.common.page.PageElementType;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseComputer;
-import birsy.clinker.common.world.level.gen.system.surface.BiomeSurfaceDecorator;
-import birsy.clinker.common.world.level.gen.system.surface.SurfaceDecorator;
-import birsy.clinker.common.world.level.gen.system.surface.SurfaceDecorators;
+import birsy.clinker.common.world.level.gen.system.surface.decorator.BiomeSurfaceDecorator;
+import birsy.clinker.common.world.level.gen.system.surface.decorator.SurfaceDecorators;
+import birsy.clinker.common.world.level.gen.system.surface.shaper.BiomeSurfaceShaper;
+import birsy.clinker.common.world.level.gen.system.surface.shaper.SurfaceShapers;
 import birsy.clinker.common.world.level.gen.system.worldfeature.WorldFeatureType;
 import birsy.clinker.core.Clinker;
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectMaps;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.level.biome.Biome;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
 import net.neoforged.neoforge.registries.RegistryBuilder;
 import net.neoforged.neoforge.registries.callback.AddCallback;
 import net.neoforged.neoforge.registries.callback.BakeCallback;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @EventBusSubscriber(modid = Clinker.MOD_ID)
 public class ClinkerRegistries {
@@ -89,6 +82,33 @@ public class ClinkerRegistries {
         }
     }
 
+    public static final ResourceKey<Registry<BiomeSurfaceShaper>> SURFACE_SHAPER_REGISTRY_KEY =
+            ResourceKey.createRegistryKey(Clinker.resource("surface_shaper"));
+    public static final Registry<BiomeSurfaceShaper> SURFACE_SHAPER_REGISTRY =
+            new RegistryBuilder<>(SURFACE_SHAPER_REGISTRY_KEY)
+                    .sync(false)
+                    .callback(SurfaceShaperCallbacks.INSTANCE)
+                    .create();
+    static class SurfaceShaperCallbacks implements BakeCallback<BiomeSurfaceShaper> {
+        static final SurfaceShaperCallbacks INSTANCE = new SurfaceShaperCallbacks();
+        @Override
+        public void onBake(Registry<BiomeSurfaceShaper> registry) {
+            for (BiomeSurfaceShaper biomeSurfaceShaper : registry) {
+                if (biomeSurfaceShaper.biome().left().isPresent()) {
+                    SurfaceShapers.shaperByBiome.put(
+                            biomeSurfaceShaper.biome().left().get(),
+                            biomeSurfaceShaper.shaper()
+                    );
+                } else if (biomeSurfaceShaper.biome().right().isPresent()) {
+                    SurfaceShapers.shaperByBiomeTag.put(
+                            biomeSurfaceShaper.biome().right().get(),
+                            biomeSurfaceShaper.shaper()
+                    );
+                }
+            }
+        }
+    }
+
     @SubscribeEvent
     public static void registerRegistries(NewRegistryEvent event) {
         event.register(WORLD_FEATURE_REGISTRY);
@@ -96,5 +116,6 @@ public class ClinkerRegistries {
         event.register(ALCHEMY_KNOWLEDGE_TYPE_REGISTRY);
         event.register(NOISE_COMPUTER_REGISTRY);
         event.register(SURFACE_DECORATOR_REGISTRY);
+        event.register(SURFACE_SHAPER_REGISTRY);
     }
 }

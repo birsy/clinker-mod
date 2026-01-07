@@ -1,9 +1,7 @@
 package birsy.clinker.common.world.level.gen.system.noise;
 
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
-import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerRegistries;
-import net.minecraft.core.Holder;
 
 public class NoiseFieldCache {
     final int minX, minY, minZ;
@@ -37,7 +35,7 @@ public class NoiseFieldCache {
             NoiseField field = fieldCache[dependency.id];
             if (field == null) {
                 field = createNoiseField(dependency);
-                field.fill(localStartY, localEndY, minX, minY, minZ, dependency.filler, context);
+                field.fill(localStartY, localEndY, minX, minY, minZ, context, dependency.filler);
             }
             fieldCache[dependency.id] = field;
         }

@@ -1,13 +1,15 @@
-package birsy.clinker.common.world.level.gen.system;
+package birsy.clinker.common.world.level.gen.system.surface.shaper;
 
-import birsy.clinker.core.registry.worldgen.ClinkerBiomes;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
 
-import java.util.HashMap;
 import java.util.Map;
 
-public class BiomeShapers {
+public class SurfaceShapers {
+    public static final Map<ResourceKey<Biome>, SurfaceShaper> shaperByBiome = new Object2ObjectOpenHashMap<>();
+    public static final Map<TagKey<Biome>, SurfaceShaper> shaperByBiomeTag = new Object2ObjectOpenHashMap<>();
 //    private static final Map<ResourceKey<Biome>, BiomeShaper> registry = new HashMap<>();
 //    private static final BiomeShaper DEFAULT =
 //            (x, y, z, biomeContribution, context) -> y - context.noiseComputerExecutor().compute(x, y, z, OthershoreNoiseComputers.SURFACE_HEIGHT_COMPUTER);

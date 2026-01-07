@@ -17,9 +17,9 @@ public abstract class NoiseField {
 
     public abstract double retrieve(int x, int y, int z);
 
-    public abstract void fill(int startY, int endY, int minX, int minY, int minZ, NoiseFieldFiller function, NoiseContext context);
-    public void fill(int minX, int minY, int minZ, NoiseFieldFiller function, NoiseContext context) {
-        this.fill(0, maxY, minX, minY, minZ, function, context);
+    public abstract void fill(int startY, int endY, int minX, int minY, int minZ, NoiseContext context, NoiseFieldFiller function);
+    public void fill(int minX, int minY, int minZ, NoiseContext context, NoiseFieldFiller function) {
+        this.fill(0, maxY, minX, minY, minZ, context, function);
     }
 
     public abstract void byIndex(int minLocalY, int maxLocalY, NoiseFieldVisitors.IndexVisitor visitor);

@@ -26,7 +26,7 @@ public final class Direct2DNoiseField extends NoiseField2D {
     }
     
     @Override
-    public void fill(int startY, int endY, int minX, int minY, int minZ, NoiseFieldFiller filler, NoiseContext context) {
+    public void fill(int startY, int endY, int minX, int minY, int minZ, NoiseContext context, NoiseFieldFiller filler) {
         if (filled) return;
         int index = 0;
         for (int z = 0; z < paddedWidth; z++) {

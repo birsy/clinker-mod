@@ -4,6 +4,7 @@ import birsy.clinker.common.world.level.gen.system.noise.FluidFieldNoiseFieldCac
 import birsy.clinker.common.world.level.gen.system.noise.NoiseComputer;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
 import birsy.clinker.common.world.level.gen.system.worldfeature.WorldFeature;
+import birsy.clinker.core.Clinker;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.Util;
 import net.minecraft.core.Direction;
@@ -16,7 +17,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public class BFSBorderFluidField extends CellularFluidField {
-    static final double VERTICAL_WEIGHT_MULTIPLIER = 1.5;
+    static final double VERTICAL_WEIGHT_MULTIPLIER = 1.25;
     static final int WEIGHT_PER_BLOCK = 10;
     static final int MAX_WEIGHT = (int) Math.round(Math.sqrt(3) * WEIGHT_PER_BLOCK * VERTICAL_WEIGHT_MULTIPLIER);
     static final int[] NEIGHBOR_WEIGHTS = Util.make(() -> {
@@ -51,7 +52,7 @@ public class BFSBorderFluidField extends CellularFluidField {
         int bY = localY + this.paddingBlocksY;
         int bZ = localZ + this.paddingBlocksXZ;
         int blockIndex = index(bX, bY, bZ, this.blockCountXZ, this.blockCountY);
-        return (this.borderDistances[blockIndex] / (double)WEIGHT_PER_BLOCK) - 1;
+        return (this.borderDistances[blockIndex] / (double)WEIGHT_PER_BLOCK) - 2;
     }
 
     @Override
@@ -65,51 +66,35 @@ public class BFSBorderFluidField extends CellularFluidField {
     public void initializeFluidBorders(NoiseField finalDensityField) {
         // place initial borders
         for (int bY = 0; bY < this.blockCountY; bY++) {
+            int prevY = Math.max(0, bY - 1);
             for (int bZ = 0; bZ < this.blockCountXZ; bZ++) {
-                NEXT_BLOCK:
+                int prevZ = Math.max(0, bZ - 1);
                 for (int bX = 0; bX < this.blockCountXZ; bX++) {
                     int blockIndex = index(bX, bY, bZ, this.blockCountXZ, this.blockCountY);
                     BlockState state = this.fluidStates[blockIndex];
 
                     // vertical
-                    if (state.isAir()) {
-                        // air blocks only check above
-                        int nY = bY + 1;
-                        if (nY < blockCountY) {
-                            BlockState neighborState = this.fluidStates[index(bX, nY, bZ, this.blockCountXZ, this.blockCountY)];
-                            if (neighborState != state) {
-                                borderDistances[blockIndex] = 0;
-                                continue NEXT_BLOCK;
-                            }
-                        }
-                    } else {
-                        // fluid blocks only check below
-                        int nY = bY - 1;
-                        if (nY < 0) {
-                            // bottom of the world, should always be contained.
-                            borderDistances[blockIndex] = 0;
-                            continue NEXT_BLOCK;
-                        } else {
-                            BlockState neighborState = this.fluidStates[index(bX, nY, bZ, this.blockCountXZ, this.blockCountY)];
-                            if (neighborState != state) {
-                                borderDistances[blockIndex] = 0;
-                                continue NEXT_BLOCK;
-                            }
-                        }
+                    int yIndex = index(bX, prevY, bZ, this.blockCountXZ, this.blockCountY);
+                    BlockState belowState = this.fluidStates[yIndex];
+                    // air blocks don't consider fluid blocks below them
+                    if (!state.isAir() && state != belowState) {
+                        borderDistances[blockIndex] = 0;
+                        continue;
                     }
 
-                    // horizontal
-                    for (Direction direction : Direction.Plane.HORIZONTAL) {
-                        int nX = bX + direction.getStepX(),
-                                nY = bY + direction.getStepY(),
-                                nZ = bZ + direction.getStepZ();
-                        if (nX < 0 || nX >= blockCountXZ || nY < 0 || nY >= blockCountY || nZ < 0 || nZ >= blockCountXZ)
-                            continue;
-                        BlockState neighborState = this.fluidStates[index(nX, nY, nZ, this.blockCountXZ, this.blockCountY)];
-                        if (neighborState != state) {
-                            borderDistances[blockIndex] = 0;
-                            continue NEXT_BLOCK;
-                        }
+                    int zIndex = index(bX, bY, prevZ, this.blockCountXZ, this.blockCountY);
+                    BlockState zState = this.fluidStates[zIndex];
+                    if (state != zState) {
+                        borderDistances[blockIndex] = 0;
+                        continue;
+                    }
+
+                    int prevX = Math.max(0, bX - 1);
+                    int xIndex = index(prevX, bY, bZ, this.blockCountXZ, this.blockCountY);
+                    BlockState xState = this.fluidStates[xIndex];
+                    if (state != xState) {
+                        borderDistances[blockIndex] = 0;
+                        continue;
                     }
                 }
             }
@@ -138,7 +123,7 @@ public class BFSBorderFluidField extends CellularFluidField {
 
                     // "smear" the air downwards.
                     this.borderDistances[belowBlockIndex] = distance;
-                    for (int i = 2; i < 1 + waterfallPresenceValue; i++) {
+                    for (int i = 2; i < 2 + waterfallPresenceValue; i++) {
                         int belowY = bY - i;
                         if (belowY < 0) break;
                         belowBlockIndex = index(bX, belowY, bZ, this.blockCountXZ, this.blockCountY);

@@ -32,7 +32,7 @@ public final class DirectNoiseField extends NoiseField3D {
     }
 
     @Override
-    public void fill(int minLocalY, int maxLocalY, int minX, int minY, int minZ, NoiseFieldFiller filler, NoiseContext context) {
+    public void fill(int minLocalY, int maxLocalY, int minX, int minY, int minZ, NoiseContext context, NoiseFieldFiller filler) {
         // find unfilled layers
         fillMask.clear();
         fillMask.set(Math.max(0, minLocalY), Math.min(chunkHeight - 1, maxLocalY) + 1);

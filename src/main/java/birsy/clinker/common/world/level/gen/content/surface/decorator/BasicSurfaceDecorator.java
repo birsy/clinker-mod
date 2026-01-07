@@ -1,7 +1,6 @@
-package birsy.clinker.common.world.level.gen.content.surface;
+package birsy.clinker.common.world.level.gen.content.surface.decorator;
 
 import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
-import birsy.clinker.common.world.level.gen.system.surface.SurfaceDecorator;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;

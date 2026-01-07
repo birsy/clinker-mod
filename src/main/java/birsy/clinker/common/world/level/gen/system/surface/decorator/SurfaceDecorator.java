@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.level.gen.system.surface;
+package birsy.clinker.common.world.level.gen.system.surface.decorator;
 
 import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;

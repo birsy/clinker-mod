@@ -1,8 +1,6 @@
-package birsy.clinker.common.world.level.gen.content.biomeshaper;
+package birsy.clinker.common.world.level.gen.content.surface.shaper;
 
-import birsy.clinker.common.world.level.gen.system.BiomeShaper;
-
-public class CliffBiomeShaper {//extends BiomeShaper {
+public class CliffSurfaceShaper {//extends BiomeShaper {
 //    private static final int[] terraceSizes = {32, 13};
 //
 //    @Override

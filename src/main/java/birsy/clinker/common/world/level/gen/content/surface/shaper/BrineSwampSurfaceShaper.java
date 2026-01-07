@@ -1,8 +1,6 @@
-package birsy.clinker.common.world.level.gen.content.biomeshaper;
+package birsy.clinker.common.world.level.gen.content.surface.shaper;
 
-import birsy.clinker.common.world.level.gen.system.BiomeShaper;
-
-public class BrineSwampBiomeShaper {//extends BiomeShaper {
+public class BrineSwampSurfaceShaper {//extends BiomeShaper {
 //    @Override
 //    public double surfaceDensity(int x, int y, int z, double biomeContribution, NoiseComputerContext context) {
 //        int seaHeight = OthershoreBiomeSource.SEA_HEIGHT + 1;

@@ -1,8 +1,6 @@
-package birsy.clinker.common.world.level.gen.content.biomeshaper;
+package birsy.clinker.common.world.level.gen.content.surface.shaper;
 
-import birsy.clinker.common.world.level.gen.system.BiomeShaper;
-
-public class LowerShelfBiomeShaper {//extends BiomeShaper {
+public class LowerShelfSurfaceShaper {//extends BiomeShaper {
 //    @Override
 //    public double surfaceDensity(int x, int y, int z, double biomeContribution, NoiseComputerContext context) {
 //        SeededNoiseHolder noise = context.noiseHolder();

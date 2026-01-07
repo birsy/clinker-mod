@@ -46,6 +46,10 @@ public class OthershoreBiomeSource extends BiomeSource {
         //return this.getNoiseBiome(x, y, z, createNoiseComputerExecutor());
     }
 
+    public Holder<Biome> getSurfaceBiome(int x, int z) {
+        return ashSteppe;
+    }
+
 //    @Override
 //    public Set<Holder<Biome>> getBiomesWithin(int x, int y, int z, int radius, Climate.Sampler sampler) {
 //        return this.getBiomesWithin(
@@ -104,7 +108,7 @@ public class OthershoreBiomeSource extends BiomeSource {
     protected MapCodec<? extends BiomeSource> codec() {
         return CODEC;
     }
-//
+
 //    protected static NoiseFieldCache createNoiseComputerExecutor() {
 //        RandomState randomState = ServerLifecycleHooks.getCurrentServer()
 //                .getLevel(ClinkerWorld.OTHERSHORE)

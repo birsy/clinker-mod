@@ -67,6 +67,7 @@ public class Clinker {
         ClinkerAlchemyKnowledgeTypes.ALCHEMY_DATA_TYPES.register(modEventBus);
         ClinkerNoiseComputers.NOISE_COMPUTERS.register(modEventBus);
         ClinkerSurfaceDecorators.SURFACE_DECORATORS.register(modEventBus);
+        ClinkerSurfaceShapers.SURFACE_SHAPERS.register(modEventBus);
 
         modEventBus.addListener(this::setup);
         modEventBus.addListener(this::doClientStuff);

@@ -1,10 +1,7 @@
 package birsy.clinker.core.registry.worldgen;
 
-import birsy.clinker.common.world.level.gen.content.surface.AshSteppeSurfaceDecorator;
-import birsy.clinker.common.world.level.gen.content.surface.BrineSwampSurfaceDecorator;
-import birsy.clinker.common.world.level.gen.content.surface.DefaultSurfaceDecorator;
-import birsy.clinker.common.world.level.gen.system.surface.BiomeSurfaceDecorator;
-import birsy.clinker.common.world.level.gen.system.surface.SurfaceDecorator;
+import birsy.clinker.common.world.level.gen.system.surface.decorator.BiomeSurfaceDecorator;
+import birsy.clinker.common.world.level.gen.system.surface.decorator.SurfaceDecorator;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerRegistries;
 import net.minecraft.resources.ResourceKey;

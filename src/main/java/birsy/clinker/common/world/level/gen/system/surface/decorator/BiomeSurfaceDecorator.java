@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.level.gen.system.surface;
+package birsy.clinker.common.world.level.gen.system.surface.decorator;
 
 import com.mojang.datafixers.util.Either;
 import net.minecraft.resources.ResourceKey;
