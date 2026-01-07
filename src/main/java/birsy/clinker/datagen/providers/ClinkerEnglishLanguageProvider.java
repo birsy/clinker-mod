@@ -4,7 +4,7 @@ import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.ClinkerItems;
 import birsy.clinker.core.registry.entity.ClinkerEntities;
-import birsy.clinker.core.registry.world.ClinkerBiomes;
+import birsy.clinker.core.registry.worldgen.ClinkerBiomes;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;

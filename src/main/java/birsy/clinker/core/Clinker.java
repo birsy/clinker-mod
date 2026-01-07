@@ -11,9 +11,7 @@ import birsy.clinker.core.registry.entity.ClinkerBlockEntities;
 import birsy.clinker.core.registry.entity.ClinkerEntities;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import birsy.clinker.core.registry.entity.ClinkerSensors;
-import birsy.clinker.core.registry.world.ClinkerFeatures;
-import birsy.clinker.core.registry.world.ClinkerPlacementModifierTypes;
-import birsy.clinker.core.registry.world.ClinkerWorld;
+import birsy.clinker.core.registry.worldgen.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -67,6 +65,8 @@ public class Clinker {
 
         ClinkerPageElementTypes.PAGE_ELEMENT_TYPES.register(modEventBus);
         ClinkerAlchemyKnowledgeTypes.ALCHEMY_DATA_TYPES.register(modEventBus);
+        ClinkerNoiseComputers.NOISE_COMPUTERS.register(modEventBus);
+        ClinkerSurfaceDecorators.SURFACE_DECORATORS.register(modEventBus);
 
         modEventBus.addListener(this::setup);
         modEventBus.addListener(this::doClientStuff);

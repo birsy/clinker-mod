@@ -1,7 +1,7 @@
 package birsy.clinker.core.registry;
 
 import birsy.clinker.common.page.Page;
-import birsy.clinker.common.world.level.gen.worldfeature.WorldFeatureSpawnSet;
+import birsy.clinker.common.world.level.gen.system.worldfeature.WorldFeatureSpawnSet;
 import birsy.clinker.core.Clinker;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;

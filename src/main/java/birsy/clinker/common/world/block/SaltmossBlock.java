@@ -1,13 +1,12 @@
 package birsy.clinker.common.world.block;
 
 import birsy.clinker.core.registry.ClinkerBlocks;
-import birsy.clinker.core.registry.world.ClinkerConfiguredFeatures;
+import birsy.clinker.core.registry.worldgen.ClinkerConfiguredFeatures;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.worldgen.features.NetherFeatures;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;

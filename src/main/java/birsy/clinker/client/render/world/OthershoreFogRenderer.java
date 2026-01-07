@@ -2,16 +2,13 @@ package birsy.clinker.client.render.world;
 
 import birsy.clinker.client.ambience.AmbienceHandler;
 import birsy.clinker.core.Clinker;
-import birsy.clinker.core.registry.world.ClinkerWorld;
+import birsy.clinker.core.registry.worldgen.ClinkerWorld;
 import com.mojang.blaze3d.shaders.FogShape;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.util.CubicSampler;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.level.material.FogType;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;

@@ -1,7 +1,7 @@
 package birsy.clinker.client.ambience;
 
 import birsy.clinker.core.Clinker;
-import birsy.clinker.core.registry.world.ClinkerWorld;
+import birsy.clinker.core.registry.worldgen.ClinkerWorld;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 
