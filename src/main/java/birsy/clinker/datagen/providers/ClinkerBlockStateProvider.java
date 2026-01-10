@@ -371,6 +371,31 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
         );
         this.simpleBlockItem(SALT_GRAVEL.get(), this.models().getExistingFile(this.modLoc( ModelProvider.BLOCK_FOLDER + "/" + name(SALT_GRAVEL.get()))));
 
+        // sea shell
+        {
+            this.simpleBlockWithVariationAndTransformation(
+                    SEA_SHELL.get(),
+                    (i) -> {
+                        String suffix = i == 0 ? "" : "_" + i;
+                        return this.models().singleTexture(name(SEA_SHELL.get()) + suffix,
+                                this.modLoc(ModelProvider.BLOCK_FOLDER + "/template_shell"),
+                                "shell",
+                                this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(SEA_SHELL.get()) + suffix)
+                        );
+                    },
+                    (i) -> {
+                        String suffix = i == 0 ? "" : "_" + i;
+                        return this.models().singleTexture(name(SEA_SHELL.get()) + suffix + "_mirrored",
+                                this.modLoc(ModelProvider.BLOCK_FOLDER + "/template_shell_mirrored"),
+                                "shell",
+                                this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(SEA_SHELL.get()) + suffix)
+                        );
+                    },
+                    5, false, true
+            );
+            this.itemModels().basicItem(SEA_SHELL.get().asItem());
+        }
+
         // plants
         {
             ResourceLocation brambleBlossom = this.modLoc(ModelProvider.BLOCK_FOLDER + "/bramble_blossom");

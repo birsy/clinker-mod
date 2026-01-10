@@ -1,0 +1,13 @@
+{
+  "type": "clinker:fluid_crack",
+  "config": {
+    "state": {
+      "Name": "minecraft:water",
+      "Properties": {
+        "falling": "true"
+      }
+    },
+    "minimum_search_distance": 5,
+    "maximum_search_distance": 32
+  }
+}

@@ -1,13 +1,10 @@
 package birsy.clinker.common.world.level.gen.system.fluid;
 
-import birsy.clinker.common.world.level.gen.system.noise.FluidFieldNoiseFieldCache;
-import birsy.clinker.common.world.level.gen.system.noise.NoiseComputer;
+import birsy.clinker.common.world.level.gen.system.noise.PaddedNoiseFieldCache;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
 import birsy.clinker.common.world.level.gen.system.worldfeature.WorldFeature;
-import birsy.clinker.core.Clinker;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.Util;
-import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -36,7 +33,7 @@ public class BFSBorderFluidField extends CellularFluidField {
     public BFSBorderFluidField(
             RandomState randomState,
             ChunkAccess chunk,
-            FluidFieldNoiseFieldCache cache,
+            PaddedNoiseFieldCache cache,
             FluidFieldFiller baseFluidFieldFiller,
             Collection<WorldFeature> worldFeatures,
             int cellWidth, int cellHeight, int paddingCells) {
@@ -76,7 +73,7 @@ public class BFSBorderFluidField extends CellularFluidField {
                     // vertical
                     int yIndex = index(bX, prevY, bZ, this.blockCountXZ, this.blockCountY);
                     BlockState belowState = this.fluidStates[yIndex];
-                    // air blocks don't consider fluid blocks below them
+                    // air blocks don't consider state blocks below them
                     if (!state.isAir() && state != belowState) {
                         borderDistances[blockIndex] = 0;
                         continue;
@@ -150,12 +147,12 @@ public class BFSBorderFluidField extends CellularFluidField {
 
         for (int curDist = 0; curDist < maxDistance; curDist++) {
             IntArrayList bucket = buckets[curDist];
-            for (int idx = 0; idx < bucket.size(); idx++) {
-                int currentIndex = bucket.getInt(idx);
+            for (int bucketIndex = 0; bucketIndex < bucket.size(); bucketIndex++) {
+                int currentIndex = bucket.getInt(bucketIndex);
                 int currentDistance = borderDistances[currentIndex];
                 if (currentDistance != curDist) continue; // out of date
 
-                // decode from index
+                // decode position from index
                 int layerSize = this.blockCountXZ * this.blockCountXZ;
                 int bY = currentIndex / layerSize;
                 int rem = currentIndex % layerSize;

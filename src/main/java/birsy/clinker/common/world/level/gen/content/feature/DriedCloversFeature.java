@@ -14,7 +14,7 @@ import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 
-public class SurfaceDriedCloversFeature extends Feature<NoneFeatureConfiguration> {
+public class DriedCloversFeature extends Feature<NoneFeatureConfiguration> {
     private static final float[][] heightDifferenceKernel = Util.make(() -> {
         int radius = 4;
         float trueRadius = radius + 0.5F;
@@ -41,7 +41,7 @@ public class SurfaceDriedCloversFeature extends Feature<NoneFeatureConfiguration
     });
 
 
-    public SurfaceDriedCloversFeature(Codec<NoneFeatureConfiguration> codec) {
+    public DriedCloversFeature(Codec<NoneFeatureConfiguration> codec) {
         super(codec);
     }
 

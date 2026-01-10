@@ -9,7 +9,7 @@ public class NoiseFieldCache {
     final int minX, minY, minZ;
     final int chunkHeight;
     final NoiseField[] fieldCache;
-    public final NoiseContext context;
+    public final CachedNoiseContext context;
     public final SeededNoiseHolder noiseHolder;
 
     public NoiseFieldCache(int minX, int minY, int minZ, int chunkHeight, SeededNoiseHolder noiseHolder) {
@@ -17,7 +17,7 @@ public class NoiseFieldCache {
         this.chunkHeight = chunkHeight;
         this.fieldCache = new NoiseField[ClinkerRegistries.NOISE_COMPUTER_REGISTRY.size()];
         this.noiseHolder = noiseHolder;
-        this.context = new NoiseContext(this);
+        this.context = new CachedNoiseContext(this);
     }
 
     public NoiseField fillNoiseField(NoiseComputer computer) {

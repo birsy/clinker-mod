@@ -123,6 +123,17 @@ public class ClinkerBlocks
             () -> new ColoredFallingBlock(new ColorRGBA(0x777472), BlockBehaviour.Properties.ofFullCopy(Blocks.GRAVEL).sound(SoundType.SOUL_SOIL))
     );
 
+    public static final DeferredBlock<SeaShellBlock> SEA_SHELL = createBlock("sea_shell", () -> new SeaShellBlock(
+            BlockBehaviour.Properties.of()
+                    .sound(SoundType.CALCITE)
+                    .mapColor(MapColor.METAL)
+                    .dynamicShape()
+                    .instabreak()
+                    .noCollission()
+                    .noOcclusion()
+                    .offsetType(BlockBehaviour.OffsetType.XZ))
+    );
+
 
     //Calamine
     public static BlockBehaviour.Properties getCalamineProperties() {
@@ -310,7 +321,9 @@ public class ClinkerBlocks
     public static final DeferredBlock<StromatoliteBlock> STROMATOLITE = createBlock("stromatolite", () -> new StromatoliteBlock(STROMATOLITE_PROPERTIES.get()));
 
     private static Supplier<BlockBehaviour.Properties> SHEET_MOSS_PROPERTIES = () -> {
-        BlockBehaviour.Properties props = BlockBehaviour.Properties.ofFullCopy(Blocks.HANGING_ROOTS).mapColor(MapColor.COLOR_GRAY).sound(SoundType.PINK_PETALS);
+        BlockBehaviour.Properties props = BlockBehaviour.Properties.ofFullCopy(Blocks.HANGING_ROOTS)
+                .mapColor(MapColor.COLOR_GRAY)
+                .sound(SoundType.PINK_PETALS);
         ((BlockBehavior$PropertiesAccessor) props).setOffsetFunction((state, level, pos) -> {
             long seed = Mth.getSeed(pos.getX(), 0, pos.getZ());
             double xOffset = (((seed >>  0 & 63L) / 64F) - 0.5) * (6.0F / 16.0F);

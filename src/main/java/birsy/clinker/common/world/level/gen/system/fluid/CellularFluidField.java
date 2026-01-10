@@ -1,8 +1,9 @@
 package birsy.clinker.common.world.level.gen.system.fluid;
 
-import birsy.clinker.common.world.level.gen.system.noise.FluidFieldNoiseFieldCache;
+import birsy.clinker.common.world.level.gen.system.noise.PaddedNoiseFieldCache;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
 import birsy.clinker.common.world.level.gen.system.worldfeature.WorldFeature;
+import net.minecraft.core.SectionPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -11,9 +12,8 @@ import net.minecraft.world.level.levelgen.RandomState;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
-// fluid map with cells, but nothing to compute borders
+// state map with cells, but nothing to compute borders
 // not really needed but i'm trying out a couple different strategies for
 // computing container borders right now so it's useful to have the base
 // cell logic separated.
@@ -44,7 +44,7 @@ public class CellularFluidField implements FluidField {
     final BlockState[] fluidStates;
 
     final PositionalRandomFactory aquiferRandom;
-    final FluidFieldNoiseFieldCache noiseCache;
+    final PaddedNoiseFieldCache noiseCache;
     final FluidFieldFiller fluidFieldFiller;
 
     final Collection<WorldFeature> worldFeatures;
@@ -52,7 +52,7 @@ public class CellularFluidField implements FluidField {
     public CellularFluidField(
             RandomState randomState,
             ChunkAccess chunk,
-            FluidFieldNoiseFieldCache noiseCache,
+            PaddedNoiseFieldCache noiseCache,
             FluidFieldFiller baseFluidFieldFiller,
             Collection<WorldFeature> worldFeatures,
             int cellWidth, int cellHeight,
@@ -98,6 +98,12 @@ public class CellularFluidField implements FluidField {
 
     @Override
     public void precomputeValues(NoiseField finalDensityField, NoiseField waterfallPresenceField) {
+        for (WorldFeature worldFeature : worldFeatures)
+            worldFeature.prefillFluidNoiseFields(
+                    SectionPos.blockToSectionCoord(minX),
+                    SectionPos.blockToSectionCoord(minZ),
+                    this.noiseCache
+            );
         this.initializeCells();
         this.computeNeighborHomogeneity();
         this.fillFluidStateMapByCell();
@@ -129,8 +135,8 @@ public class CellularFluidField implements FluidField {
         int centerZ = cellZ * this.cellWidth +  this.halfCellWidth +  (int)Math.round(cellRandom.triangle(0, this.halfCellWidth));
 
         FluidLevel fluidLevel = this.fluidFieldFiller.compute(centerX, centerY, centerZ, this.noiseCache.context);
-//        for (WorldFeature worldFeature : this.worldFeatures)
-//            fluidLevel = worldFeature.modifyFluidLevel(centerX, centerY, centerZ, fluidLevel, this.noiseContext);
+        for (WorldFeature worldFeature : this.worldFeatures)
+            fluidLevel = worldFeature.modifyFluidLevel(centerX, centerY, centerZ, fluidLevel, this.noiseCache.context);
         return new FluidCell(centerX, centerY, centerZ, fluidLevel, this.cellHeight);
     }
 
@@ -143,7 +149,7 @@ public class CellularFluidField implements FluidField {
                     FluidCell cell = this.cells[cellIndex];
                     switch (cell.cellType) {
                         case FULL:
-                            // if the cell is completely filled, check if all neighbors are completely full of the same fluid.
+                            // if the cell is completely filled, check if all neighbors are completely full of the same state.
                             // if so, the cell is homogenous.
                             for (int[] neighborOffset : NEIGHBOR_OFFSETS) {
                                 int nX = cX + neighborOffset[0], nY = cY + neighborOffset[1], nZ = cZ + neighborOffset[2];
@@ -177,8 +183,8 @@ public class CellularFluidField implements FluidField {
                         /* case SURFACE:
                             // if the cell is a surface, check that:
                             // a) the cells above are completely empty
-                            // b) the cells below are completely full of the same kind of fluid
-                            // c) the cells surrounding are surfaces, with the same fluid and water height.
+                            // b) the cells below are completely full of the same kind of state
+                            // c) the cells surrounding are surfaces, with the same state and water height.
                             for (int dX = -1; dX <= 1; dX++) {
                                 int nX = cX + dX;
                                 for (int dY = -1; dY <= 1; dY++) {

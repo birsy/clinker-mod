@@ -1,0 +1,18 @@
+{
+    "ambientocclusion": false,
+    "render_type": "cutout",
+    "textures": {
+        "particle": "#shell"
+    },
+    "elements": [
+        {
+            "from": [ 0, 1, 0 ],
+            "to": [ 16, 1, 16 ],
+            "shade": false,
+            "faces": {
+                "up": { "texture": "#shell", "uv": [ 0, 0, 16, 16 ] },
+                "down": { "texture": "#shell", "uv": [ 16, 0, 0, 16 ] }
+            }
+        }
+    ]
+}

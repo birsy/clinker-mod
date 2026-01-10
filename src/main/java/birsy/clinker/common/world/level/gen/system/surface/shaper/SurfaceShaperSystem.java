@@ -1,7 +1,9 @@
 package birsy.clinker.common.world.level.gen.system.surface.shaper;
 
 import birsy.clinker.common.world.level.gen.OthershoreBiomeSource;
+import birsy.clinker.common.world.level.gen.system.biome.BiomeCache2d;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
+import birsy.clinker.common.world.level.gen.system.noise.PaddedNoiseFieldCache;
 import birsy.clinker.common.world.level.gen.system.noise.SeededNoiseHolder;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldTypes;
@@ -74,26 +76,32 @@ public class SurfaceShaperSystem {
     }
 
     public NoiseField generateSurfaceField(ChunkAccess chunk, SeededNoiseHolder noiseHolder,
-                                           NoiseFieldCache cache, 
-                                           Set<Holder<Biome>> surfaceBiomesInChunk,
+                                           NoiseFieldCache cache, PaddedNoiseFieldCache biomeCache,
                                            Collection<WorldFeature> worldFeaturesInChunk,
                                            NoiseField baseSurfaceHeight,
                                            int minSurfaceHeight, int maxSurfaceHeight,
                                            int minX, int minY, int minZ, int chunkHeight) {
+        biomeSource.prefillSurfaceNoiseFields(biomeCache);
+        BiomeCache2d surfaceBiomeCache = biomeSource.createSurfaceBiomeCache(
+                QuartPos.fromBlock(minX - 8), QuartPos.fromBlock(minZ - 8),
+                QuartPos.fromBlock(minX + 16 + 8), QuartPos.fromBlock(minZ + 16 + 8),
+                biomeCache.context
+        );
+
         NoiseField[] biomeWeightFields = new NoiseField[this.biomeToIndex.size()];
         NoiseField totalWeightField = NoiseFieldTypes.COARSE_2D.create(chunkHeight, 0);
         double[] totalWeightFieldArray = totalWeightField.array();
-        for (Holder<Biome> biomeHolder : surfaceBiomesInChunk) {
+        for (Holder<Biome> biomeHolder : surfaceBiomeCache.containedBiomes()) {
             NoiseField biomeWeightField = NoiseFieldTypes.COARSE_2D.create(chunkHeight, 0);
             double[] biomeWeightFieldArray = biomeWeightField.array();
             biomeWeightField.byBlock((index, x, y, z) -> {
                 double total = 0;
                 int blurIndex = 0;
                 for (int oZ = 0; oZ < BIOME_BLUR_KERNEL_SIZE; oZ++) {
-                    double offsetZ = z + (oZ - HALF_BIOME_BLUR_KERNEL_SIZE) * 4 + minZ;
+                    double offsetZ = z + (oZ - HALF_BIOME_BLUR_KERNEL_SIZE) * 3 + minZ;
                     for (int oX = 0; oX < BIOME_BLUR_KERNEL_SIZE; oX++) {
-                        double offsetX = x + (oX - HALF_BIOME_BLUR_KERNEL_SIZE) * 4 + minX;
-                        Holder<Biome> neighborBiome = biomeSource.getSurfaceBiome(
+                        double offsetX = x + (oX - HALF_BIOME_BLUR_KERNEL_SIZE) * 3 + minX;
+                        Holder<Biome> neighborBiome = surfaceBiomeCache.retrieve(
                                 QuartPos.fromBlock((int) offsetX),
                                 QuartPos.fromBlock((int) offsetZ)
                         );
@@ -113,7 +121,7 @@ public class SurfaceShaperSystem {
 
         // determine bounds
         int lowerBound = Integer.MAX_VALUE, upperBound = Integer.MIN_VALUE;
-        for (Holder<Biome> biomeHolder : surfaceBiomesInChunk) {
+        for (Holder<Biome> biomeHolder : surfaceBiomeCache.containedBiomes()) {
             SurfaceShaper shaper = getSurfaceShaper(biomeHolder);
             lowerBound = Math.min(lowerBound, shaper.lowerBound());
             upperBound = Math.max(upperBound, shaper.upperBound());
@@ -136,11 +144,11 @@ public class SurfaceShaperSystem {
         );
 
         // shape per biome
-        for (Holder<Biome> biomeHolder : surfaceBiomesInChunk) {
+        for (Holder<Biome> biomeHolder : surfaceBiomeCache.containedBiomes()) {
             SurfaceShaper shaper = getSurfaceShaper(biomeHolder);
             shaper.prefillNoiseFields(cache, lowerBound, upperBound);
         }
-        for (Holder<Biome> biomeHolder : surfaceBiomesInChunk) {
+        for (Holder<Biome> biomeHolder : surfaceBiomeCache.containedBiomes()) {
             SurfaceShaper shaper = getSurfaceShaper(biomeHolder);
             NoiseField biomeWeightField = biomeWeightFields[biomeToIndex.get(biomeHolder)];
             surfaceDensityField.byBlock(lowerBound - minY, upperBound - minY,

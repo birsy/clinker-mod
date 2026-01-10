@@ -1,0 +1,156 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "clinker:block/sea_shell"
+      },
+      {
+        "model": "clinker:block/sea_shell_mirrored"
+      },
+      {
+        "model": "clinker:block/sea_shell",
+        "y": 90
+      },
+      {
+        "model": "clinker:block/sea_shell_mirrored",
+        "y": 90
+      },
+      {
+        "model": "clinker:block/sea_shell",
+        "y": 180
+      },
+      {
+        "model": "clinker:block/sea_shell_mirrored",
+        "y": 180
+      },
+      {
+        "model": "clinker:block/sea_shell",
+        "y": 270
+      },
+      {
+        "model": "clinker:block/sea_shell_mirrored",
+        "y": 270
+      },
+      {
+        "model": "clinker:block/sea_shell_1"
+      },
+      {
+        "model": "clinker:block/sea_shell_1_mirrored"
+      },
+      {
+        "model": "clinker:block/sea_shell_1",
+        "y": 90
+      },
+      {
+        "model": "clinker:block/sea_shell_1_mirrored",
+        "y": 90
+      },
+      {
+        "model": "clinker:block/sea_shell_1",
+        "y": 180
+      },
+      {
+        "model": "clinker:block/sea_shell_1_mirrored",
+        "y": 180
+      },
+      {
+        "model": "clinker:block/sea_shell_1",
+        "y": 270
+      },
+      {
+        "model": "clinker:block/sea_shell_1_mirrored",
+        "y": 270
+      },
+      {
+        "model": "clinker:block/sea_shell_2"
+      },
+      {
+        "model": "clinker:block/sea_shell_2_mirrored"
+      },
+      {
+        "model": "clinker:block/sea_shell_2",
+        "y": 90
+      },
+      {
+        "model": "clinker:block/sea_shell_2_mirrored",
+        "y": 90
+      },
+      {
+        "model": "clinker:block/sea_shell_2",
+        "y": 180
+      },
+      {
+        "model": "clinker:block/sea_shell_2_mirrored",
+        "y": 180
+      },
+      {
+        "model": "clinker:block/sea_shell_2",
+        "y": 270
+      },
+      {
+        "model": "clinker:block/sea_shell_2_mirrored",
+        "y": 270
+      },
+      {
+        "model": "clinker:block/sea_shell_3"
+      },
+      {
+        "model": "clinker:block/sea_shell_3_mirrored"
+      },
+      {
+        "model": "clinker:block/sea_shell_3",
+        "y": 90
+      },
+      {
+        "model": "clinker:block/sea_shell_3_mirrored",
+        "y": 90
+      },
+      {
+        "model": "clinker:block/sea_shell_3",
+        "y": 180
+      },
+      {
+        "model": "clinker:block/sea_shell_3_mirrored",
+        "y": 180
+      },
+      {
+        "model": "clinker:block/sea_shell_3",
+        "y": 270
+      },
+      {
+        "model": "clinker:block/sea_shell_3_mirrored",
+        "y": 270
+      },
+      {
+        "model": "clinker:block/sea_shell_4"
+      },
+      {
+        "model": "clinker:block/sea_shell_4_mirrored"
+      },
+      {
+        "model": "clinker:block/sea_shell_4",
+        "y": 90
+      },
+      {
+        "model": "clinker:block/sea_shell_4_mirrored",
+        "y": 90
+      },
+      {
+        "model": "clinker:block/sea_shell_4",
+        "y": 180
+      },
+      {
+        "model": "clinker:block/sea_shell_4_mirrored",
+        "y": 180
+      },
+      {
+        "model": "clinker:block/sea_shell_4",
+        "y": 270
+      },
+      {
+        "model": "clinker:block/sea_shell_4_mirrored",
+        "y": 270
+      }
+    ]
+  }
+}

@@ -153,7 +153,7 @@ public class ClinkerNoiseComputers {
                     (x, y, z, context) -> {
                         return Mth.clampedMap(
                                 context.sample("aquifer_ceiling_height", x / 64.0, z / 64.0),
-                                -1, 1, -20, -3
+                                -1, 1, -15, 3
                         );
                     }
             )

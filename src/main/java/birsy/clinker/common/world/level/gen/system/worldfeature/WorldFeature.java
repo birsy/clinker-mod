@@ -1,10 +1,14 @@
 package birsy.clinker.common.world.level.gen.system.worldfeature;
 
-import birsy.clinker.common.world.level.gen.system.noise.FluidFieldNoiseFieldCache;
+import birsy.clinker.common.world.level.gen.system.fluid.FluidLevel;
+import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
+import birsy.clinker.common.world.level.gen.system.noise.PaddedNoiseFieldCache;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
+import net.minecraft.core.Holder;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.biome.Biome;
 
 import java.util.Set;
 
@@ -21,24 +25,22 @@ public abstract class WorldFeature {
 
     public abstract boolean within(int minX, int minZ, int maxX, int maxZ);
 
-    public abstract boolean plan(LevelAccessor level, MetaChunk metaChunk, RandomSource randomSource);
+    public abstract boolean plan(LevelAccessor level, MetaChunk metaChunk, RandomSource randomSource, NoiseContext context);
 
     public void addChildFeatures(int childDepth, Set<WorldFeature> worldFeatures) {}
 
     public void modifySurfaceDensityField(int minX, int minY, int minZ, NoiseFieldCache cache, NoiseField field) {}
     public void modifyCaveDensityField(int minX, int minY, int minZ, NoiseFieldCache cache, NoiseField field) {}
     public void modifyFinalDensityField(int minX, int minY, int minZ, NoiseFieldCache cache, NoiseField field) {}
-    public void modifyWaterfallPresenceField(int minX, int minY, int minZ, FluidFieldNoiseFieldCache cache, NoiseField field) {}
+    public void modifyWaterfallPresenceField(int minX, int minY, int minZ, PaddedNoiseFieldCache cache, NoiseField field) {}
 
-//    public Holder<Biome> modifyBiome(int x, int y, int z, Holder<Biome> currentBiome, NoiseComputerContext context) {
-//        return currentBiome;
-//    }
-//
-//    public FluidLevel modifyFluidLevel(int x, int y, int z, FluidLevel currentFluidLevel, NoiseComputerContext context) {
-//        return currentFluidLevel;
-//    }
-//
-//    public double modifyWaterfallPresence(int x, int y, int z, double currentValue, NoiseComputerContext context) {
-//        return currentValue;
-//    }
+    public void prefillBiomeNoiseFields(int chunkX, int chunkZ, NoiseFieldCache cache) {}
+    public Holder<Biome> modifyBiome(int x, int y, int z, Holder<Biome> currentBiome, NoiseContext context) {
+        return currentBiome;
+    }
+
+    public void prefillFluidNoiseFields(int chunkX, int chunkZ, PaddedNoiseFieldCache cache) {}
+    public FluidLevel modifyFluidLevel(int x, int y, int z, FluidLevel currentFluidLevel, NoiseContext context) {
+        return currentFluidLevel;
+    }
 }

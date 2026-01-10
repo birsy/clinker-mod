@@ -1,5 +1,6 @@
 package birsy.clinker.common.world.level.gen.system.surface.decorator;
 
+import birsy.clinker.common.world.level.gen.system.noise.CachedNoiseContext;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
@@ -59,7 +60,7 @@ public class SurfaceDecorationSystem {
                                  Set<Holder<Biome>> biomes) {
         prefillNoiseFields(noiseFieldCache, minSurfaceHeight, maxSurfaceHeight, biomes);
 
-        NoiseContext noiseContext = new NoiseContext(noiseFieldCache);
+        CachedNoiseContext noiseContext = new CachedNoiseContext(noiseFieldCache);
         noiseContext.setRange(minSurfaceHeight, maxSurfaceHeight);
 
         PositionalRandomFactory surfaceBuilderRandomFactory = randomState.getOrCreateRandomFactory(SURFACE_BUILDER_RANDOM);

@@ -351,7 +351,7 @@ public class WeirdLiquidRendererRemake {
 //                    vertex(buffer, x2, chunkY + heightRight, z2, finalR, finalG, finalB, alpha, f58, f60, packedLight);
 //                    vertex(buffer, x2, chunkY + f16, z2, finalR, finalG, finalB, alpha, f58, f31, packedLight);
 //                    vertex(buffer, x1, chunkY + f16, z1, finalR, finalG, finalB, alpha, f56, f31, packedLight);
-//                    if (textureatlassprite2 != sprites[2]) { // Neo: use custom fluid's overlay texture
+//                    if (textureatlassprite2 != sprites[2]) { // Neo: use custom state's overlay texture
 //                        vertex(buffer, x1, chunkY + f16, z1, finalR, finalG, finalB, alpha, f56, f31, packedLight);
 //                        vertex(buffer, x2, chunkY + f16, z2, finalR, finalG, finalB, alpha, f58, f31, packedLight);
 //                        vertex(buffer, x2, chunkY + heightRight, z2, finalR, finalG, finalB, alpha, f58, f60, packedLight);

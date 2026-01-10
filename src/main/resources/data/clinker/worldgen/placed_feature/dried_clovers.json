@@ -1,5 +1,5 @@
 {
-  "feature": "clinker:surface_dried_clovers",
+  "feature": "clinker:dried_clovers",
   "placement": [
     {
       "type": "minecraft:heightmap",

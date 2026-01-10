@@ -1,0 +1,19 @@
+{
+  "type": "clinker:pool",
+  "config": {
+    "radius": 5,
+    "border_thickness": 1,
+    "fluid_state": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "minecraft:water"
+      }
+    },
+    "border_state": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "clinker:brimstone"
+      }
+    }
+  }
+}

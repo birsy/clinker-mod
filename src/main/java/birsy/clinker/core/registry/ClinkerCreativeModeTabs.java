@@ -135,6 +135,7 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(POLISHED_CALC_WALL.get());
 
         pOutput.accept(SALT_GRAVEL.get());
+        pOutput.accept(SEA_SHELL.get());
 
         pOutput.accept(SALTMOSS.get());
         pOutput.accept(SALTMOSS_SPROUTS.get());

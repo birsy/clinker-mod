@@ -1,0 +1,6 @@
+{
+  "parent": "clinker:block/template_shell",
+  "textures": {
+    "shell": "clinker:block/sea_shell_3"
+  }
+}

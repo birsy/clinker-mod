@@ -159,7 +159,7 @@ public class OthershoreNoiseComputers {
 //        return Math.max(noodleCaves, aquifer);
 //    });
 //
-//    // fluid fillers MUST use computeDirect because aquifers go beyond the boundaries of their contained chunk.
+//    // state fillers MUST use computeDirect because aquifers go beyond the boundaries of their contained chunk.
 //    public static final FluidFieldFiller FLUID_FILLER = (x, y, z, context) -> {
 //        NoiseFieldCache executor = context.noiseComputerExecutor();
 //        double surfaceHeight = executor.computeDirect(x, y, z, OthershoreNoiseComputers.SURFACE_HEIGHT_COMPUTER);
