@@ -1,0 +1,22 @@
+LICENSE INFORMATION
+===================
+
+1. Source Code
+The source code of this project is subject to the Mozilla Public License Version 2 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at:
+https://www.mozilla.org/en-US/MPL/2.0/
+Software distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the specific language governing rights and limitations under the License.
+
+2. Project Assets
+All non-code assets included in this project (including, but not limited to, textures, models, sounds, and other media) are All Rights Reserved.
+These assets may not be extracted, modified, reused, or redistributed outside of this mod, including for use in other projects, without explicit permission from the copyright holder.
+
+3. Modpack Distribution
+Permission is explicitly granted to include unmodified compiled versions of this mod (e.g., JAR files) in public or private Minecraft modpacks, provided that:
+- Proper credit is given to the original author(s)
+- This license is included or linked
+- The mod is not sold on its own or claimed as original work
+
+4.
+Minecraft is a trademark of Mojang Studios.
+This project is not affiliated with or endorsed by Mojang Studios.
+Any rights not expressly granted by this license are reserved by the copyright holder.
