@@ -2,7 +2,7 @@
   "type": "clinker:pool",
   "config": {
     "radius": 5,
-    "border_thickness": 1,
+    "offset_height": 0,
     "fluid_state": {
       "type": "minecraft:simple_state_provider",
       "state": {

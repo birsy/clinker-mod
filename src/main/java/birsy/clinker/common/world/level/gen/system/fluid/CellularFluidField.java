@@ -35,12 +35,14 @@ public class CellularFluidField implements FluidField {
     final int paddingCells;
 
     final int cellCountXZ, cellCountY;
+    final int cellLayerSize;
     final int minCellX, minCellY, minCellZ;
     final FluidCell[] cells;
 
     final int minX, minY, minZ;
     final int paddingBlocksXZ, paddingBlocksY;
     final int blockCountXZ, blockCountY;
+    final int blockLayerSize;
     final BlockState[] fluidStates;
 
     final PositionalRandomFactory aquiferRandom;
@@ -74,7 +76,8 @@ public class CellularFluidField implements FluidField {
         this.paddingBlocksY = this.paddingCells * this.cellHeight;
         this.blockCountXZ = 16 + this.paddingBlocksXZ * 2;
         this.blockCountY = chunk.getHeight() + this.paddingBlocksY * 2;
-        this.fluidStates = new BlockState[this.blockCountXZ * this.blockCountXZ * this.blockCountY];
+        this.blockLayerSize = this.blockCountXZ * this.blockCountXZ;
+        this.fluidStates = new BlockState[this.blockLayerSize * this.blockCountY];
         Arrays.fill(this.fluidStates, AIR);
 
         this.minCellX = Math.floorDiv(this.minX, this.cellWidth);
@@ -82,7 +85,8 @@ public class CellularFluidField implements FluidField {
         this.minCellZ = Math.floorDiv(this.minZ, this.cellWidth);
         this.cellCountXZ = (16 / this.cellWidth) + this.paddingCells * 2;
         this.cellCountY = (chunk.getHeight() / this.cellHeight) + this.paddingCells * 2;
-        this.cells = new FluidCell[this.cellCountXZ * this.cellCountXZ * this.cellCountY];
+        this.cellLayerSize = this.cellCountXZ * this.cellCountXZ;
+        this.cells = new FluidCell[this.cellLayerSize * this.cellCountY];
 
         this.worldFeatures = worldFeatures;
     }

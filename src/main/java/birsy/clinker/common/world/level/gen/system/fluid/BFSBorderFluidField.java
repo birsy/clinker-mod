@@ -14,18 +14,27 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public class BFSBorderFluidField extends CellularFluidField {
-    static final double VERTICAL_WEIGHT_MULTIPLIER = 1.25;
-    static final int WEIGHT_PER_BLOCK = 10;
-    static final int MAX_WEIGHT = (int) Math.round(Math.sqrt(3) * WEIGHT_PER_BLOCK * VERTICAL_WEIGHT_MULTIPLIER);
-    static final int[] NEIGHBOR_WEIGHTS = Util.make(() -> {
-        int[] weights = new int[NEIGHBOR_OFFSETS.length];
+    // really approximate euclidean distance
+    // trying to keep this as small as possible since the smaller it is the faster dial's algorithm runs
+    static final int ADJACENT_COST = 3, DIAGONAL_2_COST = 4, DIAGONAL_3_COST = 5;
+    static final int UP_BONUS_COST = 1;
+    static final int[] NEIGHBOR_COSTS = Util.make(() -> {
+        int[] costs = new int[NEIGHBOR_OFFSETS.length];
         for (int i = 0; i < NEIGHBOR_OFFSETS.length; i++) {
             int[] neighborOffsets = NEIGHBOR_OFFSETS[i];
-            double distance = Mth.length(neighborOffsets[0], neighborOffsets[1], neighborOffsets[2]);
-            if (neighborOffsets[1] >= 1) distance *= VERTICAL_WEIGHT_MULTIPLIER;
-            weights[i] = (int) Math.round(distance * WEIGHT_PER_BLOCK);
+            // determine what kind of corner it is
+            int zeroCount = 0;
+            for (int neighborOffset : neighborOffsets) if (neighborOffset == 0) zeroCount++;
+            // assign cost accordingly
+            int cost = 0;
+            if (zeroCount >= 3) cost = ADJACENT_COST;
+            else if (zeroCount >= 2) cost = DIAGONAL_2_COST;
+            else if (zeroCount >= 1) cost = DIAGONAL_3_COST;
+            // going up costs a little extra
+            if (neighborOffsets[1] >= 1) cost += UP_BONUS_COST;
+            costs[i] = cost;
         }
-        return weights;
+        return costs;
     });
 
     final int[] borderDistances;
@@ -49,13 +58,13 @@ public class BFSBorderFluidField extends CellularFluidField {
         int bY = localY + this.paddingBlocksY;
         int bZ = localZ + this.paddingBlocksXZ;
         int blockIndex = index(bX, bY, bZ, this.blockCountXZ, this.blockCountY);
-        return (this.borderDistances[blockIndex] / (double)WEIGHT_PER_BLOCK) - 2;
+        return (this.borderDistances[blockIndex] / (double) ADJACENT_COST) - 2;
     }
 
     @Override
     public void precomputeValues(NoiseField finalDensityField, NoiseField waterfallPresenceField) {
         super.precomputeValues(finalDensityField, waterfallPresenceField);
-        this.initializeFluidBorders(finalDensityField);
+        this.initializeFluidBordersByCell();
         this.computeWaterfalls(waterfallPresenceField);
         this.computeBorderDistances();
     }
@@ -70,10 +79,10 @@ public class BFSBorderFluidField extends CellularFluidField {
                     int blockIndex = index(bX, bY, bZ, this.blockCountXZ, this.blockCountY);
                     BlockState state = this.fluidStates[blockIndex];
 
-                    // vertical
                     int yIndex = index(bX, prevY, bZ, this.blockCountXZ, this.blockCountY);
                     BlockState belowState = this.fluidStates[yIndex];
-                    // air blocks don't consider state blocks below them
+                    // only fluids check the block below them
+                    // because only fluids flow down...
                     if (!state.isAir() && state != belowState) {
                         borderDistances[blockIndex] = 0;
                         continue;
@@ -92,6 +101,57 @@ public class BFSBorderFluidField extends CellularFluidField {
                     if (state != xState) {
                         borderDistances[blockIndex] = 0;
                         continue;
+                    }
+                }
+            }
+        }
+    }
+
+    // todo: benchmark if this is actually faster
+    protected void initializeFluidBordersByCell() {
+        for (int cY = 0; cY < this.cellCountY; cY++) {
+            for (int cZ = 0; cZ < this.cellCountXZ; cZ++) {
+                for (int cX = 0; cX < this.cellCountXZ; cX++) {
+                    int cellIndex = index(cX, cY, cZ, this.cellCountXZ, this.cellCountY);
+                    FluidCell cell = this.cells[cellIndex];
+                    int blockStartX = cX * this.cellWidth,
+                        blockStartY = cY * this.cellHeight,
+                        blockStartZ = cZ * this.cellWidth;
+
+                    // only non-homogenous cells will have borders
+                    if (!cell.homogenousWithNeighbors) {
+                        for (int bY = blockStartY; bY < blockStartY + cellHeight; bY++) {
+                            int prevY = Math.max(0, bY - 1);
+                            for (int bZ = blockStartZ; bZ < blockStartZ + cellWidth; bZ++) {
+                                int prevZ = Math.max(0, bZ - 1);
+                                for (int bX = blockStartX; bX < blockStartX + cellWidth; bX++) {
+                                    int blockIndex = index(bX, bY, bZ, this.blockCountXZ, this.blockCountY);
+                                    BlockState state = this.fluidStates[blockIndex];
+
+                                    int yIndex = index(bX, prevY, bZ, this.blockCountXZ, this.blockCountY);
+                                    BlockState belowState = this.fluidStates[yIndex];
+                                    // only fluids check the block below them
+                                    // because only fluids flow down...
+                                    if (!state.isAir() && state != belowState) {
+                                        borderDistances[blockIndex] = 0;
+                                        continue;
+                                    }
+                                    int zIndex = index(bX, bY, prevZ, this.blockCountXZ, this.blockCountY);
+                                    BlockState zState = this.fluidStates[zIndex];
+                                    if (state != zState) {
+                                        borderDistances[blockIndex] = 0;
+                                        continue;
+                                    }
+                                    int prevX = Math.max(0, bX - 1);
+                                    int xIndex = index(prevX, bY, bZ, this.blockCountXZ, this.blockCountY);
+                                    BlockState xState = this.fluidStates[xIndex];
+                                    if (state != xState) {
+                                        borderDistances[blockIndex] = 0;
+                                        continue;
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -136,7 +196,7 @@ public class BFSBorderFluidField extends CellularFluidField {
     public void computeBorderDistances() {
         // dial's algorithms dijkstra bfs
         // scaled by face cost
-        final int maxDistance = Math.min(this.paddingBlocksXZ, this.paddingBlocksY) * MAX_WEIGHT + 1;
+        final int maxDistance = Math.min(this.paddingBlocksXZ, this.paddingBlocksY) * ADJACENT_COST + 1;
 
         IntArrayList[] buckets = new IntArrayList[maxDistance];
         for (int i = 0; i < maxDistance; i++) buckets[i] = new IntArrayList();
@@ -153,9 +213,8 @@ public class BFSBorderFluidField extends CellularFluidField {
                 if (currentDistance != curDist) continue; // out of date
 
                 // decode position from index
-                int layerSize = this.blockCountXZ * this.blockCountXZ;
-                int bY = currentIndex / layerSize;
-                int rem = currentIndex % layerSize;
+                int bY = currentIndex / this.blockLayerSize;
+                int rem = currentIndex % this.blockLayerSize;
                 int bZ = rem / this.blockCountXZ;
                 int bX = rem % this.blockCountXZ;
 
@@ -167,7 +226,7 @@ public class BFSBorderFluidField extends CellularFluidField {
                     if (outOfRange(nX, nY, nZ, blockCountXZ, blockCountY)) continue;
 
                     int neighborIndex = index(nX, nY, nZ, blockCountXZ, blockCountY);
-                    int newDistance = currentDistance +  NEIGHBOR_WEIGHTS[i];
+                    int newDistance = currentDistance + NEIGHBOR_COSTS[i];
                     if (newDistance < borderDistances[neighborIndex]) {
                         borderDistances[neighborIndex] = newDistance;
                         if (newDistance < maxDistance) buckets[newDistance].add(neighborIndex);
