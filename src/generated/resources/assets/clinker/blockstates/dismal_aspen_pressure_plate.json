@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=false": {
+      "model": "clinker:block/dismal_aspen_pressure_plate"
+    },
+    "powered=true": {
+      "model": "clinker:block/dismal_aspen_pressure_plate_down"
+    }
+  }
+}

@@ -1,7 +1,7 @@
 {
   "parent": "minecraft:block/cube_column",
   "textures": {
-    "end": "clinker:block/polished_calc_bottom",
-    "side": "clinker:block/polished_calc_stairs"
+    "end": "clinker:block/polished_calc_top",
+    "side": "clinker:block/polished_calc_slab"
   }
 }

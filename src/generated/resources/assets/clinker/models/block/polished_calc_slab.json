@@ -1,8 +1,8 @@
 {
   "parent": "minecraft:block/slab",
   "textures": {
-    "bottom": "clinker:block/polished_calc_bottom",
-    "side": "clinker:block/polished_calc_stairs",
-    "top": "clinker:block/polished_calc_bottom"
+    "bottom": "clinker:block/polished_calc_top",
+    "side": "clinker:block/polished_calc_slab",
+    "top": "clinker:block/polished_calc_top"
   }
 }

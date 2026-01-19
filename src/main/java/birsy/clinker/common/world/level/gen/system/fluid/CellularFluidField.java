@@ -134,13 +134,12 @@ public class CellularFluidField implements FluidField {
 
     protected FluidCell createCell(int cellX, int cellY, int cellZ) {
         RandomSource cellRandom = aquiferRandom.at(cellX, cellY, cellZ);
-        int centerX = cellX * this.cellWidth +  this.halfCellWidth +  (int)Math.round(cellRandom.triangle(0, this.halfCellWidth));
-        int centerY = cellY * this.cellHeight + this.halfCellHeight + (int)Math.round(cellRandom.triangle(0, this.halfCellHeight));
-        int centerZ = cellZ * this.cellWidth +  this.halfCellWidth +  (int)Math.round(cellRandom.triangle(0, this.halfCellWidth));
-
-        FluidLevel fluidLevel = this.fluidFieldFiller.compute(centerX, centerY, centerZ, this.noiseCache.context);
+        double centerX = cellX * this.cellWidth +  this.halfCellWidth +  cellRandom.triangle(0, this.halfCellWidth),
+               centerY = cellY * this.cellHeight + this.halfCellHeight + cellRandom.triangle(0, this.halfCellWidth),
+               centerZ = cellZ * this.cellWidth +  this.halfCellWidth +  cellRandom.triangle(0, this.halfCellWidth);
+        FluidLevel fluidLevel = this.fluidFieldFiller.compute((int)centerX, (int)centerY, (int)centerZ, this.noiseCache.context);
         for (WorldFeature worldFeature : this.worldFeatures)
-            fluidLevel = worldFeature.modifyFluidLevel(centerX, centerY, centerZ, fluidLevel, this.noiseCache.context);
+            fluidLevel = worldFeature.modifyFluidLevel((int)centerX, (int)centerY, (int)centerZ, fluidLevel, this.noiseCache.context);
         return new FluidCell(centerX, centerY, centerZ, fluidLevel, this.cellHeight);
     }
 
@@ -162,7 +161,7 @@ public class CellularFluidField implements FluidField {
 
                                 FluidCell neighborCell = this.cells[neighborIndex];
                                 if (neighborCell.fluidType() != cell.fluidType() ||
-                                        neighborCell.cellType != CellType.EMPTY) {
+                                        neighborCell.cellType != CellType.FULL) {
                                     continue NEXT_CELL;
                                 }
                             }
@@ -184,39 +183,6 @@ public class CellularFluidField implements FluidField {
                         case SURFACE:
                             continue NEXT_CELL;
                             // still haven't quite worked out surface homogeneity...
-                        /* case SURFACE:
-                            // if the cell is a surface, check that:
-                            // a) the cells above are completely empty
-                            // b) the cells below are completely full of the same kind of state
-                            // c) the cells surrounding are surfaces, with the same state and water height.
-                            for (int dX = -1; dX <= 1; dX++) {
-                                int nX = cX + dX;
-                                for (int dY = -1; dY <= 1; dY++) {
-                                    int nY = cY + dY;
-                                    for (int dZ = -1; dZ <= 1; dZ++) {
-                                        int nZ = cZ + dZ;
-                                        if (dX == 0 && dY == 0 && dZ == 0) continue;
-                                        int neighborIndex = index(nX, nY, nZ, this.cellCountXZ, this.cellCountY);
-                                        FluidCell neighborCell = this.cells[neighborIndex];
-                                        // condition A:
-                                        if (dY == 1 &&
-                                            neighborCell.cellType != CellType.EMPTY) {
-                                            continue NEXT_CELL;
-                                        }
-                                        // condition B:
-                                        else if (dY == -1 &&
-                                                (neighborCell.fluidType() != cell.fluidType() ||
-                                                 neighborCell.cellType != CellType.FULL)) {
-                                            continue NEXT_CELL;
-                                        }
-                                        // condition C:
-                                        else if (neighborCell.fluidLevel != cell.fluidLevel) {
-                                            continue NEXT_CELL;
-                                        }
-                                    }
-                                }
-                            }
-                        break;*/
                     }
                     // if it passes all tests, it's homogenous.
                     cell.homogenousWithNeighbors = true;
@@ -270,11 +236,11 @@ public class CellularFluidField implements FluidField {
                                     int globalBlockX = bX - this.paddingBlocksXZ + this.minX;
 
                                     FluidCell bestCell = cell;
-                                    float bestDistance = cell.distanceSq(globalBlockX, globalBlockY, globalBlockZ);
+                                    double bestDistance = cell.distanceSq(globalBlockX, globalBlockY, globalBlockZ);
                                     for (int i = 0; i < validCellNeighborCount; i++) {
                                         int neighborIndex = cellNeighborIndices[i];
                                         FluidCell neighborCell = this.cells[neighborIndex];
-                                        float neighborDistance = neighborCell.distanceSq(globalBlockX, globalBlockY, globalBlockZ);
+                                        double neighborDistance = neighborCell.distanceSq(globalBlockX, globalBlockY, globalBlockZ);
                                         if (neighborDistance < bestDistance) {
                                             bestCell = neighborCell;
                                             bestDistance = neighborDistance;
@@ -301,12 +267,12 @@ public class CellularFluidField implements FluidField {
     }
 
     protected static final class FluidCell {
-        final int centerX, centerY, centerZ;
+        final double centerX, centerY, centerZ;
         final FluidLevel fluidLevel;
         final CellType cellType;
         boolean homogenousWithNeighbors;
 
-        FluidCell(int centerX, int centerY, int centerZ, FluidLevel fluidLevel, int cellHeight) {
+        FluidCell(double centerX, double centerY, double centerZ, FluidLevel fluidLevel, int cellHeight) {
             this.centerX = centerX;
             this.centerY = centerY;
             this.centerZ = centerZ;
@@ -325,8 +291,8 @@ public class CellularFluidField implements FluidField {
         BlockState fluidType() {
             return this.fluidLevel.fluid();
         }
-        int distanceSq(int x, int y, int z) {
-            int dx = x - centerX, dy = y - centerY, dz = z - centerZ;
+        double distanceSq(int x, int y, int z) {
+            double dx = x - centerX, dy = y - centerY, dz = z - centerZ;
             return dx * dx + dy * dy + dz * dz;
         }
         BlockState resolve(int y) {

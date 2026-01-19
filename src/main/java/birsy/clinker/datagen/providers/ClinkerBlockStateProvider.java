@@ -313,31 +313,95 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
 
         // polished calc
         {
-            ResourceLocation polishedCalc = this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_calc");
-            ResourceLocation polishedCalcTop = this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_calc_top");
-            ResourceLocation polishedCalcBottom = this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_calc_bottom");
-            ResourceLocation polishedCalcStairs = this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_calc_stairs");
+            String blockName = name(POLISHED_CALC.get());
+            ResourceLocation polishedCalcTop = this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + blockName + "_top");
+            ResourceLocation polishedCalcBottom = this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + blockName + "_bottom");
+            ResourceLocation polishedCalcStairs = this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + blockName + "_stairs");
+            ResourceLocation polishedCalcSlab = this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + blockName + "_slab");
 
-            this.simpleBlockWithItem(POLISHED_CALC.get(), this.models().cubeBottomTop("polished_calc", polishedCalc, polishedCalcBottom, polishedCalcTop));
+            String bricksName = name(CALC_BRICKS.get());
 
-            this.models().cubeColumn("polished_calc_double_slab", polishedCalcStairs, polishedCalcBottom);
+            this.simpleBlockWithVariation(
+                    POLISHED_CALC.get(),
+                    (i) -> {
+                        String suffix = i == 0 ? "" : "_" + i;
+                        return this.models().cubeBottomTop(
+                                blockName + suffix,
+                                this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + blockName + suffix),
+                                this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + bricksName + suffix),
+                                polishedCalcTop
+                        );
+                    },
+                    6
+            );
+            this.simpleBlockItem(POLISHED_CALC.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + blockName)));
+
+            this.models().cubeColumn("polished_calc_double_slab", polishedCalcSlab, polishedCalcTop);
             this.slabBlock(POLISHED_CALC_SLAB.get(),
-                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_calc_double_slab"),
-                    polishedCalcStairs, polishedCalcBottom, polishedCalcBottom);
-            this.simpleBlockItem(POLISHED_CALC_SLAB.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_calc_slab")));
+                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + blockName + "_double_slab"),
+                    polishedCalcSlab, polishedCalcTop, polishedCalcTop);
+            this.simpleBlockItem(POLISHED_CALC_SLAB.get(), this.models().getExistingFile(polishedCalcSlab));
 
             this.stairsBlock(POLISHED_CALC_STAIRS.get(), polishedCalcStairs, polishedCalcBottom, polishedCalcBottom);
-            this.simpleBlockItem(POLISHED_CALC_STAIRS.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_calc_stairs")));
+            this.simpleBlockItem(POLISHED_CALC_STAIRS.get(), this.models().getExistingFile(polishedCalcStairs));
 
-            ResourceLocation polishedCalcWallSide = this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_calc_wall_side");
-            ResourceLocation polishedCalcWallPost = this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_calc_wall_post");
-            ResourceLocation polishedCalcWallBottom = this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_calc_wall_bottom");
-            ResourceLocation polishedCalcWallTop = this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_calc_wall_top");
+            ResourceLocation polishedCalcWallSide = this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + blockName + "_wall_side");
+            ResourceLocation polishedCalcWallPost = this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + blockName + "_wall_post");
+            ResourceLocation polishedCalcWallBottom = this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + blockName + "_wall_bottom");
+            ResourceLocation polishedCalcWallTop = this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + blockName + "_wall_top");
 
             this.wallExtended(POLISHED_CALC_WALL.get(),
                     polishedCalcWallPost,
                     polishedCalcWallSide, polishedCalcWallTop, polishedCalcWallBottom,
                     polishedCalcTop, polishedCalcWallBottom, polishedCalcWallBottom
+            );
+        }
+
+        // dismal aspen
+        {
+            String name = "dismal_aspen";
+
+            String planksName = name + "_planks";
+            ResourceLocation planks = this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + planksName);
+
+            this.logBlock(BUNDLED_DISMAL_ASPEN_LOGS.get());
+            this.simpleBlockItem(BUNDLED_DISMAL_ASPEN_LOGS.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/bundled_dismal_aspen_logs")));
+
+            this.simpleBlockWithItem(DISMAL_ASPEN_PLANKS.get(), this.models().cubeAll(name + "_planks", planks));
+            this.stairsBlock(DISMAL_ASPEN_STAIRS.get(), planks);
+            this.simpleBlockItem(DISMAL_ASPEN_STAIRS.get(),
+                    this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name + "_stairs"))
+            );
+            this.slabBlock(DISMAL_ASPEN_SLAB.get(), planks, planks);
+            this.simpleBlockItem(DISMAL_ASPEN_SLAB.get(),
+                    this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name + "_slab"))
+            );
+            this.fenceBlock(DISMAL_ASPEN_FENCE.get(), planks);
+            this.simpleBlockItem(DISMAL_ASPEN_FENCE.get(),
+                    this.models().fenceInventory(name + "_fence_inventory", planks)
+            );
+            this.fenceGateBlock(DISMAL_ASPEN_FENCE_GATE.get(), planks);
+            this.simpleBlockItem(DISMAL_ASPEN_FENCE_GATE.get(),
+                    this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name + "_fence_gate"))
+            );
+            this.pressurePlateBlock(DISMAL_ASPEN_PRESSURE_PLATE.get(), planks);
+            this.simpleBlockItem(DISMAL_ASPEN_PRESSURE_PLATE.get(),
+                    this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name + "_pressure_plate"))
+            );
+            this.buttonBlock(DISMAL_ASPEN_BUTTON.get(), planks);
+            this.simpleBlockItem(DISMAL_ASPEN_BUTTON.get(),
+                    this.models().buttonInventory(name + "_button_inventory", planks)
+            );
+            ResourceLocation doorBottom = this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name + "_door_bottom");
+            ResourceLocation doorTop = this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name + "_door_top");
+            this.doorBlockWithRenderType(DISMAL_ASPEN_DOOR.get(), doorBottom, doorTop, "minecraft:cutout_mipped");
+            this.flatBlockItem(DISMAL_ASPEN_DOOR.get(),
+                    modLoc("item/" + name + "_door")
+            );
+            ResourceLocation trapdoor = this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name + "_trapdoor");
+            this.trapdoorBlockWithRenderType(DISMAL_ASPEN_TRAPDOOR.get(), trapdoor, true, "minecraft:cutout_mipped");
+            this.simpleBlockItem(DISMAL_ASPEN_TRAPDOOR.get(),
+                    this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name + "_trapdoor_bottom"))
             );
         }
 

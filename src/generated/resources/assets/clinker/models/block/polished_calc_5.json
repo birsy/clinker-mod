@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "clinker:block/calc_bricks_5",
+    "side": "clinker:block/polished_calc_5",
+    "top": "clinker:block/polished_calc_top"
+  }
+}

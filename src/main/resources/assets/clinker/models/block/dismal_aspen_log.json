@@ -1,0 +1,22 @@
+{
+    "parent": "block/cube",
+    "textures": {
+        "top": "clinker:block/dismal_aspen_log_top",
+        "side": "clinker:block/dismal_aspen_log",
+        "particle": "#side"
+    },
+    "elements": [
+        {
+            "from": [ 4, 0, 4 ], 
+            "to": [ 12, 16, 12 ], 
+            "faces": {
+                "north": { "texture": "#side", "uv": [ 4, 0, 12, 16 ] },
+                "east": { "texture": "#side", "uv": [ 4, 0, 12, 16 ] },
+                "south": { "texture": "#side", "uv": [ 4, 0, 12, 16 ] },
+                "west": { "texture": "#side", "uv": [ 4, 0, 12, 16 ] },
+                "up": { "texture": "#top", "uv": [ 4, 4, 12, 12 ], "cullface": "up" },
+                "down": { "texture": "#top", "uv": [ 4, 4, 12, 12 ], "cullface": "down" }
+            }
+        }
+    ]
+}

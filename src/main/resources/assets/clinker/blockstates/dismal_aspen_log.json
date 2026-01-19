@@ -1,0 +1,109 @@
+{
+    "multipart": [
+        {
+            "when": { "axis": "x" },
+            "apply": {
+                "model": "clinker:block/dismal_aspen_log",
+                "x": 270,
+                "y": 90
+            }
+        },
+        {
+            "when": { "axis": "x", "north": "true" },
+            "apply": {
+                "model": "clinker:block/dismal_aspen_log_side",
+                "x": 270
+            }
+        },
+        {
+            "when": { "axis": "x", "east": "true" },
+            "apply": {
+                "model": "clinker:block/dismal_aspen_log_side"
+            }
+        },
+        {
+            "when": { "axis": "x", "south": "true" },
+            "apply": {
+                "model": "clinker:block/dismal_aspen_log_side",
+                "x": 90
+            }
+        },
+        {
+            "when": { "axis": "x", "west": "true" },
+            "apply": {
+                "model": "clinker:block/dismal_aspen_log_side",
+                "y": 180
+            }
+        },
+
+        {
+            "when": { "axis": "y" },
+            "apply": {
+                "model": "clinker:block/dismal_aspen_log"
+            }
+        },
+        {
+            "when": { "axis": "y", "north": "true" },
+            "apply": {
+                "model": "clinker:block/dismal_aspen_log_side"
+            }
+        },
+        {
+            "when": { "axis": "y", "east": "true" },
+            "apply": {
+                "model": "clinker:block/dismal_aspen_log_side",
+                "y": 90
+            }
+        },
+        {
+            "when": { "axis": "y", "south": "true" },
+            "apply": {
+                "model": "clinker:block/dismal_aspen_log_side",
+                "y": 180
+            }
+        },
+        {
+            "when": { "axis": "y", "west": "true" },
+            "apply": {
+                "model": "clinker:block/dismal_aspen_log_side",
+                "y": 270
+            }
+        },
+
+        {
+            "when": { "axis": "z" },
+            "apply": {
+                "model": "clinker:block/dismal_aspen_log",
+                "x": 90
+            }
+        },
+        {
+            "when": { "axis": "z", "north": "true" },
+            "apply": {
+                "model": "clinker:block/dismal_aspen_log_side",
+                "x": 270
+            }
+        },
+        {
+            "when": { "axis": "z", "east": "true" },
+            "apply": {
+                "model": "clinker:block/dismal_aspen_log_side",
+                "y": 90
+            }
+        },
+        {
+            "when": { "axis": "z", "south": "true" },
+            "apply": {
+                "model": "clinker:block/dismal_aspen_log_side",
+                "x": 90
+            }
+        },
+        {
+            "when": { "axis": "z", "west": "true" },
+            "apply": {
+                "model": "clinker:block/dismal_aspen_log_side",
+                "y": 270
+            }
+        }
+    ]
+}

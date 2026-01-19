@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/fence_inventory",
+  "textures": {
+    "texture": "clinker:block/dismal_aspen_planks"
+  }
+}

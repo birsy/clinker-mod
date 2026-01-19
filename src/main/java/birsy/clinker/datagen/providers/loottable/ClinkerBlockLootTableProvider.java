@@ -68,7 +68,7 @@ public class ClinkerBlockLootTableProvider extends BlockLootSubProvider {
                                 )
                 )
         );
-        this.add(ClinkerBlocks.BARRIERROCK.get(), createShearsOrSilkTouchOnlyTable(ClinkerBlocks.BARRIERROCK.get()));
+        this.add(ClinkerBlocks.BARRIERROCK.get(), createSilkTouchOnlyTable(ClinkerBlocks.BARRIERROCK.get()));
 
         // autogenerate everything else!
         for (Block block : this.getKnownBlocks()) {
@@ -80,6 +80,8 @@ public class ClinkerBlockLootTableProvider extends BlockLootSubProvider {
                 this.add(slab, this.createSlabItemTable(slab));
             } else if (block instanceof BushBlock plant) {
                 this.add(plant, createShearsOrSilkTouchOnlyTable(plant));
+            } else if (block instanceof DoorBlock door) {
+                this.add(door, this.createDoorTable(door));
             } else {
                 this.dropSelf(block);
             }

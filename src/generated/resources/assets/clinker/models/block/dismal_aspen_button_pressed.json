@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/button_pressed",
+  "textures": {
+    "texture": "clinker:block/dismal_aspen_planks"
+  }
+}

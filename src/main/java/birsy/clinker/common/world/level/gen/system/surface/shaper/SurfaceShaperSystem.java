@@ -128,7 +128,7 @@ public class SurfaceShaperSystem {
         }
         // clamp
         lowerBound = Math.max(minSurfaceHeight + lowerBound, minY);
-        upperBound = Math.min(maxSurfaceHeight + lowerBound, chunkHeight-1);
+        upperBound = Math.min(maxSurfaceHeight + upperBound, chunkHeight-1);
 
         // initialize surface density field
         NoiseField surfaceDensityField = NoiseFieldTypes.COARSE.create(chunkHeight, 0);
@@ -154,7 +154,7 @@ public class SurfaceShaperSystem {
             surfaceDensityField.byBlock(lowerBound - minY, upperBound - minY,
                     (index, x, y, z) -> {
                         double weight = biomeWeightField.retrieve(x, y, z) * totalWeightField.retrieve(x, y, z);
-                        surfaceDensityFieldArray[index] =
+                        surfaceDensityFieldArray[index] +=
                                 shaper.surfaceDensity(x + minX, y + minY, z + minZ, weight, cache.context);
                     }
             );

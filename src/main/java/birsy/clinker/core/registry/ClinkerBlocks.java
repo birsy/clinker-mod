@@ -2,16 +2,18 @@ package birsy.clinker.core.registry;
 
 import birsy.clinker.common.world.block.*;
 import birsy.clinker.common.world.block.plant.*;
-import birsy.clinker.common.world.block.plant.aspen.SwampAspenLogBlock;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.mixin.common.BlockBehavior$PropertiesAccessor;
 import net.minecraft.core.Direction;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.ColorRGBA;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.component.SuspiciousStewEffects;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.properties.BlockSetType;
+import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.Vec3;
@@ -248,8 +250,59 @@ public class ClinkerBlocks
     //public static final DeferredBlock<Block> LOCUST_BUTTON = createBlock("locust_button", () -> new ButtonBlock(getOthershoreWoodProperties(MapColor.TERRACOTTA_GREEN)));
     //public static final DeferredBlock<Block> LOCUST_PRESSURE_PLATE = createBlock("locust_pressure_plate", () -> new PressurePlateBlock(PressurePlateBlock.Sensitivity.MOBS, getOthershoreWoodProperties(MapColor.TERRACOTTA_GREEN)));
 
-    public static final DeferredBlock<Block> SWAMP_ASPEN_LOG = createBlock("swamp_aspen_log", () -> new SwampAspenLogBlock(BlockBehaviour.Properties.of().mapColor((state) -> state.getValue(RotatedPillarBlock.AXIS) == Direction.Axis.Y ? MapColor.WOOD : MapColor.COLOR_LIGHT_GRAY).strength(2.0F).sound(SoundType.STEM).noOcclusion()));
-    public static final DeferredBlock<Block> STRIPPED_SWAMP_ASPEN_LOG = createBlock("stripped_swamp_aspen_log", () -> new SwampAspenLogBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(2.0F).sound(SoundType.STEM).noOcclusion()));
+    // dismal aspen
+    public static final BlockSetType DISMAL_ASPEN_BLOCK_SET_TYPE = BlockSetType.register(new BlockSetType("dismal_aspen"));
+    public static final WoodType DISMAL_ASPEN_WOOD_TYPE = WoodType.register(
+            new WoodType(
+                "dismal_aspen",
+                DISMAL_ASPEN_BLOCK_SET_TYPE,
+                SoundType.NETHER_WOOD,
+                SoundType.NETHER_WOOD_HANGING_SIGN,
+                SoundEvents.NETHER_WOOD_FENCE_GATE_CLOSE,
+                SoundEvents.NETHER_WOOD_FENCE_GATE_OPEN
+            )
+    );
+    public static final DeferredBlock<ThinLogBlock> DISMAL_ASPEN_LOG = createBlock("dismal_aspen_log", () -> new ThinLogBlock(
+            BlockBehaviour.Properties.ofFullCopy(Blocks.WARPED_STEM).mapColor(MapColor.COLOR_LIGHT_GRAY), 4)
+    );
+    public static final DeferredBlock<RotatedPillarBlock> BUNDLED_DISMAL_ASPEN_LOGS = createBlock("bundled_dismal_aspen_logs", () -> new RotatedPillarBlock(
+            BlockBehaviour.Properties.ofFullCopy(Blocks.WARPED_STEM).mapColor(MapColor.COLOR_LIGHT_GRAY))
+    );
+    public static final DeferredBlock<Block> DISMAL_ASPEN_PLANKS = createBlock("dismal_aspen_planks", () -> new Block(
+            BlockBehaviour.Properties.ofFullCopy(Blocks.WARPED_PLANKS).mapColor(MapColor.COLOR_LIGHT_GRAY))
+    );
+    public static final DeferredBlock<StairBlock> DISMAL_ASPEN_STAIRS = createBlock("dismal_aspen_stairs", () -> new StairBlock(
+            DISMAL_ASPEN_PLANKS.get().defaultBlockState(),
+            BlockBehaviour.Properties.ofFullCopy(Blocks.WARPED_STAIRS).mapColor(MapColor.COLOR_LIGHT_GRAY))
+    );
+    public static final DeferredBlock<SlabBlock> DISMAL_ASPEN_SLAB = createBlock("dismal_aspen_slab", () -> new SlabBlock(
+            BlockBehaviour.Properties.ofFullCopy(Blocks.WARPED_SLAB).mapColor(MapColor.COLOR_LIGHT_GRAY))
+    );
+    public static final DeferredBlock<DoorBlock> DISMAL_ASPEN_DOOR = createBlock("dismal_aspen_door", () -> new DoorBlock(
+            DISMAL_ASPEN_BLOCK_SET_TYPE,
+            BlockBehaviour.Properties.ofFullCopy(Blocks.WARPED_TRAPDOOR).mapColor(MapColor.COLOR_LIGHT_GRAY))
+    );
+    public static final DeferredBlock<TrapDoorBlock> DISMAL_ASPEN_TRAPDOOR = createBlock("dismal_aspen_trapdoor", () -> new TrapDoorBlock(
+            DISMAL_ASPEN_BLOCK_SET_TYPE,
+            BlockBehaviour.Properties.ofFullCopy(Blocks.WARPED_TRAPDOOR).mapColor(MapColor.COLOR_LIGHT_GRAY))
+    );
+    public static final DeferredBlock<FenceBlock> DISMAL_ASPEN_FENCE = createBlock("dismal_aspen_fence", () -> new FenceBlock(
+            BlockBehaviour.Properties.ofFullCopy(Blocks.WARPED_FENCE).mapColor(MapColor.COLOR_LIGHT_GRAY))
+    );
+    public static final DeferredBlock<FenceGateBlock> DISMAL_ASPEN_FENCE_GATE = createBlock("dismal_aspen_fence_gate", () -> new FenceGateBlock(
+            DISMAL_ASPEN_WOOD_TYPE,
+            BlockBehaviour.Properties.ofFullCopy(Blocks.WARPED_FENCE_GATE).mapColor(MapColor.COLOR_LIGHT_GRAY))
+    );
+    public static final DeferredBlock<PressurePlateBlock> DISMAL_ASPEN_PRESSURE_PLATE = createBlock("dismal_aspen_pressure_plate", () -> new PressurePlateBlock(
+            DISMAL_ASPEN_BLOCK_SET_TYPE,
+            BlockBehaviour.Properties.ofFullCopy(Blocks.WARPED_PRESSURE_PLATE).mapColor(MapColor.COLOR_LIGHT_GRAY))
+    );
+    public static final DeferredBlock<ButtonBlock> DISMAL_ASPEN_BUTTON = createBlock("dismal_aspen_button", () -> new ButtonBlock(
+            DISMAL_ASPEN_BLOCK_SET_TYPE,
+            30,
+            BlockBehaviour.Properties.ofFullCopy(Blocks.WARPED_BUTTON))
+    );
+
 
     //Plants
     public static final DeferredBlock<Block> TALL_MUD_REEDS = createBlock("tall_mud_reeds", () -> new DoubleMudReedsBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.TALL_GRASS).mapColor(MapColor.COLOR_BROWN).sound(SoundType.HANGING_ROOTS)));

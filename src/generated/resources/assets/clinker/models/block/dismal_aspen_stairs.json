@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/stairs",
+  "textures": {
+    "bottom": "clinker:block/dismal_aspen_planks",
+    "side": "clinker:block/dismal_aspen_planks",
+    "top": "clinker:block/dismal_aspen_planks"
+  }
+}

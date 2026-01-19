@@ -147,14 +147,26 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(STROMATOLITE.get());
 
         pOutput.accept(LEAD_ORE.get());
+
         pOutput.accept(LOCUST_LOG.get());
         pOutput.accept(TRIMMED_LOCUST_LOG.get());
         pOutput.accept(STRIPPED_LOCUST_LOG.get());
         pOutput.accept(LOCUST_PLANKS.get());
         pOutput.accept(LOCUST_STAIRS.get());
         pOutput.accept(LOCUST_SLAB.get());
-        pOutput.accept(SWAMP_ASPEN_LOG.get());
-        pOutput.accept(STRIPPED_SWAMP_ASPEN_LOG.get());
+
+        pOutput.accept(DISMAL_ASPEN_LOG.get());
+        pOutput.accept(BUNDLED_DISMAL_ASPEN_LOGS.get());
+        pOutput.accept(DISMAL_ASPEN_PLANKS.get());
+        pOutput.accept(DISMAL_ASPEN_STAIRS.get());
+        pOutput.accept(DISMAL_ASPEN_SLAB.get());
+        pOutput.accept(DISMAL_ASPEN_DOOR.get());
+        pOutput.accept(DISMAL_ASPEN_TRAPDOOR.get());
+        pOutput.accept(DISMAL_ASPEN_FENCE.get());
+        pOutput.accept(DISMAL_ASPEN_FENCE_GATE.get());
+        pOutput.accept(DISMAL_ASPEN_PRESSURE_PLATE.get());
+        pOutput.accept(DISMAL_ASPEN_BUTTON.get());
+
         pOutput.accept(TALL_MUD_REEDS.get());
         pOutput.accept(SHORT_MUD_REEDS.get());
         pOutput.accept(MUD_REEDS.get());

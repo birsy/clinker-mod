@@ -1,5 +1,6 @@
 package birsy.clinker.datagen.providers;
 
+import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerTags;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
@@ -9,6 +10,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 
@@ -48,6 +50,30 @@ public class ClinkerRecipeProvider extends RecipeProvider {
                 .pattern("C")
                 .unlockedBy(getHasName(SALTMOSS_SPROUTS), has(SALTMOSS_SPROUTS)).save(output);
 
+        // dismal aspen
+        String hasDismalAspenName = "has_dismal_aspen";
+        Criterion<?> dismalAspenRecipeUnlockCriteria =
+                woodSet(output, hasDismalAspenName,
+                        BUNDLED_DISMAL_ASPEN_LOGS,
+                        DISMAL_ASPEN_PLANKS,
+                        DISMAL_ASPEN_STAIRS,
+                        DISMAL_ASPEN_SLAB,
+                        DISMAL_ASPEN_DOOR,
+                        DISMAL_ASPEN_TRAPDOOR,
+                        DISMAL_ASPEN_FENCE,
+                        DISMAL_ASPEN_FENCE_GATE,
+                        DISMAL_ASPEN_BUTTON,
+                        DISMAL_ASPEN_PRESSURE_PLATE);
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.BUILDING_BLOCKS, DISMAL_ASPEN_PLANKS)
+                .requires(DISMAL_ASPEN_LOG)
+                .unlockedBy(hasDismalAspenName, dismalAspenRecipeUnlockCriteria)
+                .save(output, Clinker.resource("dismal_aspen_planks_from_single_log"));
+        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, BUNDLED_DISMAL_ASPEN_LOGS)
+                .define('#', DISMAL_ASPEN_LOG)
+                .pattern("##")
+                .pattern("##")
+                .unlockedBy(hasDismalAspenName, dismalAspenRecipeUnlockCriteria).save(output);
+
         // mortar & pestle
         ShapedRecipeBuilder.shaped(RecipeCategory.BREWING, MORTAR)
                 .define('#', ClinkerTags.BASALT)
@@ -73,6 +99,46 @@ public class ClinkerRecipeProvider extends RecipeProvider {
     protected static void stoneWall(RecipeOutput recipeOutput, ItemLike wall, ItemLike material) {
         wall(recipeOutput, wall, material);
         stonecutterResultFromBase(recipeOutput, RecipeCategory.BUILDING_BLOCKS, wall, material);
+    }
+
+    protected static Criterion<?> woodSet(RecipeOutput recipeOutput,
+                                  String hasName,
+                                  ItemLike log,
+                                  ItemLike planks, ItemLike stairs, ItemLike slab,
+                                  ItemLike door, ItemLike trapdoor,
+                                  ItemLike fence, ItemLike fenceGate,
+                                  ItemLike button, ItemLike pressurePlate) {
+        Criterion<?> hasWoodSet = inventoryTrigger(ItemPredicate.Builder.item().of(log, planks, stairs, slab, door, trapdoor, fence, fenceGate, button, pressurePlate));
+
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.BUILDING_BLOCKS, planks, 4).requires(log)
+                .unlockedBy(hasName, hasWoodSet)
+                .save(recipeOutput);
+        stairBuilder(stairs, Ingredient.of(planks))
+                .unlockedBy(hasName, hasWoodSet)
+                .save(recipeOutput);
+        slabBuilder(RecipeCategory.BUILDING_BLOCKS, slab, Ingredient.of(planks))
+                .unlockedBy(hasName, hasWoodSet)
+                .save(recipeOutput);
+        doorBuilder(door, Ingredient.of(planks))
+                .unlockedBy(hasName, hasWoodSet)
+                .save(recipeOutput);
+        trapdoorBuilder(trapdoor, Ingredient.of(planks))
+                .unlockedBy(hasName, hasWoodSet)
+                .save(recipeOutput);
+        fenceBuilder(fence, Ingredient.of(planks))
+                .unlockedBy(hasName, hasWoodSet)
+                .save(recipeOutput);
+        fenceGateBuilder(fenceGate, Ingredient.of(planks))
+                .unlockedBy(hasName, hasWoodSet)
+                .save(recipeOutput);
+        buttonBuilder(button, Ingredient.of(planks))
+                .unlockedBy(hasName, hasWoodSet)
+                .save(recipeOutput);
+        pressurePlateBuilder(RecipeCategory.BUILDING_BLOCKS, pressurePlate, Ingredient.of(planks))
+                .unlockedBy(hasName, hasWoodSet)
+                .save(recipeOutput);
+
+        return hasWoodSet;
     }
 
     protected static void slab(RecipeOutput recipeOutput, ItemLike slab, ItemLike material) {

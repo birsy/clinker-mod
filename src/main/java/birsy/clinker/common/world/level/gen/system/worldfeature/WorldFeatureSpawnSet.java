@@ -22,6 +22,5 @@ public record WorldFeatureSpawnSet(List<Integer> metaChunkDepths, List<WorldFeat
                         Codec.INT.fieldOf("spacing").forGetter(WorldFeatureInstance::spacingRadius)
                 ).apply(instance, WorldFeatureInstance::new)
         );
-
     }
 }

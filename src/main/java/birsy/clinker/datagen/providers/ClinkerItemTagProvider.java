@@ -49,5 +49,8 @@ public class ClinkerItemTagProvider extends ItemTagsProvider {
                 .add(Items.BASALT,
                      Items.POLISHED_BASALT,
                      Items.SMOOTH_BASALT);
+        this.tag(ItemTags.LOGS_THAT_BURN)
+                .add(ClinkerBlocks.DISMAL_ASPEN_LOG.asItem())
+                .add(ClinkerBlocks.BUNDLED_DISMAL_ASPEN_LOGS.asItem());
     }
 }

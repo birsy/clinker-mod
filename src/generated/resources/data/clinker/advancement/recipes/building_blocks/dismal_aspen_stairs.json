@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_dismal_aspen": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "clinker:bundled_dismal_aspen_logs",
+              "clinker:dismal_aspen_planks",
+              "clinker:dismal_aspen_stairs",
+              "clinker:dismal_aspen_slab",
+              "clinker:dismal_aspen_door",
+              "clinker:dismal_aspen_trapdoor",
+              "clinker:dismal_aspen_fence",
+              "clinker:dismal_aspen_fence_gate",
+              "clinker:dismal_aspen_button",
+              "clinker:dismal_aspen_pressure_plate"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "clinker:dismal_aspen_stairs"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_dismal_aspen"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "clinker:dismal_aspen_stairs"
+    ]
+  }
+}

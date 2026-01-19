@@ -1,3 +1,15 @@
 {
-  "values": []
+  "values": [
+    "clinker:dismal_aspen_log",
+    "clinker:bundled_dismal_aspen_logs",
+    "clinker:dismal_aspen_planks",
+    "clinker:dismal_aspen_stairs",
+    "clinker:dismal_aspen_slab",
+    "clinker:dismal_aspen_door",
+    "clinker:dismal_aspen_trapdoor",
+    "clinker:dismal_aspen_fence",
+    "clinker:dismal_aspen_fence_gate",
+    "clinker:dismal_aspen_pressure_plate",
+    "clinker:dismal_aspen_button"
+  ]
 }

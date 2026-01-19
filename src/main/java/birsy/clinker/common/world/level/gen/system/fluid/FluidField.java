@@ -10,5 +10,4 @@ public interface FluidField {
     default void precomputeValues(NoiseField finalDensityField, NoiseField waterfallPresenceField) {}
     double getBorderDensity(int localX, int localY, int localZ);
     BlockState getFluidState(int x, int y, int z);
-
 }

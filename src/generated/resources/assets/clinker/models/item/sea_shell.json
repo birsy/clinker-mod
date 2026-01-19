@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "clinker:block/sea_shell"
+    "layer0": "clinker:item/sea_shell"
   }
 }

@@ -80,6 +80,9 @@ public class ClinkerBlockTagProvider extends BlockTagsProvider {
             if (name.contains("ash")) {
                 usesShovel.add(block.get());
             }
+            if (name.contains("dismal_aspen")) {
+                usesAxe.add(block.get());
+            }
         }
 
         IntrinsicTagAppender<Block> needsDiamondTool = this.tag(BlockTags.NEEDS_DIAMOND_TOOL).replace(false);

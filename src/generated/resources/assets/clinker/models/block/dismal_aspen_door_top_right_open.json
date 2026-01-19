@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/door_top_right_open",
+  "render_type": "minecraft:cutout_mipped",
+  "textures": {
+    "bottom": "clinker:block/dismal_aspen_door_bottom",
+    "top": "clinker:block/dismal_aspen_door_top"
+  }
+}

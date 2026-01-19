@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "clinker:block/dismal_aspen_slab"
+    },
+    "type=double": {
+      "model": "clinker:block/dismal_aspen_planks"
+    },
+    "type=top": {
+      "model": "clinker:block/dismal_aspen_slab_top"
+    }
+  }
+}

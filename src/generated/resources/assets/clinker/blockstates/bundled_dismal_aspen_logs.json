@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "clinker:block/bundled_dismal_aspen_logs_horizontal",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "clinker:block/bundled_dismal_aspen_logs"
+    },
+    "axis=z": {
+      "model": "clinker:block/bundled_dismal_aspen_logs_horizontal",
+      "x": 90
+    }
+  }
+}

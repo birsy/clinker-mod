@@ -17,7 +17,7 @@ public class BFSBorderFluidField extends CellularFluidField {
     // really approximate euclidean distance
     // trying to keep this as small as possible since the smaller it is the faster dial's algorithm runs
     static final int ADJACENT_COST = 3, DIAGONAL_2_COST = 4, DIAGONAL_3_COST = 5;
-    static final int UP_BONUS_COST = 1;
+    static final float UP_COST_MULTIPLIER = 1.5F;
     static final int[] NEIGHBOR_COSTS = Util.make(() -> {
         int[] costs = new int[NEIGHBOR_OFFSETS.length];
         for (int i = 0; i < NEIGHBOR_OFFSETS.length; i++) {
@@ -27,11 +27,11 @@ public class BFSBorderFluidField extends CellularFluidField {
             for (int neighborOffset : neighborOffsets) if (neighborOffset == 0) zeroCount++;
             // assign cost accordingly
             int cost = 0;
-            if (zeroCount >= 3) cost = ADJACENT_COST;
-            else if (zeroCount >= 2) cost = DIAGONAL_2_COST;
-            else if (zeroCount >= 1) cost = DIAGONAL_3_COST;
+            if (zeroCount >= 2) cost = ADJACENT_COST;
+            else if (zeroCount >= 1) cost = DIAGONAL_2_COST;
+            else if (zeroCount >= 0) cost = DIAGONAL_3_COST;
             // going up costs a little extra
-            if (neighborOffsets[1] >= 1) cost += UP_BONUS_COST;
+            if (neighborOffsets[1] >= 1) cost = Math.round(cost * UP_COST_MULTIPLIER);
             costs[i] = cost;
         }
         return costs;

@@ -5,6 +5,7 @@ import birsy.clinker.common.world.level.gen.system.noise.*;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerDynamicRegistries;
 import net.minecraft.core.Holder;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.levelgen.PositionalRandomFactory;
@@ -113,7 +114,7 @@ public class MetaChunkMap {
                     int radius = realizedFeature.separationRadius;
                     if (placed) {
                         for (WorldFeature otherFeature : spawnSetFeatures) {
-                            int distance = (x - otherFeature.getCenterX()) + (z - otherFeature.getCenterZ());
+                            double distance = Mth.length(x - otherFeature.getCenterX(), z - otherFeature.getCenterZ());
                             if (distance < radius + otherFeature.separationRadius) {
                                 continue featureSet;
                             }

@@ -149,7 +149,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             minY = chunk.getMinBuildHeight(),
             minZ = chunk.getPos().getMinBlockZ();
         int chunkHeight = chunk.getHeight();
-        int fluidCellWidth = 4, fluidCellHeight = 16;
+        int fluidCellWidth = 8, fluidCellHeight = 8;
         SeededNoiseHolder noiseHolder = ((SeededNoiseHolderHolder) (Object) randomState).clinker$noiseHolder();
         NoiseFieldCache noiseFieldCache =
                 new NoiseFieldCache(minX, minY, minZ, chunkHeight, noiseHolder);
