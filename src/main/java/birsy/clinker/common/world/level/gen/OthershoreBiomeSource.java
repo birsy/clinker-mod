@@ -68,9 +68,11 @@ public class OthershoreBiomeSource extends BiomeSource {
     }
 
     public void prefillSurfaceNoiseFields(NoiseFieldCache cache) {
-
+        cache.fillNoiseField(ClinkerNoiseComputers.BASE_SURFACE_HEIGHT);
     }
     public Holder<Biome> getSurfaceBiome(int qX, int qZ, NoiseContext context) {
+        double surfaceHeight = context.retrieve(ClinkerNoiseComputers.BASE_SURFACE_HEIGHT, QuartPos.toBlock(qX), 0, QuartPos.toBlock(qZ));
+        if (surfaceHeight < SEA_HEIGHT + 20) return brineSwamp;
         return ashSteppe;
     }
     public Set<Holder<Biome>> getSurfaceBiomesWithin(int x1, int z1, int x2, int z2, NoiseContext context) {
@@ -90,10 +92,10 @@ public class OthershoreBiomeSource extends BiomeSource {
         BiomeCache2d cache = new BiomeCache2d(minQX, minQZ, maxQX, maxQZ);
         int index = 0;
         for (int z = 0; z < cache.sizeZ; z++) {
-            int globalQZ = cache.minQuartX + z;
+            int globalQZ = cache.minQuartZ + z;
             for (int x = 0; x < cache.sizeX; x++) {
-                int globalQX = cache.minQuartZ + x;
-                Holder<Biome> biome = getSurfaceBiome(globalQZ, globalQX, context);
+                int globalQX = cache.minQuartX + x;
+                Holder<Biome> biome = getSurfaceBiome(globalQX, globalQZ, context);
                 cache.biomes[index++] = biome;
                 cache.containedBiomes.add(biome);
             }

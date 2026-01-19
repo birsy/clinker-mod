@@ -23,7 +23,7 @@ public class NoiseFieldTypes {
                     new InterpolatedNoiseField(chunkHeight, 1, 2, smallestCellScale(paddingBlocks));
     public static final NoiseFieldType COARSE =
             (chunkHeight, paddingBlocks) ->
-                    new InterpolatedNoiseField(chunkHeight, 2, 3, smallestCellScale(paddingBlocks));
+                    new InterpolatedNoiseField(chunkHeight, 2, 2, smallestCellScale(paddingBlocks));
     public static final NoiseFieldType VERY_COARSE =
             (chunkHeight, paddingBlocks) ->
                     new InterpolatedNoiseField(chunkHeight, 4, 4, smallestCellScale(paddingBlocks));

@@ -178,7 +178,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         final FluidFieldFiller fluidFiller = (x, y, z, context) -> {
             double surfaceHeight = fluidFieldSurfaceHeight.retrieve(x - minX, y - minY, z - minZ);
             // sea level
-            if (y > surfaceHeight - cellHeight) return new FluidLevel(70, Blocks.WATER.defaultBlockState());
+            if (y > surfaceHeight - cellHeight) return new FluidLevel(OthershoreBiomeSource.SEA_HEIGHT, Blocks.WATER.defaultBlockState());
             // the aquifer
             if (y < 0) return new FluidLevel(-40, Blocks.WATER.defaultBlockState());
             return FluidLevel.EMPTY;

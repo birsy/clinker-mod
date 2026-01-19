@@ -1,63 +1,75 @@
 package birsy.clinker.common.world.level.gen.content.surface.shaper;
 
-public class BrineSwampSurfaceShaper {//extends BiomeShaper {
-//    @Override
-//    public double surfaceDensity(int x, int y, int z, double biomeContribution, NoiseComputerContext context) {
-//        int seaHeight = OthershoreBiomeSource.SEA_HEIGHT + 1;
-//        SeededNoiseHolder noise = context.noiseHolder();
-//        NoiseFieldCache executor = context.noiseComputerExecutor();
-//
-//        double baseSurfaceHeight = executor.compute(x, y, z, OthershoreNoiseComputers.SURFACE_HEIGHT_COMPUTER) + 2;
-//
-//        double islandNoise = executor.compute(x, y, z, OthershoreNoiseComputers.BASE_NOISE_2D[5]) * 2;
-//        if (islandNoise < 0) islandNoise *= 2;
-//        islandNoise += executor.compute(x, y, z, OthershoreNoiseComputers.BASE_NOISE_2D[4]);
-//
-//        double flat = executor.compute(x, y, z, OthershoreNoiseComputers.BASE_NOISE_2D_ALT[6]);
-//        flat = Math.clamp(flat * 3, 0, 1) * 0.9;
-//
-//        double surfaceHeight = baseSurfaceHeight + Mth.lerp(flat, islandNoise, 0);
-//        double density = y - surfaceHeight;
-//
-//        double cragHeight = Math.abs(executor.compute(x, y, z, OthershoreNoiseComputers.BASE_NOISE_2D_ALT[8]));
-//        cragHeight = Mth.clampedMap(cragHeight, -1, 1, 0, 1);
-//        cragHeight *= cragHeight;
-//        cragHeight = Mth.lerp(cragHeight, -5, 15);
-//        double cragHeightDensity = Math.max(0, y - (seaHeight + cragHeight));
-//
-//        double erosion = Math.abs(y - (seaHeight + cragHeight * 0.5));
-//        erosion = Mth.clampedMap(erosion, 0, 5, 11, 0);
-//        double columnNoise = executor.compute(x, y, z, OthershoreNoiseComputers.BASE_NOISE_2D[4]);
-//        columnNoise += executor.compute(x, y, z, OthershoreNoiseComputers.BASE_NOISE_2D[3]) * 0.25;
-//        columnNoise /= 1.25;
-//        erosion *= columnNoise * 0.5 + 0.5;
-//        erosion *= Mth.clampedMap(executor.compute(x, y, z, OthershoreNoiseComputers.BASE_NOISE_2D_ALT[7]), -1, 1, 0.5, 1);
-//
-//        double craggyIslandNoise = executor.compute(x, y, z, OthershoreNoiseComputers.BASE_NOISE_2D[7]);
-//        craggyIslandNoise += executor.compute(x, y, z, OthershoreNoiseComputers.BASE_NOISE_2D[6]) * 0.7;
-//        craggyIslandNoise = Mth.map(craggyIslandNoise, -1.0, -0.8, -1.0, 0.0);
-//        double craggyIslands = craggyIslandNoise * 20;
-//        craggyIslands += cragHeightDensity * 20;
-//        craggyIslands += erosion * 4;
-//
-//        double craggyWall = Math.abs(executor.compute(x, y, z, OthershoreNoiseComputers.BASE_NOISE_2D[8])) * 80;
-//        craggyWall -= 4;
-//        craggyWall += cragHeightDensity * 2.2;
-//        craggyWall += Mth.clampedMap(craggyIslandNoise, 1.0, 1.2, 0, 12);
-//        craggyWall += erosion;
-//
-//        craggyIslands = MathUtils.smoothMinExpo(craggyIslands, craggyWall, 3);
-//
-////        double funnyPillars = executor.compute(x, y, z, OthershoreNoiseComputers.BASE_NOISE_2D_ALT[7]);
-////        funnyPillars = Mth.map(funnyPillars, -0.95, -1.0, 0.0, -1.0);
-////        funnyPillars += Math.max(0, y - (seaHeight + cragHeight * 1.5));
-////        funnyPillars *= 8;
-////        funnyPillars += erosion * 0.5;
-////
-////        craggyIslands = Math.min(craggyIslands, funnyPillars);
-//
-//        density = MathUtils.smoothMinExpo(density, craggyIslands, 3);
-//
-//        return density;
-//    }
+import birsy.clinker.common.world.level.gen.OthershoreBiomeSource;
+import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
+import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
+import birsy.clinker.common.world.level.gen.system.surface.shaper.SurfaceShaper;
+import birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers;
+import birsy.clinker.core.util.MathUtils;
+import net.minecraft.util.Mth;
+
+public class BrineSwampSurfaceShaper extends SurfaceShaper {
+    @Override
+    public void prefillNoiseFields(NoiseFieldCache cache, int minSurfaceHeight, int maxSurfaceHeight) {
+        cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, ClinkerNoiseComputers.BASE_SURFACE_HEIGHT);
+        cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, ClinkerNoiseComputers.BASE_NOISE_2D[3]);
+        cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, ClinkerNoiseComputers.BASE_NOISE_2D[4]);
+        cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, ClinkerNoiseComputers.BASE_NOISE_2D[5]);
+        cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, ClinkerNoiseComputers.BASE_NOISE_2D[6]);
+        cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, ClinkerNoiseComputers.BASE_NOISE_2D[7]);
+        cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, ClinkerNoiseComputers.BASE_NOISE_2D[8]);
+        cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, ClinkerNoiseComputers.BASE_NOISE_2D_ALT[6]);
+        cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, ClinkerNoiseComputers.BASE_NOISE_2D_ALT[7]);
+        cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, ClinkerNoiseComputers.BASE_NOISE_2D_ALT[8]);
+    }
+
+    @Override
+    public double surfaceDensity(int x, int y, int z, double biomeContribution, NoiseContext context) {
+        int seaHeight = OthershoreBiomeSource.SEA_HEIGHT + 1;
+
+        double baseSurfaceHeight = context.retrieve(ClinkerNoiseComputers.BASE_SURFACE_HEIGHT, x, y, z) + 2;
+
+        double islandNoise = context.retrieve(ClinkerNoiseComputers.BASE_NOISE_2D[5], x, y, z) * 2;
+        if (islandNoise < 0) islandNoise *= 2;
+        islandNoise += context.retrieve(ClinkerNoiseComputers.BASE_NOISE_2D[4], x, y, z);
+
+        double flat = context.retrieve(ClinkerNoiseComputers.BASE_NOISE_2D_ALT[6], x, y, z);
+        flat = Math.clamp(flat * 3, 0, 1) * 0.9;
+
+        double surfaceHeight = baseSurfaceHeight + Mth.lerp(flat, islandNoise, 0);
+        double density = y - surfaceHeight;
+
+        double cragHeight = Math.abs(context.retrieve(ClinkerNoiseComputers.BASE_NOISE_2D_ALT[8], x, y, z));
+        cragHeight = Mth.clampedMap(cragHeight, -1, 1, 0, 1);
+        cragHeight *= cragHeight;
+        cragHeight = Mth.lerp(cragHeight, -5, 15);
+        double cragHeightDensity = Math.max(0, y - (seaHeight + cragHeight));
+
+        double erosion = Math.abs(y - (seaHeight + cragHeight * 0.5));
+        erosion = Mth.clampedMap(erosion, 0, 5, 11, 0);
+        double columnNoise = context.retrieve(ClinkerNoiseComputers.BASE_NOISE_2D[4], x, y, z);
+        columnNoise += context.retrieve(ClinkerNoiseComputers.BASE_NOISE_2D[3], x, y, z) * 0.25;
+        columnNoise /= 1.25;
+        erosion *= columnNoise * 0.5 + 0.5;
+        erosion *= Mth.clampedMap(context.retrieve(ClinkerNoiseComputers.BASE_NOISE_2D_ALT[7], x, y, z), -1, 1, 0.5, 1);
+
+        double craggyIslandNoise = context.retrieve(ClinkerNoiseComputers.BASE_NOISE_2D[7], x, y, z);
+        craggyIslandNoise += context.retrieve(ClinkerNoiseComputers.BASE_NOISE_2D[6], x, y, z) * 0.7;
+        craggyIslandNoise = Mth.map(craggyIslandNoise, -1.0, -0.8, -1.0, 0.0);
+        double craggyIslands = craggyIslandNoise * 20;
+        craggyIslands += cragHeightDensity * 20;
+        craggyIslands += erosion * 4;
+
+        double craggyWall = Math.abs(context.retrieve(ClinkerNoiseComputers.BASE_NOISE_2D[8], x, y, z)) * 80;
+        craggyWall -= 4;
+        craggyWall += cragHeightDensity * 2.2;
+        craggyWall += Mth.clampedMap(craggyIslandNoise, 1.0, 1.2, 0, 12);
+        craggyWall += erosion;
+
+        craggyIslands = MathUtils.smoothMinExpo(craggyIslands, craggyWall, 3);
+
+        density = MathUtils.smoothMinExpo(density, craggyIslands, 3);
+
+        return density;
+    }
 }

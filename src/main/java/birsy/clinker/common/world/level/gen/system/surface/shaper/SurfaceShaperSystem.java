@@ -2,6 +2,7 @@ package birsy.clinker.common.world.level.gen.system.surface.shaper;
 
 import birsy.clinker.common.world.level.gen.OthershoreBiomeSource;
 import birsy.clinker.common.world.level.gen.system.biome.BiomeCache2d;
+import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
 import birsy.clinker.common.world.level.gen.system.noise.PaddedNoiseFieldCache;
 import birsy.clinker.common.world.level.gen.system.noise.SeededNoiseHolder;
@@ -88,36 +89,26 @@ public class SurfaceShaperSystem {
                 biomeCache.context
         );
 
+
         NoiseField[] biomeWeightFields = new NoiseField[this.biomeToIndex.size()];
         NoiseField totalWeightField = NoiseFieldTypes.COARSE_2D.create(chunkHeight, 0);
         double[] totalWeightFieldArray = totalWeightField.array();
-        for (Holder<Biome> biomeHolder : surfaceBiomeCache.containedBiomes()) {
+        for (Holder<Biome> biome : surfaceBiomeCache.containedBiomes()) {
             NoiseField biomeWeightField = NoiseFieldTypes.COARSE_2D.create(chunkHeight, 0);
             double[] biomeWeightFieldArray = biomeWeightField.array();
-            biomeWeightField.byBlock((index, x, y, z) -> {
-                double total = 0;
-                int blurIndex = 0;
-                for (int oZ = 0; oZ < BIOME_BLUR_KERNEL_SIZE; oZ++) {
-                    double offsetZ = z + (oZ - HALF_BIOME_BLUR_KERNEL_SIZE) * 3 + minZ;
-                    for (int oX = 0; oX < BIOME_BLUR_KERNEL_SIZE; oX++) {
-                        double offsetX = x + (oX - HALF_BIOME_BLUR_KERNEL_SIZE) * 3 + minX;
-                        Holder<Biome> neighborBiome = surfaceBiomeCache.retrieve(
-                                QuartPos.fromBlock((int) offsetX),
-                                QuartPos.fromBlock((int) offsetZ)
-                        );
-                        if (neighborBiome.is(biomeHolder)) total += BIOME_BLUR_KERNEL[blurIndex];
-                        blurIndex++;
-                    }
-                }
-                biomeWeightFieldArray[index] = total;
-            });
-            biomeWeightFields[biomeToIndex.get(biomeHolder)] = biomeWeightField;
+            biomeWeightField.byBlock((index, x, y, z) -> fillBiomeWeightField(
+                    biome, surfaceBiomeCache, biomeWeightFieldArray,
+                    minX, minZ,
+                    index, x, y, z
+            ));
+            biomeWeightFields[biomeToIndex.get(biome)] = biomeWeightField;
             totalWeightField.byIndex((index) -> totalWeightFieldArray[index] += biomeWeightFieldArray[index]);
         }
         totalWeightField.byIndex((index) -> {
             double weight = totalWeightFieldArray[index];
             totalWeightFieldArray[index] = weight > 0 ? 1.0 / totalWeightFieldArray[index] : 0;
         });
+
 
         // determine bounds
         int lowerBound = Integer.MAX_VALUE, upperBound = Integer.MIN_VALUE;
@@ -126,16 +117,15 @@ public class SurfaceShaperSystem {
             lowerBound = Math.min(lowerBound, shaper.lowerBound());
             upperBound = Math.max(upperBound, shaper.upperBound());
         }
-        // clamp
         lowerBound = Math.max(minSurfaceHeight + lowerBound, minY);
         upperBound = Math.min(maxSurfaceHeight + upperBound, chunkHeight-1);
+
 
         // initialize surface density field
         NoiseField surfaceDensityField = NoiseFieldTypes.COARSE.create(chunkHeight, 0);
         double[] surfaceDensityFieldArray = surfaceDensityField.array();
         // initialize surface density w/ estimate from base surface height
         Arrays.fill(surfaceDensityFieldArray, 0);
-
         surfaceDensityField.byBlock(0, lowerBound - minY - 1,
                 (index, x, y, z) -> surfaceDensityFieldArray[index] = (y + minY) - baseSurfaceHeight.retrieve(x, y, z)
         );
@@ -152,11 +142,12 @@ public class SurfaceShaperSystem {
             SurfaceShaper shaper = getSurfaceShaper(biomeHolder);
             NoiseField biomeWeightField = biomeWeightFields[biomeToIndex.get(biomeHolder)];
             surfaceDensityField.byBlock(lowerBound - minY, upperBound - minY,
-                    (index, x, y, z) -> {
-                        double weight = biomeWeightField.retrieve(x, y, z) * totalWeightField.retrieve(x, y, z);
-                        surfaceDensityFieldArray[index] +=
-                                shaper.surfaceDensity(x + minX, y + minY, z + minZ, weight, cache.context);
-                    }
+                    (index, x, y, z) -> fillSurfaceDensity(
+                            biomeWeightField, totalWeightField, surfaceDensityFieldArray,
+                            shaper,
+                            minX, minY, minZ,
+                            index, x, y, z, cache.context
+                    )
             );
         }
 
@@ -165,5 +156,34 @@ public class SurfaceShaperSystem {
             worldFeature.modifySurfaceDensityField(minX, minY, minZ, cache, surfaceDensityField);
         
         return surfaceDensityField;
+    }
+
+    private static void fillBiomeWeightField(Holder<Biome> biome, BiomeCache2d surfaceBiomeCache, double[] field,
+                                      int minX, int minZ,
+                                      int index, int x, int y, int z) {
+        double total = 0;
+        int blurIndex = 0;
+        for (int oZ = 0; oZ < BIOME_BLUR_KERNEL_SIZE; oZ++) {
+            double offsetZ = z + (oZ - HALF_BIOME_BLUR_KERNEL_SIZE) * 3 + minZ;
+            for (int oX = 0; oX < BIOME_BLUR_KERNEL_SIZE; oX++) {
+                double offsetX = x + (oX - HALF_BIOME_BLUR_KERNEL_SIZE) * 3 + minX;
+                Holder<Biome> neighborBiome = surfaceBiomeCache.retrieve(
+                        QuartPos.fromBlock((int) offsetX),
+                        QuartPos.fromBlock((int) offsetZ)
+                );
+                if (neighborBiome.is(biome)) total += BIOME_BLUR_KERNEL[blurIndex];
+                blurIndex++;
+            }
+        }
+        field[index] = total;
+    }
+
+    private static void fillSurfaceDensity(NoiseField weightField, NoiseField totalWeightField, double[] surfaceDensities,
+                                    SurfaceShaper shaper,
+                                    int minX, int minY, int minZ,
+                                    int index, int x, int y, int z,
+                                    NoiseContext context) {
+        double weight = weightField.retrieve(x, y, z) * totalWeightField.retrieve(x, y, z);
+        surfaceDensities[index] += shaper.surfaceDensity(x + minX, y + minY, z + minZ, weight, context) * weight;
     }
 }

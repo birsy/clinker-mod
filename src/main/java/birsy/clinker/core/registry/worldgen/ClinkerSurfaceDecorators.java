@@ -1,6 +1,7 @@
 package birsy.clinker.core.registry.worldgen;
 
 import birsy.clinker.common.world.level.gen.content.surface.decorator.AshSteppeSurfaceDecorator;
+import birsy.clinker.common.world.level.gen.content.surface.decorator.BrineSwampSurfaceDecorator;
 import birsy.clinker.common.world.level.gen.system.surface.decorator.BiomeSurfaceDecorator;
 import birsy.clinker.common.world.level.gen.system.surface.decorator.SurfaceDecorator;
 import birsy.clinker.core.Clinker;
@@ -18,6 +19,8 @@ public class ClinkerSurfaceDecorators {
 
     public static final Supplier<BiomeSurfaceDecorator> ASH_STEPPE =
             register("ash_steppe", ClinkerBiomes.ASH_STEPPE, new AshSteppeSurfaceDecorator());
+    public static final Supplier<BiomeSurfaceDecorator> BRINE_SWAMP =
+            register("brine_swamp", ClinkerBiomes.BRINE_SWAMP, new BrineSwampSurfaceDecorator());
 //    public static final Supplier<BiomeSurfaceDecorator> BRINE_SWAMP =
 //            register("brine_swamp", ClinkerBiomes.BRINE_SWAMP, new BrineSwampSurfaceDecorator());
 //    public static final Supplier<BiomeSurfaceDecorator> UNDERGROUND =

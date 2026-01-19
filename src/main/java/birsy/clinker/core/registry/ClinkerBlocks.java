@@ -262,6 +262,9 @@ public class ClinkerBlocks
                 SoundEvents.NETHER_WOOD_FENCE_GATE_OPEN
             )
     );
+    public static final DeferredBlock<Block> DISMAL_ASPEN_HEART = createBlock("dismal_aspen_heart", () -> new DismalAspenHeartBlock(
+            BlockBehaviour.Properties.ofFullCopy(Blocks.WARPED_STEM).mapColor(MapColor.TERRACOTTA_GRAY).randomTicks())
+    );
     public static final DeferredBlock<ThinLogBlock> DISMAL_ASPEN_LOG = createBlock("dismal_aspen_log", () -> new ThinLogBlock(
             BlockBehaviour.Properties.ofFullCopy(Blocks.WARPED_STEM).mapColor(MapColor.COLOR_LIGHT_GRAY), 4)
     );
@@ -280,7 +283,7 @@ public class ClinkerBlocks
     );
     public static final DeferredBlock<DoorBlock> DISMAL_ASPEN_DOOR = createBlock("dismal_aspen_door", () -> new DoorBlock(
             DISMAL_ASPEN_BLOCK_SET_TYPE,
-            BlockBehaviour.Properties.ofFullCopy(Blocks.WARPED_TRAPDOOR).mapColor(MapColor.COLOR_LIGHT_GRAY))
+            BlockBehaviour.Properties.ofFullCopy(Blocks.WARPED_DOOR).mapColor(MapColor.COLOR_LIGHT_GRAY))
     );
     public static final DeferredBlock<TrapDoorBlock> DISMAL_ASPEN_TRAPDOOR = createBlock("dismal_aspen_trapdoor", () -> new TrapDoorBlock(
             DISMAL_ASPEN_BLOCK_SET_TYPE,

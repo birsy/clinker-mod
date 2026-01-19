@@ -361,12 +361,13 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
         {
             String name = "dismal_aspen";
 
-            String planksName = name + "_planks";
-            ResourceLocation planks = this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + planksName);
-
+            // unique blocks
+            this.simpleBlockWithItem(DISMAL_ASPEN_HEART.get(), this.models().cubeAll(name + "_heart", this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name + "_heart")));
             this.logBlock(BUNDLED_DISMAL_ASPEN_LOGS.get());
             this.simpleBlockItem(BUNDLED_DISMAL_ASPEN_LOGS.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/bundled_dismal_aspen_logs")));
 
+            String planksName = name + "_planks";
+            ResourceLocation planks = this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + planksName);
             this.simpleBlockWithItem(DISMAL_ASPEN_PLANKS.get(), this.models().cubeAll(name + "_planks", planks));
             this.stairsBlock(DISMAL_ASPEN_STAIRS.get(), planks);
             this.simpleBlockItem(DISMAL_ASPEN_STAIRS.get(),
