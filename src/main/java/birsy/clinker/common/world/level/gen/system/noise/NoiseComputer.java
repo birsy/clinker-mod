@@ -7,7 +7,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 public final class NoiseComputer {
-    public int id = -1;
+    public int id = -1; // DO NOT TOUCH EVER. assigned on deferred registration
     public final Supplier<NoiseFieldType> fieldType;
     public final BiConsumer<NoiseDependencyCollector, NoiseRegistry> dependencies;
     public final NoiseFieldFiller filler;

@@ -17,9 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(RandomState.class)
 public class RandomStateMixin implements MetaChunkMapHolder, WorldSeedHolder, SeededNoiseHolderHolder {
     @Unique MetaChunkMap clinker$metaChunkMap;
-    @Unique
-    SeededNoiseHolder clinker$noiseHolder;
-
+    @Unique SeededNoiseHolder clinker$noiseHolder;
     @Unique long clinker$worldSeed;
 
     @Inject(method = "<init>",

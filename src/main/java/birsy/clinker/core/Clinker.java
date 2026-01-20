@@ -68,6 +68,7 @@ public class Clinker {
         ClinkerNoiseComputers.NOISE_COMPUTERS.register(modEventBus);
         ClinkerSurfaceDecorators.SURFACE_DECORATORS.register(modEventBus);
         ClinkerSurfaceShapers.SURFACE_SHAPERS.register(modEventBus);
+        ClinkerProtoBiomes.PROTO_BIOMES.register(modEventBus);
 
         modEventBus.addListener(this::setup);
         modEventBus.addListener(this::doClientStuff);

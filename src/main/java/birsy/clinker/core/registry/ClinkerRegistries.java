@@ -2,6 +2,7 @@ package birsy.clinker.core.registry;
 
 import birsy.clinker.common.alchemy.knowledge.type.AlchemyKnowledgeType;
 import birsy.clinker.common.page.PageElementType;
+import birsy.clinker.common.world.level.gen.system.biome.ProtoBiome;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseComputer;
 import birsy.clinker.common.world.level.gen.system.surface.decorator.BiomeSurfaceDecorator;
 import birsy.clinker.common.world.level.gen.system.surface.decorator.SurfaceDecorators;
@@ -51,6 +52,21 @@ public class ClinkerRegistries {
         static final NoiseComputerCallbacks INSTANCE = new NoiseComputerCallbacks();
         @Override
         public void onAdd(Registry<NoiseComputer> registry, int id, ResourceKey<NoiseComputer> key, NoiseComputer value) {
+            value.id = id;
+        }
+    }
+
+    public static final ResourceKey<Registry<ProtoBiome>> PROTO_BIOME_REGISTRY_KEY =
+            ResourceKey.createRegistryKey(Clinker.resource("proto_biome"));
+    public static final Registry<ProtoBiome> PROTO_BIOME_REGISTRY =
+            new RegistryBuilder<>(PROTO_BIOME_REGISTRY_KEY)
+                    .sync(false)
+                    .callback(ProtoBiomeCallbacks.INSTANCE)
+                    .create();
+    static class ProtoBiomeCallbacks implements AddCallback<ProtoBiome> {
+        static final ProtoBiomeCallbacks INSTANCE = new ProtoBiomeCallbacks();
+        @Override
+        public void onAdd(Registry<ProtoBiome> registry, int id, ResourceKey<ProtoBiome> key, ProtoBiome value) {
             value.id = id;
         }
     }
@@ -117,5 +133,6 @@ public class ClinkerRegistries {
         event.register(NOISE_COMPUTER_REGISTRY);
         event.register(SURFACE_DECORATOR_REGISTRY);
         event.register(SURFACE_SHAPER_REGISTRY);
+        event.register(PROTO_BIOME_REGISTRY);
     }
 }

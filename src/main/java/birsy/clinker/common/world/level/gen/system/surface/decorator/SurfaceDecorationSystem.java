@@ -10,6 +10,7 @@ import net.minecraft.core.*;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.state.BlockState;
@@ -121,10 +122,15 @@ public class SurfaceDecorationSystem {
             NoiseContext context, PositionalRandomFactory randomFactory,
             int baseSurfaceHeight, boolean visibleToSun,
             BlockPos.MutableBlockPos pos, BlockPos.MutableBlockPos surfacePos, BlockPos.MutableBlockPos scratchPos) {
+        RandomSource surfaceRandom = randomFactory.at(pos);
+        int minBlockX = chunk.getPos().getMinBlockX(),
+            minBlockZ = chunk.getPos().getMinBlockZ();
+        int biomeOffsetX = Math.clamp(pos.getX() + surfaceRandom.nextIntBetweenInclusive(-1, 1), minBlockX, minBlockX + 15),
+            biomeOffsetZ = Math.clamp(pos.getZ() + surfaceRandom.nextIntBetweenInclusive(-1, 1), minBlockZ, minBlockZ + 15);
         Holder<Biome> biome = chunk.getNoiseBiome(
-                QuartPos.fromBlock(pos.getX()),
+                QuartPos.fromBlock(biomeOffsetX),
                 QuartPos.fromBlock(pos.getY()),
-                QuartPos.fromBlock(pos.getZ())
+                QuartPos.fromBlock(biomeOffsetZ)
         );
         SurfaceDecorator decorator = getSurfaceDecorator(biome);
 
@@ -162,7 +168,7 @@ public class SurfaceDecorationSystem {
         decorator.decorateSurface(
                 chunk, surfacePos.set(pos), seaLevel,
                 visibleToSun, depth, maxElevationIncrease, maxElevationDecrease, baseSurfaceHeight,
-                context, randomFactory.at(pos)
+                context, surfaceRandom
         );
 
         pos.move(Direction.DOWN, depth - 1);
