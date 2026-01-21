@@ -90,8 +90,7 @@ public class OthershoreBiomeSource extends BiomeSource {
         return CODEC;
     }
 
-    public void prefillSurfaceNoiseFields(NoiseFieldCache cache) {}
-    public Holder<Biome> getSurfaceBiome(int qX, int qZ, NoiseContext context) {
+    public Holder<Biome> getSurfaceBiome(int qX, int qZ) {
         return surfaceBiomeResolver.resolveBiome(qX, qZ);
     }
 
@@ -103,19 +102,19 @@ public class OthershoreBiomeSource extends BiomeSource {
         Set<Holder<Biome>> set = new HashSet<>(3);
         for (int qX = minQX; qX <= maxQX; qX++) {
             for (int qZ = minQZ; qZ < maxQZ; qZ++) {
-                set.add(getSurfaceBiome(qX, qZ, context));
+                set.add(getSurfaceBiome(qX, qZ));
             }
         }
         return set;
     }
-    public BiomeCache2d createSurfaceBiomeCache(int minQX, int minQZ, int maxQX, int maxQZ, NoiseContext context) {
+    public BiomeCache2d createSurfaceBiomeCache(int minQX, int minQZ, int maxQX, int maxQZ) {
         BiomeCache2d cache = new BiomeCache2d(minQX, minQZ, maxQX, maxQZ);
         int index = 0;
         for (int z = 0; z < cache.sizeZ; z++) {
             int globalQZ = cache.minQuartZ + z;
             for (int x = 0; x < cache.sizeX; x++) {
                 int globalQX = cache.minQuartX + x;
-                Holder<Biome> biome = getSurfaceBiome(globalQX, globalQZ, context);
+                Holder<Biome> biome = getSurfaceBiome(globalQX, globalQZ);
                 cache.biomes[index++] = biome;
                 cache.containedBiomes.add(biome);
             }
@@ -124,7 +123,6 @@ public class OthershoreBiomeSource extends BiomeSource {
     }
 
     public void prefillNoiseFields(NoiseFieldCache cache) {
-        this.prefillSurfaceNoiseFields(cache);
         cache.fillNoiseField(ClinkerNoiseComputers.BASE_SURFACE_HEIGHT);
     }
     public Holder<Biome> getNoiseBiome(int qX, int qY, int qZ, NoiseContext context) {
@@ -132,7 +130,7 @@ public class OthershoreBiomeSource extends BiomeSource {
         if (bY < 0) return aquifer;
         double groundHeight = context.retrieve(ClinkerNoiseComputers.BASE_SURFACE_HEIGHT, bX, bY, bZ) - 10;
         if (bY < groundHeight) return underground;
-        return getSurfaceBiome(qX, qZ, context);
+        return getSurfaceBiome(qX, qZ);
     }
     public Holder<Biome> getNoiseBiome(int qX, int qY, int qZ, BiomeCache2d surfaceBiomeCache, NoiseContext context) {
         int bX = QuartPos.toBlock(qX), bY = QuartPos.toBlock(qY), bZ = QuartPos.toBlock(qZ);
@@ -148,7 +146,7 @@ public class OthershoreBiomeSource extends BiomeSource {
         int maxQX = QuartPos.fromBlock(Math.max(bX1, bX2)) + 1,
             maxQY = QuartPos.fromBlock(Math.max(bY1, bY2)) + 1,
             maxQZ = QuartPos.fromBlock(Math.max(bZ1, bZ2)) + 1;
-        BiomeCache2d surfaceCache = createSurfaceBiomeCache(minQX, minQZ, maxQX, maxQZ, context);
+        BiomeCache2d surfaceCache = createSurfaceBiomeCache(minQX, minQZ, maxQX, maxQZ);
         Set<Holder<Biome>> set = Sets.newHashSet();
         for (int qX = minQX; qX <= maxQX; qX++) {
             for (int qY = minQY; qY <= maxQY; qY++) {

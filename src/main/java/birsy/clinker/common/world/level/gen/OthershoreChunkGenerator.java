@@ -103,9 +103,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
         int sectionQuartSize = QuartPos.fromSection(1);
         int minQX = QuartPos.fromSection(chunkPos.x), minQZ = QuartPos.fromSection(chunkPos.z);
-        BiomeCache2d surfaceBiomes = othershoreBiomeSource.createSurfaceBiomeCache(
-                minQX, minQZ, minQX + sectionQuartSize, minQZ + sectionQuartSize, noiseFieldCache.context
-        );
+        BiomeCache2d surfaceBiomes = othershoreBiomeSource.createSurfaceBiomeCache(minQX, minQZ, minQX + sectionQuartSize, minQZ + sectionQuartSize);
         for (int section = levelheightaccessor.getMinSection(); section < levelheightaccessor.getMaxSection(); section++) {
             LevelChunkSection levelchunksection = chunk.getSection(chunk.getSectionIndexFromSectionY(section));
             PalettedContainer<Holder<Biome>> palettedcontainer = levelchunksection.getBiomes().recreate();
@@ -253,7 +251,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         int chunkHeight = chunk.getHeight();
 
         NoiseField surfaceDensityField = surfaceShaperSystem.generateSurfaceField(
-                chunk, noiseHolder, cache, biomeCache,
+                chunk, noiseHolder, cache,
                 worldFeaturesInChunk,
                 baseSurfaceHeight, minSurfaceHeight, maxSurfaceHeight,
                 minX, minY, minZ, chunkHeight

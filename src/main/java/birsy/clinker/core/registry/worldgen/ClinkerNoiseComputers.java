@@ -65,46 +65,6 @@ public class ClinkerNoiseComputers {
             )
     );
 
-    public static final Supplier<NoiseComputer> COHESION = NOISE_COMPUTERS.register(
-            "cohesion",
-            () -> new NoiseComputer(
-                    () -> NoiseFieldTypes.COARSE_2D,
-                    (dependencies, registry) -> {
-                        registry.registerNoise("cohesion");
-                    },
-                    (x, y, z, context) -> {
-                        double value = context.sample("cohesion", x / 150.0, z / 150.0);
-                        value = Mth.map(value, -1, 1, 0, 1);
-                        return value * value * value;
-                    }
-            )
-    );
-
-    public static final Supplier<NoiseComputer> TEST_SURFACE = NOISE_COMPUTERS.register(
-            "test_surface",
-            () -> new NoiseComputer(
-                    () -> NoiseFieldTypes.COARSE,
-                    (dependencies, registry) -> {
-                        dependencies.addDependency(BASE_SURFACE_HEIGHT);
-                        dependencies.addDependency(COHESION);
-                        registry.registerNoise("surface");
-                        registry.registerNoise("surface_detail");
-                    },
-                    (x, y, z, context) -> {
-                        double surfaceHeight = context.retrieve(BASE_SURFACE_HEIGHT, x, y, z);
-                        double cohesion = context.retrieve(COHESION, x, y, z);
-                        double surfaceNoise = context.sample("surface",
-                                x / 64.0, y / 128.0, z / 64.0
-                        );
-                        double surfaceDetailNoise = context.sample("surface_detail",
-                                x / 16.0, y / 8.0, z / 16.0
-                        );
-                        surfaceNoise += surfaceDetailNoise * 0.3;
-                        return y - surfaceHeight + surfaceNoise * 32 * cohesion;
-                    }
-            )
-    );
-
     // caves
     public static final Supplier<NoiseComputer> SPELEOTHEMS = NOISE_COMPUTERS.register("speleothems",
             () -> new NoiseComputer(
@@ -120,18 +80,33 @@ public class ClinkerNoiseComputers {
                     }
             )
     );
+    private static final double CAVE_NOODLE_FREQUENCY = 1 / 150.0;
+    public static final Supplier<NoiseComputer> CAVE_NOODLE_A  = NOISE_COMPUTERS.register("cave_noodle_a",
+            () -> new NoiseComputer(
+                    () -> NoiseFieldTypes.COARSE,
+                    (dependencies, registry) -> registry.registerNoise("cave_noodle_a"),
+                    (x, y, z, context) -> context.sample("cave_noodle_a", x * CAVE_NOODLE_FREQUENCY, y * CAVE_NOODLE_FREQUENCY, z * CAVE_NOODLE_FREQUENCY)
+            )
+    );
+    public static final Supplier<NoiseComputer> CAVE_NOODLE_B  = NOISE_COMPUTERS.register("cave_noodle_b",
+            () -> new NoiseComputer(
+                    () -> NoiseFieldTypes.COARSE,
+                    (dependencies, registry) -> registry.registerNoise("cave_noodle_b"),
+                    (x, y, z, context) -> context.sample("cave_noodle_b", x * CAVE_NOODLE_FREQUENCY, y * CAVE_NOODLE_FREQUENCY * 2, z * CAVE_NOODLE_FREQUENCY)
+            )
+    );
     public static final Supplier<NoiseComputer> CAVE_NOODLES  = NOISE_COMPUTERS.register("cave_noodles",
             () -> new NoiseComputer(
                     () -> NoiseFieldTypes.FINE,
                     (dependencies, registry) -> {
                         dependencies.addDependency(SPELEOTHEMS);
-                        registry.registerNoise("cave_a");
-                        registry.registerNoise("cave_b");
+                        dependencies.addDependency(CAVE_NOODLE_A);
+                        dependencies.addDependency(CAVE_NOODLE_B);
                     },
                     (x, y, z, context) -> {
                         double frequency = 1.0 / 150.0;
-                        double caveNoiseA = context.sample("cave_a", x * frequency, y * frequency, z * frequency);
-                        double caveNoiseB = context.sample("cave_b", x * frequency, y * frequency * 2, z * frequency);
+                        double caveNoiseA = context.retrieve(CAVE_NOODLE_A, x, y, z);
+                        double caveNoiseB = context.retrieve(CAVE_NOODLE_B, x, y, z);
                         double sumOfSquares = Math.sqrt(caveNoiseA * caveNoiseA + caveNoiseB * caveNoiseB) / frequency;
                         sumOfSquares = 30 - sumOfSquares;
 
