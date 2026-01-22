@@ -44,11 +44,12 @@ public class BiomeLayerDebugViewScreen extends Screen {
     }
 
     public void createBiomeResolver() {
-        long seed = Random.newSeed();
+        long seed = 0L;
         PositionalRandomFactory randomFactory = RandomSource.create(seed).forkPositional();
         SeededNoiseHolder holder = new SeededNoiseHolder(randomFactory);
         UncachedNoiseContext noiseContext = new UncachedNoiseContext(holder);
         this.resolver = OthershoreBiomeSource.createSurfaceBiomeResolver((name) -> randomFactory.fromHashOf(name).forkPositional(), noiseContext);
+        if (this.viewingLayer >= this.resolver.layerCount) this.viewingLayer = this.resolver.layerCount - 1;
     }
 
     @Override
@@ -69,7 +70,7 @@ public class BiomeLayerDebugViewScreen extends Screen {
         gfx.drawString(font, "press L to change layers. press R to regenerate.", offsetX, offsetY - (font.lineHeight + 2), 0xFFFFFF);
 
         int y = offsetY + MAP_SIZE + 2;
-        gfx.drawString(font, "center: " + centerX + ", " + centerZ, offsetX, y, 0xFFFFFF);
+        gfx.drawString(font, "center: " + (centerX - dragDeltaX * blocksPerPixel) + ", " + (centerZ - dragDeltaY * blocksPerPixel), offsetX, y, 0xFFFFFF);
         y += font.lineHeight + 2;
         gfx.drawString(font, "zoom: " + blocksPerPixel + " blocks / pixel", offsetX, y, 0xFFFFFF);
         y += font.lineHeight + 2;

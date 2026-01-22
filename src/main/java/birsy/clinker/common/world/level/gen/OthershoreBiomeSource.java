@@ -62,7 +62,7 @@ public class OthershoreBiomeSource extends BiomeSource {
     }
 
     public static LayeredBiomeResolver createSurfaceBiomeResolver(Function<ResourceLocation, PositionalRandomFactory> randomState, UncachedNoiseContext noiseContext) {
-        return LayeredBiomeResolver.builder(4)
+        return LayeredBiomeResolver.builder(8)
                 .layer((x, z, current, neighborhood, random, context) -> {
                     double surfaceHeight = context.retrieve(ClinkerNoiseComputers.BASE_SURFACE_HEIGHT, x, 0, z);
                     if (surfaceHeight < SEA_HEIGHT + 20)
@@ -70,13 +70,22 @@ public class OthershoreBiomeSource extends BiomeSource {
                     return ClinkerProtoBiomes.UPPER_SHELF.get();
                 })
                 .zoom()
-                .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(0.5))
-                .layer(new BiomeLayerOperations.WeightedSmooth())
+                .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1))
+                .layer(new BiomeLayerOperations.Smooth())
                 .zoom()
-                .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(0.5))
-                .layer(new BiomeLayerOperations.WeightedSmooth())
+                .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1))
                 .zoom()
-                .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1.0))
+                .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1))
+                .layer(new BiomeLayerOperations.Smooth())
+                .zoom()
+                .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1))
+                .layer(new BiomeLayerOperations.Smooth())
+                .layer(new BiomeLayerOperations.Smooth())
+                .zoom()
+                .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1))
+                .zoom()
+                .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1))
+                .layer(new BiomeLayerOperations.Smooth())
                 .build(randomState, noiseContext);
     }
 

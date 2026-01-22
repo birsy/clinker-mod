@@ -5,11 +5,13 @@ import birsy.clinker.common.world.level.gen.OthershoreBiomeSource;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
 import birsy.clinker.common.world.level.gen.system.surface.decorator.SurfaceDecorator;
+import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.material.Fluids;
 
 import static birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers.*;
 
@@ -51,9 +53,16 @@ public class AshSteppeSurfaceDecorator extends SurfaceDecorator {
                 ashNoiseSample += ditherRandomAshDuneAmount;
 
                 int ashAmount = ((int) Mth.map(ashNoiseSample, -1.0, 1.0, -1, 6));
-                if (ashAmount > 1)
-                    chunk.setBlockState(pos.above(),
-                            ClinkerBlocks.ASH_LAYER.get().defaultBlockState().setValue(FallingLayerBlock.LAYERS, ashAmount), false);
+                if (ashAmount > 1) {
+                    BlockPos ashPos = pos.above();
+                    boolean waterlogged = chunk.getFluidState(ashPos).is(Fluids.WATER);
+                    chunk.setBlockState(ashPos,
+                            ClinkerBlocks.ASH_LAYER.get().defaultBlockState()
+                                    .setValue(FallingLayerBlock.LAYERS, ashAmount)
+                                    .setValue(FallingLayerBlock.WATERLOGGED, waterlogged),
+                            false);
+                }
+
             }
         }
     }
