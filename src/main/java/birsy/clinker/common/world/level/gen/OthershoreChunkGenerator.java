@@ -259,11 +259,27 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
         // compute cave density
         int maxCaveHeight = maxSurfaceHeight + 32;
+        int localMaxCaveHeight = maxCaveHeight - minY + 1;
         NoiseField caveDensityField = cache.fillNoiseField(minY, maxCaveHeight, ClinkerNoiseComputers.CAVES.get());
         double[] caveDensityFieldArray = caveDensityField.array();
-        caveDensityField.byIndex(maxCaveHeight - minY + 1, chunkHeight - 1, (index) -> caveDensityFieldArray[index] = -1000);
+        caveDensityField.byBlock(localMaxCaveHeight, chunkHeight - 1,
+                (index, x, y, z) -> { if (y > localMaxCaveHeight) caveDensityFieldArray[index] = -100; }
+        );
+        NoiseField caveEntranceMaskField =
+                cache.fillNoiseField(minY, maxCaveHeight, ClinkerNoiseComputers.CAVE_ENTRANCE_MASK.get());
         for (WorldFeature worldFeature : worldFeaturesInChunk)
-            worldFeature.modifyCaveDensityField(minX, minY, minZ, cache, caveDensityField);
+            worldFeature.modifyCaveDensityField(minX, minY, minZ, cache, caveDensityField, caveEntranceMaskField);
+        // combine mask and height
+        caveDensityField.byBlock(
+                0, localMaxCaveHeight,
+                (index, x, y, z) -> {
+                    double surfaceHeight = baseSurfaceHeight.retrieve(x, y, z) - minY - 32;
+                    surfaceHeight += 64 * caveEntranceMaskField.retrieve(x, y, z);
+                    double distanceToSurface = surfaceHeight - y;
+                    caveDensityFieldArray[index] =
+                            MathUtils.smoothMinExpo(caveDensityFieldArray[index], distanceToSurface, 5);
+                }
+        );
 
         // combine cave density and surface density
         // special 2x2x2 cell size for extra vertical detail...

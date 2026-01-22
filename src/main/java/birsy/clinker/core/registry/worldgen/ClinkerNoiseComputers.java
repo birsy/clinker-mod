@@ -80,6 +80,16 @@ public class ClinkerNoiseComputers {
                     }
             )
     );
+    public static final Supplier<NoiseComputer> CAVE_ENTRANCE_MASK  = NOISE_COMPUTERS.register("cave_entrance",
+            () -> new NoiseComputer(
+                    () -> NoiseFieldTypes.COARSE_2D,
+                    (dependencies, registry) -> registry.registerNoise("cave_entrance"),
+                    (x, y, z, context) ->
+                            Mth.clampedMap(context.sample("cave_entrance", x / 80.0, z / 80.0),
+                                    0, 0.8, 0.0, 1.0)
+            )
+    );
+
     private static final double CAVE_NOODLE_FREQUENCY = 1 / 150.0;
     public static final Supplier<NoiseComputer> CAVE_NOODLE_A  = NOISE_COMPUTERS.register("cave_noodle_a",
             () -> new NoiseComputer(

@@ -598,38 +598,14 @@ public class MathUtils {
     }
 
     public static double smoothMinExpo(double a, double b, double smoothness) {
-        if (smoothness == 0) {
-            return Math.min(a, b);
-        } else {
-            double k = 1 / smoothness;
-            double res = Math.pow(2, -k * a) + Math.pow(2, -k * b);
-            return -MathUtils.log(2, res) / k;
-        }
+        double k = 1 / smoothness;
+        double res = Math.pow(2, -k * a) + Math.pow(2, -k * b);
+        return -MathUtils.log(2, res) / k;
     }
 
     public static double smoothClampExpo(double value, double min, double max, double smoothness) {
         return smoothMinExpo(smoothMinExpo(value, max, smoothness), min, -smoothness);
     }
-
-    public static double smoothMinExpo2(double smoothness, double... nums) {
-        if (smoothness == 0) {
-            double min = Double.MAX_VALUE;
-            for (double num : nums) {
-                min = Math.min(num, min);
-            }
-
-            return min;
-        } else {
-            double k = 1 / smoothness;
-            double res = 0;
-            for (double num : nums) {
-                res += Math.pow(2, -k * num);
-            }
-
-            return -MathUtils.log(2, res) / k;
-        }
-    }
-
 
     public static double a_asin(double x) {
         double a0 = 1.5707288;
