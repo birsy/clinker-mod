@@ -17,7 +17,8 @@
     "client.GameRendererMixin",
     "client.GuiMixin",
     "client.ItemBlockRenderTypesMixin",
-    "client.LevelRendererMixin"
+    "client.LevelRendererMixin",
+    "client.TitleScreenMixin"
   ],
   "mixins": [
     "common.BlockBehavior$PropertiesAccessor",

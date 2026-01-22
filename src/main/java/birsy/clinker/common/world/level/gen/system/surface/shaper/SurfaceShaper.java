@@ -8,5 +8,5 @@ public abstract class SurfaceShaper {
     public abstract double surfaceDensity(int x, int y, int z, double biomeContribution, NoiseContext context);
     public int upperBound() { return 32; }
     public int lowerBound() { return -16; }
-    public int height() { return -16; }
+    public int height() { return 64; } // unused, might stay that way.
 }

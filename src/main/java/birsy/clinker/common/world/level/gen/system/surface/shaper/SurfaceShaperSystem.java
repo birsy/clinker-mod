@@ -184,6 +184,7 @@ public class SurfaceShaperSystem {
         field[index] = total;
     }
 
+    // unused, might stay that way.
     private VerticalRange fillSurfaceHeightField(int minX, int minY, int minZ, BiomeCache2d surfaceBiomeCache,
                                                  NoiseField[] biomeWeightFields, NoiseField totalWeightField,
                                                  NoiseField surfaceHeightField) {

@@ -17,12 +17,15 @@ import net.minecraft.core.HolderGetter;
 import net.minecraft.core.QuartPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.RegistryOps;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.biome.*;
+import net.minecraft.world.level.levelgen.PositionalRandomFactory;
 import net.minecraft.world.level.levelgen.RandomState;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class OthershoreBiomeSource extends BiomeSource {
@@ -34,6 +37,7 @@ public class OthershoreBiomeSource extends BiomeSource {
             MIDDLE_SHELF_HEIGHT = 180,
             SEA_HEIGHT = 64;
     private final HolderGetter<Biome> biomeGetter;
+    private final Holder<Biome>[] biomeByProtoBiomeId;
     private Holder<Biome> voidBiome;
     private Holder<Biome> underground, aquifer;
 
@@ -42,14 +46,23 @@ public class OthershoreBiomeSource extends BiomeSource {
 
     public OthershoreBiomeSource(HolderGetter<Biome> biomeGetter) {
         this.biomeGetter = biomeGetter;
+        biomeByProtoBiomeId = new Holder[ClinkerRegistries.PROTO_BIOME_REGISTRY.size()];
+        // fill in biomes
+        Holder.Reference<Biome> voidBiome = biomeGetter.getOrThrow(Biomes.THE_VOID);
+        for (ProtoBiome protoBiome : ClinkerRegistries.PROTO_BIOME_REGISTRY) {
+            biomeByProtoBiomeId[protoBiome.id] = protoBiome.biome.map(biomeGetter::getOrThrow).orElse(voidBiome);
+        }
         underground = biomeGetter.getOrThrow(ClinkerBiomes.UNDERGROUND);
         aquifer = biomeGetter.getOrThrow(ClinkerBiomes.AQUIFER);
     }
 
     public void initRandomState(RandomState randomState) {
         this.uncachedNoiseContext = new UncachedNoiseContext(((SeededNoiseHolderHolder)(Object) randomState).clinker$noiseHolder());
+        this.surfaceBiomeResolver = createSurfaceBiomeResolver(randomState::getOrCreateRandomFactory, this.uncachedNoiseContext);
+    }
 
-        this.surfaceBiomeResolver = LayeredBiomeResolver.builder(4)
+    public static LayeredBiomeResolver createSurfaceBiomeResolver(Function<ResourceLocation, PositionalRandomFactory> randomState, UncachedNoiseContext noiseContext) {
+        return LayeredBiomeResolver.builder(4)
                 .layer((x, z, current, neighborhood, random, context) -> {
                     double surfaceHeight = context.retrieve(ClinkerNoiseComputers.BASE_SURFACE_HEIGHT, x, 0, z);
                     if (surfaceHeight < SEA_HEIGHT + 20)
@@ -64,7 +77,7 @@ public class OthershoreBiomeSource extends BiomeSource {
                 .layer(new BiomeLayerOperations.WeightedSmooth())
                 .zoom()
                 .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1.0))
-                .build(biomeGetter, randomState,  this.uncachedNoiseContext);
+                .build(randomState, noiseContext);
     }
 
     @Override
@@ -91,7 +104,7 @@ public class OthershoreBiomeSource extends BiomeSource {
     }
 
     public Holder<Biome> getSurfaceBiome(int qX, int qZ) {
-        return surfaceBiomeResolver.resolveBiome(qX, qZ);
+        return biomeByProtoBiomeId[surfaceBiomeResolver.getProtoBiome(qX, qZ).id];
     }
 
     public Set<Holder<Biome>> getSurfaceBiomesWithin(int x1, int z1, int x2, int z2, NoiseContext context) {

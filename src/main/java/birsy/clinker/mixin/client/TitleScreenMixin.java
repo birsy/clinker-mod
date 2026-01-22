@@ -1,0 +1,39 @@
+package birsy.clinker.mixin.client;
+
+import birsy.clinker.client.gui.debug.BiomeLayerDebugViewScreen;
+import birsy.clinker.core.Clinker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.client.gui.screens.options.OptionsScreen;
+import net.minecraft.network.chat.Component;
+import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.neoforge.common.NeoForge;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+@Mixin(TitleScreen.class)
+public abstract class TitleScreenMixin extends Screen {
+
+    protected TitleScreenMixin(Component title) { super(title); }
+
+    @Inject(method = "init", at = @At("RETURN"))
+    private void clinker$addTitleScreenButtons(CallbackInfo ci) {
+        // debug!!
+        if (!FMLLoader.isProduction()) {
+            Clinker.LOGGER.info("added debug widgets to title screen");
+            this.addRenderableWidget(
+                    Button.builder(Component.literal("clinker's epic biome layer debug view"), button -> this.minecraft.setScreen(new BiomeLayerDebugViewScreen()))
+                            .bounds(this.width - 202, this.height - 40, 200, 20)
+                            .build()
+            );
+        }
+    }
+}
