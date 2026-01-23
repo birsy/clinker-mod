@@ -5,6 +5,7 @@ import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
 import birsy.clinker.common.world.level.gen.system.noise.SeededNoiseHolderHolder;
 import birsy.clinker.common.world.level.gen.system.noise.UncachedNoiseContext;
+import birsy.clinker.common.world.level.gen.system.surface.shaper.SurfaceShaperSystem;
 import birsy.clinker.core.registry.ClinkerRegistries;
 import birsy.clinker.core.registry.worldgen.ClinkerBiomes;
 import birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers;
@@ -15,6 +16,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.QuartPos;
+import net.minecraft.core.SectionPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
@@ -150,14 +152,20 @@ public class OthershoreBiomeSource extends BiomeSource {
     public Holder<Biome> getNoiseBiome(int qX, int qY, int qZ, NoiseContext context) {
         int bX = QuartPos.toBlock(qX), bY = QuartPos.toBlock(qY), bZ = QuartPos.toBlock(qZ);
         if (bY < 0) return aquifer;
-        double groundHeight = context.retrieve(ClinkerNoiseComputers.BASE_SURFACE_HEIGHT, bX, bY, bZ) - 10;
-        if (bY < groundHeight) return underground;
+        if (bY < 30) return underground; // this sucks!
         return getSurfaceBiome(qX, qZ);
     }
     public Holder<Biome> getNoiseBiome(int qX, int qY, int qZ, BiomeCache2d surfaceBiomeCache, NoiseContext context) {
         int bX = QuartPos.toBlock(qX), bY = QuartPos.toBlock(qY), bZ = QuartPos.toBlock(qZ);
         if (bY < 0) return aquifer;
-        double groundHeight = context.retrieve(ClinkerNoiseComputers.BASE_SURFACE_HEIGHT, bX, bY, bZ) - 10;
+        if (bY < 30) return underground; // this STILL sucks!
+        return surfaceBiomeCache.retrieve(qX, qZ);
+    }
+    public Holder<Biome> getNoiseBiome(int qX, int qY, int qZ, BiomeCache2d surfaceBiomeCache, SurfaceShaperSystem.SurfaceHeightInfo surfaceHeight, NoiseContext context) {
+        int bX = QuartPos.toBlock(qX), bY = QuartPos.toBlock(qY), bZ = QuartPos.toBlock(qZ);
+        if (bY < 0) return aquifer;
+        int localX = SectionPos.sectionRelative(bX), localZ = SectionPos.sectionRelative(bZ);
+        double groundHeight = surfaceHeight.surfaceHeight().retrieve(localX, 0, localZ) - 10;
         if (bY < groundHeight) return underground;
         return surfaceBiomeCache.retrieve(qX, qZ);
     }

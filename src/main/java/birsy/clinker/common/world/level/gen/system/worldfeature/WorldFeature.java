@@ -29,6 +29,7 @@ public abstract class WorldFeature {
 
     public void addChildFeatures(int childDepth, Set<WorldFeature> worldFeatures) {}
 
+    public void modifySurfaceHeight(int minX, int minZ, NoiseFieldCache cache, NoiseField field) {}
     public void modifySurfaceDensityField(int minX, int minY, int minZ, NoiseFieldCache cache, NoiseField field) {}
     public void modifyCaveDensityField(int minX, int minY, int minZ, NoiseFieldCache cache, NoiseField field, NoiseField maskField) {}
     public void modifyFinalDensityField(int minX, int minY, int minZ, NoiseFieldCache cache, NoiseField field) {}
@@ -43,4 +44,5 @@ public abstract class WorldFeature {
     public FluidLevel modifyFluidLevel(int x, int y, int z, FluidLevel currentFluidLevel, NoiseContext context) {
         return currentFluidLevel;
     }
+
 }
