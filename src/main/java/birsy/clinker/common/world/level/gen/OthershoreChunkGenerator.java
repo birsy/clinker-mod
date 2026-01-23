@@ -273,8 +273,8 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         caveDensityField.byBlock(
                 0, localMaxCaveHeight,
                 (index, x, y, z) -> {
-                    double surfaceHeight = baseSurfaceHeight.retrieve(x, y, z) - minY - 32;
-                    surfaceHeight += 64 * caveEntranceMaskField.retrieve(x, y, z);
+                    double surfaceHeight = baseSurfaceHeight.retrieve(x, y, z) - minY - 24;
+                    surfaceHeight += 32 * caveEntranceMaskField.retrieve(x, y, z);
                     double distanceToSurface = surfaceHeight - y;
                     caveDensityFieldArray[index] =
                             MathUtils.smoothMinExpo(caveDensityFieldArray[index], distanceToSurface, 5);
