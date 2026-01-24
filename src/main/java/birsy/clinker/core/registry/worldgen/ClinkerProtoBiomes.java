@@ -1,15 +1,8 @@
 package birsy.clinker.core.registry.worldgen;
 
-import birsy.clinker.common.world.level.gen.OthershoreBiomeSource;
-import birsy.clinker.common.world.level.gen.system.biome.ProtoBiome;
-import birsy.clinker.common.world.level.gen.system.noise.NoiseComputer;
-import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldFiller;
-import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldType;
-import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldTypes;
+import birsy.clinker.common.world.level.gen.system.biome.resolver.ProtoBiome;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerRegistries;
-import birsy.clinker.core.util.MathUtils;
-import net.minecraft.util.Mth;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;

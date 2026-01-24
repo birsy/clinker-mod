@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.level.gen.system.biome;
+package birsy.clinker.common.world.level.gen.system.biome.resolver;
 
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.biome.Biome;

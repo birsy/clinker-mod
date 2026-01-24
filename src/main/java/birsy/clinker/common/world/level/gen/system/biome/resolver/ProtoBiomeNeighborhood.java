@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.level.gen.system.biome;
+package birsy.clinker.common.world.level.gen.system.biome.resolver;
 
 public class ProtoBiomeNeighborhood {
     protected final ProtoBiome[] array;

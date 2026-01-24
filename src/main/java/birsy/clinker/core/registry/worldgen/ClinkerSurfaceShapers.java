@@ -2,7 +2,6 @@ package birsy.clinker.core.registry.worldgen;
 
 import birsy.clinker.common.world.level.gen.content.surface.shaper.AshSteppeSurfaceShaper;
 import birsy.clinker.common.world.level.gen.content.surface.shaper.BrineSwampSurfaceShaper;
-import birsy.clinker.common.world.level.gen.content.surface.shaper.TestingSurfaceShaper;
 import birsy.clinker.common.world.level.gen.system.surface.shaper.BiomeSurfaceShaper;
 import birsy.clinker.common.world.level.gen.system.surface.shaper.DefaultSurfaceShaper;
 import birsy.clinker.common.world.level.gen.system.surface.shaper.SurfaceShaper;

@@ -1,23 +1,20 @@
 package birsy.clinker.client.gui.debug;
 
 import birsy.clinker.common.world.level.gen.OthershoreBiomeSource;
-import birsy.clinker.common.world.level.gen.system.biome.LayeredBiomeResolver;
-import birsy.clinker.common.world.level.gen.system.biome.ProtoBiome;
+import birsy.clinker.common.world.level.gen.system.biome.resolver.LayeredBiomeResolver;
+import birsy.clinker.common.world.level.gen.system.biome.resolver.ProtoBiome;
 import birsy.clinker.common.world.level.gen.system.noise.SeededNoiseHolder;
 import birsy.clinker.common.world.level.gen.system.noise.UncachedNoiseContext;
 import birsy.clinker.core.registry.ClinkerRegistries;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.levelgen.PositionalRandomFactory;
-import org.joml.Random;
 import org.lwjgl.glfw.GLFW;
 
 public class BiomeLayerDebugViewScreen extends Screen {

@@ -3,15 +3,21 @@ package birsy.clinker.common.world.level.gen.content.surface.shaper;
 import birsy.clinker.common.world.level.gen.OthershoreBiomeSource;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
-import birsy.clinker.common.world.level.gen.system.surface.shaper.SurfaceShaper;
 import birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers;
 import birsy.clinker.core.util.MathUtils;
 import net.minecraft.util.Mth;
 
-public class BrineSwampSurfaceShaper extends SurfaceShaper {
+public class BrineSwampSurfaceShaper extends SimpleSurfaceShaper {
     @Override
-    public void prefillNoiseFields(NoiseFieldCache cache, int minSurfaceHeight, int maxSurfaceHeight) {
-        cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, ClinkerNoiseComputers.BASE_SURFACE_HEIGHT);
+    public void prefillHeightmapNoiseFields(NoiseFieldCache cache) {}
+
+    @Override
+    public double getHeight(int x, int z, double weight, NoiseContext context) {
+        return (OthershoreBiomeSource.SEA_HEIGHT - 1) * weight;
+    }
+
+    @Override
+    public void prefillDensityNoiseFields(NoiseFieldCache cache, int minSurfaceHeight, int maxSurfaceHeight) {
         cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, ClinkerNoiseComputers.BASE_NOISE_2D[3]);
         cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, ClinkerNoiseComputers.BASE_NOISE_2D[4]);
         cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, ClinkerNoiseComputers.BASE_NOISE_2D[5]);
@@ -24,20 +30,17 @@ public class BrineSwampSurfaceShaper extends SurfaceShaper {
     }
 
     @Override
-    public double surfaceDensity(int x, int y, int z, double biomeContribution, NoiseContext context) {
+    public double surfaceDensity(int x, int y, int z, double heightmapHeight, double heightmapGradient, double distanceToSurface, double biomeWeight, NoiseContext context) {
         int seaHeight = OthershoreBiomeSource.SEA_HEIGHT + 1;
 
-        double baseSurfaceHeight = context.retrieve(ClinkerNoiseComputers.BASE_SURFACE_HEIGHT, x, y, z) + 2;
-
         double islandNoise = context.retrieve(ClinkerNoiseComputers.BASE_NOISE_2D[5], x, y, z) * 2;
-        if (islandNoise < 0) islandNoise *= 2;
+        if (islandNoise < 0) islandNoise *= 1.5;
         islandNoise += context.retrieve(ClinkerNoiseComputers.BASE_NOISE_2D[4], x, y, z);
 
         double flat = context.retrieve(ClinkerNoiseComputers.BASE_NOISE_2D_ALT[6], x, y, z);
         flat = Math.clamp(flat * 3, 0, 1) * 0.9;
 
-        double surfaceHeight = baseSurfaceHeight + Mth.lerp(flat, islandNoise, 0);
-        double density = y - surfaceHeight;
+        double density = distanceToSurface + Mth.lerp(flat, islandNoise, 0);
 
         double cragHeight = Math.abs(context.retrieve(ClinkerNoiseComputers.BASE_NOISE_2D_ALT[8], x, y, z));
         cragHeight = Mth.clampedMap(cragHeight, -1, 1, 0, 1);

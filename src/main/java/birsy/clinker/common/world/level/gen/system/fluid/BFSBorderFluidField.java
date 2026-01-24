@@ -3,6 +3,7 @@ package birsy.clinker.common.world.level.gen.system.fluid;
 import birsy.clinker.common.world.level.gen.system.noise.PaddedNoiseFieldCache;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
 import birsy.clinker.common.world.level.gen.system.worldfeature.WorldFeature;
+import birsy.clinker.common.world.level.gen.system.worldfeature.WorldFeatureContext;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.Util;
 import net.minecraft.util.Mth;
@@ -45,8 +46,10 @@ public class BFSBorderFluidField extends CellularFluidField {
             PaddedNoiseFieldCache cache,
             FluidFieldFiller baseFluidFieldFiller,
             Collection<WorldFeature> worldFeatures,
+            WorldFeatureContext worldFeatureContext,
+            NoiseField heightmap,
             int cellWidth, int cellHeight, int paddingCells) {
-        super(randomState, chunk, cache, baseFluidFieldFiller, worldFeatures, cellWidth, cellHeight, paddingCells);
+        super(randomState, chunk, cache, baseFluidFieldFiller, worldFeatures, worldFeatureContext, heightmap, cellWidth, cellHeight, paddingCells);
         this.borderDistances = new int[this.fluidStates.length];
         // fill with maximum possible distance
         Arrays.fill(this.borderDistances, 1000);

@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.level.gen.system.biome;
+package birsy.clinker.common.world.level.gen.system.biome.resolver;
 
 import birsy.clinker.common.world.level.gen.system.noise.UncachedNoiseContext;
 import birsy.clinker.core.registry.ClinkerRegistries;
@@ -20,7 +20,7 @@ public final class BiomeLayer {
     private final BiomeLayerOperation[] operations;
     private final int cellScale, cellSizeBlocks;
     private final int cacheSize;
-    private final Long2IntLinkedOpenHashMap cache;
+    private final ThreadLocal<Long2IntLinkedOpenHashMap> cache;
 
     private final ThreadLocal<ProtoBiomeNeighborhood> threadNeighborhood = ThreadLocal.withInitial(ProtoBiomeNeighborhood::new);
 
@@ -37,31 +37,28 @@ public final class BiomeLayer {
         this.cellScale = cellScale;
         this.cellSizeBlocks = 1 << cellScale;
 
-        this.cacheSize = Math.max(9, BASE_CACHE_SIZE >> cellScale);
-        this.cache = new Long2IntLinkedOpenHashMap(this.cacheSize + 1);
-        this.cache.defaultReturnValue(-1);
+        this.cacheSize = Math.max(9, BASE_CACHE_SIZE << cellScale);
+        this.cache = ThreadLocal.withInitial(() -> {
+            Long2IntLinkedOpenHashMap map = new Long2IntLinkedOpenHashMap(this.cacheSize + 1);
+            map.defaultReturnValue(-1);
+            return map;
+        });
     }
 
     public ProtoBiome getOrCreateCellAt(int blockX, int blockZ) {
         int cellX = toCellPos(blockX, cellScale),
             cellZ = toCellPos(blockZ, cellScale);
         long key = toCellKey(cellX, cellZ);
-        synchronized (cache) {
-            int existingId = cache.getAndMoveToFirst(key);
-            if (existingId >= 0)
-                return ClinkerRegistries.PROTO_BIOME_REGISTRY.byIdOrThrow(existingId);
-        }
+
+        Long2IntLinkedOpenHashMap map = cache.get();
+
+        int existingId = map.get(key);
+        if (existingId >= 0) return ClinkerRegistries.PROTO_BIOME_REGISTRY.byIdOrThrow(existingId);
 
         ProtoBiomeNeighborhood neighborhood = threadNeighborhood.get();
         int newId = createCellAt(neighborhood, cellX, cellZ).id;
-        synchronized (cache) {
-            // someone else may have populated while we computed
-            int existingId = cache.getAndMoveToFirst(key);
-            if (existingId >= 0)
-                return ClinkerRegistries.PROTO_BIOME_REGISTRY.byIdOrThrow(existingId);
-            cache.putAndMoveToFirst(key, newId);
-            if (cache.size() > cacheSize) cache.removeLastInt();
-        }
+        map.putAndMoveToFirst(key, newId);
+        if (map.size() > cacheSize) map.removeLastInt();
 
         return ClinkerRegistries.PROTO_BIOME_REGISTRY.byIdOrThrow(newId);
     }

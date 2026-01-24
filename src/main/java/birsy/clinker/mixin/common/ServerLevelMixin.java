@@ -3,6 +3,8 @@ package birsy.clinker.mixin.common;
 
 import birsy.clinker.common.alchemy.workstation.WorkstationManager;
 import birsy.clinker.common.world.level.gen.OthershoreBiomeSource;
+import birsy.clinker.common.world.level.gen.system.worldfeature.MetaChunkMap;
+import birsy.clinker.common.world.level.gen.system.worldfeature.MetaChunkMapHolder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerChunkCache;
@@ -10,6 +12,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.progress.ChunkProgressListener;
 import net.minecraft.world.RandomSequences;
 import net.minecraft.world.level.dimension.LevelStem;
+import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.level.storage.ServerLevelData;
 import org.spongepowered.asm.mixin.Final;
@@ -49,10 +52,13 @@ public abstract class ServerLevelMixin {
         WorkstationManager.managerByLevel.put(me, manager);
         WorkstationManager.managerByDimension.put(me.dimension(), manager);
 
+        RandomState randomState = this.chunkSource.chunkMap.randomState();
+        MetaChunkMap metaChunkMap = ((MetaChunkMapHolder) (Object) randomState).clinker$metaChunkMap();
         // init biome source!
         if (this.chunkSource.getGenerator().getBiomeSource() instanceof OthershoreBiomeSource othershoreBiomeSource) {
             othershoreBiomeSource.initRandomState(this.chunkSource.chunkMap.randomState());
         }
+
     }
 
     @Inject(method = "tick(Ljava/util/function/BooleanSupplier;)V", at = @At("TAIL"))

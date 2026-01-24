@@ -1,22 +1,19 @@
 package birsy.clinker.common.world.level.gen.content.surface.shaper;
 
-import birsy.clinker.common.world.level.gen.OthershoreBiomeSource;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
-import birsy.clinker.common.world.level.gen.system.surface.shaper.SurfaceShaper;
 import net.minecraft.util.Mth;
 
 import static birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers.*;
 
-public class AshSteppeSurfaceShaper extends SurfaceShaper {
+public class AshSteppeSurfaceShaper extends SimpleSurfaceShaper {
     @Override
     public int upperBound() {
         return 48;
     }
 
     @Override
-    public void prefillNoiseFields(NoiseFieldCache cache, int minSurfaceHeight, int maxSurfaceHeight) {
-        cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, BASE_SURFACE_HEIGHT);
+    public void prefillDensityNoiseFields(NoiseFieldCache cache, int minSurfaceHeight, int maxSurfaceHeight) {
         cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, BASE_NOISE_2D[7]);
         cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, BASE_NOISE_2D[6]);
         cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, BASE_NOISE_2D[5]);
@@ -27,18 +24,15 @@ public class AshSteppeSurfaceShaper extends SurfaceShaper {
     }
 
     @Override
-    public double surfaceDensity(int x, int y, int z, double biomeContribution, NoiseContext context) {
-        double baseSurfaceHeight = context.retrieve(BASE_SURFACE_HEIGHT, x, y, z);
-
+    public double surfaceDensity(int x, int y, int z, double heightmapHeight, double heightmapGradient, double distanceToSurface, double biomeWeight, NoiseContext context) {
         double ashDunes = Math.abs(context.retrieve(BASE_NOISE_2D[6], x, y, z)) * -2 - 1;
         ashDunes += (Math.abs(context.retrieve(BASE_NOISE_2D[5], x, y, z)) * -2 - 1) * 0.5;
         double weirdCliffs = context.retrieve(BASE_NOISE_2D[7], x, y, z);
-        weirdCliffs = Mth.lerp(biomeContribution, 0, weirdCliffs);
+        weirdCliffs = Mth.lerp(biomeWeight, 0, weirdCliffs);
         weirdCliffs = (1 - Math.abs(weirdCliffs)) * Math.signum(weirdCliffs) * 5;
         weirdCliffs *= context.retrieve(BASE_NOISE_2D_ALT[7], x, y, z) * 0.5 + 0.5;
 
-        double surfaceHeight = baseSurfaceHeight + ashDunes * 2 + weirdCliffs + 5;
-        double surfaceDensity = y - surfaceHeight;
+        double surfaceDensity = distanceToSurface + ashDunes * 2 + weirdCliffs + 5;
 
         double plateauNoise = context.retrieve(BASE_NOISE_2D_ALT[8], x, y, z);
         plateauNoise = Mth.map(plateauNoise, 0.7, 1, 0, 1);
@@ -48,11 +42,11 @@ public class AshSteppeSurfaceShaper extends SurfaceShaper {
         double plateauDensity = Double.MAX_VALUE;//(y - baseSurfaceHeight) - plateauNoise;
         for (int i = 0; i < 2; i++) {
             double stepHeight = 3 + i * 4;
-            int terracedY = (int) (Math.floor((y - baseSurfaceHeight) / stepHeight) * stepHeight + baseSurfaceHeight);
+            int terracedY = (int) (Math.floor((y - heightmapHeight) / stepHeight) * stepHeight + heightmapHeight);
             double plateauLayerNoise = i % 2 == 0 ?
                     context.retrieve(BASE_NOISE_2D[6], x, y, z) :
                     context.retrieve(BASE_NOISE_2D_ALT[6], x, y, z);
-            double plateauLayerDensity = (terracedY - baseSurfaceHeight) * 2 - (plateauNoise + plateauLayerNoise * 40);
+            double plateauLayerDensity = (terracedY - heightmapHeight) * 2 - (plateauNoise + plateauLayerNoise * 40);
             plateauDensity = Math.min(plateauDensity, plateauLayerDensity);
         }
         double plateauHighFreq = context.retrieve(BASE_NOISE[4], x, y, z);
@@ -65,7 +59,7 @@ public class AshSteppeSurfaceShaper extends SurfaceShaper {
 //            double terraceShape = (y - terracedY) / stepHeight;
 //            terraceShape *= terraceShape;
 //            double terracedCliffHeight = Mth.map(terracedY + terraceShape * stepHeight * 0.5, ashDunesHeight, ashDunesHeight + 30, 0, 1);
-//            terracedCliffHeight *= biomeContribution;
+//            terracedCliffHeight *= biomeWeight;
 //            terracedCliffHeight = Mth.map(terracedCliffHeight, 0, 1, -1, 0);
 //
 //            double cliffMask = (terracedCliffHeight + plateauExistenceNoise * 0.5) * 40;

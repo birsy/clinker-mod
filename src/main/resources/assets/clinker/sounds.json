@@ -80,5 +80,13 @@
 		"sounds": [
 			{"name": "clinker:ambient/othershore/ash_plains/chimney1", "stream": true}
 		]
+	},
+	"music_disc.coda": {
+		"sounds": [
+			{
+				"name": "clinker:records/coda",
+				"stream": true
+			}
+		]
 	}
 }

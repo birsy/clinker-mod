@@ -57,13 +57,11 @@ public class SurfaceDecorationSystem {
 
     public void applySurfaceDecorations(WorldGenLevel level, ChunkAccess chunk, RandomState randomState,
                                  NoiseFieldCache noiseFieldCache,
-                                 NoiseField surfaceHeightField, int minSurfaceHeight, int maxSurfaceHeight,
+                                 NoiseField heightmap, NoiseField heightmapGradient,
                                  Set<Holder<Biome>> biomes) {
-        prefillNoiseFields(noiseFieldCache, minSurfaceHeight, maxSurfaceHeight, biomes);
+        for (Holder<Biome> biome : biomes) getSurfaceDecorator(biome).prefillNoiseFields(noiseFieldCache);
 
-        CachedNoiseContext noiseContext = new CachedNoiseContext(noiseFieldCache);
-        noiseContext.setRange(minSurfaceHeight, maxSurfaceHeight);
-
+        CachedNoiseContext noiseContext = noiseFieldCache.context;
         PositionalRandomFactory surfaceBuilderRandomFactory = randomState.getOrCreateRandomFactory(SURFACE_BUILDER_RANDOM);
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(),
                                  surfacePos = new BlockPos.MutableBlockPos(),
@@ -73,7 +71,7 @@ public class SurfaceDecorationSystem {
                 decorateColumn(
                         level, chunk,
                         x, z,
-                        surfaceHeightField,
+                        heightmap, heightmapGradient,
                         noiseContext,
                         surfaceBuilderRandomFactory,
                         pos, surfacePos, scratchPos
@@ -82,22 +80,18 @@ public class SurfaceDecorationSystem {
         }
     }
 
-    private void prefillNoiseFields(NoiseFieldCache cache, int minSurfaceHeight, int maxSurfaceHeight, Set<Holder<Biome>> biomes) {
-        for (Holder<Biome> biome : biomes) {
-            getSurfaceDecorator(biome).prefillNoiseFields(cache, minSurfaceHeight, maxSurfaceHeight);
-        }
-    }
-
     private void decorateColumn(
             WorldGenLevel level, ChunkAccess chunk,
             int localX, int localZ,
-            NoiseField surfaceHeightField, NoiseContext context, PositionalRandomFactory randomFactory,
+            NoiseField heightmapField, NoiseField heightmapGradientField,
+            NoiseContext context, PositionalRandomFactory randomFactory,
             BlockPos.MutableBlockPos pos, BlockPos.MutableBlockPos surfacePos, BlockPos.MutableBlockPos scratchPos) {
         int worldX = localX + chunk.getPos().getMinBlockX();
         int worldZ = localZ + chunk.getPos().getMinBlockZ();
 
         int startY = chunk.getHeight(Heightmap.Types.OCEAN_FLOOR_WG, localX, localZ);
-        int baseSurfaceHeight = (int) surfaceHeightField.retrieve(localX, 0, localZ);
+        int heightmapHeight = (int) heightmapField.retrieve(localX, 0, localZ);
+        double heightmapGradient = Math.sqrt(heightmapGradientField.retrieve(localX, 0, localZ));
 
         pos.set(worldX, startY, worldZ);
 
@@ -108,8 +102,8 @@ public class SurfaceDecorationSystem {
                 decorateSurfaceAt(
                         level, chunk,
                         context, randomFactory,
-                        baseSurfaceHeight, visibleToSun,
-                        pos, surfacePos, scratchPos
+                        heightmapHeight, heightmapGradient,
+                        visibleToSun, pos, surfacePos, scratchPos
                 );
                 visibleToSun = false;
             }
@@ -120,7 +114,7 @@ public class SurfaceDecorationSystem {
     private void decorateSurfaceAt(
             WorldGenLevel level, ChunkAccess chunk,
             NoiseContext context, PositionalRandomFactory randomFactory,
-            int baseSurfaceHeight, boolean visibleToSun,
+            int heightmapHeight, double heightmapGradient, boolean visibleToSun,
             BlockPos.MutableBlockPos pos, BlockPos.MutableBlockPos surfacePos, BlockPos.MutableBlockPos scratchPos) {
         RandomSource surfaceRandom = randomFactory.at(pos);
         int minBlockX = chunk.getPos().getMinBlockX(),
@@ -167,7 +161,8 @@ public class SurfaceDecorationSystem {
 
         decorator.decorateSurface(
                 chunk, surfacePos.set(pos), seaLevel,
-                visibleToSun, depth, maxElevationIncrease, maxElevationDecrease, baseSurfaceHeight,
+                visibleToSun, depth, maxElevationIncrease, maxElevationDecrease,
+                heightmapHeight, heightmapGradient,
                 context, surfaceRandom
         );
 

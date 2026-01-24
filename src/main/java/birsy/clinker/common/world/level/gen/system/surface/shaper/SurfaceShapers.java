@@ -1,5 +1,6 @@
 package birsy.clinker.common.world.level.gen.system.surface.shaper;
 
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;

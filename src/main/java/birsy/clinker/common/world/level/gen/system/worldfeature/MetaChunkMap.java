@@ -1,6 +1,5 @@
 package birsy.clinker.common.world.level.gen.system.worldfeature;
 
-import birsy.clinker.common.world.level.gen.content.worldfeatures.UndergroundLakeWorldFeature;
 import birsy.clinker.common.world.level.gen.system.noise.*;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerDynamicRegistries;
@@ -22,7 +21,7 @@ public class MetaChunkMap {
     private final RandomState randomState;
     private final PositionalRandomFactory metaChunkRandom;
     private final Map<Long, MetaChunk>[] metaChunkCache;
-    private NoiseContext context;
+    private UncachedNoiseContext uncachedNoiseContext;
 
     public MetaChunkMap(RandomState randomState) {
         this.randomState = randomState;
@@ -45,13 +44,15 @@ public class MetaChunkMap {
             for (int i = 0; i < featureSet.metaChunkDepths().size(); i++)
                 this.worldFeatureSetsByDepth[i].add(featureSet);
         });
+
+        this.uncachedNoiseContext = new UncachedNoiseContext(((SeededNoiseHolderHolder)(Object) randomState).clinker$noiseHolder());
     }
 
     int getMetaChunkSizeForDepth(int depth) {
         return 16 << depth;
     }
 
-    MetaChunk getMetaChunk(LevelAccessor level, int depth, int blockX, int blockZ) {
+    MetaChunk getMetaChunk(LevelAccessor level, int depth, int blockX, int blockZ, WorldFeatureContext worldContext) {
         int size = getMetaChunkSizeForDepth(depth);
         int metaChunkX = Math.floorDiv(blockX, size), metaChunkZ = Math.floorDiv(blockZ, size);
         long key = MetaChunk.asLong(metaChunkX, metaChunkZ);
@@ -69,7 +70,8 @@ public class MetaChunkMap {
                                 level,
                                 depth + 1,
                                 (Math.floorDiv(blockX, parentSize) + xOffset) * parentSize,
-                                (Math.floorDiv(blockZ, parentSize) + zOffset) * parentSize
+                                (Math.floorDiv(blockZ, parentSize) + zOffset) * parentSize,
+                                worldContext
                         );
                         // propagate features "downward" to "child"
                         parent.propagateFeatures(newChunk);
@@ -77,14 +79,13 @@ public class MetaChunkMap {
                 }
             }
 
-            generateWorldFeatures(level, depth, newChunk);
+            generateWorldFeatures(level, depth, newChunk, worldContext);
             return newChunk;
         });
     }
 
-    void generateWorldFeatures(LevelAccessor level, int depth, MetaChunk metaChunk) {
+    void generateWorldFeatures(LevelAccessor level, int depth, MetaChunk metaChunk, WorldFeatureContext worldContext) {
         if (depth <= 0) return;
-        NoiseContext noiseContext = getOrCreateContext();
         RandomSource random = metaChunkRandom.at(metaChunk.minX(), depth, metaChunk.maxZ());
 
 //        if (depth == 6) {
@@ -93,13 +94,13 @@ public class MetaChunkMap {
 //            metaChunk.worldFeatures.add(river);
 //        }
 //
-        if (depth == 4) {
-            for (int i = 0; i < random.nextInt(4, 12); i++) {
-                WorldFeature lake = new UndergroundLakeWorldFeature(depth, 0);
-                lake.plan(level, metaChunk, random, noiseContext);
-                metaChunk.worldFeatures.add(lake);
-            }
-        }
+//        if (depth == 4) {
+//            for (int i = 0; i < random.nextInt(4, 12); i++) {
+//                WorldFeature lake = new UndergroundLakeWorldFeature(depth, 0);
+//                lake.plan(level, metaChunk, random, noiseContext);
+//                metaChunk.worldFeatures.add(lake);
+//            }
+//        }
 
         List<WorldFeature> spawnSetFeatures = new ArrayList<>(16);
 
@@ -109,7 +110,7 @@ public class MetaChunkMap {
                 featureSet:
                 for (int i = 0; i < count; i++) {
                     WorldFeature realizedFeature = feature.feature().create(metaChunk, feature.spacingRadius());
-                    boolean placed = realizedFeature.plan(level, metaChunk, random, noiseContext);
+                    boolean placed = realizedFeature.plan(level, metaChunk, random, uncachedNoiseContext, worldContext);
                     int x = realizedFeature.getCenterX(), z = realizedFeature.getCenterZ();
                     int radius = realizedFeature.separationRadius;
                     if (placed) {
@@ -129,15 +130,7 @@ public class MetaChunkMap {
         }
     }
 
-    public Collection<WorldFeature> getWorldFeatures(LevelAccessor level, int blockX, int blockZ) {
-        return getMetaChunk(level, 0, blockX, blockZ).worldFeatures;
-    }
-
-    public NoiseContext getOrCreateContext() {
-        if (this.context == null) {
-            SeededNoiseHolder noiseHolder = ((SeededNoiseHolderHolder)(Object)this.randomState).clinker$noiseHolder();
-            this.context = new UncachedNoiseContext(noiseHolder);
-        }
-        return this.context;
+    public Collection<WorldFeature> getWorldFeatures(LevelAccessor level, int blockX, int blockZ, WorldFeatureContext context) {
+        return getMetaChunk(level, 0, blockX, blockZ, context).worldFeatures;
     }
 }

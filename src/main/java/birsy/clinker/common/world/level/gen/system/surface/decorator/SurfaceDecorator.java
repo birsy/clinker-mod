@@ -7,10 +7,10 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.chunk.ChunkAccess;
 
 public abstract class SurfaceDecorator {
-    public abstract void prefillNoiseFields(NoiseFieldCache cache, int minSurfaceHeight, int maxSurfaceHeight);
+    public abstract void prefillNoiseFields(NoiseFieldCache cache);
     public abstract void decorateSurface(ChunkAccess chunk, BlockPos.MutableBlockPos pos,
                                          int seaLevel, boolean canSeeSun, int depth,
-                                         int maxElevationIncrease, int maxElevationDecrease, int surfaceHeight,
+                                         int maxElevationIncrease, int maxElevationDecrease, int surfaceHeight, double surfaceHeightGradient,
                                          NoiseContext context, RandomSource random);
 
     public boolean shouldCalculateElevationChange(boolean canSeeSun, int y) {

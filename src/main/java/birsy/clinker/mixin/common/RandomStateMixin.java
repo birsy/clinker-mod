@@ -23,9 +23,9 @@ public class RandomStateMixin implements MetaChunkMapHolder, WorldSeedHolder, Se
     @Inject(method = "<init>",
             at = @At("TAIL"))
     private void clinker$initRandomState(NoiseGeneratorSettings settings, HolderGetter noiseParametersGetter, long levelSeed, CallbackInfo ci) {
-        clinker$metaChunkMap = new MetaChunkMap((RandomState)(Object)this);
         clinker$noiseHolder = new SeededNoiseHolder(((RandomState)(Object)this).random);
         clinker$worldSeed = levelSeed;
+        clinker$metaChunkMap = new MetaChunkMap((RandomState)(Object)this);
     }
 
     @Override

@@ -4,8 +4,8 @@ import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
 
 public abstract class NoiseField {
     public static final int CHUNK_WIDTH = 16;
-    final int maxY;
-    final int paddingBlocks, paddingCells;
+    public final int maxY;
+    public final int paddingBlocks, paddingCells;
 
     protected NoiseField(int maxY, int paddingBlocks, int paddingCells) {
         this.maxY = maxY;
@@ -37,5 +37,18 @@ public abstract class NoiseField {
     public abstract void visit(int minLocalY, int maxLocalY, NoiseFieldVisitors.BigVisitor visitor);
     public void visit(NoiseFieldVisitors.BigVisitor visitor) {
         this.visit(0, maxY, visitor);
+    }
+
+    public abstract void byBlockPadded(int minLocalY, int maxLocalY, NoiseFieldVisitors.PositionVisitor visitor);
+    public void byBlockPadded(NoiseFieldVisitors.PositionVisitor visitor) {
+        this.byBlockPadded(0, maxY, visitor);
+    }
+    public abstract void byCellPadded(int minLocalY, int maxLocalY, NoiseFieldVisitors.PositionVisitor visitor);
+    public void byCellPadded(NoiseFieldVisitors.PositionVisitor visitor) {
+        this.byCellPadded(0, maxY, visitor);
+    }
+    public abstract void visitPadded(int minLocalY, int maxLocalY, NoiseFieldVisitors.BigVisitor visitor);
+    public void visitPadded(NoiseFieldVisitors.BigVisitor visitor) {
+        this.visitPadded(0, maxY, visitor);
     }
 }

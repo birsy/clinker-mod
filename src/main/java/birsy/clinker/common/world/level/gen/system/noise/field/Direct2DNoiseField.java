@@ -48,7 +48,6 @@ public final class Direct2DNoiseField extends NoiseField2D {
             }
         }
     }
-
     @Override
     public void byBlock(int minLocalY, int maxLocalY, NoiseFieldVisitors.PositionVisitor visitor) {
         int index = 0;
@@ -58,18 +57,42 @@ public final class Direct2DNoiseField extends NoiseField2D {
             }
         }
     }
-
     @Override
     public void byCell(int minLocalY, int maxLocalY, NoiseFieldVisitors.PositionVisitor visitor) {
         this.byBlock(minLocalY, maxLocalY, visitor);
     }
-
     @Override
     public void visit(int minLocalY, int maxLocalY, NoiseFieldVisitors.BigVisitor visitor) {
         int index = 0;
         for (int z = 0; z < paddedWidth; z++) {
             for (int x = 0; x < paddedWidth; x++) {
                 visitor.visit(index++, x, 0, z, x, 0, z);
+            }
+        }
+    }
+    @Override
+    public void byBlockPadded(int minLocalY, int maxLocalY, NoiseFieldVisitors.PositionVisitor visitor) {
+        int index = 0;
+        for (int z = 0; z < paddedWidth; z++) {
+            int bZ = z - paddingBlocks;
+            for (int x = 0; x < paddedWidth; x++) {
+                int bX = z - paddingBlocks;
+                visitor.visit(index++, bX, 0, bZ);
+            }
+        }
+    }
+    @Override
+    public void byCellPadded(int minLocalY, int maxLocalY, NoiseFieldVisitors.PositionVisitor visitor) {
+        this.byBlockPadded(minLocalY, maxLocalY, visitor);
+    }
+    @Override
+    public void visitPadded(int minLocalY, int maxLocalY, NoiseFieldVisitors.BigVisitor visitor) {
+        int index = 0;
+        for (int z = 0; z < paddedWidth; z++) {
+            int bZ = z - paddingBlocks;
+            for (int x = 0; x < paddedWidth; x++) {
+                int bX = z - paddingBlocks;
+                visitor.visit(index++, bX, 0, bZ, bX, 0, bZ);
             }
         }
     }

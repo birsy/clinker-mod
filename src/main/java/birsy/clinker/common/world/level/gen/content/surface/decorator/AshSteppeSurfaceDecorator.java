@@ -5,7 +5,6 @@ import birsy.clinker.common.world.level.gen.OthershoreBiomeSource;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
 import birsy.clinker.common.world.level.gen.system.surface.decorator.SurfaceDecorator;
-import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
@@ -20,14 +19,14 @@ public class AshSteppeSurfaceDecorator extends SurfaceDecorator {
     public AshSteppeSurfaceDecorator() {}
 
     @Override
-    public void prefillNoiseFields(NoiseFieldCache cache, int minSurfaceHeight, int maxSurfaceHeight) {
+    public void prefillNoiseFields(NoiseFieldCache cache) {
         cache.fillNoiseField(BASE_NOISE_2D[6]);
         cache.fillNoiseField(BASE_NOISE_2D_ALT[6]);
         cache.fillNoiseField(BASE_NOISE_2D[3]);
     }
 
     @Override
-    public void decorateSurface(ChunkAccess chunk, BlockPos.MutableBlockPos pos, int seaLevel, boolean canSeeSun, int depth, int maxElevationIncrease, int maxElevationDecrease, int surfaceHeight, NoiseContext context, RandomSource random) {
+    public void decorateSurface(ChunkAccess chunk, BlockPos.MutableBlockPos pos, int seaLevel, boolean canSeeSun, int depth, int maxElevationIncrease, int maxElevationDecrease, int surfaceHeight, double surfaceHeightGradient, NoiseContext context, RandomSource random) {
         if (!canSeeSun && pos.getY() < 130) return;
 
         float ditherRandom = (random.nextFloat() * 2) - 1;

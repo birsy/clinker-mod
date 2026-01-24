@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.level.gen.system.biome;
+package birsy.clinker.common.world.level.gen.system.biome.resolver;
 
 import birsy.clinker.common.world.level.gen.system.noise.UncachedNoiseContext;
 import birsy.clinker.core.Clinker;

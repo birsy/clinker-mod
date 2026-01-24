@@ -3,6 +3,7 @@ package birsy.clinker.common.world.level.gen.system.fluid;
 import birsy.clinker.common.world.level.gen.system.noise.PaddedNoiseFieldCache;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
 import birsy.clinker.common.world.level.gen.system.worldfeature.WorldFeature;
+import birsy.clinker.common.world.level.gen.system.worldfeature.WorldFeatureContext;
 import net.minecraft.core.SectionPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
@@ -50,6 +51,8 @@ public class CellularFluidField implements FluidField {
     final FluidFieldFiller fluidFieldFiller;
 
     final Collection<WorldFeature> worldFeatures;
+    final WorldFeatureContext worldFeatureContext;
+    final NoiseField heightmap;
 
     public CellularFluidField(
             RandomState randomState,
@@ -57,6 +60,8 @@ public class CellularFluidField implements FluidField {
             PaddedNoiseFieldCache noiseCache,
             FluidFieldFiller baseFluidFieldFiller,
             Collection<WorldFeature> worldFeatures,
+            WorldFeatureContext worldFeatureContext,
+            NoiseField heightmap,
             int cellWidth, int cellHeight,
             int paddingCells) {
         this.aquiferRandom = randomState.aquiferRandom();
@@ -89,6 +94,8 @@ public class CellularFluidField implements FluidField {
         this.cells = new FluidCell[this.cellLayerSize * this.cellCountY];
 
         this.worldFeatures = worldFeatures;
+        this.worldFeatureContext = worldFeatureContext;
+        this.heightmap = heightmap;
     }
 
     @Override
@@ -106,8 +113,8 @@ public class CellularFluidField implements FluidField {
             worldFeature.prefillFluidNoiseFields(
                     SectionPos.blockToSectionCoord(minX),
                     SectionPos.blockToSectionCoord(minZ),
-                    this.noiseCache
-            );
+                    this.noiseCache,
+                    this.worldFeatureContext);
         this.initializeCells();
         this.computeNeighborHomogeneity();
         this.fillFluidStateMapByCell();
@@ -139,7 +146,7 @@ public class CellularFluidField implements FluidField {
                centerZ = cellZ * this.cellWidth +  this.halfCellWidth +  cellRandom.triangle(0, this.halfCellWidth);
         FluidLevel fluidLevel = this.fluidFieldFiller.compute((int)centerX, (int)centerY, (int)centerZ, this.noiseCache.context);
         for (WorldFeature worldFeature : this.worldFeatures)
-            fluidLevel = worldFeature.modifyFluidLevel((int)centerX, (int)centerY, (int)centerZ, fluidLevel, this.noiseCache.context);
+            fluidLevel = worldFeature.modifyFluidLevel((int)centerX, (int)centerY, (int)centerZ, minX, minY, minZ, fluidLevel, this.noiseCache.context, this.heightmap);
         return new FluidCell(centerX, centerY, centerZ, fluidLevel, this.cellHeight);
     }
 
@@ -202,7 +209,8 @@ public class CellularFluidField implements FluidField {
                         blockStartY = cY * this.cellHeight,
                         blockStartZ = cZ * this.cellWidth;
 
-                    if (cell.homogenousWithNeighbors && cell.cellType != CellType.EMPTY) {
+                    if (cell.cellType == CellType.EMPTY && cell.homogenousWithNeighbors) continue;
+                    if (cell.homogenousWithNeighbors) {
                         int blockEndY = Math.min(blockStartY + this.cellHeight, this.blockCountY);
                         int localSurfaceHeight = Math.min(
                                 cell.fluidHeight() - this.minY + this.paddingBlocksY,

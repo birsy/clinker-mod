@@ -4,38 +4,38 @@ import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
 import birsy.clinker.common.world.level.gen.system.surface.shaper.SurfaceShaper;
+import birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers;
 
 public abstract class SimpleSurfaceShaper extends SurfaceShaper {
-    public abstract void prefillHeightNoiseFields(NoiseFieldCache cache);
-    public abstract double surfaceHeight(int x, int z, double biomeContribution, NoiseContext context);
-
     public abstract void prefillDensityNoiseFields(NoiseFieldCache cache, int minSurfaceHeight, int maxSurfaceHeight);
-    public abstract double surfaceDensity(int x, int y, int z, double biomeContribution, NoiseContext context);
+    public abstract double surfaceDensity(int x, int y, int z, double heightmapHeight, double heightmapGradient, double distanceToSurface, double biomeWeight, NoiseContext context);
 
     @Override
-    public void fillSurfaceHeightField(NoiseField surfaceHeightField, NoiseFieldCache cache, int minX, int minZ, NoiseField biomeWeight) {
-        this.prefillHeightNoiseFields(cache);
-        NoiseContext context = cache.context;
-        double[] surfaceHeightArray = surfaceHeightField.array();
-        surfaceHeightField.byBlock(
-                (index, x, y, z) -> {
-                    double weight = biomeWeight.retrieve(x, y, z);
-                    surfaceHeightArray[index] += this.surfaceHeight(x + minX, z + minZ, weight, context) * weight;
-                }
-        );
+    public void prefillHeightmapNoiseFields(NoiseFieldCache cache) {
+        cache.fillNoiseField(ClinkerNoiseComputers.BASE_SURFACE_HEIGHT);
+    }
+
+    @Override
+    public double getHeight(int x, int z, double weight, NoiseContext context) {
+        return context.retrieve(ClinkerNoiseComputers.BASE_SURFACE_HEIGHT, x, 0, z) * weight;
     }
 
     @Override
     public void fillSurfaceDensityField(NoiseField surfaceDensityField, NoiseFieldCache cache, int minX, int minY, int minZ,
-                                        NoiseField surfaceHeightField, int lowerGenBound, int upperGenBound,
+                                        NoiseField heightmapField, NoiseField heightmapGradientField,
+                                        NoiseField distanceToHeightmap, int lowerGenBound, int upperGenBound,
                                         NoiseField biomeWeight) {
-        this.prefillNoiseFields(cache, lowerGenBound, upperGenBound);
+        this.prefillDensityNoiseFields(cache, lowerGenBound, upperGenBound);
+
         NoiseContext context = cache.context;
         double[] surfaceDensityArray = surfaceDensityField.array();
-        surfaceDensityField.byBlock(lowerGenBound - minY, upperGenBound - minY,
+        surfaceDensityField.byBlockPadded(lowerGenBound - minY, upperGenBound - minY,
                 (index, x, y, z) -> {
                     double weight = biomeWeight.retrieve(x, y, z);
-                    surfaceDensityArray[index] += this.surfaceDensity(x + minX, y + minY, z + minZ, weight, context) * weight;
+                    double heightmap = heightmapField.retrieve(x, y, z),
+                           heightmapGradient = heightmapGradientField.retrieve(x, y, z),
+                           distanceToSurface = distanceToHeightmap.retrieve(x, y, z);
+                    surfaceDensityArray[index] += this.surfaceDensity(x + minX, y + minY, z + minZ, heightmap, heightmapGradient, distanceToSurface, weight, context) * weight;
                 }
         );
     }

@@ -2,7 +2,7 @@ package birsy.clinker.core.registry;
 
 import birsy.clinker.common.alchemy.knowledge.type.AlchemyKnowledgeType;
 import birsy.clinker.common.page.PageElementType;
-import birsy.clinker.common.world.level.gen.system.biome.ProtoBiome;
+import birsy.clinker.common.world.level.gen.system.biome.resolver.ProtoBiome;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseComputer;
 import birsy.clinker.common.world.level.gen.system.surface.decorator.BiomeSurfaceDecorator;
 import birsy.clinker.common.world.level.gen.system.surface.decorator.SurfaceDecorators;

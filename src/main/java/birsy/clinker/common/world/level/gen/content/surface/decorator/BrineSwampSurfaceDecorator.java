@@ -17,7 +17,7 @@ public class BrineSwampSurfaceDecorator extends SurfaceDecorator {
     public BrineSwampSurfaceDecorator() {}
 
     @Override
-    public void prefillNoiseFields(NoiseFieldCache cache, int minSurfaceHeight, int maxSurfaceHeight) {
+    public void prefillNoiseFields(NoiseFieldCache cache) {
         cache.fillNoiseField(ClinkerNoiseComputers.BASE_NOISE_2D[3]);
         cache.fillNoiseField(ClinkerNoiseComputers.BASE_NOISE_2D[5]);
     }
@@ -32,11 +32,14 @@ public class BrineSwampSurfaceDecorator extends SurfaceDecorator {
             int maxElevationIncrease,
             int maxElevationDecrease,
             int surfaceHeight,
-            NoiseContext context,
+            double surfaceHeightGradient, NoiseContext context,
             RandomSource random) {
-
         int offset = 0;
         double noise3 = context.retrieve(ClinkerNoiseComputers.BASE_NOISE_2D[3], pos.getX(), pos.getY(), pos.getZ());
+        int rockDepth = (int) Math.min(20 + noise3 * 4, depth);
+        rockDepth -= surfaceHeightGradient * 3;
+        if (rockDepth <= 0) return;
+
         double noise5 = context.retrieve(ClinkerNoiseComputers.BASE_NOISE_2D[5], pos.getX(), pos.getY(), pos.getZ());
 
         double waterloggingNoise = noise5 + noise3 * 0.5;
@@ -104,7 +107,7 @@ public class BrineSwampSurfaceDecorator extends SurfaceDecorator {
         }
 
         int sandBlocks = !placedSand ? 0 : random.nextInt(2, 3);
-        for (int i = offset; i < Math.min(20 + noise3 * 4, depth); i++) {
+        for (int i = offset; i < rockDepth; i++) {
             if (sandBlocks > 0) {
                 chunk.setBlockState(pos, ClinkerBlocks.SALT_GRAVEL.get().defaultBlockState(), false);
                 sandBlocks--;

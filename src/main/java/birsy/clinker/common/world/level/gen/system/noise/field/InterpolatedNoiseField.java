@@ -56,9 +56,9 @@ public final class InterpolatedNoiseField extends NoiseField3D {
         int nextX = cellX + ((localX | -localX) >>> 31),
             nextY = cellY + ((localY | -localY) >>> 31),
             nextZ = cellZ + ((localZ | -localZ) >>> 31);
-        if (nextX >= xzCellCount) Clinker.LOGGER.warn("!!! x exceeded: {}, {}, {}, {}, {}", x, cellX, nextX, localX, interpX);
-        if (nextY >= yCellCount) Clinker.LOGGER.warn("!!! y exceeded: {}, {}, {}, {}, {}", y, cellY, nextY, localY, interpY);
-        if (nextZ >= xzCellCount) Clinker.LOGGER.warn("!!! z exceeded: {}, {}, {}, {}, {}", z, cellZ, nextZ, localZ, interpZ);
+        //if (nextX >= xzCellCount) Clinker.LOGGER.warn("!!! x exceeded: {}, {}, {}, {}, {}", x, cellX, nextX, localX, interpX);
+        //if (nextY >= yCellCount) Clinker.LOGGER.warn("!!! y exceeded: {}, {}, {}, {}, {}", y, cellY, nextY, localY, interpY);
+        //if (nextZ >= xzCellCount) Clinker.LOGGER.warn("!!! z exceeded: {}, {}, {}, {}, {}", z, cellZ, nextZ, localZ, interpZ);
         return Mth.lerp3(interpX, interpZ, interpY,
                 field[cellX + cellZ * xzCellCount + cellY * xzCellStride], field[nextX + cellZ * xzCellCount + cellY * xzCellStride],
                 field[cellX + nextZ * xzCellCount + cellY * xzCellStride], field[nextX + nextZ * xzCellCount + cellY * xzCellStride],
@@ -110,7 +110,6 @@ public final class InterpolatedNoiseField extends NoiseField3D {
             }
         }
     }
-
     @Override
     public void byCell(int minLocalY, int maxLocalY, NoiseFieldVisitors.PositionVisitor visitor) {
         int cellYStart = Math.max(0, minLocalY >> yCellScale),
@@ -124,36 +123,83 @@ public final class InterpolatedNoiseField extends NoiseField3D {
             }
         }
     }
-
     @Override
     public void byBlock(int minLocalY, int maxLocalY, NoiseFieldVisitors.PositionVisitor visitor) {
         int cellYStart = Math.max(0, minLocalY >> yCellScale),
             cellYEnd = Math.min(yCellCount - 1, maxLocalY >> yCellScale);
         int index = cellYStart * xzCellStride;
         for (int cellY = cellYStart; cellY <= cellYEnd; cellY++) {
-            int blockY = cellY << yCellScale;
+            int bY = cellY << yCellScale;
             for (int cellZ = 0; cellZ < xzCellCount; cellZ++) {
-                int blockZ = cellZ << xzCellScale;
+                int bZ = cellZ << xzCellScale;
                 for (int cellX = 0; cellX < xzCellCount; cellX++) {
-                    int blockX = cellX << xzCellScale;
-                    visitor.visit(index++, blockX, blockY, blockZ);
+                    int bX = cellX << xzCellScale;
+                    visitor.visit(index++, bX, bY, bZ);
                 }
             }
         }
     }
-
     @Override
     public void visit(int minLocalY, int maxLocalY, NoiseFieldVisitors.BigVisitor visitor) {
         int cellYStart = Math.max(0, minLocalY >> yCellScale),
             cellYEnd = Math.min(yCellCount - 1, maxLocalY >> yCellScale);
         int index = cellYStart * xzCellStride;
         for (int cellY = cellYStart; cellY <= cellYEnd; cellY++) {
-            int blockY = cellY << yCellScale;
+            int bY = cellY << yCellScale;
             for (int cellZ = 0; cellZ < xzCellCount; cellZ++) {
-                int blockZ = cellZ << xzCellScale;
+                int bZ = cellZ << xzCellScale;
                 for (int cellX = 0; cellX < xzCellCount; cellX++) {
-                    int blockX = cellX << xzCellScale;
-                    visitor.visit(index++, blockX, blockY, blockZ, cellX, cellY, cellZ);
+                    int bX = cellX << xzCellScale;
+                    visitor.visit(index++, bX, bY, bZ, cellX, cellY, cellZ);
+                }
+            }
+        }
+    }
+    @Override
+    public void byBlockPadded(int minLocalY, int maxLocalY, NoiseFieldVisitors.PositionVisitor visitor) {
+        int cellYStart = Math.max(0, minLocalY >> yCellScale),
+            cellYEnd = Math.min(yCellCount - 1, maxLocalY >> yCellScale);
+        int index = cellYStart * xzCellStride;
+        for (int cellY = cellYStart; cellY <= cellYEnd; cellY++) {
+            int bY = cellY << yCellScale;
+            for (int cellZ = 0; cellZ < xzCellCount; cellZ++) {
+                int bZ = (cellZ << xzCellScale) - paddingBlocks;
+                for (int cellX = 0; cellX < xzCellCount; cellX++) {
+                    int bX = (cellX << xzCellScale) - paddingBlocks;
+                    visitor.visit(index++, bX, bY, bZ);
+                }
+            }
+        }
+    }
+    @Override
+    public void byCellPadded(int minLocalY, int maxLocalY, NoiseFieldVisitors.PositionVisitor visitor) {
+        int cellYStart = Math.max(0, minLocalY >> yCellScale),
+            cellYEnd = Math.min(yCellCount - 1, maxLocalY >> yCellScale);
+        int index = cellYStart * xzCellStride;
+        for (int cellY = cellYStart; cellY <= cellYEnd; cellY++) {
+            for (int cellZ = 0; cellZ < xzCellCount; cellZ++) {
+                int cZ = cellZ - paddingCells;
+                for (int cellX = 0; cellX < xzCellCount; cellX++) {
+                    int cX = cellX - paddingCells;
+                    visitor.visit(index++, cX, cellY, cZ);
+                }
+            }
+        }
+    }
+    @Override
+    public void visitPadded(int minLocalY, int maxLocalY, NoiseFieldVisitors.BigVisitor visitor) {
+        int cellYStart = Math.max(0, minLocalY >> yCellScale),
+            cellYEnd = Math.min(yCellCount - 1, maxLocalY >> yCellScale);
+        int index = cellYStart * xzCellStride;
+        for (int cellY = cellYStart; cellY <= cellYEnd; cellY++) {
+            int bY = cellY << yCellScale;
+            for (int cellZ = 0; cellZ < xzCellCount; cellZ++) {
+                int cZ = cellZ - paddingCells;
+                int bZ = (cellZ << xzCellScale) - paddingBlocks;
+                for (int cellX = 0; cellX < xzCellCount; cellX++) {
+                    int cX = cellX - paddingCells;
+                    int bX = (cellX << xzCellScale) - paddingBlocks;
+                    visitor.visit(index++, bX, bY, bZ, cX, cellY, cZ);
                 }
             }
         }

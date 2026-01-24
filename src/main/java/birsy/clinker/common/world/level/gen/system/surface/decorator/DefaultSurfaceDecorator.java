@@ -10,11 +10,11 @@ public class DefaultSurfaceDecorator extends SurfaceDecorator {
     public DefaultSurfaceDecorator() {}
 
     @Override
-    public void prefillNoiseFields(NoiseFieldCache cache, int minSurfaceHeight, int maxSurfaceHeight) {
+    public void prefillNoiseFields(NoiseFieldCache cache) {
         // it does nothing
     }
     @Override
-    public void decorateSurface(ChunkAccess chunk, BlockPos.MutableBlockPos pos, int seaLevel, boolean canSeeSun, int depth, int maxElevationIncrease, int maxElevationDecrease, int surfaceHeight, NoiseContext context, RandomSource random) {
+    public void decorateSurface(ChunkAccess chunk, BlockPos.MutableBlockPos pos, int seaLevel, boolean canSeeSun, int depth, int maxElevationIncrease, int maxElevationDecrease, int surfaceHeight, double surfaceHeightGradient, NoiseContext context, RandomSource random) {
         // still nothing
     }
 }

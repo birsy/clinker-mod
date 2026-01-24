@@ -2,20 +2,22 @@ package birsy.clinker.common.world.level.gen.system.surface.shaper;
 
 import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
-import birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers;
+import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
 
 public class DefaultSurfaceShaper extends SurfaceShaper {
     @Override
-    public void prefillNoiseFields(NoiseFieldCache cache, int minSurfaceHeight, int maxSurfaceHeight) {
-        cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, ClinkerNoiseComputers.BASE_SURFACE_HEIGHT.get());
-    }
+    public void prefillHeightmapNoiseFields(NoiseFieldCache cache) {}
     @Override
-    public double surfaceDensity(int x, int y, int z, double biomeContribution, NoiseContext context) {
-        return y - context.retrieve(ClinkerNoiseComputers.BASE_SURFACE_HEIGHT, x, y, z);
+    public double getHeight(int x, int z, double weight, NoiseContext context) { return 100 * weight; }
+
+    @Override
+    public void fillSurfaceDensityField(NoiseField surfaceDensityField, NoiseFieldCache cache, int minX, int minY, int minZ, NoiseField heightmapField, NoiseField squaredHeightmapGradientField, NoiseField distanceToHeightmap, int lowerGenBound, int upperGenBound, NoiseField biomeWeight) {
+        double[] surfaceDensityArray = surfaceDensityField.array();
+        surfaceDensityField.byBlockPadded(lowerGenBound, upperGenBound, (index, x, y, z) -> surfaceDensityArray[index] = y - heightmapField.retrieve(x, y, z));
     }
 
     @Override
-    public int upperBound() { return 16; }
+    public int upperBound() { return 8; }
     @Override
-    public int lowerBound() { return super.lowerBound(); }
+    public int lowerBound() { return -8; }
 }
