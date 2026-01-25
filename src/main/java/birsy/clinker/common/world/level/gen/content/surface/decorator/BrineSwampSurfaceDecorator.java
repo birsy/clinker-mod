@@ -43,14 +43,14 @@ public class BrineSwampSurfaceDecorator extends SurfaceDecorator {
 
         double noise5 = context.retrieve(ClinkerNoiseComputers.BASE_NOISE_2D[5], pos.getX(), pos.getY(), pos.getZ());
 
-        double waterloggingNoise = noise5 + noise3 * 0.5;
+        double waterloggingNoise = noise5 + noise3 * 0.8;
 
         double dither = random.nextDouble() * 2 - 1;
 
         boolean placedSand = false;
 
         if (pos.getY() > surfaceHeight - 10) {
-            if (pos.getY() == seaLevel - 1 && waterloggingNoise > 0.2 && maxElevationIncrease <= 0) {
+            if (pos.getY() == seaLevel - 1 && waterloggingNoise > 0 && maxElevationIncrease <= 0) {
                 chunk.setBlockState(pos, Blocks.WATER.defaultBlockState(), false);
                 pos.move(Direction.DOWN);
 
