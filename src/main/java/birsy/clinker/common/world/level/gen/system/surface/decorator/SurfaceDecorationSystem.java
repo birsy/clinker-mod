@@ -140,7 +140,7 @@ public class SurfaceDecorationSystem {
         // compute elevation changes
         int maxElevationIncrease = 0,
             maxElevationDecrease = 0;
-        if (decorator.shouldCalculateElevationChange(visibleToSun, pos.getY())) {
+        if (decorator.shouldCalculateElevationChange(visibleToSun, pos.getY(), heightmapHeight)) {
             for (Direction dir : Direction.Plane.HORIZONTAL) {
                 scratchPos.set(pos).move(dir);
                 boolean solid = level.getBlockState(scratchPos)

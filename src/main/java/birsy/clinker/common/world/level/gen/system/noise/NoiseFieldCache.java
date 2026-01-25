@@ -28,7 +28,7 @@ public class NoiseFieldCache {
     }
 
     public NoiseField fillNoiseField(int startY, int endY, NoiseComputer computer) {
-        int localStartY = startY - minY, localEndY = endY - minY;
+        int localStartY = Math.clamp(startY - minY, 0, chunkHeight), localEndY = Math.clamp(endY - minY, 0, chunkHeight);
         context.setRange(startY, endY);
 
         // collect all dependencies

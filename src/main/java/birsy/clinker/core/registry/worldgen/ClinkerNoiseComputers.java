@@ -247,18 +247,28 @@ public class ClinkerNoiseComputers {
     public static final Supplier<NoiseComputer>[] BASE_NOISE_ALT = baseNoiseArray("base_noise_alt", 10, false);
     public static final Supplier<NoiseComputer>[] BASE_NOISE_2D = baseNoiseArray("base_noise_2d", 10, true);
     public static final Supplier<NoiseComputer>[] BASE_NOISE_2D_ALT = baseNoiseArray("base_noise_2d_alt", 10, true);
-    private static Supplier<NoiseComputer> baseNoise(String name, int index, double horizontalFrequency, double verticalFrequency, boolean twoDimensional) {
+    private static Supplier<NoiseComputer> baseNoise(String name, int index, int size, boolean twoDimensional) {
         String concatenatedName = name + "_" + index;
         Supplier<NoiseFieldType> fieldType;
-        boolean useHighResCache = horizontalFrequency < 4;
+
+        double horizontalFrequency = 1.0 / size, verticalFrequency = 0.5 / size;
+
+        int cacheResolution = 0;
+        if (size >= 3) cacheResolution = 1;
+        if (size >= 32) cacheResolution = 2;
+
         if (twoDimensional) {
-            fieldType = useHighResCache ?
-                    (() -> NoiseFieldTypes.FINE_2D) :
-                    (() -> NoiseFieldTypes.COARSE_2D);
+            fieldType = switch (cacheResolution) {
+                case 0 -> () -> NoiseFieldTypes.FINE_2D;
+                case 1 -> () -> NoiseFieldTypes.COARSE_2D;
+                default -> () -> NoiseFieldTypes.VERY_COARSE_2D;
+            };
         } else {
-            fieldType = useHighResCache ?
-                    (() -> NoiseFieldTypes.FINE) :
-                    (() -> NoiseFieldTypes.COARSE);
+            fieldType = switch (cacheResolution) {
+                case 0 -> () -> NoiseFieldTypes.FINE;
+                case 1 -> () -> NoiseFieldTypes.COARSE;
+                default -> () -> NoiseFieldTypes.VERY_COARSE;
+            };
         }
         NoiseFieldFiller filler;
         if (twoDimensional) {
@@ -279,7 +289,7 @@ public class ClinkerNoiseComputers {
         Supplier<NoiseComputer>[] noiseComputers = new Supplier[length];
         for (int i = 0; i < length; i++) {
             int size = 1 << i;
-            noiseComputers[i] = baseNoise(name, i, 1.0 / size, 0.5 / size, twoDimensional);
+            noiseComputers[i] = baseNoise(name, i, size, twoDimensional);
         }
         return noiseComputers;
     }

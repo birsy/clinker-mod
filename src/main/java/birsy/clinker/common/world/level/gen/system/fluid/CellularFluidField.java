@@ -6,6 +6,7 @@ import birsy.clinker.common.world.level.gen.system.worldfeature.WorldFeature;
 import birsy.clinker.common.world.level.gen.system.worldfeature.WorldFeatureContext;
 import net.minecraft.core.SectionPos;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.PositionalRandomFactory;
@@ -83,7 +84,7 @@ public class CellularFluidField implements FluidField {
         this.blockCountY = chunk.getHeight() + this.paddingBlocksY * 2;
         this.blockLayerSize = this.blockCountXZ * this.blockCountXZ;
         this.fluidStates = new BlockState[this.blockLayerSize * this.blockCountY];
-        Arrays.fill(this.fluidStates, AIR);
+        Arrays.fill(this.fluidStates, Blocks.AIR.defaultBlockState());
 
         this.minCellX = Math.floorDiv(this.minX, this.cellWidth);
         this.minCellY = Math.floorDiv(this.minY, this.cellHeight);
@@ -210,7 +211,7 @@ public class CellularFluidField implements FluidField {
                         blockStartZ = cZ * this.cellWidth;
 
                     if (cell.cellType == CellType.EMPTY && cell.homogenousWithNeighbors) continue;
-                    if (cell.homogenousWithNeighbors) {
+                    if (cell.cellType == CellType.FULL && cell.homogenousWithNeighbors) {
                         int blockEndY = Math.min(blockStartY + this.cellHeight, this.blockCountY);
                         int localSurfaceHeight = Math.min(
                                 cell.fluidHeight() - this.minY + this.paddingBlocksY,

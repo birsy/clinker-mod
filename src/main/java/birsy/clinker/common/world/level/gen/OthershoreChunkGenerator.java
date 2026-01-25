@@ -127,7 +127,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
         BiomeCache2d surfaceBiomes = this.getSurfaceBiomeCacheForChunk(minX, minZ);
         BiomeBlender.ChunkBiomeBlendingWeights blendingInfo = this.biomeBlender.generateChunkBiomeBlendingWeights(surfaceBiomes, minX, minZ, 0);
-        SurfaceShaperSystem.ChunkSurfaceHeightmap heightmapInfo = this.surfaceShaperSystem.generateHeightmap(noiseFieldCache, worldFeatures, surfaceBiomes, blendingInfo, worldContext, minX, minZ, 0);
+        SurfaceShaperSystem.ChunkSurfaceHeightmap heightmapInfo = this.surfaceShaperSystem.generateHeightmap(noiseFieldCache, worldFeatures, surfaceBiomes, blendingInfo, worldContext, minX, minZ);
 
         int sectionQuartSize = QuartPos.fromSection(1);
         for (int section = levelheightaccessor.getMinSection(); section < levelheightaccessor.getMaxSection(); section++) {
@@ -241,7 +241,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                     BlockState state = isSolid ?
                             ClinkerBlocks.BRIMSTONE.get().defaultBlockState() :
                             fluidField.getFluidState(pos.getX(), pos.getY(), pos.getZ());
-                    if (!state.isAir()) {
+                    if (!(state == null || state.isAir())) {
                         chunk.setBlockState(pos, state, false);
                         // update any placed state blocks in waterfalls, so they flow!
                         if (!state.getFluidState().isEmpty() && waterfallPresence.retrieve(xi, yi, zi) > 0) {
@@ -439,7 +439,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                             .getWorldFeatures(chunk.getLevel(), minX, minZ, this.worldContext);
             BiomeCache2d surfaceBiomes = getSurfaceBiomeCacheForChunk(minX, minZ);
             BiomeBlender.ChunkBiomeBlendingWeights chunkBiomeBlendingWeights = this.biomeBlender.generateChunkBiomeBlendingWeights(surfaceBiomes, minX, minZ, 0);
-            SurfaceShaperSystem.ChunkSurfaceHeightmap heightmapInfo = this.surfaceShaperSystem.generateHeightmap(cache, worldFeatures, surfaceBiomes, chunkBiomeBlendingWeights, worldContext, minX, minZ, 0);
+            SurfaceShaperSystem.ChunkSurfaceHeightmap heightmapInfo = this.surfaceShaperSystem.generateHeightmap(cache, worldFeatures, surfaceBiomes, chunkBiomeBlendingWeights, worldContext, minX, minZ);
             NoiseField heightmapGradient = surfaceShaperSystem.generateHeightmapGradientSquaredField(heightmapInfo.field());
             surfaceDecorationSystem.applySurfaceDecorations(
                     level, chunk, chunkCache.randomState(), cache,

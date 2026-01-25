@@ -66,7 +66,7 @@ public class AshSteppeSurfaceDecorator extends SurfaceDecorator {
         }
     }
 
-    public boolean shouldCalculateElevationChange(boolean canSeeSun, int y) {
+    public boolean shouldCalculateElevationChange(boolean canSeeSun, int y, int surfaceHeight) {
         return canSeeSun || y >= OthershoreBiomeSource.MIDDLE_SHELF_HEIGHT - 20;
     }
 }

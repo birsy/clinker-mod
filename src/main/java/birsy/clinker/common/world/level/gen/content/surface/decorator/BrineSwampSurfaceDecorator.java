@@ -1,6 +1,5 @@
 package birsy.clinker.common.world.level.gen.content.surface.decorator;
 
-import birsy.clinker.common.world.level.gen.OthershoreBiomeSource;
 import birsy.clinker.common.world.level.gen.OthershoreGenerationConstants;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
@@ -120,7 +119,7 @@ public class BrineSwampSurfaceDecorator extends SurfaceDecorator {
     }
 
     @Override
-    public boolean shouldCalculateElevationChange(boolean canSeeSun, int y) {
+    public boolean shouldCalculateElevationChange(boolean canSeeSun, int y, int surfaceHeight) {
         return canSeeSun || y >= OthershoreGenerationConstants.BASE_SEA_LEVEL - 2;
     }
 }

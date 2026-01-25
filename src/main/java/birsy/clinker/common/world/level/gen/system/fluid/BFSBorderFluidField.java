@@ -86,7 +86,7 @@ public class BFSBorderFluidField extends CellularFluidField {
                     BlockState belowState = this.fluidStates[yIndex];
                     // only fluids check the block below them
                     // because only fluids flow down...
-                    if (!state.isAir() && state != belowState) {
+                    if (!(state == null || state.isAir()) && state != belowState) {
                         borderDistances[blockIndex] = 0;
                         continue;
                     }
@@ -135,7 +135,7 @@ public class BFSBorderFluidField extends CellularFluidField {
                                     BlockState belowState = this.fluidStates[yIndex];
                                     // only fluids check the block below them
                                     // because only fluids flow down...
-                                    if (!state.isAir() && state != belowState) {
+                                    if (!(state == null || state.isAir()) && state != belowState) {
                                         borderDistances[blockIndex] = 0;
                                         continue;
                                     }
@@ -172,7 +172,7 @@ public class BFSBorderFluidField extends CellularFluidField {
                     int blockIndex = index(bX, bY, bZ, this.blockCountXZ, this.blockCountY);
                     BlockState state = this.fluidStates[blockIndex];
                     int distance = this.borderDistances[blockIndex];
-                    if (!state.isAir() || distance <= 0) continue;
+                    if (!(state == null || state.isAir()) || distance <= 0) continue;
 
                     int belowBlockIndex = index(bX, bY - 1, bZ, this.blockCountXZ, this.blockCountY);
                     int belowDistance = this.borderDistances[belowBlockIndex];

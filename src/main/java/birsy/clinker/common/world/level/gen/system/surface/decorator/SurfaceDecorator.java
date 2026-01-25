@@ -13,7 +13,7 @@ public abstract class SurfaceDecorator {
                                          int maxElevationIncrease, int maxElevationDecrease, int surfaceHeight, double surfaceHeightGradient,
                                          NoiseContext context, RandomSource random);
 
-    public boolean shouldCalculateElevationChange(boolean canSeeSun, int y) {
+    public boolean shouldCalculateElevationChange(boolean canSeeSun, int y, int surfaceHeight) {
         return canSeeSun;
     }
 }

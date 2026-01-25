@@ -54,6 +54,7 @@ public class UndergroundLakeWorldFeature extends WorldFeature {
         double[] biomeWeights = worldContext.biomeBlender().getBiomeBlendingWeights(new double[worldContext.biomeList().maxId() + 1], this.centerX, this.centerZ);
         double surfaceHeight = worldContext.surfaceShaperSystem().getHeight(biomeWeights, this.centerX, this.centerZ, context);
         int maxFluidLevel = Mth.floor(surfaceHeight - 15);
+        if (maxFluidLevel < 4) return false;
         this.waterLevel = randomSource.nextInt(4, maxFluidLevel);
         this.fluid = randomSource.nextInt(3) != 0 ? Blocks.WATER.defaultBlockState() : Blocks.LAVA.defaultBlockState();
         return true;
@@ -61,10 +62,10 @@ public class UndergroundLakeWorldFeature extends WorldFeature {
 
     @Override
     public void prefillFluidNoiseFields(int chunkX, int chunkZ, PaddedNoiseFieldCache cache, WorldFeatureContext worldContext) {
-        cache.fillNoiseField(ClinkerNoiseComputers.BASE_SURFACE_HEIGHT);
         cache.fillNoiseField(ClinkerNoiseComputers.BASE_NOISE_2D[6]);
         cache.fillNoiseField(ClinkerNoiseComputers.BASE_NOISE_2D_ALT[6]);
     }
+
     @Override
     public FluidLevel modifyFluidLevel(int x, int y, int z, int minX, int minY, int minZ, FluidLevel currentFluidLevel, NoiseContext context, NoiseField heightmap) {
         if (currentFluidLevel.height() > this.waterLevel)

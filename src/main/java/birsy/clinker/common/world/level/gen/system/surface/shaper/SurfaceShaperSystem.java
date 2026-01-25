@@ -4,6 +4,7 @@ import birsy.clinker.common.world.level.gen.system.biome.BiomeBlender;
 import birsy.clinker.common.world.level.gen.system.biome.BiomeCache2d;
 import birsy.clinker.common.world.level.gen.system.biome.BiomeList;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
+import birsy.clinker.common.world.level.gen.system.noise.PaddedNoiseFieldCache;
 import birsy.clinker.common.world.level.gen.system.noise.UncachedNoiseContext;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldTypes;
@@ -61,7 +62,25 @@ public class SurfaceShaperSystem {
         return height;
     }
 
+    public ChunkSurfaceHeightmap generateHeightmap(PaddedNoiseFieldCache cache,
+                                                    Collection<WorldFeature> worldFeaturesInChunk,
+                                                    BiomeCache2d surfaceBiomeCache,
+                                                    BiomeBlender.ChunkBiomeBlendingWeights surfaceBlendingInfo,
+                                                    WorldFeatureContext context,
+                                                    int minX, int minZ, int padding) {
+        return this.generateHeightmapInternal(cache, worldFeaturesInChunk, surfaceBiomeCache, surfaceBlendingInfo, context, minX, minZ, padding);
+    }
+
     public ChunkSurfaceHeightmap generateHeightmap(NoiseFieldCache cache,
+                                                   Collection<WorldFeature> worldFeaturesInChunk,
+                                                   BiomeCache2d surfaceBiomeCache,
+                                                   BiomeBlender.ChunkBiomeBlendingWeights surfaceBlendingInfo,
+                                                   WorldFeatureContext context,
+                                                   int minX, int minZ) {
+        return this.generateHeightmapInternal(cache, worldFeaturesInChunk, surfaceBiomeCache, surfaceBlendingInfo, context, minX, minZ, 0);
+    }
+
+    private ChunkSurfaceHeightmap generateHeightmapInternal(NoiseFieldCache cache,
                                                    Collection<WorldFeature> worldFeaturesInChunk,
                                                    BiomeCache2d surfaceBiomeCache,
                                                    BiomeBlender.ChunkBiomeBlendingWeights surfaceBlendingInfo,
