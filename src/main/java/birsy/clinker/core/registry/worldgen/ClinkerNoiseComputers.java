@@ -1,6 +1,7 @@
 package birsy.clinker.core.registry.worldgen;
 
 import birsy.clinker.common.world.level.gen.OthershoreBiomeSource;
+import birsy.clinker.common.world.level.gen.OthershoreGenerationConstants;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseComputer;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldFiller;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldType;
@@ -31,6 +32,7 @@ public class ClinkerNoiseComputers {
     );
 
     // surface
+    @Deprecated(forRemoval = true)
     public static final Supplier<NoiseComputer> BASE_SURFACE_HEIGHT = NOISE_COMPUTERS.register(
             "base_surface_height",
             () -> new NoiseComputer(
@@ -57,13 +59,24 @@ public class ClinkerNoiseComputers {
                         seas = seas * (1 / Mth.clampedMap(erosion, 0, 1, 0.1, 0.2));
                         seas = Math.clamp(seas / 2.0 + 0.5, 0, 1);
 
-                        val = Mth.clampedMap(middleShelf, 0, 1, 25 + OthershoreBiomeSource.SEA_HEIGHT, 5 + OthershoreBiomeSource.MIDDLE_SHELF_HEIGHT);
-                        val = Mth.lerp(seas, val, OthershoreBiomeSource.SEA_HEIGHT - 3);
+                        int minHeight = OthershoreGenerationConstants.BASE_SEA_LEVEL + 8;
+                        val = Mth.clampedMap(middleShelf, 0, 1, 25 + minHeight, 5 + OthershoreBiomeSource.MIDDLE_SHELF_HEIGHT);
+                        val = Mth.lerp(seas, val, minHeight - 3);
 
-                        return ((val - OthershoreBiomeSource.SEA_HEIGHT) * scale) + OthershoreBiomeSource.SEA_HEIGHT;
+                        return ((val - minHeight) * scale) + minHeight;
                     }
             )
     );
+
+    private static final double CLIFF_ROCK_FREQUENCY = 1 / 20.0;
+    public static final Supplier<NoiseComputer> CLIFF_ROCKS  = NOISE_COMPUTERS.register("cliff_rocks",
+            () -> new NoiseComputer(
+                    () -> NoiseFieldTypes.COARSE,
+                    (dependencies, registry) -> registry.registerNoise("cliff_rocks"),
+                    (x, y, z, context) -> context.sample("cliff_rocks", x * CLIFF_ROCK_FREQUENCY * 0.7, y * CLIFF_ROCK_FREQUENCY * 0.4, z * CLIFF_ROCK_FREQUENCY * 0.7)
+            )
+    );
+
 
     // caves
     public static final Supplier<NoiseComputer> SPELEOTHEMS = NOISE_COMPUTERS.register("speleothems",

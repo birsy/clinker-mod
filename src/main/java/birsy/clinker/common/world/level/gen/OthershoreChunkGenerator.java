@@ -72,7 +72,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         this.biomeBlender = new BiomeBlender(this.biomeList, biomeSource);
         this.surfaceShaperSystem = new SurfaceShaperSystem(biomeGetter, this.biomeList);
         this.surfaceDecorationSystem = new SurfaceDecorationSystem(
-                8, OthershoreBiomeSource.SEA_HEIGHT,
+                8, OthershoreGenerationConstants.BASE_SEA_LEVEL,
                 ClinkerBlocks.BRIMSTONE.get().defaultBlockState(), biomeGetter);
 
         this.worldContext = new WorldFeatureContext(biomeList, biomeBlender, surfaceShaperSystem);
@@ -204,7 +204,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         final FluidFieldFiller fluidFiller = (x, y, z, context) -> {
             double surfaceHeight = heightmapInfo.field().retrieve(x - minX, y - minY, z - minZ);
             // sea level
-            if (y > surfaceHeight - cellHeight) return new FluidLevel(OthershoreBiomeSource.SEA_HEIGHT, Blocks.WATER.defaultBlockState());
+            if (y > surfaceHeight - cellHeight) return new FluidLevel(OthershoreGenerationConstants.BASE_SEA_LEVEL, Blocks.WATER.defaultBlockState());
             // the aquifer
             if (y < 0) return new FluidLevel(-40, Blocks.WATER.defaultBlockState());
             return FluidLevel.EMPTY;

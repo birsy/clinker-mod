@@ -9,6 +9,9 @@ import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldTypes;
 import birsy.clinker.common.world.level.gen.system.worldfeature.WorldFeature;
 import birsy.clinker.common.world.level.gen.system.worldfeature.WorldFeatureContext;
+import birsy.clinker.core.Clinker;
+import birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers;
+import birsy.clinker.core.util.MathUtils;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
@@ -132,7 +135,7 @@ public class SurfaceShaperSystem {
                                              WorldFeatureContext worldContext,
                                              int minX, int minY, int minZ, int chunkHeight) {
         // determine bounds
-        int lowerBound = Integer.MAX_VALUE, upperBound = Integer.MIN_VALUE;
+        int lowerBound = -16, upperBound = 16;
         for (Holder<Biome> biomeHolder : surfaceBiomeCache.containedBiomes()) {
             SurfaceShaper shaper = getSurfaceShaper(biomeHolder);
             lowerBound = Math.min(lowerBound, shaper.lowerBound());
@@ -166,10 +169,42 @@ public class SurfaceShaperSystem {
             shaper.fillSurfaceDensityField(surfaceDensityField, cache, minX, minY, minZ, heightmap, heightmapGradient, distanceToHeightmap, lowerBound, upperBound, biomeWeightField);
         }
 
+        this.createRockyCliffsOnSteepSlopes(cache, heightmapGradient, distanceToHeightmap, surfaceBlendingInfo.biomeTransitionFactorField(), surfaceDensityField, lowerBound, upperBound, minX, minY, minZ, chunkHeight);
+
         for (WorldFeature worldFeature : worldFeaturesInChunk)
             worldFeature.modifySurfaceDensityField(minX, minY, minZ, cache, surfaceDensityField, worldContext);
 
         return surfaceDensityField;
+    }
+
+    // whenever there are big discontinuities in the heightmap near biome transitions,
+    // surface shapers can't really handle that...
+    // so we add on some rocky cliff textures to help make it look less smooth and 1.12 biomes o' plenty mountains-y
+    private void createRockyCliffsOnSteepSlopes(NoiseFieldCache cache,
+                                                NoiseField heightmapGradientField, NoiseField distanceToHeightmapField,
+                                                NoiseField biomeTransitionFactorField,
+                                                NoiseField surfaceDensityField,
+                                                int lowerSurfaceBound, int upperSurfaceBound,
+                                                int minX, int minY, int minZ, int chunkHeight) {
+        NoiseField cliffRockField = cache.fillNoiseField(lowerSurfaceBound, upperSurfaceBound, ClinkerNoiseComputers.CLIFF_ROCKS);
+        double cliffSize = 6;
+        double[] surfaceDensityFieldArray = surfaceDensityField.array();
+        surfaceDensityField.byBlockPadded(lowerSurfaceBound - minY, upperSurfaceBound - minY,
+                (index, x, y, z) -> {
+                    // make sure it only occurs when the heightmap is steep
+                    double gradientMask = Mth.clampedMap(heightmapGradientField.retrieve(x, y, z), 1, 6, 0, 1);
+                    // make sure it only occurs near the ground
+                    double distanceToHeightmapMask = Mth.clampedMap(Math.abs(distanceToHeightmapField.retrieve(x, y, z)), cliffSize * 0.5, cliffSize, 1, 0);
+                    // make sure it only occurs between biomes. surface shapers can take care of intra-biome cliffs
+                    double biomeTransitionMask = Math.clamp(biomeTransitionFactorField.retrieve(x, y, z), 0, 1);
+
+                    double cliffRock = ((Math.abs(cliffRockField.retrieve(x, y, z)) * -2 + 1) - 0.2) * cliffSize;
+
+                    double cliffs = cliffRock * biomeTransitionMask * gradientMask * distanceToHeightmapMask;
+
+                    surfaceDensityFieldArray[index] += cliffs;
+                }
+        );
     }
 
     public record ChunkSurfaceHeightmap(NoiseField field, int minimum, int maximum) {}

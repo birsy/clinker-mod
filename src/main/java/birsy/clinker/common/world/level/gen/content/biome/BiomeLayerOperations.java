@@ -1,5 +1,8 @@
-package birsy.clinker.common.world.level.gen.system.biome.resolver;
+package birsy.clinker.common.world.level.gen.content.biome;
 
+import birsy.clinker.common.world.level.gen.system.biome.resolver.BiomeLayerOperation;
+import birsy.clinker.common.world.level.gen.system.biome.resolver.ProtoBiome;
+import birsy.clinker.common.world.level.gen.system.biome.resolver.ProtoBiomeNeighborhood;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
 import birsy.clinker.core.registry.ClinkerRegistries;
 import net.minecraft.util.RandomSource;

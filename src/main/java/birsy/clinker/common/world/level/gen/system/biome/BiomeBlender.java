@@ -64,19 +64,39 @@ public class BiomeBlender {
             biomeWeightFields[biomeList.getId(biome)] = biomeWeightField;
         }
 
-        return new ChunkBiomeBlendingWeights(biomeWeightFields);
+        return new ChunkBiomeBlendingWeights(biomeWeightFields, generateBiomeTransitionFactorField(surfaceBiomeCache, biomeWeightFields, padding));
+    }
+
+    private NoiseField generateBiomeTransitionFactorField(BiomeCache2d surfaceBiomeCache, NoiseField[] biomeWeightFields, int padding) {
+        NoiseField biomeTransitionFactorField = NoiseFieldTypes.COARSE_2D.create(1, padding);
+        double[] biomeTransitionFactorArray = biomeTransitionFactorField.array();
+
+        biomeTransitionFactorField.byIndex(index -> {
+            double max1 = 0, max2 = 0;
+            for (Holder<Biome> biome : surfaceBiomeCache.containedBiomes()) {
+                NoiseField biomeWeightField = biomeWeightFields[biomeList.getId(biome)];
+                double weight = biomeWeightField.array()[index];
+                if (weight > max1) {
+                    max2 = max1;
+                    max1 = weight;
+                } else if (weight > max2) {
+                    max2 = weight;
+                }
+            }
+            biomeTransitionFactorArray[index] = Math.clamp(1 - (max1 - max2), 0, 1);
+        });
+
+        return biomeTransitionFactorField;
     }
 
     public double[] getBiomeBlendingWeights(double[] weightByBiomeId, int x, int z) {
         Arrays.fill(weightByBiomeId, 0);
-        int qX = QuartPos.fromBlock(x),
-            qZ = QuartPos.fromBlock(z);
         int blurIndex = 0;
         for (int oZ = 0; oZ < BIOME_BLUR_KERNEL_SIZE; oZ++) {
-            int offsetQZ = qZ + (oZ - HALF_BIOME_BLUR_KERNEL_SIZE);
+            int offsetQZ = QuartPos.fromBlock(z + (oZ - HALF_BIOME_BLUR_KERNEL_SIZE) * QuartPos.SIZE);
 
             for (int oX = 0; oX < BIOME_BLUR_KERNEL_SIZE; oX++) {
-                int offsetQX = qX + (oX - HALF_BIOME_BLUR_KERNEL_SIZE);
+                int offsetQX = QuartPos.fromBlock(x + (oX - HALF_BIOME_BLUR_KERNEL_SIZE) * QuartPos.SIZE);
 
                 Holder<Biome> neighborBiome = this.biomeSource.getSurfaceBiome(offsetQX, offsetQZ);
                 weightByBiomeId[biomeList.getId(neighborBiome)] += BIOME_BLUR_KERNEL[blurIndex];
@@ -88,9 +108,8 @@ public class BiomeBlender {
 
     private static void fillBiomeWeightField(Holder<Biome> biome, BiomeCache2d surfaceBiomeCache, double[] field,
                                              int minX, int minZ, int index, int localX, int localZ) {
-        int x = minX + localX, z = minZ + localZ;
-        int qX = QuartPos.fromBlock(minX + localX),
-            qZ = QuartPos.fromBlock(minZ + localZ);
+        int x = minX + localX,
+            z = minZ + localZ;
         double total = 0;
         int blurIndex = 0;
         for (int oZ = 0; oZ < BIOME_BLUR_KERNEL_SIZE; oZ++) {
@@ -107,7 +126,7 @@ public class BiomeBlender {
         field[index] = total;
     }
 
-    public record ChunkBiomeBlendingWeights(NoiseField[] weightByBiomeId) {
+    public record ChunkBiomeBlendingWeights(NoiseField[] weightByBiomeId, NoiseField biomeTransitionFactorField) {
         @Nullable
         public NoiseField weightForBiome(BiomeList biomes, Holder<Biome> biome) {
             return weightByBiomeId[biomes.getId(biome)];

@@ -2,6 +2,7 @@ package birsy.clinker.common.world.level.gen.content.surface.shaper;
 
 import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
+import birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers;
 import net.minecraft.util.Mth;
 
 import static birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers.*;
@@ -10,6 +11,16 @@ public class AshSteppeSurfaceShaper extends SimpleSurfaceShaper {
     @Override
     public int upperBound() {
         return 48;
+    }
+
+    // kinda placeholder
+    @Override
+    public void prefillHeightmapNoiseFields(NoiseFieldCache cache) {
+        cache.fillNoiseField(ClinkerNoiseComputers.BASE_SURFACE_HEIGHT);
+    }
+    @Override
+    public double getHeight(int x, int z, double weight, NoiseContext context) {
+        return context.retrieve(ClinkerNoiseComputers.BASE_SURFACE_HEIGHT, x, 0, z) * weight;
     }
 
     @Override

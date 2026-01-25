@@ -11,25 +11,15 @@ public abstract class SimpleSurfaceShaper extends SurfaceShaper {
     public abstract double surfaceDensity(int x, int y, int z, double heightmapHeight, double heightmapGradient, double distanceToSurface, double biomeWeight, NoiseContext context);
 
     @Override
-    public void prefillHeightmapNoiseFields(NoiseFieldCache cache) {
-        cache.fillNoiseField(ClinkerNoiseComputers.BASE_SURFACE_HEIGHT);
-    }
-
-    @Override
-    public double getHeight(int x, int z, double weight, NoiseContext context) {
-        return context.retrieve(ClinkerNoiseComputers.BASE_SURFACE_HEIGHT, x, 0, z) * weight;
-    }
-
-    @Override
     public void fillSurfaceDensityField(NoiseField surfaceDensityField, NoiseFieldCache cache, int minX, int minY, int minZ,
                                         NoiseField heightmapField, NoiseField heightmapGradientField,
-                                        NoiseField distanceToHeightmap, int lowerGenBound, int upperGenBound,
+                                        NoiseField distanceToHeightmap, int localLowerGenBound, int localUpperGenBound,
                                         NoiseField biomeWeight) {
-        this.prefillDensityNoiseFields(cache, lowerGenBound, upperGenBound);
+        this.prefillDensityNoiseFields(cache, localLowerGenBound, localUpperGenBound);
 
         NoiseContext context = cache.context;
         double[] surfaceDensityArray = surfaceDensityField.array();
-        surfaceDensityField.byBlockPadded(lowerGenBound - minY, upperGenBound - minY,
+        surfaceDensityField.byBlockPadded(localLowerGenBound - minY, localUpperGenBound - minY,
                 (index, x, y, z) -> {
                     double weight = biomeWeight.retrieve(x, y, z);
                     double heightmap = heightmapField.retrieve(x, y, z),

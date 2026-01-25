@@ -112,6 +112,7 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
         Minecraft.getInstance().getProfiler().push("clinker.updateLightmap");
         // skylight, between 1 and 0 so it's easier to work with.
         float skyL = (float) pixelY / 15.0F;
+        skyL = Mth.sqrt(skyL);
         // ditto
         float blockL = (float) pixelX / 15.0F;
 

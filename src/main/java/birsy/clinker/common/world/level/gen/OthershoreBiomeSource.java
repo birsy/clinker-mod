@@ -1,7 +1,7 @@
 package birsy.clinker.common.world.level.gen;
 
 import birsy.clinker.common.world.level.gen.system.biome.*;
-import birsy.clinker.common.world.level.gen.system.biome.resolver.BiomeLayerOperations;
+import birsy.clinker.common.world.level.gen.content.biome.BiomeLayerOperations;
 import birsy.clinker.common.world.level.gen.system.biome.resolver.LayeredBiomeResolver;
 import birsy.clinker.common.world.level.gen.system.biome.resolver.ProtoBiome;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
@@ -39,9 +39,9 @@ public class OthershoreBiomeSource extends BiomeSource {
             instance -> instance.group(RegistryOps.retrieveGetter(Registries.BIOME))
                         .apply(instance, instance.stable(OthershoreBiomeSource::new))
     );
+    @Deprecated(forRemoval = true)
     public static final int UPPER_SHELF_HEIGHT = 230,
-            MIDDLE_SHELF_HEIGHT = 180,
-            SEA_HEIGHT = 64;
+                            MIDDLE_SHELF_HEIGHT = 180;
     private final HolderGetter<Biome> biomeGetter;
     private final Holder<Biome>[] biomeByProtoBiomeId;
     private Holder<Biome> voidBiome;
@@ -87,7 +87,7 @@ public class OthershoreBiomeSource extends BiomeSource {
         return LayeredBiomeResolver.builder(8)
                 .layer((x, z, current, neighborhood, random, context) -> {
                     double surfaceHeight = context.retrieve(ClinkerNoiseComputers.BASE_SURFACE_HEIGHT, x, 0, z);
-                    if (surfaceHeight < SEA_HEIGHT + 20)
+                    if (surfaceHeight < OthershoreGenerationConstants.BASE_SEA_LEVEL + 20)
                         return ClinkerProtoBiomes.LOWER_SHELF.get();
                     return ClinkerProtoBiomes.UPPER_SHELF.get();
                 })

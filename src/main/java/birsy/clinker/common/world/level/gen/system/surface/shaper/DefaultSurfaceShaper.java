@@ -11,9 +11,9 @@ public class DefaultSurfaceShaper extends SurfaceShaper {
     public double getHeight(int x, int z, double weight, NoiseContext context) { return 100 * weight; }
 
     @Override
-    public void fillSurfaceDensityField(NoiseField surfaceDensityField, NoiseFieldCache cache, int minX, int minY, int minZ, NoiseField heightmapField, NoiseField squaredHeightmapGradientField, NoiseField distanceToHeightmap, int lowerGenBound, int upperGenBound, NoiseField biomeWeight) {
+    public void fillSurfaceDensityField(NoiseField surfaceDensityField, NoiseFieldCache cache, int minX, int minY, int minZ, NoiseField heightmapField, NoiseField squaredHeightmapGradientField, NoiseField distanceToHeightmap, int localLowerGenBound, int localUpperGenBound, NoiseField biomeWeight) {
         double[] surfaceDensityArray = surfaceDensityField.array();
-        surfaceDensityField.byBlockPadded(lowerGenBound, upperGenBound, (index, x, y, z) -> surfaceDensityArray[index] = y - heightmapField.retrieve(x, y, z));
+        surfaceDensityField.byBlockPadded(localLowerGenBound, localUpperGenBound, (index, x, y, z) -> surfaceDensityArray[index] = y - heightmapField.retrieve(x, y, z));
     }
 
     @Override
