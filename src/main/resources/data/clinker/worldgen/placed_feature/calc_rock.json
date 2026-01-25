@@ -19,7 +19,7 @@
     {
       "type": "clinker:height_filter",
       "min_inclusive": {
-        "absolute": 67
+        "absolute": 104
       },
       "max_inclusive": {
         "below_top": 0
@@ -27,7 +27,7 @@
     },
     {
       "type": "clinker:heightmap_steepness_filter",
-      "heightmap": "MOTION_BLOCKING_NO_LEAVES",
+      "heightmap": "OCEAN_FLOOR",
       "max_gradient_inclusive": 1,
       "radius": 2
     },
