@@ -45,7 +45,9 @@ public class ClinkerSounds {
     public static final Supplier<SoundEvent> AMBIENT_ASH_PLAINS_LOOP = SOUNDS.register("ambient.ash_plains.loop",
             () -> SoundEvent.createVariableRangeEvent(Clinker.resource("ambient.ash_plains.loop")));
 
-
-
-
+    // music
+    public static final Supplier<SoundEvent> MUSIC_OTHERSHORE_SURFACE = SOUNDS.register("music.othershore.surface",
+            () -> SoundEvent.createVariableRangeEvent(Clinker.resource("music.othershore.surface")));
+    public static final Supplier<SoundEvent> MUSIC_OTHERSHORE_SUBTERRANEAN = SOUNDS.register("music.othershore.subterranean",
+            () -> SoundEvent.createVariableRangeEvent(Clinker.resource("music.othershore.subterranean")));
 }
