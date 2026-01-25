@@ -19,6 +19,7 @@ public class LongStringLocalizationAuthority {
     }
 
     public void putLongString(String loc, ResourceLocation id, String str) {
+        id = validatePath(id);
         LabeledString parsedString = LabeledString.parse(str);
         if(longStrings.containsKey(loc)) {
             longStrings.get(loc).put(id, parsedString);
