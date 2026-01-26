@@ -44,7 +44,9 @@
     [],
     [],
     [],
-    [],
+    [
+      "clinker:patch_peat_moss"
+    ],
     [],
     [
       "clinker:sheet_moss_surface",

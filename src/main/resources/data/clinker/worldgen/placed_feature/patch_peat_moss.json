@@ -1,0 +1,54 @@
+{
+  "feature": "clinker:patch_peat_moss",
+  "placement": [
+    {
+      "type": "minecraft:count",
+      "count": {
+        "type": "minecraft:weighted_list",
+        "distribution": [
+          {
+            "weight": 295,
+            "data": 0
+          },
+          {
+            "weight": 4,
+            "data": 1
+          },
+          {
+            "weight": 1,
+            "data": 4
+          }
+        ]
+      }
+    },
+    {
+      "type": "minecraft:in_square"
+    },
+    {
+      "type": "minecraft:heightmap",
+      "heightmap": "OCEAN_FLOOR"
+    },
+    {
+      "type": "minecraft:surface_water_depth_filter",
+      "max_water_depth": 0
+    },
+    {
+      "type": "clinker:height_filter",
+      "min_inclusive": {
+        "absolute": 106
+      },
+      "max_inclusive": {
+        "below_top": 0
+      }
+    },
+    {
+      "type": "clinker:heightmap_steepness_filter",
+      "heightmap": "OCEAN_FLOOR",
+      "max_gradient_inclusive": 1,
+      "radius": 2
+    },
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}

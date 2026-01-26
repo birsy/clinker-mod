@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "clinker:block/peat_moss_buds"
+      },
+      {
+        "model": "clinker:block/peat_moss_buds_mirrored"
+      },
+      {
+        "model": "clinker:block/peat_moss_buds_1"
+      },
+      {
+        "model": "clinker:block/peat_moss_buds_1_mirrored"
+      },
+      {
+        "model": "clinker:block/peat_moss_buds_2"
+      },
+      {
+        "model": "clinker:block/peat_moss_buds_2_mirrored"
+      },
+      {
+        "model": "clinker:block/peat_moss_buds_3"
+      },
+      {
+        "model": "clinker:block/peat_moss_buds_3_mirrored"
+      }
+    ]
+  }
+}

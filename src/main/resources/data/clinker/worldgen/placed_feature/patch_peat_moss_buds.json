@@ -1,0 +1,29 @@
+{
+  "feature": "clinker:patch_peat_moss_buds",
+  "placement": [
+    {
+      "type": "minecraft:count",
+      "count": 25
+    },
+    {
+      "type": "minecraft:in_square"
+    },
+    {
+      "type": "minecraft:heightmap",
+      "heightmap": "WORLD_SURFACE_WG"
+    },
+    {
+      "type": "minecraft:environment_scan",
+      "direction_of_search": "down",
+      "max_steps": 1,
+      "target_condition": {
+        "type": "minecraft:matching_blocks",
+        "offset": [0, -1, 0],
+        "blocks": "clinker:peat_moss"
+      }
+    },
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}
