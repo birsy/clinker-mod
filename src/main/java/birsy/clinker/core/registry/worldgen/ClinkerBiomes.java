@@ -12,6 +12,7 @@ public class ClinkerBiomes {
     public static final List<ResourceKey<Biome>> BIOMES = new ArrayList<>();
 
     public static final ResourceKey<Biome> PLATEAU = register("plateau");
+    public static final ResourceKey<Biome> BRINE_SNAKES = register("brine_snakes");
     public static final ResourceKey<Biome> ASH_STEPPE = register("ash_steppe");
     public static final ResourceKey<Biome> CLIFFSIDE = register("cliffside");
     public static final ResourceKey<Biome> LOWER_SHELF = register("lower_shelf");

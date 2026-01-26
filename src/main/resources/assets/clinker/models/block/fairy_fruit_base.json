@@ -1,5 +1,5 @@
 {
-  "parent": "clinker:block/thick_grass",
+  "parent": "clinker:block/cross_dense",
   "render_type": "cutout",
   "textures": {
     "cross": "clinker:block/fairy_fruit_base"
