@@ -18,7 +18,7 @@ public class SnakesSurfaceDecorator extends SurfaceDecorator {
     @Override
     public void prefillNoiseFields(NoiseFieldCache cache) {
         cache.fillNoiseField(ClinkerNoiseComputers.BASE_NOISE_2D[3]);
-        cache.fillNoiseField(ClinkerNoiseComputers.BASE_NOISE_2D[5]);
+        //cache.fillNoiseField(ClinkerNoiseComputers.BASE_NOISE_2D[5]);
         cache.fillNoiseField(ClinkerNoiseComputers.BASE_NOISE_2D_ALT[6]);
         cache.fillNoiseField(ClinkerNoiseComputers.BASE_NOISE_2D[7]);
     }
@@ -40,12 +40,6 @@ public class SnakesSurfaceDecorator extends SurfaceDecorator {
         int rockDepth = (int) Math.min(20 + noise3 * 4, depth);
         rockDepth -= (int) (surfaceHeightGradient * 3);
         if (rockDepth <= 0) return;
-
-        double noise5 = context.retrieve(ClinkerNoiseComputers.BASE_NOISE_2D[5], pos.getX(), pos.getY(), pos.getZ());
-
-        double waterloggingNoise = noise5 + noise3 * 0.8;
-
-        double dither = random.nextDouble() * 2 - 1;
 
         boolean placedSand = false;
 
