@@ -53,7 +53,7 @@ public class FairyFruitBlock extends BaseEntityBlock implements SimpleWaterlogge
 
     @Override
     public float getMaxHorizontalOffset() {
-        return super.getMaxHorizontalOffset();
+        return 0.1f;
     }
 
     @Nullable
