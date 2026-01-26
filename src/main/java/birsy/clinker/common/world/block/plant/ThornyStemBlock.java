@@ -32,7 +32,7 @@ public class ThornyStemBlock extends AbstractDirectionalStemBlock implements ISh
     public boolean shouldConnect(LevelAccessor level, BlockPos pos, BlockState currentState, Direction neighborDirection, BlockPos neighborPos, BlockState neighborState) {
         if (neighborState.is(ClinkerTags.BRAMBLE_FLOWERS))
             return neighborDirection == Direction.UP;
-        return neighborState.is(this);
+        return neighborState.is(ClinkerTags.BRAMBLES);
     }
 
     @Override

@@ -53,6 +53,10 @@ public class ClinkerBlockTagProvider extends BlockTagsProvider {
         brambleFlowers.add(ClinkerBlocks.BRAMBLE_BLOSSOM.get());
         brambleFlowers.add(ClinkerBlocks.WITHERING_BRAMBLE_BLOSSOM.get());
 
+        IntrinsicTagAppender<Block> brambles = this.tag(ClinkerTags.BRAMBLES).replace(false);
+        brambles.add(ClinkerBlocks.THORNY_STEM.get());
+        brambles.add(ClinkerBlocks.SALTY_STEM.get());
+
         IntrinsicTagAppender<Block> usesPickaxe = this.tag(BlockTags.MINEABLE_WITH_PICKAXE).replace(false);
         IntrinsicTagAppender<Block> usesAxe = this.tag(BlockTags.MINEABLE_WITH_AXE).replace(false);
         IntrinsicTagAppender<Block> usesShovel = this.tag(BlockTags.MINEABLE_WITH_SHOVEL).replace(false);

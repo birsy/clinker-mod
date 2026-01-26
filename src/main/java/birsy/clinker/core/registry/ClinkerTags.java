@@ -15,6 +15,7 @@ public class ClinkerTags {
     public static final TagKey<Block> WORKSTATION = BlockTags.create(Clinker.resource("valid_workstation_blocks"));
     public static final TagKey<Block> BRAMBLE_FLOWERS = BlockTags.create(Clinker.resource("bramble_flowers"));
     public static final TagKey<Block> OTHERSHORE_SOIL = BlockTags.create(Clinker.resource("othershore_soil"));
+    public static final TagKey<Block> BRAMBLES = BlockTags.create(Clinker.resource("brambles"));
 
     public static final TagKey<GameEvent> GNOMAD_CALLOUTS = TagKey.create(Registries.GAME_EVENT, Clinker.resource("gnomad_callouts"));
 
