@@ -9,8 +9,11 @@ import birsy.clinker.common.world.item.components.PageContents;
 import birsy.clinker.core.Clinker;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.*;
 
 import net.minecraft.world.item.component.ItemLore;
@@ -40,6 +43,13 @@ public class ClinkerItems
 
     public static final DeferredItem<Item> FISTFUL_OF_MAGGOTS = ITEMS.register("fistful_of_maggots",
             () -> new FistfulOfMaggotsItem(new Item.Properties().stacksTo(16))
+    );
+
+    public static final DeferredItem<Item> MUSIC_DISC_CODA = ITEMS.register("music_disc_coda",
+            () -> new Item(new Item.Properties()
+                    .stacksTo(1)
+                    .rarity(Rarity.RARE)
+                    .jukeboxPlayable(ResourceKey.create(Registries.JUKEBOX_SONG, Clinker.resource("coda"))))
     );
 
     public static final DeferredItem<Item> LEECH = ITEMS.registerSimpleItem("leech", new Item.Properties());

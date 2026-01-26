@@ -25,6 +25,8 @@ public class ClinkerItemModelProvider extends ItemModelProvider {
 
         this.handheldItem(ClinkerItems.PECULIAR_MIRROR.get());
         this.handheldItem(ClinkerItems.PESTLE.get());
+
+        this.basicItem(ClinkerItems.MUSIC_DISC_CODA);
     }
 
     public ItemModelBuilder basicItem(DeferredItem<? extends Item> item) {

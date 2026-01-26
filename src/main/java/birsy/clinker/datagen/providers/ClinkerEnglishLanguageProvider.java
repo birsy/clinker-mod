@@ -31,6 +31,8 @@ public class ClinkerEnglishLanguageProvider extends LanguageProvider {
         for (DeferredHolder<Item, ? extends Item> entry : ClinkerItems.ITEMS.getEntries()) {
             if (entry == ClinkerItems.ALCHEMISTS_CROSSBOW) {
                 this.addItem(entry, "Alchemist's Crossbow");
+            } else if (entry == ClinkerItems.MUSIC_DISC_CODA) {
+                this.addItem(entry, "Music Disc");
             } else {
                 this.addItem(entry, localizedNameFromRegistryName(entry.getId().getPath()));
             }
@@ -41,6 +43,8 @@ public class ClinkerEnglishLanguageProvider extends LanguageProvider {
         for (ResourceKey<Biome> biome : ClinkerBiomes.BIOMES) {
             this.add("biome.clinker." + biome.location().getPath(), localizedNameFromRegistryName(biome.location().getPath()));
         }
+
+        this.add("jukebox_song.clinker.coda", "Squire - CODA");
 
         this.add("item.clinker.ordnance.fuse_duration", "Fuse lasts %s seconds");
 

@@ -46,8 +46,12 @@ public class ClinkerSounds {
             () -> SoundEvent.createVariableRangeEvent(Clinker.resource("ambient.ash_plains.loop")));
 
     // music
+    public static final Supplier<SoundEvent> MUSIC_DISC_CODA = SOUNDS.register("music_disc.coda",
+            () -> SoundEvent.createVariableRangeEvent(Clinker.resource("music_disc.coda")));
+
     public static final Supplier<SoundEvent> MUSIC_OTHERSHORE_SURFACE = SOUNDS.register("music.othershore.surface",
             () -> SoundEvent.createVariableRangeEvent(Clinker.resource("music.othershore.surface")));
+
     public static final Supplier<SoundEvent> MUSIC_OTHERSHORE_SUBTERRANEAN = SOUNDS.register("music.othershore.subterranean",
             () -> SoundEvent.createVariableRangeEvent(Clinker.resource("music.othershore.subterranean")));
 }

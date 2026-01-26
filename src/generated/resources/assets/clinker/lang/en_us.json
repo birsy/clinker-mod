@@ -3,6 +3,7 @@
   "biome.clinker.ash_steppe": "Ash Steppe",
   "biome.clinker.brine_swamp": "Brine Swamp",
   "biome.clinker.cliffside": "Cliffside",
+  "biome.clinker.heath": "Heath",
   "biome.clinker.lower_shelf": "Lower Shelf",
   "biome.clinker.plateau": "Plateau",
   "biome.clinker.underground": "Underground",
@@ -57,6 +58,7 @@
   "block.clinker.dismal_aspen_door": "Dismal Aspen Door",
   "block.clinker.dismal_aspen_fence": "Dismal Aspen Fence",
   "block.clinker.dismal_aspen_fence_gate": "Dismal Aspen Fence Gate",
+  "block.clinker.dismal_aspen_heart": "Dismal Aspen Heart",
   "block.clinker.dismal_aspen_log": "Dismal Aspen Log",
   "block.clinker.dismal_aspen_planks": "Dismal Aspen Planks",
   "block.clinker.dismal_aspen_pressure_plate": "Dismal Aspen Pressure Plate",
@@ -163,6 +165,7 @@
   "item.clinker.lead_sword": "Lead Sword",
   "item.clinker.leech": "Leech",
   "item.clinker.mogul_warhook": "Mogul Warhook",
+  "item.clinker.music_disc_coda": "Music Disc",
   "item.clinker.ordnance": "Ordnance",
   "item.clinker.ordnance.detonation_dud": "Dud",
   "item.clinker.ordnance.detonation_flechette": "Releases Flechettes",
@@ -184,6 +187,7 @@
   "item.clinker.vitriol_bucket": "Vitriol Bucket",
   "itemGroup.clinker.clinker": "Clinker",
   "itemGroup.clinker.pages": "Pages",
+  "jukebox_song.clinker.coda": "Squire - CODA",
   "page.clinker.title.blank": "Blank Page",
   "page.clinker.title.test": "Testing Page"
 }

@@ -206,5 +206,6 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(CROSSBOW_REPEATER_ATTACHMENT.get());
         pOutput.accept(MOGUL_WARHOOK.get());
         pOutput.accept(FISTFUL_OF_MAGGOTS.get());
+        pOutput.accept(MUSIC_DISC_CODA.get());
     }
 }

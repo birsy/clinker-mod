@@ -23,6 +23,7 @@ import net.minecraft.core.SectionPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.random.SimpleWeightedRandomList;
 import net.minecraft.world.level.biome.*;
 import net.minecraft.world.level.levelgen.PositionalRandomFactory;
 import net.minecraft.world.level.levelgen.RandomState;
@@ -92,6 +93,9 @@ public class OthershoreBiomeSource extends BiomeSource {
                     return ClinkerProtoBiomes.UPPER_SHELF.get();
                 })
                 .zoom()
+//                .layer(new BiomeLayerOperations.Mutate(ClinkerProtoBiomes.UPPER_SHELF.get(),
+//                        ClinkerProtoBiomes.UPPER_SHELF.get(), ClinkerProtoBiomes.HEATH.get())
+//                )
                 .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1))
                 .layer(new BiomeLayerOperations.Smooth())
                 .zoom()
