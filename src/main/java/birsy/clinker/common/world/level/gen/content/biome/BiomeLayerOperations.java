@@ -5,10 +5,8 @@ import birsy.clinker.common.world.level.gen.system.biome.resolver.ProtoBiome;
 import birsy.clinker.common.world.level.gen.system.biome.resolver.ProtoBiomeNeighborhood;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
 import birsy.clinker.core.registry.ClinkerRegistries;
-import birsy.clinker.core.registry.worldgen.ClinkerProtoBiomes;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.random.SimpleWeightedRandomList;
-import net.minecraft.util.random.WeightedRandomList;
 
 import java.util.Arrays;
 
@@ -51,6 +49,28 @@ public class BiomeLayerOperations {
         @Override
         public ProtoBiome apply(int blockX, int blockZ, ProtoBiome current, ProtoBiomeNeighborhood previousLayerNeighborhood, RandomSource random, NoiseContext noiseContext) {
             if (current == biomeToMutate) return results.getRandomValue(random).orElse(current);
+            return current;
+        }
+    }
+
+    public record Surround(ProtoBiome biomeToSurround, ProtoBiome surroundingBiome) implements BiomeLayerOperation {
+        @Override
+        public ProtoBiome apply(int blockX, int blockZ, ProtoBiome current, ProtoBiomeNeighborhood previousLayerNeighborhood, RandomSource random, NoiseContext noiseContext) {
+            if (current == biomeToSurround) return current;
+            for (int offsetIndex : ProtoBiomeNeighborhood.NEIGHBOR_INDICES)
+                if (previousLayerNeighborhood.fromIndex(offsetIndex) == biomeToSurround) return surroundingBiome;
+            return current;
+        }
+    }
+
+    // biome A takes priority
+    public record CreateBorders(ProtoBiome biomeA, ProtoBiome biomeB, ProtoBiome borderBiome) implements BiomeLayerOperation {
+        @Override
+        public ProtoBiome apply(int blockX, int blockZ, ProtoBiome current, ProtoBiomeNeighborhood previousLayerNeighborhood, RandomSource random, NoiseContext noiseContext) {
+            if (current == biomeB) {
+                for (int offsetIndex : ProtoBiomeNeighborhood.NEIGHBOR_INDICES)
+                    if (previousLayerNeighborhood.fromIndex(offsetIndex) == biomeA) return borderBiome;
+            }
             return current;
         }
     }
