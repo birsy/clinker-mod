@@ -35,7 +35,9 @@
   "spawn_costs": {},
   "carvers": {},
   "features": [
-    [],
+    [
+      "clinker:shale_rock"
+    ],
     [
       "clinker:sheet_moss_surface",
       "clinker:patch_saltmoss_sprouts",
