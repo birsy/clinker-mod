@@ -629,6 +629,10 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
                     this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + stromatoliteName + "_" + StromatoliteBlock.MAX_SIZE_INCLUSIVE)
             ));
         }
+        this.simpleBlockItem(
+                PEAT_MOSS.get(),
+                this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + "peat_moss"))
+        );
     }
 
     public void flatBlockItem(Block block) {

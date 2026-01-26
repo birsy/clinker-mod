@@ -182,6 +182,14 @@ public class ClinkerBlocks
             .strength(1.5F, 6.0F)
             .sound(SoundType.GILDED_BLACKSTONE)));
 
+    //Peat
+    public static final DeferredBlock<Block> PEAT_MOSS = createBlock("peat_moss", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BROWN)
+            .strength(0.25F,1F)
+            .sound(SoundType.BIG_DRIPLEAF)
+            .ignitedByLava()
+            .pushReaction(PushReaction.DESTROY)
+    ));
+
     //Shale
     public static BlockBehaviour.Properties getShaleProperties() {
         return BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_GRAY)
@@ -404,6 +412,7 @@ public class ClinkerBlocks
         fire.setFlammable(THORNY_STEM.get(), 60, 5);
         fire.setFlammable(BRAMBLE_BLOSSOM.get(), 60, 5);
         fire.setFlammable(WITHERING_BRAMBLE_BLOSSOM.get(), 60, 5);
+        fire.setFlammable(PEAT_MOSS.get(), 200, 12);
     }
 
     public static <T extends Block> DeferredBlock<T> createBlock(String name, final Supplier<T> supplier) {
