@@ -474,6 +474,7 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
             }, 2);
             this.flatBlockItem(WITHERING_BRAMBLE_BLOSSOM.get());
             this.itemModels().basicItem(THORNY_STEM.get().asItem());
+            this.itemModels().basicItem(SALTY_STEM.get().asItem());
 
             this.simpleBlock(SHEET_MOSS.get(),
                     this.models().singleTexture(name(SHEET_MOSS.get()),
