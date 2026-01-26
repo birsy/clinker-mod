@@ -46,7 +46,8 @@
       "clinker:water_crack_underground"
     ],
     [
-      "clinker:sheet_moss_underground"
+      "clinker:sheet_moss_underground",
+      "clinker:patch_cave_sprouts"
     ],
     []
   ]

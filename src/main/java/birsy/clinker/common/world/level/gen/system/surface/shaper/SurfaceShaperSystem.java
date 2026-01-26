@@ -183,7 +183,7 @@ public class SurfaceShaperSystem {
             NoiseField biomeWeightField = surfaceBlendingInfo.weightForBiome(biomeList, biome);
             if (biomeWeightField == null) continue;
             SurfaceShaper shaper = getSurfaceShaper(biome);
-            shaper.fillSurfaceDensityField(surfaceDensityField, cache, , minX, minY, minZ, heightmap, heightmapGradient, distanceToHeightmap, lowerBound, upperBound, biomeWeightField);
+            shaper.fillSurfaceDensityField(surfaceDensityField, cache, chunkHeight, minX, minY, minZ, heightmap, heightmapGradient, distanceToHeightmap, lowerBound, upperBound, biomeWeightField);
         }
 
         this.createRockyCliffsOnSteepSlopes(cache, heightmapGradient, distanceToHeightmap, surfaceBlendingInfo.biomeTransitionFactorField(), surfaceDensityField, lowerBound, upperBound, minX, minY, minZ, chunkHeight);
