@@ -10,9 +10,7 @@ import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldTypes;
 import birsy.clinker.common.world.level.gen.system.worldfeature.WorldFeature;
 import birsy.clinker.common.world.level.gen.system.worldfeature.WorldFeatureContext;
-import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers;
-import birsy.clinker.core.util.MathUtils;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
@@ -171,7 +169,7 @@ public class SurfaceShaperSystem {
         heightmapGradient.byIndex((index) -> heightmapGradientArray[index] = Math.sqrt(squaredHeightmapGradientArray[index]));
 
         // initialize surface density w/ estimate from base surface height
-        NoiseField surfaceDensityField = NoiseFieldTypes.COARSE.create(chunkHeight, 0);
+        NoiseField surfaceDensityField = NoiseFieldTypes.FINE.create(chunkHeight, 0);
         double[] surfaceDensityFieldArray = surfaceDensityField.array();
         Arrays.fill(surfaceDensityFieldArray, 0);
         surfaceDensityField.byBlockPadded(0, lowerBound - minY - 1,
@@ -185,7 +183,7 @@ public class SurfaceShaperSystem {
             NoiseField biomeWeightField = surfaceBlendingInfo.weightForBiome(biomeList, biome);
             if (biomeWeightField == null) continue;
             SurfaceShaper shaper = getSurfaceShaper(biome);
-            shaper.fillSurfaceDensityField(surfaceDensityField, cache, minX, minY, minZ, heightmap, heightmapGradient, distanceToHeightmap, lowerBound, upperBound, biomeWeightField);
+            shaper.fillSurfaceDensityField(surfaceDensityField, cache, , minX, minY, minZ, heightmap, heightmapGradient, distanceToHeightmap, lowerBound, upperBound, biomeWeightField);
         }
 
         this.createRockyCliffsOnSteepSlopes(cache, heightmapGradient, distanceToHeightmap, surfaceBlendingInfo.biomeTransitionFactorField(), surfaceDensityField, lowerBound, upperBound, minX, minY, minZ, chunkHeight);

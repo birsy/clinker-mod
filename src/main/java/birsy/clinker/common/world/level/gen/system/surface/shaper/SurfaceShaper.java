@@ -7,7 +7,7 @@ import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
 public abstract class SurfaceShaper {
     public abstract void prefillHeightmapNoiseFields(NoiseFieldCache cache);
     public abstract double getHeight(int x, int z, double weight, NoiseContext context);
-    public abstract void fillSurfaceDensityField(NoiseField surfaceDensityField, NoiseFieldCache cache, int minX, int minY, int minZ,
+    public abstract void fillSurfaceDensityField(NoiseField surfaceDensityField, NoiseFieldCache cache, int chunkHeight, int minX, int minY, int minZ,
                                                  NoiseField heightmapField, NoiseField squaredHeightmapGradientField, NoiseField distanceToHeightmap, int localLowerGenBound, int localUpperGenBound,
                                                  NoiseField biomeWeight);
     public int upperBound() { return 32; }
