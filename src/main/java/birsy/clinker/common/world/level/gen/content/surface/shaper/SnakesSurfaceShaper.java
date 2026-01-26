@@ -21,17 +21,11 @@ public class SnakesSurfaceShaper extends SimpleSurfaceShaper {
         cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, ClinkerNoiseComputers.BASE_NOISE_2D[5]);
         cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, ClinkerNoiseComputers.BASE_NOISE_2D[6]);
         cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, ClinkerNoiseComputers.BASE_NOISE_2D[7]);
-        cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, ClinkerNoiseComputers.BASE_NOISE_2D[8]);
         cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, ClinkerNoiseComputers.BASE_NOISE_2D_ALT[6]);
-        cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, ClinkerNoiseComputers.BASE_NOISE_2D_ALT[7]);
-        cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, ClinkerNoiseComputers.BASE_NOISE_2D_ALT[8]);
     }
 
     @Override
     public double surfaceDensity(int x, int y, int z, double heightmapHeight, double heightmapGradient, double distanceToSurface, double biomeWeight, NoiseContext context) {
-
-        double fineNoise = context.retrieve(ClinkerNoiseComputers.BASE_NOISE_2D[3], x, y, z)*0.25;
-
         double gN1 = context.retrieve(ClinkerNoiseComputers.BASE_NOISE_2D_ALT[6], x, y, z);
         double gN2 = context.retrieve(ClinkerNoiseComputers.BASE_NOISE_2D[7], x, y, z);
 
