@@ -12,6 +12,7 @@ import birsy.clinker.core.registry.entity.ClinkerEntities;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import birsy.clinker.core.registry.entity.ClinkerSensors;
 import birsy.clinker.core.registry.worldgen.*;
+import birsy.clinker.core.util.ClinkMeCommand;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -24,7 +25,9 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -86,6 +89,13 @@ public class Clinker {
     @SubscribeEvent
     public static void registerListeners(RegisterClientReloadListenersEvent event) {
         event.registerReloadListener(new LongStringLocalizationReloader());
+    }
+
+    @SubscribeEvent
+    public static void registerListeners(RegisterCommandsEvent event) {
+        if (!FMLLoader.isProduction()) {
+            ClinkMeCommand.register(event.getDispatcher(), event.getBuildContext());
+        }
     }
 
     private void doClientStuff(final FMLClientSetupEvent event) {
