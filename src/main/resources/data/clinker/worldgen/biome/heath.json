@@ -42,10 +42,13 @@
     [],
     [],
     [],
-    [],
+    [
+      "clinker:patch_peat_moss"
+    ],
     [],
     [
-      "clinker:dried_clovers"
+      "clinker:dried_clovers",
+      "clinker:patch_peat_moss_buds"
     ],
     []
   ]

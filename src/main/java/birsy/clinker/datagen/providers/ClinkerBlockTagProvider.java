@@ -44,6 +44,7 @@ public class ClinkerBlockTagProvider extends BlockTagsProvider {
         othershoreSoil.add(ClinkerBlocks.CALC.get());
         othershoreSoil.add(ClinkerBlocks.MUD.get());
         othershoreSoil.add(ClinkerBlocks.SALT_GRAVEL.get());
+        othershoreSoil.add(ClinkerBlocks.PEAT_MOSS.get());
 
         IntrinsicTagAppender<Block> climbables = this.tag(BlockTags.CLIMBABLE).replace(false);
         climbables.add(ClinkerBlocks.THORNY_STEM.get());
@@ -66,6 +67,9 @@ public class ClinkerBlockTagProvider extends BlockTagsProvider {
         usesShovel.add(ClinkerBlocks.SALTMOSS.get());
         usesShovel.add(ClinkerBlocks.SALT_GRAVEL.get());
         usesShovel.add(ClinkerBlocks.SALTPETRE_LEACHED_DIRT.get());
+
+        usesShovel.add(ClinkerBlocks.PEAT_MOSS.get());
+        usesHoe.add(ClinkerBlocks.PEAT_MOSS.get());
 
         for (DeferredHolder<Block, ? extends Block> block : ClinkerBlocks.BLOCKS.getEntries()) {
             String name = block.getRegisteredName().toLowerCase();

@@ -42,7 +42,9 @@
     [],
     [],
     [],
-    [],
+    [
+      "clinker:patch_peat_moss"
+    ],
     [],
     [
       "clinker:patch_mud_reeds",

@@ -1,0 +1,7 @@
+{
+  "parent": "clinker:block/cross_dense",
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "cross": "clinker:block/peat_moss_buds_3"
+  }
+}

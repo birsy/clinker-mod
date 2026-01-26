@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "clinker:block/peat_moss"
+      },
+      {
+        "model": "clinker:block/peat_moss",
+        "y": 180
+      },
+      {
+        "model": "clinker:block/peat_moss_1"
+      },
+      {
+        "model": "clinker:block/peat_moss_1",
+        "y": 180
+      }
+    ]
+  }
+}

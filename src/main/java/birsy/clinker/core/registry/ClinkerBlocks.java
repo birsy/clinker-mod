@@ -181,6 +181,14 @@ public class ClinkerBlocks
             .strength(1.5F, 6.0F)
             .sound(SoundType.GILDED_BLACKSTONE)));
 
+    //Peat
+    public static final DeferredBlock<Block> PEAT_MOSS = createBlock("peat_moss", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BROWN)
+            .strength(0.25F,1F)
+            .sound(SoundType.BIG_DRIPLEAF)
+            .ignitedByLava()
+            .pushReaction(PushReaction.DESTROY)
+    ));
+
     //Shale
     public static BlockBehaviour.Properties getShaleProperties() {
         return BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_GRAY)
@@ -391,6 +399,8 @@ public class ClinkerBlocks
     public static final DeferredBlock<SheetMossBlock> SHEET_MOSS = createBlock("sheet_moss", () -> new SheetMossBlock(SHEET_MOSS_PROPERTIES.get()));
     public static final DeferredBlock<DoubleSheetMossBlock> LONG_SHEET_MOSS = createBlock("long_sheet_moss", () -> new DoubleSheetMossBlock(SHEET_MOSS_PROPERTIES.get()));
 
+    public static final DeferredBlock<OthershorePlantBlock> PEAT_MOSS_BUDS = createBlock("peat_moss_buds", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_ORANGE).sound(SoundType.HANGING_ROOTS)));
+
     // fluids
     public static DeferredBlock<LiquidBlock> VITRIOL_BLOCK = BLOCKS.register("vitriol", () -> new LiquidBlock(
             ClinkerFluids.VITRIOL.get(), BlockBehaviour.Properties.ofFullCopy(Blocks.WATER).mapColor(MapColor.DIRT))
@@ -403,6 +413,8 @@ public class ClinkerBlocks
         fire.setFlammable(THORNY_STEM.get(), 60, 5);
         fire.setFlammable(BRAMBLE_BLOSSOM.get(), 60, 5);
         fire.setFlammable(WITHERING_BRAMBLE_BLOSSOM.get(), 60, 5);
+        fire.setFlammable(PEAT_MOSS.get(), 300, 12);
+        fire.setFlammable(PEAT_MOSS_BUDS.get(), 300, 400);
     }
 
     public static <T extends Block> DeferredBlock<T> createBlock(String name, final Supplier<T> supplier) {

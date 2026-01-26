@@ -89,10 +89,15 @@ public class OthershoreBiomeSource extends BiomeSource {
                         return ClinkerProtoBiomes.LOWER_SHELF.get();
                     return ClinkerProtoBiomes.UPPER_SHELF.get();
                 })
+                .layer(new BiomeLayerOperations.Mutate(ClinkerProtoBiomes.UPPER_SHELF.get(),
+                          SimpleWeightedRandomList.<ProtoBiome>builder()
+                                  .add(ClinkerProtoBiomes.UPPER_SHELF.get(), 10)
+                                  .add(ClinkerProtoBiomes.HEATH.get(), 7)
+                                  .build()
+                ))
+                .layer(new BiomeLayerOperations.Smooth())
+                .layer(new BiomeLayerOperations.Smooth())
                 .zoom()
-//                .layer(new BiomeLayerOperations.Mutate(ClinkerProtoBiomes.UPPER_SHELF.get(),
-//                        ClinkerProtoBiomes.UPPER_SHELF.get(), ClinkerProtoBiomes.HEATH.get())
-//                )
                 .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1))
                 .layer(new BiomeLayerOperations.Smooth())
                 .zoom()

@@ -609,6 +609,24 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
                     2, false, false
             );
             this.flatBlockItem(CAVE_SPROUTS.get());
+
+            this.simpleBlockItem(
+                    PEAT_MOSS.get(),
+                    this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + "peat_moss"))
+            );
+
+            String peatMossBudsName = name(PEAT_MOSS_BUDS.get());
+            this.simpleBlockWithVariationAndTransformation(
+                    PEAT_MOSS_BUDS.get(),
+                    (i) -> this.denseCross(peatMossBudsName + (i == 0 ? "" : "_" + i),
+                                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + peatMossBudsName + (i == 0 ? "" : "_" + i)))
+                            .renderType("cutout"),
+                    (i) -> this.denseCrossMirrored(peatMossBudsName + (i == 0 ? "" : "_" + i) + "_mirrored",
+                                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + peatMossBudsName + (i == 0 ? "" : "_" + i)))
+                            .renderType("cutout"),
+                    4, false, false
+            );
+            this.flatBlockItem(PEAT_MOSS_BUDS.get());
         }
 
         // stromatolites
