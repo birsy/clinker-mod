@@ -85,12 +85,10 @@ public class OthershoreBiomeSource extends BiomeSource {
         return LayeredBiomeResolver.builder(8)
                 .layer((x, z, current, neighborhood, random, context) -> {
                     double surfaceHeight = context.retrieve(ClinkerNoiseComputers.BASE_SURFACE_HEIGHT, x, 0, z);
-                    if (surfaceHeight < OthershoreGenerationConstants.BASE_SEA_LEVEL + 60) {
-                        if (surfaceHeight < OthershoreGenerationConstants.BASE_SEA_LEVEL + 20) {
-                            return ClinkerProtoBiomes.LOWER_SHELF.get();
-                        }
-                        return ClinkerProtoBiomes.LOWER_SNAKES.get();
+                    if (surfaceHeight < OthershoreGenerationConstants.BASE_SEA_LEVEL + 20) {
+                        return ClinkerProtoBiomes.LOWER_SHELF.get();
                     }
+
                     return ClinkerProtoBiomes.UPPER_SHELF.get();
                 })
                 .layer(new BiomeLayerOperations.Mutate(ClinkerProtoBiomes.UPPER_SHELF.get(),
@@ -102,6 +100,9 @@ public class OthershoreBiomeSource extends BiomeSource {
                 .layer(new BiomeLayerOperations.Smooth())
                 .layer(new BiomeLayerOperations.Smooth())
                 .zoom()
+                .layer(new BiomeLayerOperations.Mutate(ClinkerProtoBiomes.LOWER_SHELF.get(),
+                        ClinkerProtoBiomes.LOWER_SHELF.get(), ClinkerProtoBiomes.LOWER_SNAKES.get())
+                )
                 .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1))
                 .layer(new BiomeLayerOperations.Smooth())
                 .zoom()

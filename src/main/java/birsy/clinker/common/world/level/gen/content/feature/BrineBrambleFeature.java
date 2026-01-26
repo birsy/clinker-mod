@@ -8,6 +8,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.PipeBlock;
 import net.minecraft.world.level.block.SupportType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -16,6 +17,7 @@ import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -50,7 +52,7 @@ public class BrineBrambleFeature extends Feature<NoneFeatureConfiguration> {
             propagateBramble(ps, escrow, level, d, tgt, random, budget);
         }
 
-        placeBramble(ps, level, random);
+        placeBramble(ps, level, origin, random);
 
         return true;
     }
@@ -68,13 +70,13 @@ public class BrineBrambleFeature extends Feature<NoneFeatureConfiguration> {
 
         for(BlockPos pos : tgtEscrowEscrow) {
             for(Direction nd : Direction.values()) {
-                if(d == Direction.DOWN || d.getOpposite() == d)
+                if(d.getOpposite() == d)
                     continue;
 
                 BlockPos tgt = pos.relative(nd);
                 BlockState s = level.getBlockState(bp.relative(nd));
 
-                if(s.canBeReplaced() && rs.nextFloat() > 0.3) {
+                if(s.canBeReplaced() && rs.nextFloat() > (d == Direction.UP ? 0.75 : 0.5)) {
                     tgts.add(tgt);
                     tgtEscrow.add(tgt);
 
@@ -98,9 +100,13 @@ public class BrineBrambleFeature extends Feature<NoneFeatureConfiguration> {
         return budget;
     }
 
-    private void placeBramble(ArrayList<BlockPos> positions, WorldGenLevel l, RandomSource r) {
+    private static final Vec3 up = new Vec3(0., 1., 0.);
+
+    private void placeBramble(ArrayList<BlockPos> positions, WorldGenLevel l, BlockPos p, RandomSource r) {
         for(BlockPos pos : positions) {
-            BlockState s = getStateForPlacement(l, pos, positions, ClinkerBlocks.SALTY_STEM.get().defaultBlockState());
+            Block ds = (pos.getCenter().subtract(p.getBottomCenter()).dot(up) < .5 + r.nextFloat() * 2.) ? ClinkerBlocks.THORNY_STEM.get() : ClinkerBlocks.SALTY_STEM.get();
+
+            BlockState s = getStateForPlacement(l, pos, positions, ds.defaultBlockState());
             if(s != null)
                 l.setBlock(pos, s, 3);
         }
