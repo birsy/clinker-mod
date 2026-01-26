@@ -1,0 +1,11 @@
+{
+  "vertex": "veil:blit_screen",
+  "fragment": "clinker:brightness_contrast",
+  "textures": {
+    "DiffuseSampler": {
+      "type": "framebuffer",
+      "name": "minecraft:main"
+    }
+  }
+}
+

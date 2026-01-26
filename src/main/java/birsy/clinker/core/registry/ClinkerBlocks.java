@@ -60,7 +60,6 @@ public class ClinkerBlocks
                     .mapColor(MapColor.TERRACOTTA_BROWN)
                     .strength(80.0F, 6.0F)
                     .sound(SoundType.POLISHED_DEEPSLATE)
-                    .requiresCorrectToolForDrops()
             )
     );
 

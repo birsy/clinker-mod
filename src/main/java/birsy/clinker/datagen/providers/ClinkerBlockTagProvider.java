@@ -73,8 +73,7 @@ public class ClinkerBlockTagProvider extends BlockTagsProvider {
                 name.contains("calc") ||
                 name.contains("calamine") ||
                 name.contains("capstone") ||
-                name.contains("shale") ||
-                name.contains("barrierrock")) {
+                name.contains("shale")) {
                 usesPickaxe.add(block.get());
             }
             if (name.contains("ash")) {

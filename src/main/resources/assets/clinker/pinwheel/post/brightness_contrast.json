@@ -1,0 +1,12 @@
+{
+  "stages": [
+    {
+      "type": "veil:blit",
+      "shader": "clinker:brightness_contrast",
+      "in": "minecraft:main"
+    }
+  ]
+}
+
+
+
