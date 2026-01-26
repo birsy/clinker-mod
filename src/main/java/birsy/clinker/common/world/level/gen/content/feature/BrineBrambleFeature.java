@@ -60,7 +60,7 @@ public class BrineBrambleFeature extends Feature<NoneFeatureConfiguration> {
     private static final ArrayList<BlockPos> tgtEscrowEscrow = new ArrayList<>();
 
     private static int propagateBramble(ArrayList<BlockPos> tgts, ArrayList<BlockPos> tgtEscrow, WorldGenLevel level, Direction d, BlockPos bp, RandomSource rs, int budget) {
-        if(budget <= 0) {
+        if(budget <= 0 || tgtEscrow.isEmpty()) {
             return 0;
         }
         boolean br = false;
@@ -70,13 +70,13 @@ public class BrineBrambleFeature extends Feature<NoneFeatureConfiguration> {
 
         for(BlockPos pos : tgtEscrowEscrow) {
             for(Direction nd : Direction.values()) {
-                if(d.getOpposite() == d)
+                if(nd.getOpposite() == d)
                     continue;
 
                 BlockPos tgt = pos.relative(nd);
                 BlockState s = level.getBlockState(bp.relative(nd));
 
-                if(s.canBeReplaced() && rs.nextFloat() > (d == Direction.UP ? 0.75 : 0.5)) {
+                if(s.canBeReplaced() && rs.nextFloat() > (d == Direction.UP ? 0.8 : d == Direction.DOWN ? -0.1 : 0.25)) {
                     tgts.add(tgt);
                     tgtEscrow.add(tgt);
 
@@ -91,6 +91,7 @@ public class BrineBrambleFeature extends Feature<NoneFeatureConfiguration> {
             }
             if(br)
                 break;
+            budget -= 1;
         }
 
         if(budget > 0) {
@@ -104,9 +105,11 @@ public class BrineBrambleFeature extends Feature<NoneFeatureConfiguration> {
 
     private void placeBramble(ArrayList<BlockPos> positions, WorldGenLevel l, BlockPos p, RandomSource r) {
         for(BlockPos pos : positions) {
+            if(pos.getY() > p.getY() + 2)
+                continue;
             Block ds = (pos.getCenter().subtract(p.getBottomCenter()).dot(up) < .5 + r.nextFloat() * 2.) ? ClinkerBlocks.THORNY_STEM.get() : ClinkerBlocks.SALTY_STEM.get();
 
-            BlockState s = getStateForPlacement(l, pos, positions, ds.defaultBlockState());
+            BlockState s = getStateForPlacement(l, pos, p, positions, ds.defaultBlockState());
             if(s != null)
                 l.setBlock(pos, s, 3);
         }
@@ -116,15 +119,19 @@ public class BrineBrambleFeature extends Feature<NoneFeatureConfiguration> {
         return positions.stream().anyMatch(p -> p.closerThan(pos, 0.01));
     }
 
-    public static @Nullable BlockState getStateForPlacement(WorldGenLevel l, BlockPos tgt, ArrayList<BlockPos> positions, BlockState state) {
+    public static @Nullable BlockState getStateForPlacement(WorldGenLevel l, BlockPos tgt, BlockPos orig, ArrayList<BlockPos> positions, BlockState state) {
         boolean connected = false;
         BlockPos.MutableBlockPos neighborPos = tgt.mutable();
+
         for (Direction direction : Direction.values()) {
             neighborPos = neighborPos.set(tgt).move(direction);
-            boolean shouldConnect = contains(positions, tgt);
+            boolean shouldConnect = contains(positions, neighborPos);
             if (shouldConnect) connected = true;
             state = state.setValue(PipeBlock.PROPERTY_BY_DIRECTION.get(direction), shouldConnect);
         }
+        //stem
+        if(tgt.closerThan(orig, 0.01))
+            state = state.setValue(PipeBlock.PROPERTY_BY_DIRECTION.get(Direction.DOWN), true);
 
         if (!connected)
             return null;
