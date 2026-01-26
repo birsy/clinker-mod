@@ -7,6 +7,8 @@ import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
 import birsy.clinker.core.registry.ClinkerRegistries;
 import birsy.clinker.core.registry.worldgen.ClinkerProtoBiomes;
 import net.minecraft.util.RandomSource;
+import net.minecraft.util.random.SimpleWeightedRandomList;
+import net.minecraft.util.random.WeightedRandomList;
 
 import java.util.Arrays;
 
@@ -45,13 +47,11 @@ public class BiomeLayerOperations {
         }
     }
 
-    public record MutateUpperShelf() implements BiomeLayerOperation {
+    public record Mutate(ProtoBiome biomeToMutate, SimpleWeightedRandomList<ProtoBiome> results) implements BiomeLayerOperation {
         @Override
         public ProtoBiome apply(int blockX, int blockZ, ProtoBiome current, ProtoBiomeNeighborhood previousLayerNeighborhood, RandomSource random, NoiseContext noiseContext) {
-            if (current == ClinkerProtoBiomes.UPPER_SHELF.get())
-                return random.nextFloat() > 0.5 ? current : ClinkerProtoBiomes.HEATH.get();
+            if (current == biomeToMutate) return results.getRandomValue(random).orElse(current);
             return current;
         }
     }
-
 }
