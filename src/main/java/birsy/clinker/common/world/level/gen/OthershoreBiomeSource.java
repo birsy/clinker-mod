@@ -16,10 +16,7 @@ import birsy.clinker.core.registry.worldgen.ClinkerProtoBiomes;
 import com.google.common.collect.Sets;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderGetter;
-import net.minecraft.core.QuartPos;
-import net.minecraft.core.SectionPos;
+import net.minecraft.core.*;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
@@ -114,6 +111,7 @@ public class OthershoreBiomeSource extends BiomeSource {
                 .layer(new BiomeLayerOperations.Smooth())
                 .build(randomState, noiseContext);
     }
+
 
     @Override
     protected Stream<Holder<Biome>> collectPossibleBiomes() {
