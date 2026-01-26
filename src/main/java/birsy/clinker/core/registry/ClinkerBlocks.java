@@ -69,6 +69,10 @@ public class ClinkerBlocks
             .strength(2.75F, 75.0F)
             .sound(SoundType.DRIPSTONE_BLOCK).requiresCorrectToolForDrops())
     );
+    //new LeavesBlock(Properties.of().mapColor(MapColor.PLANT).strength(0.2F).randomTicks().sound(soundType).noOcclusion().isValidSpawn(Blocks::ocelotOrParrot).isSuffocating(Blocks::never).isViewBlocking(Blocks::never).ignitedByLava().pushReaction(PushReaction.DESTROY).isRedstoneConductor(Blocks::never))
+
+    //public static final DeferredBlock<Block> SALTBRUSH = createBlock("saltbrush", () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(BRIMSTONE.get())));
+
     public static final DeferredBlock<Block> BRIMSTONE_SLAB = createBlock("brimstone_slab", () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(BRIMSTONE.get())));
     public static final DeferredBlock<Block> BRIMSTONE_STAIRS = createBlock("brimstone_stairs", () -> new StairBlock(BRIMSTONE.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(BRIMSTONE.get())));
     public static final DeferredBlock<Block> BRIMSTONE_WALL = createBlock("brimstone_wall", () -> new WallBlock(BlockBehaviour.Properties.ofFullCopy(BRIMSTONE.get())));
@@ -344,6 +348,16 @@ public class ClinkerBlocks
                             .mapColor(MapColor.TERRACOTTA_BLACK)
                             .sound(SoundType.HANGING_ROOTS)
                             .speedFactor(0.5F)
+                            .pushReaction(PushReaction.DESTROY)
+            ));
+    public static final DeferredBlock<Block> SALTY_STEM = createBlock("salty_stem", () ->
+            new ThornyStemBlock(
+                    BlockBehaviour.Properties.of()
+                            .noCollission()
+                            .strength(4.0F)
+                            .mapColor(MapColor.TERRACOTTA_BLACK)
+                            .sound(SoundType.HANGING_ROOTS)
+                            .speedFactor(0.45F)
                             .pushReaction(PushReaction.DESTROY)
             ));
 

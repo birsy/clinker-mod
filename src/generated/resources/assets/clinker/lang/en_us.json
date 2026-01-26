@@ -1,6 +1,7 @@
 {
   "biome.clinker.aquifer": "Aquifer",
   "biome.clinker.ash_steppe": "Ash Steppe",
+  "biome.clinker.brine_snakes": "Brine Snakes",
   "biome.clinker.brine_swamp": "Brine Swamp",
   "biome.clinker.cliffside": "Cliffside",
   "biome.clinker.heath": "Heath",
@@ -105,6 +106,7 @@
   "block.clinker.saltmoss_blossom": "Saltmoss Blossom",
   "block.clinker.saltmoss_sprouts": "Saltmoss Sprouts",
   "block.clinker.saltpetre_leached_dirt": "Saltpetre Leached Dirt",
+  "block.clinker.salty_stem": "Salty Stem",
   "block.clinker.sea_shell": "Sea Shell",
   "block.clinker.shale": "Shale",
   "block.clinker.shale_bricks": "Shale Bricks",
