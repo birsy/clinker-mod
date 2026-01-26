@@ -5,6 +5,7 @@ import birsy.clinker.common.world.level.gen.system.biome.resolver.ProtoBiome;
 import birsy.clinker.common.world.level.gen.system.biome.resolver.ProtoBiomeNeighborhood;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
 import birsy.clinker.core.registry.ClinkerRegistries;
+import net.minecraft.Util;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.random.SimpleWeightedRandomList;
 
@@ -46,6 +47,13 @@ public class BiomeLayerOperations {
     }
 
     public record Mutate(ProtoBiome biomeToMutate, SimpleWeightedRandomList<ProtoBiome> results) implements BiomeLayerOperation {
+        public Mutate(ProtoBiome biomeToMutate, ProtoBiome... results) {
+            this(biomeToMutate, Util.make(() -> {
+                SimpleWeightedRandomList.Builder<ProtoBiome> builder = SimpleWeightedRandomList.builder();
+                for (ProtoBiome result : results) builder.add(result);
+                return builder.build();
+            }));
+        }
         @Override
         public ProtoBiome apply(int blockX, int blockZ, ProtoBiome current, ProtoBiomeNeighborhood previousLayerNeighborhood, RandomSource random, NoiseContext noiseContext) {
             if (current == biomeToMutate) return results.getRandomValue(random).orElse(current);
