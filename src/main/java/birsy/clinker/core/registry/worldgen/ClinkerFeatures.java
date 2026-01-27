@@ -3,6 +3,8 @@ package birsy.clinker.core.registry.worldgen;
 import birsy.clinker.common.world.level.gen.content.feature.*;
 import birsy.clinker.core.Clinker;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.data.worldgen.BiomeDefaultFeatures;
+import net.minecraft.data.worldgen.features.VegetationFeatures;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.configurations.BlockStateConfiguration;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
@@ -25,6 +27,8 @@ public class ClinkerFeatures {
             FEATURES.register("mud_reeds_patch", () -> new MudReedsPatchFeature(NoneFeatureConfiguration.CODEC));
     public static final Supplier<Feature<NoneFeatureConfiguration>> SNAKE_MUD_REEDS =
             FEATURES.register("snake_mud_reeds", () -> new SnakeReedsFeature(NoneFeatureConfiguration.CODEC));
+    public static final Supplier<Feature<NoneFeatureConfiguration>> WATERLINE_FERN =
+            FEATURES.register("waterline_fern", () -> new WaterlineFernFeature(NoneFeatureConfiguration.CODEC));
     public static final Supplier<Feature<NoneFeatureConfiguration>> BRINE_BRAMBLE =
             FEATURES.register("brine_bramble", () -> new BrineBrambleFeature(NoneFeatureConfiguration.CODEC));
     public static final Supplier<Feature<NoneFeatureConfiguration>> SALTMOSS_BLOOM =
@@ -41,4 +45,5 @@ public class ClinkerFeatures {
             FEATURES.register("pool", () -> new PoolFeature(PoolFeature.PoolFeatureConfiguration.CODEC));
     public static final Supplier<Feature<NoneFeatureConfiguration>> PEAT_MOSS =
             FEATURES.register("peat_moss_blob", () -> new PeatBlobFeature(NoneFeatureConfiguration.CODEC));
+
 }
