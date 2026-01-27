@@ -183,6 +183,8 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(SALTY_STEM.get());
         pOutput.accept(BRAMBLE_BLOSSOM.get());
 
+        pOutput.accept(WATER_FERN_ITEM.get());
+
         pOutput.accept(SHEET_MOSS.get());
         pOutput.accept(LONG_SHEET_MOSS.get());
     }

@@ -1,0 +1,42 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "clinker:block/water_fern_part"
+      },
+      "when": {
+        "northwest": true
+      }
+    },
+    {
+      "apply": {
+        "model": "clinker:block/water_fern_part",
+        "uvlock": true,
+        "y": 90
+      },
+      "when": {
+        "northeast": true
+      }
+    },
+    {
+      "apply": {
+        "model": "clinker:block/water_fern_part",
+        "uvlock": true,
+        "y": 180
+      },
+      "when": {
+        "southeast": true
+      }
+    },
+    {
+      "apply": {
+        "model": "clinker:block/water_fern_part",
+        "uvlock": true,
+        "y": 270
+      },
+      "when": {
+        "southwest": true
+      }
+    }
+  ]
+}

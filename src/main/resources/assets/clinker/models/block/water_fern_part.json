@@ -1,0 +1,28 @@
+{
+  "render_type": "cutout",
+  "textures": {
+    "particle": "clinker:block/water_fern/water_fern",
+    "algae_top": "clinker:block/water_fern/water_fern_top",
+    "algae_bottom": "clinker:block/water_fern/water_fern_bottom"
+  },
+  "elements": [
+    {
+      "from": [0, -2.5, 0],
+      "to": [8, -0.2, 8],
+      "rotation": {"angle": 0, "axis": "y", "origin": [8, 0.05, 8]},
+      "faces": {
+        "up": {"uv": [0, 0, 8, 8], "texture": "#algae_top"},
+        "down": {"uv": [0, 8, 8, 16], "texture": "#algae_top"}
+      }
+    },
+    {
+      "from": [0, -2.1, 0],
+      "to": [8, -0.8, 8],
+      "rotation": {"angle": 0, "axis": "y", "origin": [8, -0.95, 8]},
+      "faces": {
+        "up": {"uv": [0, 0, 8, 8], "texture": "#algae_bottom"},
+        "down": {"uv": [0, 8, 8, 16], "texture": "#algae_bottom"}
+      }
+    }
+  ]
+}
