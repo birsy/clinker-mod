@@ -1,0 +1,20 @@
+{
+	"textures": {
+		"1": "clinker:block/spotweed_tip",
+		"particle": "clinker:block/spotweed_stalk"
+	},
+	"elements": [
+		{
+			"from": [7, 0, 7],
+			"to": [9, 16, 9],
+			"faces": {
+				"north": {"uv": [2, 0, 4, 16], "texture": "#1"},
+				"east": {"uv": [2, 0, 4, 16], "texture": "#1"},
+				"south": {"uv": [2, 0, 4, 16], "texture": "#1"},
+				"west": {"uv": [2, 0, 4, 16], "texture": "#1"},
+				"up": {"uv": [2, 0, 4, 2], "texture": "#1", "cullface": "up"},
+				"down": {"uv": [2, 0, 4, 2], "texture": "#1", "cullface": "down"}
+			}
+		}
+	]
+}

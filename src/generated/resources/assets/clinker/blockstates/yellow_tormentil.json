@@ -1,0 +1,21 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "clinker:block/yellow_tormentil"
+      },
+      {
+        "model": "clinker:block/yellow_tormentil",
+        "y": 90
+      },
+      {
+        "model": "clinker:block/yellow_tormentil",
+        "y": 180
+      },
+      {
+        "model": "clinker:block/yellow_tormentil",
+        "y": 270
+      }
+    ]
+  }
+}

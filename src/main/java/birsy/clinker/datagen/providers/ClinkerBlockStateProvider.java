@@ -630,15 +630,25 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
 
             // tormentil
             {
-                String tormentilName = name(INDIGO_TORMENTIL.get());
-                ModelFile.ExistingModelFile tormentilModel = this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + tormentilName));
+                String tormentilIndigoName = name(INDIGO_TORMENTIL.get());
+                ModelFile.ExistingModelFile tormentilIndigoModel = this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + tormentilIndigoName));
                 this.getVariantBuilder(INDIGO_TORMENTIL.get()).partialState().addModels(
-                        ConfiguredModel.builder().modelFile(tormentilModel).rotationY(0).buildLast(),
-                        ConfiguredModel.builder().modelFile(tormentilModel).rotationY(90).buildLast(),
-                        ConfiguredModel.builder().modelFile(tormentilModel).rotationY(180).buildLast(),
-                        ConfiguredModel.builder().modelFile(tormentilModel).rotationY(270).buildLast()
+                        ConfiguredModel.builder().modelFile(tormentilIndigoModel).rotationY(0).buildLast(),
+                        ConfiguredModel.builder().modelFile(tormentilIndigoModel).rotationY(90).buildLast(),
+                        ConfiguredModel.builder().modelFile(tormentilIndigoModel).rotationY(180).buildLast(),
+                        ConfiguredModel.builder().modelFile(tormentilIndigoModel).rotationY(270).buildLast()
                 );
-                this.flatBlockItem(INDIGO_TORMENTIL.get(), this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + tormentilName));
+                this.flatBlockItem(INDIGO_TORMENTIL.get(), this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + tormentilIndigoName + "_item"));
+
+                String tormentilYellowName = name(YELLOW_TORMENTIL.get());
+                ModelFile.ExistingModelFile tormentilYellowModel = this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + tormentilYellowName));
+                this.getVariantBuilder(YELLOW_TORMENTIL.get()).partialState().addModels(
+                        ConfiguredModel.builder().modelFile(tormentilYellowModel).rotationY(0).buildLast(),
+                        ConfiguredModel.builder().modelFile(tormentilYellowModel).rotationY(90).buildLast(),
+                        ConfiguredModel.builder().modelFile(tormentilYellowModel).rotationY(180).buildLast(),
+                        ConfiguredModel.builder().modelFile(tormentilYellowModel).rotationY(270).buildLast()
+                );
+                this.flatBlockItem(YELLOW_TORMENTIL.get(), this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + tormentilYellowName + "_item"));
             }
         }
 
@@ -660,6 +670,10 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
                     this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + stromatoliteName + "_" + StromatoliteBlock.MAX_SIZE_INCLUSIVE)
             ));
         }
+
+        // spotweed
+        String spotweedName = name(SPOTWEED.get());
+        this.flatBlockItem(SPOTWEED.get(), this.modLoc(ModelProvider.ITEM_FOLDER + "/" + spotweedName));
     }
 
     public void flatBlockItem(Block block) {
