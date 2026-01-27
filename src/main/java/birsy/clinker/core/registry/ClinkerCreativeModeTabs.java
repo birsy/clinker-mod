@@ -148,6 +148,7 @@ public class ClinkerCreativeModeTabs {
 
         pOutput.accept(PEAT_MOSS.get());
         pOutput.accept(PEAT_MOSS_BUDS.get());
+        pOutput.accept(INDIGO_TORMENTIL.get());
 
         pOutput.accept(LEAD_ORE.get());
 

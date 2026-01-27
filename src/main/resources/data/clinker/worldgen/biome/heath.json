@@ -26,8 +26,8 @@
       "probability": 0.01
     },
     "ambient_sound": "clinker:ambient.ash_plains.loop",
-    "sky_color": 4209726,
-    "fog_color": 9139549,
+    "sky_color": 4602686,
+    "fog_color": 8875101,
     "water_color": 6578522,
     "water_fog_color": 723467
   },
@@ -47,6 +47,7 @@
     ],
     [],
     [
+      "clinker:patch_tormentils",
       "clinker:dried_clovers",
       "clinker:patch_peat_moss_buds"
     ],
