@@ -2,6 +2,6 @@
    "parent": "block/cube_column",
    "textures": {
        "end": "clinker:block/peat_moss_top_1",
-       "side": "clinker:block/peat_moss"
+       "side": "clinker:block/peat_moss_1"
    }
 }

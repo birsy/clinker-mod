@@ -56,9 +56,14 @@ public class HeathSurfaceDecorator extends SurfaceDecorator {
             double erosionMask = context.retrieve(BASE_NOISE_2D[5], x, 0, z);
             erosionMask += random.triangle(0, 0.5);
 
-            boolean placePeat = (erosionMask < 0 || maxElevationDecrease < 1) && maxElevationDecrease <= 3;
-            placePeat &= context.retrieve(BASE_NOISE_2D_ALT[5], x, 0, z) + random.triangle(0, 0.2) < 0.5;
-            chunk.setBlockState(pos, placePeat ? ClinkerBlocks.PEAT_MOSS.get().defaultBlockState() : ClinkerBlocks.BRIMSTONE.get().defaultBlockState(), false);
+            boolean placeSoil = (erosionMask < 0 || maxElevationDecrease < 1) && maxElevationDecrease <= 3;
+            placeSoil &= context.retrieve(BASE_NOISE_2D_ALT[5], x, 0, z) + random.triangle(0, 0.2) < 0.5;
+
+            BlockState soilState = ClinkerBlocks.PEAT_MOSS.get().defaultBlockState();
+            if (wiggleNoise - 0.3 + random.triangle(0, 0.25) > 0) {
+                soilState = ClinkerBlocks.ASHEN_REGOLITH.get().defaultBlockState();
+            }
+            chunk.setBlockState(pos, placeSoil ? soilState : ClinkerBlocks.BRIMSTONE.get().defaultBlockState(), false);
 
             if (maxElevationIncrease == 1) {
                 double ashNoise = wiggleNoise + 0.5;
@@ -75,16 +80,14 @@ public class HeathSurfaceDecorator extends SurfaceDecorator {
 
             }
 
-            if (placePeat) {
+            if (placeSoil) {
                 int soilDepth = random.nextIntBetweenInclusive(2, 3) - maxElevationDecrease;
                 for (int i = 0; i < Math.min(soilDepth, depth); i++) {
                     pos.move(0, -1, 0);
                     offset++;
-                    chunk.setBlockState(pos, ClinkerBlocks.PEAT_MOSS.get().defaultBlockState(), false);
+                    chunk.setBlockState(pos, soilState, false);
                 }
             }
-        } else {
-            chunk.setBlockState(pos, Blocks.AIR.defaultBlockState(), false);
         }
 
 //        int stoneDepth = Math.min(10, depth) - offset;

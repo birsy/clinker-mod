@@ -27,7 +27,7 @@
     },
     "ambient_sound": "clinker:ambient.ash_plains.loop",
     "sky_color": 4602686,
-    "fog_color": 8875101,
+    "fog_color": 6447200,
     "water_color": 6578522,
     "water_fog_color": 723467
   },
@@ -36,7 +36,9 @@
   "carvers": {},
   "features": [
     [],
-    [],
+    [
+      "clinker:brimstone_rock"
+    ],
     [],
     [],
     [],
