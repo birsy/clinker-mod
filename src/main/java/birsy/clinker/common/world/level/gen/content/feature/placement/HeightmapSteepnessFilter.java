@@ -44,13 +44,18 @@ public class HeightmapSteepnessFilter extends PlacementFilter {
     protected boolean shouldPlace(PlacementContext context, RandomSource random, BlockPos pos) {
         int y = context.getHeight(this.heightmap, pos.getX(), pos.getZ());
         int maxSteepness = this.maxGradient.sample(random);
+
+        boolean inverted = maxSteepness < 0;
+        maxSteepness = Math.abs(maxSteepness);
+
         for (int i = radius - 1; i >= 0; i--) {
             for (int j = 0; j < OFFSETS.length; j += 2) {
                 int offsetY = context.getHeight(this.heightmap, pos.getX() + OFFSETS[j] * i, pos.getZ() + OFFSETS[j + 1] * i);
-                if (Math.abs(offsetY - y) > maxSteepness) return false;
+                if (Math.abs(offsetY - y) > maxSteepness) return !inverted;
             }
         }
-        return true;
+
+        return inverted;
     }
 
     @Override
