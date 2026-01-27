@@ -81,7 +81,7 @@ public class HeathSurfaceDecorator extends SurfaceDecorator {
             }
 
             if (placeSoil) {
-                int soilDepth = random.nextIntBetweenInclusive(2, 3) - maxElevationDecrease;
+                int soilDepth = random.nextIntBetweenInclusive(1, 2) - maxElevationDecrease;
                 for (int i = 0; i < Math.min(soilDepth, depth); i++) {
                     pos.move(0, -1, 0);
                     offset++;

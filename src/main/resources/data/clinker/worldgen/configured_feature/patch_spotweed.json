@@ -8,7 +8,7 @@
           "to_place": {
             "type": "minecraft:simple_state_provider",
             "state": {
-              "Name": "clinker:indigo_tormentil"
+              "Name": "clinker:spotweed"
             }
           }
         }
@@ -23,8 +23,8 @@
         }
       ]
     },
-    "tries": 48,
-    "xz_spread": 3,
-    "y_spread": 3
+    "tries": 100,
+    "xz_spread": 4,
+    "y_spread": 4
   }
 }

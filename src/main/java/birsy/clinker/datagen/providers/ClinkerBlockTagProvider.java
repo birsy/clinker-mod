@@ -71,6 +71,9 @@ public class ClinkerBlockTagProvider extends BlockTagsProvider {
         usesShovel.add(ClinkerBlocks.PEAT_MOSS.get());
         usesHoe.add(ClinkerBlocks.PEAT_MOSS.get());
 
+        usesAxe.add(ClinkerBlocks.SPOTWEED.get());
+        usesHoe.add(ClinkerBlocks.SPOTWEED.get());
+
         for (DeferredHolder<Block, ? extends Block> block : ClinkerBlocks.BLOCKS.getEntries()) {
             String name = block.getRegisteredName().toLowerCase();
             if (name.contains("brimstone") ||
