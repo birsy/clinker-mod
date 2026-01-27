@@ -16,8 +16,9 @@ public class HeightmapSteepnessFilter extends PlacementFilter {
     public static final MapCodec<HeightmapSteepnessFilter> CODEC = RecordCodecBuilder.mapCodec(
             obj -> obj.group(Heightmap.Types.CODEC.fieldOf("heightmap").forGetter(filter -> filter.heightmap),
                              IntProvider.CODEC.fieldOf("max_gradient_inclusive").forGetter(filter -> filter.maxGradient),
-                             Codec.INT.fieldOf("radius").orElse(1).forGetter(filter -> filter.radius)
-                    ).apply(obj, HeightmapSteepnessFilter::new)
+                             Codec.INT.fieldOf("radius").orElse(1).forGetter(filter -> filter.radius),
+                             Codec.BOOL.fieldOf("inverted").orElse(false).forGetter(filter -> filter.inverted)
+            ).apply(obj, HeightmapSteepnessFilter::new)
     );
     private static final int[] OFFSETS = {
             -1, -1,
@@ -33,11 +34,13 @@ public class HeightmapSteepnessFilter extends PlacementFilter {
     private final Heightmap.Types heightmap;
     private final IntProvider maxGradient;
     private final int radius;
+    private final boolean inverted;
 
-    public HeightmapSteepnessFilter(Heightmap.Types heightmap, IntProvider maxGradient, int radius) {
+    public HeightmapSteepnessFilter(Heightmap.Types heightmap, IntProvider maxGradient, int radius, boolean inverted) {
         this.heightmap = heightmap;
         this.maxGradient = maxGradient;
         this.radius = radius;
+        this.inverted = inverted;
     }
 
     @Override
@@ -45,17 +48,23 @@ public class HeightmapSteepnessFilter extends PlacementFilter {
         int y = context.getHeight(this.heightmap, pos.getX(), pos.getZ());
         int maxSteepness = this.maxGradient.sample(random);
 
-        boolean inverted = maxSteepness < 0;
-        maxSteepness = Math.abs(maxSteepness);
-
-        for (int i = radius - 1; i >= 0; i--) {
-            for (int j = 0; j < OFFSETS.length; j += 2) {
-                int offsetY = context.getHeight(this.heightmap, pos.getX() + OFFSETS[j] * i, pos.getZ() + OFFSETS[j + 1] * i);
-                if (Math.abs(offsetY - y) > maxSteepness) return !inverted;
+        if (!inverted) {
+            for (int i = radius - 1; i >= 0; i--) {
+                for (int j = 0; j < OFFSETS.length; j += 2) {
+                    int offsetY = context.getHeight(this.heightmap, pos.getX() + OFFSETS[j] * i, pos.getZ() + OFFSETS[j + 1] * i);
+                    if (Math.abs(offsetY - y) > maxSteepness) return false;
+                }
             }
+            return true;
+        } else {
+            for (int i = radius - 1; i >= 0; i--) {
+                for (int j = 0; j < OFFSETS.length; j += 2) {
+                    int offsetY = context.getHeight(this.heightmap, pos.getX() + OFFSETS[j] * i, pos.getZ() + OFFSETS[j + 1] * i);
+                    if (Math.abs(offsetY - y) < maxSteepness) return false;
+                }
+            }
+            return true;
         }
-
-        return inverted;
     }
 
     @Override
