@@ -13,7 +13,7 @@ public class DefaultSurfaceShaper extends SurfaceShaper {
     @Override
     public void fillSurfaceDensityField(NoiseField surfaceDensityField, NoiseFieldCache cache, int chunkHeight, int minX, int minY, int minZ, NoiseField heightmapField, NoiseField squaredHeightmapGradientField, NoiseField distanceToHeightmap, int localLowerGenBound, int localUpperGenBound, NoiseField biomeWeight) {
         double[] surfaceDensityArray = surfaceDensityField.array();
-        surfaceDensityField.byBlockPadded(localLowerGenBound, localUpperGenBound, (index, x, y, z) -> surfaceDensityArray[index] = y - heightmapField.retrieve(x, y, z));
+        surfaceDensityField.byBlockPadded(localLowerGenBound, localUpperGenBound, (index, x, y, z) -> surfaceDensityArray[index] += distanceToHeightmap.retrieve(x, y, z) * biomeWeight.retrieve(x, y, z));
     }
 
     @Override
