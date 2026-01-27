@@ -57,13 +57,15 @@ public class HeightmapSteepnessFilter extends PlacementFilter {
             }
             return true;
         } else {
+            int maximumFoundSteepness = 0;
             for (int i = radius - 1; i >= 0; i--) {
                 for (int j = 0; j < OFFSETS.length; j += 2) {
                     int offsetY = context.getHeight(this.heightmap, pos.getX() + OFFSETS[j] * i, pos.getZ() + OFFSETS[j + 1] * i);
-                    if (Math.abs(offsetY - y) < maxSteepness) return false;
+                    offsetY = Math.abs(offsetY - y);
+                    if (maximumFoundSteepness <= offsetY) maximumFoundSteepness = offsetY;
                 }
             }
-            return true;
+            return maximumFoundSteepness >= maxSteepness;
         }
     }
 
