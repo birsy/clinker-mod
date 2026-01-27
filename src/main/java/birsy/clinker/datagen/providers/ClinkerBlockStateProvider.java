@@ -627,6 +627,19 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
                     4, false, false
             );
             this.flatBlockItem(PEAT_MOSS_BUDS.get());
+
+            // tormentil
+            {
+                String tormentilName = name(INDIGO_TORMENTIL.get());
+                ModelFile.ExistingModelFile tormentilModel = this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + tormentilName));
+                this.getVariantBuilder(INDIGO_TORMENTIL.get()).partialState().addModels(
+                        ConfiguredModel.builder().modelFile(tormentilModel).rotationY(0).buildLast(),
+                        ConfiguredModel.builder().modelFile(tormentilModel).rotationY(90).buildLast(),
+                        ConfiguredModel.builder().modelFile(tormentilModel).rotationY(180).buildLast(),
+                        ConfiguredModel.builder().modelFile(tormentilModel).rotationY(270).buildLast()
+                );
+                this.flatBlockItem(INDIGO_TORMENTIL.get(), this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + tormentilName));
+            }
         }
 
         // stromatolites
