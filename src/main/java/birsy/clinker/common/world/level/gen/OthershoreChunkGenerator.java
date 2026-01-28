@@ -376,10 +376,9 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         BiomeBlender.ChunkBiomeBlendingWeights chunkBiomeBlendingWeights = biomeBlender.generateChunkBiomeBlendingWeights(surfaceBiomes, minX, minZ, 0);
         SurfaceShaperSystem.ChunkSurfaceHeightmap heightmapInfo = surfaceShaperSystem.generateHeightmap(cache, worldFeatures, surfaceBiomes, chunkBiomeBlendingWeights, worldContext, minX, minZ);
         NoiseField heightmapGradient = surfaceShaperSystem.generateHeightmapGradientSquaredField(heightmapInfo.field());
-        surfaceDecorationSystem.applySurfaceDecorations(
-                level, chunk, randomState, cache,
-                heightmapInfo.field(), heightmapGradient,
-                getBiomesInChunk(chunk)
+        surfaceDecorationSystem.decorate(
+                cache, heightmapInfo.field(), heightmapGradient,
+                level, chunk, randomState
         );
 
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(minX, minY, minZ);

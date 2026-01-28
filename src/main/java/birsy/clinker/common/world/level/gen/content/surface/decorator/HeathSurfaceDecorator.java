@@ -1,14 +1,13 @@
 package birsy.clinker.common.world.level.gen.content.surface.decorator;
 
 import birsy.clinker.common.world.block.FallingLayerBlock;
-import birsy.clinker.common.world.level.gen.OthershoreBiomeSource;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
+import birsy.clinker.common.world.level.gen.system.surface.decorator.SurfaceDecorationContext;
 import birsy.clinker.common.world.level.gen.system.surface.decorator.SurfaceDecorator;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 
@@ -28,19 +27,23 @@ public class HeathSurfaceDecorator extends SurfaceDecorator {
     }
 
     @Override
-    public void decorateSurface(ChunkAccess chunk, BlockPos.MutableBlockPos pos, int seaLevel, boolean canSeeSun, int depth, int maxElevationIncrease, int maxElevationDecrease, int surfaceHeight, double surfaceHeightGradient, NoiseContext context, RandomSource random) {
-        int x = pos.getX(), z = pos.getZ();
-        double wiggleNoise = context.retrieve(BASE_NOISE_2D[4], x, 0, z);
+    public void decorateSurface(BlockPos.MutableBlockPos pos, int seaLevel, ChunkAccess chunk, NoiseContext noiseContext, RandomSource random, SurfaceDecorationContext surfaceContext) {
+        int maxElevationDecrease = surfaceContext.maxElevationDecrease(),
+            maxElevationIncrease = surfaceContext.maxElevationIncrease();
+        int depth = surfaceContext.depth();
 
-        double cliff0Fac = context.retrieve(BASE_NOISE_2D[6], x, 0, z);
+        int x = pos.getX(), z = pos.getZ();
+        double wiggleNoise = noiseContext.retrieve(BASE_NOISE_2D[4], x, 0, z);
+
+        double cliff0Fac = noiseContext.retrieve(BASE_NOISE_2D[6], x, 0, z);
         double cliff0 = Math.pow(Math.abs(cliff0Fac), 1 / 12.0) * Math.signum(cliff0Fac) * 8;
 
-        double cliff1Fac = context.retrieve(BASE_NOISE_2D_ALT[7], x, 0, z) - 0.5;
+        double cliff1Fac = noiseContext.retrieve(BASE_NOISE_2D_ALT[7], x, 0, z) - 0.5;
         double cliff1 = Math.pow(Math.abs(cliff1Fac), 1 / 24.0) * Math.signum(cliff1Fac) * 30;
-        double cliff1Mask = context.retrieve(BASE_NOISE_2D[8], x, 0, z) * 0.5 + 0.5;
+        double cliff1Mask = noiseContext.retrieve(BASE_NOISE_2D[8], x, 0, z) * 0.5 + 0.5;
         cliff1 *= cliff1Mask;
 
-        double surfaceFac = context.retrieve(BASE_NOISE_2D[7], x, 0, z);
+        double surfaceFac = noiseContext.retrieve(BASE_NOISE_2D[7], x, 0, z);
         double surface = surfaceFac * 8;
 
         boolean placeStone = false;
@@ -53,11 +56,11 @@ public class HeathSurfaceDecorator extends SurfaceDecorator {
 
         int offset = 1;
         if (!placeStone) {
-            double erosionMask = context.retrieve(BASE_NOISE_2D[5], x, 0, z);
+            double erosionMask = noiseContext.retrieve(BASE_NOISE_2D[5], x, 0, z);
             erosionMask += random.triangle(0, 0.5);
 
             boolean placeSoil = (erosionMask < 0 || maxElevationDecrease < 1) && maxElevationDecrease <= 3;
-            placeSoil &= context.retrieve(BASE_NOISE_2D_ALT[5], x, 0, z) + random.triangle(0, 0.2) < 0.5;
+            placeSoil &= noiseContext.retrieve(BASE_NOISE_2D_ALT[5], x, 0, z) + random.triangle(0, 0.2) < 0.5;
 
             BlockState soilState = ClinkerBlocks.PEAT_MOSS.get().defaultBlockState();
             if (wiggleNoise - 0.3 + random.triangle(0, 0.25) > 0) {
@@ -77,7 +80,6 @@ public class HeathSurfaceDecorator extends SurfaceDecorator {
                             false);
                     pos.move(0, -1, 0);
                 }
-
             }
 
             if (placeSoil) {
@@ -97,7 +99,7 @@ public class HeathSurfaceDecorator extends SurfaceDecorator {
 //        }
     }
 
-    public boolean shouldCalculateElevationChange(boolean canSeeSun, int y, int surfaceHeight) {
+    public boolean shouldCalculateElevationChange(boolean visibleToSky, int y, double surfaceHeight) {
         return y >= surfaceHeight - 20;
     }
 }

@@ -24,12 +24,6 @@ public class ClinkerSurfaceDecorators {
             register("brine_swamp", ClinkerBiomes.BRINE_SWAMP, new BrineSwampSurfaceDecorator());
     public static final Supplier<BiomeSurfaceDecorator> HEATH =
             register("heath", ClinkerBiomes.HEATH, new HeathSurfaceDecorator());
-//    public static final Supplier<BiomeSurfaceDecorator> BRINE_SWAMP =
-//            register("brine_swamp", ClinkerBiomes.BRINE_SWAMP, new BrineSwampSurfaceDecorator());
-//    public static final Supplier<BiomeSurfaceDecorator> UNDERGROUND =
-//            register("underground", ClinkerBiomes.UNDERGROUND, new DefaultSurfaceDecorator());
-//    public static final Supplier<BiomeSurfaceDecorator> AQUIFER =
-//            register("aquifer", ClinkerBiomes.AQUIFER, new DefaultSurfaceDecorator());
 
     public static Supplier<BiomeSurfaceDecorator> register(String name, ResourceKey<Biome> biome, SurfaceDecorator decorator) {
         return SURFACE_DECORATORS.register(name, () -> new BiomeSurfaceDecorator(biome, decorator));
