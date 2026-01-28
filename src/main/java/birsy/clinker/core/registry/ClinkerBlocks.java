@@ -403,7 +403,7 @@ public class ClinkerBlocks
     public static final DeferredBlock<OthershorePlantBlock> INDIGO_TORMENTIL = createBlock("indigo_tormentil", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.DANDELION).mapColor(MapColor.COLOR_PURPLE).sound(SoundType.PINK_PETALS)));
     public static final DeferredBlock<OthershorePlantBlock> YELLOW_TORMENTIL = createBlock("yellow_tormentil", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.DANDELION).mapColor(MapColor.COLOR_YELLOW).sound(SoundType.PINK_PETALS)));
 
-    public static final DeferredBlock<SpotweedBlock> SPOTWEED = createBlock("spotweed", () -> new SpotweedBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BAMBOO).mapColor(MapColor.CRIMSON_STEM).sound(SoundType.SPONGE)
+    public static final DeferredBlock<SpotreedBlock> SPOTREED = createBlock("spotreed", () -> new SpotreedBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BAMBOO).mapColor(MapColor.CRIMSON_STEM).sound(SoundType.SPONGE)
             .noOcclusion()
             .pushReaction(PushReaction.DESTROY)
             .offsetType(BlockBehaviour.OffsetType.XZ)

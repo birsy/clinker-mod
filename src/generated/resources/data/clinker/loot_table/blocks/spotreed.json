@@ -34,11 +34,11 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "clinker:spotweed"
+          "name": "clinker:spotreed"
         }
       ],
       "rolls": 1.0
     }
   ],
-  "random_sequence": "clinker:blocks/spotweed"
+  "random_sequence": "clinker:blocks/spotreed"
 }

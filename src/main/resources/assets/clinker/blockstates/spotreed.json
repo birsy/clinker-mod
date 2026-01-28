@@ -1,0 +1,56 @@
+{
+  "variants": {
+    "lit=false": [
+      {
+        "model": "clinker:block/spotreed/spotreed"
+      },
+      {
+        "model": "clinker:block/spotreed/spotreed_1"
+      },
+      {
+        "model": "clinker:block/spotreed/spotreed_2"
+      },
+      {
+        "model": "clinker:block/spotreed/spotreed_3"
+      },
+      {
+        "model": "clinker:block/spotreed/spotreed_4"
+      },
+      {
+        "model": "clinker:block/spotreed/spotreed_5"
+      },
+      {
+        "model": "clinker:block/spotreed/spotreed_6"
+      },
+      {
+        "model": "clinker:block/spotreed/spotreed_7"
+      }
+    ],
+        "lit=true": [
+      {
+        "model": "clinker:block/spotreed/spotreed_tip"
+      },
+      {
+        "model": "clinker:block/spotreed/spotreed_tip_1"
+      },
+      {
+        "model": "clinker:block/spotreed/spotreed_tip_2"
+      },
+      {
+        "model": "clinker:block/spotreed/spotreed_tip_3"
+      },
+      {
+        "model": "clinker:block/spotreed/spotreed_tip_4"
+      },
+      {
+        "model": "clinker:block/spotreed/spotreed_tip_5"
+      },
+      {
+        "model": "clinker:block/spotreed/spotreed_tip_6"
+      },
+      {
+        "model": "clinker:block/spotreed/spotreed_tip_7"
+      }
+    ]
+  }
+}

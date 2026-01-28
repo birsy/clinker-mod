@@ -672,8 +672,8 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
         }
 
         // spotweed
-        String spotweedName = name(SPOTWEED.get());
-        this.flatBlockItem(SPOTWEED.get(), this.modLoc(ModelProvider.ITEM_FOLDER + "/" + spotweedName));
+        String spotreedName = name(SPOTREED.get());
+        this.flatBlockItem(SPOTREED.get(), this.modLoc(ModelProvider.ITEM_FOLDER + "/" + spotreedName));
     }
 
     public void flatBlockItem(Block block) {
