@@ -24,6 +24,7 @@
   ],
   "mixins": [
     "common.BlockBehavior$PropertiesAccessor",
+    "common.ChunkPyramidMixin",
     "common.ChunkStatusTasksMixin",
     "common.ComposterBlockMixin",
     "common.CropBlockMixin",

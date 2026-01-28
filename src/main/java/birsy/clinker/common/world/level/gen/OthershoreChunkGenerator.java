@@ -105,7 +105,12 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         );
     }
 
-    private ChunkAccess doBiomeFillTask(OthershoreBiomeSource othershoreBiomeSource, Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunk) {
+    private ChunkAccess doBiomeFillTask(
+            OthershoreBiomeSource othershoreBiomeSource,
+            Blender blender,
+            RandomState randomState,
+            StructureManager structureManager,
+            ChunkAccess chunk) {
         ChunkPos chunkPos = chunk.getPos();
         int minX = chunkPos.getMinBlockX(),
             minY = chunk.getMinBuildHeight(),
@@ -168,7 +173,11 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         );
     }
 
-    private ChunkAccess doNoiseFillTask(Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunk) {
+    private ChunkAccess doNoiseFillTask(
+            Blender blender,
+            RandomState randomState,
+            StructureManager structureManager,
+            ChunkAccess chunk) {
         ChunkPos chunkPos = chunk.getPos();
         int minX = chunkPos.getMinBlockX(),
             minY = chunk.getMinBuildHeight(),
@@ -284,12 +293,6 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                                                BiomeBlender.ChunkBiomeBlendingWeights chunkBiomeBlendingWeights,
                                                SurfaceShaperSystem.ChunkSurfaceHeightmap heightmapInfo,
                                                int minX, int minY, int minZ) {
-//        if (true) {
-//            NoiseField finalDensityField = new InterpolatedNoiseField(chunk.getHeight(), 1, 1, 0);
-//            double[] finalDensityFieldArray = finalDensityField.array();
-//            Arrays.fill(finalDensityFieldArray, 100);
-//            return finalDensityField;
-//        }
         int chunkHeight = chunk.getHeight();
 
         NoiseField heightmap = heightmapInfo.field();
@@ -366,12 +369,26 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         int chunkHeight = chunk.getHeight();
         SeededNoiseHolder noiseHolder = ((SeededNoiseHolderHolder) (Object) randomState).clinker$noiseHolder();
         NoiseFieldCache cache = new NoiseFieldCache(minX, minY, minZ, chunkHeight, noiseHolder);
+
+        Collection<WorldFeature> worldFeatures =
+                ((MetaChunkMapHolder) (Object) randomState).clinker$metaChunkMap()
+                        .getWorldFeatures(chunk.getLevel(), minX, minZ, worldContext);
+        BiomeCache2d surfaceBiomes = getSurfaceBiomeCacheForChunk(minX, minZ);
+        BiomeBlender.ChunkBiomeBlendingWeights chunkBiomeBlendingWeights = biomeBlender.generateChunkBiomeBlendingWeights(surfaceBiomes, minX, minZ, 0);
+        SurfaceShaperSystem.ChunkSurfaceHeightmap heightmapInfo = surfaceShaperSystem.generateHeightmap(cache, worldFeatures, surfaceBiomes, chunkBiomeBlendingWeights, worldContext, minX, minZ);
+        NoiseField heightmapGradient = surfaceShaperSystem.generateHeightmapGradientSquaredField(heightmapInfo.field());
+        surfaceDecorationSystem.applySurfaceDecorations(
+                level, chunk, randomState, cache,
+                heightmapInfo.field(), heightmapGradient,
+                getBiomesInChunk(chunk)
+        );
+
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(minX, minY, minZ);
         PositionalRandomFactory randomFactory = randomState.getOrCreateRandomFactory(BEDROCK_RANDOM);
-
         createBarrierrockLayer(chunk, randomFactory, cache, pos, minX, minY, minZ);
         createBedrockLayer(chunk, randomFactory, cache, pos, minX, minY, minZ);
     }
+
     private void createBedrockLayer(
             ChunkAccess chunk, PositionalRandomFactory random, NoiseFieldCache cache,
             BlockPos.MutableBlockPos pos, int minX, int minY, int minZ) {
@@ -426,27 +443,6 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
     @Override
     public void applyBiomeDecoration(WorldGenLevel level, ChunkAccess chunk, StructureManager structureManager) {
-        if (level.getChunkSource() instanceof ServerChunkCache chunkCache) {
-            SeededNoiseHolder noiseHolder = ((SeededNoiseHolderHolder)(Object)chunkCache.randomState()).clinker$noiseHolder();
-            NoiseFieldCache cache = new NoiseFieldCache(
-                    chunk.getPos().getMinBlockX(), chunk.getMinBuildHeight(), chunk.getPos().getMinBlockZ(),
-                    chunk.getHeight(), noiseHolder
-            );
-
-            int minX = chunk.getPos().getMinBlockX(), minZ = chunk.getPos().getMinBlockZ();
-            Collection<WorldFeature> worldFeatures =
-                    ((MetaChunkMapHolder)(Object) chunkCache.randomState()).clinker$metaChunkMap()
-                            .getWorldFeatures(chunk.getLevel(), minX, minZ, this.worldContext);
-            BiomeCache2d surfaceBiomes = getSurfaceBiomeCacheForChunk(minX, minZ);
-            BiomeBlender.ChunkBiomeBlendingWeights chunkBiomeBlendingWeights = this.biomeBlender.generateChunkBiomeBlendingWeights(surfaceBiomes, minX, minZ, 0);
-            SurfaceShaperSystem.ChunkSurfaceHeightmap heightmapInfo = this.surfaceShaperSystem.generateHeightmap(cache, worldFeatures, surfaceBiomes, chunkBiomeBlendingWeights, worldContext, minX, minZ);
-            NoiseField heightmapGradient = surfaceShaperSystem.generateHeightmapGradientSquaredField(heightmapInfo.field());
-            surfaceDecorationSystem.applySurfaceDecorations(
-                    level, chunk, chunkCache.randomState(), cache,
-                    heightmapInfo.field(), heightmapGradient,
-                    getBiomesInChunk(chunk)
-            );
-        }
         super.applyBiomeDecoration(level, chunk, structureManager);
     }
 
