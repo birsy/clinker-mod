@@ -144,7 +144,7 @@ public class SurfaceDecorationSystem {
             for (Direction dir : Direction.Plane.HORIZONTAL) {
                 scratchPos.set(pos).move(dir);
                 boolean solid = level.getBlockState(scratchPos)
-                        .isCollisionShapeFullBlock(level, scratchPos);
+                        .isSolidRender(level, scratchPos);
                 Direction step = solid ? Direction.UP : Direction.DOWN;
 
                 for (int i = 0; i <= maxElevationDifference; i++) {
@@ -153,7 +153,7 @@ public class SurfaceDecorationSystem {
                     if (solid) maxElevationIncrease = Math.max(maxElevationIncrease, i);
                     else maxElevationDecrease = Math.max(maxElevationDecrease, i + 1);
                     boolean topReached = solid != level.getBlockState(scratchPos)
-                                    .isCollisionShapeFullBlock(level, scratchPos);
+                                    .isSolidRender(level, scratchPos);
                     if (topReached) break;
                 }
             }
