@@ -370,9 +370,8 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         SeededNoiseHolder noiseHolder = ((SeededNoiseHolderHolder) (Object) randomState).clinker$noiseHolder();
         NoiseFieldCache cache = new NoiseFieldCache(minX, minY, minZ, chunkHeight, noiseHolder);
 
-        Collection<WorldFeature> worldFeatures =
-                ((MetaChunkMapHolder) (Object) randomState).clinker$metaChunkMap()
-                        .getWorldFeatures(chunk.getLevel(), minX, minZ, worldContext);
+        Collection<WorldFeature> worldFeatures = ((MetaChunkMapHolder) (Object) randomState).clinker$metaChunkMap()
+                .getWorldFeatures(chunk.getLevel(), minX, minZ, worldContext);
         BiomeCache2d surfaceBiomes = getSurfaceBiomeCacheForChunk(minX, minZ);
         BiomeBlender.ChunkBiomeBlendingWeights chunkBiomeBlendingWeights = biomeBlender.generateChunkBiomeBlendingWeights(surfaceBiomes, minX, minZ, 0);
         SurfaceShaperSystem.ChunkSurfaceHeightmap heightmapInfo = surfaceShaperSystem.generateHeightmap(cache, worldFeatures, surfaceBiomes, chunkBiomeBlendingWeights, worldContext, minX, minZ);
