@@ -56,7 +56,7 @@ public class SurfaceBlobFeature extends Feature<SurfaceBlobFeature.SurfaceBlobCo
                     // search upwards if we're a solid block to look for a surface
                     for (int i = 0; i < 5; i++) {
                         mutableBlockPos.move(Direction.UP);
-                        if (level.getBlockState(mutableBlockPos).isAir()) {
+                        if (!level.getBlockState(mutableBlockPos).isSolid()) {
                             mutableBlockPos.move(Direction.DOWN);
                             foundSurface = true;
                             break;
