@@ -19,6 +19,7 @@ public class LongStringLocalizationAuthority {
     }
 
     public void putLongString(String loc, ResourceLocation id, String str) {
+        id = validatePath(id);
         LabeledString parsedString = LabeledString.parse(str);
         if(longStrings.containsKey(loc)) {
             longStrings.get(loc).put(id, parsedString);
@@ -29,16 +30,17 @@ public class LongStringLocalizationAuthority {
     }
 
     public LabeledString getLabelledLongString(ResourceLocation id) {
+        ResourceLocation lid = validatePath(id);
         String currentLanguage = Minecraft.getInstance().getLanguageManager().getSelected();
         LabeledString outputString;
         // default to english if the language isn't supported at all.
         HashMap<ResourceLocation, LabeledString> localizedLongStrings = longStrings.get(longStrings.containsKey(currentLanguage) ? currentLanguage : "en_us");
-        if (localizedLongStrings.containsKey(id)) {
+        if (localizedLongStrings.containsKey(lid)) {
             // if the current language has the id, return that
-            outputString = localizedLongStrings.get(id);
+            outputString = localizedLongStrings.get(lid);
         } else {
             // otherwise, default to english again. if no such string exists in english, just use the resource as a placeholder.
-            outputString = longStrings.get("en_us").computeIfAbsent(id, (key) -> LabeledString.parse(id.toString()));
+            outputString = longStrings.get("en_us").computeIfAbsent(lid, (key) -> LabeledString.parse(lid.toString()));
         }
 
         return outputString;

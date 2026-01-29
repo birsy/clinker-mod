@@ -9,15 +9,19 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.ColorRGBA;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.PlaceOnWaterBlockItem;
 import net.minecraft.world.item.component.SuspiciousStewEffects;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.block.state.properties.WoodType;
+import net.minecraft.world.level.levelgen.feature.WaterloggedVegetationPatchFeature;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.List;
@@ -69,6 +73,10 @@ public class ClinkerBlocks
             .strength(2.75F, 75.0F)
             .sound(SoundType.DRIPSTONE_BLOCK).requiresCorrectToolForDrops())
     );
+    //new LeavesBlock(Properties.of().mapColor(MapColor.PLANT).strength(0.2F).randomTicks().sound(soundType).noOcclusion().isValidSpawn(Blocks::ocelotOrParrot).isSuffocating(Blocks::never).isViewBlocking(Blocks::never).ignitedByLava().pushReaction(PushReaction.DESTROY).isRedstoneConductor(Blocks::never))
+
+    //public static final DeferredBlock<Block> SALTBRUSH = createBlock("saltbrush", () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(BRIMSTONE.get())));
+
     public static final DeferredBlock<Block> BRIMSTONE_SLAB = createBlock("brimstone_slab", () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(BRIMSTONE.get())));
     public static final DeferredBlock<Block> BRIMSTONE_STAIRS = createBlock("brimstone_stairs", () -> new StairBlock(BRIMSTONE.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(BRIMSTONE.get())));
     public static final DeferredBlock<Block> BRIMSTONE_WALL = createBlock("brimstone_wall", () -> new WallBlock(BlockBehaviour.Properties.ofFullCopy(BRIMSTONE.get())));
@@ -123,6 +131,14 @@ public class ClinkerBlocks
     public static final DeferredBlock<ColoredFallingBlock> SALT_GRAVEL = createBlock("salt_gravel",
             () -> new ColoredFallingBlock(new ColorRGBA(0x777472), BlockBehaviour.Properties.ofFullCopy(Blocks.GRAVEL).sound(SoundType.SOUL_SOIL))
     );
+
+    public static final DeferredBlock<Block> WATER_FERN = createBlockNoItem("water_fern", () -> new WaterFernBlock(
+            BlockBehaviour.Properties.of()
+                    .instabreak().replaceable()
+                    .mapColor(MapColor.PLANT).sound(SoundType.BIG_DRIPLEAF).pushReaction(PushReaction.DESTROY)
+                    .noOcclusion().noCollission().noLootTable()));
+
+    public static final DeferredItem<Item> WATER_FERN_ITEM = BLOCK_ITEMS.register("water_fern", () -> new PlaceOnWaterBlockItem(WATER_FERN.get(), new Item.Properties()));
 
     public static final DeferredBlock<SeaShellBlock> SEA_SHELL = createBlock("sea_shell", () -> new SeaShellBlock(
             BlockBehaviour.Properties.of()
@@ -344,6 +360,16 @@ public class ClinkerBlocks
                             .mapColor(MapColor.TERRACOTTA_BLACK)
                             .sound(SoundType.HANGING_ROOTS)
                             .speedFactor(0.5F)
+                            .pushReaction(PushReaction.DESTROY)
+            ));
+    public static final DeferredBlock<Block> SALTY_STEM = createBlock("salty_stem", () ->
+            new ThornyStemBlock(
+                    BlockBehaviour.Properties.of()
+                            .noCollission()
+                            .strength(4.0F)
+                            .mapColor(MapColor.TERRACOTTA_BLACK)
+                            .sound(SoundType.HANGING_ROOTS)
+                            .speedFactor(0.45F)
                             .pushReaction(PushReaction.DESTROY)
             ));
 

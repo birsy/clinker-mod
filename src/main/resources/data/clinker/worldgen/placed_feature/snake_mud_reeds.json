@@ -1,0 +1,33 @@
+{
+  "feature": "clinker:snake_mud_reeds",
+  "placement": [
+    {
+      "type": "minecraft:count",
+      "count": {
+        "type": "minecraft:uniform",
+        "min_inclusive": 3,
+        "max_inclusive": 7
+      }
+    },
+    {
+      "type": "minecraft:in_square"
+    },
+    {
+      "type": "minecraft:heightmap",
+      "heightmap": "WORLD_SURFACE_WG"
+    },
+    {
+      "type": "minecraft:environment_scan",
+      "direction_of_search": "down",
+      "max_steps": 2,
+      "target_condition": {
+        "type": "minecraft:matching_blocks",
+        "offset": [0, -1, 0],
+        "blocks": "clinker:salt_gravel"
+      }
+    },
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}

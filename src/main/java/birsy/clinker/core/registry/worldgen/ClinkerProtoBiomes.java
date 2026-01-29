@@ -17,6 +17,8 @@ public class ClinkerProtoBiomes {
             PROTO_BIOMES.register("upper_shelf", () -> new ProtoBiome(ClinkerBiomes.ASH_STEPPE));
     public static final Supplier<ProtoBiome> LOWER_SHELF =
             PROTO_BIOMES.register("lower_shelf", () -> new ProtoBiome(ClinkerBiomes.BRINE_SWAMP));
+    public static final Supplier<ProtoBiome> LOWER_SNAKES =
+            PROTO_BIOMES.register("snakes", () -> new ProtoBiome(ClinkerBiomes.BRINE_SNAKES));
     public static final Supplier<ProtoBiome> HEATH =
             PROTO_BIOMES.register("heath", () -> new ProtoBiome(ClinkerBiomes.HEATH));
 }

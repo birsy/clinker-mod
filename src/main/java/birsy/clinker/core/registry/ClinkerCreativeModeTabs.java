@@ -180,7 +180,10 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(CAVE_FIG_ROOTS.get());
         pOutput.accept(DRIED_CLOVERS.get());
         pOutput.accept(THORNY_STEM.get());
+        pOutput.accept(SALTY_STEM.get());
         pOutput.accept(BRAMBLE_BLOSSOM.get());
+
+        pOutput.accept(WATER_FERN_ITEM.get());
 
         pOutput.accept(SHEET_MOSS.get());
         pOutput.accept(LONG_SHEET_MOSS.get());
