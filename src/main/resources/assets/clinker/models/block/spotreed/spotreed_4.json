@@ -1,8 +1,8 @@
 {
 	"textures": {
-		"1": "clinker:block/spotweed_tip",
-		"3": "clinker:block/spotweed_stalk",
-		"particle": "clinker:block/spotweed_stalk"
+		"1": "clinker:block/spotreed_tip",
+		"3": "clinker:block/spotreed_stalk",
+		"particle": "clinker:block/spotreed_stalk"
 	},
 	"elements": [
 		{

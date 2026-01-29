@@ -1,9 +1,9 @@
 package birsy.clinker.common.world.level.gen.content.surface.decorator;
 
 import birsy.clinker.common.world.block.FallingLayerBlock;
-import birsy.clinker.common.world.level.gen.OthershoreBiomeSource;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
+import birsy.clinker.common.world.level.gen.system.surface.decorator.SurfaceDecorationContext;
 import birsy.clinker.common.world.level.gen.system.surface.decorator.SurfaceDecorator;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import net.minecraft.core.BlockPos;
@@ -26,17 +26,19 @@ public class AshSteppeSurfaceDecorator extends SurfaceDecorator {
     }
 
     @Override
-    public void decorateSurface(ChunkAccess chunk, BlockPos.MutableBlockPos pos, int seaLevel, boolean canSeeSun, int depth, int maxElevationIncrease, int maxElevationDecrease, int surfaceHeight, double surfaceHeightGradient, NoiseContext context, RandomSource random) {
-        if (!canSeeSun && pos.getY() < 130) return;
+    public void decorateSurface(BlockPos.MutableBlockPos pos, int seaLevel, ChunkAccess chunk, NoiseContext noiseContext, RandomSource random, SurfaceDecorationContext surfaceContext) {
+        if (pos.getY() < (surfaceContext.surfaceHeight() - 20)) return;
 
         float ditherRandom = (random.nextFloat() * 2) - 1;
         ditherRandom *= 0.3F;
 
-        double ashGroundNoise = context.retrieve(BASE_NOISE_2D[6], pos.getX(), pos.getY(), pos.getZ());
+        double ashGroundNoise = noiseContext.retrieve(BASE_NOISE_2D[6], pos.getX(), pos.getY(), pos.getZ());
         boolean shouldPlaceAsh = ashGroundNoise + ditherRandom > -0.5;
 
+        int maxElevationDecrease = surfaceContext.maxElevationDecrease(),
+            maxElevationIncrease = surfaceContext.maxElevationIncrease();
         if (maxElevationDecrease == 1) {
-            double ashBorderNoise = context.retrieve(BASE_NOISE_2D_ALT[6], pos.getX(), pos.getY(), pos.getZ());
+            double ashBorderNoise = noiseContext.retrieve(BASE_NOISE_2D_ALT[6], pos.getX(), pos.getY(), pos.getZ());
             if (ashBorderNoise > 0 && shouldPlaceAsh) {
                 chunk.setBlockState(pos, ClinkerBlocks.ASH.get().defaultBlockState(), false);
             }
@@ -48,7 +50,7 @@ public class AshSteppeSurfaceDecorator extends SurfaceDecorator {
                 float ditherRandomAshDuneAmount = random.nextFloat();
                 ditherRandomAshDuneAmount *= -0.15F;
 
-                double ashNoiseSample = context.retrieve(BASE_NOISE_2D[3], pos.getX(), pos.getY(), pos.getZ());
+                double ashNoiseSample = noiseContext.retrieve(BASE_NOISE_2D[3], pos.getX(), pos.getY(), pos.getZ());
                 ashNoiseSample += ditherRandomAshDuneAmount;
 
                 int ashAmount = ((int) Mth.map(ashNoiseSample, -1.0, 1.0, -1, 6));
@@ -66,7 +68,7 @@ public class AshSteppeSurfaceDecorator extends SurfaceDecorator {
         }
     }
 
-    public boolean shouldCalculateElevationChange(boolean canSeeSun, int y, int surfaceHeight) {
-        return canSeeSun || y >= OthershoreBiomeSource.MIDDLE_SHELF_HEIGHT - 20;
+    public boolean shouldCalculateElevationChange(boolean visibleToSky, int y, double surfaceHeight) {
+        return y >= (surfaceHeight - 20);
     }
 }

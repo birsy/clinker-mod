@@ -13,13 +13,13 @@ public abstract class SimpleSurfaceShaper extends SurfaceShaper {
     @Override
     public void fillSurfaceDensityField(NoiseField surfaceDensityField, NoiseFieldCache cache, int chunkHeight, int minX, int minY, int minZ,
                                         NoiseField heightmapField, NoiseField heightmapGradientField,
-                                        NoiseField distanceToHeightmap, int localLowerGenBound, int localUpperGenBound,
+                                        NoiseField distanceToHeightmap, int lowerGenBound, int upperGenBound,
                                         NoiseField biomeWeight) {
-        this.prefillDensityNoiseFields(cache, localLowerGenBound, localUpperGenBound);
+        this.prefillDensityNoiseFields(cache, lowerGenBound, upperGenBound);
 
         NoiseContext context = cache.context;
         double[] surfaceDensityArray = surfaceDensityField.array();
-        surfaceDensityField.byBlockPadded(localLowerGenBound - minY, localUpperGenBound - minY,
+        surfaceDensityField.byBlockPadded(lowerGenBound - minY, upperGenBound - minY,
                 (index, x, y, z) -> {
                     double weight = biomeWeight.retrieve(x, y, z);
                     double heightmap = heightmapField.retrieve(x, y, z),

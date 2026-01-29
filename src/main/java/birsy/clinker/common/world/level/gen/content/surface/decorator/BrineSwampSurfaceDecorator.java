@@ -3,6 +3,7 @@ package birsy.clinker.common.world.level.gen.content.surface.decorator;
 import birsy.clinker.common.world.level.gen.OthershoreGenerationConstants;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
+import birsy.clinker.common.world.level.gen.system.surface.decorator.SurfaceDecorationContext;
 import birsy.clinker.common.world.level.gen.system.surface.decorator.SurfaceDecorator;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers;
@@ -23,24 +24,21 @@ public class BrineSwampSurfaceDecorator extends SurfaceDecorator {
     }
 
     @Override
-    public void decorateSurface(
-            ChunkAccess chunk,
-            BlockPos.MutableBlockPos pos,
-            int seaLevel,
-            boolean canSeeSun,
-            int depth,
-            int maxElevationIncrease,
-            int maxElevationDecrease,
-            int surfaceHeight,
-            double surfaceHeightGradient, NoiseContext context,
-            RandomSource random) {
+    public void decorateSurface(BlockPos.MutableBlockPos pos, int seaLevel, ChunkAccess chunk,
+                                NoiseContext noiseContext, RandomSource random, SurfaceDecorationContext surfaceContext) {
+        double surfaceHeight = surfaceContext.surfaceHeight(),
+               surfaceHeightGradient = surfaceContext.surfaceHeightGradient();
+        int maxElevationDecrease = surfaceContext.maxElevationDecrease(),
+            maxElevationIncrease = surfaceContext.maxElevationIncrease();
+        int depth = surfaceContext.depth();
+
         int offset = 0;
-        double noise3 = context.retrieve(ClinkerNoiseComputers.BASE_NOISE_2D[3], pos.getX(), pos.getY(), pos.getZ());
+        double noise3 = noiseContext.retrieve(ClinkerNoiseComputers.BASE_NOISE_2D[3], pos.getX(), pos.getY(), pos.getZ());
         int rockDepth = (int) Math.min(20 + noise3 * 4, depth);
         rockDepth -= surfaceHeightGradient * 3;
         if (rockDepth <= 0) return;
 
-        double noise5 = context.retrieve(ClinkerNoiseComputers.BASE_NOISE_2D[5], pos.getX(), pos.getY(), pos.getZ());
+        double noise5 = noiseContext.retrieve(ClinkerNoiseComputers.BASE_NOISE_2D[5], pos.getX(), pos.getY(), pos.getZ());
 
         double waterloggingNoise = noise5 + noise3 * 0.8;
 
@@ -119,7 +117,7 @@ public class BrineSwampSurfaceDecorator extends SurfaceDecorator {
     }
 
     @Override
-    public boolean shouldCalculateElevationChange(boolean canSeeSun, int y, int surfaceHeight) {
-        return canSeeSun || y >= OthershoreGenerationConstants.BASE_SEA_LEVEL - 2;
+    public boolean shouldCalculateElevationChange(boolean visibleToSky, int y, double surfaceHeight) {
+        return visibleToSky || y >= OthershoreGenerationConstants.BASE_SEA_LEVEL - 2;
     }
 }

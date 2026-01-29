@@ -1,0 +1,22 @@
+{
+  "type": "clinker:surface_blob",
+  "config": {
+    "feature": {
+      "feature": "clinker:patch_peat_moss_buds",
+      "placement": [
+        {
+          "type": "minecraft:rarity_filter",
+          "chance": 8
+        }
+      ]
+    },
+    "surface_state_provider": {
+      "type": "minecraft:simple_state_provider",
+      "state": { "Name": "clinker:peat_moss" }
+    },
+    "under_state_provider": {
+      "type": "minecraft:simple_state_provider",
+      "state": { "Name": "clinker:peat_moss" }
+    }
+  }
+}
