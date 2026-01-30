@@ -132,13 +132,11 @@ public class ClinkerBlocks
             () -> new ColoredFallingBlock(new ColorRGBA(0x777472), BlockBehaviour.Properties.ofFullCopy(Blocks.GRAVEL).sound(SoundType.SOUL_SOIL))
     );
 
-    public static final DeferredBlock<Block> WATER_FERN = createBlockNoItem("water_fern", () -> new WaterFernBlock(
-            BlockBehaviour.Properties.of()
-                    .instabreak().replaceable()
-                    .mapColor(MapColor.PLANT).sound(SoundType.BIG_DRIPLEAF).pushReaction(PushReaction.DESTROY)
-                    .noOcclusion().noCollission().noLootTable()));
-
-    public static final DeferredItem<Item> WATER_FERN_ITEM = BLOCK_ITEMS.register("water_fern", () -> new PlaceOnWaterBlockItem(WATER_FERN.get(), new Item.Properties()));
+//    public static final DeferredBlock<Block> WATER_FERN = createBlockNoItem("water_fern", () -> new WaterFernBlock(
+//            BlockBehaviour.Properties.of()
+//                    .instabreak().replaceable()
+//                    .mapColor(MapColor.PLANT).sound(SoundType.BIG_DRIPLEAF).pushReaction(PushReaction.DESTROY)
+//                    .noOcclusion().noCollission().noLootTable()));
 
     public static final DeferredBlock<SeaShellBlock> SEA_SHELL = createBlock("sea_shell", () -> new SeaShellBlock(
             BlockBehaviour.Properties.of()
@@ -386,10 +384,17 @@ public class ClinkerBlocks
                             .mapColor(MapColor.COLOR_BLACK)
             ));
 
+    public static final DeferredBlock<CorpseLilyBudBlock> CORPSE_LILY_BUD = createBlock("corpse_lily_bud",
+            () -> new CorpseLilyBudBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.PUMPKIN).randomTicks().strength(0.5F).mapColor(MapColor.COLOR_RED).sound(SoundType.NETHER_SPROUTS)));
+    public static final DeferredBlock<CorpseLilyBulbBlock> CORPSE_LILY_BULB = createBlock("corpse_lily_bulb",
+            () -> new CorpseLilyBulbBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.PUMPKIN).randomTicks().mapColor(MapColor.COLOR_RED).sound(SoundType.WART_BLOCK)));
+    public static final DeferredBlock<CorpseLilyPetalBlock> CORPSE_LILY_PETAL = createBlock("corpse_lily_petal",
+            () -> new CorpseLilyPetalBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.PUMPKIN).strength(0.75F).mapColor(MapColor.COLOR_RED).sound(SoundType.WART_BLOCK)));
+
     public static final DeferredBlock<OthershorePlantBlock> SALTMOSS_SPROUTS = createBlock("saltmoss_sprouts", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_RED).sound(SoundType.HANGING_ROOTS)));
     public static final DeferredBlock<OthershorePlantBlock> DRIED_SALTMOSS_SPROUTS = createBlock("dried_saltmoss_sprouts", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_RED).sound(SoundType.HANGING_ROOTS)));
     public static final DeferredBlock<SaltmossBlossomBlock> SALTMOSS_BLOSSOM = createBlock("saltmoss_blossom", () -> new SaltmossBlossomBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_RED).sound(SoundType.HANGING_ROOTS)));
-    public static final DeferredBlock<OthershorePlantBlock> YARROW = createBlock("yarrow", () -> new SaltmossBlossomBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_YELLOW).sound(SoundType.HANGING_ROOTS)));
+    public static final DeferredBlock<SaltmossBlossomBlock> YARROW = createBlock("yarrow", () -> new SaltmossBlossomBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_YELLOW).sound(SoundType.HANGING_ROOTS)));
     public static final DeferredBlock<OthershorePlantBlock> CAVE_SPROUTS = createBlock("cave_sprouts", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_BROWN).sound(SoundType.AZALEA_LEAVES)));
 
     private static Supplier<BlockBehaviour.Properties> STROMATOLITE_PROPERTIES = () -> {
@@ -457,8 +462,7 @@ public class ClinkerBlocks
         return block;
     }
 
-    public static DeferredBlock<Block> createBlockNoItem(String name, final Supplier<? extends Block> supplier) {
-        DeferredBlock<Block> block = BLOCKS.register(name, supplier);
-        return block;
+    public static <T extends Block> DeferredBlock<T> createBlockNoItem(String name, final Supplier<T> supplier) {
+        return BLOCKS.register(name, supplier);
     }
 }

@@ -27,8 +27,8 @@ public class ClinkerFeatures {
             FEATURES.register("mud_reeds_patch", () -> new MudReedsPatchFeature(NoneFeatureConfiguration.CODEC));
     public static final Supplier<Feature<NoneFeatureConfiguration>> SNAKE_MUD_REEDS =
             FEATURES.register("snake_mud_reeds", () -> new SnakeReedsFeature(NoneFeatureConfiguration.CODEC));
-    public static final Supplier<Feature<NoneFeatureConfiguration>> WATERLINE_FERN =
-            FEATURES.register("waterline_fern", () -> new WaterlineFernFeature(NoneFeatureConfiguration.CODEC));
+//    public static final Supplier<Feature<NoneFeatureConfiguration>> WATERLINE_FERN =
+//            FEATURES.register("waterline_fern", () -> new WaterlineFernFeature(NoneFeatureConfiguration.CODEC));
     public static final Supplier<Feature<NoneFeatureConfiguration>> BRINE_BRAMBLE =
             FEATURES.register("brine_bramble", () -> new BrineBrambleFeature(NoneFeatureConfiguration.CODEC));
     public static final Supplier<Feature<NoneFeatureConfiguration>> SALTMOSS_BLOOM =

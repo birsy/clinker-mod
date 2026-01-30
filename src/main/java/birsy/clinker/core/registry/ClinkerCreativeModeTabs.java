@@ -183,10 +183,14 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(SALTY_STEM.get());
         pOutput.accept(BRAMBLE_BLOSSOM.get());
 
-        pOutput.accept(WATER_FERN_ITEM.get());
+//        pOutput.accept(WATER_FERN_ITEM.get());
 
         pOutput.accept(SHEET_MOSS.get());
         pOutput.accept(LONG_SHEET_MOSS.get());
+
+        pOutput.accept(CORPSE_LILY_SEEDS.get());
+        pOutput.accept(CORPSE_LILY_BULB.get());
+        pOutput.accept(CORPSE_LILY_PETAL.get());
     }
 
     public static void addItems(CreativeModeTab.ItemDisplayParameters pParameters, CreativeModeTab.Output pOutput) {
@@ -216,5 +220,6 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(MOGUL_WARHOOK.get());
         pOutput.accept(FISTFUL_OF_MAGGOTS.get());
         pOutput.accept(MUSIC_DISC_CODA.get());
+
     }
 }

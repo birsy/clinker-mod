@@ -1,0 +1,31 @@
+{
+  "multipart": [
+    {
+      "apply": [
+        {
+          "model": "clinker:block/corpse_lily_bud"
+        },
+        {
+          "model": "clinker:block/corpse_lily_bud",
+          "y": 90
+        },
+        {
+          "model": "clinker:block/corpse_lily_bud",
+          "y": 180
+        },
+        {
+          "model": "clinker:block/corpse_lily_bud",
+          "y": 270
+        }
+      ]
+    },
+    {
+      "apply": {
+        "model": "clinker:block/corpse_lily_overlay"
+      },
+      "when": {
+        "down": "true"
+      }
+    }
+  ]
+}

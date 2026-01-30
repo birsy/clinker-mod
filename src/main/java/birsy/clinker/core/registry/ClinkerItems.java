@@ -133,6 +133,11 @@ public class ClinkerItems
     );
 
 
+//    public static final DeferredItem<Item> WATER_FERN_ITEM = ITEMS.register("water_fern", () -> new PlaceOnWaterBlockItem(ClinkerBlocks.WATER_FERN.get(), new Item.Properties()));
+
+    public static final DeferredItem<Item> CORPSE_LILY_SEEDS = ITEMS.register("corpse_lily_seeds", () -> new ItemNameBlockItem(ClinkerBlocks.CORPSE_LILY_BUD.get(), new Item.Properties()));
+
+
     @SubscribeEvent
     public static void registerClientItemExtensions(RegisterClientExtensionsEvent event) {
         event.registerItem(new AlchemistsCrossbowItem.AlchemistsCrossbowClientItemExtension(), ALCHEMISTS_CROSSBOW.get());

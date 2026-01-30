@@ -27,6 +27,8 @@ public class ClinkerItemModelProvider extends ItemModelProvider {
         this.handheldItem(ClinkerItems.PESTLE.get());
 
         this.basicItem(ClinkerItems.MUSIC_DISC_CODA);
+
+        this.basicItem(ClinkerItems.CORPSE_LILY_SEEDS);
     }
 
     public ItemModelBuilder basicItem(DeferredItem<? extends Item> item) {

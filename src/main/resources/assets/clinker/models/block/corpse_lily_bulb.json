@@ -1,0 +1,74 @@
+{
+	"parent": "block/block",
+	"render_type": "cutout",
+	"textures": {
+		"bulb_side": "clinker:block/corpse_lily_bulb_side",
+		"bulb_top": "clinker:block/corpse_lily_bulb_top",
+		"bulb_inside": "clinker:block/corpse_lily_bulb_inside",
+		"bulb_bottom": "clinker:block/corpse_lily_bulb_bottom",
+		"bulb_rim": "clinker:block/corpse_lily_bulb_rim",
+		"particle": "#bulb_top"
+	},
+	"elements": [
+		{
+			"from": [2, 0, 2],
+			"to": [4, 6, 12],
+			"faces": {
+				"north": {"uv": [12, 10, 14, 16], "texture": "#bulb_side"},
+				"east": {"uv": [4, 16, 14, 10], "texture": "#bulb_inside"},
+				"west": {"uv": [2, 10, 12, 16], "texture": "#bulb_side"}
+			}
+		},
+		{
+			"from": [2, 0, 12],
+			"to": [12, 6, 14],
+			"faces": {
+				"north": {"uv": [4, 16, 14, 10], "texture": "#bulb_inside"},
+				"south": {"uv": [2, 10, 12, 16], "texture": "#bulb_side"},
+				"west": {"uv": [12, 10, 14, 16], "texture": "#bulb_side"}
+			}
+		},
+		{
+			"from": [12, 0, 4],
+			"to": [14, 6, 14],
+			"faces": {
+				"east": {"uv": [2, 10, 12, 16], "texture": "#bulb_side"},
+				"south": {"uv": [12, 10, 14, 16], "texture": "#bulb_side"},
+				"west": {"uv": [4, 16, 14, 10], "texture": "#bulb_inside"}
+			}
+		},
+		{
+			"from": [2, 6, 2],
+			"to": [14, 6, 14],
+			"faces": {
+				"up": {"uv": [2, 2, 14, 14], "texture": "#bulb_top"},
+				"down": {"uv": [0, 0, 12, 12], "texture": "#missing"}
+			}
+		},
+		{
+			"from": [4, 6.5, 4],
+			"to": [12, 6.5, 12],
+			"faces": {
+				"up": {"uv": [4, 4, 12, 12], "texture": "#bulb_rim"},
+				"down": {"uv": [4, 4, 12, 12], "texture": "#bulb_rim"}
+			}
+		},
+		{
+			"from": [2, 0, 2],
+			"to": [14, 0.5, 14],
+			"faces": {
+				"up": {"uv": [2, 2, 14, 14], "texture": "#bulb_inside"},
+				"down": {"uv": [2, 2, 14, 14], "texture": "#bulb_bottom"}
+			}
+		},
+		{
+			"from": [4, 0, 2],
+			"to": [14, 6, 4],
+			"faces": {
+				"north": {"uv": [2, 10, 12, 16], "texture": "#bulb_side"},
+				"east": {"uv": [12, 10, 14, 16], "texture": "#bulb_side"},
+				"south": {"uv": [4, 16, 14, 10], "texture": "#bulb_inside"}
+			}
+		}
+	]
+}

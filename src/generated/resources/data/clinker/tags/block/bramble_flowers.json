@@ -1,6 +1,8 @@
 {
   "values": [
     "clinker:bramble_blossom",
-    "clinker:withering_bramble_blossom"
+    "clinker:withering_bramble_blossom",
+    "clinker:corpse_lily_bud",
+    "clinker:corpse_lily_bulb"
   ]
 }

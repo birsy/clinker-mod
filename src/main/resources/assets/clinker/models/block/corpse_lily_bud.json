@@ -1,0 +1,66 @@
+{
+	"parent": "block/block",
+	"render_type": "cutout",
+	"textures": {
+		"bud": "clinker:block/corpse_lily_bud",
+		"particle": "#bud"
+	},
+	"elements": [
+		{
+			"from": [5.5, 0, 5.5],
+			"to": [10.5, 5, 10.5],
+			"faces": {
+				"north": {"uv": [1, 6, 6, 11], "texture": "#bud"},
+				"east": {"uv": [1, 6, 6, 11], "texture": "#bud"},
+				"south": {"uv": [1, 6, 6, 11], "texture": "#bud"},
+				"west": {"uv": [1, 6, 6, 11], "texture": "#bud"},
+				"up": {"uv": [1, 1, 6, 6], "texture": "#bud"},
+				"down": {"uv": [1, 11, 6, 16], "texture": "#bud"}
+			}
+		},
+		{
+			"from": [5, -0.5, 5],
+			"to": [11, -0.5, 11],
+			"faces": {
+				"up": {"uv": [8, 9, 14, 15], "texture": "#bud"},
+				"down": {"uv": [8, 9, 14, 15], "texture": "#bud"}
+			}
+		},
+		{
+			"from": [5.25, -0.5, 4],
+			"to": [5.25, 2.5, 12],
+			"shade": false,
+			"faces": {
+				"east": {"uv": [7, 5, 15, 8], "texture": "#bud"},
+				"west": {"uv": [7, 5, 15, 8], "texture": "#bud"}
+			}
+		},
+		{
+			"from": [10.75, -0.5, 4],
+			"to": [10.75, 2.5, 12],
+			"shade": false,
+			"faces": {
+				"east": {"uv": [7, 5, 15, 8], "texture": "#bud"},
+				"west": {"uv": [7, 5, 15, 8], "texture": "#bud"}
+			}
+		},
+		{
+			"from": [4, -0.5, 5.25],
+			"to": [12, 2.5, 5.25],
+			"shade": false,
+			"faces": {
+				"north": {"uv": [7, 5, 15, 8], "texture": "#bud"},
+				"south": {"uv": [7, 5, 15, 8], "texture": "#bud"}
+			}
+		},
+		{
+			"from": [4, -0.5, 10.75],
+			"to": [12, 2.5, 10.75],
+			"shade": false,
+			"faces": {
+				"north": {"uv": [7, 5, 15, 8], "texture": "#bud"},
+				"south": {"uv": [7, 5, 15, 8], "texture": "#bud"}
+			}
+		}
+	]
+}

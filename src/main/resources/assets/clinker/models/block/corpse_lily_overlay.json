@@ -1,0 +1,30 @@
+{
+	"parent": "block/block",
+	"render_type": "cutout",
+	"textures": {
+		"overlay": "clinker:block/corpse_lily_overlay",
+		"particle": "#overlay"
+	},
+	"elements": [
+		{
+			"from": [4, -6, 7.95],
+			"to": [12, 0, 8.05],
+			"shade": false,
+			"rotation": {"angle": 45, "axis": "y", "origin": [8, 0, 8], "rescale": true},
+			"faces": {
+				"north": {"uv": [4, 0, 12, 6], "texture": "#overlay"},
+				"south": {"uv": [4, 0, 12, 6], "texture": "#overlay"}
+			}
+		},
+		{
+			"from": [4, -6, 7.95],
+			"to": [12, 0, 8.05],
+			"shade": false,
+			"rotation": {"angle": -45, "axis": "y", "origin": [8, 0, 8], "rescale": true},
+			"faces": {
+				"north": {"uv": [4, 0, 12, 6], "texture": "#overlay"},
+				"south": {"uv": [4, 0, 12, 6], "texture": "#overlay"}
+			}
+		}
+	]
+}

@@ -1,10 +1,12 @@
 package birsy.clinker.datagen.providers.loottable;
 
+import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.ClinkerItems;
 import net.minecraft.advancements.critereon.StatePropertiesPredicate;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.loot.BlockLootSubProvider;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -70,12 +72,18 @@ public class ClinkerBlockLootTableProvider extends BlockLootSubProvider {
         );
         this.add(ClinkerBlocks.BARRIERROCK.get(), createSilkTouchOnlyTable(ClinkerBlocks.BARRIERROCK.get()));
 
+        this.add(ClinkerBlocks.CORPSE_LILY_BUD.get(),
+                createSingleItemTable(ClinkerItems.CORPSE_LILY_SEEDS));
+        this.add(ClinkerBlocks.CORPSE_LILY_BULB.get(),
+                createSingleItemTableWithSilkTouch(ClinkerBlocks.CORPSE_LILY_BULB.get(), ClinkerItems.CORPSE_LILY_SEEDS.get(), UniformGenerator.between(1.0F, 3.0F)));
+
         // autogenerate everything else!
         for (Block block : this.getKnownBlocks()) {
             if (blocksWithLootTables.contains(block)) continue;
             if (block instanceof LiquidBlock) continue;
 
-            // Clinker.LOGGER.info(block.getName());
+            if (block.getLootTable().location().equals(ResourceLocation.withDefaultNamespace("empty"))) continue;
+
             if (block instanceof SlabBlock slab) {
                 this.add(slab, this.createSlabItemTable(slab));
             } else if (block instanceof BushBlock plant) {
@@ -86,6 +94,7 @@ public class ClinkerBlockLootTableProvider extends BlockLootSubProvider {
                 this.dropSelf(block);
             }
         }
+
     }
 
     protected LootTable.Builder createShearsOrSilkTouchOnlyTable(ItemLike item) {

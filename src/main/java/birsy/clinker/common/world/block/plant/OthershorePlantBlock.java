@@ -51,7 +51,7 @@ public class OthershorePlantBlock extends BushBlock implements BonemealableBlock
     }
 
     @Override
-    public boolean isValidBonemealTarget(LevelReader p_256559_, BlockPos p_50898_, BlockState p_50899_) { return false; }
+    public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state) { return false; }
     @Override
     public boolean isBonemealSuccess(Level pLevel, RandomSource pRandomSource, BlockPos pPos, BlockState pState) { return true; }
     @Override

@@ -22,6 +22,25 @@ public class ShapeUtil {
         return map;
     });
 
+    public static VoxelShape rotate(VoxelShape shape, int turns, Direction.Axis axis, double centerX, double centerY, double centerZ) {
+        VoxelShape[] newShapes = new VoxelShape[]{Shapes.empty()};
+
+        double rotation = turns * Mth.HALF_PI;
+        shape.forAllBoxes((x1, y1, z1, x2, y2, z2) -> {
+            Quaterniond quaternion = new Quaterniond(new AxisAngle4d(rotation, JomlConversions.toJOML(AXIS_TO_VECTOR.get(axis))));
+            Vec3 c1 = JomlConversions.toMoj(quaternion.transform(new Vector3d(x1, y1, z1).sub(centerX, centerY, centerZ)));
+            Vec3 c2 = JomlConversions.toMoj(quaternion.transform(new Vector3d(x2, y2, z2).sub(centerX, centerY, centerZ)));
+            c1 = c1.add(centerX, centerY, centerZ);
+            c2 = c2.add(centerX, centerY, centerZ);
+
+            VoxelShape newBox = Shapes.box(Math.min(c1.x(), c2.x()), Math.min(c1.y(), c2.y()), Math.min(c1.z(), c2.z()),
+                    Math.max(c1.x(), c2.x()), Math.max(c1.y(), c2.y()), Math.max(c1.z(), c2.z()));
+            newShapes[0] = Shapes.join(newShapes[0], newBox, BooleanOp.OR);
+        });
+
+        return newShapes[0];
+    }
+
     public static VoxelShape rotate(VoxelShape shape, int turns, Direction.Axis axis) {
         VoxelShape[] newShapes = new VoxelShape[]{Shapes.empty()};
 

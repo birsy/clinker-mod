@@ -1,5 +1,7 @@
 package birsy.clinker.datagen.providers;
 
+import birsy.clinker.common.world.block.plant.CorpseLilyCenterBlock;
+import birsy.clinker.common.world.block.plant.CorpseLilyPetalBlock;
 import birsy.clinker.common.world.block.plant.DoubleSheetMossBlock;
 import birsy.clinker.common.world.block.plant.StromatoliteBlock;
 import birsy.clinker.core.Clinker;
@@ -673,8 +675,67 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
         }
 
         // spotweed
-        String spotreedName = name(SPOTREED.get());
-        this.flatBlockItem(SPOTREED.get(), this.modLoc(ModelProvider.ITEM_FOLDER + "/" + spotreedName));
+        {
+            String spotreedName = name(SPOTREED.get());
+            this.flatBlockItem(SPOTREED.get(), this.modLoc(ModelProvider.ITEM_FOLDER + "/" + spotreedName));
+        }
+
+        // corpse lily
+        {
+            ModelFile.ExistingModelFile rootsOverlayModel = this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/corpse_lily_overlay"));
+
+            String budName = name(CORPSE_LILY_BUD.get());
+            ModelFile.ExistingModelFile budModel = this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + budName));
+            getMultipartBuilder(CORPSE_LILY_BUD.get())
+                    .part()
+                    .modelFile(budModel).nextModel()
+                    .modelFile(budModel).rotationY(90).nextModel()
+                    .modelFile(budModel).rotationY(180).nextModel()
+                    .modelFile(budModel).rotationY(270).addModel()
+                    .end()
+                    .part()
+                    .modelFile(rootsOverlayModel).addModel()
+                    .condition(CorpseLilyCenterBlock.DOWN, true)
+                    .end();
+
+            String bulbName = name(CORPSE_LILY_BULB.get());
+            ModelFile.ExistingModelFile bulbModel = this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + bulbName));
+            getMultipartBuilder(CORPSE_LILY_BULB.get())
+                    .part()
+                    .modelFile(bulbModel).nextModel()
+                    .modelFile(bulbModel).rotationY(90).nextModel()
+                    .modelFile(bulbModel).rotationY(180).nextModel()
+                    .modelFile(bulbModel).rotationY(270).addModel()
+                    .end()
+                    .part()
+                    .modelFile(rootsOverlayModel).addModel()
+                    .condition(CorpseLilyCenterBlock.DOWN, true)
+                    .end();
+            this.flatBlockItem(CORPSE_LILY_BULB.get(), this.modLoc(ModelProvider.ITEM_FOLDER + "/" + bulbName));
+
+            String petalName = name(CORPSE_LILY_PETAL.get());
+            ModelFile.ExistingModelFile bloomedPetalModel = this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + petalName + "_bloomed"));
+            ModelFile.ExistingModelFile unbloomedPetalModel = this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + petalName + "_unbloomed"));
+            getVariantBuilder(CORPSE_LILY_PETAL.get())
+                    .partialState().with(CorpseLilyPetalBlock.FACING, Direction.WEST).with(CorpseLilyPetalBlock.BLOOM, false)
+                    .addModels(ConfiguredModel.builder().modelFile(unbloomedPetalModel).build())
+                    .partialState().with(CorpseLilyPetalBlock.FACING, Direction.NORTH).with(CorpseLilyPetalBlock.BLOOM, false)
+                    .addModels(ConfiguredModel.builder().modelFile(unbloomedPetalModel).rotationY(90).build())
+                    .partialState().with(CorpseLilyPetalBlock.FACING, Direction.EAST).with(CorpseLilyPetalBlock.BLOOM, false)
+                    .addModels(ConfiguredModel.builder().modelFile(unbloomedPetalModel).rotationY(180).build())
+                    .partialState().with(CorpseLilyPetalBlock.FACING, Direction.SOUTH).with(CorpseLilyPetalBlock.BLOOM, false)
+                    .addModels(ConfiguredModel.builder().modelFile(unbloomedPetalModel).rotationY(270).build())
+
+                    .partialState().with(CorpseLilyPetalBlock.FACING, Direction.WEST).with(CorpseLilyPetalBlock.BLOOM, true)
+                    .addModels(ConfiguredModel.builder().modelFile(bloomedPetalModel).build())
+                    .partialState().with(CorpseLilyPetalBlock.FACING, Direction.NORTH).with(CorpseLilyPetalBlock.BLOOM, true)
+                    .addModels(ConfiguredModel.builder().modelFile(bloomedPetalModel).rotationY(90).build())
+                    .partialState().with(CorpseLilyPetalBlock.FACING, Direction.EAST).with(CorpseLilyPetalBlock.BLOOM, true)
+                    .addModels(ConfiguredModel.builder().modelFile(bloomedPetalModel).rotationY(180).build())
+                    .partialState().with(CorpseLilyPetalBlock.FACING, Direction.SOUTH).with(CorpseLilyPetalBlock.BLOOM, true)
+                    .addModels(ConfiguredModel.builder().modelFile(bloomedPetalModel).rotationY(270).build());
+            this.flatBlockItem(CORPSE_LILY_PETAL.get(), this.modLoc(ModelProvider.ITEM_FOLDER + "/" + petalName));
+        }
     }
 
     public void flatBlockItem(Block block) {

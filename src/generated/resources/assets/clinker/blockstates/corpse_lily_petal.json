@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "bloom=false,facing=east": {
+      "model": "clinker:block/corpse_lily_petal_unbloomed",
+      "y": 180
+    },
+    "bloom=false,facing=north": {
+      "model": "clinker:block/corpse_lily_petal_unbloomed",
+      "y": 90
+    },
+    "bloom=false,facing=south": {
+      "model": "clinker:block/corpse_lily_petal_unbloomed",
+      "y": 270
+    },
+    "bloom=false,facing=west": {
+      "model": "clinker:block/corpse_lily_petal_unbloomed"
+    },
+    "bloom=true,facing=east": {
+      "model": "clinker:block/corpse_lily_petal_bloomed",
+      "y": 180
+    },
+    "bloom=true,facing=north": {
+      "model": "clinker:block/corpse_lily_petal_bloomed",
+      "y": 90
+    },
+    "bloom=true,facing=south": {
+      "model": "clinker:block/corpse_lily_petal_bloomed",
+      "y": 270
+    },
+    "bloom=true,facing=west": {
+      "model": "clinker:block/corpse_lily_petal_bloomed"
+    }
+  }
+}

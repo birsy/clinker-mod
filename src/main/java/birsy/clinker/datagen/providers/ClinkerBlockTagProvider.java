@@ -52,6 +52,8 @@ public class ClinkerBlockTagProvider extends BlockTagsProvider {
         IntrinsicTagAppender<Block> brambleFlowers = this.tag(ClinkerTags.BRAMBLE_FLOWERS).replace(false);
         brambleFlowers.add(ClinkerBlocks.BRAMBLE_BLOSSOM.get());
         brambleFlowers.add(ClinkerBlocks.WITHERING_BRAMBLE_BLOSSOM.get());
+        brambleFlowers.add(ClinkerBlocks.CORPSE_LILY_BUD.get());
+        brambleFlowers.add(ClinkerBlocks.CORPSE_LILY_BULB.get());
 
         IntrinsicTagAppender<Block> brambles = this.tag(ClinkerTags.BRAMBLES).replace(false);
         brambles.add(ClinkerBlocks.THORNY_STEM.get());
