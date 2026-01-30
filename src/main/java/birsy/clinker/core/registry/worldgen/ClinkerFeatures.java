@@ -45,4 +45,6 @@ public class ClinkerFeatures {
             FEATURES.register("pool", () -> new PoolFeature(PoolFeature.PoolFeatureConfiguration.CODEC));
     public static final Supplier<Feature<SurfaceBlobFeature.SurfaceBlobConfiguration>> SURFACE_BLOB =
             FEATURES.register("surface_blob", () -> new SurfaceBlobFeature(SurfaceBlobFeature.SurfaceBlobConfiguration.CODEC));
+    public static final Supplier<Feature<NoneFeatureConfiguration>> CORPSE_LILY =
+            FEATURES.register("corpse_lily", () -> new CorpseLilyFeature(NoneFeatureConfiguration.CODEC));
 }

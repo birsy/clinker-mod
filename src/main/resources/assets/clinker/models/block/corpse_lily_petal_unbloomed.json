@@ -1,5 +1,6 @@
 {
 	"parent": "block/block",
+	"ambientocclusion": false,
 	"render_type": "cutout",
 	"textures": {
 		"petal": "clinker:block/corpse_lily_petal",

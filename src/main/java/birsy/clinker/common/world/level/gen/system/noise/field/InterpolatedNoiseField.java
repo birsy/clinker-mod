@@ -56,9 +56,6 @@ public final class InterpolatedNoiseField extends NoiseField3D {
         int nextX = cellX + ((localX | -localX) >>> 31),
             nextY = cellY + ((localY | -localY) >>> 31),
             nextZ = cellZ + ((localZ | -localZ) >>> 31);
-        //if (nextX >= xzCellCount) Clinker.LOGGER.warn("!!! x exceeded: {}, {}, {}, {}, {}", x, cellX, nextX, localX, interpX);
-        //if (nextY >= yCellCount) Clinker.LOGGER.warn("!!! y exceeded: {}, {}, {}, {}, {}", y, cellY, nextY, localY, interpY);
-        //if (nextZ >= xzCellCount) Clinker.LOGGER.warn("!!! z exceeded: {}, {}, {}, {}, {}", z, cellZ, nextZ, localZ, interpZ);
         return Mth.lerp3(interpX, interpZ, interpY,
                 field[cellX + cellZ * xzCellCount + cellY * xzCellStride], field[nextX + cellZ * xzCellCount + cellY * xzCellStride],
                 field[cellX + nextZ * xzCellCount + cellY * xzCellStride], field[nextX + nextZ * xzCellCount + cellY * xzCellStride],

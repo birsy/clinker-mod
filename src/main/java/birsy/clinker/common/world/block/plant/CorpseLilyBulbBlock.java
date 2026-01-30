@@ -9,6 +9,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -77,15 +78,15 @@ public class CorpseLilyBulbBlock extends CorpseLilyCenterBlock {
             BlockState petal = ClinkerBlocks.CORPSE_LILY_PETAL.get().defaultBlockState()
                     .setValue(CorpseLilyPetalBlock.FACING, direction.getOpposite())
                     .setValue(CorpseLilyPetalBlock.WATERLOGGED, level.getFluidState(mPos).is(Fluids.WATER));
-            level.setBlock(mPos, petal, 2);
+            level.setBlock(mPos, petal, 3);
             return;
         }
     }
 
-    public static void place(Level level, BlockPos pos) {
+    public static void place(LevelAccessor level, BlockPos pos, boolean bloomed) {
         BlockState bulb = ClinkerBlocks.CORPSE_LILY_BULB.get().defaultBlockState()
                 .setValue(CorpseLilyPetalBlock.WATERLOGGED, level.getFluidState(pos).is(Fluids.WATER));
-        level.setBlock(pos, bulb, 2);
+        level.setBlock(pos, bulb, 3);
 
         BlockPos.MutableBlockPos mPos = pos.mutable();
         for (Direction direction : Direction.Plane.HORIZONTAL) {
@@ -97,7 +98,10 @@ public class CorpseLilyBulbBlock extends CorpseLilyCenterBlock {
             BlockState petal = ClinkerBlocks.CORPSE_LILY_PETAL.get().defaultBlockState()
                     .setValue(CorpseLilyPetalBlock.FACING, direction.getOpposite())
                     .setValue(CorpseLilyPetalBlock.WATERLOGGED, level.getFluidState(mPos).is(Fluids.WATER));
-            level.setBlock(mPos, petal, 2);
+            if (bloomed) {
+                petal = petal.setValue(CorpseLilyPetalBlock.BLOOM, true);
+            }
+            level.setBlock(mPos, petal, 3);
         }
     }
 }

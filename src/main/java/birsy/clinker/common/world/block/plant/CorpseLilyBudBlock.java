@@ -51,7 +51,7 @@ public class CorpseLilyBudBlock extends CorpseLilyCenterBlock {
         int age = state.getValue(AGE);
         age++;
         if (age > 4) {
-            CorpseLilyBulbBlock.place(level, pos);
+            CorpseLilyBulbBlock.place(level, pos, false);
             return true;
         } else {
             level.setBlock(pos, state.setValue(AGE, age), 2);

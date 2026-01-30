@@ -11,8 +11,6 @@ import javax.annotation.Nullable;
 import java.util.Arrays;
 
 public final class BiomeLayer {
-    public static int BASE_CACHE_SIZE = 1024;
-
     @Nullable
     private final BiomeLayer previousLayer;
     private final PositionalRandomFactory randomFactory;
@@ -37,7 +35,7 @@ public final class BiomeLayer {
         this.cellScale = cellScale;
         this.cellSizeBlocks = 1 << cellScale;
 
-        this.cacheSize = Math.max(9, BASE_CACHE_SIZE << cellScale);
+        this.cacheSize = 512;
         this.cache = ThreadLocal.withInitial(() -> {
             Long2IntLinkedOpenHashMap map = new Long2IntLinkedOpenHashMap(this.cacheSize + 1);
             map.defaultReturnValue(-1);
