@@ -2,6 +2,9 @@ package birsy.clinker.common.world.block.plant;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -51,6 +54,8 @@ public class CorpseLilyBudBlock extends CorpseLilyCenterBlock {
         int age = state.getValue(AGE);
         age++;
         if (age > 4) {
+            float pitch = Mth.randomBetween(level.random, 0.8F, 1.2F);
+            level.playSound(null, pos, SoundEvents.NETHER_WART_PLANTED, SoundSource.BLOCKS, 1.0F, pitch);
             CorpseLilyBulbBlock.place(level, pos, false);
             return true;
         } else {

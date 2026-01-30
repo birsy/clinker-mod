@@ -32,6 +32,7 @@ public class ClinkerParticles
     public static final Supplier<SimpleParticleType> SNOOZE = register("snooze");
     public static final Supplier<SimpleParticleType> MOTH = register("moth");
     public static final Supplier<SimpleParticleType> FIREFLY = register("firefly");
+    public static final Supplier<SimpleParticleType> FLY = register("fly");
     public static final Supplier<SimpleParticleType> FIRE_SPEW = register("fire_spew");
     public static final Supplier<SimpleParticleType> WRITHING_MAGGOT = register("writhing_maggot");
 
@@ -89,6 +90,7 @@ public class ClinkerParticles
         event.registerSpriteSet(SNOOZE.get(), SnoozeParticle.Provider::new);
         event.registerSpriteSet(MOTH.get(), MothParticle.Provider::new);
         event.registerSpriteSet(FIREFLY.get(), FireflyParticle.Provider::new);
+        event.registerSpriteSet(FLY.get(), FlyParticle.Provider::new);
         event.registerSpriteSet(ORDNANCE_TRAIL.get(), OrdnanceTrailParticle.Provider::new);
         event.registerSpriteSet(ORDNANCE_EXPLOSION.get(), OrdnanceExplosionParticle.Provider::new);
         event.registerSpriteSet(EXPLOSION_LIGHT.get(), ExplosionLightParticle.Provider::new);

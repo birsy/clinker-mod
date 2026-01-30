@@ -42,10 +42,12 @@ public class CorpseLilyCenterBlock extends OthershorePlantBlock {
     @Override
     protected BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor level, BlockPos currentPos, BlockPos facingPos) {
         BlockState updatedState = super.updateShape(state, facing, facingState, level, currentPos, facingPos);
-        if (facing == Direction.DOWN && facingState.is(ClinkerBlocks.THORNY_STEM.get())) {
-            updatedState = updatedState.setValue(DOWN, true);
-        } else if (facing == Direction.DOWN) {
-            updatedState = updatedState.setValue(DOWN, false);
+        if (updatedState.is(this)) {
+            if (facing == Direction.DOWN && facingState.is(ClinkerBlocks.THORNY_STEM.get())) {
+                updatedState = updatedState.setValue(DOWN, true);
+            } else if (facing == Direction.DOWN) {
+                updatedState = updatedState.setValue(DOWN, false);
+            }
         }
         return updatedState;
     }

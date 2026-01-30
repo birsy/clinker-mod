@@ -1,10 +1,15 @@
 package birsy.clinker.common.world.block.plant;
 
 import birsy.clinker.core.registry.ClinkerBlocks;
+import birsy.clinker.core.registry.ClinkerParticles;
 import birsy.clinker.core.registry.ClinkerTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -12,6 +17,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SporeBlossomBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
@@ -66,6 +72,27 @@ public class CorpseLilyBulbBlock extends CorpseLilyCenterBlock {
         if (random.nextInt(0, 5) == 0) this.grow(level, pos, state, random);
     }
 
+    @Override
+    public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
+        super.animateTick(state, level, pos, random);
+        BlockPos.MutableBlockPos mPos = pos.mutable();
+        mPos.set(
+                pos.getX() + (int)random.triangle(0, 2),
+                pos.getY() + (int)random.triangle(1, 2),
+                pos.getZ() + (int)random.triangle(0, 2)
+        );
+        BlockState particleState = level.getBlockState(mPos);
+        if (!particleState.isCollisionShapeFullBlock(level, mPos)) {
+            level.addParticle(
+                    ClinkerParticles.FLY.get(),
+                    mPos.getX() + random.nextDouble(),
+                    mPos.getY() + random.nextDouble(),
+                    mPos.getZ() + random.nextDouble(),
+                    0.0, 0.0, 0.0
+            );
+        }
+    }
+
     void grow(Level level, BlockPos pos, BlockState state, RandomSource random) {
         BlockPos.MutableBlockPos mPos = pos.mutable();
         for (Direction direction : Direction.Plane.HORIZONTAL.shuffledCopy(random)) {
@@ -75,6 +102,8 @@ public class CorpseLilyBulbBlock extends CorpseLilyCenterBlock {
             if (offsetState.is(ClinkerBlocks.CORPSE_LILY_PETAL)) continue;
             if (!offsetState.canBeReplaced()) continue;
 
+            float pitch = Mth.randomBetween(level.random, 0.8F, 1.2F);
+            level.playSound(null, mPos, SoundEvents.NETHER_WART_PLANTED, SoundSource.BLOCKS, 1.0F, pitch);
             BlockState petal = ClinkerBlocks.CORPSE_LILY_PETAL.get().defaultBlockState()
                     .setValue(CorpseLilyPetalBlock.FACING, direction.getOpposite())
                     .setValue(CorpseLilyPetalBlock.WATERLOGGED, level.getFluidState(mPos).is(Fluids.WATER));
