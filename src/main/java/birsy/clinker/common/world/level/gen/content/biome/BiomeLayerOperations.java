@@ -87,4 +87,25 @@ public class BiomeLayerOperations {
             return current;
         }
     }
+
+    public record Expand(ProtoBiome... biomes) implements BiomeLayerOperation {
+        @Override
+        public ProtoBiome apply(int blockX, int blockZ, ProtoBiome current, ProtoBiomeNeighborhood previousLayerNeighborhood, RandomSource random, NoiseContext noiseContext) {
+            for (ProtoBiome biome : biomes) {
+                if (current == biome) return current;
+                for (int offsetIndex : ProtoBiomeNeighborhood.NEIGHBOR_INDICES) {
+                    if (previousLayerNeighborhood.fromIndex(offsetIndex) == biome) return biome;
+                }
+            }
+
+            return current;
+        }
+    }
+
+    public record Biome(ProtoBiome biome) implements BiomeLayerOperation {
+        @Override
+        public ProtoBiome apply(int blockX, int blockZ, ProtoBiome current, ProtoBiomeNeighborhood previousLayerNeighborhood, RandomSource random, NoiseContext noiseContext) {
+            return biome;
+        }
+    }
 }

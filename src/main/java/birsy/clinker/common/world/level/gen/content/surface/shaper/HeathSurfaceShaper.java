@@ -19,28 +19,35 @@ public class HeathSurfaceShaper extends SimpleSurfaceShaper {
 
     @Override
     public void prefillDensityNoiseFields(NoiseFieldCache cache, int minSurfaceHeight, int maxSurfaceHeight) {
+        cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, BASE_NOISE_2D[4]);
         cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, BASE_NOISE_2D_ALT[5]);
         cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, BASE_NOISE_2D[6]);
         cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, BASE_NOISE_2D[7]);
         cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, BASE_NOISE_2D_ALT[7]);
         cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, BASE_NOISE_2D[8]);
+
+        cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, BASE_NOISE[5]);
     }
 
     @Override
     public double surfaceDensity(int x, int y, int z, double heightmapHeight, double heightmapGradient, double distanceToSurface, double biomeWeight, NoiseContext context) {
         double baseNoise =  context.retrieve(BASE_NOISE_2D_ALT[5], x, y, z);
 
-        double cliff0Fac = context.retrieve(BASE_NOISE_2D[6], x, 0, z);
+        double smallNoise = context.retrieve(BASE_NOISE_2D[4], x, y, z) * 0.13;
+
+        double cliff0Fac = context.retrieve(BASE_NOISE_2D[6], x, 0, z) + smallNoise;
         double cliff0 = Math.pow(Math.abs(cliff0Fac), 1 / 12.0) * Math.signum(cliff0Fac) * 8;
 
-        double cliff1Fac = context.retrieve(BASE_NOISE_2D_ALT[7], x, 0, z) - 0.5;
-        double cliff1 = Math.pow(Math.abs(cliff1Fac), 1 / 24.0) * Math.signum(cliff1Fac) * 30;
+        double cliff1Fac = context.retrieve(BASE_NOISE_2D_ALT[7], x, 0, z) - 0.5 + smallNoise;
+        double cliff1 = Math.pow(Math.abs(cliff1Fac), 1 / 12.0) * Math.signum(cliff1Fac) * 30;
         double cliff1Mask = context.retrieve(BASE_NOISE_2D[8], x, 0, z) * 0.5 + 0.5;
         cliff1 *= cliff1Mask;
 
         double surface = context.retrieve(BASE_NOISE_2D[7], x, y, z);
         surface *= 8;
 
-        return (y - heightmapHeight) + baseNoise - Math.max(Math.max(cliff0, cliff1) * biomeWeight, surface);
+        double verticalVarianceNoise = context.retrieve(BASE_NOISE[5], x, y, z) * 5;
+
+        return (y - heightmapHeight) + baseNoise - Math.max((Math.max(cliff0, cliff1) + verticalVarianceNoise) * biomeWeight, surface);
     }
 }
