@@ -73,7 +73,7 @@ public class ClinkerNoiseComputers {
             () -> new NoiseComputer(
                     () -> NoiseFieldTypes.COARSE,
                     (dependencies, registry) -> registry.registerNoise("cliff_rocks"),
-                    (x, y, z, context) -> context.sample("cliff_rocks", x * CLIFF_ROCK_FREQUENCY * 0.7, y * CLIFF_ROCK_FREQUENCY * 0.4, z * CLIFF_ROCK_FREQUENCY * 0.7)
+                    (x, y, z, context) -> context.sample("cliff_rocks", x * CLIFF_ROCK_FREQUENCY * 0.5, y * CLIFF_ROCK_FREQUENCY * 0.4, z * CLIFF_ROCK_FREQUENCY * 0.5)
             )
     );
 
