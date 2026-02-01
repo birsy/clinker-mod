@@ -20,6 +20,7 @@
     "client.ItemBlockRenderTypesMixin",
     "client.LevelRendererMixin",
     "client.LightTextureMixin",
+    "client.SpriteContents$InterpolationDataMixin",
     "client.TitleScreenMixin"
   ],
   "mixins": [

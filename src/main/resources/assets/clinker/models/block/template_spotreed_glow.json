@@ -1,0 +1,24 @@
+{
+	"ambientocclusion": false,
+	"render_type": "translucent",
+	"textures": {
+		"particle": "clinker:block/spotreed_particle"
+	},
+	"elements": [
+		{
+			"from": [6.975, -0.25, 6.975],
+			"to": [9.025, 16.025, 9.025],
+			"shade": false,
+			"faces": {
+				"north": {"uv": [9, 0, 7, 16], "texture": "#glow"},
+				"south": {"uv": [9, 0, 7, 16], "texture": "#glow"},
+				"east": {"uv": [7, 0, 9, 16], "texture": "#glow"},
+				"west": {"uv": [7, 0, 9, 16], "texture": "#glow"},
+				"up": {"uv": [7, 0, 9, 1], "texture": "#glow"}
+			},
+			"neoforge_data": {
+				"block_light": 15
+			}
+		}
+	]
+}

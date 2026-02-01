@@ -437,7 +437,7 @@ public class ClinkerBlocks
     public static final DeferredBlock<SpotreedBlock> SPOTREED = createBlock("spotreed", () -> new SpotreedBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BAMBOO).mapColor(MapColor.CRIMSON_STEM).sound(SoundType.SPONGE)
             .noOcclusion()
             .pushReaction(PushReaction.DESTROY)
-            .offsetType(BlockBehaviour.OffsetType.XZ)
+            .offsetType(BlockBehaviour.OffsetType.XYZ)
     ));
 
     // fluids

@@ -1,17 +1,20 @@
 package birsy.clinker.datagen.providers;
 
-import birsy.clinker.common.world.block.plant.CorpseLilyCenterBlock;
-import birsy.clinker.common.world.block.plant.CorpseLilyPetalBlock;
-import birsy.clinker.common.world.block.plant.DoubleSheetMossBlock;
-import birsy.clinker.common.world.block.plant.StromatoliteBlock;
+import birsy.clinker.common.world.block.plant.*;
 import birsy.clinker.core.Clinker;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
+import net.minecraft.data.models.blockstates.Variant;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.properties.*;
+import net.neoforged.neoforge.client.model.CompositeModel;
 import net.neoforged.neoforge.client.model.generators.*;
+import net.neoforged.neoforge.client.model.generators.loaders.CompositeModelBuilder;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import java.util.function.Function;
@@ -630,6 +633,53 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
                     4, false, false
             );
             this.flatBlockItem(PEAT_MOSS_BUDS.get());
+
+            // spotreed
+            {
+                String spotreedName = name(SPOTREED.get());
+                ResourceLocation spotreedParticle = this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + spotreedName + "_particle");
+                ResourceLocation spotreedTemplate = this.modLoc(ModelProvider.BLOCK_FOLDER + "/template_" + spotreedName);
+
+                VariantBlockStateBuilder.PartialBlockstate state = this.getVariantBuilder(SPOTREED.get()).partialState().with(SpotreedBlock.LIT, false);
+                for (int i = 0; i < 8; i++) {
+                    String suffix = i == 0 ? "" : ("_" + i);
+                    state.addModels(
+                            ConfiguredModel.builder().modelFile(
+                                    this.models().withExistingParent(spotreedName + suffix, spotreedTemplate)
+                                            .texture("stalk", this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + spotreedName + "_stalk" + suffix))
+                                            .texture("end", this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + spotreedName + "_end"))
+                                            .texture("particle", spotreedParticle)
+                            ).buildLast()
+                    );
+                }
+                state = state.partialState().with(SpotreedBlock.LIT, true);
+
+                ResourceLocation spotreedGlowTemplate = this.modLoc(ModelProvider.BLOCK_FOLDER + "/template_" + spotreedName + "_glow");
+                ResourceLocation spotreedTipTemplate = this.modLoc(ModelProvider.BLOCK_FOLDER + "/template_" + spotreedName + "_tip");
+
+                for (int i = 0; i < 8; i++) {
+                    String suffix = i == 0 ? "" : ("_" + i);
+                    state.addModels(
+                            ConfiguredModel.builder().modelFile(
+                                    this.models().getBuilder(ModelProvider.BLOCK_FOLDER + "/spotreed_tip" + suffix)
+                                            .texture("particle", spotreedParticle)
+                                            .customLoader(CompositeModelBuilder::begin)
+                                            .child("stalk",
+                                                    this.models().withExistingParent(spotreedName + "_tip_stalk" + suffix, spotreedTipTemplate)
+                                                            .texture("stalk", this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + spotreedName + "_tip" + suffix))
+                                                            .texture("end", this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + spotreedName + "_end"))
+                                                            .texture("tip_end", this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + spotreedName + "_tip_end" + suffix))
+                                                            .texture("particle", spotreedParticle)
+                                            )
+                                            .child("glow",
+                                                    this.models().withExistingParent(spotreedName + "_glow" + suffix, spotreedGlowTemplate)
+                                                            .texture("glow", this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + spotreedName + "_glow" + suffix))
+                                                            .texture("particle", spotreedParticle)
+                                            ).end()
+                            ).buildLast()
+                    );
+                }
+            }
 
             // tormentil
             {

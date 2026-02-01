@@ -1,0 +1,22 @@
+{
+	"ambientocclusion": true,
+	"render_type": "cutout",
+	"textures": {
+		"particle": "clinker:block/spotreed_particle"
+	},
+	"elements": [
+		{
+			"from": [7, 0, 7],
+			"to": [9, 16, 9],
+			"shade": true,
+			"faces": {
+				"north": {"uv": [9, 0, 7, 16], "texture": "#stalk"},
+				"south": {"uv": [9, 0, 7, 16], "texture": "#stalk"},
+				"east": {"uv": [7, 0, 9, 16], "texture": "#stalk"},
+				"west": {"uv": [7, 0, 9, 16], "texture": "#stalk"},
+				"up": {"uv": [7, 7, 9, 9], "texture": "#end", "cullface": "up"},
+				"down": {"uv": [7, 7, 9, 9], "texture": "#end", "cullface": "down"}
+			}
+		}
+	]
+}

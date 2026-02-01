@@ -1,0 +1,9 @@
+{
+  "parent": "clinker:block/template_spotreed_tip",
+  "textures": {
+    "end": "clinker:block/spotreed_end",
+    "particle": "clinker:block/spotreed_particle",
+    "stalk": "clinker:block/spotreed_tip_6",
+    "tip_end": "clinker:block/spotreed_tip_end_6"
+  }
+}
