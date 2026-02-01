@@ -168,7 +168,7 @@
   "music.othershore.surface": {
     "sounds": [
       {
-        "name": "clinker:music/game/buckhardt",
+        "name": "clinker:music/game/burckhardt",
         "stream": true,
         "volume": 0.5
       },

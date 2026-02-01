@@ -191,6 +191,8 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(CORPSE_LILY_SEEDS.get());
         pOutput.accept(CORPSE_LILY_BULB.get());
         pOutput.accept(CORPSE_LILY_PETAL.get());
+
+        pOutput.accept(MOTH_BALL.get());
     }
 
     public static void addItems(CreativeModeTab.ItemDisplayParameters pParameters, CreativeModeTab.Output pOutput) {

@@ -1,0 +1,36 @@
+{
+	"parent": "block/block",
+	"render_type": "cutout",
+	"textures": {
+		"texture": "clinker:block/moth_ball",
+		"particle": "#texture"
+	},
+	"elements": [
+		{
+			"from": [4.5, 0, 4.5],
+			"to": [11.5, 7, 11.5],
+			"shade": false,
+			"faces": {
+				"north": {"uv": [0, 13, 7, 6], "texture": "#texture"},
+				"east": {"uv": [7, 6, 0, 13], "texture": "#texture"},
+				"south": {"uv": [0, 6, 7, 13], "texture": "#texture"},
+				"west": {"uv": [7, 13, 0, 6], "texture": "#texture"},
+				"up": {"uv": [7, 13, 0, 6], "texture": "#texture"},
+				"down": {"uv": [0, 13, 7, 6], "texture": "#texture"}
+			}
+		},
+		{
+			"from": [5, 0.5, 5],
+			"to": [11, 6.5, 11],
+			"shade": false,
+			"faces": {
+				"north": {"uv": [6, 0, 0, 6], "texture": "#texture"},
+				"east": {"uv": [6, 0, 0, 6], "texture": "#texture"},
+				"south": {"uv": [0, 0, 6, 6], "texture": "#texture"},
+				"west": {"uv": [0, 0, 6, 6], "texture": "#texture"},
+				"up": {"uv": [0, 0, 6, 6], "texture": "#texture"},
+				"down": {"uv": [0, 6, 6, 0], "texture": "#texture"}
+			}
+		}
+	]
+}

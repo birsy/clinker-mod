@@ -1,0 +1,44 @@
+{
+  "feature": "clinker:sea_shells",
+  "placement": [
+    {
+      "type": "minecraft:count",
+      "count": {
+        "type": "minecraft:weighted_list",
+        "distribution": [
+          {
+            "weight": 1,
+            "data": 2
+          },
+          {
+            "weight": 4,
+            "data": 1
+          },
+          {
+            "weight": 10,
+            "data": 0
+          }
+        ]
+      }
+    },
+    {
+      "type": "minecraft:in_square"
+    },
+    {
+      "type": "minecraft:heightmap",
+      "heightmap": "OCEAN_FLOOR"
+    },
+    {
+      "type": "clinker:height_filter",
+      "min_inclusive": {
+        "absolute": 97
+      },
+      "max_inclusive": {
+        "absolute": 102
+      }
+    },
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}

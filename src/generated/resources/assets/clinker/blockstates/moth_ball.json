@@ -1,0 +1,55 @@
+{
+  "variants": {
+    "count=1": [
+      {
+        "model": "clinker:block/moth_ball_single"
+      },
+      {
+        "model": "clinker:block/moth_ball_single",
+        "y": 90
+      },
+      {
+        "model": "clinker:block/moth_ball_single",
+        "y": 180
+      },
+      {
+        "model": "clinker:block/moth_ball_single",
+        "y": 270
+      }
+    ],
+    "count=2": [
+      {
+        "model": "clinker:block/moth_ball_double"
+      },
+      {
+        "model": "clinker:block/moth_ball_double",
+        "y": 90
+      },
+      {
+        "model": "clinker:block/moth_ball_double",
+        "y": 180
+      },
+      {
+        "model": "clinker:block/moth_ball_double",
+        "y": 270
+      }
+    ],
+    "count=3": [
+      {
+        "model": "clinker:block/moth_ball_triple"
+      },
+      {
+        "model": "clinker:block/moth_ball_triple",
+        "y": 90
+      },
+      {
+        "model": "clinker:block/moth_ball_triple",
+        "y": 180
+      },
+      {
+        "model": "clinker:block/moth_ball_triple",
+        "y": 270
+      }
+    ]
+  }
+}

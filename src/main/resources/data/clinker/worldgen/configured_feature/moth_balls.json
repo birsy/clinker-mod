@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:simple_block",
+  "config": {
+    "to_place": {
+      "type": "minecraft:weighted_state_provider",
+      "entries": [
+        {
+          "weight": 5,
+          "data": {
+            "Name": "clinker:moth_ball",
+            "Properties": {
+              "count": "1"
+            }
+          }
+        },
+        {
+          "weight": 4,
+          "data": {
+            "Name": "clinker:moth_ball",
+            "Properties": {
+              "count": "2"
+            }
+          }
+        },
+        {
+          "weight": 1,
+          "data": {
+            "Name": "clinker:moth_ball",
+            "Properties": {
+              "count": "3"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

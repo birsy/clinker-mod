@@ -230,8 +230,10 @@ public class MothParticle extends Particle {
             posestack.mulPose(Axis.YP.rotation(tilt));
         }
         float totalLife = (this.age + pPartialTicks) / this.lifetime;
-        float scale = Mth.clamp(MathUtils.mapRange(0.95F, 1.0F, 1, 0, totalLife), 0, 1);
-        scale *= Mth.sqrt(scale);
+        float scale = Mth.clamp(Mth.map(totalLife, 0.95F, 1.0F, 1, 0), 0, 1);
+        scale *= Mth.clamp(Mth.map(totalLife, 0.0F, 0.1F, 0, 1), 0, 1);
+
+        scale = Mth.sqrt(scale);
         posestack.scale(scale, scale, scale);
         int packedLight = getLightColor(pPartialTicks);
         Matrix4f matrix;

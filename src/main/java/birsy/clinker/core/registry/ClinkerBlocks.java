@@ -391,6 +391,17 @@ public class ClinkerBlocks
     public static final DeferredBlock<CorpseLilyPetalBlock> CORPSE_LILY_PETAL = createBlock("corpse_lily_petal",
             () -> new CorpseLilyPetalBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.PUMPKIN).strength(0.75F).mapColor(MapColor.COLOR_RED).sound(SoundType.WART_BLOCK)));
 
+    public static final DeferredBlock<MothBallBlock> MOTH_BALL = createBlock("moth_ball",
+            () -> new MothBallBlock(BlockBehaviour.Properties.of()
+                    .noOcclusion()
+                    .pushReaction(PushReaction.DESTROY)
+                    .strength(0.1F)
+                    .mapColor(MapColor.TERRACOTTA_WHITE)
+                    .sound(SoundType.WOOL)
+                    .offsetType(BlockBehaviour.OffsetType.XYZ)
+                    .dynamicShape())
+    );
+
     public static final DeferredBlock<OthershorePlantBlock> SALTMOSS_SPROUTS = createBlock("saltmoss_sprouts", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_RED).sound(SoundType.HANGING_ROOTS)));
     public static final DeferredBlock<OthershorePlantBlock> DRIED_SALTMOSS_SPROUTS = createBlock("dried_saltmoss_sprouts", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_RED).sound(SoundType.HANGING_ROOTS)));
     public static final DeferredBlock<SaltmossBlossomBlock> SALTMOSS_BLOSSOM = createBlock("saltmoss_blossom", () -> new SaltmossBlossomBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_RED).sound(SoundType.HANGING_ROOTS)));
@@ -434,7 +445,8 @@ public class ClinkerBlocks
     public static final DeferredBlock<OthershorePlantBlock> INDIGO_TORMENTIL = createBlock("indigo_tormentil", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.DANDELION).mapColor(MapColor.COLOR_PURPLE).sound(SoundType.PINK_PETALS)));
     public static final DeferredBlock<OthershorePlantBlock> YELLOW_TORMENTIL = createBlock("yellow_tormentil", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.DANDELION).mapColor(MapColor.COLOR_YELLOW).sound(SoundType.PINK_PETALS)));
 
-    public static final DeferredBlock<SpotreedBlock> SPOTREED = createBlock("spotreed", () -> new SpotreedBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BAMBOO).mapColor(MapColor.CRIMSON_STEM).sound(SoundType.SPONGE)
+    public static final DeferredBlock<SpotreedBlock> SPOTREED = createBlock("spotreed", () -> new SpotreedBlock(
+            BlockBehaviour.Properties.ofFullCopy(Blocks.BAMBOO).mapColor(MapColor.CRIMSON_STEM).sound(SoundType.FUNGUS)
             .noOcclusion()
             .pushReaction(PushReaction.DESTROY)
             .offsetType(BlockBehaviour.OffsetType.XYZ)

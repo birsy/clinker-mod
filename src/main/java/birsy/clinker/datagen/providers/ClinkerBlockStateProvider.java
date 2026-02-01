@@ -1,5 +1,6 @@
 package birsy.clinker.datagen.providers;
 
+import birsy.clinker.common.world.block.MothBallBlock;
 import birsy.clinker.common.world.block.plant.*;
 import birsy.clinker.core.Clinker;
 import net.minecraft.client.renderer.texture.TextureAtlas;
@@ -668,13 +669,10 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
                                                     this.models().withExistingParent(spotreedName + "_tip_stalk" + suffix, spotreedTipTemplate)
                                                             .texture("stalk", this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + spotreedName + "_tip" + suffix))
                                                             .texture("end", this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + spotreedName + "_end"))
-                                                            .texture("tip_end", this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + spotreedName + "_tip_end" + suffix))
-                                                            .texture("particle", spotreedParticle)
                                             )
                                             .child("glow",
                                                     this.models().withExistingParent(spotreedName + "_glow" + suffix, spotreedGlowTemplate)
                                                             .texture("glow", this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + spotreedName + "_glow" + suffix))
-                                                            .texture("particle", spotreedParticle)
                                             ).end()
                             ).buildLast()
                     );
@@ -785,6 +783,22 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
                     .partialState().with(CorpseLilyPetalBlock.FACING, Direction.SOUTH).with(CorpseLilyPetalBlock.BLOOM, true)
                     .addModels(ConfiguredModel.builder().modelFile(bloomedPetalModel).rotationY(270).build());
             this.flatBlockItem(CORPSE_LILY_PETAL.get(), this.modLoc(ModelProvider.ITEM_FOLDER + "/" + petalName));
+        }
+
+        // moth ball
+        {
+            String mothBallName = name(MOTH_BALL.get());
+            ModelFile.ExistingModelFile mothBallSingleModel = this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + mothBallName + "_single")),
+                                        mothBallDoubleModel = this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + mothBallName + "_double")),
+                                        mothBallTripleModel = this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + mothBallName + "_triple"));
+            getVariantBuilder(MOTH_BALL.get())
+                    .partialState().with(MothBallBlock.COUNT, 1)
+                    .addModels(ConfiguredModel.allYRotations(mothBallSingleModel, 0, false))
+                    .partialState().with(MothBallBlock.COUNT, 2)
+                    .addModels(ConfiguredModel.allYRotations(mothBallDoubleModel, 0, false))
+                    .partialState().with(MothBallBlock.COUNT, 3)
+                    .addModels(ConfiguredModel.allYRotations(mothBallTripleModel, 0, false));
+            this.flatBlockItem(MOTH_BALL.get(), this.modLoc(ModelProvider.ITEM_FOLDER + "/" + mothBallName));
         }
     }
 
