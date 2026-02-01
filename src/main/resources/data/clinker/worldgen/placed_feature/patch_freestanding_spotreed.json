@@ -7,7 +7,7 @@
         "type": "minecraft:weighted_list",
         "distribution": [
           {
-            "weight": 1,
+            "weight": 5,
             "data": 0
           },
           {
@@ -15,8 +15,8 @@
             "data": 1
           },
           {
-            "weight": 4,
-            "data": 5
+            "weight": 1,
+            "data": 2
           }
         ]
       }
@@ -41,13 +41,6 @@
         ],
         "blocks": "clinker:peat_moss"
       }
-    },
-    {
-      "type": "clinker:heightmap_steepness_filter",
-      "heightmap": "OCEAN_FLOOR",
-      "max_gradient_inclusive": 2,
-      "inverted": true,
-      "radius": 2
     },
     {
       "type": "minecraft:biome"

@@ -1,7 +1,6 @@
 {
   "parent": "clinker:block/template_spotreed_glow",
   "textures": {
-    "glow": "clinker:block/spotreed_glow_1",
-    "particle": "clinker:block/spotreed_particle"
+    "glow": "clinker:block/spotreed_glow_1"
   }
 }

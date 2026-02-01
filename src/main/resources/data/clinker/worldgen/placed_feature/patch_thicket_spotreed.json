@@ -7,16 +7,16 @@
         "type": "minecraft:weighted_list",
         "distribution": [
           {
-            "weight": 1,
-            "data": 0
+            "weight": 2,
+            "data": 3
           },
           {
-            "weight": 5,
-            "data": 1
-          },
-          {
-            "weight": 4,
+            "weight": 2,
             "data": 5
+          },
+          {
+            "weight": 3,
+            "data": 8
           }
         ]
       }
@@ -47,7 +47,7 @@
       "heightmap": "OCEAN_FLOOR",
       "max_gradient_inclusive": 2,
       "inverted": true,
-      "radius": 2
+      "radius": 3
     },
     {
       "type": "minecraft:biome"

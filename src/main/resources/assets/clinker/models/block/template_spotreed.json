@@ -1,5 +1,6 @@
 {
-	"ambientocclusion": true,
+	"format_version": "1.21.11",
+	"credit": "Made with Blockbench",
 	"render_type": "cutout",
 	"textures": {
 		"particle": "clinker:block/spotreed_particle"
@@ -8,14 +9,33 @@
 		{
 			"from": [7, 0, 7],
 			"to": [9, 16, 9],
-			"shade": true,
 			"faces": {
 				"north": {"uv": [9, 0, 7, 16], "texture": "#stalk"},
-				"south": {"uv": [9, 0, 7, 16], "texture": "#stalk"},
 				"east": {"uv": [7, 0, 9, 16], "texture": "#stalk"},
+				"south": {"uv": [9, 0, 7, 16], "texture": "#stalk"},
 				"west": {"uv": [7, 0, 9, 16], "texture": "#stalk"},
 				"up": {"uv": [7, 7, 9, 9], "texture": "#end", "cullface": "up"},
 				"down": {"uv": [7, 7, 9, 9], "texture": "#end", "cullface": "down"}
+			}
+		},
+		{
+			"from": [0, 0, 8],
+			"to": [16, 16, 8],
+			"shade": false,
+			"rotation": {"angle": 45, "axis": "y", "origin": [8, 1, 8], "rescale": true},
+			"faces": {
+				"north": {"uv": [0, 0, 16, 16], "texture": "#stalk"},
+				"south": {"uv": [0, 0, 16, 16], "texture": "#stalk"}
+			}
+		},
+		{
+			"from": [8, 0, 0],
+			"to": [8, 16, 16],
+			"shade": false,
+			"rotation": {"angle": 45, "axis": "y", "origin": [8, 1, 8], "rescale": true},
+			"faces": {
+				"east": {"uv": [0, 0, 16, 16], "texture": "#stalk"},
+				"west": {"uv": [0, 0, 16, 16], "texture": "#stalk"}
 			}
 		}
 	]
