@@ -19,6 +19,7 @@ public class HeathThicketSurfaceShaper extends SimpleSurfaceShaper {
 
     @Override
     public void prefillDensityNoiseFields(NoiseFieldCache cache, int minSurfaceHeight, int maxSurfaceHeight) {
+        cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, BASE_NOISE_2D[3]);
         cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, BASE_NOISE_2D[4]);
         cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, BASE_NOISE_2D_ALT[5]);
         cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, BASE_NOISE_2D[6]);
@@ -38,6 +39,11 @@ public class HeathThicketSurfaceShaper extends SimpleSurfaceShaper {
         double cliff0Fac = context.retrieve(BASE_NOISE_2D[6], x, 0, z) + smallNoise;
         double cliff0 = Math.pow(Math.abs(cliff0Fac), 1 / 12.0) * Math.signum(cliff0Fac) * 8;
 
+        double cliff2Fac = context.retrieve(BASE_NOISE_2D[4], x, 0, z) + smallNoise -8;
+        double cliff2 = Math.pow(Math.abs(cliff2Fac), 1 / 12.0) * Math.signum(cliff2Fac) * 100;
+        double cliff2Mask = context.retrieve(BASE_NOISE_2D[3], x, 0, z) * 0.5 + 0.5;
+        cliff2 *= cliff2Mask;
+
         double cliff1Fac = context.retrieve(BASE_NOISE_2D_ALT[7], x, 0, z) - 0.5 + smallNoise;
         double cliff1 = Math.pow(Math.abs(cliff1Fac), 1 / 12.0) * Math.signum(cliff1Fac) * 30;
         double cliff1Mask = context.retrieve(BASE_NOISE_2D[8], x, 0, z) * 0.5 + 0.5;
@@ -48,6 +54,6 @@ public class HeathThicketSurfaceShaper extends SimpleSurfaceShaper {
 
         double verticalVarianceNoise = context.retrieve(BASE_NOISE[5], x, y, z) * 5;
 
-        return (y - heightmapHeight) + baseNoise - Math.max((Math.max(cliff0, cliff1) + verticalVarianceNoise) * biomeWeight, surface);
+        return (y - heightmapHeight) + baseNoise - Math.max((Math.max(Math.max(cliff0, cliff2), cliff1) + verticalVarianceNoise) * biomeWeight, surface);
     }
 }

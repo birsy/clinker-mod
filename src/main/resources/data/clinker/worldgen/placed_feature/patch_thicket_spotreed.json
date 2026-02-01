@@ -8,18 +8,14 @@
         "distribution": [
           {
             "weight": 2,
-            "data": 0
-          },
-          {
-            "weight": 2,
-            "data": 1
-          },
-          {
-            "weight": 3,
             "data": 3
           },
           {
-            "weight": 1,
+            "weight": 2,
+            "data": 5
+          },
+          {
+            "weight": 3,
             "data": 8
           }
         ]
@@ -49,8 +45,9 @@
     {
       "type": "clinker:heightmap_steepness_filter",
       "heightmap": "OCEAN_FLOOR",
-      "max_gradient_inclusive": 0.2,
-      "radius": 2
+      "max_gradient_inclusive": 2,
+      "inverted": true,
+      "radius": 3
     },
     {
       "type": "minecraft:biome"
