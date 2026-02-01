@@ -30,6 +30,8 @@ public class ClinkerSurfaceShapers {
             register("brine_swamp", ClinkerBiomes.BRINE_SWAMP, new BrineSwampSurfaceShaper());
     public static final Supplier<BiomeSurfaceShaper> HEATH =
             register("heath", ClinkerBiomes.HEATH, new HeathSurfaceShaper());
+    public static final Supplier<BiomeSurfaceShaper> HEATH_THICKET =
+            register("heath_thicket", ClinkerBiomes.HEATH_THICKET, new HeathSurfaceShaper());
     public static final Supplier<BiomeSurfaceShaper> BRINE_SNAKES =
             register("brine_snakes", ClinkerBiomes.BRINE_SNAKES, new SnakesSurfaceShaper());
 //    public static final BiomeShaper ASH_STEPPE = register(ClinkerBiomes.ASH_STEPPE, new AshSteppeBiomeShaper());

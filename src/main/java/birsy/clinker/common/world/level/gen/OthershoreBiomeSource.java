@@ -104,6 +104,13 @@ public class OthershoreBiomeSource extends BiomeSource {
                         )
                 )
                 .layer(new BiomeLayerOperations.Smooth())
+                .layer(new BiomeLayerOperations.Mutate(ClinkerProtoBiomes.HEATH.get(),
+                        SimpleWeightedRandomList.<ProtoBiome>builder()
+                                .add(ClinkerProtoBiomes.HEATH.get(), 10)
+                                .add(ClinkerProtoBiomes.HEATH_THICKET.get(), 3)
+                                .build()
+                        )
+                )
                 .layer(new BiomeLayerOperations.Smooth())
                 .zoom()
                 .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1))
