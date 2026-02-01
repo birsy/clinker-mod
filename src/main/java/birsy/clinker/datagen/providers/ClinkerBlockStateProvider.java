@@ -677,6 +677,10 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
                             ).buildLast()
                     );
                 }
+
+                {
+                    this.flatBlockItem(SPOTREED.get(), this.modLoc(ModelProvider.ITEM_FOLDER + "/" + spotreedName));
+                }
             }
 
             // tormentil
@@ -722,11 +726,6 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
             ));
         }
 
-        // spotweed
-        {
-            String spotreedName = name(SPOTREED.get());
-            this.flatBlockItem(SPOTREED.get(), this.modLoc(ModelProvider.ITEM_FOLDER + "/" + spotreedName));
-        }
 
         // corpse lily
         {

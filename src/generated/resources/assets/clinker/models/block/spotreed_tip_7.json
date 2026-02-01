@@ -3,17 +3,14 @@
     "glow": {
       "parent": "clinker:block/template_spotreed_glow",
       "textures": {
-        "glow": "clinker:block/spotreed_glow_7",
-        "particle": "clinker:block/spotreed_particle"
+        "glow": "clinker:block/spotreed_glow_7"
       }
     },
     "stalk": {
       "parent": "clinker:block/template_spotreed_tip",
       "textures": {
         "end": "clinker:block/spotreed_end",
-        "particle": "clinker:block/spotreed_particle",
-        "stalk": "clinker:block/spotreed_tip_7",
-        "tip_end": "clinker:block/spotreed_tip_end_7"
+        "stalk": "clinker:block/spotreed_tip_7"
       }
     }
   },
