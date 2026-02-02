@@ -20,6 +20,7 @@
     "client.ItemBlockRenderTypesMixin",
     "client.LevelRendererMixin",
     "client.LightTextureMixin",
+    "client.MinecraftMixin",
     "client.SpriteContents$InterpolationDataMixin",
     "client.TitleScreenMixin"
   ],

@@ -34,11 +34,14 @@ public class OthershoreFogRenderer {
 
     @SubscribeEvent
     public static void renderFogColors(ViewportEvent.ComputeFogColor event) {
-        if (event.getRenderer().getMainCamera().getFluidInCamera() == FogType.NONE) {
-            float brightness = (float) Mth.lerp(Minecraft.getInstance().options.gamma().get(), 0.5F, 1.0F);
-            event.setRed(event.getRed() * brightness);
-            event.setGreen(event.getGreen() * brightness);
-            event.setBlue(event.getBlue() * brightness);
-        }
+        ClientLevel level = Minecraft.getInstance().level;
+
+        if (level.dimension() != ClinkerWorld.OTHERSHORE) return;
+        if (event.getRenderer().getMainCamera().getFluidInCamera() != FogType.NONE) return;
+
+        float brightness = (float) Mth.map(Minecraft.getInstance().options.gamma().get(), 0.0F, 0.5F, 0.7F, 1.0F);
+        event.setRed(event.getRed() * brightness);
+        event.setGreen(event.getGreen() * brightness);
+        event.setBlue(event.getBlue() * brightness);
     }
 }
