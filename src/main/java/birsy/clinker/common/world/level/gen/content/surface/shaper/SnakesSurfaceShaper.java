@@ -47,7 +47,7 @@ public class SnakesSurfaceShaper extends SimpleSurfaceShaper {
 
         double yFac = y - heightmapHeight - 5;
         yFac -= shatteredIslandHeightOffset;
-        yFac *= 5;
+        yFac *= 3;
         yFac = Math.max(yFac, 0);
 
         chainedIslands += yFac;
