@@ -69,16 +69,9 @@ public class FallingLayerBlock extends ColoredFallingBlock implements SimpleWate
 
     @Override
     public boolean canSurvive(BlockState pState, LevelReader pLevel, BlockPos pPos) {
-        BlockState blockstate = pLevel.getBlockState(pPos.below());
-        if (!blockstate.is(Blocks.ICE) && !blockstate.is(Blocks.PACKED_ICE) && !blockstate.is(Blocks.BARRIER)) {
-            if (!blockstate.is(Blocks.HONEY_BLOCK) && !blockstate.is(Blocks.SOUL_SAND)) {
-                return isFaceFull(blockstate.getCollisionShape(pLevel, pPos.below()), Direction.UP) || blockstate.is(this) && blockstate.getValue(LAYERS) == 8;
-            } else {
-                return true;
-            }
-        } else {
-            return false;
-        }
+        BlockPos belowPos = pPos.below();
+        BlockState belowState = pLevel.getBlockState(pPos.below());
+        return belowState.isFaceSturdy(pLevel, belowPos, Direction.UP) || pState.getValue(LAYERS) == 8;
     }
 
     @Override
@@ -106,7 +99,7 @@ public class FallingLayerBlock extends ColoredFallingBlock implements SimpleWate
         BlockState blockstate = pContext.getLevel().getBlockState(pContext.getClickedPos());
         if (blockstate.is(this)) {
             int i = blockstate.getValue(LAYERS);
-            return blockstate.setValue(LAYERS, Integer.valueOf(Math.min(8, i + 1)));
+            return blockstate.setValue(LAYERS, Math.min(8, i + 1));
         } else {
             return super.getStateForPlacement(pContext);
         }
