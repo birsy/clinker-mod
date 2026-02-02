@@ -2,12 +2,14 @@ package birsy.clinker.common.world.block;
 
 import birsy.clinker.core.registry.ClinkerParticles;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BambooStalkBlock;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
@@ -24,16 +26,6 @@ public class MothBallBlock extends Block {
 
     public MothBallBlock(Properties properties) {
         super(properties);
-    }
-
-    @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        Vec3 offset = state.getOffset(level, pos);
-        return switch (state.getValue(COUNT)) {
-            case 2 -> TWO_AABB.move(offset.x, offset.y, offset.z);
-            case 3 -> THREE_AABB.move(offset.x, offset.y, offset.z);
-            default -> ONE_AABB.move(offset.x, offset.y, offset.z);
-        };
     }
 
     @Override
@@ -60,17 +52,39 @@ public class MothBallBlock extends Block {
     }
 
     @Override
+    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+        return this.canSurvive(state, level, pos) ? super.updateShape(state, direction, neighborState, level, pos, neighborPos) : Blocks.AIR.defaultBlockState();
+    }
+
+    @Override
+    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        Vec3 offset = state.getOffset(level, pos);
+        return switch (state.getValue(COUNT)) {
+            case 2 -> TWO_AABB.move(offset.x, offset.y, offset.z);
+            case 3 -> THREE_AABB.move(offset.x, offset.y, offset.z);
+            default -> ONE_AABB.move(offset.x, offset.y, offset.z);
+        };
+    }
+
+    @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         BlockState blockstate = context.getLevel().getBlockState(context.getClickedPos());
         if (blockstate.is(this)) {
             return blockstate.setValue(COUNT, Math.min(3, blockstate.getValue(COUNT) + 1));
         }
-        return super.getStateForPlacement(context);
+        BlockState result = super.getStateForPlacement(context);
+        return this.canSurvive(result, context.getLevel(), context.getClickedPos()) ? result : null;
     }
 
     @Override
     protected boolean canBeReplaced(BlockState state, BlockPlaceContext useContext) {
         return !useContext.isSecondaryUseActive() && useContext.getItemInHand().is(this.asItem()) && state.getValue(COUNT) < 3 || super.canBeReplaced(state, useContext);
+    }
+
+    @Override
+    protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+        BlockPos belowPos = pos.below();
+        return level.getBlockState(belowPos).isFaceSturdy(level, belowPos, Direction.UP, SupportType.RIGID);
     }
 
     @Override

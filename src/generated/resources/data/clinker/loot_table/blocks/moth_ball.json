@@ -3,14 +3,56 @@
   "pools": [
     {
       "bonus_rolls": 0.0,
-      "conditions": [
-        {
-          "condition": "minecraft:survives_explosion"
-        }
-      ],
       "entries": [
         {
           "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "conditions": [
+                {
+                  "block": "clinker:moth_ball",
+                  "condition": "minecraft:block_state_property",
+                  "properties": {
+                    "count": "1"
+                  }
+                }
+              ],
+              "count": 1.0,
+              "function": "minecraft:set_count"
+            },
+            {
+              "add": false,
+              "conditions": [
+                {
+                  "block": "clinker:moth_ball",
+                  "condition": "minecraft:block_state_property",
+                  "properties": {
+                    "count": "2"
+                  }
+                }
+              ],
+              "count": 2.0,
+              "function": "minecraft:set_count"
+            },
+            {
+              "add": false,
+              "conditions": [
+                {
+                  "block": "clinker:moth_ball",
+                  "condition": "minecraft:block_state_property",
+                  "properties": {
+                    "count": "3"
+                  }
+                }
+              ],
+              "count": 3.0,
+              "function": "minecraft:set_count"
+            },
+            {
+              "function": "minecraft:explosion_decay"
+            }
+          ],
           "name": "clinker:moth_ball"
         }
       ],

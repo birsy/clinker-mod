@@ -1,5 +1,6 @@
 package birsy.clinker.datagen.providers.loottable;
 
+import birsy.clinker.common.world.block.MothBallBlock;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.ClinkerItems;
@@ -7,6 +8,7 @@ import net.minecraft.advancements.critereon.StatePropertiesPredicate;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -15,6 +17,7 @@ import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
+import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.minecraft.world.level.storage.loot.functions.ApplyBonusCount;
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
 import net.minecraft.world.level.storage.loot.predicates.ExplosionCondition;
@@ -23,6 +26,7 @@ import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class ClinkerBlockLootTableProvider extends BlockLootSubProvider {
@@ -76,6 +80,26 @@ public class ClinkerBlockLootTableProvider extends BlockLootSubProvider {
                 createSingleItemTable(ClinkerItems.CORPSE_LILY_SEEDS));
         this.add(ClinkerBlocks.CORPSE_LILY_BULB.get(),
                 createSingleItemTableWithSilkTouch(ClinkerBlocks.CORPSE_LILY_BULB.get(), ClinkerItems.CORPSE_LILY_SEEDS.get(), UniformGenerator.between(1.0F, 3.0F)));
+
+        this.add(ClinkerBlocks.MOTH_BALL.get(),
+                LootTable.lootTable().withPool(
+                        LootPool.lootPool()
+                                .setRolls(ConstantValue.exactly(1.0F))
+                                .add(this.applyExplosionDecay(ClinkerBlocks.MOTH_BALL.get(),
+                                                LootItem.lootTableItem(ClinkerBlocks.MOTH_BALL.get()).apply(
+                                                            List.of(1, 2, 3),
+                                                            count -> SetItemCountFunction.setCount(ConstantValue.exactly((float) count))
+                                                                    .when(
+                                                                            LootItemBlockStatePropertyCondition.hasBlockStateProperties(ClinkerBlocks.MOTH_BALL.get())
+                                                                            .setProperties(
+                                                                                    StatePropertiesPredicate.Builder.properties().hasProperty(MothBallBlock.COUNT, count)
+                                                                            )
+                                                                    )
+                                                        )
+                                        )
+                                )
+                )
+        );
 
         // autogenerate everything else!
         for (Block block : this.getKnownBlocks()) {
