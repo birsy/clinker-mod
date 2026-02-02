@@ -41,7 +41,7 @@ public class BrineSwampSurfaceShaper extends SimpleSurfaceShaper {
         double flat = context.retrieve(ClinkerNoiseComputers.BASE_NOISE_2D_ALT[6], x, y, z);
         flat = Math.clamp(flat * 3, 0, 1) * 0.9;
 
-        double density = distanceToSurface + Mth.lerp(flat, islandNoise, 0);
+        double density = distanceToSurface + Mth.lerp(flat, islandNoise, 0) * 1.5;
 
         double cragHeight = Math.abs(context.retrieve(ClinkerNoiseComputers.BASE_NOISE_2D_ALT[8], x, y, z));
         cragHeight = Mth.clampedMap(cragHeight, -1, 1, 0, 1);
