@@ -12,6 +12,7 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.SupportType;
+import net.minecraft.world.level.block.SweetBerryBushBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
@@ -76,7 +77,10 @@ public class ThornyStemBlock extends AbstractDirectionalStemBlock implements ISh
             }
         }
         if (inside) {
-            entity.hurt(level.damageSources().cactus(), 1);
+            if(entity.tickCount % 20 < 12 && entity.tickCount % 3 == 0 &&  (entity.xOld != entity.getX() || entity.zOld != entity.getZ())) {
+                entity.hurt(level.damageSources().cactus(), 1);
+                entity.invulnerableTime = 11;
+            }
             boolean onClimbable = entity instanceof LivingEntity livingEntity && livingEntity.onClimbable();
             if (entity.getDeltaMovement().y < 0 || onClimbable) {
                 entity.makeStuckInBlock(state, new Vec3(1, 0.8, 1));
