@@ -78,6 +78,32 @@ public class ClinkerNoiseComputers {
     );
 
 
+    public static final Supplier<NoiseComputer> SHATTERED_ISLANDS = NOISE_COMPUTERS.register("shattered_islands",
+            () -> new NoiseComputer(
+                    () -> NoiseFieldTypes.FINE_2D,
+                    (dependencies, registry) -> {
+                        registry.registerNoise("shattered_islands");
+                    },
+                    (x, y, z, context) -> {
+                        return context.sample("shattered_islands", x / 24.0, z / 24.0);
+                    }
+            )
+    );
+    public static final Supplier<NoiseComputer> BIG_ISLANDS = NOISE_COMPUTERS.register("big_islands",
+            () -> new NoiseComputer(
+                    () -> NoiseFieldTypes.COARSE_2D,
+                    (dependencies, registry) -> {
+                        registry.registerNoise("big_islands");
+                    },
+                    (x, y, z, context) -> {
+                        return Mth.map(
+                                context.sample("big_islands", x / 200.0, z / 200.0),
+                                -0.7, -1.0, 0, -1)
+                                * 10;
+                    }
+            )
+    );
+
     // caves
     public static final Supplier<NoiseComputer> SPELEOTHEMS = NOISE_COMPUTERS.register("speleothems",
             () -> new NoiseComputer(
