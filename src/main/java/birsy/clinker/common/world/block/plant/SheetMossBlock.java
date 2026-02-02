@@ -29,7 +29,7 @@ public class SheetMossBlock extends OthershorePlantBlock implements IShearable {
     }
 
     @Override
-    protected boolean mayPlaceOn(BlockState pState, BlockGetter pLevel, BlockPos pPos) {
+    public boolean mayPlaceOn(BlockState pState, BlockGetter pLevel, BlockPos pPos) {
         return canPlaceOn(pState, pLevel, pPos);
     }
 

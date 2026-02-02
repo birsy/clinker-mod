@@ -49,7 +49,6 @@ public class StromatoliteBlock extends Block {
 
     @Override
     protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-        Clinker.LOGGER.info("tick");
         if (true) {
             return;
         }

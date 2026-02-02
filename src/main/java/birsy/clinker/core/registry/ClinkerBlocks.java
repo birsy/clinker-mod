@@ -329,9 +329,9 @@ public class ClinkerBlocks
 
 
     //Plants
-    public static final DeferredBlock<Block> TALL_MUD_REEDS = createBlock("tall_mud_reeds", () -> new DoubleMudReedsBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.TALL_GRASS).mapColor(MapColor.COLOR_BROWN).sound(SoundType.HANGING_ROOTS)));
-    public static final DeferredBlock<Block> SHORT_MUD_REEDS = createBlock("short_mud_reeds", () -> new MudReedsBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SHORT_GRASS).mapColor(MapColor.COLOR_BROWN).sound(SoundType.HANGING_ROOTS)));
-    public static final DeferredBlock<Block> MUD_REEDS = createBlock("mud_reeds", () -> new MudReedsBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SHORT_GRASS).mapColor(MapColor.COLOR_BROWN).sound(SoundType.HANGING_ROOTS)));
+    public static final DeferredBlock<DoubleMudReedsBlock> TALL_MUD_REEDS = createBlock("tall_mud_reeds", () -> new DoubleMudReedsBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.TALL_GRASS).mapColor(MapColor.COLOR_BROWN).sound(SoundType.HANGING_ROOTS)));
+    public static final DeferredBlock<MudReedsBlock> SHORT_MUD_REEDS = createBlock("short_mud_reeds", () -> new MudReedsBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SHORT_GRASS).mapColor(MapColor.COLOR_BROWN).sound(SoundType.HANGING_ROOTS)));
+    public static final DeferredBlock<MudReedsBlock> MUD_REEDS = createBlock("mud_reeds", () -> new MudReedsBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SHORT_GRASS).mapColor(MapColor.COLOR_BROWN).sound(SoundType.HANGING_ROOTS)));
 
     public static final DeferredBlock<Block> CAVE_FIG_STEM = createBlock("cave_fig_stem", () -> new HugeMushroomBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY).sound(SoundType.CALCITE)));
     public static final DeferredBlock<Block> CAVE_FIG_ROOTS = createBlock("cave_fig_roots", () -> new CaveFigRootsBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY).noOcclusion().sound(SoundType.CALCITE)));
@@ -384,7 +384,7 @@ public class ClinkerBlocks
                             .mapColor(MapColor.COLOR_BLACK)
             ));
 
-    public static final DeferredBlock<CorpseLilyBudBlock> CORPSE_LILY_BUD = createBlock("corpse_lily_bud",
+    public static final DeferredBlock<CorpseLilyBudBlock> CORPSE_LILY_BUD = createBlockNoItem("corpse_lily_bud",
             () -> new CorpseLilyBudBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.PUMPKIN).randomTicks().strength(0.5F).mapColor(MapColor.COLOR_RED).sound(SoundType.NETHER_SPROUTS)));
     public static final DeferredBlock<CorpseLilyBulbBlock> CORPSE_LILY_BULB = createBlock("corpse_lily_bulb",
             () -> new CorpseLilyBulbBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.PUMPKIN).randomTicks().mapColor(MapColor.COLOR_RED).sound(SoundType.WART_BLOCK)));
@@ -445,12 +445,31 @@ public class ClinkerBlocks
     public static final DeferredBlock<OthershorePlantBlock> INDIGO_TORMENTIL = createBlock("indigo_tormentil", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.DANDELION).mapColor(MapColor.COLOR_PURPLE).sound(SoundType.PINK_PETALS)));
     public static final DeferredBlock<OthershorePlantBlock> YELLOW_TORMENTIL = createBlock("yellow_tormentil", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.DANDELION).mapColor(MapColor.COLOR_YELLOW).sound(SoundType.PINK_PETALS)));
 
-    public static final DeferredBlock<SpotreedBlock> SPOTREED = createBlock("spotreed", () -> new SpotreedBlock(
-            BlockBehaviour.Properties.ofFullCopy(Blocks.BAMBOO).mapColor(MapColor.CRIMSON_STEM).sound(SoundType.FUNGUS)
-            .noOcclusion()
-            .pushReaction(PushReaction.DESTROY)
-            .offsetType(BlockBehaviour.OffsetType.XYZ)
-    ));
+    private static Supplier<BlockBehaviour.Properties> SPOTREED_PROPERTIES = () -> {
+        BlockBehaviour.Properties props = BlockBehaviour.Properties.ofFullCopy(Blocks.BAMBOO)
+                .mapColor(MapColor.CRIMSON_STEM)
+                .sound(SoundType.FUNGUS)
+                .noOcclusion()
+                .pushReaction(PushReaction.DESTROY);
+        ((BlockBehavior$PropertiesAccessor) props).setOffsetFunction((state, level, pos) -> {
+            long seed = Mth.getSeed(pos.getX(), 0, pos.getZ());
+            double xOffset = Mth.clamp((((seed & 15L) / 15.0) - 0.5) * 0.5, -0.25F, 0.25);
+            double yOffset = Mth.clamp((((seed >> 8 & 15L) / 15.0) - 0.5) * 0.5, -0.25F, 0.25);
+            double zOffset = (((seed >> 4 & 15L) / 15.0F) - 1.0) * 0.2;
+            if (state.getValue(SpotreedBlock.VERTICAL_DIRECTION) == Direction.DOWN) zOffset *= -1;
+            return new Vec3(xOffset, zOffset, yOffset);
+        });
+        return props;
+    };
+    public static final DeferredBlock<SpotreedBlock> SPOTREED = createBlock("spotreed", () -> new SpotreedBlock(SPOTREED_PROPERTIES.get()));
+
+//    public static final DeferredBlock<TangledSpotreedBlock> TANGLED_SPOTREED = createBlock("tangled_spotreed", () -> new TangledSpotreedBlock(
+//            BlockBehaviour.Properties.ofFullCopy(Blocks.BAMBOO_PLANKS)
+//                    .mapColor(MapColor.CRIMSON_STEM)
+//                    .sound(SoundType.FUNGUS)
+//                    .pushReaction(PushReaction.BLOCK)
+//            )
+//    );
 
     // fluids
     public static DeferredBlock<LiquidBlock> VITRIOL_BLOCK = BLOCKS.register("vitriol", () -> new LiquidBlock(

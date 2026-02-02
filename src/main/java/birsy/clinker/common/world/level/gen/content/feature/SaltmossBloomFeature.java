@@ -6,6 +6,8 @@ import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
@@ -25,13 +27,14 @@ public class SaltmossBloomFeature extends Feature<NoneFeatureConfiguration> {
         BlockPos.MutableBlockPos pos = origin.mutable();
         BlockPos.MutableBlockPos belowPos = origin.mutable();
 
+        OthershorePlantBlock sproutsBlock = ClinkerBlocks.DRIED_SALTMOSS_SPROUTS.get();
         for (int i = 0; i < random.nextInt(2, 9); i++) {
             pos.set(origin).move((int) (random.nextGaussian() * 1.5), 2, (int) (random.nextGaussian() * 1.5));
             belowPos.set(pos).move(0, -1, 0);
             // column scan
             for (int y = 0; y < 4; y++) {
-                if (level.getBlockState(pos).canBeReplaced() && OthershorePlantBlock.canPlaceOn(level.getBlockState(belowPos), level, belowPos)) {
-                    level.setBlock(pos, ClinkerBlocks.DRIED_SALTMOSS_SPROUTS.get().defaultBlockState(), 2);
+                if (level.getBlockState(pos).canBeReplaced() && sproutsBlock.mayPlaceOn(level.getBlockState(belowPos), level, belowPos)) {
+                    level.setBlock(pos, sproutsBlock.defaultBlockState(), 2);
                     placed = true;
                     break;
                 }
@@ -43,8 +46,9 @@ public class SaltmossBloomFeature extends Feature<NoneFeatureConfiguration> {
 
         pos.set(origin);
         belowPos.set(origin).move(0, -1, 1);
-        if (level.getBlockState(pos).canBeReplaced() && OthershorePlantBlock.canPlaceOn(level.getBlockState(belowPos), level, belowPos)) {
-            level.setBlock(pos, ClinkerBlocks.SALTMOSS_BLOSSOM.get().defaultBlockState(), 2);
+        OthershorePlantBlock blossomBlock = ClinkerBlocks.SALTMOSS_BLOSSOM.get();
+        if (level.getBlockState(pos).canBeReplaced() && blossomBlock.mayPlaceOn(level.getBlockState(belowPos), level, belowPos)) {
+            level.setBlock(pos, blossomBlock.defaultBlockState(), 2);
             placed = true;
         }
 

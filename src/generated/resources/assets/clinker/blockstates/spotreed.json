@@ -1,6 +1,40 @@
 {
   "variants": {
-    "lit=false": [
+    "lit=false,vertical_direction=down": [
+      {
+        "model": "clinker:block/spotreed",
+        "x": 180
+      },
+      {
+        "model": "clinker:block/spotreed_1",
+        "x": 180
+      },
+      {
+        "model": "clinker:block/spotreed_2",
+        "x": 180
+      },
+      {
+        "model": "clinker:block/spotreed_3",
+        "x": 180
+      },
+      {
+        "model": "clinker:block/spotreed_4",
+        "x": 180
+      },
+      {
+        "model": "clinker:block/spotreed_5",
+        "x": 180
+      },
+      {
+        "model": "clinker:block/spotreed_6",
+        "x": 180
+      },
+      {
+        "model": "clinker:block/spotreed_7",
+        "x": 180
+      }
+    ],
+    "lit=false,vertical_direction=up": [
       {
         "model": "clinker:block/spotreed"
       },
@@ -26,7 +60,41 @@
         "model": "clinker:block/spotreed_7"
       }
     ],
-    "lit=true": [
+    "lit=true,vertical_direction=down": [
+      {
+        "model": "clinker:block/spotreed_tip",
+        "x": 180
+      },
+      {
+        "model": "clinker:block/spotreed_tip_1",
+        "x": 180
+      },
+      {
+        "model": "clinker:block/spotreed_tip_2",
+        "x": 180
+      },
+      {
+        "model": "clinker:block/spotreed_tip_3",
+        "x": 180
+      },
+      {
+        "model": "clinker:block/spotreed_tip_4",
+        "x": 180
+      },
+      {
+        "model": "clinker:block/spotreed_tip_5",
+        "x": 180
+      },
+      {
+        "model": "clinker:block/spotreed_tip_6",
+        "x": 180
+      },
+      {
+        "model": "clinker:block/spotreed_tip_7",
+        "x": 180
+      }
+    ],
+    "lit=true,vertical_direction=up": [
       {
         "model": "clinker:block/spotreed_tip"
       },

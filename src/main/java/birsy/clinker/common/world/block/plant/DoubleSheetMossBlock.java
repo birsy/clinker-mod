@@ -47,7 +47,7 @@ public class DoubleSheetMossBlock extends OthershorePlantBlock implements IShear
     }
 
     @Override
-    protected boolean mayPlaceOn(BlockState pState, BlockGetter pLevel, BlockPos pPos) {
+    public boolean mayPlaceOn(BlockState pState, BlockGetter pLevel, BlockPos pPos) {
         return canPlaceOn(pState, pLevel, pPos);
     }
 

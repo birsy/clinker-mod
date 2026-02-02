@@ -639,49 +639,100 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
             {
                 String spotreedName = name(SPOTREED.get());
                 ResourceLocation spotreedParticle = this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + spotreedName + "_particle");
+
                 ResourceLocation spotreedTemplate = this.modLoc(ModelProvider.BLOCK_FOLDER + "/template_" + spotreedName);
-
-                VariantBlockStateBuilder.PartialBlockstate state = this.getVariantBuilder(SPOTREED.get()).partialState().with(SpotreedBlock.LIT, false);
-                for (int i = 0; i < 8; i++) {
-                    String suffix = i == 0 ? "" : ("_" + i);
-                    state.addModels(
-                            ConfiguredModel.builder().modelFile(
-                                    this.models().withExistingParent(spotreedName + suffix, spotreedTemplate)
-                                            .texture("stalk", this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + spotreedName + "_stalk" + suffix))
-                                            .texture("end", this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + spotreedName + "_end"))
-                                            .texture("particle", spotreedParticle)
-                            ).buildLast()
-                    );
-                }
-                state = state.partialState().with(SpotreedBlock.LIT, true);
-
                 ResourceLocation spotreedGlowTemplate = this.modLoc(ModelProvider.BLOCK_FOLDER + "/template_" + spotreedName + "_glow");
                 ResourceLocation spotreedTipTemplate = this.modLoc(ModelProvider.BLOCK_FOLDER + "/template_" + spotreedName + "_tip");
 
-                for (int i = 0; i < 8; i++) {
-                    String suffix = i == 0 ? "" : ("_" + i);
-                    state.addModels(
-                            ConfiguredModel.builder().modelFile(
-                                    this.models().getBuilder(ModelProvider.BLOCK_FOLDER + "/spotreed_tip" + suffix)
-                                            .texture("particle", spotreedParticle)
-                                            .customLoader(CompositeModelBuilder::begin)
-                                            .child("stalk",
-                                                    this.models().withExistingParent(spotreedName + "_tip_stalk" + suffix, spotreedTipTemplate)
-                                                            .texture("stalk", this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + spotreedName + "_tip" + suffix))
-                                                            .texture("end", this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + spotreedName + "_end"))
-                                            )
-                                            .child("glow",
-                                                    this.models().withExistingParent(spotreedName + "_glow" + suffix, spotreedGlowTemplate)
-                                                            .texture("glow", this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + spotreedName + "_glow" + suffix))
-                                            ).end()
-                            ).buildLast()
-                    );
+                VariantBlockStateBuilder variantBuilder = this.getVariantBuilder(SPOTREED.get());
+
+                // build models for each growth direction
+                for (Direction direction : Direction.Plane.VERTICAL) {
+                    int xRotation = direction == Direction.DOWN ? 180 : 0;
+
+                    VariantBlockStateBuilder.PartialBlockstate stalkState =
+                            variantBuilder.partialState()
+                                    .with(SpotreedBlock.LIT, false)
+                                    .with(SpotreedBlock.VERTICAL_DIRECTION, direction);
+                    for (int i = 0; i < 8; i++) {
+                        String suffix = i == 0 ? "" : ("_" + i);
+                        stalkState.addModels(
+                                ConfiguredModel.builder().modelFile(
+                                        this.models().withExistingParent(spotreedName + suffix, spotreedTemplate)
+                                                .texture("stalk", this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + spotreedName + "_stalk" + suffix))
+                                                .texture("end", this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + spotreedName + "_end"))
+                                                .texture("particle", spotreedParticle)
+                                ).rotationX(xRotation).buildLast()
+                        );
+                    }
+
+                    VariantBlockStateBuilder.PartialBlockstate tipState =
+                            variantBuilder.partialState()
+                                .with(SpotreedBlock.LIT, true)
+                                .with(SpotreedBlock.VERTICAL_DIRECTION, direction);
+                    for (int i = 0; i < 8; i++) {
+                        String suffix = i == 0 ? "" : ("_" + i);
+                        tipState.addModels(
+                                ConfiguredModel.builder().modelFile(
+                                        this.models().getBuilder(ModelProvider.BLOCK_FOLDER + "/spotreed_tip" + suffix)
+                                                .texture("particle", spotreedParticle)
+                                                .customLoader(CompositeModelBuilder::begin)
+                                                .child("stalk",
+                                                        this.models().withExistingParent(spotreedName + "_tip_stalk" + suffix, spotreedTipTemplate)
+                                                                .texture("stalk", this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + spotreedName + "_tip" + suffix))
+                                                                .texture("end", this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + spotreedName + "_end"))
+                                                )
+                                                .child("glow",
+                                                        this.models().withExistingParent(spotreedName + "_glow" + suffix, spotreedGlowTemplate)
+                                                                .texture("glow", this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + spotreedName + "_glow" + suffix))
+                                                ).end()
+                                ).rotationX(xRotation).buildLast()
+                        );
+                    }
                 }
 
-                {
-                    this.flatBlockItem(SPOTREED.get(), this.modLoc(ModelProvider.ITEM_FOLDER + "/" + spotreedName));
-                }
+                this.flatBlockItem(SPOTREED.get(), this.modLoc(ModelProvider.ITEM_FOLDER + "/" + spotreedName));
             }
+            // tangled spotreed
+//            {
+//                String spotreedName = name(SPOTREED.get());
+//                ResourceLocation spotreedParticle = this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + spotreedName + "_particle");
+//                String tangledSpotreedName = name(TANGLED_SPOTREED.get());
+//
+//                ResourceLocation tangledSpotreedTemplate = this.modLoc(ModelProvider.BLOCK_FOLDER + "/template_" + tangledSpotreedName);
+//                ResourceLocation tangledSpotreedGlow = this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + tangledSpotreedName + "_glow");
+//
+//                VariantBlockStateBuilder variantBuilder = this.getVariantBuilder(TANGLED_SPOTREED.get());
+//                for (Direction.Axis axis : Direction.Axis.VALUES) {
+//                    int yRot = 0, xRot = 0;
+//                    if (axis == Direction.Axis.X) {
+//                        xRot = 90; yRot = 90;
+//                    } else if (axis == Direction.Axis.Z) {
+//                        xRot = 90;
+//                    }
+//
+//                    VariantBlockStateBuilder.PartialBlockstate state = variantBuilder.partialState().with(RotatedPillarBlock.AXIS, axis);
+//                    for (int i = 0; i < 6; i++) {
+//                        String suffix = i == 0 ? "" : ("_" + i);
+//                        state.addModels(
+//                                ConfiguredModel.builder().modelFile(
+//                                        this.models().getBuilder(ModelProvider.BLOCK_FOLDER + "/" + tangledSpotreedName + suffix)
+//                                                .texture("particle", spotreedParticle)
+//                                                .customLoader(CompositeModelBuilder::begin)
+//                                                .child("stalk",
+//                                                        this.models().withExistingParent(tangledSpotreedName + "_stalk" + suffix, tangledSpotreedTemplate)
+//                                                                .texture("side", this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + tangledSpotreedName + suffix))
+//                                                )
+//                                                .child("glow",
+//                                                        this.models().withExistingParent(tangledSpotreedName + "_glow_stupid_generated_duplicate", tangledSpotreedGlow)
+//                                                ).end()
+//                                ).rotationX(xRot).rotationY(yRot).buildLast()
+//                        );
+//                    }
+//                }
+//                this.simpleBlockItem(TANGLED_SPOTREED.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + tangledSpotreedName)));
+//            }
+
 
             // tormentil
             {

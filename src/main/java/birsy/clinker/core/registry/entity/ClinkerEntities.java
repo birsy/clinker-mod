@@ -13,6 +13,7 @@ import birsy.clinker.common.world.entity.projectile.OrdnanceEntity;
 import birsy.clinker.common.world.entity.projectile.RerollFlaskEntity;
 import birsy.clinker.common.world.entity.projectile.WarhookEntity;
 import birsy.clinker.core.Clinker;
+import net.minecraft.client.renderer.entity.FallingBlockRenderer;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -73,6 +74,11 @@ public class ClinkerEntities {
                     .sized(1.0F, 1.0F).noSave().noSummon()
                     .build(Clinker.resource("collider").toString()));
 
+    public static final Supplier<EntityType<FallingLayerEntity>> FALLING_LAYER = ENTITY_TYPES.register("falling_layer", () ->
+            EntityType.Builder.of(FallingLayerEntity::new, MobCategory.MISC)
+                    .sized(1.0f, 1.0f)
+                    .build(Clinker.resource("falling_layer").toString()));
+
     public static final Supplier<EntityType<TestRopeEntity>> TEST_ROPE = ENTITY_TYPES.register("test_rope", () ->
             EntityType.Builder.of(TestRopeEntity::new, MobCategory.CREATURE)
                     .sized(0.5F, 0.5F)
@@ -121,6 +127,7 @@ public class ClinkerEntities {
 
         event.registerEntityRenderer(ClinkerEntities.MOLD.get(), MoldRenderer::new);
 
+        event.registerEntityRenderer(ClinkerEntities.FALLING_LAYER.get(), FallingBlockRenderer::new);
         event.registerEntityRenderer(ClinkerEntities.COLLIDER.get(), NoopRenderer::new);
         event.registerEntityRenderer(ClinkerEntities.TEST_ROPE.get(), DebugRopeEntityRenderer::new);
 

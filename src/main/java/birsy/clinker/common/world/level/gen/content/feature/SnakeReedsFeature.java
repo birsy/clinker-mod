@@ -34,7 +34,8 @@ public class SnakeReedsFeature extends Feature<NoneFeatureConfiguration> {
             belowPos.set(pos).move(0, -1, 0);
             // column scan
             for (int y = 0; y < 4; y++) {
-                if (OthershorePlantBlock.canPlaceOn(level.getBlockState(belowPos), level, belowPos) && level.getBlockState(pos).getFluidState().isSourceOfType(Fluids.WATER) && level.getBlockState(pos.immutable().above()).isAir()) {
+                OthershorePlantBlock mudReeds = ClinkerBlocks.MUD_REEDS.get();
+                if (mudReeds.mayPlaceOn(level.getBlockState(belowPos), level, belowPos) && level.getBlockState(pos).getFluidState().isSourceOfType(Fluids.WATER) && level.getBlockState(pos.immutable().above()).isAir()) {
                     level.setBlock(pos, ClinkerBlocks.TALL_MUD_REEDS.get().defaultBlockState().setValue(DoublePlantBlock.HALF, DoubleBlockHalf.LOWER).setValue(DoubleMudReedsBlock.WATERLOGGED, true), 2);
                     level.setBlock(pos.immutable().above(), ClinkerBlocks.TALL_MUD_REEDS.get().defaultBlockState().setValue(DoublePlantBlock.HALF, DoubleBlockHalf.UPPER), 2);
                     placed = true;

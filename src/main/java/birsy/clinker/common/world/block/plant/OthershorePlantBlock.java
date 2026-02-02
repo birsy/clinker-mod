@@ -33,34 +33,12 @@ public class OthershorePlantBlock extends BushBlock implements BonemealableBlock
     }
 
     @Override
-    protected MapCodec<? extends BushBlock> codec() {
-        return null;
-    }
-
-    public static boolean canPlaceOn(BlockState pState, BlockGetter pLevel, BlockPos pPos) {
-        return pState.is(ClinkerTags.OTHERSHORE_SOIL) && pState.isFaceSturdy(pLevel, pPos, Direction.UP);
-    }
-
-    @Override
-    protected boolean mayPlaceOn(BlockState pState, BlockGetter pLevel, BlockPos pPos) {
-        return canPlaceOn(pState, pLevel, pPos);
+    public boolean mayPlaceOn(BlockState pState, BlockGetter pLevel, BlockPos pPos) {
+        return super.mayPlaceOn(pState, pLevel, pPos) || (pState.is(ClinkerTags.OTHERSHORE_SOIL) && pState.isFaceSturdy(pLevel, pPos, Direction.UP));
     }
 
     public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
         return SHAPE;
-    }
-
-    @Override
-    public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state) { return false; }
-    @Override
-    public boolean isBonemealSuccess(Level pLevel, RandomSource pRandomSource, BlockPos pPos, BlockState pState) { return true; }
-    @Override
-    public void performBonemeal(ServerLevel pLevel, RandomSource pRandomSource, BlockPos pPos, BlockState pState) {}
-
-
-    @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> stateBuilder) {
-        stateBuilder.add(WATERLOGGED);
     }
 
     @Override
@@ -73,9 +51,24 @@ public class OthershorePlantBlock extends BushBlock implements BonemealableBlock
         BlockState blockstate = super.getStateForPlacement(context);
         if (blockstate != null) {
             FluidState fluidstate = context.getLevel().getFluidState(context.getClickedPos());
-            return blockstate.setValue(WATERLOGGED, Boolean.valueOf(fluidstate.getType() == Fluids.WATER));
-        } else {
-            return null;
+            return blockstate.setValue(WATERLOGGED, fluidstate.getType() == Fluids.WATER);
         }
+        return blockstate;
+    }
+
+    @Override
+    public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state) { return false; }
+    @Override
+    public boolean isBonemealSuccess(Level pLevel, RandomSource pRandomSource, BlockPos pPos, BlockState pState) { return true; }
+    @Override
+    public void performBonemeal(ServerLevel pLevel, RandomSource pRandomSource, BlockPos pPos, BlockState pState) {}
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> stateBuilder) {
+        stateBuilder.add(WATERLOGGED);
+    }
+    @Override
+    protected MapCodec<? extends BushBlock> codec() {
+        return null;
     }
 }

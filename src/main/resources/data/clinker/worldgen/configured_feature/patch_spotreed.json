@@ -3,13 +3,14 @@
   "config": {
     "feature": {
       "feature": {
-        "type": "minecraft:simple_block",
+        "type": "clinker:spotreed",
         "config": {
-          "to_place": {
-            "type": "minecraft:simple_state_provider",
-            "state": {
-              "Name": "clinker:spotreed"
-            }
+          "length": {
+            "type": "clamped_normal",
+            "min_inclusive": 3,
+            "max_inclusive": 7,
+            "mean": 4,
+            "deviation": 2
           }
         }
       },

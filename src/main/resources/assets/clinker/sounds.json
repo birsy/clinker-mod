@@ -144,7 +144,13 @@
     "sounds": [
       {
         "name": "clinker:ambient/othershore/ash_plains/bubbling1",
-        "stream": true
+        "stream": true,
+        "volume": 0.6
+      },
+      {
+        "name": "clinker:ambient/othershore/ash_plains/bubbling2",
+        "stream": true,
+        "volume": 0.6
       }
     ]
   },
@@ -153,7 +159,8 @@
     "sounds": [
       {
         "name": "clinker:ambient/othershore/ash_plains/chimney1",
-        "stream": true
+        "stream": true,
+        "volume": 0.6
       }
     ]
   },

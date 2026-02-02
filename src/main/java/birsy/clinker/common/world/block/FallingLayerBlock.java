@@ -1,10 +1,15 @@
 package birsy.clinker.common.world.block;
 
+import birsy.clinker.common.world.entity.FallingLayerEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.ColorRGBA;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.*;
@@ -45,6 +50,15 @@ public class FallingLayerBlock extends ColoredFallingBlock implements SimpleWate
     }
 
     @Override
+    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        BlockState belowState = level.getBlockState(pos.below());
+        if (isFree(belowState) && (belowState.getOptionalValue(LAYERS).orElse(0) != 8) && pos.getY() >= level.getMinBuildHeight()) {
+            FallingLayerEntity entity = FallingLayerEntity.fall(level, pos, state);
+            this.falling(entity);
+        }
+    }
+
+    @Override
     protected boolean isPathfindable(BlockState state, PathComputationType pathComputationType) {
         if (Objects.requireNonNull(pathComputationType) == PathComputationType.LAND) {
             return state.getValue(LAYERS) < 5;
@@ -71,13 +85,15 @@ public class FallingLayerBlock extends ColoredFallingBlock implements SimpleWate
     public boolean canSurvive(BlockState pState, LevelReader pLevel, BlockPos pPos) {
         BlockPos belowPos = pPos.below();
         BlockState belowState = pLevel.getBlockState(pPos.below());
-        return belowState.isFaceSturdy(pLevel, belowPos, Direction.UP) || pState.getValue(LAYERS) == 8;
+        return belowState.isFaceSturdy(pLevel, belowPos, Direction.UP) ||
+               pState.getValue(LAYERS) == 8 ||
+               belowState.getOptionalValue(LAYERS).orElse(0) == 8;
     }
 
     @Override
     public BlockState updateShape(BlockState pState, Direction pFacing, BlockState pFacingState, LevelAccessor pLevel, BlockPos pCurrentPos, BlockPos pFacingPos) {
         if (pState.getValue(WATERLOGGED)) pLevel.scheduleTick(pCurrentPos, Fluids.WATER, Fluids.WATER.getTickDelay(pLevel));
-        return !pState.canSurvive(pLevel, pCurrentPos) ? Blocks.AIR.defaultBlockState() : super.updateShape(pState, pFacing, pFacingState, pLevel, pCurrentPos, pFacingPos);
+        return super.updateShape(pState, pFacing, pFacingState, pLevel, pCurrentPos, pFacingPos);
     }
 
     @Override

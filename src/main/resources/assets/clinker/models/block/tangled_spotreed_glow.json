@@ -1,0 +1,23 @@
+{
+	"parent": "block/block",
+	"ambientocclusion": false,
+	"render_type": "translucent",
+	"textures": {
+		"particle": "clinker:block/spotreed_particle",
+		"glow": "clinker:block/tangled_spotreed_glow"
+	},
+	"elements": [
+		{
+			"from": [1, -0.025, 1],
+			"to": [15, 16.025, 15],
+			"shade": false,
+			"faces": {
+				"up": {"uv": [1, 1, 15, 15], "texture": "#glow", "cullface": "up"},
+				"down": {"uv": [1, 1, 15, 15], "texture": "#glow", "cullface": "down"}
+			},
+			"neoforge_data": {
+				"block_light": 15
+			}
+		}
+	]
+}

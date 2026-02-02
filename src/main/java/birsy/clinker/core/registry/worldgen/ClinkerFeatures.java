@@ -47,4 +47,6 @@ public class ClinkerFeatures {
             FEATURES.register("surface_blob", () -> new SurfaceBlobFeature(SurfaceBlobFeature.SurfaceBlobConfiguration.CODEC));
     public static final Supplier<Feature<NoneFeatureConfiguration>> CORPSE_LILY =
             FEATURES.register("corpse_lily", () -> new CorpseLilyFeature(NoneFeatureConfiguration.CODEC));
+    public static final Supplier<Feature<SpotreedFeature.SpotreedFeatureConfiguration>> SPOTREED =
+            FEATURES.register("spotreed", () -> new SpotreedFeature(SpotreedFeature.SpotreedFeatureConfiguration.CODEC));
 }
