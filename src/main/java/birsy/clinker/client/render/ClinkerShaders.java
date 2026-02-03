@@ -26,6 +26,8 @@ public class ClinkerShaders {
 
     public static final ResourceLocation PARTICLE_BLOSSOM_BUG = Clinker.resource("particle/blossom_bug");
 
+    public static final ResourceLocation FOG_LAYER = Clinker.resource("fog_layer");
+
     // vanilla shaders
     private static ShaderInstance rendertypeEntityCutoutUnlitShader;
     public static ShaderInstance getEntityCutoutUnlitShader() {

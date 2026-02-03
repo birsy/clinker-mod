@@ -1,0 +1,11 @@
+{
+  "vertex": "clinker:fog_layer",
+  "fragment": "clinker:fog_layer",
+  "textures": {
+    "FogSampler": "clinker:textures/environment/fog.png",
+    "DepthSampler": {
+      "type": "framebuffer",
+      "name": "minecraft:main:depth"
+    }
+  }
+}

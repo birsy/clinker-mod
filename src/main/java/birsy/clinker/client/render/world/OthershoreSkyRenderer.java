@@ -288,7 +288,7 @@ public class OthershoreSkyRenderer {
     }
     private float previousRenderDistance = -1;
     private void buildStarVBOs() {
-        RING_MIN_RADIUS = (Minecraft.getInstance().options.getEffectiveRenderDistance()+1) * 16;
+        RING_MIN_RADIUS = (Minecraft.getInstance().options.renderDistance().get() + 1) * 16;
         if (previousRenderDistance != RING_MIN_RADIUS) {
             previousRenderDistance = RING_MIN_RADIUS;
             this.floatingStarBuffers = new VertexBuffer[RING_COUNT + 1];

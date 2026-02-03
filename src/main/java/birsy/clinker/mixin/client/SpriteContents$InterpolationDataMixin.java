@@ -1,6 +1,8 @@
 package birsy.clinker.mixin.client;
 
 import com.llamalad7.mixinextras.sugar.Local;
+import com.moulberry.mixinconstraints.annotations.IfModAbsent;
+import com.moulberry.mixinconstraints.annotations.IfModLoaded;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import org.spongepowered.asm.mixin.Debug;
@@ -8,7 +10,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
-@Debug(export = true)
+@IfModAbsent(value = "sodium")
 @Mixin(targets = "net.minecraft.client.renderer.texture.SpriteContents$InterpolationData")
 public abstract class SpriteContents$InterpolationDataMixin {
     @ModifyArg(method = "uploadInterpolatedFrame",

@@ -82,6 +82,12 @@ public class OthershoreBiomeSource extends BiomeSource {
     }
 
     public static LayeredBiomeResolver createSurfaceBiomeResolver(Function<ResourceLocation, PositionalRandomFactory> randomState, UncachedNoiseContext noiseContext) {
+//        if (true) {
+//            return LayeredBiomeResolver.builder(8)
+//                    .layer(new BiomeLayerOperations.Biome(ClinkerProtoBiomes.LOWER_SNAKES.get()))
+//                    .build(randomState, noiseContext);
+//        }
+
         return LayeredBiomeResolver.builder(8)
                 .layer((x, z, current, neighborhood, random, context) -> {
                     double surfaceHeight = context.retrieve(ClinkerNoiseComputers.BASE_SURFACE_HEIGHT, x, 0, z);
