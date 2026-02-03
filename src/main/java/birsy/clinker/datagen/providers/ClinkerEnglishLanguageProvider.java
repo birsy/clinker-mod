@@ -44,28 +44,24 @@ public class ClinkerEnglishLanguageProvider extends LanguageProvider {
         this.add("itemGroup.clinker.pages", "Pages");
 
         this.addItem(ClinkerItems.ALCHEMISTS_CROSSBOW, "Alchemist's Crossbow");
+        this.add("item.clinker.alchemists_crossbow.no_ammo", "Hold ammunition in opposite hand to load.");
+        this.add("item.clinker.alchemists_crossbow.primed", "Primed");
+        this.add("item.clinker.alchemists_crossbow.repeater", "Repeater Attachment");
+        this.add("item.clinker.crossbow_repeater_attachment.instructions", "Attachment for an Alchemist's Crossbow.");
 
         this.addItem(ClinkerItems.MUSIC_DISC_CODA, "Music Disc");
         this.add("jukebox_song.clinker.coda", "Squire - CODA");
 
         this.add("item.clinker.ordnance.fuse_duration", "Fuse lasts %s seconds");
-
         this.add("item.clinker.ordnance.detonation_dud", "Dud");
         this.add("item.clinker.ordnance.detonation_flechette", "Releases Flechettes");
         this.add("item.clinker.ordnance.detonation_oil", "Bursts into Oil");
-
         this.add("item.clinker.ordnance.touch_detonate", "Detonates on Impact");
         this.add("item.clinker.ordnance.touch_stick", "Sticky");
         this.add("item.clinker.ordnance.touch_bounce", "Bouncy");
-
         this.add("item.clinker.ordnance.electrified", "Electrified");
         this.add("item.clinker.ordnance.trail", "Smoke Trail");
         this.add("item.clinker.ordnance.potion", "Potion: %s");
-
-        this.add("item.clinker.alchemists_crossbow.no_ammo", "Hold ammunition in opposite hand to load.");
-        this.add("item.clinker.alchemists_crossbow.primed", "Primed");
-        this.add("item.clinker.alchemists_crossbow.repeater", "Repeater Attachment");
-        this.add("item.clinker.crossbow_repeater_attachment.instructions", "Attachment for an Alchemist's Crossbow.");
 
         // pages
         this.add("page.clinker.title.blank", "Blank Page");
