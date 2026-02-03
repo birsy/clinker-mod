@@ -6,11 +6,9 @@ import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.PipeBlock;
-import net.minecraft.world.level.block.SupportType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
@@ -21,6 +19,8 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class BrineBrambleFeature extends Feature<NoneFeatureConfiguration> {
     public BrineBrambleFeature(Codec<NoneFeatureConfiguration> config) {
@@ -38,18 +38,38 @@ public class BrineBrambleFeature extends Feature<NoneFeatureConfiguration> {
         ArrayList<BlockPos> ps = new ArrayList<>();
         ArrayList<BlockPos> escrow = new ArrayList<>();
         int budget;
+        ps.add(origin.mutable());
 
         for(Direction d : Direction.values()) {
-            escrow.clear();
-            tgt = origin.mutable();
-            budget = 12;
             if(d == Direction.DOWN)
                 continue;
+
+            escrow.clear();
+            tgt = origin.mutable();
+            budget = 37;
+
             ps.add(tgt.relative(d));
             escrow.add(tgt.relative(d));
 
 
-            propagateBramble(ps, escrow, level, d, tgt, random, budget);
+            propagateBrambleDown(ps, level, tgt, random, budget);
+            //propagateBramble(ps, escrow, level, d, tgt, random, budget);
+        }
+
+        escrow.addAll(ps);
+
+        int top = 8;
+
+        for(BlockPos p : escrow) {
+            if(random.nextFloat() > 1f - 0.3f/(1f+Math.sqrt(p.distSqr(origin)))) {
+                top -= 1;
+                budget = 15;
+                propagateBrambleDown(ps, level, p, random, budget);
+
+                if(top <= 0) {
+                    break;
+                }
+            }
         }
 
         placeBramble(ps, level, origin, random);
@@ -75,8 +95,10 @@ public class BrineBrambleFeature extends Feature<NoneFeatureConfiguration> {
 
                 BlockPos tgt = pos.relative(nd);
                 BlockState s = level.getBlockState(bp.relative(nd));
+                BlockState s2 = level.getBlockState(bp.relative(nd).relative(Direction.DOWN));
+                BlockState s3 = level.getBlockState(bp.relative(nd).relative(Direction.DOWN, 2));
 
-                if(s.canBeReplaced() && rs.nextFloat() > (d == Direction.UP ? 0.8 : d == Direction.DOWN ? -0.1 : 0.25)) {
+                if(s.canBeReplaced() && (s2.isSolid() || s3.isSolid()) && rs.nextFloat() > (d == Direction.UP ? 0.9 : d == Direction.DOWN ? 0. : 0.35)) {
                     tgts.add(tgt);
                     tgtEscrow.add(tgt);
 
@@ -101,13 +123,65 @@ public class BrineBrambleFeature extends Feature<NoneFeatureConfiguration> {
         return budget;
     }
 
+    private static final List<Direction> dirs = Arrays.stream(Direction.values()).filter(Direction.Plane.HORIZONTAL).toList();
+
+
+
+    private static int propagateBrambleDown(ArrayList<BlockPos> tgts, WorldGenLevel level, BlockPos bp, RandomSource rs, int budget) {
+        if(budget <= 0) {
+            return 0;
+        }
+
+        BlockPos.MutableBlockPos tgt = bp.mutable();
+        BlockPos.MutableBlockPos tgtB = bp.relative(Direction.DOWN).mutable();
+        while(budget > 0) {
+            if(!level.getBlockState(tgtB).canBeReplaced()) {
+                int r = rs.nextInt(4);
+                boolean noEsc = true;
+                for(int ui = 0; ui < 4; ui++) {
+                    int i = (ui + r) % 4;
+                    Direction dir = dirs.get(i);
+                    tgt.move(dir);
+                    if(level.getBlockState(tgt).canBeReplaced()) {
+                        tgts.add(tgt.immutable());
+                        tgtB.move(dir);
+                        budget -= 1;
+                        noEsc = false;
+                        break;
+                    }
+                }
+                if(noEsc) {
+                    budget = 0;
+                }
+            } else {
+                if(rs.nextFloat() > 0.7) {
+                    Direction d2 = Direction.fromYRot(budget % 2 * 180 + (((budget + 1)*0.5) % 2 * 90));
+                    if(level.getBlockState(tgt.relative(d2)).canBeReplaced()) {
+                        tgt.move(d2);
+                        tgts.add(tgt.immutable());
+                        tgtB.move(d2);
+                    }
+                }
+                tgt.move(Direction.DOWN);
+                tgts.add(tgt.immutable());
+                tgtB.move(Direction.DOWN);
+                budget -= 1;
+            }
+
+        }
+
+        return budget;
+    }
+
     private static final Vec3 up = new Vec3(0., 1., 0.);
 
     private void placeBramble(ArrayList<BlockPos> positions, WorldGenLevel l, BlockPos p, RandomSource r) {
         for(BlockPos pos : positions) {
             if(pos.getY() > p.getY() + 2)
                 continue;
-            Block ds = (pos.getCenter().subtract(p.getBottomCenter()).dot(up) < .5 + r.nextFloat() * 2.) ? ClinkerBlocks.THORNY_STEM.get() : ClinkerBlocks.SALTY_STEM.get();
+            Block ds = (-pos.getCenter().subtract(p.getBottomCenter()).dot(up) < .5 + r.nextFloat() * 2.) ? ClinkerBlocks.THORNY_STEM.get() : ClinkerBlocks.SALTY_STEM.get();
+            if(!l.getBlockState(pos).canBeReplaced())
+                continue;
 
             BlockState s = getStateForPlacement(l, pos, p, positions, ds.defaultBlockState());
             if(s != null)
