@@ -756,7 +756,24 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
                 );
                 this.flatBlockItem(YELLOW_TORMENTIL.get(), this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + tormentilYellowName + "_item"));
             }
+
+            // blue rose
+            {
+                String blueRoseName = name(BLUE_ROSE.get());
+                this.simpleBlockWithVariationAndTransformation(
+                        BLUE_ROSE.get(),
+                        (i) -> this.models().cross(blueRoseName + (i == 0 ? "" : "_" + i),
+                                        this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + blueRoseName + (i == 0 ? "" : "_" + i)))
+                                .renderType("cutout"),
+                        (i) -> this.crossMirrored(blueRoseName + (i == 0 ? "" : "_" + i) + "_mirrored",
+                                        this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + blueRoseName + (i == 0 ? "" : "_" + i)))
+                                .renderType("cutout"),
+                        1, false, false
+                );
+                this.flatBlockItem(BLUE_ROSE.get());
+            }
         }
+
 
         // stromatolites
         {

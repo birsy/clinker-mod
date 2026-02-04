@@ -463,6 +463,11 @@ public class ClinkerBlocks
     };
     public static final DeferredBlock<SpotreedBlock> SPOTREED = createBlock("spotreed", () -> new SpotreedBlock(SPOTREED_PROPERTIES.get()));
 
+    public static final DeferredBlock<OthershorePlantBlock> BLUE_ROSE = createBlock("blue_rose", () -> new OthershorePlantBlock(
+            BlockBehaviour.Properties.ofFullCopy(Blocks.DANDELION).mapColor(MapColor.LAPIS).sound(SoundType.PINK_PETALS))
+    );
+
+
 //    public static final DeferredBlock<TangledSpotreedBlock> TANGLED_SPOTREED = createBlock("tangled_spotreed", () -> new TangledSpotreedBlock(
 //            BlockBehaviour.Properties.ofFullCopy(Blocks.BAMBOO_PLANKS)
 //                    .mapColor(MapColor.CRIMSON_STEM)

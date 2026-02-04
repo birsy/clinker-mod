@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "clinker:block/blue_rose"
+      },
+      {
+        "model": "clinker:block/blue_rose_mirrored"
+      }
+    ]
+  }
+}
