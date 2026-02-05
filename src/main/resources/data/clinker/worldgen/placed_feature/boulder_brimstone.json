@@ -1,5 +1,5 @@
 {
-  "feature": "clinker:brimstone_rock",
+  "feature": "clinker:boulder_brimstone",
   "placement": [
     {
       "type": "minecraft:count",
@@ -18,7 +18,7 @@
     },
     {
       "type": "clinker:heightmap_steepness_filter",
-      "heightmap": "OCEAN_FLOOR",
+      "heightmap": "MOTION_BLOCKING_NO_LEAVES",
       "max_gradient_inclusive": 1,
       "radius": 2
     },

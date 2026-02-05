@@ -27,8 +27,8 @@
     [],
     [],
     [
-      "clinker:water_leak_aquifer",
-      "clinker:water_crack_underground"
+      "clinker:leak_water_aquifer",
+      "clinker:crack_water_underground"
     ],
     [
       "clinker:sheet_moss_aquifer"

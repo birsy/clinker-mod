@@ -1,5 +1,5 @@
 {
-  "feature": "clinker:water_leak",
+  "feature": "clinker:leak_water",
   "placement": [
     {
       "type": "minecraft:count",

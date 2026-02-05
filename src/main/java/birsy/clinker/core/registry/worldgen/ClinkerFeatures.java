@@ -41,8 +41,8 @@ public class ClinkerFeatures {
             FEATURES.register("fluid_leak", () -> new FluidLeakFeature(BlockStateConfiguration.CODEC));
     public static final Supplier<Feature<FluidCrackFeature.FluidCrackConfiguration>> FLUID_CRACK =
             FEATURES.register("fluid_crack", () -> new FluidCrackFeature(FluidCrackFeature.FluidCrackConfiguration.CODEC));
-    public static final Supplier<Feature<PoolFeature.PoolFeatureConfiguration>> POOL =
-            FEATURES.register("pool", () -> new PoolFeature(PoolFeature.PoolFeatureConfiguration.CODEC));
+    public static final Supplier<Feature<PoolFeature.PoolConfiguration>> POOL =
+            FEATURES.register("pool", () -> new PoolFeature(PoolFeature.PoolConfiguration.CODEC));
     public static final Supplier<Feature<SurfaceBlobFeature.SurfaceBlobConfiguration>> SURFACE_BLOB =
             FEATURES.register("surface_blob", () -> new SurfaceBlobFeature(SurfaceBlobFeature.SurfaceBlobConfiguration.CODEC));
     public static final Supplier<Feature<NoneFeatureConfiguration>> CORPSE_LILY =
