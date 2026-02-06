@@ -55,6 +55,9 @@ public class PoolFeature extends Feature<PoolFeature.PoolConfiguration> {
         BlockPos.MutableBlockPos mPos = origin.mutable(), borderCheckPos = origin.mutable();
 
         Collection<BlockPos> positionsToPlace = new ArrayList<>();
+        Collection<BlockPos> positionsToUpdate = new ArrayList<>();
+
+        BlockState stateToPlace = config.stateProvider().getState(random, origin);
 
         // for every column
         for (int x = -generationRadius; x <= generationRadius; x++) {
@@ -63,11 +66,16 @@ public class PoolFeature extends Feature<PoolFeature.PoolConfiguration> {
                 mPos.set(origin.getX() + x, origin.getY(), origin.getZ() + z);
 
                 boolean foundSurface = false;
-                if (level.getBlockState(mPos).isSolid()) {
+                BlockState stateAtPos = level.getBlockState(mPos);
+                if (stateAtPos == stateToPlace) continue NEXT_BLOCK;
+
+                if (stateAtPos.isSolid()) {
                     // search upwards if we're a solid block to look for a surface
                     for (int i = 0; i < 5; i++) {
                         mPos.move(Direction.UP);
-                        if (!level.getBlockState(mPos).isSolid()) {
+                        stateAtPos = level.getBlockState(mPos);
+                        if (stateAtPos == stateToPlace) continue NEXT_BLOCK;
+                        if (!stateAtPos.isSolid()) {
                             mPos.move(Direction.DOWN);
                             foundSurface = true;
                             break;
@@ -77,7 +85,9 @@ public class PoolFeature extends Feature<PoolFeature.PoolConfiguration> {
                     // search downwards if we're an air block to look for a surface
                     for (int i = 0; i < 5; i++) {
                         mPos.move(Direction.DOWN);
-                        if (level.getBlockState(mPos).isSolid()) {
+                        stateAtPos = level.getBlockState(mPos);
+                        if (stateAtPos == stateToPlace) continue NEXT_BLOCK;
+                        if (stateAtPos.isSolid()) {
                             foundSurface = true;
                             break;
                         }
@@ -85,14 +95,16 @@ public class PoolFeature extends Feature<PoolFeature.PoolConfiguration> {
                 }
                 // if we haven't found a surface, then skip
                 if (!foundSurface)
-                    continue;
+                    continue NEXT_BLOCK;
 
+                boolean waterfall = false;//random.nextInt(20) == 0;
                 boolean onUpEdge = false;
                 for (Direction direction : Direction.Plane.HORIZONTAL) {
                     borderCheckPos.set(mPos);
                     borderCheckPos.move(direction);
 
-                    if (!level.getBlockState(borderCheckPos).isFaceSturdy(level, borderCheckPos, direction.getOpposite(), SupportType.FULL)) {
+                    BlockState neighborState = level.getBlockState(borderCheckPos);
+                    if (!neighborState.isFaceSturdy(level, borderCheckPos, direction.getOpposite(), SupportType.FULL) && neighborState != stateToPlace && !waterfall) {
                         continue NEXT_BLOCK;
                     }
 
@@ -103,9 +115,8 @@ public class PoolFeature extends Feature<PoolFeature.PoolConfiguration> {
                 }
 
                 // only discard it when its going up occasionally
-                if (onUpEdge && noise.getValue(mPos.getX(), 1000, mPos.getZ()) > 0) {
+                if (onUpEdge && noise.getValue(mPos.getX(), 1000, mPos.getZ()) > 0)
                     continue NEXT_BLOCK;
-                }
 
                 double dist = Mth.length(x, z);
 
@@ -115,17 +126,41 @@ public class PoolFeature extends Feature<PoolFeature.PoolConfiguration> {
                 double noiseValue = noise.getValue(mPos.getX(), mPos.getY(), mPos.getZ()) * noiseIntensity;
                 dist += noiseValue;
 
+                if (dist > radius)
+                    continue NEXT_BLOCK;
+
                 mPos.move(Direction.DOWN);
-                boolean canBelowSupport = level.getBlockState(mPos).isFaceSturdy(level, mPos, Direction.UP, SupportType.FULL);
-                mPos.move(Direction.UP);
-                if (dist <= radius && canBelowSupport) {
-                    positionsToPlace.add(mPos.immutable());
-                }
+                if (!level.getBlockState(mPos).isFaceSturdy(level, mPos, Direction.UP, SupportType.FULL))
+                    continue NEXT_BLOCK;
+
+                mPos.move(Direction.UP, 2);
+                if (!level.getBlockState(mPos).canBeReplaced())
+                    continue NEXT_BLOCK;
+                mPos.move(Direction.DOWN);
+
+                BlockPos pos = mPos.immutable();
+                positionsToPlace.add(pos);
+                if (waterfall) positionsToUpdate.add(pos);
             }
         }
 
+
         for (BlockPos pos : positionsToPlace) {
-            level.setBlock(pos, config.stateProvider().getState(random, pos), 3);
+            mPos.set(pos);
+            level.setBlock(mPos, stateToPlace, 3);
+            mPos.move(Direction.UP);
+            BlockState stateAtPos = level.getBlockState(mPos);
+            while (mPos.getY() < level.getMaxBuildHeight() - 1 && (!stateAtPos.isAir() && stateAtPos.canBeReplaced())) {
+                level.destroyBlock(mPos, false);
+                //level.setBlock(mPos, Blocks.AIR.defaultBlockState(), 3);
+                mPos.move(Direction.UP);
+                stateAtPos = level.getBlockState(mPos);
+            }
+        }
+
+        for (BlockPos pos : positionsToUpdate) {
+            BlockState stateAtPos = level.getBlockState(pos);
+            level.scheduleTick(pos, stateAtPos.getFluidState().getType(), 0);
         }
 
         return !positionsToPlace.isEmpty();
