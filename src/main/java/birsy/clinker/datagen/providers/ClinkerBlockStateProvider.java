@@ -618,6 +618,11 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
             this.flatBlockItem(CAVE_SPROUTS.get());
 
             this.simpleBlockItem(
+                    CARAPACE_HUSK.get(),
+                    this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + "carapace_husk"))
+            );
+
+            this.simpleBlockItem(
                     PEAT_MOSS.get(),
                     this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + "peat_moss"))
             );

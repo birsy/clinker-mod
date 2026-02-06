@@ -482,6 +482,13 @@ public class ClinkerBlocks
     );
 
     //Special
+    public static final DeferredBlock<Block> CARAPACE_HUSK = createBlock("carapace_husk", () -> new CarapaceHuskBlock(BlockBehaviour.Properties.of()
+            .noOcclusion()
+            .pushReaction(PushReaction.DESTROY)
+            .strength(0.4F)
+            .mapColor(MapColor.TERRACOTTA_GRAY)
+            .sound(SoundType.FROGLIGHT)
+    ));
     public static final DeferredBlock<Block> BLANK_SARCOPHAGUS = createBlock("blank_sarcophagus", () -> new SarcophagusBlock(BlockBehaviour.Properties.ofFullCopy(BRIMSTONE.get()).noOcclusion()));
 
     public static void defineFlammability(FireBlock fire) {
