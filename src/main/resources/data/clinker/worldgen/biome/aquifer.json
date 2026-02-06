@@ -3,6 +3,12 @@
   "downfall": 0.4,
   "has_precipitation": false,
   "effects": {
+    "music": {
+      "sound": "clinker:music.othershore.aquifer",
+      "min_delay": 12000,
+      "max_delay": 24000,
+      "replace_current_music": false
+    },
     "particle": {
       "options": {
         "type": "minecraft:white_ash"

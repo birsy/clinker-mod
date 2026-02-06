@@ -1,5 +1,6 @@
 package birsy.clinker.mixin.client;
 
+import birsy.clinker.client.ClinkerMusic;
 import birsy.clinker.core.registry.worldgen.ClinkerWorld;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.Minecraft;
@@ -27,6 +28,6 @@ public abstract class MinecraftMixin {
     )
     void clinker$overrideOthershoreMusic(CallbackInfoReturnable<Music> cir, @Local Holder<Biome> biomeHolder) {
         if (this.player.level().dimension() == ClinkerWorld.OTHERSHORE) 
-            cir.setReturnValue(biomeHolder.value().getBackgroundMusic().orElse(Musics.GAME));
+            cir.setReturnValue(biomeHolder.value().getBackgroundMusic().orElse(ClinkerMusic.OTHERSHORE_SURFACE));
     }
 }

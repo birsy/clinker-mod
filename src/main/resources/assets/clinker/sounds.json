@@ -224,5 +224,12 @@
         "volume": 0.8
       }
     ]
+  },
+  "music.othershore.aquifer": {
+    "sounds": [
+      {
+        "name": "clinker:music/game/silence"
+      }
+    ]
   }
 }
