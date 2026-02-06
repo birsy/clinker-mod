@@ -23,7 +23,7 @@ public class BridgeCavernWorldFeature {// extends WorldFeature {
 //    }
 //
 //    @Override
-//    public boolean plan(LevelAccessor level, MetaChunk metaChunk, RandomSource randomSource, NoiseComputerContext context) {
+//    public boolean realize(LevelAccessor level, MetaChunk metaChunk, RandomSource randomSource, NoiseComputerContext context) {
 //        return false;
 //    }
 }

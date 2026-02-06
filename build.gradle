@@ -99,6 +99,9 @@ configurations {
 }
 
 dependencies {
+    jarJar(implementation("com.github.ben-manes.caffeine:caffeine:3.2.3"))
+    additionalRuntimeClasspath "com.github.ben-manes.caffeine:caffeine:3.2.3"
+
     jarJar(implementation("com.moulberry:mixinconstraints:1.1.0") {
         exclude group: "org.slf4j",
                 module: "slf4j-api"
@@ -108,7 +111,7 @@ dependencies {
     }
     implementation("net.tslat.smartbrainlib:SmartBrainLib-neoforge-${project.minecraft_version}:${project.sbl_version}")
     localRuntime "maven.modrinth:spark:1.10.124-neoforge-1.21.1"
-    //localRuntime "maven.modrinth:sodium:mc1.21.1-0.6.13-neoforge"
+    // localRuntime "maven.modrinth:sodium:mc1.21.1-0.6.13-neoforge"
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

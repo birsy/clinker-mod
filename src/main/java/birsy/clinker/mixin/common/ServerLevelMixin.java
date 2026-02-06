@@ -3,8 +3,8 @@ package birsy.clinker.mixin.common;
 
 import birsy.clinker.common.alchemy.workstation.WorkstationManager;
 import birsy.clinker.common.world.level.gen.OthershoreBiomeSource;
-import birsy.clinker.common.world.level.gen.system.worldfeature.MetaChunkMap;
-import birsy.clinker.common.world.level.gen.system.worldfeature.MetaChunkMapHolder;
+import birsy.clinker.common.world.level.gen.system.metachunk.MetaChunkMap;
+import birsy.clinker.common.world.level.gen.system.metachunk.MetaChunkMapHolder;
 import birsy.clinker.core.registry.worldgen.ClinkerWorld;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;

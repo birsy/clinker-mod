@@ -31,7 +31,7 @@ public class JaggedPeakWorldFeature {// extends WorldFeature {
 //    }
 //
 //    @Override
-//    public boolean plan(LevelAccessor level, MetaChunk metaChunk, RandomSource randomSource, NoiseComputerContext context) {
+//    public boolean realize(LevelAccessor level, MetaChunk metaChunk, RandomSource randomSource, NoiseComputerContext context) {
 //        this.radius = randomSource.nextInt(100, 180);
 //        this.centerX = randomSource.nextInt(metaChunk.minX(), metaChunk.maxX());
 //        this.centerZ = randomSource.nextInt(metaChunk.minZ(), metaChunk.maxZ());

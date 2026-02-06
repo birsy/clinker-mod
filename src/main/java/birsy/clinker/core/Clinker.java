@@ -16,8 +16,10 @@ import birsy.clinker.core.util.ClinkMeCommand;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.core.dispenser.ProjectileDispenseBehavior;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.FireBlock;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -73,6 +75,10 @@ public class Clinker {
         ClinkerSurfaceShapers.SURFACE_SHAPERS.register(modEventBus);
         ClinkerProtoBiomes.PROTO_BIOMES.register(modEventBus);
 
+        ClinkerWorldFeatureCapabilities.WORLD_FEATURE_CAPABILITIES.register(modEventBus);
+        ClinkerWorldFeatures.Types.WORLD_FEATURE_TYPES.register(modEventBus);
+        ClinkerWorldFeatures.Spawns.WORLD_FEATURE_SPAWNS.register(modEventBus);
+
         modEventBus.addListener(this::setup);
         modEventBus.addListener(this::doClientStuff);
     }
@@ -82,7 +88,7 @@ public class Clinker {
     }
 
     private void setup(final FMLCommonSetupEvent event) {
-//        DispenserBlock.registerBehavior(ClinkerItems.ORDNANCE.get(), new ProjectileDispenseBehavior(ClinkerItems.ORDNANCE.get()));
+        DispenserBlock.registerProjectileBehavior(ClinkerItems.ORDNANCE.get());
         ClinkerBlocks.defineFlammability((FireBlock) Blocks.FIRE);
     }
 

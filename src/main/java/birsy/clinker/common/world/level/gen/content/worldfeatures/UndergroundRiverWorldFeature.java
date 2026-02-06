@@ -27,7 +27,7 @@ public class UndergroundRiverWorldFeature { //extends WorldFeature {
 //    }
 //
 //    @Override
-//    public boolean plan(LevelAccessor level, MetaChunk metaChunk, RandomSource randomSource, NoiseComputerContext context) {
+//    public boolean realize(LevelAccessor level, MetaChunk metaChunk, RandomSource randomSource, NoiseComputerContext context) {
 //
 //        BlockPos.MutableBlockPos start = BlockPos.ZERO.mutable(), end = BlockPos.ZERO.mutable();
 //        double distance = 0;

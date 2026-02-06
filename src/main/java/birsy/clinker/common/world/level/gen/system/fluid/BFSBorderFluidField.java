@@ -2,17 +2,18 @@ package birsy.clinker.common.world.level.gen.system.fluid;
 
 import birsy.clinker.common.world.level.gen.system.noise.PaddedNoiseFieldCache;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
-import birsy.clinker.common.world.level.gen.system.worldfeature.WorldFeature;
-import birsy.clinker.common.world.level.gen.system.worldfeature.WorldFeatureContext;
+import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureContext;
+import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesFluids;
+import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesWaterfallPresence;
+import birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.Util;
-import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.RandomState;
 
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.List;
 
 public class BFSBorderFluidField extends CellularFluidField {
     // really approximate euclidean distance
@@ -39,17 +40,21 @@ public class BFSBorderFluidField extends CellularFluidField {
     });
 
     final int[] borderDistances;
+    final List<ModifiesWaterfallPresence> worldFeaturesModifyingWaterfallPresence;
+    public NoiseField waterfallPresenceField;
 
     public BFSBorderFluidField(
             RandomState randomState,
             ChunkAccess chunk,
             PaddedNoiseFieldCache cache,
             FluidFieldFiller baseFluidFieldFiller,
-            Collection<WorldFeature> worldFeatures,
+            List<ModifiesFluids> worldFeaturesModifyingFluids,
+            List<ModifiesWaterfallPresence> worldFeaturesModifyingWaterfallPresence,
             WorldFeatureContext worldFeatureContext,
             NoiseField heightmap,
             int cellWidth, int cellHeight, int paddingCells) {
-        super(randomState, chunk, cache, baseFluidFieldFiller, worldFeatures, worldFeatureContext, heightmap, cellWidth, cellHeight, paddingCells);
+        super(randomState, chunk, cache, baseFluidFieldFiller, worldFeaturesModifyingFluids, worldFeatureContext, heightmap, cellWidth, cellHeight, paddingCells);
+        this.worldFeaturesModifyingWaterfallPresence = worldFeaturesModifyingWaterfallPresence;
         this.borderDistances = new int[this.fluidStates.length];
         // fill with maximum possible distance
         Arrays.fill(this.borderDistances, 1000);
@@ -65,9 +70,12 @@ public class BFSBorderFluidField extends CellularFluidField {
     }
 
     @Override
-    public void precomputeValues(NoiseField finalDensityField, NoiseField waterfallPresenceField) {
-        super.precomputeValues(finalDensityField, waterfallPresenceField);
+    public void precomputeValues(NoiseField finalDensityField) {
+        super.precomputeValues(finalDensityField);
         this.initializeFluidBordersByCell();
+        this.waterfallPresenceField = noiseCache.fillNoiseField(ClinkerNoiseComputers.WATERFALL_PRESENCE.get());
+        for (ModifiesWaterfallPresence worldFeature : worldFeaturesModifyingWaterfallPresence)
+            worldFeature.modifyWaterfallPresence(minX, minY, minZ, noiseCache, waterfallPresenceField, worldFeatureContext);
         this.computeWaterfalls(waterfallPresenceField);
         this.computeBorderDistances();
     }

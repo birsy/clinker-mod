@@ -3,12 +3,14 @@ package birsy.clinker.core.registry;
 import birsy.clinker.common.alchemy.knowledge.type.AlchemyKnowledgeType;
 import birsy.clinker.common.page.PageElementType;
 import birsy.clinker.common.world.level.gen.system.biome.resolver.ProtoBiome;
+import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureSpawnSet;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseComputer;
 import birsy.clinker.common.world.level.gen.system.surface.decorator.BiomeSurfaceDecorator;
 import birsy.clinker.common.world.level.gen.system.surface.decorator.SurfaceDecorators;
 import birsy.clinker.common.world.level.gen.system.surface.shaper.BiomeSurfaceShaper;
 import birsy.clinker.common.world.level.gen.system.surface.shaper.SurfaceShapers;
-import birsy.clinker.common.world.level.gen.system.worldfeature.WorldFeatureType;
+import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureType;
+import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.WorldFeatureCapability;
 import birsy.clinker.core.Clinker;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -21,9 +23,19 @@ import net.neoforged.neoforge.registries.callback.BakeCallback;
 
 @EventBusSubscriber(modid = Clinker.MOD_ID)
 public class ClinkerRegistries {
-    public static final ResourceKey<Registry<WorldFeatureType>> WORLD_FEATURE_REGISTRY_KEY =
+    public static final ResourceKey<Registry<WorldFeatureType<?>>> WORLD_FEATURE_REGISTRY_KEY =
             ResourceKey.createRegistryKey(Clinker.resource("world_feature"));
-    public static final Registry<WorldFeatureType> WORLD_FEATURE_REGISTRY = new RegistryBuilder<>(WORLD_FEATURE_REGISTRY_KEY)
+    public static final Registry<WorldFeatureType<?>> WORLD_FEATURE_REGISTRY = new RegistryBuilder<>(WORLD_FEATURE_REGISTRY_KEY)
+            .sync(false)
+            .create();
+    public static final ResourceKey<Registry<WorldFeatureSpawnSet>> WORLD_FEATURE_SPAWN_SET_REGISTRY_KEY =
+            ResourceKey.createRegistryKey(Clinker.resource("world_feature_spawn_set"));
+    public static final Registry<WorldFeatureSpawnSet> WORLD_FEATURE_SPAWN_SET_REGISTRY = new RegistryBuilder<>(WORLD_FEATURE_SPAWN_SET_REGISTRY_KEY)
+            .sync(false)
+            .create();
+    public static final ResourceKey<Registry<Class<? extends WorldFeatureCapability>>> WORLD_FEATURE_CAPABILITY_REGISTRY_KEY =
+            ResourceKey.createRegistryKey(Clinker.resource("world_feature_capability"));
+    public static final Registry<Class<? extends WorldFeatureCapability>> WORLD_FEATURE_CAPABILITY_REGISTRY = new RegistryBuilder<>(WORLD_FEATURE_CAPABILITY_REGISTRY_KEY)
             .sync(false)
             .create();
 
@@ -127,7 +139,10 @@ public class ClinkerRegistries {
 
     @SubscribeEvent
     public static void registerRegistries(NewRegistryEvent event) {
+        event.register(WORLD_FEATURE_CAPABILITY_REGISTRY);
         event.register(WORLD_FEATURE_REGISTRY);
+        event.register(WORLD_FEATURE_SPAWN_SET_REGISTRY);
+
         event.register(PAGE_ELEMENT_TYPE_REGISTRY);
         event.register(ALCHEMY_KNOWLEDGE_TYPE_REGISTRY);
         event.register(NOISE_COMPUTER_REGISTRY);

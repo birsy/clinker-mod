@@ -2,8 +2,8 @@ package birsy.clinker.common.world.level.gen.system.fluid;
 
 import birsy.clinker.common.world.level.gen.system.noise.PaddedNoiseFieldCache;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
-import birsy.clinker.common.world.level.gen.system.worldfeature.WorldFeature;
-import birsy.clinker.common.world.level.gen.system.worldfeature.WorldFeatureContext;
+import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureContext;
+import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesFluids;
 import net.minecraft.core.SectionPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Blocks;
@@ -13,7 +13,7 @@ import net.minecraft.world.level.levelgen.PositionalRandomFactory;
 import net.minecraft.world.level.levelgen.RandomState;
 
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.List;
 
 // state map with cells, but nothing to compute borders
 // not really needed but i'm trying out a couple different strategies for
@@ -51,7 +51,7 @@ public class CellularFluidField implements FluidField {
     final PaddedNoiseFieldCache noiseCache;
     final FluidFieldFiller fluidFieldFiller;
 
-    final Collection<WorldFeature> worldFeatures;
+    final List<ModifiesFluids> worldFeatures;
     final WorldFeatureContext worldFeatureContext;
     final NoiseField heightmap;
 
@@ -60,7 +60,7 @@ public class CellularFluidField implements FluidField {
             ChunkAccess chunk,
             PaddedNoiseFieldCache noiseCache,
             FluidFieldFiller baseFluidFieldFiller,
-            Collection<WorldFeature> worldFeatures,
+            List<ModifiesFluids> worldFeatures,
             WorldFeatureContext worldFeatureContext,
             NoiseField heightmap,
             int cellWidth, int cellHeight,
@@ -109,8 +109,8 @@ public class CellularFluidField implements FluidField {
     }
 
     @Override
-    public void precomputeValues(NoiseField finalDensityField, NoiseField waterfallPresenceField) {
-        for (WorldFeature worldFeature : worldFeatures)
+    public void precomputeValues(NoiseField finalDensityField) {
+        for (ModifiesFluids worldFeature : worldFeatures)
             worldFeature.prefillFluidNoiseFields(
                     SectionPos.blockToSectionCoord(minX),
                     SectionPos.blockToSectionCoord(minZ),
@@ -146,7 +146,7 @@ public class CellularFluidField implements FluidField {
                centerY = cellY * this.cellHeight + this.halfCellHeight + cellRandom.triangle(0, this.halfCellWidth),
                centerZ = cellZ * this.cellWidth +  this.halfCellWidth +  cellRandom.triangle(0, this.halfCellWidth);
         FluidLevel fluidLevel = this.fluidFieldFiller.compute((int)centerX, (int)centerY, (int)centerZ, this.noiseCache.context);
-        for (WorldFeature worldFeature : this.worldFeatures)
+        for (ModifiesFluids worldFeature : this.worldFeatures)
             fluidLevel = worldFeature.modifyFluidLevel((int)centerX, (int)centerY, (int)centerZ, minX, minY, minZ, fluidLevel, this.noiseCache.context, this.heightmap);
         return new FluidCell(centerX, centerY, centerZ, fluidLevel, this.cellHeight);
     }

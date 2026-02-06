@@ -8,11 +8,10 @@ import birsy.clinker.common.world.level.gen.system.noise.PaddedNoiseFieldCache;
 import birsy.clinker.common.world.level.gen.system.noise.UncachedNoiseContext;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldTypes;
-import birsy.clinker.common.world.level.gen.system.worldfeature.WorldFeature;
-import birsy.clinker.common.world.level.gen.system.worldfeature.WorldFeatureContext;
-import birsy.clinker.core.Clinker;
+import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureContext;
+import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesHeightmap;
+import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesSurfaceDensity;
 import birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers;
-import birsy.clinker.core.util.MathUtils;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
@@ -63,29 +62,29 @@ public class SurfaceShaperSystem {
     }
 
     public ChunkSurfaceHeightmap generateHeightmap(PaddedNoiseFieldCache cache,
-                                                    Collection<WorldFeature> worldFeaturesInChunk,
-                                                    BiomeCache2d surfaceBiomeCache,
-                                                    BiomeBlender.ChunkBiomeBlendingWeights surfaceBlendingInfo,
-                                                    WorldFeatureContext context,
-                                                    int minX, int minZ, int padding) {
-        return this.generateHeightmapInternal(cache, worldFeaturesInChunk, surfaceBiomeCache, surfaceBlendingInfo, context, minX, minZ, padding);
+                                                   List<ModifiesHeightmap> heightmapModifyingWorldFeatures,
+                                                   BiomeCache2d surfaceBiomeCache,
+                                                   BiomeBlender.ChunkBiomeBlendingWeights surfaceBlendingInfo,
+                                                   WorldFeatureContext context,
+                                                   int minX, int minZ, int padding) {
+        return this.generateHeightmapInternal(cache, heightmapModifyingWorldFeatures, surfaceBiomeCache, surfaceBlendingInfo, context, minX, minZ, padding);
     }
 
     public ChunkSurfaceHeightmap generateHeightmap(NoiseFieldCache cache,
-                                                   Collection<WorldFeature> worldFeaturesInChunk,
+                                                   List<ModifiesHeightmap> heightmapModifyingWorldFeatures,
                                                    BiomeCache2d surfaceBiomeCache,
                                                    BiomeBlender.ChunkBiomeBlendingWeights surfaceBlendingInfo,
                                                    WorldFeatureContext context,
                                                    int minX, int minZ) {
-        return this.generateHeightmapInternal(cache, worldFeaturesInChunk, surfaceBiomeCache, surfaceBlendingInfo, context, minX, minZ, 0);
+        return this.generateHeightmapInternal(cache, heightmapModifyingWorldFeatures, surfaceBiomeCache, surfaceBlendingInfo, context, minX, minZ, 0);
     }
 
     private ChunkSurfaceHeightmap generateHeightmapInternal(NoiseFieldCache cache,
-                                                   Collection<WorldFeature> worldFeaturesInChunk,
-                                                   BiomeCache2d surfaceBiomeCache,
-                                                   BiomeBlender.ChunkBiomeBlendingWeights surfaceBlendingInfo,
-                                                    WorldFeatureContext context,
-                                                   int minX, int minZ, int padding) {
+                                                            List<ModifiesHeightmap> heightmapModifyingWorldFeatures,
+                                                            BiomeCache2d surfaceBiomeCache,
+                                                            BiomeBlender.ChunkBiomeBlendingWeights surfaceBlendingInfo,
+                                                            WorldFeatureContext context,
+                                                            int minX, int minZ, int padding) {
         NoiseField heightmapField = NoiseFieldTypes.COARSE_2D.create(0, padding);
         double[] heightmapArray = heightmapField.array();
         for (Holder<Biome> biome : surfaceBiomeCache.containedBiomes()) {
@@ -102,7 +101,7 @@ public class SurfaceShaperSystem {
             );
         }
 
-        for (WorldFeature worldFeature : worldFeaturesInChunk)
+        for (ModifiesHeightmap worldFeature : heightmapModifyingWorldFeatures)
             worldFeature.modifyHeightmap(minX, minZ, cache, heightmapField, context);
 
         double min = Double.MAX_VALUE, max = Double.MIN_VALUE;
@@ -147,7 +146,7 @@ public class SurfaceShaperSystem {
     }
 
     public NoiseField generateSurfaceDensity(NoiseFieldCache cache,
-                                             Collection<WorldFeature> worldFeaturesInChunk,
+                                             List<ModifiesSurfaceDensity> surfaceDensityModifyingWorldFeatures,
                                              BiomeCache2d surfaceBiomeCache,
                                              BiomeBlender.ChunkBiomeBlendingWeights surfaceBlendingInfo,
                                              ChunkSurfaceHeightmap heightmapInfo, NoiseField squaredHeightmapGradient, NoiseField distanceToHeightmap,
@@ -190,8 +189,8 @@ public class SurfaceShaperSystem {
 
         this.createRockyCliffsOnSteepSlopes(cache, heightmapGradient, distanceToHeightmap, surfaceBlendingInfo.biomeTransitionFactorField(), surfaceDensityField, lowerBound, upperBound, minX, minY, minZ, chunkHeight);
 
-        for (WorldFeature worldFeature : worldFeaturesInChunk)
-            worldFeature.modifySurfaceDensityField(minX, minY, minZ, cache, surfaceDensityField, worldContext);
+        for (ModifiesSurfaceDensity worldFeature : surfaceDensityModifyingWorldFeatures)
+            worldFeature.modifySurfaceDensity(minX, minY, minZ, cache, surfaceDensityField, worldContext);
 
         return surfaceDensityField;
     }

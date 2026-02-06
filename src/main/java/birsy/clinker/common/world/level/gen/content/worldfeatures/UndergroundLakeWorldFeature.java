@@ -1,29 +1,39 @@
 package birsy.clinker.common.world.level.gen.content.worldfeatures;
 
 import birsy.clinker.common.world.level.gen.system.fluid.FluidLevel;
+import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureType;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
 import birsy.clinker.common.world.level.gen.system.noise.PaddedNoiseFieldCache;
 import birsy.clinker.common.world.level.gen.system.noise.UncachedNoiseContext;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
-import birsy.clinker.common.world.level.gen.system.worldfeature.MetaChunk;
-import birsy.clinker.common.world.level.gen.system.worldfeature.WorldFeature;
-import birsy.clinker.common.world.level.gen.system.worldfeature.WorldFeatureContext;
+import birsy.clinker.common.world.level.gen.system.metachunk.MetaChunk;
+import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeature;
+import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureContext;
+import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesFluids;
 import birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers;
-import net.minecraft.core.SectionPos;
+import birsy.clinker.core.registry.worldgen.ClinkerWorldFeatures;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class UndergroundLakeWorldFeature extends WorldFeature {
-    int centerX, centerZ;
-    int radius = 16;
-    int waterLevel = 0;
-    BlockState fluid;
+import javax.annotation.Nullable;
+import java.util.Optional;
 
-    public UndergroundLakeWorldFeature(int depth, int separationRadius) {
-        super(depth, separationRadius);
+public class UndergroundLakeWorldFeature extends WorldFeature implements ModifiesFluids {
+    final int centerX, centerZ;
+    final int radius;
+    final int waterLevel;
+    final BlockState fluid;
+
+    public UndergroundLakeWorldFeature(int centerX, int centerZ, int radius, int waterLevel, BlockState fluid) {
+        this.centerX = centerX;
+        this.centerZ = centerZ;
+        this.radius = radius;
+        this.waterLevel = waterLevel;
+        this.fluid = fluid;
     }
 
     @Override
@@ -46,18 +56,35 @@ public class UndergroundLakeWorldFeature extends WorldFeature {
     }
 
     @Override
-    public boolean plan(LevelAccessor level, MetaChunk metaChunk, RandomSource randomSource, UncachedNoiseContext context, WorldFeatureContext worldContext) {
-        this.radius = randomSource.nextInt(10, 30) + randomSource.nextInt(10, 30);
-        this.centerX = randomSource.nextInt(metaChunk.minX(), metaChunk.maxX());
-        this.centerZ = randomSource.nextInt(metaChunk.minZ(), metaChunk.maxZ());
+    public WorldFeatureType<UndergroundLakeWorldFeature> type() {
+        return ClinkerWorldFeatures.Types.UNDERGROUND_LAKE.get();
+    }
 
-        double[] biomeWeights = worldContext.biomeBlender().getBiomeBlendingWeights(new double[worldContext.biomeList().maxId() + 1], this.centerX, this.centerZ);
-        double surfaceHeight = worldContext.surfaceShaperSystem().getHeight(biomeWeights, this.centerX, this.centerZ, context);
+    public static Optional<UndergroundLakeWorldFeature> realize(@Nullable BlockPos center,
+                                                             LevelAccessor level,
+                                                             int minX, int minZ, int maxX, int maxZ, int metaChunkDepth,
+                                                             RandomSource randomSource,
+                                                             UncachedNoiseContext context,
+                                                             WorldFeatureContext worldContext) {
+        int centerX, centerZ;
+        if (center != null) {
+            centerX = center.getX();
+            centerZ = center.getZ();
+        } else {
+            centerX = randomSource.nextIntBetweenInclusive(minX, maxX);
+            centerZ = randomSource.nextIntBetweenInclusive(minZ, maxZ);
+        }
+
+        double[] biomeWeights = worldContext.biomeBlender().getBiomeBlendingWeights(new double[worldContext.biomeList().maxId() + 1], centerX, centerZ);
+        double surfaceHeight = worldContext.surfaceShaperSystem().getHeight(biomeWeights, centerX, centerZ, context);
         int maxFluidLevel = Mth.floor(surfaceHeight - 15);
-        if (maxFluidLevel < 4) return false;
-        this.waterLevel = randomSource.nextInt(4, maxFluidLevel);
-        this.fluid = randomSource.nextInt(3) != 0 ? Blocks.WATER.defaultBlockState() : Blocks.LAVA.defaultBlockState();
-        return true;
+        if (maxFluidLevel < 4) return Optional.empty();
+
+        int radius = randomSource.nextInt(10, 30) + randomSource.nextInt(10, 30);
+        int waterLevel = randomSource.nextInt(4, maxFluidLevel);
+        // todo: replace with weighted list
+        BlockState fluid = randomSource.nextInt(3) != 0 ? Blocks.WATER.defaultBlockState() : Blocks.LAVA.defaultBlockState();
+        return Optional.of(new UndergroundLakeWorldFeature(centerX, centerZ, radius, waterLevel, fluid));
     }
 
     @Override

@@ -11,12 +11,16 @@ import birsy.clinker.common.world.level.gen.system.noise.*;
 import birsy.clinker.common.world.level.gen.system.noise.field.*;
 import birsy.clinker.common.world.level.gen.system.biome.BiomeBlender;
 import birsy.clinker.common.world.level.gen.system.surface.shaper.SurfaceShaperSystem;
-import birsy.clinker.common.world.level.gen.system.worldfeature.MetaChunkMapHolder;
-import birsy.clinker.common.world.level.gen.system.worldfeature.WorldFeature;
-import birsy.clinker.common.world.level.gen.system.worldfeature.WorldFeatureContext;
+import birsy.clinker.common.world.level.gen.system.metachunk.MetaChunkMapHolder;
+import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureContext;
+import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureSet;
+import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesBiome;
+import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesCaveDensity;
+import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesFinalDensity;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers;
+import birsy.clinker.core.registry.worldgen.ClinkerWorldFeatureCapabilities;
 import birsy.clinker.core.util.MathUtils;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -25,7 +29,6 @@ import net.minecraft.core.*;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.world.level.*;
 import net.minecraft.world.level.biome.Biome;
@@ -41,7 +44,6 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.PositionalRandomFactory;
 import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraft.world.level.levelgen.blending.Blender;
-import net.minecraft.world.level.material.FluidState;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -121,18 +123,26 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
         NoiseFieldCache noiseFieldCache = new NoiseFieldCache(minX, minY, minZ, chunkHeight, noiseHolder);
 
-        Collection<WorldFeature> worldFeatures =
+        WorldFeatureSet worldFeatures =
                 ((MetaChunkMapHolder) (Object) randomState).clinker$metaChunkMap()
                         .getWorldFeatures(chunk.getLevel(), minX, minZ, this.worldContext);
 
         // prefill noise fields
-        for (WorldFeature worldFeature : worldFeatures)
+        List<ModifiesBiome> biomeModifyingWorldFeatures = worldFeatures.byCapability(ClinkerWorldFeatureCapabilities.MODIFIES_BIOME.get());
+        for (ModifiesBiome worldFeature : biomeModifyingWorldFeatures)
             worldFeature.prefillBiomeNoiseFields(chunkPos.x, chunkPos.z, noiseFieldCache, worldContext);
         othershoreBiomeSource.prefillNoiseFields(noiseFieldCache);
 
         BiomeCache2d surfaceBiomes = this.getSurfaceBiomeCacheForChunk(minX, minZ);
         BiomeBlender.ChunkBiomeBlendingWeights blendingInfo = this.biomeBlender.generateChunkBiomeBlendingWeights(surfaceBiomes, minX, minZ, 0);
-        SurfaceShaperSystem.ChunkSurfaceHeightmap heightmapInfo = this.surfaceShaperSystem.generateHeightmap(noiseFieldCache, worldFeatures, surfaceBiomes, blendingInfo, worldContext, minX, minZ);
+        SurfaceShaperSystem.ChunkSurfaceHeightmap heightmapInfo = this.surfaceShaperSystem.generateHeightmap(
+                noiseFieldCache,
+                worldFeatures.byCapability(ClinkerWorldFeatureCapabilities.MODIFIES_HEIGHTMAP.get()),
+                surfaceBiomes,
+                blendingInfo,
+                worldContext,
+                minX, minZ
+        );
 
         int sectionQuartSize = QuartPos.fromSection(1);
         for (int section = levelheightaccessor.getMinSection(); section < levelheightaccessor.getMaxSection(); section++) {
@@ -153,7 +163,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                                 globalQuartX, globalQuartY, globalQuartZ,
                                 surfaceBiomes, heightmapInfo, noiseFieldCache.context
                         );
-                        for (WorldFeature worldFeature : worldFeatures)
+                        for (ModifiesBiome worldFeature : biomeModifyingWorldFeatures)
                             worldFeature.modifyBiome(globalBlockX, globalBlockY, globalBlockZ, minX, minY, minZ, biome, noiseFieldCache.context);
                         palettedcontainer.getAndSetUnchecked(qX, qY, qZ, biome);
                     }
@@ -189,14 +199,22 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                 new NoiseFieldCache(minX, minY, minZ, chunkHeight, noiseHolder);
         PaddedNoiseFieldCache biomeAndFluidCache =
                 new PaddedNoiseFieldCache(minX, minY, minZ, chunkHeight, noiseHolder, fluidCellWidth);
-        Collection<WorldFeature> worldFeatures =
+        WorldFeatureSet worldFeatures =
                 ((MetaChunkMapHolder) (Object) randomState).clinker$metaChunkMap()
                 .getWorldFeatures(chunk.getLevel(), minX, minZ, this.worldContext);
 
         // density field
         BiomeCache2d surfaceBiomes = this.getSurfaceBiomeCacheForChunk(minX, minZ);
         BiomeBlender.ChunkBiomeBlendingWeights chunkBiomeBlendingWeights = this.biomeBlender.generateChunkBiomeBlendingWeights(surfaceBiomes, minX, minZ, fluidCellWidth);
-        SurfaceShaperSystem.ChunkSurfaceHeightmap heightmapInfo = this.surfaceShaperSystem.generateHeightmap(biomeAndFluidCache, worldFeatures, surfaceBiomes, chunkBiomeBlendingWeights, worldContext, minX, minZ, fluidCellWidth);
+        SurfaceShaperSystem.ChunkSurfaceHeightmap heightmapInfo = this.surfaceShaperSystem.generateHeightmap(
+                biomeAndFluidCache,
+                worldFeatures.byCapability(ClinkerWorldFeatureCapabilities.MODIFIES_HEIGHTMAP.get()),
+                surfaceBiomes,
+                chunkBiomeBlendingWeights,
+                worldContext,
+                minX, minZ,
+                fluidCellWidth
+        );
 
         NoiseField finalDensityField = createFinalDensityField(
                 chunk, noiseHolder, noiseFieldCache, biomeAndFluidCache, worldFeatures,
@@ -206,9 +224,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
         // fluid field
         int cellWidth = fluidCellWidth, cellHeight = fluidCellHeight;
-        NoiseField waterfallPresence = biomeAndFluidCache.fillNoiseField(ClinkerNoiseComputers.WATERFALL_PRESENCE.get());
-        for (WorldFeature worldFeature : worldFeatures)
-            worldFeature.modifyWaterfallPresenceField(minX, minY, minZ, biomeAndFluidCache, waterfallPresence, worldContext);
+
 
         final FluidFieldFiller fluidFiller = (x, y, z, context) -> {
             double surfaceHeight = heightmapInfo.field().retrieve(x - minX, y - minY, z - minZ);
@@ -219,12 +235,15 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             return FluidLevel.EMPTY;
         };
 
-        FluidField finalFluidField = new BFSBorderFluidField(randomState, chunk,
-                biomeAndFluidCache, fluidFiller, worldFeatures, worldContext, heightmapInfo.field(), cellWidth, cellHeight, 1
+        BFSBorderFluidField finalFluidField = new BFSBorderFluidField(randomState, chunk,
+                biomeAndFluidCache, fluidFiller,
+                worldFeatures.byCapability(ClinkerWorldFeatureCapabilities.MODIFIES_FLUIDS.get()),
+                worldFeatures.byCapability(ClinkerWorldFeatureCapabilities.MODIFIES_WATERFALL_PRESENCE.get()),
+                worldContext, heightmapInfo.field(), cellWidth, cellHeight, 1
         );
-        finalFluidField.precomputeValues(finalDensityField, waterfallPresence);
+        finalFluidField.precomputeValues(finalDensityField);
 
-        this.fillFromFields(finalDensityField, finalFluidField, waterfallPresence, chunk);
+        this.fillFromFields(finalDensityField, finalFluidField, finalFluidField.waterfallPresenceField, chunk);
         return chunk;
     }
 
@@ -288,7 +307,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
     private NoiseField createFinalDensityField(ChunkAccess chunk, SeededNoiseHolder noiseHolder,
                                                NoiseFieldCache cache, PaddedNoiseFieldCache biomeCache,
-                                               Collection<WorldFeature> worldFeaturesInChunk,
+                                               WorldFeatureSet worldFeaturesInChunk,
                                                BiomeCache2d surfaceBiomes,
                                                BiomeBlender.ChunkBiomeBlendingWeights chunkBiomeBlendingWeights,
                                                SurfaceShaperSystem.ChunkSurfaceHeightmap heightmapInfo,
@@ -299,7 +318,9 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         NoiseField heightmapGradient = surfaceShaperSystem.generateHeightmapGradientSquaredField(heightmap);
         NoiseField distanceToHeightmap = surfaceShaperSystem.generateApproximateDistanceToHeightmap(chunkHeight, minY, heightmap, heightmapGradient);
         NoiseField surfaceDensityField = surfaceShaperSystem.generateSurfaceDensity(
-                cache, worldFeaturesInChunk, surfaceBiomes, chunkBiomeBlendingWeights,
+                cache,
+                worldFeaturesInChunk.byCapability(ClinkerWorldFeatureCapabilities.MODIFIES_SURFACE_DENSITY.get()),
+                surfaceBiomes, chunkBiomeBlendingWeights,
                 heightmapInfo, heightmapGradient, distanceToHeightmap, this.worldContext,
                 minX, minY, minZ, chunkHeight
         );
@@ -314,8 +335,8 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         );
         NoiseField caveEntranceMaskField =
                 cache.fillNoiseField(minY, maxCaveHeight, ClinkerNoiseComputers.CAVE_ENTRANCE_MASK.get());
-        for (WorldFeature worldFeature : worldFeaturesInChunk)
-            worldFeature.modifyCaveDensityField(minX, minY, minZ, cache, caveDensityField, caveEntranceMaskField, worldContext);
+        for (ModifiesCaveDensity worldFeature : worldFeaturesInChunk.byCapability(ClinkerWorldFeatureCapabilities.MODIFIES_CAVE_DENSITY.get()))
+            worldFeature.modifyCaveDensity(minX, minY, minZ, cache, caveDensityField, caveEntranceMaskField, worldContext);
         // combine mask and height
         caveDensityField.byBlockPadded(
                 0, localMaxCaveHeight,
@@ -340,8 +361,8 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                 (index, x, y, z) -> finalDensityFieldArray[index] = surfaceDensityField.retrieve(x, y, z)
         );
 
-        for (WorldFeature worldFeature : worldFeaturesInChunk)
-            worldFeature.modifyFinalDensityField(minX, minY, minZ, cache, finalDensityField, worldContext);
+        for (ModifiesFinalDensity worldFeature : worldFeaturesInChunk.byCapability(ClinkerWorldFeatureCapabilities.MODIFIES_FINAL_DENSITY.get()))
+            worldFeature.modifyFinalDensity(minX, minY, minZ, cache, finalDensityField, worldContext);
 
         return finalDensityField;
     }
@@ -370,11 +391,17 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         SeededNoiseHolder noiseHolder = ((SeededNoiseHolderHolder) (Object) randomState).clinker$noiseHolder();
         NoiseFieldCache cache = new NoiseFieldCache(minX, minY, minZ, chunkHeight, noiseHolder);
 
-        Collection<WorldFeature> worldFeatures = ((MetaChunkMapHolder) (Object) randomState).clinker$metaChunkMap()
+        WorldFeatureSet worldFeatures = ((MetaChunkMapHolder) (Object) randomState).clinker$metaChunkMap()
                 .getWorldFeatures(chunk.getLevel(), minX, minZ, worldContext);
         BiomeCache2d surfaceBiomes = getSurfaceBiomeCacheForChunk(minX, minZ);
         BiomeBlender.ChunkBiomeBlendingWeights chunkBiomeBlendingWeights = biomeBlender.generateChunkBiomeBlendingWeights(surfaceBiomes, minX, minZ, 0);
-        SurfaceShaperSystem.ChunkSurfaceHeightmap heightmapInfo = surfaceShaperSystem.generateHeightmap(cache, worldFeatures, surfaceBiomes, chunkBiomeBlendingWeights, worldContext, minX, minZ);
+        SurfaceShaperSystem.ChunkSurfaceHeightmap heightmapInfo = surfaceShaperSystem.generateHeightmap(
+                cache,
+                worldFeatures.byCapability(ClinkerWorldFeatureCapabilities.MODIFIES_HEIGHTMAP.get()),
+                surfaceBiomes, chunkBiomeBlendingWeights,
+                worldContext,
+                minX, minZ
+        );
         NoiseField heightmapGradient = surfaceShaperSystem.generateHeightmapGradientSquaredField(heightmapInfo.field());
         surfaceDecorationSystem.decorate(
                 cache, heightmapInfo.field(), heightmapGradient,

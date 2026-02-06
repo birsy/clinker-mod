@@ -27,7 +27,7 @@ public class TestWorldFeature { //extends WorldFeature {
 //    }
 //
 //    @Override
-//    public boolean plan(LevelAccessor level, MetaChunk metaChunk, RandomSource randomSource, NoiseComputerContext context) {
+//    public boolean realize(LevelAccessor level, MetaChunk metaChunk, RandomSource randomSource, NoiseComputerContext context) {
 //        this.radius = (depth + 1) * 3;
 //        this.centerX = randomSource.nextInt(metaChunk.minX(), metaChunk.maxX());
 //        this.centerZ = randomSource.nextInt(metaChunk.minZ(), metaChunk.maxZ());
