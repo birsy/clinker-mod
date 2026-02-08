@@ -6,8 +6,8 @@ import birsy.clinker.core.registry.ClinkerRegistries;
 import java.util.function.Supplier;
 
 public class NoiseFieldCache {
-    final int minX, minY, minZ;
-    final int chunkHeight;
+    public final int minX, minY, minZ;
+    public final int chunkHeight;
     final NoiseField[] fieldCache;
     public final CachedNoiseContext context;
     public final SeededNoiseHolder noiseHolder;

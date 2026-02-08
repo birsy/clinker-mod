@@ -5,5 +5,5 @@ import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureContext;
 
 public interface ModifiesCaveDensity extends WorldFeatureCapability {
-    void modifyCaveDensity(int minX, int minY, int minZ, NoiseFieldCache cache, NoiseField field, NoiseField maskField, WorldFeatureContext worldContext);
+    void modifyCaveDensity(int minX, int minY, int minZ, int maxCaveHeight, NoiseFieldCache cache, NoiseField field, NoiseField maskField, WorldFeatureContext worldContext);
 }

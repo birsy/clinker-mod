@@ -336,7 +336,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         NoiseField caveEntranceMaskField =
                 cache.fillNoiseField(minY, maxCaveHeight, ClinkerNoiseComputers.CAVE_ENTRANCE_MASK.get());
         for (ModifiesCaveDensity worldFeature : worldFeaturesInChunk.byCapability(ClinkerWorldFeatureCapabilities.MODIFIES_CAVE_DENSITY.get()))
-            worldFeature.modifyCaveDensity(minX, minY, minZ, cache, caveDensityField, caveEntranceMaskField, worldContext);
+            worldFeature.modifyCaveDensity(minX, minY, minZ, maxCaveHeight, cache, caveDensityField, caveEntranceMaskField, worldContext);
         // combine mask and height
         caveDensityField.byBlockPadded(
                 0, localMaxCaveHeight,

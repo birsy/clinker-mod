@@ -1,5 +1,6 @@
 package birsy.clinker.core.registry.worldgen;
 
+import birsy.clinker.common.world.level.gen.content.worldfeatures.RiverWorldFeature;
 import birsy.clinker.common.world.level.gen.content.worldfeatures.UndergroundLakeWorldFeature;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureSpawnSet;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureType;
@@ -15,6 +16,8 @@ public final class ClinkerWorldFeatures {
 
         public static final Supplier<WorldFeatureType<UndergroundLakeWorldFeature>> UNDERGROUND_LAKE =
                 WORLD_FEATURE_TYPES.register("underground_lake", () -> new WorldFeatureType<>(0, 0, UndergroundLakeWorldFeature::realize));
+        public static final Supplier<WorldFeatureType<RiverWorldFeature>> RIVER =
+                WORLD_FEATURE_TYPES.register("river", () -> new WorldFeatureType<>(100, 0, RiverWorldFeature::realize));
     }
 
     public static final class Spawns {
@@ -26,5 +29,12 @@ public final class ClinkerWorldFeatures {
                                 .add(Types.UNDERGROUND_LAKE.get(), 4, 12)
                                 .build()
                 );
+
+//        public static final Supplier<WorldFeatureSpawnSet> RIVER =
+//                WORLD_FEATURE_SPAWNS.register("river",
+//                        () -> WorldFeatureSpawnSet.builder(5)
+//                                .add(Types.RIVER.get(), 0, 3)
+//                                .build()
+//                );
     }
 }
