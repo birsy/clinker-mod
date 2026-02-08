@@ -27,7 +27,7 @@ public class WorldFeatureSet {
     public WorldFeatureSet(Collection<WorldFeature> worldFeatures) {
         this.byCapability = new Object2ObjectArrayMap<>(ClinkerRegistries.WORLD_FEATURE_CAPABILITY_REGISTRY.size());
         worldFeatures.stream()
-                .sorted(Comparator.comparingInt(worldFeature -> -worldFeature.type().priority()))
+                .sorted(Comparator.comparingInt(worldFeature -> worldFeature.type().priority()))
                 .forEachOrdered(
                     worldFeature -> {
                         Class<? extends WorldFeature> worldFeatureClass = worldFeature.getClass();

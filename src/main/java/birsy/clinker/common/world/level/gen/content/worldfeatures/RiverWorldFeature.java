@@ -1,24 +1,35 @@
 package birsy.clinker.common.world.level.gen.content.worldfeatures;
 
+import birsy.clinker.common.world.level.gen.system.fluid.FluidLevel;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeature;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureContext;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureType;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesCaveDensity;
+import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesFluids;
+import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
+import birsy.clinker.common.world.level.gen.system.noise.PaddedNoiseFieldCache;
 import birsy.clinker.common.world.level.gen.system.noise.UncachedNoiseContext;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldTypes;
 import birsy.clinker.core.Clinker;
+import birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers;
 import birsy.clinker.core.registry.worldgen.ClinkerWorldFeatures;
+import birsy.clinker.core.util.MathUtils;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.Blocks;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
-public class RiverWorldFeature extends WorldFeature implements ModifiesCaveDensity {
+public class RiverWorldFeature extends WorldFeature implements ModifiesCaveDensity, ModifiesFluids {
     final int centerX, centerZ;
     final CompiledRiver river;
 
@@ -28,29 +39,12 @@ public class RiverWorldFeature extends WorldFeature implements ModifiesCaveDensi
         this.river = river;
     }
 
-    public static RiverWorldFeature realize(BlockPos source, BlockPos drain, LevelAccessor level,
-                                            int minX, int minZ, int maxX, int maxZ, int metaChunkDepth,
-                                            RandomSource randomSource,
-                                            UncachedNoiseContext context,
-                                            WorldFeatureContext worldContext) {
-        Clinker.LOGGER.info("creating river from {} {} {} to {} {} {}", source.getX(), source.getY(), source.getZ(), drain.getX(), drain.getY(), drain.getZ());
-        RiverNode start = new RiverNode(source.getX(), source.getY(), source.getZ(), 10.0F);
-        RiverNode end = new RiverNode(drain.getX(), drain.getY(), drain.getZ(), 15.0F);
-        int centerX = (source.getX() + drain.getX()) / 2, centerZ = (source.getZ() + drain.getZ()) / 2;
-        RiverNode middle = new RiverNode(
-                centerX + (int) randomSource.triangle(0, 60),
-                (source.getY() + drain.getY()) / 2,
-                centerZ + (int) randomSource.triangle(0, 60),
-                15.0F);
-        return new RiverWorldFeature(centerX, centerZ, new CompiledRiver(start, middle, end));
-    }
-
     public static Optional<RiverWorldFeature> realize(@Nullable BlockPos center,
-                                                                LevelAccessor level,
-                                                                int minX, int minZ, int maxX, int maxZ, int metaChunkDepth,
-                                                                RandomSource randomSource,
-                                                                UncachedNoiseContext context,
-                                                                WorldFeatureContext worldContext) {
+                                                      LevelAccessor level,
+                                                      int minX, int minZ, int maxX, int maxZ, int metaChunkDepth,
+                                                      RandomSource randomSource,
+                                                      UncachedNoiseContext context,
+                                                      WorldFeatureContext worldContext) {
         BlockPos.MutableBlockPos source = BlockPos.ZERO.mutable(), drain = BlockPos.ZERO.mutable();
         for (int i = 0; i < 32; i++) {
             source.set(randomSource.nextIntBetweenInclusive(minX, maxX), 35, randomSource.nextIntBetweenInclusive(minZ, maxZ));
@@ -61,29 +55,174 @@ public class RiverWorldFeature extends WorldFeature implements ModifiesCaveDensi
         return Optional.empty();
     }
 
+    public static RiverWorldFeature realize(BlockPos source, BlockPos drain, LevelAccessor level,
+                                            int minX, int minZ, int maxX, int maxZ, int metaChunkDepth,
+                                            RandomSource randomSource,
+                                            UncachedNoiseContext context,
+                                            WorldFeatureContext worldContext) {
+        Clinker.LOGGER.info("creating river from {} {} {} to {} {} {}", source.getX(), source.getY(), source.getZ(), drain.getX(), drain.getY(), drain.getZ());
+
+        ObjectArrayList<BlockPos> riverCurve = generateRiverCurve(source, drain, 128, randomSource, context);
+        ObjectArrayList<RiverNode> nodes = resampleCurve(riverCurve, 10);
+
+        int centerX = (source.getX() + drain.getX()) / 2, centerZ = (source.getZ() + drain.getZ()) / 2;
+
+        return new RiverWorldFeature(centerX, centerZ, new CompiledRiver(nodes.toArray(new RiverNode[0])));
+    }
+
+    private static ObjectArrayList<BlockPos> generateRiverCurve(BlockPos startPos, BlockPos endPos, int count, RandomSource randomSource, UncachedNoiseContext context) {
+        int riverX = endPos.getX() - startPos.getX(),
+            riverZ = endPos.getZ() - startPos.getZ();
+        int perpRiverX = riverZ,
+            perpRiverZ = -riverX;
+        double riverLength = Mth.length(riverX, riverZ);
+
+        int frequency = (int) Math.round(riverLength / 100.0);
+        ObjectArrayList<BlockPos> nodePositions = new ObjectArrayList<>(count);
+
+        nodePositions.add(startPos);
+        int y = startPos.getY();
+        for (int i = 1; i < count - 1; i++) {
+            float factor = i / (count - 1.0F);
+            float midFactor = Mth.clampedMap(factor, 0, 0.5F, 0, 1) * Mth.clampedMap(factor, 0.5F, 1, 1, 0);
+            midFactor = (float) Mth.smoothstep(midFactor);
+
+            int baseX = Mth.lerpDiscrete(factor, startPos.getX(), endPos.getX()),
+                baseZ = Mth.lerpDiscrete(factor, startPos.getZ(), endPos.getZ());
+            float riverWiggliness = (float)context.retrieve(ClinkerNoiseComputers.BASE_NOISE_2D[7], baseX, 0, baseZ);
+            riverWiggliness = riverWiggliness * 0.5F + 0.5F;
+            riverWiggliness *= midFactor;
+
+            float localX = factor - Mth.sin(frequency * factor * Mth.TWO_PI) * riverWiggliness * 0.3F * 0.2F,
+                  localZ = Mth.sin(frequency * factor * Mth.PI) * riverWiggliness * 0.3F;
+            double xOffset = riverX * localX + perpRiverX * localZ,
+                   zOffset = riverZ * localX + perpRiverZ * localZ;
+
+            // some logic for computing the y...
+            // honestly could not really tell you how this worked.
+            int startY = startPos.getY(),
+                endY = endPos.getY();
+            int straightLineY = Mth.lerpDiscrete(factor, startY, endY);
+            int difference = y - straightLineY;
+            if (Math.abs(difference) > 4 && difference > randomSource.nextInt(24))
+                y = straightLineY;
+
+            BlockPos nodePos = new BlockPos(startPos.getX() + (int) xOffset, y, startPos.getZ() + (int) zOffset);
+            nodePositions.add(nodePos);
+        }
+        nodePositions.add(endPos);
+        return nodePositions;
+    }
+
+    private static ObjectArrayList<RiverNode> resampleCurve(ObjectArrayList<BlockPos> nodePositions, double step) {
+        ObjectArrayList<RiverNode> result = new ObjectArrayList<>();
+        // compute length
+        int n = nodePositions.size();
+        double[] lengths = new double[n];
+        lengths[0] = 0;
+
+        for (int i = 1; i < n; i++)
+            lengths[i] = lengths[i - 1] + Math.sqrt(nodePositions.get(i - 1).distSqr(nodePositions.get(i)));
+        double totalLength = lengths[n - 1];
+
+        // resample curve so its evenly spaced
+        int ceilingHeight = nodePositions.getFirst().getY();
+        for (double targetLength = 0; targetLength <= totalLength; targetLength += step) {
+            int x, y, z;
+            int closestIndex = Arrays.binarySearch(lengths, targetLength);
+            if (closestIndex < 0) closestIndex = -closestIndex - 1;
+
+            if (closestIndex <= 0) {
+                x = nodePositions.getFirst().getX(); y = nodePositions.getFirst().getY(); z = nodePositions.getFirst().getZ();
+            } else if (closestIndex >= n) {
+                x = nodePositions.getLast().getX(); y = nodePositions.getLast().getY(); z = nodePositions.getLast().getZ();
+            } else {
+                BlockPos a = nodePositions.get(closestIndex - 1);
+                BlockPos b = nodePositions.get(closestIndex);
+
+                double segStart = lengths[closestIndex - 1];
+                double segEnd = lengths[closestIndex];
+                float f = (float) ((targetLength - segStart) / (segEnd - segStart));
+
+                x = Mth.lerpDiscrete(f, a.getX(), b.getX());
+                y = f < 0.5 ? a.getY() : b.getY();
+                z = Mth.lerpDiscrete(f, a.getZ(), b.getZ());
+            }
+
+            double riverRadius = 15.0F;
+
+            ceilingHeight = MathUtils.approach(ceilingHeight, y, (int)(step / 8.0));
+            double progress = targetLength / totalLength;
+            riverRadius *= Mth.clampedMap(progress, 0, 0.2, 0.3, 1);
+            riverRadius *= Mth.clampedMap(progress, 0.8, 1, 1, 0.5);
+            riverRadius = Mth.lerp(riverRadius, 3, 20);
+
+            if (!result.isEmpty()) {
+                RiverNode previous = result.getLast();
+                double lateralDistanceToPrevious = Mth.lengthSquared(previous.x - x, previous.z - z);
+                if (lateralDistanceToPrevious < 0.001) continue;
+            }
+            result.add(new RiverNode(x, y, z, riverRadius));
+        }
+
+        BlockPos last = nodePositions.getLast();
+        result.add(new RiverNode(last.getX(), last.getY(), last.getZ(), result.getLast().radius()));
+
+        return result;
+    }
+
     @Override
     public void modifyCaveDensity(int minX, int minY, int minZ, int maxCaveHeight, NoiseFieldCache cache, NoiseField field, NoiseField maskField, WorldFeatureContext worldContext) {
+        int riverRadius = 15;
+        int riverHeight = 35;
+        cache.noiseHolder.registerNoise("riverbed");
+
         RiverSample sample = new RiverSample();
-        NoiseField lateralRiverDistanceField = NoiseFieldTypes.COARSE_2D.create(0,0);
-        double[] lateralRiverDistanceArray = lateralRiverDistanceField.array();
+        NoiseField lateralRiverDistanceField = NoiseFieldTypes.FINE_2D.create(0,0),
+                   riverBedNoiseField = NoiseFieldTypes.FINE_2D.create(0,0);
+        double[] lateralRiverDistanceArray = lateralRiverDistanceField.array(),
+                 riverBedNoiseArray = riverBedNoiseField.array();
         lateralRiverDistanceField.byBlock(0, cache.chunkHeight,
                 (index, x, y, z) -> {
                     sample.reset(x + minX, z + minZ, river);
                     river.sample(x + minX, z + minZ, sample);
                     lateralRiverDistanceArray[index] = sample.distance;
+                    riverBedNoiseArray[index] = Math.abs(cache.noiseHolder.sample("riverbed", sample.u * 0.02, sample.v * 0.06)) * 2.0 - 1.0;
                 }
         );
 
-        int riverRadius = 10;
-        int riverHeight = 35;
         double[] caveNoiseArray = field.array();
         field.byBlock((riverHeight - riverRadius) - minY, (riverHeight + riverRadius) - minY,
                 (index, x, y, z) -> {
                     double lateralDistance = lateralRiverDistanceField.retrieve(x, y, z);
+                    double riverShape = riverRadius - Mth.length(lateralDistance, (y + minY) - riverHeight);
+                    riverShape = Math.min((y + minY) - (2 * riverBedNoiseField.retrieve(x, y, z) + riverHeight - 1), riverShape);
+
                     double caveNoise = caveNoiseArray[index];
-                    caveNoiseArray[index] = Math.max(caveNoise, riverRadius - Mth.length(lateralDistance, (y + minY) - riverHeight));
+
+                    caveNoiseArray[index] = Math.max(caveNoise, riverShape);
                 }
         );
+    }
+
+    @Override
+    public void prefillFluidNoiseFields(int chunkX, int chunkZ, PaddedNoiseFieldCache cache, WorldFeatureContext worldContext) {}
+    private final ThreadLocal<RiverSample> sharedFluidLevelSample = ThreadLocal.withInitial(RiverSample::new);
+    @Override
+    public FluidLevel modifyFluidLevel(int x, int y, int z, int minX, int minY, int minZ, FluidLevel currentFluidLevel, NoiseContext context, NoiseField heightmap) {
+        int riverRadius = 15;
+        int riverHeight = 35;
+
+        RiverSample sample = sharedFluidLevelSample.get();
+        sample.reset(x, z, this.river);
+        sample.segmentIndex = -2;
+        sample.distance = Double.POSITIVE_INFINITY;
+        river.sample(x, z, sample);
+
+        if (sample.distance > riverRadius) return currentFluidLevel;
+        if (Math.abs(y - riverHeight) > riverRadius * 2) return currentFluidLevel;
+
+        return new FluidLevel(riverHeight, Blocks.WATER.defaultBlockState());
     }
 
     @Override public int getCenterX() { return centerX; }
@@ -197,8 +336,12 @@ public class RiverWorldFeature extends WorldFeature implements ModifiesCaveDensi
 
                 double dirX = end.x - start.x, dirZ = end.z - start.z;
                 double length = Math.sqrt(dirX * dirX + dirZ * dirZ);
-
-                dirX /= length; dirZ /= length;
+                if (length == 0) {
+                    // no NaNs here!!!
+                    dirX = 0; dirZ = 0;
+                } else {
+                    dirX /= length; dirZ /= length;
+                }
                 this.dirX[i0] = dirX; this.dirZ[i0] = dirZ;
                 double perpX = -dirZ, perpZ = dirX;
 
@@ -214,10 +357,17 @@ public class RiverWorldFeature extends WorldFeature implements ModifiesCaveDensi
 
                 double miterX = lastPerpX + perpX, miterZ = lastPerpZ + perpZ;
                 double miterLength = Mth.length(miterX, miterZ);
-                miterX /= miterLength; miterZ /= miterLength;
+                if (miterLength == 0) {
+                    // no NaNs here!!!
+                    miterX = 0; miterZ = 0;
+                } else {
+                    miterX /= miterLength; miterZ /= miterLength;
+                }
                 this.miterX[i] = miterX; this.miterZ[i] = miterZ;
-                this.miterScale0[i] = 1.0 / (miterX * dirZ - miterZ * dirX);
-                this.miterScale1[i] = 1.0 / (miterX * lastDirX - miterZ * lastDirZ);
+                double miterScale0 = (miterX * dirZ - miterZ * dirX);
+                this.miterScale0[i] = miterScale0 == 0 ? 1.0 : 1.0 / miterScale0;
+                double miterScale1 = (miterX * lastDirX - miterZ * lastDirZ);
+                this.miterScale1[i] = miterScale1 == 0 ? 1.0 : 1.0 / miterScale1;
 
                 lastDirX = dirX; lastDirZ = dirZ;
                 lastPerpX = perpX; lastPerpZ = perpZ;
@@ -333,6 +483,8 @@ public class RiverWorldFeature extends WorldFeature implements ModifiesCaveDensi
                    miterZDiff = miter1intersectionZ - miter0intersectionZ;
             double segmentFactor = ((x - miter0intersectionX) * miterXDiff + (z - miter0intersectionZ) * miterZDiff) /
                                    (miterXDiff * miterXDiff + miterZDiff * miterZDiff);
+            if (Double.isNaN(segmentFactor))
+                Clinker.LOGGER.info("segmentFactor NaN! If you see this, tell the developers. Provide your world seed and coordinates!");
 
             sample.segmentFactor = segmentFactor;
             // distance along segment, kinda?

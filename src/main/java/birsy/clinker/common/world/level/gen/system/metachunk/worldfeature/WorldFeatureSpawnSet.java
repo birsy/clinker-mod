@@ -12,7 +12,7 @@ import java.util.List;
 public record WorldFeatureSpawnSet(int metaChunkDepth, List<WorldFeatureSpawn> features) {
     public WorldFeatureSpawnSet(int metaChunkDepth, List<WorldFeatureSpawn> features) {
         this.metaChunkDepth = metaChunkDepth;
-        features.sort(Comparator.comparingInt((featureSpawn) -> -featureSpawn.featureType().priority()));
+        features.sort(Comparator.comparingInt((featureSpawn) -> featureSpawn.featureType().priority()));
         this.features = Collections.unmodifiableList(features);
     }
 
