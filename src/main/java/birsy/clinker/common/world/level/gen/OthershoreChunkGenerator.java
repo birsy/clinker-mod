@@ -56,6 +56,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                     .apply(obj, obj.stable(OthershoreChunkGenerator::new))
     );
     private static final ResourceLocation BEDROCK_RANDOM = Clinker.resource("bedrock");
+    private static final BlockState BRIMSTONE = ClinkerBlocks.BRIMSTONE.get().defaultBlockState();
 
     final BiomeList biomeList;
 
@@ -63,6 +64,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
     final SurfaceShaperSystem surfaceShaperSystem;
     final SurfaceDecorationSystem surfaceDecorationSystem;
     final WorldFeatureContext worldContext;
+
 
     // reused between chunk generation stages
     //final SyncedChunkCache<BiomeBlender.ChunkBiomeBlendingWeights> biomeWeightCache = new SyncedChunkCache<>();
@@ -250,59 +252,57 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
     private void fillFromFields(NoiseField densityField, FluidField fluidField, NoiseField waterfallPresence, ChunkAccess chunk) {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
 
-        int[] worldSurfaceHeight = new int[16 * 16],
-              oceanFloorHeight = new int[16 * 16];
-        Arrays.fill(worldSurfaceHeight, Integer.MIN_VALUE);
-        Arrays.fill(oceanFloorHeight, Integer.MIN_VALUE);
+        boolean[] filledWorldSurfaceHeight = new boolean[16 * 16],
+                  filledOceanFloorHeight = new boolean[16 * 16];
+        Arrays.fill(filledWorldSurfaceHeight, false);
+        Arrays.fill(filledOceanFloorHeight, false);
 
-        for (int yi = 0; yi < chunk.getHeight() - 1; yi++) {
-            pos.setY(yi + chunk.getMinBuildHeight());
+        Heightmap worldSurfaceHeightmap = chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.WORLD_SURFACE_WG),
+                  oceanFloorHeightmap = chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.OCEAN_FLOOR_WG);
+
+        int minX = chunk.getPos().getMinBlockX(), minY = chunk.getMinBuildHeight(), minZ = chunk.getPos().getMinBlockZ();
+        for (int yi = chunk.getHeight() - 1; yi >= 0; yi--) {
+            int y = yi + minY;
+            pos.setY(y);
+            int sectionY = SectionPos.sectionRelative(y);
+            int sectionIndex = chunk.getSectionIndex(y);
+            LevelChunkSection section = chunk.getSection(sectionIndex);
+
             for (int zi = 0; zi < 16; zi++) {
-                pos.setZ(zi + chunk.getPos().getMinBlockZ());
+                int z = zi + minZ;
+                pos.setZ(z);
+
                 for (int xi = 0; xi < 16; xi++) {
-                    pos.setX(xi + chunk.getPos().getMinBlockX());
+                    int x = xi + minX;
+                    pos.setX(x);
 
                     double density = densityField.retrieve(xi, yi, zi);
                     density = MathUtils.smoothMinExpo(density, fluidField.getBorderDensity(xi, yi, zi), 3);
 
                     boolean isSolid = density <= 0;
-                    BlockState state = isSolid ?
-                            ClinkerBlocks.BRIMSTONE.get().defaultBlockState() :
-                            fluidField.getFluidState(pos.getX(), pos.getY(), pos.getZ());
-                    if (!(state == null || state.isAir())) {
-                        chunk.setBlockState(pos, state, false);
+                    BlockState state = isSolid ? BRIMSTONE : fluidField.getFluidState(x, y, z);
+                    if (state != null && !state.isAir()) {
+                        section.setBlockState(xi, sectionY, zi, state, false);
                         // update any placed state blocks in waterfalls, so they flow!
-                        if (!state.getFluidState().isEmpty() && waterfallPresence.retrieve(xi, yi, zi) > 0) {
+                        if (!isSolid && waterfallPresence.retrieve(xi, yi, zi) > 0) {
                             chunk.markPosForPostprocessing(pos);
                         }
-                        // update heightmaps
+
+                        // fill heightmaps
                         int index = xi + zi * 16;
-                        if (worldSurfaceHeight[index] == Integer.MIN_VALUE) worldSurfaceHeight[index] = pos.getY();
-                        if (state.isSolid() && oceanFloorHeight[index] == Integer.MIN_VALUE) oceanFloorHeight[index] = pos.getY();
+                        if (!filledWorldSurfaceHeight[index]) {
+                            worldSurfaceHeightmap.update(xi, pos.getY(), zi, state);
+                            filledWorldSurfaceHeight[index] = true;
+                        }
+                        if (!filledOceanFloorHeight[index] && isSolid) {
+                            oceanFloorHeightmap.update(xi, pos.getY(), zi, state);
+                            filledOceanFloorHeight[index] = true;
+                        }
                     }
                 }
             }
         }
 
-        // fill heightmaps
-        Heightmap heightmapOceanFloor = chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.OCEAN_FLOOR_WG);
-        Heightmap heightmapWorldSurface = chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.WORLD_SURFACE_WG);
-        for (int zi = 0; zi < 16; zi++) {
-            pos.setZ(zi + chunk.getPos().getMinBlockZ());
-            for (int xi = 0; xi < 16; xi++) {
-                pos.setX(xi + chunk.getPos().getMinBlockX());
-
-                int index = xi + zi * 16;
-
-                pos.setY(worldSurfaceHeight[index]);
-                BlockState state = chunk.getBlockState(pos);
-                heightmapWorldSurface.update(xi, pos.getY(), zi, state);
-
-                pos.setY(oceanFloorHeight[index]);
-                state = chunk.getBlockState(pos);
-                heightmapOceanFloor.update(xi, pos.getY(), zi, state);
-            }
-        }
     }
 
     private NoiseField createFinalDensityField(ChunkAccess chunk, SeededNoiseHolder noiseHolder,
