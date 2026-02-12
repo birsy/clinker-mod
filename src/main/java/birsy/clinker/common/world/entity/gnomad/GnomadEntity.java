@@ -1,6 +1,6 @@
 package birsy.clinker.common.world.entity.gnomad;
 
-import birsy.clinker.common.world.entity.GroundLocomoteEntity;
+import birsy.clinker.common.world.entity.GroundLocomotionEntity;
 import birsy.clinker.common.world.entity.gnomad.gnomind.squad.GnomadSquad;
 import birsy.clinker.common.world.entity.gnomad.gnomind.squad.GnomadSquads;
 import birsy.clinker.core.Clinker;
@@ -15,12 +15,11 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
 
 
 import static net.minecraft.world.entity.monster.Monster.createMonsterAttributes;
 
-public abstract class GnomadEntity extends GroundLocomoteEntity implements Enemy {
+public abstract class GnomadEntity extends GroundLocomotionEntity implements Enemy {
     public GnomadSquad squad;
 
     

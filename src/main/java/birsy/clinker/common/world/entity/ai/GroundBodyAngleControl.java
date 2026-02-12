@@ -1,15 +1,14 @@
 package birsy.clinker.common.world.entity.ai;
 
-import birsy.clinker.common.world.entity.GroundLocomoteEntity;
-import birsy.clinker.core.util.PropertyModifierStack;
+import birsy.clinker.common.world.entity.GroundLocomotionEntity;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
 
 public class GroundBodyAngleControl extends BodyRotationControl {
-    protected final GroundLocomoteEntity me;
+    protected final GroundLocomotionEntity me;
     public final LookTargetController lookTargetController;
 
-    public GroundBodyAngleControl(GroundLocomoteEntity pMob) {
+    public GroundBodyAngleControl(GroundLocomotionEntity pMob) {
         super(pMob);
         this.me = pMob;
         this.lookTargetController = new LookTargetController(pMob);

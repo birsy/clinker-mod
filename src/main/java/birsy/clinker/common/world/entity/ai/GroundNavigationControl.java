@@ -1,7 +1,5 @@
 package birsy.clinker.common.world.entity.ai;
 
-import birsy.clinker.core.Clinker;
-import net.minecraft.core.Vec3i;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
@@ -9,10 +7,10 @@ import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
 import net.tslat.smartbrainlib.api.core.navigation.SmoothGroundNavigation;
 
-public class ClinkerSmoothGroundNavigation extends SmoothGroundNavigation {
+public class GroundNavigationControl extends SmoothGroundNavigation {
     protected final float minDistanceToNode;
 
-    public ClinkerSmoothGroundNavigation(Mob mob, Level level, float minDistanceToNode) {
+    public GroundNavigationControl(Mob mob, Level level, float minDistanceToNode) {
         super(mob, level);
         this.minDistanceToNode = minDistanceToNode;
         this.maxDistanceToWaypoint = 0.5F;

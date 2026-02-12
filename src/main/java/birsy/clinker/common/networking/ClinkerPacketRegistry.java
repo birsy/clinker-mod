@@ -28,7 +28,7 @@ public class ClinkerPacketRegistry {
         // client bound
         registrar.playToClient(ClientboundPushPacket.TYPE, ClientboundPushPacket.STREAM_CODEC, ClientboundPushPacket::handle);
 
-        registrar.playToClient(ClientboundGroundLocomotorSyncPacket.TYPE, ClientboundGroundLocomotorSyncPacket.STREAM_CODEC, ClientboundGroundLocomotorSyncPacket::handle);
+        registrar.playToClient(ClientboundMobLocomotionSyncPacket.TYPE, ClientboundMobLocomotionSyncPacket.STREAM_CODEC, ClientboundMobLocomotionSyncPacket::handle);
 
         registrar.playToClient(ClientboundRopeEntityInitPacket.TYPE,
                 ClientboundRopeEntityInitPacket.STREAM_CODEC,

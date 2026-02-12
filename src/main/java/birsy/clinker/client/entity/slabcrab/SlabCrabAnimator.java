@@ -43,9 +43,9 @@ public class SlabCrabAnimator extends Animator<SlabCrabEntity, SlabCrabSkeleton>
         this.awakeIdleAnim.setMixFactor(1F);
         this.awakeIdleAnim.setTime(time);
         float walkMult = 10;
-        float walkFac = entity.getWalkAmount(1.0F) * walkMult * 2,
-              strafeFac = entity.getStrafeAmount(1.0F) * walkMult;
-        float walkTime = entity.getCumulativeWalk() * 20;
+        float walkFac = entity.getForwardLocomotionAmount(1.0F) * walkMult * 2,
+              strafeFac = entity.getStrafeLocomotionAmount(1.0F) * walkMult;
+        float walkTime = entity.getCumulativeLocomotionAmount() * 30;
         this.walkBobAnim.setMixFactor(Mth.sqrt(walkFac * walkFac + strafeFac * strafeFac));
         this.walkBobAnim.setTime(walkTime);
         this.walkLegsAnim.setMixFactor(walkFac);

@@ -1,14 +1,11 @@
 package birsy.clinker.client.entity.mogul;
 
 import birsy.clinker.common.world.entity.gnomad.mogul.MogulAttackHandler;
-import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.common.world.entity.gnomad.mogul.GnomadMogulEntity;
 import foundry.veil.api.client.necromancer.animation.Animation;
 import foundry.veil.api.client.necromancer.animation.Animator;
 import net.minecraft.core.Direction;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.tslat.smartbrainlib.util.RandomUtil;
@@ -98,13 +95,13 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
             this.floatingTransition = Mth.lerp(0.1F, this.floatingTransition,  0.0F);
         }
 
-        float moveTime = entity.getCumulativeWalk() * 2.3F;
+        float moveTime = entity.getCumulativeLocomotionAmount() * 2.3F;
 
-        float walkFac = Mth.clamp(5 * entity.getWalkAmount(1.0F), -0.8F, 0.8F) * (1 - this.floatingTransition);
+        float walkFac = Mth.clamp(5 * entity.getForwardLocomotionAmount(1.0F), -0.8F, 0.8F) * (1 - this.floatingTransition);
         this.walkAnim.setMixFactor(walkFac);
         this.walkAnim.setTime(moveTime);
 
-        float strafeFac = Mth.clamp(8 * entity.getStrafeAmount(1.0F), -0.8F, 0.8F) * (1 - this.floatingTransition);
+        float strafeFac = Mth.clamp(8 * entity.getStrafeLocomotionAmount(1.0F), -0.8F, 0.8F) * (1 - this.floatingTransition);
         this.strafeAnim.setMixFactor(strafeFac);
         this.strafeAnim.setTime(moveTime);
 
@@ -355,7 +352,7 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
             skeleton.MogulRightLeg.rotateDeg(-8 * Mth.cos(time * 0.05F) * mixFactor * globalDegree, Direction.Axis.X);
 
             Vec3 velocity = parent.getDeltaMovement();
-            float walkAmount = parent.getWalkAmount(1.0F), strafeAmount = parent.getStrafeAmount(1.0F);
+            float walkAmount = parent.getForwardLocomotionAmount(1.0F), strafeAmount = parent.getStrafeLocomotionAmount(1.0F);
             if (velocity.x - strafeAmount != 0 || velocity.z + walkAmount != 0) {
                 velocity = velocity.multiply(1, 0, 1);
                 // rotate the velocity based off the body rot
@@ -381,7 +378,7 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
                 }
             }
 
-            float moveTime = parent.getCumulativeWalk() * 2.3F;
+            float moveTime = parent.getCumulativeLocomotionAmount() * 2.3F;
             float walkFac = Mth.sqrt(walkAmount * walkAmount + strafeAmount * strafeAmount) * 10;
             skeleton.MogulLeftLeg.rotateDeg(20 * Mth.sin(moveTime) * mixFactor * globalDegree * walkFac, Direction.Axis.X);
             skeleton.MogulRightLeg.rotateDeg(20 * Mth.sin(moveTime + Mth.PI) * mixFactor * globalDegree * walkFac, Direction.Axis.X);

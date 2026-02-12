@@ -1,7 +1,7 @@
 package birsy.clinker.common.world.entity;
 
 import birsy.clinker.common.networking.packet.debug.ClientboundPathfindingDebugPacket;
-import birsy.clinker.common.world.entity.ai.ClinkerSmoothGroundNavigation;
+import birsy.clinker.common.world.entity.ai.GroundNavigationControl;
 import birsy.clinker.common.world.entity.ai.behaviors.SetRandomWalkTargetCloseEnough;
 import birsy.clinker.common.world.entity.rope.RopeEntity;
 import birsy.clinker.common.world.entity.rope.RopeEntitySegment;
@@ -75,7 +75,7 @@ public class TestRopeEntity extends RopeEntity<RopeEntitySegment> implements Sma
 
     @Override
     protected PathNavigation createNavigation(Level pLevel) {
-        return new ClinkerSmoothGroundNavigation(this, pLevel, 1.5F);
+        return new GroundNavigationControl(this, pLevel, 1.5F);
     }
 
     @Override

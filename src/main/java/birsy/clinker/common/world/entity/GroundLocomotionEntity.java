@@ -1,6 +1,6 @@
 package birsy.clinker.common.world.entity;
 
-import birsy.clinker.common.networking.packet.ClientboundGroundLocomotorSyncPacket;
+import birsy.clinker.common.networking.packet.ClientboundMobLocomotionSyncPacket;
 import birsy.clinker.common.world.entity.ai.*;
 import birsy.clinker.core.Clinker;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
@@ -11,7 +11,6 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
@@ -31,47 +30,34 @@ import net.tslat.smartbrainlib.util.EntityRetrievalUtil;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
-public class GroundLocomoteEntity extends PathfinderMob {
-    private static final EntityDataAccessor<Float> DATA_SYNCED_BODY_ROTATION =
-            SynchedEntityData.defineId(GroundLocomoteEntity.class, EntityDataSerializers.FLOAT);
-    public final Vector3f walk = new Vector3f(), previousWalk = new Vector3f();
-    
-    Vector3f smoothedWalk = new Vector3f();
-
-    float cumulativeWalkGoal = 0;
-    float cumulativeWalk = 0;
+public class GroundLocomotionEntity extends PathfinderMob {
+    protected static final EntityDataAccessor<Float> DATA_SYNCED_BODY_ROTATION =
+            SynchedEntityData.defineId(GroundLocomotionEntity.class, EntityDataSerializers.FLOAT);
+    public final Vector3f locomotionVector = new Vector3f(),
+                          previousLocomotionVector = new Vector3f(),
+                          smoothedLocomotionVector = new Vector3f(),
+                          smoothedLocomotionGoalVector = new Vector3f();
+    protected float cumulativeLocomotionAmount = 0, cumulativeLocomotionAmountGoal = 0;
     protected final Scheduler scheduler = new Scheduler();
 
-    protected GroundLocomoteEntity(EntityType<? extends PathfinderMob> pEntityType, Level pLevel) {
+    protected GroundLocomotionEntity(EntityType<? extends PathfinderMob> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         this.moveControl = new GroundMoveControl(this);
         this.lookControl = new GroundLookAngleControl(this);
     }
-
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(DATA_SYNCED_BODY_ROTATION, 0.0F);
     }
-
-    public void setSyncedBodyRotation(float rotation) {
-        this.getEntityData().set(DATA_SYNCED_BODY_ROTATION, rotation);
-    }
-
-    public float getSyncedBodyRotation() {
-        return this.getEntityData().get(DATA_SYNCED_BODY_ROTATION);
-    }
-
     @Override
     protected PathNavigation createNavigation(Level pLevel) {
-        return new ClinkerSmoothGroundNavigation(this, pLevel, 0.5F);
+        return new GroundNavigationControl(this, pLevel, 0.5F);
     }
-
     @Override
     protected BodyRotationControl createBodyControl() {
         return new GroundBodyAngleControl(this);
     }
-
     @Override
     public GroundMoveControl getMoveControl() {
         return (GroundMoveControl) super.getMoveControl();
@@ -86,67 +72,79 @@ public class GroundLocomoteEntity extends PathfinderMob {
 
     @Override
     public void tick() {
-        this.previousWalk.set(walk);
+        this.previousLocomotionVector.set(locomotionVector);
         this.scheduler.tick();
         super.tick();
         if (this.level().isClientSide()) {
-            this.smoothedWalk.lerp(this.walk,0.3F);
-            this.cumulativeWalk = Mth.lerp(0.5F, this.cumulativeWalk, this.cumulativeWalkGoal);
+            this.locomotionVector.zero();
+            this.smoothedLocomotionVector.lerp(smoothedLocomotionGoalVector, 0.2F);
+            this.cumulativeLocomotionAmount = Mth.lerp(0.5F, this.cumulativeLocomotionAmount, this.cumulativeLocomotionAmountGoal);
         } else {
             this.getBodyRotationControl().tick();
         }
     }
 
     @Override
+    public void setSpeed(float speed) {
+        float zza = this.zza;
+        super.setSpeed(speed);
+        this.setZza(zza);
+    }
+
+    @Override
+    public void travel(Vec3 travelVector) {
+        super.travel(travelVector);
+    }
+
+    @Override
     protected void customServerAiStep() {
         this.debugMove();
-        Vec3 positionPriorToWalking = this.position();
-        this.move(MoverType.SELF, new Vec3(walk.x, walk.y, walk.z));
-        Vec3 walkedVector = this.position().subtract(positionPriorToWalking);
-        //if (!this.onGround()) walkedVector = walkedVector.scale(0);
-
-        float distancedActuallyWalked = (float) walkedVector.length();
-        this.cumulativeWalk += distancedActuallyWalked;
-
-        PacketDistributor.sendToPlayersTrackingEntity(this, new ClientboundGroundLocomotorSyncPacket(this.getId(), walkedVector.toVector3f(), this.cumulativeWalk));
+        this.setYya(locomotionVector.y);
+        Clinker.LOGGER.info("{}", locomotionVector.length());
+        if (this.locomotionVector.x != 0 || this.locomotionVector.y != 0 || this.locomotionVector.z != 0) this.setSpeed(0.5F);
+        if (this.locomotionVector.x != 0 || this.locomotionVector.z != 0) {
+            float inverseAngle = -this.getYRot();
+            float sinA = Mth.sin(inverseAngle * Mth.DEG_TO_RAD), cosA = Mth.cos(inverseAngle *  Mth.DEG_TO_RAD);
+            // rotated because xxa/zza are relative to rotation
+            this.setXxa(locomotionVector.x * cosA - locomotionVector.z * sinA);
+            this.setZza(locomotionVector.z * cosA + locomotionVector.x * sinA);
+        } else {
+            this.setXxa(0); this.setZza(0);
+        }
+        if (this.onGround()) {
+            double lateralDistanceMoved = Mth.length(this.getDeltaMovement().x, this.getDeltaMovement().z);
+            this.cumulativeLocomotionAmount += (float) lateralDistanceMoved;
+        }
+        PacketDistributor.sendToPlayersTrackingEntity(this, new ClientboundMobLocomotionSyncPacket(this.getId(), this.locomotionVector, this.cumulativeLocomotionAmount));
     }
 
-    public void walk(float x, float y, float z) {
-        this.walk.set(x, y, z);
+    public void setSyncedBodyRotation(float rotation) {
+        this.getEntityData().set(DATA_SYNCED_BODY_ROTATION, rotation);
+    }
+    public float getSyncedBodyRotation() {
+        return this.getEntityData().get(DATA_SYNCED_BODY_ROTATION);
     }
 
-    public void walk(Vector3fc vector3fc) {
-        this.walk.set(vector3fc);
-    }
+    public void setLocomotionVector(float x, float y, float z) { this.locomotionVector.set(x, y, z);}
+    public void setLocomotionVector(Vector3fc vec) { this.setLocomotionVector(vec.x(), vec.y(), vec.z()); }
 
-    private final Vector3f returnWalkVector = new Vector3f();
-    public Vector3fc getWalkVector(float partialTicks) {
-        returnWalkVector.set(smoothedWalk);
-        return returnWalkVector;
-    }
-
-    private final Vector3f returnFacingVector = new Vector3f();
+    private final Vector3f facingDir = new Vector3f();
     public Vector3fc getBodyFacingDirection(float partialTicks) {
-        float angle = - Mth.lerp(partialTicks, this.yBodyRotO, this.yBodyRot) * (float) (Math.PI / 180.0);
-        return returnFacingVector.set(Mth.sin(angle), 0, Mth.cos(angle));
+        float angle = -Mth.rotLerp(partialTicks, this.yBodyRotO, this.yBodyRot) * Mth.DEG_TO_RAD;
+        return facingDir.set(Mth.sin(angle), 0, Mth.cos(angle));
     }
 
-    public float getWalkAmount(float partialTick) {
-        return this.getWalkVector(partialTick).dot(this.getBodyFacingDirection(partialTick));
+    public Vector3fc getLocomotionVectorForAnimation() { return smoothedLocomotionVector; }
+    public float getForwardLocomotionAmount(float partialTick) {
+        return this.getLocomotionVectorForAnimation().dot(this.getBodyFacingDirection(partialTick));
+    }
+    public float getStrafeLocomotionAmount(float partialTick) {
+        Vector3fc bodyFacingDir = this.getBodyFacingDirection(partialTick);
+        return this.getLocomotionVectorForAnimation().dot(-bodyFacingDir.z(), bodyFacingDir.y(), bodyFacingDir.x());
     }
 
-    private final Vector3f strafeDir = new Vector3f(1, 0, 0);
-    public float getStrafeAmount(float partialTick) {
-        return this.getWalkVector(partialTick).dot(this.getBodyFacingDirection(partialTick).cross(0, 1, 0, strafeDir));
-    }
-
-    public void setCumulativeWalk(float amount) {
-        this.cumulativeWalkGoal = amount;
-    }
-
-    public float getCumulativeWalk() {
-        return cumulativeWalk;
-    }
+    public void setCumulativeLocomotionAmount(float amount) { this.cumulativeLocomotionAmountGoal = amount; }
+    public float getCumulativeLocomotionAmount() { return cumulativeLocomotionAmount; }
 
     private void debugMove() {
         float maxSpeed = 1.0F;
@@ -202,12 +200,8 @@ public class GroundLocomoteEntity extends PathfinderMob {
         this.lookAt(EntityAnchorArgument.Anchor.EYES, new Vec3(x, y, z));
         this.lookControl.setLookAt(x, y, z);
         if (this.position().distanceToSqr(x, y, z) > completionRadius*completionRadius) {
-            //this.getMoveControl().setWantedPosition(x, y, z, maxSpeed);
             Path path = this.getNavigation().createPath(new BlockPos((int) x, (int) y, (int) z), 0);
             if (path != null) this.getNavigation().moveTo(path, maxSpeed);
-        } else {
-            //this.getMoveControl().setWantedPosition(this.getX(), this.getY(), this.getZ(), 0);
-           // this.getNavigation().stop();
         }
     }
 }

@@ -1,25 +1,25 @@
 package birsy.clinker.common.world.entity.ai;
 
-import birsy.clinker.common.world.entity.GroundLocomoteEntity;
+import birsy.clinker.common.world.entity.GroundLocomotionEntity;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ai.control.LookControl;
 
 public class GroundLookAngleControl extends LookControl {
     public final LookTargetController lookTargetController;
 
-    public GroundLookAngleControl(GroundLocomoteEntity mob) {
+    public GroundLookAngleControl(GroundLocomotionEntity mob) {
         super(mob);
         this.lookTargetController = new LookTargetController(mob);
     }
 
-    public GroundLocomoteEntity getEntity() {
-        return (GroundLocomoteEntity) this.mob;
+    public GroundLocomotionEntity getEntity() {
+        return (GroundLocomotionEntity) this.mob;
     }
 
     @Override
     public void tick() {
         this.lookTargetController.tick();
-        GroundLocomoteEntity me = this.getEntity();
+        GroundLocomotionEntity me = this.getEntity();
         float desiredYAngle = Mth.wrapDegrees(this.lookTargetController.getDesiredYaw().orElse(me.yHeadRot));
         float desiredXAngle = Mth.wrapDegrees(this.lookTargetController.getDesiredPitch().orElse(me.getXRot()));
         float lerpFactor = this.lookTargetController.getRotationSpeed();
