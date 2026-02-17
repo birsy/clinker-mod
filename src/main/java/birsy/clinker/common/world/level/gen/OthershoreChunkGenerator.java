@@ -287,7 +287,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                         if (!isSolid && waterfallPresence.retrieve(xi, yi, zi) > 0) {
                             chunk.markPosForPostprocessing(pos);
                         }
-
+                        
                         // fill heightmaps
                         int index = xi + zi * 16;
                         if (!filledWorldSurfaceHeight[index]) {
@@ -330,7 +330,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         int localMaxCaveHeight = maxCaveHeight - minY + 1;
         NoiseField caveDensityField = cache.fillNoiseField(minY, maxCaveHeight, ClinkerNoiseComputers.CAVES.get());
         double[] caveDensityFieldArray = caveDensityField.array();
-        caveDensityField.byBlockPadded(localMaxCaveHeight, chunkHeight - 1,
+        caveDensityField.byBlock(localMaxCaveHeight, chunkHeight - 1,
                 (index, x, y, z) -> { if (y > localMaxCaveHeight) caveDensityFieldArray[index] = -100; }
         );
         NoiseField caveEntranceMaskField =
@@ -338,7 +338,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         for (ModifiesCaveDensity worldFeature : worldFeaturesInChunk.byCapability(ClinkerWorldFeatureCapabilities.MODIFIES_CAVE_DENSITY.get()))
             worldFeature.modifyCaveDensity(minX, minY, minZ, maxCaveHeight, cache, caveDensityField, caveEntranceMaskField, worldContext);
         // combine mask and height
-        caveDensityField.byBlockPadded(
+        caveDensityField.byBlock(
                 0, localMaxCaveHeight,
                 (index, x, y, z) -> {
                     double dist = distanceToHeightmap.retrieve(x, y, z) + 24;
@@ -352,12 +352,12 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         // special 2x2x2 cell size for extra vertical detail...
         NoiseField finalDensityField = new InterpolatedNoiseField(chunkHeight, 1, 1, 0);
         double[] finalDensityFieldArray = finalDensityField.array();
-        finalDensityField.byBlockPadded(0, maxCaveHeight - minY, (index, x, y, z) -> {
+        finalDensityField.byBlock(0, maxCaveHeight - minY, (index, x, y, z) -> {
             double surfaceDensity = surfaceDensityField.retrieve(x, y, z);
             double caveDensity = caveDensityField.retrieve(x, y, z);
             finalDensityFieldArray[index] = -MathUtils.smoothMinExpo(-surfaceDensity, -caveDensity, 8);
         });
-        finalDensityField.byBlockPadded(maxCaveHeight - minY + 1, chunkHeight - 1,
+        finalDensityField.byBlock(maxCaveHeight - minY + 1, chunkHeight - 1,
                 (index, x, y, z) -> finalDensityFieldArray[index] = surfaceDensityField.retrieve(x, y, z)
         );
 

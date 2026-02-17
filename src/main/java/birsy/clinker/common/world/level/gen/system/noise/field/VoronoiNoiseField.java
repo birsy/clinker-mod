@@ -1,32 +1,29 @@
 package birsy.clinker.common.world.level.gen.system.noise.field;
 
 import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
-import birsy.clinker.core.Clinker;
+import birsy.clinker.common.world.level.gen.system.noise.VoronoiEvaluator;
 import net.minecraft.util.Mth;
 
 import java.util.BitSet;
 
-public final class InterpolatedNoiseField extends NoiseField3D {
-    public final int xzCellScale, xzCellSize, xzCellMask, xzCellCount, xzCellStride;
-    public final int yCellScale, yCellSize, yCellMask, yCellCount;
-    final double invXZCellSize, invYCellSize;
+public final class VoronoiNoiseField extends NoiseField3D {
+    final VoronoiEvaluator evaluator;
+    public final int xzCellScale, xzCellSize, xzCellCount, xzCellStride;
+    public final int yCellScale, yCellSize, yCellCount;
     final BitSet filledLayers, fillMask;
     public final double[] field;
 
-    public InterpolatedNoiseField(int chunkHeight, int xzCellScale, int yCellScale, int paddingCells) {
+    public VoronoiNoiseField(VoronoiEvaluator evaluator, int chunkHeight, int xzCellScale, int yCellScale, int paddingCells) {
         super(chunkHeight, paddingCells, paddingCells << xzCellScale);
 
+        this.evaluator = evaluator;
         this.xzCellScale = xzCellScale;
         this.xzCellSize = 1 << xzCellScale;
-        this.xzCellMask = this.xzCellSize - 1;
-        this.invXZCellSize = 1.0 / this.xzCellSize;
         this.xzCellCount = (CHUNK_WIDTH >> xzCellScale) + 1 + paddingCells * 2; // padding
         this.xzCellStride = this.xzCellCount * this.xzCellCount;
 
         this.yCellScale = yCellScale;
         this.yCellSize = 1 << yCellScale;
-        this.yCellMask = this.yCellSize - 1;
-        this.invYCellSize = 1.0 / this.yCellSize;
         this.yCellCount = (chunkHeight >> yCellScale) + 1;
 
         this.field = new double[this.xzCellStride * this.yCellCount];
@@ -41,26 +38,8 @@ public final class InterpolatedNoiseField extends NoiseField3D {
 
     @Override
     public double retrieve(int x, int y, int z) {
-        int paddedX = x + paddingBlocks,
-            paddedZ = z + paddingBlocks;
-        int cellX = paddedX >> xzCellScale,
-            cellY = y >> yCellScale,
-            cellZ = paddedZ >> xzCellScale;
-        int localX = paddedX & xzCellMask,
-            localY = y & yCellMask,
-            localZ = paddedZ & xzCellMask;
-        double interpX = localX * invXZCellSize,
-               interpY = localY * invYCellSize,
-               interpZ = localZ * invXZCellSize;
-        int nextX = cellX + ((localX | -localX) >>> 31),
-            nextY = cellY + ((localY | -localY) >>> 31),
-            nextZ = cellZ + ((localZ | -localZ) >>> 31);
-        return Mth.lerp3(interpX, interpZ, interpY,
-                field[cellX + cellZ * xzCellCount + cellY * xzCellStride], field[nextX + cellZ * xzCellCount + cellY * xzCellStride],
-                field[cellX + nextZ * xzCellCount + cellY * xzCellStride], field[nextX + nextZ * xzCellCount + cellY * xzCellStride],
-                field[cellX + cellZ * xzCellCount + nextY * xzCellStride], field[nextX + cellZ * xzCellCount + nextY * xzCellStride],
-                field[cellX + nextZ * xzCellCount + nextY * xzCellStride], field[nextX + nextZ * xzCellCount + nextY * xzCellStride]
-        );
+        int cellIndex = evaluator.getNearestCellIndex(x, y, z);
+        return field[cellIndex];
     }
 
     @Override
@@ -87,7 +66,10 @@ public final class InterpolatedNoiseField extends NoiseField3D {
                 int globalZ = (cellZ << xzCellScale) + minZ;
                 for (int cellX = 0; cellX < xzCellCount; cellX++) {
                     int globalX = (cellX << xzCellScale) + minX;
-                    field[index++] = filler.compute(globalX, globalY, globalZ, context);
+                    double cellCenterX = evaluator.cellCenterX(globalX, globalY, globalZ, index),
+                           cellCenterY = evaluator.cellCenterY(globalX, globalY, globalZ, index),
+                           cellCenterZ = evaluator.cellCenterZ(globalX, globalY, globalZ, index);
+                    field[index++] = filler.compute((int) cellCenterX, (int) cellCenterY, (int) cellCenterZ, context);
                 }
             }
         }
@@ -122,22 +104,6 @@ public final class InterpolatedNoiseField extends NoiseField3D {
     @Override
     public void byBlock(int minLocalY, int maxLocalY, NoiseFieldVisitors.PositionVisitor visitor) {
         int cellYStart = Math.max(0, minLocalY >> yCellScale),
-                cellYEnd = Math.min(yCellCount - 1, maxLocalY >> yCellScale);
-        int index = cellYStart * xzCellStride;
-        for (int cellY = cellYStart; cellY <= cellYEnd; cellY++) {
-            int bY = cellY << yCellScale;
-            for (int cellZ = 0; cellZ < xzCellCount; cellZ++) {
-                int bZ = (cellZ << xzCellScale) - paddingBlocks;
-                for (int cellX = 0; cellX < xzCellCount; cellX++) {
-                    int bX = (cellX << xzCellScale) - paddingBlocks;
-                    visitor.visit(index++, bX, bY, bZ);
-                }
-            }
-        }
-    }
-    @Override
-    public void visit(int minLocalY, int maxLocalY, NoiseFieldVisitors.BigVisitor visitor) {
-        int cellYStart = Math.max(0, minLocalY >> yCellScale),
             cellYEnd = Math.min(yCellCount - 1, maxLocalY >> yCellScale);
         int index = cellYStart * xzCellStride;
         for (int cellY = cellYStart; cellY <= cellYEnd; cellY++) {
@@ -146,7 +112,29 @@ public final class InterpolatedNoiseField extends NoiseField3D {
                 int bZ = (cellZ << xzCellScale) - paddingBlocks;
                 for (int cellX = 0; cellX < xzCellCount; cellX++) {
                     int bX = (cellX << xzCellScale) - paddingBlocks;
-                    visitor.visit(index++, bX, bY, bZ, cellX, cellY, cellZ);
+                    double cellCenterX = evaluator.cellCenterX(bX, bY, bZ, index),
+                           cellCenterY = evaluator.cellCenterY(bX, bY, bZ, index),
+                           cellCenterZ = evaluator.cellCenterZ(bX, bY, bZ, index);
+                    visitor.visit(index++, (int) cellCenterX, (int) cellCenterY, (int) cellCenterZ);
+                }
+            }
+        }
+    }
+    @Override
+    public void visit(int minLocalY, int maxLocalY, NoiseFieldVisitors.BigVisitor visitor) {
+        int cellYStart = Math.max(0, minLocalY >> yCellScale),
+                cellYEnd = Math.min(yCellCount - 1, maxLocalY >> yCellScale);
+        int index = cellYStart * xzCellStride;
+        for (int cellY = cellYStart; cellY <= cellYEnd; cellY++) {
+            int bY = cellY << yCellScale;
+            for (int cellZ = 0; cellZ < xzCellCount; cellZ++) {
+                int bZ = (cellZ << xzCellScale) - paddingBlocks;
+                for (int cellX = 0; cellX < xzCellCount; cellX++) {
+                    int bX = (cellX << xzCellScale) - paddingBlocks;
+                    double cellCenterX = evaluator.cellCenterX(bX, bY, bZ, index),
+                           cellCenterY = evaluator.cellCenterY(bX, bY, bZ, index),
+                           cellCenterZ = evaluator.cellCenterZ(bX, bY, bZ, index);
+                    visitor.visit(index++, (int) cellCenterX, (int) cellCenterY, (int) cellCenterZ, cellX, cellY, cellZ);
                 }
             }
         }

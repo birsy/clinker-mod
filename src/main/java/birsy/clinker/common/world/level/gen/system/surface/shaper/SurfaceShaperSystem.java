@@ -93,7 +93,7 @@ public class SurfaceShaperSystem {
             SurfaceShaper shaper = getSurfaceShaper(biome);
 
             shaper.prefillHeightmapNoiseFields(cache);
-            heightmapField.byBlockPadded(
+            heightmapField.byBlock(
                     (index, x, y, z) -> {
                         double weight = biomeWeightField.retrieve(x, y, z);
                         heightmapArray[index] += shaper.getHeight(x + minX, z + minZ, weight, cache.context);
@@ -118,7 +118,7 @@ public class SurfaceShaperSystem {
 
         int min = 0 - heightmap.paddingBlocks, max = 15 + heightmap.paddingBlocks;
         double[] gradientMapArray = gradientMap.array();
-        gradientMap.byBlockPadded((index, x, y, z) -> {
+        gradientMap.byBlock((index, x, y, z) -> {
             double xHeight0 = heightmap.retrieve(Math.clamp(x - 1, min, max), 0, z),
                    xHeight1 = heightmap.retrieve(Math.clamp(x + 1, min, max), 0, z);
             double dX = (xHeight1 - xHeight0) * 0.5;
@@ -137,7 +137,7 @@ public class SurfaceShaperSystem {
     public NoiseField generateApproximateDistanceToHeightmap(int chunkHeight, int minY, NoiseField heightmap, NoiseField squaredHeightmapGradient) {
         NoiseField approxDistance = NoiseFieldTypes.COARSE.create(chunkHeight, 0);
         double[] approxDistanceArray = approxDistance.array();
-        approxDistance.byBlockPadded((index, x, y, z) -> {
+        approxDistance.byBlock((index, x, y, z) -> {
             double heightmapValue = heightmap.retrieve(x, y, z),
                    squaredHeightmapGradientValue = squaredHeightmapGradient.retrieve(x, y, z);
             approxDistanceArray[index] = ((y + minY) - heightmapValue) / Math.sqrt(1.0 + squaredHeightmapGradientValue);
@@ -173,10 +173,10 @@ public class SurfaceShaperSystem {
         NoiseField surfaceDensityField = NoiseFieldTypes.FINE.create(chunkHeight, 0);
         double[] surfaceDensityFieldArray = surfaceDensityField.array();
         Arrays.fill(surfaceDensityFieldArray, 0);
-        surfaceDensityField.byBlockPadded(0, lowerBound - minY - 1,
+        surfaceDensityField.byBlock(0, lowerBound - minY - 1,
                 (index, x, y, z) -> surfaceDensityFieldArray[index] = distanceToHeightmap.retrieve(x, y, z)
         );
-        surfaceDensityField.byBlockPadded(upperBound - minY + 1, chunkHeight - 1,
+        surfaceDensityField.byBlock(upperBound - minY + 1, chunkHeight - 1,
                 (index, x, y, z) -> surfaceDensityFieldArray[index] = distanceToHeightmap.retrieve(x, y, z)
         );
 
@@ -207,7 +207,7 @@ public class SurfaceShaperSystem {
         NoiseField cliffRockField = cache.fillNoiseField(lowerSurfaceBound, upperSurfaceBound, ClinkerNoiseComputers.CLIFF_ROCKS);
         double cliffSize = 6;
         double[] surfaceDensityFieldArray = surfaceDensityField.array();
-        surfaceDensityField.byBlockPadded(lowerSurfaceBound - minY, upperSurfaceBound - minY,
+        surfaceDensityField.byBlock(lowerSurfaceBound - minY, upperSurfaceBound - minY,
                 (index, x, y, z) -> {
                     // make sure it only occurs when the heightmap is steep
                     double gradientMask = Mth.clampedMap(heightmapGradientField.retrieve(x, y, z), 1, 6, 0, 1);

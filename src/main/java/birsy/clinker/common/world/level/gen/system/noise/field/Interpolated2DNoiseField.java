@@ -53,12 +53,7 @@ public final class Interpolated2DNoiseField extends NoiseField2D {
 
     @Override
     public void byIndex(int minLocalY, int maxLocalY, NoiseFieldVisitors.IndexVisitor visitor) {
-        int index = 0;
-        for (int cellZ = 0; cellZ < cellCount; cellZ++) {
-            for (int cellX = 0; cellX < cellCount; cellX++) {
-                visitor.visit(index++);
-            }
-        }
+        for (int i = 0; i < field.length; i++) visitor.visit(i);
     }
     @Override
     public void byCell(int minLocalY, int maxLocalY, NoiseFieldVisitors.PositionVisitor visitor) {
@@ -73,9 +68,9 @@ public final class Interpolated2DNoiseField extends NoiseField2D {
     public void byBlock(int minLocalY, int maxLocalY, NoiseFieldVisitors.PositionVisitor visitor) {
         int index = 0;
         for (int cellZ = 0; cellZ < cellCount; cellZ++) {
-            int bZ = cellZ << cellScale;
+            int bZ = (cellZ << cellScale) - paddingBlocks;
             for (int cellX = 0; cellX < cellCount; cellX++) {
-                int bX = cellX << cellScale;
+                int bX = (cellX << cellScale) - paddingBlocks;
                 visitor.visit(index++, bX, 0, bZ);
             }
         }
@@ -84,45 +79,10 @@ public final class Interpolated2DNoiseField extends NoiseField2D {
     public void visit(int minLocalY, int maxLocalY, NoiseFieldVisitors.BigVisitor visitor) {
         int index = 0;
         for (int cellZ = 0; cellZ < cellCount; cellZ++) {
-            int bZ = cellZ << cellScale;
+            int bZ = (cellZ << cellScale) - paddingBlocks;
             for (int cellX = 0; cellX < cellCount; cellX++) {
-                int bX = cellX << cellScale;
+                int bX = (cellX << cellScale) - paddingBlocks;
                 visitor.visit(index++, bX, 0, bZ, cellX, 0, cellZ);
-            }
-        }
-    }
-    @Override
-    public void byBlockPadded(int minLocalY, int maxLocalY, NoiseFieldVisitors.PositionVisitor visitor) {
-        int index = 0;
-        for (int cellZ = 0; cellZ < cellCount; cellZ++) {
-            int bZ = (cellZ << cellScale) - paddingBlocks;
-            for (int cellX = 0; cellX < cellCount; cellX++) {
-                int bX = (cellX << cellScale) - paddingBlocks;
-                visitor.visit(index++, bX, 0, bZ);
-            }
-        }
-    }
-    @Override
-    public void byCellPadded(int minLocalY, int maxLocalY, NoiseFieldVisitors.PositionVisitor visitor) {
-        int index = 0;
-        for (int cellZ = 0; cellZ < cellCount; cellZ++) {
-            int cZ = cellZ - paddingCells;
-            for (int cellX = 0; cellX < cellCount; cellX++) {
-                int cX = cellX - paddingCells;
-                visitor.visit(index++, cX, 0, cZ);
-            }
-        }
-    }
-    @Override
-    public void visitPadded(int minLocalY, int maxLocalY, NoiseFieldVisitors.BigVisitor visitor) {
-        int index = 0;
-        for (int cellZ = 0; cellZ < cellCount; cellZ++) {
-            int cZ = cellZ - paddingCells;
-            int bZ = (cellZ << cellScale) - paddingBlocks;
-            for (int cellX = 0; cellX < cellCount; cellX++) {
-                int cX = cellX - paddingCells;
-                int bX = (cellX << cellScale) - paddingBlocks;
-                visitor.visit(index++, bX, 0, bZ, cX, 0, cZ);
             }
         }
     }

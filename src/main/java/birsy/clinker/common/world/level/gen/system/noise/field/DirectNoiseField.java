@@ -79,34 +79,6 @@ public final class DirectNoiseField extends NoiseField3D {
         int index = startY * xzStride;
         for (int y = startY; y <= endY; y++) {
             for (int z = 0; z < paddedWidth; z++) {
-                for (int x = 0; x < paddedWidth; x++) {
-                    visitor.visit(index++, x, y, z);
-                }
-            }
-        }
-    }
-    @Override
-    public void byCell(int minLocalY, int maxLocalY, NoiseFieldVisitors.PositionVisitor visitor) {
-        this.byBlock(minLocalY, maxLocalY, visitor);
-    }
-    @Override
-    public void visit(int minLocalY, int maxLocalY, NoiseFieldVisitors.BigVisitor visitor) {
-        int startY = Math.max(0, minLocalY), endY = Math.min(chunkHeight - 1, maxLocalY);
-        int index = startY * xzStride;
-        for (int y = startY; y <= endY; y++) {
-            for (int z = 0; z < paddedWidth; z++) {
-                for (int x = 0; x < paddedWidth; x++) {
-                    visitor.visit(index++, x, y, z, x, y, z);
-                }
-            }
-        }
-    }
-    @Override
-    public void byBlockPadded(int minLocalY, int maxLocalY, NoiseFieldVisitors.PositionVisitor visitor) {
-        int startY = Math.max(0, minLocalY), endY = Math.min(chunkHeight - 1, maxLocalY);
-        int index = startY * xzStride;
-        for (int y = startY; y <= endY; y++) {
-            for (int z = 0; z < paddedWidth; z++) {
                 int bZ = z - paddingBlocks;
                 for (int x = 0; x < paddedWidth; x++) {
                     int bX = x - paddingBlocks;
@@ -116,11 +88,19 @@ public final class DirectNoiseField extends NoiseField3D {
         }
     }
     @Override
-    public void byCellPadded(int minLocalY, int maxLocalY, NoiseFieldVisitors.PositionVisitor visitor) {
-        this.byBlockPadded(minLocalY, maxLocalY, visitor);
+    public void byCell(int minLocalY, int maxLocalY, NoiseFieldVisitors.PositionVisitor visitor) {
+        int startY = Math.max(0, minLocalY), endY = Math.min(chunkHeight - 1, maxLocalY);
+        int index = startY * xzStride;
+        for (int y = startY; y <= endY; y++) {
+            for (int z = 0; z < paddedWidth; z++) {
+                for (int x = 0; x < paddedWidth; x++) {
+                    visitor.visit(index++, x, y, z);
+                }
+            }
+        }
     }
     @Override
-    public void visitPadded(int minLocalY, int maxLocalY, NoiseFieldVisitors.BigVisitor visitor) {
+    public void visit(int minLocalY, int maxLocalY, NoiseFieldVisitors.BigVisitor visitor) {
         int startY = Math.max(0, minLocalY), endY = Math.min(chunkHeight - 1, maxLocalY);
         int index = startY * xzStride;
         for (int y = startY; y <= endY; y++) {
@@ -128,7 +108,7 @@ public final class DirectNoiseField extends NoiseField3D {
                 int bZ = z - paddingBlocks;
                 for (int x = 0; x < paddedWidth; x++) {
                     int bX = x - paddingBlocks;
-                    visitor.visit(index++, bX, y, bZ, bX, y, bZ);
+                    visitor.visit(index++, bX, y, bZ, x, y, z);
                 }
             }
         }

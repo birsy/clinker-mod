@@ -4,7 +4,6 @@ import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
 import birsy.clinker.common.world.level.gen.system.surface.shaper.SurfaceShaper;
-import birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers;
 
 public abstract class SimpleSurfaceShaper extends SurfaceShaper {
     public abstract void prefillDensityNoiseFields(NoiseFieldCache cache, int minSurfaceHeight, int maxSurfaceHeight);
@@ -19,7 +18,7 @@ public abstract class SimpleSurfaceShaper extends SurfaceShaper {
 
         NoiseContext context = cache.context;
         double[] surfaceDensityArray = surfaceDensityField.array();
-        surfaceDensityField.byBlockPadded(lowerGenBound - minY, upperGenBound - minY,
+        surfaceDensityField.byBlock(lowerGenBound - minY, upperGenBound - minY,
                 (index, x, y, z) -> {
                     double weight = biomeWeight.retrieve(x, y, z);
                     double heightmap = heightmapField.retrieve(x, y, z),

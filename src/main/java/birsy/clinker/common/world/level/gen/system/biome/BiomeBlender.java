@@ -3,11 +3,9 @@ package birsy.clinker.common.world.level.gen.system.biome;
 import birsy.clinker.common.world.level.gen.OthershoreBiomeSource;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldTypes;
-import birsy.clinker.core.Clinker;
 import net.minecraft.Util;
 import net.minecraft.core.Holder;
 import net.minecraft.core.QuartPos;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.biome.Biome;
 
 import javax.annotation.Nullable;
@@ -56,7 +54,7 @@ public class BiomeBlender {
         for (Holder<Biome> biome : surfaceBiomeCache.containedBiomes()) {
             NoiseField biomeWeightField = NoiseFieldTypes.COARSE_2D.create(1, padding);
             double[] biomeWeightFieldArray = biomeWeightField.array();
-            biomeWeightField.byBlockPadded((index, x, y, z) -> fillBiomeWeightField(
+            biomeWeightField.byBlock((index, x, y, z) -> fillBiomeWeightField(
                     biome, surfaceBiomeCache, biomeWeightFieldArray,
                     minX, minZ,
                     index, x, z
