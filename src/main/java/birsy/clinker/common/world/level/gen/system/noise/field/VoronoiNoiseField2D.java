@@ -3,13 +3,9 @@ package birsy.clinker.common.world.level.gen.system.noise.field;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
 import birsy.clinker.common.world.level.gen.system.noise.VoronoiEvaluator;
 
-import java.util.BitSet;
-
 public final class VoronoiNoiseField2D extends NoiseField2D {
     private final VoronoiEvaluator evaluator;
-    private final int cellCount;
-    private final int paddedCellCount;
-    private final int cellScale;
+    private final int cellScale, cellCount;
 
     private final double[] field;
     private boolean filled;
@@ -18,11 +14,8 @@ public final class VoronoiNoiseField2D extends NoiseField2D {
         super(paddingCells << cellScale, paddingCells);
         this.evaluator = evaluator;
         this.cellScale = cellScale;
-
-        this.cellCount = 16 >> cellScale;
-        this.paddedCellCount = cellCount + paddingCells * 2;
-
-        this.field = new double[paddedCellCount * paddedCellCount];
+        this.cellCount = (CHUNK_WIDTH >> cellScale) + paddingCells * 2;
+        this.field = new double[cellCount * cellCount];
         this.filled = false;
     }
 
