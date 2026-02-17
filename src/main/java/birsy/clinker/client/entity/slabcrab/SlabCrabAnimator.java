@@ -46,12 +46,24 @@ public class SlabCrabAnimator extends Animator<SlabCrabEntity, SlabCrabSkeleton>
         float walkFac = entity.getForwardLocomotionAmount(1.0F) * walkMult * 2,
               strafeFac = entity.getStrafeLocomotionAmount(1.0F) * walkMult;
         float walkTime = entity.getCumulativeLocomotionAmount() * 30;
-        this.walkBobAnim.setMixFactor(Mth.sqrt(walkFac * walkFac + strafeFac * strafeFac));
+        this.walkBobAnim.setMixFactor((float) Mth.length(walkFac, strafeFac));
+
+        if (Math.abs(walkFac) > Math.abs(strafeFac)) {
+            walkFac = Math.max(Math.abs(walkFac), 0.5F) * Mth.sign(walkFac);
+        } else {
+            strafeFac = Math.max(Math.abs(strafeFac), 0.5F) * Mth.sign(strafeFac);
+        }
+
         this.walkBobAnim.setTime(walkTime);
         this.walkLegsAnim.setMixFactor(walkFac);
         this.walkLegsAnim.setTime(walkTime);
         this.strafeLegsAnim.setMixFactor(strafeFac);
         this.strafeLegsAnim.setTime(walkTime);
+
+        skeleton.leftEye.rotateDeg(netHeadYaw, Direction.Axis.Y);
+        skeleton.rightEye.rotateDeg(netHeadYaw, Direction.Axis.Y);
+        skeleton.leftEye.rotateDeg(headPitch, Direction.Axis.X);
+        skeleton.rightEye.rotateDeg(headPitch, Direction.Axis.X);
     }
 
     private static class IdleAnimation extends Animation<SlabCrabEntity, SlabCrabSkeleton> {
