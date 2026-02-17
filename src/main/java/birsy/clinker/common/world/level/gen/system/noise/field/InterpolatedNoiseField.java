@@ -84,9 +84,9 @@ public final class InterpolatedNoiseField extends NoiseField3D {
         for (int cellY = startCellY; cellY <= endCellY; cellY++) {
             int globalY = (cellY << yCellScale) + minY;
             for (int cellZ = 0; cellZ < xzCellCount; cellZ++) {
-                int globalZ = (cellZ << xzCellScale) + minZ;
+                int globalZ = (cellZ << xzCellScale) + minZ - paddingBlocks;
                 for (int cellX = 0; cellX < xzCellCount; cellX++) {
-                    int globalX = (cellX << xzCellScale) + minX;
+                    int globalX = (cellX << xzCellScale) + minX - paddingBlocks;
                     field[index++] = filler.compute(globalX, globalY, globalZ, context);
                 }
             }
