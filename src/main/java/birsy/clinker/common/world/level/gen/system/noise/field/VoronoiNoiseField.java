@@ -2,7 +2,6 @@ package birsy.clinker.common.world.level.gen.system.noise.field;
 
 import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
 import birsy.clinker.common.world.level.gen.system.noise.VoronoiEvaluator;
-import net.minecraft.util.Mth;
 
 import java.util.BitSet;
 

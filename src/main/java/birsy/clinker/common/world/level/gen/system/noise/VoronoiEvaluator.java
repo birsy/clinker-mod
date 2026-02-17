@@ -1,6 +1,6 @@
 package birsy.clinker.common.world.level.gen.system.noise;
 
-public sealed interface VoronoiEvaluator permits VoronoiEvaluator2d, VoronoiEvaluator3d {
+public sealed interface VoronoiEvaluator permits VoronoiEvaluator2D, VoronoiEvaluator3D {
     int getNearestCellIndex(int bX, int bY, int bZ);
     int getNearestCellIndexLocal(int bX, int bY, int bZ);
 

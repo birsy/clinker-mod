@@ -3,7 +3,7 @@ package birsy.clinker.common.world.level.gen.system.noise;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.levelgen.PositionalRandomFactory;
 
-public final class VoronoiEvaluator2d implements VoronoiEvaluator {
+public final class VoronoiEvaluator2D implements VoronoiEvaluator {
     static final int[] NEIGHBOR_OFFSETS = {
             // edges
            -1,  0,   1,  0,   0, -1,   0,  1,
@@ -24,7 +24,7 @@ public final class VoronoiEvaluator2d implements VoronoiEvaluator {
     final float[] cellCenters;
     final long[] cellHash;
 
-    public VoronoiEvaluator2d(PositionalRandomFactory voronoiRandom, int minX, int minZ, int cellScale, int additionalPadding) {
+    public VoronoiEvaluator2D(PositionalRandomFactory voronoiRandom, int minX, int minZ, int cellScale, int additionalPadding) {
         this.voronoiRandom = voronoiRandom;
         this.cellScale = cellScale;
         this.cellSize = 1 << cellScale;
