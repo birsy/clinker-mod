@@ -39,6 +39,7 @@ public class GroundLocomotionEntity extends PathfinderMob {
                           smoothedLocomotionGoalVector = new Vector3f();
     protected float cumulativeLocomotionAmount = 0, cumulativeLocomotionAmountGoal = 0;
     protected final Scheduler scheduler = new Scheduler();
+    protected LookTargetController.LookTargetHandle baseLookHandle;
 
     protected GroundLocomotionEntity(EntityType<? extends PathfinderMob> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -92,15 +93,9 @@ public class GroundLocomotionEntity extends PathfinderMob {
     }
 
     @Override
-    public void travel(Vec3 travelVector) {
-        super.travel(travelVector);
-    }
-
-    @Override
     protected void customServerAiStep() {
         this.debugMove();
         this.setYya(locomotionVector.y);
-        Clinker.LOGGER.info("{}", locomotionVector.length());
         if (this.locomotionVector.x != 0 || this.locomotionVector.y != 0 || this.locomotionVector.z != 0) this.setSpeed(0.5F);
         if (this.locomotionVector.x != 0 || this.locomotionVector.z != 0) {
             float inverseAngle = -this.getYRot();
@@ -109,13 +104,21 @@ public class GroundLocomotionEntity extends PathfinderMob {
             this.setXxa(locomotionVector.x * cosA - locomotionVector.z * sinA);
             this.setZza(locomotionVector.z * cosA + locomotionVector.x * sinA);
         } else {
-            this.setXxa(0); this.setZza(0);
+            this.setXxa(0);
+            this.setZza(0);
         }
         if (this.onGround()) {
             double lateralDistanceMoved = Mth.length(this.getDeltaMovement().x, this.getDeltaMovement().z);
             this.cumulativeLocomotionAmount += (float) lateralDistanceMoved;
         }
         PacketDistributor.sendToPlayersTrackingEntity(this, new ClientboundMobLocomotionSyncPacket(this.getId(), this.locomotionVector, this.cumulativeLocomotionAmount));
+
+        this.updateBaseLookDirection();
+    }
+
+    public void updateBaseLookDirection() {
+        if (baseLookHandle == null) baseLookHandle = this.getLookControl().lookTargetController.createHandle(0.5F, Integer.MIN_VALUE);
+        baseLookHandle.face(0, this.getSyncedBodyRotation());
     }
 
     public void setSyncedBodyRotation(float rotation) {

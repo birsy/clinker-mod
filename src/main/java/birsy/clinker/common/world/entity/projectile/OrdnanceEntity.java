@@ -9,7 +9,7 @@ import birsy.clinker.core.registry.entity.ClinkerEntities;
 import birsy.clinker.core.registry.ClinkerParticles;
 import birsy.clinker.core.registry.ClinkerSounds;
 import birsy.clinker.core.util.MathUtils;
-import birsy.clinker.core.util.VectorUtil;
+import birsy.clinker.core.util.VectorUtils;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -217,7 +217,7 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
         Vec3 normal = new Vec3(pResult.getDirection().getStepX(), pResult.getDirection().getStepY(), pResult.getDirection().getStepZ());
         //extra little force to prevent goofy bouncing
         if (normal.distanceTo(new Vec3(0, 1, 0)) < 0.01) velocity = velocity.subtract(0, this.getGravity(), 0);
-        velocity = VectorUtil.reflect(normal, velocity);
+        velocity = VectorUtils.reflect(normal, velocity);
 
         switch (effects.touchType()) {
             case NORMAL:

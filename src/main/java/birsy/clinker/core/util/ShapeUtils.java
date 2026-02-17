@@ -13,7 +13,7 @@ import org.joml.Vector3d;
 
 import java.util.HashMap;
 
-public class ShapeUtil {
+public class ShapeUtils {
     public static HashMap<Direction.Axis, Vec3> AXIS_TO_VECTOR = Util.make(() -> {
         HashMap<Direction.Axis, Vec3> map = new HashMap<>();
         map.put(Direction.Axis.X, new Vec3(1, 0, 0));

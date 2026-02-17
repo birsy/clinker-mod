@@ -42,9 +42,6 @@ public class GroundMoveControl extends MoveControl {
             strafeRight = 0;
         }
 
-//        if (operation == Operation.WAIT || baseSpeed == 0.0F) me.setSpeed(0.0F);
-//        else me.setSpeed(0.5F);
-
         applyDesiredVelocity(me);
     }
 

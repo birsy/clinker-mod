@@ -26,6 +26,6 @@ public class GroundBodyAngleControl extends BodyRotationControl {
 
     @Override
     public void clientTick() {
-        me.yBodyRot = Mth.approachDegrees(me.yBodyRot, me.getSyncedBodyRotation(), 5);
+        me.yBodyRot = Mth.approachDegrees(me.yBodyRot, me.getSyncedBodyRotation(), 15);
     }
 }

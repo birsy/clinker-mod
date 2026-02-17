@@ -1,7 +1,7 @@
 package birsy.clinker.common.world.block.plant;
 
 import birsy.clinker.core.registry.ClinkerBlocks;
-import birsy.clinker.core.util.ShapeUtil;
+import birsy.clinker.core.util.ShapeUtils;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -15,7 +15,6 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.BigDripleafBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
@@ -42,8 +41,8 @@ public class CorpseLilyPetalBlock extends Block implements SimpleWaterloggedBloc
         Direction direction = Direction.NORTH;
         for (int i = 0; i < 4; i++) {
             int index = direction.get2DDataValue() * 2;
-            shapes[index + 0] = ShapeUtil.rotate(BLOOMED_SHAPE, i, Direction.Axis.Y);
-            shapes[index + 1] = ShapeUtil.rotate(UNBLOOMED_SHAPE, i, Direction.Axis.Y);
+            shapes[index + 0] = ShapeUtils.rotate(BLOOMED_SHAPE, i, Direction.Axis.Y);
+            shapes[index + 1] = ShapeUtils.rotate(UNBLOOMED_SHAPE, i, Direction.Axis.Y);
             direction = direction.getCounterClockWise();
         }
         return shapes;

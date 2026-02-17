@@ -2,7 +2,7 @@ package birsy.clinker.common.world.entity.projectile;
 
 import birsy.clinker.common.alchemy.effects.ChainLightningHandler;
 import birsy.clinker.common.world.item.components.OrdnanceEffects;
-import birsy.clinker.core.util.VectorUtil;
+import birsy.clinker.core.util.VectorUtils;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -178,7 +178,7 @@ public class FlechetteEntity extends Projectile implements IEntityWithComplexSpa
 
         if (this.effects.touchType() == OrdnanceEffects.TouchType.BOUNCE) {
             Vec3 normal = new Vec3(pResult.getDirection().getStepX(), pResult.getDirection().getStepY(), pResult.getDirection().getStepZ());
-            this.setDeltaMovement( VectorUtil.reflect(normal, this.getDeltaMovement()) );
+            this.setDeltaMovement( VectorUtils.reflect(normal, this.getDeltaMovement()) );
         } else {
             this.stuck = true;
             this.stuckDirection.set(this.getDeltaMovement().x(), this.getDeltaMovement().y(), this.getDeltaMovement().z()).normalize();

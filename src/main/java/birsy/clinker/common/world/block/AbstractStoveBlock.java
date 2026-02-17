@@ -1,14 +1,11 @@
 package birsy.clinker.common.world.block;
 
 import birsy.clinker.core.Clinker;
-import birsy.clinker.core.util.ShapeUtil;
+import birsy.clinker.core.util.ShapeUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -47,17 +44,17 @@ public abstract class AbstractStoveBlock extends AbstractDoubleBlock {
 
     protected VoxelShape createShape(Direction direction, ChestType type) {
         VoxelShape shape = type == ChestType.SINGLE ? getSingleShape() : getDoubleShape();
-        if (type == ChestType.LEFT) shape = ShapeUtil.flip(shape, Direction.Axis.X);
+        if (type == ChestType.LEFT) shape = ShapeUtils.flip(shape, Direction.Axis.X);
 
         switch (direction) {
             case EAST:
-                shape = ShapeUtil.rotate(shape, -1, Direction.Axis.Y);
+                shape = ShapeUtils.rotate(shape, -1, Direction.Axis.Y);
                 break;
             case WEST:
-                shape = ShapeUtil.rotate(shape, 1, Direction.Axis.Y);
+                shape = ShapeUtils.rotate(shape, 1, Direction.Axis.Y);
                 break;
             case SOUTH:
-                shape = ShapeUtil.rotate(shape, 2, Direction.Axis.Y);
+                shape = ShapeUtils.rotate(shape, 2, Direction.Axis.Y);
                 break;
         }
 

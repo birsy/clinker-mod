@@ -49,10 +49,10 @@ public class MogulCombatStateMachine extends StateMachineBehavior<GnomadMogulEnt
 
             Optional<Entity> nearestEntity = EntityRetrievalUtil.getNearestEntity(entity, 10);
             if (nearestEntity.isPresent()) {
-                this.headLookTarget.setActive(true);
+                this.headLookTarget.setWeight(1.0F);
                 this.headLookTarget.face(nearestEntity.get());
             } else {
-                this.headLookTarget.setActive(false);
+                this.headLookTarget.setWeight(0.0F);
             }
             this.bodyLookTarget.face(0, entity.getYHeadRot());
         }
@@ -64,12 +64,12 @@ public class MogulCombatStateMachine extends StateMachineBehavior<GnomadMogulEnt
             // face the mob
             Optional<Entity> nearestEntity = EntityRetrievalUtil.getNearestEntity(entity, 16);
             if (nearestEntity.isPresent()) {
-                this.headLookTarget.setActive(true);
+                this.headLookTarget.setWeight(1.0F);
                 this.headLookTarget.face(nearestEntity.get());
                 if (Mth.lengthSquared(entity.getX() - nearestEntity.get().getX(), entity.getZ() - nearestEntity.get().getZ()) > 8*8)
                     forwardsMovement = 3;
             } else {
-                this.headLookTarget.setActive(false);
+                this.headLookTarget.setWeight(0.0F);
             }
             this.bodyLookTarget.face(0, entity.getYHeadRot());
 
