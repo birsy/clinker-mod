@@ -17,12 +17,18 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.levelgen.PositionalRandomFactory;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
 public class BiomeLayerDebugViewScreen extends Screen {
     public static final int MAP_SIZE = 256, HALF_MAP_SIZE = MAP_SIZE / 2;
 
     private LayeredBiomeResolver resolver;
 
     private int centerX, centerZ;
+    private int newCenterX, newCenterZ;
+
     private int blocksPerPixel = 2;
     private int viewingLayer = 0;
 
@@ -33,6 +39,16 @@ public class BiomeLayerDebugViewScreen extends Screen {
     private boolean dragging;
     private int lastMouseX, lastMouseY;
     private int dragDeltaX, dragDeltaY;
+
+    // threading
+    private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor(r -> {
+        Thread t = new Thread(r, "BiomeDebugBuilder");
+        t.setDaemon(true);
+        return t;
+    });
+    private Future<?> currentTask;
+    private volatile NativeImage pendingImage;
+    private final Object taskLock = new Object();
 
     public BiomeLayerDebugViewScreen() {
         super(Component.literal("Biome Layer Debug View"));
@@ -53,6 +69,7 @@ public class BiomeLayerDebugViewScreen extends Screen {
     public void render(GuiGraphics gfx, int mouseX, int mouseY, float partialTick) {
         if (resolver == null) return;
         if (dirty) rebuildMap();
+        if (pendingImage != null) applyBuiltMap();
 
         PANORAMA.render(gfx, this.width, this.height, 1, partialTick);
         gfx.fillGradient(0, 0, width, height, 0x80FFFFFF, 0x80000000);
@@ -61,7 +78,9 @@ public class BiomeLayerDebugViewScreen extends Screen {
         int borderSize = 1;
         gfx.fill(offsetX - borderSize, offsetY - borderSize, offsetX + MAP_SIZE + borderSize, offsetY + MAP_SIZE + borderSize, 0xFF000000);
         // offset uvs by drag delta to make movement smoother
-        gfx.blit(textureLocation, offsetX, offsetY, -dragDeltaX, -dragDeltaY, MAP_SIZE, MAP_SIZE, MAP_SIZE, MAP_SIZE);
+        if (texture != null && textureLocation != null) {
+            gfx.blit(textureLocation, offsetX, offsetY, -dragDeltaX, -dragDeltaY, MAP_SIZE, MAP_SIZE, MAP_SIZE, MAP_SIZE);
+        }
 
         gfx.drawCenteredString(font, "epic biomes preview", this.width/2, offsetY - (font.lineHeight + 2) * 2, 0xFFFFFF);
         gfx.drawString(font, "press L to change layers. press R to regenerate.", offsetX, offsetY - (font.lineHeight + 2), 0xFFFFFF);
@@ -90,33 +109,56 @@ public class BiomeLayerDebugViewScreen extends Screen {
     }
 
     private void rebuildMap() {
-        if (texture != null) {
-            texture.close();
-        }
-
-        NativeImage image = new NativeImage(MAP_SIZE, MAP_SIZE, false);
-        for (int z = 0; z < MAP_SIZE; z++) {
-            int blockZ = centerZ + (z - HALF_MAP_SIZE) * blocksPerPixel;
-
-            for (int x = 0; x < MAP_SIZE; x++) {
-                int blockX = centerX + (x - HALF_MAP_SIZE) * blocksPerPixel;
-
-                ProtoBiome proto = resolver.getProtoBiome(blockX, blockZ, viewingLayer);
-                int color = protoBiomeColor(proto);
-
-                image.setPixelRGBA(x, z, color);
+        dirty = false;
+        synchronized (taskLock) {
+            if (currentTask != null && !currentTask.isDone()) {
+                currentTask.cancel(true);
             }
+            newCenterX = centerX - (dragDeltaX * blocksPerPixel);
+            newCenterZ = centerZ - (dragDeltaY * blocksPerPixel);
+            currentTask = EXECUTOR.submit(() -> {
+                NativeImage image = new NativeImage(MAP_SIZE, MAP_SIZE, false);
+                for (int z = 0; z < MAP_SIZE; z++) {
+                    if (Thread.currentThread().isInterrupted()) return null;
+
+                    int blockZ = newCenterZ + (z - HALF_MAP_SIZE) * blocksPerPixel;
+                    for (int x = 0; x < MAP_SIZE; x++) {
+                        int blockX = newCenterX + (x - HALF_MAP_SIZE) * blocksPerPixel;
+
+                        ProtoBiome proto = resolver.getProtoBiome(blockX, blockZ, viewingLayer);
+                        int color = protoBiomeColor(proto);
+                        image.setPixelRGBA(x, z, color);
+                    }
+                }
+                pendingImage = image;
+                return null;
+            });
         }
-        this.texture = new DynamicTexture(image);
-        this.textureLocation = Minecraft.getInstance()
+    }
+
+    private void applyBuiltMap() {
+        if (texture != null) texture.close();
+        texture = new DynamicTexture(pendingImage);
+        textureLocation = Minecraft.getInstance()
                 .getTextureManager()
                 .register("biome_debug", texture);
-        dirty = false;
+        pendingImage.close();
+        pendingImage = null;
+
+        centerX = newCenterX;
+        centerZ = newCenterZ;
+        dragDeltaX = 0;
+        dragDeltaY = 0;
     }
 
     @Override
     public void onClose() {
         super.onClose();
+        synchronized (taskLock) {
+            if (currentTask != null) {
+                currentTask.cancel(true);
+            }
+        }
         if (texture != null) {
             texture.close();
             texture = null;
@@ -142,21 +184,18 @@ public class BiomeLayerDebugViewScreen extends Screen {
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         dragging = false;
-        centerX -= dragDeltaX * blocksPerPixel;
-        centerZ -= dragDeltaY * blocksPerPixel;
-        if (dragDeltaX != 0 || dragDeltaY != 0) dirty = true;
-        dragDeltaX = 0;
-        dragDeltaY = 0;
         return super.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dx, double dy) {
         if (!dragging) return false;
-        dragDeltaX += (int) mouseX - lastMouseX;
-        dragDeltaY += (int) mouseY - lastMouseY;
+        int dX = (int) mouseX - lastMouseX, dY = (int) mouseY - lastMouseY;
+        dragDeltaX += dX;
+        dragDeltaY += dY;
         lastMouseX = (int) mouseX;
         lastMouseY = (int) mouseY;
+        if (dX != 0 && dY != 0) dirty = true;
         return true;
     }
 

@@ -5,11 +5,13 @@ import birsy.clinker.common.world.level.gen.system.biome.resolver.ProtoBiome;
 import birsy.clinker.common.world.level.gen.system.biome.resolver.ProtoBiomeNeighborhood;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
 import birsy.clinker.core.registry.ClinkerRegistries;
+import birsy.clinker.core.registry.worldgen.ClinkerProtoBiomes;
 import net.minecraft.Util;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.random.SimpleWeightedRandomList;
 
 import java.util.Arrays;
+import java.util.Set;
 import java.util.function.Predicate;
 
 public class BiomeLayerOperations {
@@ -36,6 +38,42 @@ public class BiomeLayerOperations {
                 }
             }
             return ClinkerRegistries.PROTO_BIOME_REGISTRY.byIdOrThrow(winningBiome);
+        }
+    }
+
+    public record SmoothSpecific(Predicate<ProtoBiome> shouldSmoothInto) implements BiomeLayerOperation {
+        public SmoothSpecific(Set<ProtoBiome> targets) {
+            this(targets::contains);
+        }
+        public SmoothSpecific(ProtoBiome... targets) {
+            this(Set.of(targets));
+        }
+
+        private static final ThreadLocal<int[]> threadedCounts = ThreadLocal.withInitial(() -> new int[ClinkerRegistries.PROTO_BIOME_REGISTRY.size()]);
+        @Override
+        public ProtoBiome apply(int blockX, int blockZ, ProtoBiome current, ProtoBiomeNeighborhood previousLayerNeighborhood, RandomSource random, NoiseContext noiseContext) {
+            int[] counts = threadedCounts.get();
+            // reset value
+            Arrays.fill(counts, 0);
+
+            int highestCount = 0;
+            int winningBiome = current.id;
+            for (int dz = -1; dz <= 1; dz++) {
+                for (int dx = -1; dx <= 1; dx++) {
+                    ProtoBiome neighbor = previousLayerNeighborhood.fromOffset(dx, dz);
+                    int biomeCount = counts[neighbor.id] + 1;
+                    counts[neighbor.id] = biomeCount;
+                    if (biomeCount > highestCount) {
+                        winningBiome = neighbor.id;
+                        highestCount = biomeCount;
+                    }
+                }
+            }
+
+            ProtoBiome winner = ClinkerRegistries.PROTO_BIOME_REGISTRY.byIdOrThrow(winningBiome);
+            if (shouldSmoothInto.test(winner))
+                return ClinkerRegistries.PROTO_BIOME_REGISTRY.byIdOrThrow(winningBiome);
+            return current;
         }
     }
 

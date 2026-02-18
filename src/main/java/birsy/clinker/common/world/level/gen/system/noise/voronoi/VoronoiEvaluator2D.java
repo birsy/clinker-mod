@@ -1,6 +1,5 @@
 package birsy.clinker.common.world.level.gen.system.noise.voronoi;
 
-import birsy.clinker.core.Clinker;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.levelgen.PositionalRandomFactory;
 
@@ -14,10 +13,9 @@ public final class VoronoiEvaluator2D implements VoronoiEvaluator {
 
     final PositionalRandomFactory randomFactory;
     public final int minCellX, minCellZ, maxCellX, maxCellZ;
-    public final int xCellCount, zCellCount, cellCount;
+    public final int cellCountX, cellCountZ, cellCount;
 
     public final int cellSize;
-    public final double halfCellSize;
     public final int minBlockX, minBlockZ, maxBlockX, maxBlockZ;
 
     final double[] cellCenters;
@@ -29,13 +27,13 @@ public final class VoronoiEvaluator2D implements VoronoiEvaluator {
         this.randomFactory = randomFactory;
         this.minCellX = minCellX; this.maxCellX = maxCellX;
         this.minCellZ = minCellZ; this.maxCellZ = maxCellZ;
-        this.xCellCount = maxCellX - minCellX;
-        this.zCellCount = maxCellZ - minCellZ;
-        this.cellCount = xCellCount * zCellCount;
+        this.cellCountX = maxCellX - minCellX;
+        this.cellCountZ = maxCellZ - minCellZ;
+        this.cellCount = cellCountX * cellCountZ;
         this.cellHashes = new long[cellCount];
         this.cellCenters = new double[cellCount * 2];
 
-        this.cellSize = cellSize; this.halfCellSize = cellSize / 2.0F;
+        this.cellSize = cellSize;
         this.minBlockX = minCellX * cellSize; this.maxBlockX = maxCellX * cellSize;
         this.minBlockZ = minCellZ * cellSize; this.maxBlockZ = maxCellZ * cellSize;
     }
@@ -55,7 +53,7 @@ public final class VoronoiEvaluator2D implements VoronoiEvaluator {
             cellZ = Math.floorDiv(bZ, cellSize);
         int localCellX = cellX - minCellX,
             localCellZ = cellZ - minCellZ;
-        int closestCellIndex = localCellX + localCellZ * xCellCount;
+        int closestCellIndex = localCellX + localCellZ * cellCountX;
         double dX = bX - cellCenters[closestCellIndex * 2 + 0],
                dZ = bZ - cellCenters[closestCellIndex * 2 + 1];
         double closestDistanceSq = dX * dX + dZ * dZ;
@@ -64,7 +62,7 @@ public final class VoronoiEvaluator2D implements VoronoiEvaluator {
                 neighborCellZ = cellZ + NEIGHBOR_OFFSETS[i + 1];
             int localNeighborCellX = neighborCellX - minCellX,
                 localNeighborCellZ = neighborCellZ - minCellZ;
-            int neighborCellIndex = localNeighborCellX + localNeighborCellZ * xCellCount;
+            int neighborCellIndex = localNeighborCellX + localNeighborCellZ * cellCountX;
             double dnX = bX - cellCenters[neighborCellIndex * 2 + 0],
                    dnZ = bZ - cellCenters[neighborCellIndex * 2 + 1];
             double neighborDistanceSq = dnX * dnX + dnZ * dnZ;
@@ -80,9 +78,9 @@ public final class VoronoiEvaluator2D implements VoronoiEvaluator {
     public void fill(int startY, int endY) {
         if (filled) return;
         int index = 0;
-        for (int localCellZ = 0; localCellZ < zCellCount; localCellZ++) {
+        for (int localCellZ = 0; localCellZ < cellCountZ; localCellZ++) {
             int cellZ = minCellZ + localCellZ;
-            for (int localCellX = 0; localCellX < xCellCount; localCellX++) {
+            for (int localCellX = 0; localCellX < cellCountX; localCellX++) {
                 int cellX = minCellX + localCellX;
                 computeCellAttributes(cellX, cellZ, index++);
             }
@@ -92,8 +90,8 @@ public final class VoronoiEvaluator2D implements VoronoiEvaluator {
 
     void computeCellAttributes(int cX, int cZ, int i) {
         RandomSource cellRandom = randomFactory.at(cX, 0, cZ);
-        cellCenters[i * 2 + 0] = (cX + cellRandom.nextDouble()) * cellSize; //cellRandom.triangle((cX * 2 + 1) * halfCellSize, halfCellSize);
-        cellCenters[i * 2 + 1] = (cZ + cellRandom.nextDouble()) * cellSize;//cellRandom.triangle((cZ * 2 + 1) * halfCellSize, halfCellSize);
+        cellCenters[i * 2 + 0] = (cX + cellRandom.nextDouble()) * cellSize;
+        cellCenters[i * 2 + 1] = (cZ + cellRandom.nextDouble()) * cellSize;
         cellHashes[i] = cellRandom.nextLong();
     }
 }
