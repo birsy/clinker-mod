@@ -1,5 +1,7 @@
 package birsy.clinker.common.world.level.gen.system.noise;
 
+import birsy.clinker.common.world.level.gen.system.noise.voronoi.VoronoiEvaluator;
+
 public final class CachedNoiseContext implements NoiseContext {
     private int minY, maxY;
     final NoiseFieldCache cache;
@@ -18,6 +20,11 @@ public final class CachedNoiseContext implements NoiseContext {
     @Override
     public double retrieve(NoiseComputer computer, int x, int y, int z) {
         return cache.fieldCache[computer.id].retrieve(x - cache.minX, y - cache.minY, z - cache.minZ);
+    }
+
+    @Override
+    public VoronoiEvaluator getVoronoi(String name) {
+        return cache.voronoiEvaluators.get(name);
     }
 
     @Override

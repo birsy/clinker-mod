@@ -64,10 +64,10 @@ public final class InterpolatedNoiseField extends NoiseField3D {
     }
 
     @Override
-    public void fill(int startY, int endY, int minX, int minY, int minZ, NoiseContext context, NoiseFieldFiller filler) {
+    public void fill(int minLocalY, int maxLocalY, int minX, int minY, int minZ, NoiseContext context, NoiseFieldFiller filler) {
         // find unfilled layers
         fillMask.clear();
-        fillMask.set(Math.max(0, startY >> yCellScale), Math.min(yCellCount - 1, endY >> yCellScale) + 1);
+        fillMask.set(Math.max(0, minLocalY >> yCellScale), Math.min(yCellCount - 1, maxLocalY >> yCellScale) + 1);
         fillMask.andNot(filledLayers);
         // fill them
         for (int startCellY = fillMask.nextSetBit(0); startCellY >= 0; startCellY = fillMask.nextSetBit(startCellY + 1)) {

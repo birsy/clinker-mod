@@ -3,9 +3,12 @@ package birsy.clinker.core.registry.worldgen;
 import birsy.clinker.common.world.level.gen.OthershoreBiomeSource;
 import birsy.clinker.common.world.level.gen.OthershoreGenerationConstants;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseComputer;
+import birsy.clinker.common.world.level.gen.system.noise.field.FieldFactory;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldFiller;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldType;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldTypes;
+import birsy.clinker.common.world.level.gen.system.noise.voronoi.VoronoiDefinition;
+import birsy.clinker.common.world.level.gen.system.noise.voronoi.VoronoiEvaluator;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerRegistries;
 import birsy.clinker.core.util.MathUtils;
@@ -20,7 +23,7 @@ public class ClinkerNoiseComputers {
     public static final Supplier<NoiseComputer> WATERFALL_PRESENCE = NOISE_COMPUTERS.register(
             "waterfall_presence",
             () -> new NoiseComputer(
-                    () -> NoiseFieldTypes.COARSE_2D,
+                    () -> FieldFactory.standard(NoiseFieldTypes.COARSE_2D),
                     (dependencies, registry) -> {
                         registry.registerNoise("waterfall");
                     },
@@ -36,7 +39,7 @@ public class ClinkerNoiseComputers {
     public static final Supplier<NoiseComputer> BASE_SURFACE_HEIGHT = NOISE_COMPUTERS.register(
             "base_surface_height",
             () -> new NoiseComputer(
-                    () -> NoiseFieldTypes.VERY_COARSE_2D,
+                    () -> FieldFactory.standard(NoiseFieldTypes.VERY_COARSE_2D),
                     (dependencies, registry) -> {
                         registry.registerNoise("base_middle_shelf",
                                 2, 1.0, 4.0, 0.7, 0.0);
@@ -71,7 +74,7 @@ public class ClinkerNoiseComputers {
     private static final double CLIFF_ROCK_FREQUENCY = 1 / 20.0;
     public static final Supplier<NoiseComputer> CLIFF_ROCKS  = NOISE_COMPUTERS.register("cliff_rocks",
             () -> new NoiseComputer(
-                    () -> NoiseFieldTypes.COARSE,
+                    () -> FieldFactory.standard(NoiseFieldTypes.COARSE),
                     (dependencies, registry) -> registry.registerNoise("cliff_rocks"),
                     (x, y, z, context) -> context.sample("cliff_rocks", x * CLIFF_ROCK_FREQUENCY * 0.5, y * CLIFF_ROCK_FREQUENCY * 0.4, z * CLIFF_ROCK_FREQUENCY * 0.5)
             )
@@ -80,7 +83,7 @@ public class ClinkerNoiseComputers {
 
     public static final Supplier<NoiseComputer> SHATTERED_ISLANDS = NOISE_COMPUTERS.register("shattered_islands",
             () -> new NoiseComputer(
-                    () -> NoiseFieldTypes.FINE_2D,
+                    () -> FieldFactory.standard(NoiseFieldTypes.FINE_2D),
                     (dependencies, registry) -> {
                         registry.registerNoise("shattered_islands");
                     },
@@ -91,7 +94,7 @@ public class ClinkerNoiseComputers {
     );
     public static final Supplier<NoiseComputer> BIG_ISLANDS = NOISE_COMPUTERS.register("big_islands",
             () -> new NoiseComputer(
-                    () -> NoiseFieldTypes.COARSE_2D,
+                    () -> FieldFactory.standard(NoiseFieldTypes.COARSE_2D),
                     (dependencies, registry) -> {
                         registry.registerNoise("big_islands");
                     },
@@ -107,7 +110,7 @@ public class ClinkerNoiseComputers {
     // caves
     public static final Supplier<NoiseComputer> SPELEOTHEMS = NOISE_COMPUTERS.register("speleothems",
             () -> new NoiseComputer(
-                    () -> NoiseFieldTypes.FINE,
+                    () -> FieldFactory.standard(NoiseFieldTypes.FINE),
                     (dependencies, registry) -> {
                         registry.registerNoise("speleothem");
                     },
@@ -121,7 +124,7 @@ public class ClinkerNoiseComputers {
     );
     public static final Supplier<NoiseComputer> CAVE_ENTRANCE_MASK  = NOISE_COMPUTERS.register("cave_entrance",
             () -> new NoiseComputer(
-                    () -> NoiseFieldTypes.COARSE_2D,
+                    () -> FieldFactory.standard(NoiseFieldTypes.COARSE_2D),
                     (dependencies, registry) -> registry.registerNoise("cave_entrance"),
                     (x, y, z, context) ->
                             Mth.clampedMap(context.sample("cave_entrance", x / 128.0, z / 128.0),
@@ -132,21 +135,21 @@ public class ClinkerNoiseComputers {
     private static final double CAVE_NOODLE_FREQUENCY = 1 / 150.0;
     public static final Supplier<NoiseComputer> CAVE_NOODLE_A  = NOISE_COMPUTERS.register("cave_noodle_a",
             () -> new NoiseComputer(
-                    () -> NoiseFieldTypes.COARSE,
+                    () -> FieldFactory.standard(NoiseFieldTypes.COARSE),
                     (dependencies, registry) -> registry.registerNoise("cave_noodle_a"),
                     (x, y, z, context) -> context.sample("cave_noodle_a", x * CAVE_NOODLE_FREQUENCY, y * CAVE_NOODLE_FREQUENCY, z * CAVE_NOODLE_FREQUENCY)
             )
     );
     public static final Supplier<NoiseComputer> CAVE_NOODLE_B  = NOISE_COMPUTERS.register("cave_noodle_b",
             () -> new NoiseComputer(
-                    () -> NoiseFieldTypes.COARSE,
+                    () -> FieldFactory.standard(NoiseFieldTypes.COARSE),
                     (dependencies, registry) -> registry.registerNoise("cave_noodle_b"),
                     (x, y, z, context) -> context.sample("cave_noodle_b", x * CAVE_NOODLE_FREQUENCY, y * CAVE_NOODLE_FREQUENCY * 2, z * CAVE_NOODLE_FREQUENCY)
             )
     );
     public static final Supplier<NoiseComputer> CAVE_NOODLES  = NOISE_COMPUTERS.register("cave_noodles",
             () -> new NoiseComputer(
-                    () -> NoiseFieldTypes.FINE,
+                    () -> FieldFactory.standard(NoiseFieldTypes.FINE),
                     (dependencies, registry) -> {
                         dependencies.addDependency(SPELEOTHEMS);
                         dependencies.addDependency(CAVE_NOODLE_A);
@@ -170,7 +173,7 @@ public class ClinkerNoiseComputers {
 
     public static final Supplier<NoiseComputer> AQUIFER_CEILING_HEIGHT = NOISE_COMPUTERS.register("cave_aquifer_ceiling_height",
             () -> new NoiseComputer(
-                    () -> NoiseFieldTypes.COARSE_2D,
+                    () -> FieldFactory.standard(NoiseFieldTypes.COARSE_2D),
                     (dependencies, registry) -> {
                         registry.registerNoise("aquifer_ceiling_height");
                     },
@@ -184,7 +187,7 @@ public class ClinkerNoiseComputers {
     );
     public static final Supplier<NoiseComputer> AQUIFER_ISLANDS = NOISE_COMPUTERS.register("cave_aquifer_islands",
             () -> new NoiseComputer(
-                    () -> NoiseFieldTypes.COARSE_2D,
+                    () -> FieldFactory.standard(NoiseFieldTypes.COARSE_2D),
                     (dependencies, registry) -> {
                         registry.registerNoise("aquifer_islands", 2, 1.0, 2.5, 1, 0.5);
                     },
@@ -195,7 +198,7 @@ public class ClinkerNoiseComputers {
     );
     public static final Supplier<NoiseComputer> AQUIFER_WALLS = NOISE_COMPUTERS.register("cave_aquifer_walls",
             () -> new NoiseComputer(
-                    () -> NoiseFieldTypes.COARSE_2D,
+                    () -> FieldFactory.standard(NoiseFieldTypes.COARSE_2D),
                     (dependencies, registry) -> {
                         registry.registerNoise("aquifer_wall");
                         registry.registerNoise("aquifer_wall_holes");
@@ -219,7 +222,7 @@ public class ClinkerNoiseComputers {
 
     public static final Supplier<NoiseComputer> CAVE_AQUIFER = NOISE_COMPUTERS.register("cave_aquifer",
             () -> new NoiseComputer(
-                    () -> NoiseFieldTypes.COARSE,
+                    () -> FieldFactory.standard(NoiseFieldTypes.COARSE),
                     (dependencies, registry) -> {
                         dependencies.addDependency(AQUIFER_CEILING_HEIGHT.get());
                         dependencies.addDependency(AQUIFER_ISLANDS.get());
@@ -255,7 +258,7 @@ public class ClinkerNoiseComputers {
 
     public static final Supplier<NoiseComputer> CAVES = NOISE_COMPUTERS.register("caves",
             () -> new NoiseComputer(
-                    () -> NoiseFieldTypes.FINE,
+                    () -> FieldFactory.standard(NoiseFieldTypes.FINE),
                     (dependencies, registry) -> {
                         dependencies.addDependency(CAVE_NOODLES.get());
                         dependencies.addDependency(CAVE_AQUIFER.get());
@@ -275,7 +278,7 @@ public class ClinkerNoiseComputers {
     public static final Supplier<NoiseComputer>[] BASE_NOISE_2D_ALT = baseNoiseArray("base_noise_2d_alt", 10, true);
     private static Supplier<NoiseComputer> baseNoise(String name, int index, int size, boolean twoDimensional) {
         String concatenatedName = name + "_" + index;
-        Supplier<NoiseFieldType> fieldType;
+        Supplier<FieldFactory> fieldType;
 
         double horizontalFrequency = 1.0 / size, verticalFrequency = 0.5 / size;
 
@@ -285,15 +288,15 @@ public class ClinkerNoiseComputers {
 
         if (twoDimensional) {
             fieldType = switch (cacheResolution) {
-                case 0 -> () -> NoiseFieldTypes.FINE_2D;
-                case 1 -> () -> NoiseFieldTypes.COARSE_2D;
-                default -> () -> NoiseFieldTypes.VERY_COARSE_2D;
+                case 0 -> () -> FieldFactory.standard(NoiseFieldTypes.FINE_2D);
+                case 1 -> () -> FieldFactory.standard(NoiseFieldTypes.COARSE_2D);
+                default -> () -> FieldFactory.standard(NoiseFieldTypes.VERY_COARSE_2D);
             };
         } else {
             fieldType = switch (cacheResolution) {
-                case 0 -> () -> NoiseFieldTypes.FINE;
-                case 1 -> () -> NoiseFieldTypes.COARSE;
-                default -> () -> NoiseFieldTypes.VERY_COARSE;
+                case 0 -> () -> FieldFactory.standard(NoiseFieldTypes.FINE);
+                case 1 -> () -> FieldFactory.standard(NoiseFieldTypes.COARSE);
+                default -> () -> FieldFactory.standard(NoiseFieldTypes.VERY_COARSE);
             };
         }
         NoiseFieldFiller filler;

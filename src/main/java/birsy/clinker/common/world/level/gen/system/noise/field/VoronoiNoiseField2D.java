@@ -1,21 +1,21 @@
 package birsy.clinker.common.world.level.gen.system.noise.field;
 
 import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
-import birsy.clinker.common.world.level.gen.system.noise.VoronoiEvaluator;
+import birsy.clinker.common.world.level.gen.system.noise.voronoi.VoronoiEvaluator2D;
+import birsy.clinker.core.Clinker;
 
 public final class VoronoiNoiseField2D extends NoiseField2D {
-    private final VoronoiEvaluator evaluator;
-    private final int cellScale, cellCount;
-
+    private final VoronoiEvaluator2D evaluator;
+    private final int minX, minZ;
     private final double[] field;
     private boolean filled;
 
-    public VoronoiNoiseField2D(VoronoiEvaluator evaluator, int cellScale, int paddingCells) {
-        super(paddingCells << cellScale, paddingCells);
+    public VoronoiNoiseField2D(VoronoiEvaluator2D evaluator, int minX, int minZ) {
+        super(0, 0);
         this.evaluator = evaluator;
-        this.cellScale = cellScale;
-        this.cellCount = (CHUNK_WIDTH >> cellScale) + paddingCells * 2;
-        this.field = new double[cellCount * cellCount];
+        this.minX = minX;
+        this.minZ = minZ;
+        this.field = new double[evaluator.cellCount];
         this.filled = false;
     }
 
@@ -26,22 +26,18 @@ public final class VoronoiNoiseField2D extends NoiseField2D {
 
     @Override
     public double retrieve(int x, int y, int z) {
-        int cellIndex = evaluator.getNearestCellIndex(x, y, z);
+        int cellIndex = evaluator.getNearestCellIndex(x + minX, 0, z + minZ);
         return field[cellIndex];
     }
 
     @Override
-    public void fill(int startY, int endY, int minX, int minY, int minZ, NoiseContext context, NoiseFieldFiller filler) {
+    public void fill(int minLocalY, int maxLocalY, int minX, int minY, int minZ, NoiseContext context, NoiseFieldFiller filler) {
         if (filled) return;
-        int index = 0;
-        for (int cellZ = 0; cellZ < cellCount; cellZ++) {
-            int globalZ = (cellZ << cellScale) + minZ - paddingBlocks;
-            for (int cellX = 0; cellX < cellCount; cellX++) {
-                int globalX = (cellX << cellScale) + minX - paddingBlocks;
-                double cellCenterX = evaluator.cellCenterX(globalX, 0, globalZ, index),
-                       cellCenterZ = evaluator.cellCenterZ(globalX, 0, globalZ, index);
-                field[index++] = filler.compute((int) cellCenterX, 0, (int) cellCenterZ, context);
-            }
+        evaluator.fill(0, 0);
+        for (int i = 0; i < field.length; i++) {
+            double cellCenterX = evaluator.cellCenterX(minX, minY, minZ, i),
+                   cellCenterZ = evaluator.cellCenterZ(minX, minY, minZ, i);
+            field[i] = filler.compute((int) cellCenterX, 0, (int) cellCenterZ, context);
         }
         filled = true;
     }
@@ -53,8 +49,8 @@ public final class VoronoiNoiseField2D extends NoiseField2D {
     @Override
     public void byCell(int minLocalY, int maxLocalY, NoiseFieldVisitors.PositionVisitor visitor) {
         int index = 0;
-        for (int cellZ = 0; cellZ < cellCount; cellZ++) {
-            for (int cellX = 0; cellX < cellCount; cellX++) {
+        for (int cellZ = 0; cellZ < evaluator.zCellCount; cellZ++) {
+            for (int cellX = 0; cellX < evaluator.xCellCount; cellX++) {
                 visitor.visit(index++, cellX, 0, cellZ);
             }
         }
@@ -62,12 +58,12 @@ public final class VoronoiNoiseField2D extends NoiseField2D {
     @Override
     public void byBlock(int minLocalY, int maxLocalY, NoiseFieldVisitors.PositionVisitor visitor) {
         int index = 0;
-        for (int cellZ = 0; cellZ < cellCount; cellZ++) {
-            int bZ = (cellZ << cellScale) - paddingBlocks;
-            for (int cellX = 0; cellX < cellCount; cellX++) {
-                int bX = (cellX << cellScale) - paddingBlocks;
-                double cellCenterX = evaluator.cellCenterX(bX, 0, bZ, index),
-                       cellCenterZ = evaluator.cellCenterZ(bX, 0, bZ, index);
+        for (int cellZ = 0; cellZ < evaluator.zCellCount; cellZ++) {
+            int blockZ = cellZ * evaluator.cellSize + evaluator.minBlockZ;
+            for (int cellX = 0; cellX < evaluator.xCellCount; cellX++) {
+                int blockX = cellX * evaluator.cellSize + evaluator.minBlockX;
+                double cellCenterX = evaluator.cellCenterX(blockX, 0, blockZ, index),
+                       cellCenterZ = evaluator.cellCenterZ(blockX, 0, blockZ, index);
                 visitor.visit(index++, (int) cellCenterX, 0, (int) cellCenterZ);
             }
         }
@@ -75,12 +71,12 @@ public final class VoronoiNoiseField2D extends NoiseField2D {
     @Override
     public void visit(int minLocalY, int maxLocalY, NoiseFieldVisitors.BigVisitor visitor) {
         int index = 0;
-        for (int cellZ = 0; cellZ < cellCount; cellZ++) {
-            int bZ = (cellZ << cellScale) - paddingBlocks;
-            for (int cellX = 0; cellX < cellCount; cellX++) {
-                int bX = (cellX << cellScale) - paddingBlocks;
-                double cellCenterX = evaluator.cellCenterX(bX, 0, bZ, index),
-                       cellCenterZ = evaluator.cellCenterZ(bX, 0, bZ, index);
+        for (int cellZ = 0; cellZ < evaluator.zCellCount; cellZ++) {
+            int blockZ = cellZ * evaluator.cellSize + evaluator.minBlockZ;
+            for (int cellX = 0; cellX < evaluator.xCellCount; cellX++) {
+                int blockX = cellX * evaluator.cellSize + evaluator.minBlockX;
+                double cellCenterX = evaluator.cellCenterX(blockX, 0, blockZ, index),
+                       cellCenterZ = evaluator.cellCenterZ(blockX, 0, blockZ, index);
                 visitor.visit(index++, (int) cellCenterX, 0, (int) cellCenterZ, cellX, 0, cellZ);
             }
         }

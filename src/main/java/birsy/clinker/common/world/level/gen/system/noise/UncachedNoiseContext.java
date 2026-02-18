@@ -1,5 +1,6 @@
 package birsy.clinker.common.world.level.gen.system.noise;
 
+import birsy.clinker.common.world.level.gen.system.noise.voronoi.VoronoiEvaluator;
 import birsy.clinker.core.registry.ClinkerRegistries;
 
 public final class UncachedNoiseContext implements NoiseContext {
@@ -28,5 +29,11 @@ public final class UncachedNoiseContext implements NoiseContext {
     @Override
     public double sample(String name, double x, double y) {
         return noiseProvider.sample(name, x, y);
+    }
+
+    // todo: this
+    @Override
+    public VoronoiEvaluator getVoronoi(String name) {
+        throw new UnsupportedOperationException();
     }
 }

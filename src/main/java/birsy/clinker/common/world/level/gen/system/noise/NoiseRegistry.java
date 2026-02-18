@@ -1,5 +1,6 @@
 package birsy.clinker.common.world.level.gen.system.noise;
 
+import birsy.clinker.common.world.level.gen.system.noise.voronoi.VoronoiDefinition;
 import birsy.clinker.core.util.noise.FastNoiseLite;
 
 import java.util.function.Supplier;
@@ -26,4 +27,6 @@ public interface NoiseRegistry {
             return noise;
         });
     }
+
+    void registerVoronoi(String name, Supplier<VoronoiDefinition> factory);
 }

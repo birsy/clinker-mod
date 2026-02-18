@@ -1,5 +1,6 @@
 package birsy.clinker.common.world.level.gen.system.noise;
 
+import birsy.clinker.common.world.level.gen.system.noise.field.FieldFactory;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldFiller;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldType;
 
@@ -8,14 +9,14 @@ import java.util.function.Supplier;
 
 public final class NoiseComputer {
     public int id = -1; // DO NOT TOUCH EVER. assigned on deferred registration
-    public final Supplier<NoiseFieldType> fieldType;
+    public final Supplier<FieldFactory> fieldFactory;
     public final BiConsumer<NoiseDependencyCollector, NoiseRegistry> dependencies;
     public final NoiseFieldFiller filler;
 
-    public NoiseComputer(Supplier<NoiseFieldType> fieldType,
+    public NoiseComputer(Supplier<FieldFactory> fieldFactory,
                          BiConsumer<NoiseDependencyCollector, NoiseRegistry> dependencies,
                          NoiseFieldFiller filler) {
-        this.fieldType = fieldType;
+        this.fieldFactory = fieldFactory;
         this.dependencies = dependencies;
         this.filler = filler;
     }

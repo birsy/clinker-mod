@@ -1,33 +1,23 @@
 package birsy.clinker.common.world.level.gen.system.noise.field;
 
 import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
-import birsy.clinker.common.world.level.gen.system.noise.VoronoiEvaluator;
+import birsy.clinker.common.world.level.gen.system.noise.voronoi.VoronoiEvaluator3D;
 
 import java.util.BitSet;
 
 public final class VoronoiNoiseField extends NoiseField3D {
-    final VoronoiEvaluator evaluator;
-    public final int xzCellScale, xzCellSize, xzCellCount, xzCellStride;
-    public final int yCellScale, yCellSize, yCellCount;
+    final VoronoiEvaluator3D evaluator;
+    final int minX, minY, minZ;
     final BitSet filledLayers, fillMask;
     public final double[] field;
 
-    public VoronoiNoiseField(VoronoiEvaluator evaluator, int chunkHeight, int xzCellScale, int yCellScale, int paddingCells) {
-        super(chunkHeight, paddingCells, paddingCells << xzCellScale);
-
+    public VoronoiNoiseField(VoronoiEvaluator3D evaluator, int minX, int minY, int minZ, int chunkHeight) {
+        super(chunkHeight, 0, 0);
+        this.minX = minX; this.minY = minY; this.minZ = minZ;
         this.evaluator = evaluator;
-        this.xzCellScale = xzCellScale;
-        this.xzCellSize = 1 << xzCellScale;
-        this.xzCellCount = (CHUNK_WIDTH >> xzCellScale) + 1 + paddingCells * 2; // padding
-        this.xzCellStride = this.xzCellCount * this.xzCellCount;
-
-        this.yCellScale = yCellScale;
-        this.yCellSize = 1 << yCellScale;
-        this.yCellCount = (chunkHeight >> yCellScale) + 1;
-
-        this.field = new double[this.xzCellStride * this.yCellCount];
-        this.filledLayers = new BitSet(this.yCellCount);
-        this.fillMask = new BitSet(this.yCellCount);
+        this.field = new double[evaluator.cellCount];
+        this.filledLayers = new BitSet(evaluator.yCellCount);
+        this.fillMask = new BitSet(evaluator.yCellCount);
     }
 
     @Override
@@ -37,37 +27,39 @@ public final class VoronoiNoiseField extends NoiseField3D {
 
     @Override
     public double retrieve(int x, int y, int z) {
-        int cellIndex = evaluator.getNearestCellIndex(x, y, z);
+        int cellIndex = evaluator.getNearestCellIndex(x + minX, y + minY, z + minZ);
         return field[cellIndex];
     }
 
     @Override
-    public void fill(int startY, int endY, int minX, int minY, int minZ, NoiseContext context, NoiseFieldFiller filler) {
+    public void fill(int minLocalY, int maxLocalY, int minX, int minY, int minZ, NoiseContext context, NoiseFieldFiller filler) {
+        this.evaluator.fill(minLocalY + minY, maxLocalY + minY);
+        int startCellY = Math.floorDiv(minLocalY + minY, evaluator.yCellSize),
+            endCellY = Math.ceilDiv(maxLocalY + minY, evaluator.yCellSize);
+        int localStartCellY = Math.max(0, startCellY - evaluator.minCellY),
+            localEndCellY = Math.min(evaluator.yCellCount - 1, endCellY - evaluator.minCellY);
         // find unfilled layers
         fillMask.clear();
-        fillMask.set(Math.max(0, startY >> yCellScale), Math.min(yCellCount - 1, endY >> yCellScale) + 1);
+        fillMask.set(localStartCellY, localEndCellY + 1);
         fillMask.andNot(filledLayers);
         // fill them
-        for (int startCellY = fillMask.nextSetBit(0); startCellY >= 0; startCellY = fillMask.nextSetBit(startCellY + 1)) {
-            int endCellY = fillMask.nextClearBit(startCellY);
-            if (endCellY == -1) endCellY = yCellCount;
-            fillInternal(startCellY, endCellY - 1, minX, minY, minZ, filler, context);
+        for (int layerStartY = fillMask.nextSetBit(0); layerStartY >= 0; layerStartY = fillMask.nextSetBit(layerStartY + 1)) {
+            int layerEndY = fillMask.nextClearBit(layerStartY);
+            if (layerEndY == -1) layerEndY = evaluator.yCellCount;
+            fillInternal(layerStartY, layerEndY - 1, minX, minY, minZ, filler, context);
         }
         // finally, set filled layers
         filledLayers.or(fillMask);
     }
 
     public void fillInternal(int startCellY, int endCellY, int minX, int minY, int minZ, NoiseFieldFiller filler, NoiseContext context) {
-        int index = startCellY * xzCellStride;
+        int index = startCellY * evaluator.cellStride;
         for (int cellY = startCellY; cellY <= endCellY; cellY++) {
-            int globalY = (cellY << yCellScale) + minY;
-            for (int cellZ = 0; cellZ < xzCellCount; cellZ++) {
-                int globalZ = (cellZ << xzCellScale) + minZ;
-                for (int cellX = 0; cellX < xzCellCount; cellX++) {
-                    int globalX = (cellX << xzCellScale) + minX;
-                    double cellCenterX = evaluator.cellCenterX(globalX, globalY, globalZ, index),
-                           cellCenterY = evaluator.cellCenterY(globalX, globalY, globalZ, index),
-                           cellCenterZ = evaluator.cellCenterZ(globalX, globalY, globalZ, index);
+            for (int cellZ = 0; cellZ < evaluator.zCellCount; cellZ++) {
+                for (int cellX = 0; cellX < evaluator.xCellCount; cellX++) {
+                    double cellCenterX = evaluator.cellCenterX(minX, minY, minZ, index),
+                           cellCenterY = evaluator.cellCenterY(minX, minY, minZ, index),
+                           cellCenterZ = evaluator.cellCenterZ(minX, minY, minZ, index);
                     field[index++] = filler.compute((int) cellCenterX, (int) cellCenterY, (int) cellCenterZ, context);
                 }
             }
@@ -76,12 +68,14 @@ public final class VoronoiNoiseField extends NoiseField3D {
 
     @Override
     public void byIndex(int minLocalY, int maxLocalY, NoiseFieldVisitors.IndexVisitor visitor) {
-        int cellYStart = Math.max(0, minLocalY >> yCellScale),
-            cellYEnd = Math.min(yCellCount - 1, maxLocalY >> yCellScale);
-        int index = cellYStart * xzCellStride;
-        for (int cellY = cellYStart; cellY <= cellYEnd; cellY++) {
-            for (int cellZ = 0; cellZ < xzCellCount; cellZ++) {
-                for (int cellX = 0; cellX < xzCellCount; cellX++) {
+        int startCellY = Math.floorDiv(minLocalY + minY, evaluator.yCellSize),
+            endCellY = Math.ceilDiv(maxLocalY + minY, evaluator.yCellSize);
+        int localStartCellY = Math.max(0, startCellY - evaluator.minCellY),
+            localEndCellY = Math.min(evaluator.yCellCount - 1, endCellY - evaluator.minCellY);
+        int index = localStartCellY * evaluator.cellStride;
+        for (int cellY = localStartCellY; cellY <= localEndCellY; cellY++) {
+            for (int cellZ = 0; cellZ < evaluator.zCellCount; cellZ++) {
+                for (int cellX = 0; cellX < evaluator.xCellCount; cellX++) {
                     visitor.visit(index++);
                 }
             }
@@ -89,12 +83,14 @@ public final class VoronoiNoiseField extends NoiseField3D {
     }
     @Override
     public void byCell(int minLocalY, int maxLocalY, NoiseFieldVisitors.PositionVisitor visitor) {
-        int cellYStart = Math.max(0, minLocalY >> yCellScale),
-            cellYEnd = Math.min(yCellCount - 1, maxLocalY >> yCellScale);
-        int index = cellYStart * xzCellStride;
-        for (int cellY = cellYStart; cellY <= cellYEnd; cellY++) {
-            for (int cellZ = 0; cellZ < xzCellCount; cellZ++) {
-                for (int cellX = 0; cellX < xzCellCount; cellX++) {
+        int startCellY = Math.floorDiv(minLocalY + minY, evaluator.yCellSize),
+            endCellY = Math.ceilDiv(maxLocalY + minY, evaluator.yCellSize);
+        int localStartCellY = Math.max(0, startCellY - evaluator.minCellY),
+            localEndCellY = Math.min(evaluator.yCellCount - 1, endCellY - evaluator.minCellY);
+        int index = localStartCellY * evaluator.cellStride;
+        for (int cellY = localStartCellY; cellY <= localEndCellY; cellY++) {
+            for (int cellZ = 0; cellZ < evaluator.zCellCount; cellZ++) {
+                for (int cellX = 0; cellX < evaluator.xCellCount; cellX++) {
                     visitor.visit(index++, cellX, cellY, cellZ);
                 }
             }
@@ -102,18 +98,17 @@ public final class VoronoiNoiseField extends NoiseField3D {
     }
     @Override
     public void byBlock(int minLocalY, int maxLocalY, NoiseFieldVisitors.PositionVisitor visitor) {
-        int cellYStart = Math.max(0, minLocalY >> yCellScale),
-            cellYEnd = Math.min(yCellCount - 1, maxLocalY >> yCellScale);
-        int index = cellYStart * xzCellStride;
-        for (int cellY = cellYStart; cellY <= cellYEnd; cellY++) {
-            int bY = cellY << yCellScale;
-            for (int cellZ = 0; cellZ < xzCellCount; cellZ++) {
-                int bZ = (cellZ << xzCellScale) - paddingBlocks;
-                for (int cellX = 0; cellX < xzCellCount; cellX++) {
-                    int bX = (cellX << xzCellScale) - paddingBlocks;
-                    double cellCenterX = evaluator.cellCenterX(bX, bY, bZ, index),
-                           cellCenterY = evaluator.cellCenterY(bX, bY, bZ, index),
-                           cellCenterZ = evaluator.cellCenterZ(bX, bY, bZ, index);
+        int startCellY = Math.floorDiv(minLocalY + minY, evaluator.yCellSize),
+            endCellY = Math.ceilDiv(maxLocalY + minY, evaluator.yCellSize);
+        int localStartCellY = Math.max(0, startCellY - evaluator.minCellY),
+            localEndCellY = Math.min(evaluator.yCellCount - 1, endCellY - evaluator.minCellY);
+        int index = localStartCellY * evaluator.cellStride;
+        for (int cellY = localStartCellY; cellY <= localEndCellY; cellY++) {
+            for (int cellZ = 0; cellZ < evaluator.zCellCount; cellZ++) {
+                for (int cellX = 0; cellX < evaluator.xCellCount; cellX++) {
+                    double cellCenterX = evaluator.cellCenterX(minX, minY, minZ, index),
+                           cellCenterY = evaluator.cellCenterY(minX, minY, minZ, index),
+                           cellCenterZ = evaluator.cellCenterZ(minX, minY, minZ, index);
                     visitor.visit(index++, (int) cellCenterX, (int) cellCenterY, (int) cellCenterZ);
                 }
             }
@@ -121,18 +116,17 @@ public final class VoronoiNoiseField extends NoiseField3D {
     }
     @Override
     public void visit(int minLocalY, int maxLocalY, NoiseFieldVisitors.BigVisitor visitor) {
-        int cellYStart = Math.max(0, minLocalY >> yCellScale),
-                cellYEnd = Math.min(yCellCount - 1, maxLocalY >> yCellScale);
-        int index = cellYStart * xzCellStride;
-        for (int cellY = cellYStart; cellY <= cellYEnd; cellY++) {
-            int bY = cellY << yCellScale;
-            for (int cellZ = 0; cellZ < xzCellCount; cellZ++) {
-                int bZ = (cellZ << xzCellScale) - paddingBlocks;
-                for (int cellX = 0; cellX < xzCellCount; cellX++) {
-                    int bX = (cellX << xzCellScale) - paddingBlocks;
-                    double cellCenterX = evaluator.cellCenterX(bX, bY, bZ, index),
-                           cellCenterY = evaluator.cellCenterY(bX, bY, bZ, index),
-                           cellCenterZ = evaluator.cellCenterZ(bX, bY, bZ, index);
+        int startCellY = Math.floorDiv(minLocalY + minY, evaluator.yCellSize),
+            endCellY = Math.ceilDiv(maxLocalY + minY, evaluator.yCellSize);
+        int localStartCellY = Math.max(0, startCellY - evaluator.minCellY),
+            localEndCellY = Math.min(evaluator.yCellCount - 1, endCellY - evaluator.minCellY);
+        int index = localStartCellY * evaluator.cellStride;
+        for (int cellY = localStartCellY; cellY <= localEndCellY; cellY++) {
+            for (int cellZ = 0; cellZ < evaluator.zCellCount; cellZ++) {
+                for (int cellX = 0; cellX < evaluator.xCellCount; cellX++) {
+                    double cellCenterX = evaluator.cellCenterX(minX, minY, minZ, index),
+                           cellCenterY = evaluator.cellCenterY(minX, minY, minZ, index),
+                           cellCenterZ = evaluator.cellCenterZ(minX, minY, minZ, index);
                     visitor.visit(index++, (int) cellCenterX, (int) cellCenterY, (int) cellCenterZ, cellX, cellY, cellZ);
                 }
             }

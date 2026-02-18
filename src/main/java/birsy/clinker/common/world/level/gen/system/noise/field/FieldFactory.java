@@ -1,0 +1,12 @@
+package birsy.clinker.common.world.level.gen.system.noise.field;
+
+
+import birsy.clinker.common.world.level.gen.system.noise.voronoi.VoronoiDefinition;
+
+public sealed interface FieldFactory permits FieldFactory.Standard, FieldFactory.Voronoi {
+    public static FieldFactory standard(NoiseFieldType<?> fieldType) { return new Standard(fieldType); }
+    public static FieldFactory voronoi(VoronoiDefinition definition) { return new Voronoi(definition); }
+
+    record Standard(NoiseFieldType<?> fieldType) implements FieldFactory {}
+    record Voronoi(VoronoiDefinition definition) implements FieldFactory {}
+}

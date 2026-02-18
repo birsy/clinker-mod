@@ -1,5 +1,6 @@
 package birsy.clinker.common.world.level.gen.system.noise;
 
+import birsy.clinker.common.world.level.gen.system.noise.field.FieldFactory;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
 
 public final class PaddedNoiseFieldCache extends NoiseFieldCache {
@@ -9,7 +10,8 @@ public final class PaddedNoiseFieldCache extends NoiseFieldCache {
         this.paddingSize = paddingSize;
     }
 
-    protected NoiseField createNoiseField(NoiseComputer computer) {
-        return computer.fieldType.get().create(this.chunkHeight, this.paddingSize + 1);
+    @Override
+    protected NoiseField createStandardNoiseField(NoiseComputer computer, FieldFactory.Standard factory) {
+        return factory.fieldType().create(this.chunkHeight, this.paddingSize + 1);
     }
 }
