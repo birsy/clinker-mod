@@ -47,13 +47,7 @@ public class NoiseFieldCache {
         collector.addDependency(computer);
 
         for (String name : collector.dependentVoronoiDefinitions) {
-            voronoiEvaluators.computeIfAbsent(name,
-                    (key) -> {
-                        VoronoiDefinition definition = this.noiseHolder.voronoiDefinitions.get(name);
-                        PositionalRandomFactory base = this.noiseHolder.worldRandom.fromHashOf(name).forkPositional();
-                        return definition.createEvaluatorForChunk(base, this.minX, this.minY, this.minZ, this.chunkHeight);
-                    }
-            ).fill(startY, endY);
+            voronoiEvaluators.computeIfAbsent(name, (key) -> this.createVoronoiEvaluator(name)).fill(startY, endY);
         }
 
         // fill out the values for all noise fields, depth-first
@@ -82,6 +76,12 @@ public class NoiseFieldCache {
         return null;
     }
 
+    protected VoronoiEvaluator createVoronoiEvaluator(String key) {
+        VoronoiDefinition definition = this.noiseHolder.voronoiDefinitions.get(key);
+        PositionalRandomFactory base = this.noiseHolder.worldRandom.fromHashOf(key).forkPositional();
+        return definition.createEvaluatorForChunk(base, this.minX, this.minY, this.minZ, this.chunkHeight, 0);
+    }
+
     protected NoiseField createStandardNoiseField(NoiseComputer computer, FieldFactory.Standard factory) {
         return factory.fieldType().create(this.chunkHeight, 0);
     }
@@ -89,13 +89,7 @@ public class NoiseFieldCache {
         // create the evaluator
         String id = "noise_computer_" + computer.id + "_voronoi";
         this.noiseHolder.registerVoronoi(id, factory::definition);
-        VoronoiEvaluator evaluator = voronoiEvaluators.computeIfAbsent(id,
-                (key) -> {
-                    VoronoiDefinition definition = this.noiseHolder.voronoiDefinitions.get(id);
-                    PositionalRandomFactory base = this.noiseHolder.worldRandom.fromHashOf(id).forkPositional();
-                    return definition.createEvaluatorForChunk(base, this.minX, this.minY, this.minZ, this.chunkHeight);
-                }
-        );
+        VoronoiEvaluator evaluator = voronoiEvaluators.computeIfAbsent(id, (key) -> this.createVoronoiEvaluator(id));
         // then the noise field...
         if (evaluator instanceof VoronoiEvaluator2D v2d)
             return new VoronoiNoiseField2D(v2d, this.minX, this.minZ);

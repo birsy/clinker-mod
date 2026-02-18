@@ -37,11 +37,12 @@ public final class CachedNoiseContext implements NoiseContext {
         return noiseProvider.sample(name, x, y);
     }
 
-    public double minY() {
+    @Override
+    public int yRangeStart() {
         return minY;
     }
-
-    public double maxY() {
+    @Override
+    public int yRangeEnd() {
         return maxY;
     }
 }

@@ -102,7 +102,7 @@ public final class VoronoiEvaluator3D implements VoronoiEvaluator {
     @Override
     public void fill(int startY, int endY) {
         int localStartCellY = Math.max(0, Math.floorDiv(startY, yCellSize) - minCellY),
-            localEndCellY = Math.min(yCellCount - 1, Math.ceilDiv(startY, yCellSize) - minCellY);
+            localEndCellY = Math.min(yCellCount - 1, Math.ceilDiv(endY, yCellSize) - minCellY);
         // find unfilled layers
         fillMask.clear();
         fillMask.set(localStartCellY, localEndCellY + 1);

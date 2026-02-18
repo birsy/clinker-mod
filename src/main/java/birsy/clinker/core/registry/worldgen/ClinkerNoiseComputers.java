@@ -5,10 +5,7 @@ import birsy.clinker.common.world.level.gen.OthershoreGenerationConstants;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseComputer;
 import birsy.clinker.common.world.level.gen.system.noise.field.FieldFactory;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldFiller;
-import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldType;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldTypes;
-import birsy.clinker.common.world.level.gen.system.noise.voronoi.VoronoiDefinition;
-import birsy.clinker.common.world.level.gen.system.noise.voronoi.VoronoiEvaluator;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerRegistries;
 import birsy.clinker.core.util.MathUtils;
@@ -19,6 +16,18 @@ import java.util.function.Supplier;
 
 public class ClinkerNoiseComputers {
     public static final DeferredRegister<NoiseComputer> NOISE_COMPUTERS = DeferredRegister.create(ClinkerRegistries.NOISE_COMPUTER_REGISTRY, Clinker.MOD_ID);
+
+    public static final Supplier<NoiseComputer> STRATIFIED_Y = NOISE_COMPUTERS.register(
+            "stratified_y",
+            () -> new NoiseComputer(
+                    () -> FieldFactory.voronoi3d(24, 4),
+                    (dependencies, registry) -> {},
+                    (x, y, z, context) -> {
+                        //Clinker.LOGGER.info(y);
+                        return y;
+                    }
+            )
+    );
 
     public static final Supplier<NoiseComputer> WATERFALL_PRESENCE = NOISE_COMPUTERS.register(
             "waterfall_presence",
