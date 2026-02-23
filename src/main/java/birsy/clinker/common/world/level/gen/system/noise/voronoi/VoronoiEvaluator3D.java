@@ -66,36 +66,45 @@ public final class VoronoiEvaluator3D implements VoronoiEvaluator {
     public long cellHash(int bX, int bY, int bZ, int cellIndex) { return cellHashes[cellIndex]; }
 
     @Override
-    public int getNearestCellIndex(int bX, int bY, int bZ) {
+    public long getPackedF1F2Indices(int bX, int bY, int bZ) {
         int cellX = Math.floorDiv(bX, cellSizeXZ),
             cellY = Math.floorDiv(bY, cellSizeY),
             cellZ = Math.floorDiv(bZ, cellSizeXZ);
         int localCellX = cellX - minCellX,
             localCellY = cellY - minCellY,
             localCellZ = cellZ - minCellZ;
+
         int closestCellIndex = localCellX + localCellZ * cellCountX + localCellY * cellStride;
         double dX = bX - cellCenters[closestCellIndex * 3 + 0],
                dY = bY - cellCenters[closestCellIndex * 3 + 1],
                dZ = bZ - cellCenters[closestCellIndex * 3 + 2];
         double closestDistanceSq = dX * dX + dY * dY + dZ * dZ;
+
+        int secondClosestCellIndex = -1;
+        double secondClosestDistanceSq = Double.MAX_VALUE;
+
         for (int i = 0; i < NEIGHBOR_OFFSETS.length; i += 3) {
             int neighborCellX = cellX + NEIGHBOR_OFFSETS[i + 0],
-                neighborCellY = cellY + NEIGHBOR_OFFSETS[i + 1],
-                neighborCellZ = cellZ + NEIGHBOR_OFFSETS[i + 2];
+                    neighborCellY = cellY + NEIGHBOR_OFFSETS[i + 1],
+                    neighborCellZ = cellZ + NEIGHBOR_OFFSETS[i + 2];
             int localNeighborCellX = neighborCellX - minCellX,
-                localNeighborCellY = neighborCellY - minCellY,
-                localNeighborCellZ = neighborCellZ - minCellZ;
+                    localNeighborCellY = neighborCellY - minCellY,
+                    localNeighborCellZ = neighborCellZ - minCellZ;
             int neighborCellIndex = localNeighborCellX + localNeighborCellZ * cellCountX + localNeighborCellY * cellStride;
             double dnX = bX - cellCenters[neighborCellIndex * 3 + 0],
-                   dnY = bY - cellCenters[neighborCellIndex * 3 + 1],
-                   dnZ = bZ - cellCenters[neighborCellIndex * 3 + 2];
+                    dnY = bY - cellCenters[neighborCellIndex * 3 + 1],
+                    dnZ = bZ - cellCenters[neighborCellIndex * 3 + 2];
             double neighborDistanceSq = dnX * dnX + dnY * dnY + dnZ * dnZ;
             if (neighborDistanceSq < closestDistanceSq) {
                 closestCellIndex = neighborCellIndex;
                 closestDistanceSq = neighborDistanceSq;
+            } else if (neighborDistanceSq < secondClosestDistanceSq) {
+                secondClosestCellIndex = neighborCellIndex;
+                secondClosestDistanceSq = neighborDistanceSq;
             }
         }
-        return closestCellIndex;
+
+        return VoronoiEvaluator.packF1F2(closestCellIndex, secondClosestCellIndex);
     }
 
     @Override

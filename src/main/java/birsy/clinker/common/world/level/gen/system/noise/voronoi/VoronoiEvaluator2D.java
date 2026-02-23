@@ -48,15 +48,20 @@ public final class VoronoiEvaluator2D implements VoronoiEvaluator {
     public long cellHash(int bX, int bY, int bZ, int cellIndex) { return cellHashes[cellIndex]; }
 
     @Override
-    public int getNearestCellIndex(int bX, int bY, int bZ) {
+    public long getPackedF1F2Indices(int bX, int bY, int bZ) {
         int cellX = Math.floorDiv(bX, cellSize),
             cellZ = Math.floorDiv(bZ, cellSize);
         int localCellX = cellX - minCellX,
             localCellZ = cellZ - minCellZ;
+
         int closestCellIndex = localCellX + localCellZ * cellCountX;
         double dX = bX - cellCenters[closestCellIndex * 2 + 0],
                dZ = bZ - cellCenters[closestCellIndex * 2 + 1];
         double closestDistanceSq = dX * dX + dZ * dZ;
+
+        int secondClosestCellIndex = -1;
+        double secondClosestDistanceSq = Double.MAX_VALUE;
+
         for (int i = 0; i < NEIGHBOR_OFFSETS.length; i += 2) {
             int neighborCellX = cellX + NEIGHBOR_OFFSETS[i + 0],
                 neighborCellZ = cellZ + NEIGHBOR_OFFSETS[i + 1];
@@ -69,9 +74,13 @@ public final class VoronoiEvaluator2D implements VoronoiEvaluator {
             if (neighborDistanceSq < closestDistanceSq) {
                 closestCellIndex = neighborCellIndex;
                 closestDistanceSq = neighborDistanceSq;
+            } else if (neighborDistanceSq < secondClosestDistanceSq) {
+                secondClosestCellIndex = neighborCellIndex;
+                secondClosestDistanceSq = neighborDistanceSq;
             }
         }
-        return closestCellIndex;
+
+        return VoronoiEvaluator.packF1F2(closestCellIndex, secondClosestCellIndex);
     }
 
     @Override
