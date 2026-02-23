@@ -20,7 +20,7 @@ public class NoiseFieldTypes {
 
     public static final NoiseFieldType<InterpolatedNoiseField> FINE =
             (chunkHeight, paddingBlocks) ->
-                    new InterpolatedNoiseField(chunkHeight, 1, 2, smallestCellScale(paddingBlocks));
+                    new InterpolatedNoiseField(chunkHeight, 2, 1, smallestCellScale(paddingBlocks));
     public static final NoiseFieldType<InterpolatedNoiseField> COARSE =
             (chunkHeight, paddingBlocks) ->
                     new InterpolatedNoiseField(chunkHeight, 2, 2, smallestCellScale(paddingBlocks));

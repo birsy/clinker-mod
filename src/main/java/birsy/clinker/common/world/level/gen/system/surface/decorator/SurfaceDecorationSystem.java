@@ -125,8 +125,8 @@ public class SurfaceDecorationSystem {
                                double heightmapHeight, double heightmapGradient, boolean visibleToSky,
                                WorldGenLevel level, ChunkAccess chunk, RandomSource random,
                                List<SurfaceToDecorate> surfaces, Set<SurfaceDecorator> containedDecorators) {
-        int biomeOffsetX = pos.getX() + random.nextIntBetweenInclusive(-1, 1),
-            biomeOffsetZ = pos.getZ() + random.nextIntBetweenInclusive(-1, 1);
+        int biomeOffsetX = Math.clamp(pos.getX() + random.nextIntBetweenInclusive(-1, 1), chunk.getPos().getMinBlockX(), chunk.getPos().getMaxBlockX()),
+            biomeOffsetZ = Math.clamp(pos.getZ() + random.nextIntBetweenInclusive(-1, 1), chunk.getPos().getMinBlockZ(), chunk.getPos().getMaxBlockZ());
         Holder<Biome> biome = chunk.getNoiseBiome(
                 QuartPos.fromBlock(biomeOffsetX),
                 QuartPos.fromBlock(pos.getY()),

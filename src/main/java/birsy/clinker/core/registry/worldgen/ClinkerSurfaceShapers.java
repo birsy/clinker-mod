@@ -31,11 +31,8 @@ public class ClinkerSurfaceShapers {
             register("heath_thicket", ClinkerBiomes.HEATH_THICKET, new HeathThicketSurfaceShaper());
     public static final Supplier<BiomeSurfaceShaper> BRINE_SNAKES =
             register("brine_snakes", ClinkerBiomes.BRINE_SNAKES, new SnakesSurfaceShaper());
-//    public static final BiomeShaper ASH_STEPPE = register(ClinkerBiomes.ASH_STEPPE, new AshSteppeBiomeShaper());
-//    public static final BiomeShaper BRINE_SWAMP = register(ClinkerBiomes.BRINE_SWAMP, new BrineSwampBiomeShaper());
-//
-//    public static final BiomeShaper CLIFFSIDE = register(ClinkerBiomes.CLIFFSIDE, new LowerShelfBiomeShaper());
-//    public static final BiomeShaper LOWER_SHELF = register(ClinkerBiomes.LOWER_SHELF, new LowerShelfBiomeShaper());
+    public static final Supplier<BiomeSurfaceShaper> SHORE =
+            register("shore", ClinkerBiomes.SHORE, new ShoreSurfaceShaper());
 
     public static Supplier<BiomeSurfaceShaper> register(String name, ResourceKey<Biome> biome, SurfaceShaper shaper) {
         return SURFACE_SHAPERS.register(name, () -> new BiomeSurfaceShaper(biome, shaper));

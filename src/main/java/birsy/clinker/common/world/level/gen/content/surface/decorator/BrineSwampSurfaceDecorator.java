@@ -118,6 +118,6 @@ public class BrineSwampSurfaceDecorator extends SurfaceDecorator {
 
     @Override
     public boolean shouldCalculateElevationChange(boolean visibleToSky, int y, double surfaceHeight) {
-        return visibleToSky || y >= OthershoreGenerationConstants.BASE_SEA_LEVEL - 2;
+        return visibleToSky || y >= OthershoreGenerationConstants.SEA_HEIGHT - 2;
     }
 }

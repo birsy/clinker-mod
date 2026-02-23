@@ -111,7 +111,7 @@ dependencies {
     }
     implementation("net.tslat.smartbrainlib:SmartBrainLib-neoforge-${project.minecraft_version}:${project.sbl_version}")
     localRuntime "maven.modrinth:spark:1.10.124-neoforge-1.21.1"
-    // localRuntime "maven.modrinth:sodium:mc1.21.1-0.6.13-neoforge"
+    localRuntime "maven.modrinth:sodium:mc1.21.1-0.6.13-neoforge"
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

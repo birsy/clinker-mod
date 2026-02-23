@@ -13,14 +13,13 @@ public class AshSteppeSurfaceShaper extends SimpleSurfaceShaper {
         return 48;
     }
 
-    // kinda placeholder
     @Override
     public void prefillHeightmapNoiseFields(NoiseFieldCache cache) {
-        cache.fillNoiseField(ClinkerNoiseComputers.BASE_SURFACE_HEIGHT);
+        cache.fillNoiseField(UPPER_SHELF_ELEVATION);
     }
     @Override
     public double getHeight(int x, int z, double weight, NoiseContext context) {
-        return context.retrieve(ClinkerNoiseComputers.BASE_SURFACE_HEIGHT, x, 0, z) * weight;
+        return context.retrieve(UPPER_SHELF_ELEVATION, x, 0, z);
     }
 
     @Override

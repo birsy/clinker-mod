@@ -6,6 +6,7 @@ import birsy.clinker.common.world.level.gen.system.noise.NoiseComputer;
 import birsy.clinker.common.world.level.gen.system.noise.field.FieldFactory;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldFiller;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldTypes;
+import birsy.clinker.common.world.level.gen.system.noise.voronoi.VoronoiEvaluator;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerRegistries;
 import birsy.clinker.core.util.MathUtils;
@@ -20,11 +21,31 @@ public class ClinkerNoiseComputers {
     public static final Supplier<NoiseComputer> STRATIFIED_Y = NOISE_COMPUTERS.register(
             "stratified_y",
             () -> new NoiseComputer(
-                    () -> FieldFactory.voronoi3d(24, 4),
+                    () -> FieldFactory.voronoi3d(24, 3),
                     (dependencies, registry) -> {},
+                    (x, y, z, context) -> y
+            )
+    );
+
+    public static final Supplier<NoiseComputer> CLIFF_CRACKS = NOISE_COMPUTERS.register(
+            "cliff_cracks",
+            () -> new NoiseComputer(
+                    () -> FieldFactory.standard(NoiseFieldTypes.FINE_2D),
+                    (dependencies, registry) -> {
+                        registry.registerVoronoi2d("cliff_cracks", 32);
+                    },
                     (x, y, z, context) -> {
-                        //Clinker.LOGGER.info(y);
-                        return y;
+                        VoronoiEvaluator evaluator = context.getVoronoi("cliff_cracks");
+                        long packedIndices = evaluator.getPackedF1F2Indices(x, y, z);
+                        int f1 = VoronoiEvaluator.unpackF1(packedIndices),
+                            f2 = VoronoiEvaluator.unpackF2(packedIndices);
+                        double f1X = evaluator.cellCenterX(x, y, z, f1),
+                               f1Z = evaluator.cellCenterX(x, y, z, f1);
+                        double f1Dist = Mth.length(x - f1X, z - f1Z);
+                        double f2X = evaluator.cellCenterX(x, y, z, f2),
+                               f2Z = evaluator.cellCenterX(x, y, z, f2);
+                        double f2Dist = Mth.length(x - f2X, z - f2Z);
+                        return f2Dist - f1Dist;
                     }
             )
     );
@@ -44,41 +65,41 @@ public class ClinkerNoiseComputers {
     );
 
     // surface
-    @Deprecated(forRemoval = true)
-    public static final Supplier<NoiseComputer> BASE_SURFACE_HEIGHT = NOISE_COMPUTERS.register(
-            "base_surface_height",
+    public static final Supplier<NoiseComputer> BASE_ELEVATION = NOISE_COMPUTERS.register(
+            "base_elevation",
             () -> new NoiseComputer(
                     () -> FieldFactory.standard(NoiseFieldTypes.VERY_COARSE_2D),
                     (dependencies, registry) -> {
-                        registry.registerNoise("base_middle_shelf",
-                                2, 1.0, 4.0, 0.7, 0.0);
-                        registry.registerNoise("base_upper_shelf");
-                        registry.registerNoise("base_seas");
-                        registry.registerNoise("base_erosion");
+                        registry.registerNoise("base_elevation", 2, 1.0, 4.0, 0.25, 0.0);
                     },
                     (x, y, z, context) -> {
-                        double scale = 1;
-                        double frequency = (1 / 500.0) / scale;
-                        double val;
-                        double erosion = context.sample("base_erosion", x * frequency, z * frequency);
-                        erosion = Mth.clampedMap(erosion, -1, 1, 0, 1);
-
-                        double middleShelf = context.sample("base_middle_shelf", x * frequency * 0.25, z * frequency * 0.25);
-                        middleShelf = middleShelf * (1 / Mth.clampedMap(erosion, 0, 1, 0.5, 1));
-                        middleShelf = Mth.clampedMap(middleShelf, -1, -0.1, 0, 1);
-
-                        double seas = context.sample("base_seas", x * frequency * 0.2, z * frequency * 0.2) - 0.5;
-                        seas = seas * (1 / Mth.clampedMap(erosion, 0, 1, 0.1, 0.2));
-                        seas = Math.clamp(seas / 2.0 + 0.5, 0, 1);
-
-                        int minHeight = OthershoreGenerationConstants.BASE_SEA_LEVEL + 8;
-                        val = Mth.clampedMap(middleShelf, 0, 1, 25 + minHeight, 5 + OthershoreBiomeSource.MIDDLE_SHELF_HEIGHT);
-                        val = Mth.lerp(seas, val, minHeight - 3);
-
-                        return ((val - minHeight) * scale) + minHeight;
+                        return Mth.clampedMap(
+                                context.sample("base_elevation", x / 3000.0, z / 3000.0),
+                                -0.5, 0.5,
+                                OthershoreGenerationConstants.SEA_HEIGHT, OthershoreGenerationConstants.UPPER_SHELF_HEIGHT - 20
+                        );
                     }
             )
     );
+    public static final Supplier<NoiseComputer> UPPER_SHELF_ELEVATION = NOISE_COMPUTERS.register(
+            "upper_shelf_elevation",
+            () -> new NoiseComputer(
+                    () -> FieldFactory.standard(NoiseFieldTypes.VERY_COARSE_2D),
+                    (dependencies, registry) -> {
+                        dependencies.addDependency(BASE_ELEVATION);
+                        registry.registerNoise("upper_shelf_elevation");
+                    },
+                    (x, y, z, context) -> {
+                        return Math.max(Mth.clampedMap(
+                                context.sample("upper_shelf_elevation", x / 200.0, z / 200.0),
+                                -1.0, 1.0,
+                                OthershoreGenerationConstants.UPPER_SHELF_HEIGHT - 30, OthershoreGenerationConstants.UPPER_SHELF_HEIGHT
+                        ), context.retrieve(BASE_ELEVATION, x, y, z));
+                    }
+            )
+    );
+
+
 
     private static final double CLIFF_ROCK_FREQUENCY = 1 / 20.0;
     public static final Supplier<NoiseComputer> CLIFF_ROCKS  = NOISE_COMPUTERS.register("cliff_rocks",

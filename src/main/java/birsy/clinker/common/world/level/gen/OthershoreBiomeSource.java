@@ -12,7 +12,6 @@ import birsy.clinker.common.world.level.gen.system.surface.shaper.SurfaceShaperS
 import birsy.clinker.core.registry.ClinkerRegistries;
 import birsy.clinker.core.registry.worldgen.ClinkerBiomes;
 import birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers;
-import birsy.clinker.core.registry.worldgen.ClinkerProtoBiomes;
 import com.google.common.collect.Sets;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -30,7 +29,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
+
+import static birsy.clinker.core.registry.worldgen.ClinkerProtoBiomes.*;
 
 public class OthershoreBiomeSource extends BiomeSource {
     public static final MapCodec<OthershoreBiomeSource> CODEC = RecordCodecBuilder.mapCodec(
@@ -84,45 +86,49 @@ public class OthershoreBiomeSource extends BiomeSource {
     public static LayeredBiomeResolver createSurfaceBiomeResolver(Function<ResourceLocation, PositionalRandomFactory> randomState, UncachedNoiseContext noiseContext) {
 //        if (true) {
 //            return LayeredBiomeResolver.builder(8)
-//                    .layer(new BiomeLayerOperations.Biome(ClinkerProtoBiomes.LOWER_SNAKES.get()))
+//                    .layer(new BiomeLayerOperations.Biome(LOWER_SNAKES.get()))
 //                    .build(randomState, noiseContext);
 //        }
 
         return LayeredBiomeResolver.builder(8)
                 .layer((x, z, current, neighborhood, random, context) -> {
-                    double surfaceHeight = context.retrieve(ClinkerNoiseComputers.BASE_SURFACE_HEIGHT, x, 0, z);
-                    if (surfaceHeight < OthershoreGenerationConstants.BASE_SEA_LEVEL + 20) {
-                        return ClinkerProtoBiomes.LOWER_SHELF.get();
+                    double surfaceHeight = context.retrieve(ClinkerNoiseComputers.BASE_ELEVATION, x, 0, z);
+                    if (surfaceHeight < OthershoreGenerationConstants.SEA_HEIGHT + 20) {
+                        return LOWER_SHELF.get();
                     }
-                    return ClinkerProtoBiomes.UPPER_SHELF.get();
+                    return UPPER_SHELF.get();
                 })
-                .layer(new BiomeLayerOperations.Mutate(ClinkerProtoBiomes.UPPER_SHELF.get(),
+                .layer(new BiomeLayerOperations.CreateBorders(UPPER_SHELF.get(), LOWER_SHELF.get(), SHORE.get()))
+                .layer(new BiomeLayerOperations.Mutate(UPPER_SHELF.get(),
                           SimpleWeightedRandomList.<ProtoBiome>builder()
-                                  .add(ClinkerProtoBiomes.UPPER_SHELF.get(), 10)
-                                  .add(ClinkerProtoBiomes.HEATH.get(), 7)
+                                  .add(ASH_STEPPE.get(), 10)
+                                  .add(HEATH.get(), 7)
                                   .build()
                         ),
-                        new BiomeLayerOperations.Mutate(ClinkerProtoBiomes.LOWER_SHELF.get(),
+                        new BiomeLayerOperations.Mutate(LOWER_SHELF.get(),
                                 SimpleWeightedRandomList.<ProtoBiome>builder()
-                                        .add(ClinkerProtoBiomes.LOWER_SHELF.get(), 10)
-                                        .add(ClinkerProtoBiomes.LOWER_SNAKES.get(), 7)
+                                        .add(BRINE_SWAMP.get(), 10)
+                                        .add(BRINE_SNAKES.get(), 7)
                                         .build()
                         )
                 )
-                .layer(new BiomeLayerOperations.Smooth())
+                .layer(new BiomeLayerOperations.SmoothSpecific(Predicate.not(Predicate.isEqual(SHORE.get()))))
                 .layer(new BiomeLayerOperations.Smooth())
                 .zoom()
                 .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1))
-                .layer(new BiomeLayerOperations.Mutate(ClinkerProtoBiomes.HEATH.get(),
+                .layer(new BiomeLayerOperations.Mutate(HEATH.get(),
                                 SimpleWeightedRandomList.<ProtoBiome>builder()
-                                        .add(ClinkerProtoBiomes.HEATH.get(), 10)
-                                        .add(ClinkerProtoBiomes.HEATH_THICKET.get(), 3)
+                                        .add(HEATH.get(), 10)
+                                        .add(HEATH_THICKET.get(), 3)
                                         .build()
                         )
                 )
                 .layer(new BiomeLayerOperations.Smooth())
-                .layer(new BiomeLayerOperations.CreateBorders(ClinkerProtoBiomes.HEATH_THICKET.get(), ClinkerProtoBiomes.HEATH.get(), ClinkerProtoBiomes.HEATH_THICKET.get()),
-                       new BiomeLayerOperations.CreateBorders(ClinkerProtoBiomes.UPPER_SHELF.get(), ClinkerProtoBiomes.HEATH_THICKET.get(), ClinkerProtoBiomes.HEATH.get()))
+                .layer(new BiomeLayerOperations.CreateBorders(HEATH_THICKET.get(), HEATH.get(), HEATH_THICKET.get()),
+                       new BiomeLayerOperations.CreateBorders(
+                               (biome) -> biome != HEATH_THICKET.get() && biome != HEATH.get(),
+                               Predicate.isEqual(HEATH_THICKET.get()),
+                               HEATH.get()))
                 .zoom()
                 .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1))
                 .zoom()
@@ -209,7 +215,7 @@ public class OthershoreBiomeSource extends BiomeSource {
         int bX = QuartPos.toBlock(qX), bY = QuartPos.toBlock(qY), bZ = QuartPos.toBlock(qZ);
         if (bY < 0) return aquifer;
         int localX = SectionPos.sectionRelative(bX), localZ = SectionPos.sectionRelative(bZ);
-        double surfaceHeight = heightmapInfo.field().retrieve(localX, 0, localZ) - 10;
+        double surfaceHeight = heightmapInfo.combinedHeightmapField().retrieve(localX, 0, localZ) - 10;
         if (bY < surfaceHeight) return underground;
         return surfaceBiomeCache.retrieve(qX, qZ);
     }

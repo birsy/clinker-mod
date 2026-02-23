@@ -9,7 +9,7 @@ public class DefaultSurfaceShaper extends SurfaceShaper {
     @Override
     public void prefillHeightmapNoiseFields(NoiseFieldCache cache) {}
     @Override
-    public double getHeight(int x, int z, double weight, NoiseContext context) { return OthershoreGenerationConstants.BASE_SEA_LEVEL * weight; }
+    public double getHeight(int x, int z, double weight, NoiseContext context) { return OthershoreGenerationConstants.SEA_HEIGHT * weight; }
 
     @Override
     public void fillSurfaceDensityField(NoiseField surfaceDensityField, NoiseFieldCache cache, int chunkHeight, int minX, int minY, int minZ, NoiseField heightmapField, NoiseField squaredHeightmapGradientField, NoiseField distanceToHeightmap, int lowerGenBound, int upperGenBound, NoiseField biomeWeight) {

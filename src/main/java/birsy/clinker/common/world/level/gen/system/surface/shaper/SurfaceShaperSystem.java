@@ -12,6 +12,7 @@ import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldF
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesHeightmap;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesSurfaceDensity;
 import birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers;
+import birsy.clinker.core.util.MathUtils;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
@@ -21,6 +22,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.biome.Biome;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 public class SurfaceShaperSystem {
@@ -64,7 +66,7 @@ public class SurfaceShaperSystem {
     public ChunkSurfaceHeightmap generateHeightmap(PaddedNoiseFieldCache cache,
                                                    List<ModifiesHeightmap> heightmapModifyingWorldFeatures,
                                                    BiomeCache2d surfaceBiomeCache,
-                                                   BiomeBlender.ChunkBiomeBlendingWeights surfaceBlendingInfo,
+                                                   BiomeBlender.ChunkBiomeBlendingInfo surfaceBlendingInfo,
                                                    WorldFeatureContext context,
                                                    int minX, int minZ, int padding) {
         return this.generateHeightmapInternal(cache, heightmapModifyingWorldFeatures, surfaceBiomeCache, surfaceBlendingInfo, context, minX, minZ, padding);
@@ -73,7 +75,7 @@ public class SurfaceShaperSystem {
     public ChunkSurfaceHeightmap generateHeightmap(NoiseFieldCache cache,
                                                    List<ModifiesHeightmap> heightmapModifyingWorldFeatures,
                                                    BiomeCache2d surfaceBiomeCache,
-                                                   BiomeBlender.ChunkBiomeBlendingWeights surfaceBlendingInfo,
+                                                   BiomeBlender.ChunkBiomeBlendingInfo surfaceBlendingInfo,
                                                    WorldFeatureContext context,
                                                    int minX, int minZ) {
         return this.generateHeightmapInternal(cache, heightmapModifyingWorldFeatures, surfaceBiomeCache, surfaceBlendingInfo, context, minX, minZ, 0);
@@ -82,35 +84,42 @@ public class SurfaceShaperSystem {
     private ChunkSurfaceHeightmap generateHeightmapInternal(NoiseFieldCache cache,
                                                             List<ModifiesHeightmap> heightmapModifyingWorldFeatures,
                                                             BiomeCache2d surfaceBiomeCache,
-                                                            BiomeBlender.ChunkBiomeBlendingWeights surfaceBlendingInfo,
+                                                            BiomeBlender.ChunkBiomeBlendingInfo surfaceBlendingInfo,
                                                             WorldFeatureContext context,
                                                             int minX, int minZ, int padding) {
-        NoiseField heightmapField = NoiseFieldTypes.COARSE_2D.create(0, padding);
-        double[] heightmapArray = heightmapField.array();
+        NoiseField[] biomeHeightmaps = new NoiseField[this.biomeList.maxId() + 1];
+        NoiseField mergedHeightmapField = NoiseFieldTypes.COARSE_2D.create(0, padding);
+        double[] mergedHeightmapArray = mergedHeightmapField.array();
         for (Holder<Biome> biome : surfaceBiomeCache.containedBiomes()) {
             NoiseField biomeWeightField = surfaceBlendingInfo.weightForBiome(biomeList, biome);
             if (biomeWeightField == null) continue;
             SurfaceShaper shaper = getSurfaceShaper(biome);
 
+            NoiseField biomeHeightmapField = NoiseFieldTypes.COARSE_2D.create(0, padding);
+            double[] biomeHeightmapArray = biomeHeightmapField.array();
+
             shaper.prefillHeightmapNoiseFields(cache);
-            heightmapField.byBlock(
+            mergedHeightmapField.byBlock(
                     (index, x, y, z) -> {
                         double weight = biomeWeightField.retrieve(x, y, z);
-                        heightmapArray[index] += shaper.getHeight(x + minX, z + minZ, weight, cache.context);
+                        double height = shaper.getHeight(x + minX, z + minZ, weight, cache.context);
+                        biomeHeightmapArray[index] = height;
+                        mergedHeightmapArray[index] += height * weight;
                     }
             );
+            biomeHeightmaps[this.biomeList.getId(biome)] = biomeHeightmapField;
         }
 
         for (ModifiesHeightmap worldFeature : heightmapModifyingWorldFeatures)
-            worldFeature.modifyHeightmap(minX, minZ, cache, heightmapField, context);
+            worldFeature.modifyHeightmap(minX, minZ, cache, mergedHeightmapField, biomeHeightmaps, context);
 
         double min = Double.MAX_VALUE, max = Double.MIN_VALUE;
-        for (double height : heightmapArray) {
+        for (double height : mergedHeightmapArray) {
             if (height > max) max = height;
             if (height < min) min = height;
         }
 
-        return new ChunkSurfaceHeightmap(heightmapField, Mth.floor(min), Mth.ceil(max));
+        return new ChunkSurfaceHeightmap(mergedHeightmapField, biomeHeightmaps, Mth.floor(min), Mth.ceil(max));
     }
 
     public NoiseField generateHeightmapGradientSquaredField(NoiseField heightmap) {
@@ -148,7 +157,7 @@ public class SurfaceShaperSystem {
     public NoiseField generateSurfaceDensity(NoiseFieldCache cache,
                                              List<ModifiesSurfaceDensity> surfaceDensityModifyingWorldFeatures,
                                              BiomeCache2d surfaceBiomeCache,
-                                             BiomeBlender.ChunkBiomeBlendingWeights surfaceBlendingInfo,
+                                             BiomeBlender.ChunkBiomeBlendingInfo blendingInfo,
                                              ChunkSurfaceHeightmap heightmapInfo, NoiseField squaredHeightmapGradient, NoiseField distanceToHeightmap,
                                              WorldFeatureContext worldContext,
                                              int minX, int minY, int minZ, int chunkHeight) {
@@ -163,7 +172,7 @@ public class SurfaceShaperSystem {
         upperBound = Math.min(heightmapInfo.maximum + upperBound, chunkHeight-1);
 
         // some utility stuff for the heightmaps
-        NoiseField heightmap = heightmapInfo.field;
+        NoiseField heightmap = heightmapInfo.combinedHeightmapField;
         NoiseField heightmapGradient = NoiseFieldTypes.COARSE_2D.create(0, 0);
         double[] heightmapGradientArray = heightmapGradient.array();
         double[] squaredHeightmapGradientArray = squaredHeightmapGradient.array();
@@ -181,13 +190,13 @@ public class SurfaceShaperSystem {
         );
 
         for (Holder<Biome> biome : surfaceBiomeCache.containedBiomes()) {
-            NoiseField biomeWeightField = surfaceBlendingInfo.weightForBiome(biomeList, biome);
+            NoiseField biomeWeightField = blendingInfo.weightForBiome(biomeList, biome);
             if (biomeWeightField == null) continue;
             SurfaceShaper shaper = getSurfaceShaper(biome);
             shaper.fillSurfaceDensityField(surfaceDensityField, cache, chunkHeight, minX, minY, minZ, heightmap, heightmapGradient, distanceToHeightmap, lowerBound, upperBound, biomeWeightField);
         }
 
-        this.createRockyCliffsOnSteepSlopes(cache, heightmapGradient, distanceToHeightmap, surfaceBlendingInfo.biomeTransitionFactorField(), surfaceDensityField, lowerBound, upperBound, minX, minY, minZ, chunkHeight);
+        this.createCliffs(cache, surfaceBiomeCache, heightmapInfo, blendingInfo, surfaceDensityField, lowerBound, upperBound, minX, minY, minZ, chunkHeight);
 
         for (ModifiesSurfaceDensity worldFeature : surfaceDensityModifyingWorldFeatures)
             worldFeature.modifySurfaceDensity(minX, minY, minZ, cache, surfaceDensityField, worldContext);
@@ -198,34 +207,81 @@ public class SurfaceShaperSystem {
     // whenever there are big discontinuities in the heightmap near biome transitions,
     // surface shapers can't really handle that...
     // so we add on some rocky cliff textures to help make it look less smooth and 1.12 biomes o' plenty mountains-y
-    private void createRockyCliffsOnSteepSlopes(NoiseFieldCache cache,
-                                                NoiseField heightmapGradientField, NoiseField distanceToHeightmapField,
-                                                NoiseField biomeTransitionFactorField,
-                                                NoiseField surfaceDensityField,
-                                                int lowerSurfaceBound, int upperSurfaceBound,
-                                                int minX, int minY, int minZ, int chunkHeight) {
-        NoiseField cliffRockField = cache.fillNoiseField(lowerSurfaceBound, upperSurfaceBound, ClinkerNoiseComputers.CLIFF_ROCKS);
-        double cliffSize = 6;
+    private static final int MIN_CLIFF_HEIGHT_DIFFERENCE = 10;
+    private NoiseField createCliffModifiedHeightmap(BiomeCache2d surfaceBiomeCache, NoiseField mergedHeightmapField, NoiseField[] heightmapByBiome) {
+        NoiseField cliffModifiedHeightmapField = NoiseFieldTypes.COARSE_2D.create(0, 0);
+        double[] cliffModifiedHeightmapArray = cliffModifiedHeightmapField.array();
+        for (Holder<Biome> biome : surfaceBiomeCache.containedBiomes()) {
+            NoiseField biomeHeightmapField = heightmapByBiome[this.biomeList.getId(biome)];
+            if (biomeHeightmapField == null) continue;
+            cliffModifiedHeightmapField.byBlock(
+                    (index, x, y, z) -> {
+                        double biomeHeight = biomeHeightmapField.retrieve(x, y, z);
+                        double combinedHeight = mergedHeightmapField.retrieve(x, y, z);
+                        double cliffFactor = Math.clamp((biomeHeight - combinedHeight) / MIN_CLIFF_HEIGHT_DIFFERENCE, 0, 1);
+                        cliffModifiedHeightmapArray[index] = Mth.lerp(cliffFactor, combinedHeight, biomeHeight);
+                    }
+            );
+        }
+
+        return cliffModifiedHeightmapField;
+    }
+    private void createCliffs(NoiseFieldCache cache,
+                              BiomeCache2d surfaceBiomeCache,
+                              ChunkSurfaceHeightmap heightmapInfo,
+                              BiomeBlender.ChunkBiomeBlendingInfo blendingInfo,
+                              NoiseField surfaceDensityField,
+                              int lowerSurfaceBound, int upperSurfaceBound,
+                              int minX, int minY, int minZ, int chunkHeight) {
+        NoiseField stratifiedYField = cache.fillNoiseField(lowerSurfaceBound, upperSurfaceBound, ClinkerNoiseComputers.STRATIFIED_Y);
+        NoiseField cliffCracksField = cache.fillNoiseField(lowerSurfaceBound, upperSurfaceBound, ClinkerNoiseComputers.CLIFF_CRACKS);
+
+        NoiseField borderDistanceField = NoiseFieldTypes.COARSE_2D.create(chunkHeight, 0);
+        double[] borderDistanceArray = borderDistanceField.array();
         double[] surfaceDensityFieldArray = surfaceDensityField.array();
-        surfaceDensityField.byBlock(lowerSurfaceBound - minY, upperSurfaceBound - minY,
-                (index, x, y, z) -> {
-                    // make sure it only occurs when the heightmap is steep
-                    double gradientMask = Mth.clampedMap(heightmapGradientField.retrieve(x, y, z), 1, 6, 0, 1);
-                    // make sure it only occurs near the ground
-                    double distanceToHeightmapMask = Mth.clampedMap(Math.abs(distanceToHeightmapField.retrieve(x, y, z)), cliffSize * 0.5, cliffSize, 1, 0);
-                    // make sure it only occurs between biomes. surface shapers can take care of intra-biome cliffs
-                    double biomeTransitionMask = Math.clamp(biomeTransitionFactorField.retrieve(x, y, z), 0, 1);
+        for (Holder<Biome> biome : surfaceBiomeCache.containedBiomes()) {
+            NoiseField distanceToBiomeEdgeField = blendingInfo.borderDistanceForBiome(this.biomeList, biome);
+            NoiseField biomeHeightmapField = heightmapInfo.heightmapForBiome(this.biomeList, biome);
+            if (distanceToBiomeEdgeField == null || biomeHeightmapField == null) continue;
 
-                    double cliffRock = cliffRockField.retrieve(x, y, z);
-                    cliffRock = Math.round(cliffRock * 3.0) / 3.0;
-                    cliffRock = ((Math.abs(cliffRock) * -2 + 1) - 0.3) * cliffSize;
+            // create horizontal distance-to-biome map
+            Arrays.fill(borderDistanceArray, 100.0);
+            borderDistanceField.byBlock(
+                    (index, x, y, z) -> {
+                        double biomeHeight = biomeHeightmapField.retrieve(x, y, z);
+                        double combinedHeight = heightmapInfo.combinedHeightmapField.retrieve(x, y, z);
+                        double baseCliffRadius = Mth.clampedMap(biomeHeight - combinedHeight, 0, MIN_CLIFF_HEIGHT_DIFFERENCE, 0, 8);
+                        borderDistanceArray[index] = Math.abs(distanceToBiomeEdgeField.retrieve(x, y, z)) - baseCliffRadius;
+                    }
+            );
 
-                    double cliffs = cliffRock * biomeTransitionMask * gradientMask * distanceToHeightmapMask * 1.3;
+            // each biome gets its own surrounding cliff!
+            surfaceDensityField.byBlock(lowerSurfaceBound - minY, upperSurfaceBound - minY,
+                    (index, x, y, z) -> {
+                        double stratifiedY = stratifiedYField.retrieve(x, y, z);
+                        stratifiedY = Mth.lerp(-0.2, stratifiedY, y + minY);
+                        double biomeHeight = biomeHeightmapField.retrieve(x, y, z) - 5;
+                        double combinedHeight = heightmapInfo.combinedHeightmapField.retrieve(x, y, z);
+                        stratifiedY = Mth.lerp(Mth.clampedMap(biomeHeight - y, 5, 15, 0, 1), stratifiedY, y);
 
-                    surfaceDensityFieldArray[index] += cliffs;
-                }
-        );
+                        double verticalCliffDistance = stratifiedY - biomeHeight;
+                        double lateralCliffDistance = borderDistanceField.retrieve(x, y, z);
+                        double baseFlare = Mth.clampedMap(stratifiedY, combinedHeight, biomeHeight, 1, 0);
+                        baseFlare *= baseFlare;
+                        double baseFlareRadius = Mth.clampedMap(biomeHeight - combinedHeight, 0, 30, 5, 16);
+                        lateralCliffDistance -= baseFlare * baseFlareRadius;
+                        double cliffDistance = -MathUtils.smoothMinExpo(-lateralCliffDistance, -verticalCliffDistance, 5);
+                        cliffDistance += Mth.clampedMap(cliffCracksField.retrieve(x, y, z), 0, 3, 4, 0);
+                        surfaceDensityFieldArray[index] = MathUtils.smoothMinExpo(surfaceDensityFieldArray[index], cliffDistance, 3);
+                    }
+            );
+        }
     }
 
-    public record ChunkSurfaceHeightmap(NoiseField field, int minimum, int maximum) {}
+    public record ChunkSurfaceHeightmap(NoiseField combinedHeightmapField, NoiseField[] heightmapByBiome, int minimum, int maximum) {
+        @Nullable
+        public NoiseField heightmapForBiome(BiomeList biomes, Holder<Biome> biome) {
+            return heightmapByBiome[biomes.getId(biome)];
+        }
+    }
 }

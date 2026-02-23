@@ -28,5 +28,11 @@ public interface NoiseRegistry {
         });
     }
 
+    default void registerVoronoi2d(String name, int cellSize) {
+        this.registerVoronoi(name, () -> VoronoiDefinition.twoDimensional(cellSize));
+    }
+    default void registerVoronoi3d(String name, int xzCellSize, int yCellSize) {
+        this.registerVoronoi(name, () -> VoronoiDefinition.threeDimensional(xzCellSize, yCellSize));
+    }
     void registerVoronoi(String name, Supplier<VoronoiDefinition> factory);
 }

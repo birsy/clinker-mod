@@ -90,7 +90,7 @@ public class NoiseFieldCache {
         String id = "noise_computer_" + computer.id + "_voronoi";
         this.noiseHolder.registerVoronoi(id, factory::definition);
         VoronoiEvaluator evaluator = voronoiEvaluators.computeIfAbsent(id, (key) -> this.createVoronoiEvaluator(id));
-        // then the noise field...
+        // then the noise combinedHeightmapField...
         if (evaluator instanceof VoronoiEvaluator2D v2d)
             return new VoronoiNoiseField2D(v2d, this.minX, this.minZ);
         if (evaluator instanceof VoronoiEvaluator3D v3d)

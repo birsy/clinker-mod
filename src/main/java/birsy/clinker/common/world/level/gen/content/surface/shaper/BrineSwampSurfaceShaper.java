@@ -1,6 +1,5 @@
 package birsy.clinker.common.world.level.gen.content.surface.shaper;
 
-import birsy.clinker.common.world.level.gen.OthershoreBiomeSource;
 import birsy.clinker.common.world.level.gen.OthershoreGenerationConstants;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
@@ -14,7 +13,7 @@ public class BrineSwampSurfaceShaper extends SimpleSurfaceShaper {
 
     @Override
     public double getHeight(int x, int z, double weight, NoiseContext context) {
-        return (OthershoreGenerationConstants.BASE_SEA_LEVEL - 1) * weight;
+        return (OthershoreGenerationConstants.SEA_HEIGHT - 1);
     }
 
     @Override
@@ -32,7 +31,7 @@ public class BrineSwampSurfaceShaper extends SimpleSurfaceShaper {
 
     @Override
     public double surfaceDensity(int x, int y, int z, double heightmapHeight, double heightmapGradient, double distanceToSurface, double biomeWeight, NoiseContext context) {
-        int seaHeight = OthershoreGenerationConstants.BASE_SEA_LEVEL + 1;
+        int seaHeight = OthershoreGenerationConstants.SEA_HEIGHT + 1;
 
         double islandNoise = context.retrieve(ClinkerNoiseComputers.BASE_NOISE_2D[5], x, y, z) * 2;
         if (islandNoise < 0) islandNoise *= 1.5;

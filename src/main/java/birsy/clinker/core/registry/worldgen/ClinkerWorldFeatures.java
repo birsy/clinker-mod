@@ -30,11 +30,11 @@ public final class ClinkerWorldFeatures {
                                 .build()
                 );
 
-//        public static final Supplier<WorldFeatureSpawnSet> RIVER =
-//                WORLD_FEATURE_SPAWNS.register("river",
-//                        () -> WorldFeatureSpawnSet.builder(5)
-//                                .add(Types.RIVER.get(), 0, 3)
-//                                .build()
-//                );
+        public static final Supplier<WorldFeatureSpawnSet> RIVER =
+                WORLD_FEATURE_SPAWNS.register("river",
+                        () -> WorldFeatureSpawnSet.builder(5)
+                                .add(Types.RIVER.get(), 0, 3)
+                                .build()
+                );
     }
 }

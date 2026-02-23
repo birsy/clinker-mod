@@ -13,7 +13,7 @@ public class SnakesSurfaceShaper extends SimpleSurfaceShaper {
 
     @Override
     public double getHeight(int x, int z, double weight, NoiseContext context) {
-        return (OthershoreGenerationConstants.BASE_SEA_LEVEL - 2) * weight;
+        return (OthershoreGenerationConstants.SEA_HEIGHT - 2);
     }
 
     @Override
@@ -27,7 +27,7 @@ public class SnakesSurfaceShaper extends SimpleSurfaceShaper {
 
     @Override
     public double surfaceDensity(int x, int y, int z, double heightmapHeight, double heightmapGradient, double distanceToSurface, double biomeWeight, NoiseContext context) {
-        int seaFloorHeight = OthershoreGenerationConstants.BASE_SEA_LEVEL - 2;
+        int seaFloorHeight = OthershoreGenerationConstants.SEA_HEIGHT - 2;
 
         double path = context.retrieve(ClinkerNoiseComputers.BASE_NOISE_2D[7], x, y, z);
         path = Math.abs(path);

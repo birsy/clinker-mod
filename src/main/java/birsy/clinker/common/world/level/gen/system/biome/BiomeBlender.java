@@ -3,38 +3,58 @@ package birsy.clinker.common.world.level.gen.system.biome;
 import birsy.clinker.common.world.level.gen.OthershoreBiomeSource;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldTypes;
-import net.minecraft.Util;
 import net.minecraft.core.Holder;
 import net.minecraft.core.QuartPos;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.biome.Biome;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
 
 public class BiomeBlender {
+    static final int BIOME_KERNEL_SIZE = 11, HALF_BIOME_KERNEL_SIZE = 5;
     static final int BIOME_BLUR_KERNEL_SIZE = 7, HALF_BIOME_BLUR_KERNEL_SIZE = 3;
-    static final double[] BIOME_BLUR_KERNEL = Util.make(() -> {
-        double halfSize = BIOME_BLUR_KERNEL_SIZE / 2.0;
-        double gamma = halfSize / 3.0;
-        double total = 0;
-        double[] array = new double[BIOME_BLUR_KERNEL_SIZE * BIOME_BLUR_KERNEL_SIZE];
-        for (int kX = 0; kX < BIOME_BLUR_KERNEL_SIZE; kX++) {
-            double kernelX = kX + 0.5;
-            for (int kZ = 0; kZ < BIOME_BLUR_KERNEL_SIZE; kZ++) {
-                double kernelZ = kZ + 0.5;
-                double distanceToCenter = Math.sqrt(
-                        (kernelX - halfSize) * (kernelX - halfSize) +
-                                (kernelZ - halfSize) * (kernelZ - halfSize)
-                );
-                double value =  (1.0 / Math.sqrt(2 * Math.PI * gamma)) * Math.exp(-((distanceToCenter * distanceToCenter) / (2 * gamma * gamma)));
-                array[kX + kZ * BIOME_BLUR_KERNEL_SIZE] = value;
-                total += value;
+    static final double[] BIOME_DISTANCE_KERNEL = new double[BIOME_KERNEL_SIZE * BIOME_KERNEL_SIZE];
+    static final double[] BIOME_BLUR_KERNEL = new double[BIOME_KERNEL_SIZE * BIOME_KERNEL_SIZE];
+    // optimized smaller version for when i only need the blur kernel
+    static final double[] SMALL_BIOME_BLUR_KERNEL = new double[BIOME_BLUR_KERNEL_SIZE * BIOME_BLUR_KERNEL_SIZE];
+    static {
+        double totalWeight = 0;
+        for (int x = 0; x < BIOME_KERNEL_SIZE; x++) {
+            double centeredX = (x + 0.5) - (BIOME_KERNEL_SIZE * 0.5);
+            for (int y = 0; y < BIOME_KERNEL_SIZE; y++) {
+                double centeredY = (y + 0.5) - (BIOME_KERNEL_SIZE * 0.5);
+
+                int index = x + y * BIOME_KERNEL_SIZE;
+
+                double distance = Mth.length(centeredX, centeredY);
+                BIOME_DISTANCE_KERNEL[index] = distance;
+
+                double weight = blurKernel(distance);
+                totalWeight += weight;
+                BIOME_BLUR_KERNEL[index] = weight;
             }
         }
+        for (int x = 0; x < BIOME_BLUR_KERNEL_SIZE; x++) {
+            double centeredX = (x + 0.5) - (BIOME_BLUR_KERNEL_SIZE * 0.5);
+            for (int y = 0; y < BIOME_BLUR_KERNEL_SIZE; y++) {
+                double centeredY = (y + 0.5) - (BIOME_BLUR_KERNEL_SIZE * 0.5);
+                int index = x + y * BIOME_BLUR_KERNEL_SIZE;
+                double distance = Mth.length(centeredX, centeredY);
+                SMALL_BIOME_BLUR_KERNEL[index] = blurKernel(distance);
+            }
+        }
+
         // normalize
-        for (int i = 0; i < array.length; i++) array[i] /= total;
-        return array;
-    });
+        for (int i = 0; i < BIOME_BLUR_KERNEL.length; i++) BIOME_BLUR_KERNEL[i] /= totalWeight;
+        for (int i = 0; i < SMALL_BIOME_BLUR_KERNEL.length; i++) SMALL_BIOME_BLUR_KERNEL[i] /= totalWeight;
+    }
+
+    private static double blurKernel(double distance) {
+        double biomeBlurRadius = BIOME_BLUR_KERNEL_SIZE * 0.5;
+        double t = Math.clamp(distance / biomeBlurRadius, 0, 1);
+        return (1 - t * t) * (1 - t * t);
+    }
 
     final BiomeList biomeList;
     final OthershoreBiomeSource biomeSource;
@@ -45,89 +65,89 @@ public class BiomeBlender {
     }
 
     public int requiredBiomeCachePadding() {
-        return HALF_BIOME_BLUR_KERNEL_SIZE + 1;
+        return HALF_BIOME_KERNEL_SIZE + 1;
     }
 
-    public ChunkBiomeBlendingWeights generateChunkBiomeBlendingWeights(BiomeCache2d surfaceBiomeCache, int minX, int minZ, int padding) {
+    public ChunkBiomeBlendingInfo generateChunkBiomeBlendingInfo(BiomeCache2d surfaceBiomeCache, int minX, int minZ, int padding) {
         NoiseField[] biomeWeightFields = new NoiseField[biomeList.maxId() + 1];
+        NoiseField[] biomeDistanceFields = new NoiseField[biomeList.maxId() + 1];
 
         for (Holder<Biome> biome : surfaceBiomeCache.containedBiomes()) {
             NoiseField biomeWeightField = NoiseFieldTypes.COARSE_2D.create(1, padding);
             double[] biomeWeightFieldArray = biomeWeightField.array();
-            biomeWeightField.byBlock((index, x, y, z) -> fillBiomeWeightField(
-                    biome, surfaceBiomeCache, biomeWeightFieldArray,
+            NoiseField biomeDistanceField = NoiseFieldTypes.COARSE_2D.create(1, padding);
+            double[] biomeDistanceFieldArray = biomeDistanceField.array();
+
+            biomeWeightField.byBlock((index, x, y, z) -> fillBiomeBlendingFields(
+                    biome, surfaceBiomeCache,
+                    biomeWeightFieldArray, biomeDistanceFieldArray,
                     minX, minZ,
                     index, x, z
             ));
-            biomeWeightFields[biomeList.getId(biome)] = biomeWeightField;
+            int biomeId = biomeList.getId(biome);
+            biomeWeightFields[biomeId] = biomeWeightField;
+            biomeDistanceFields[biomeId] = biomeDistanceField;
         }
 
-        return new ChunkBiomeBlendingWeights(biomeWeightFields, generateBiomeTransitionFactorField(surfaceBiomeCache, biomeWeightFields, padding));
-    }
-
-    private NoiseField generateBiomeTransitionFactorField(BiomeCache2d surfaceBiomeCache, NoiseField[] biomeWeightFields, int padding) {
-        NoiseField biomeTransitionFactorField = NoiseFieldTypes.COARSE_2D.create(1, padding);
-        double[] biomeTransitionFactorArray = biomeTransitionFactorField.array();
-
-        biomeTransitionFactorField.byIndex(index -> {
-            double max1 = 0, max2 = 0;
-            for (Holder<Biome> biome : surfaceBiomeCache.containedBiomes()) {
-                NoiseField biomeWeightField = biomeWeightFields[biomeList.getId(biome)];
-                double weight = biomeWeightField.array()[index];
-                if (weight > max1) {
-                    max2 = max1;
-                    max1 = weight;
-                } else if (weight > max2) {
-                    max2 = weight;
-                }
-            }
-            biomeTransitionFactorArray[index] = Math.clamp(1 - (max1 - max2), 0, 1);
-        });
-
-        return biomeTransitionFactorField;
+        return new ChunkBiomeBlendingInfo(biomeWeightFields, biomeDistanceFields);
     }
 
     public double[] getBiomeBlendingWeights(double[] weightByBiomeId, int x, int z) {
         Arrays.fill(weightByBiomeId, 0);
-        int blurIndex = 0;
+        int kernelIndex = 0;
         for (int oZ = 0; oZ < BIOME_BLUR_KERNEL_SIZE; oZ++) {
-            int offsetQZ = QuartPos.fromBlock(z + (oZ - HALF_BIOME_BLUR_KERNEL_SIZE) * QuartPos.SIZE);
+            int sampleQZ = QuartPos.fromBlock(z + (oZ - HALF_BIOME_BLUR_KERNEL_SIZE) * QuartPos.SIZE);
 
             for (int oX = 0; oX < BIOME_BLUR_KERNEL_SIZE; oX++) {
-                int offsetQX = QuartPos.fromBlock(x + (oX - HALF_BIOME_BLUR_KERNEL_SIZE) * QuartPos.SIZE);
+                int sampleQX = QuartPos.fromBlock(x + (oX - HALF_BIOME_BLUR_KERNEL_SIZE) * QuartPos.SIZE);
 
-                Holder<Biome> neighborBiome = this.biomeSource.getSurfaceBiome(offsetQX, offsetQZ);
-                weightByBiomeId[biomeList.getId(neighborBiome)] += BIOME_BLUR_KERNEL[blurIndex];
-                blurIndex++;
+                Holder<Biome> neighborBiome = this.biomeSource.getSurfaceBiome(sampleQX, sampleQZ);
+                weightByBiomeId[biomeList.getId(neighborBiome)] += SMALL_BIOME_BLUR_KERNEL[kernelIndex];
+                kernelIndex++;
             }
         }
         return weightByBiomeId;
     }
 
-    private static void fillBiomeWeightField(Holder<Biome> biome, BiomeCache2d surfaceBiomeCache, double[] field,
-                                             int minX, int minZ, int index, int localX, int localZ) {
+    private static void fillBiomeBlendingFields(Holder<Biome> biome, BiomeCache2d surfaceBiomeCache,
+                                                double[] weightField, double[] distanceToBorderField,
+                                                int minX, int minZ, int index, int localX, int localZ) {
         int x = minX + localX,
             z = minZ + localZ;
-        double total = 0;
-        int blurIndex = 0;
-        for (int oZ = 0; oZ < BIOME_BLUR_KERNEL_SIZE; oZ++) {
-            int offsetQZ = QuartPos.fromBlock(z + (oZ - HALF_BIOME_BLUR_KERNEL_SIZE) * QuartPos.SIZE);
+        Holder<Biome> currentBiome = surfaceBiomeCache.retrieve(QuartPos.fromBlock(x), QuartPos.fromBlock(z));
+        boolean isInsideBiome = currentBiome.is(biome);
+        double minimumDistance = 100;
 
-            for (int oX = 0; oX < BIOME_BLUR_KERNEL_SIZE; oX++) {
-                int offsetQX = QuartPos.fromBlock(x + (oX - HALF_BIOME_BLUR_KERNEL_SIZE) * QuartPos.SIZE);
+        double totalWeight = 0;
+        int kernelIndex = 0;
+        for (int oZ = 0; oZ < BIOME_KERNEL_SIZE; oZ++) {
+            int sampleQZ = QuartPos.fromBlock(z + (oZ - HALF_BIOME_KERNEL_SIZE) * QuartPos.SIZE);
 
-                Holder<Biome> neighborBiome = surfaceBiomeCache.retrieve(offsetQX, offsetQZ);
-                if (neighborBiome.is(biome)) total += BIOME_BLUR_KERNEL[blurIndex];
-                blurIndex++;
+            for (int oX = 0; oX < BIOME_KERNEL_SIZE; oX++) {
+                int sampleQX = QuartPos.fromBlock(x + (oX - HALF_BIOME_KERNEL_SIZE) * QuartPos.SIZE);
+
+                Holder<Biome> neighborBiome = surfaceBiomeCache.retrieve(sampleQX, sampleQZ);
+                boolean neighborIsBiome = neighborBiome.is(biome);
+
+                if (isInsideBiome != neighborIsBiome)
+                    minimumDistance = Math.min(minimumDistance, BIOME_DISTANCE_KERNEL[kernelIndex]);
+                if (neighborIsBiome)
+                    totalWeight += BIOME_BLUR_KERNEL[kernelIndex];
+                kernelIndex++;
             }
         }
-        field[index] = total;
+        weightField[index] = totalWeight;
+        distanceToBorderField[index] = minimumDistance * QuartPos.SIZE * (isInsideBiome ? -1 : 1);
     }
 
-    public record ChunkBiomeBlendingWeights(NoiseField[] weightByBiomeId, NoiseField biomeTransitionFactorField) {
+    public record ChunkBiomeBlendingInfo(NoiseField[] weightByBiomeId, NoiseField[] borderDistanceByBiomeId) {
         @Nullable
         public NoiseField weightForBiome(BiomeList biomes, Holder<Biome> biome) {
             return weightByBiomeId[biomes.getId(biome)];
+        }
+        @Nullable
+        public NoiseField borderDistanceForBiome(BiomeList biomes, Holder<Biome> biome) {
+            return borderDistanceByBiomeId[biomes.getId(biome)];
         }
     }
 }

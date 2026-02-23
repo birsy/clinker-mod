@@ -10,12 +10,11 @@ public class HeathSurfaceShaper extends SimpleSurfaceShaper {
 
     @Override
     public void prefillHeightmapNoiseFields(NoiseFieldCache cache) {
-        cache.fillNoiseField(BASE_NOISE_2D_ALT[9]);
+        cache.fillNoiseField(UPPER_SHELF_ELEVATION);
     }
-
     @Override
     public double getHeight(int x, int z, double weight, NoiseContext context) {
-        return (150 + context.retrieve(BASE_NOISE_2D_ALT[9], x, 0, z) * 10) * weight;
+        return context.retrieve(UPPER_SHELF_ELEVATION, x, 0, z);
     }
 
     @Override

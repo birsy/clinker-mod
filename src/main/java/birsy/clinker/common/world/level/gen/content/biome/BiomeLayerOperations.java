@@ -103,7 +103,7 @@ public class BiomeLayerOperations {
 
     public record Surround(Predicate<ProtoBiome> target, ProtoBiome surroundingBiome) implements BiomeLayerOperation {
         public Surround(ProtoBiome target, ProtoBiome surroundingBiome) {
-            this(biome -> biome == target, surroundingBiome);
+            this(Predicate.isEqual(target), surroundingBiome);
         }
         @Override
         public ProtoBiome apply(int blockX, int blockZ, ProtoBiome current, ProtoBiomeNeighborhood previousLayerNeighborhood, RandomSource random, NoiseContext noiseContext) {
@@ -115,12 +115,15 @@ public class BiomeLayerOperations {
     }
 
     // biomeA takes priority, while biomeB is overwritten by the borderBiome
-    public record CreateBorders(ProtoBiome biomeA, ProtoBiome biomeB, ProtoBiome borderBiome) implements BiomeLayerOperation {
+    public record CreateBorders(Predicate<ProtoBiome> biomeA, Predicate<ProtoBiome> biomeB, ProtoBiome borderBiome) implements BiomeLayerOperation {
+        public CreateBorders(ProtoBiome biomeA, ProtoBiome biomeB, ProtoBiome borderBiome) {
+            this(Predicate.isEqual(biomeA), Predicate.isEqual(biomeB), borderBiome);
+        }
         @Override
         public ProtoBiome apply(int blockX, int blockZ, ProtoBiome current, ProtoBiomeNeighborhood previousLayerNeighborhood, RandomSource random, NoiseContext noiseContext) {
-            if (current == biomeB) {
+            if (biomeA.test(current)) {
                 for (int offsetIndex : ProtoBiomeNeighborhood.NEIGHBOR_INDICES)
-                    if (previousLayerNeighborhood.fromIndex(offsetIndex) == biomeA) return borderBiome;
+                    if (biomeB.test(previousLayerNeighborhood.fromIndex(offsetIndex))) return borderBiome;
             }
             return current;
         }

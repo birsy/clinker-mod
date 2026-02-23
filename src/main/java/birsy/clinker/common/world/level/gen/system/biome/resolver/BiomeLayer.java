@@ -1,8 +1,11 @@
 package birsy.clinker.common.world.level.gen.system.biome.resolver;
 
+import birsy.clinker.common.world.level.gen.system.metachunk.MetaChunk;
 import birsy.clinker.common.world.level.gen.system.noise.UncachedNoiseContext;
 import birsy.clinker.core.registry.ClinkerRegistries;
 import birsy.clinker.core.registry.worldgen.ClinkerProtoBiomes;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import it.unimi.dsi.fastutil.longs.Long2IntLinkedOpenHashMap;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.levelgen.PositionalRandomFactory;
@@ -17,8 +20,7 @@ public final class BiomeLayer {
     private final UncachedNoiseContext context;
     private final BiomeLayerOperation[] operations;
     private final int cellScale, cellSizeBlocks;
-    private final int cacheSize;
-    private final ThreadLocal<Long2IntLinkedOpenHashMap> cache;
+    private final Cache<Long, Integer> cache;
 
     private final ThreadLocal<ProtoBiomeNeighborhood> threadNeighborhood = ThreadLocal.withInitial(ProtoBiomeNeighborhood::new);
 
@@ -35,12 +37,10 @@ public final class BiomeLayer {
         this.cellScale = cellScale;
         this.cellSizeBlocks = 1 << cellScale;
 
-        this.cacheSize = 512;
-        this.cache = ThreadLocal.withInitial(() -> {
-            Long2IntLinkedOpenHashMap map = new Long2IntLinkedOpenHashMap(this.cacheSize + 1);
-            map.defaultReturnValue(-1);
-            return map;
-        });
+        this.cache = Caffeine.newBuilder()
+                .maximumSize(512)
+                .executor(Runnable::run)
+                .build();
     }
 
     public ProtoBiome getOrCreateCellAt(int blockX, int blockZ) {
@@ -48,17 +48,9 @@ public final class BiomeLayer {
             cellZ = toCellPos(blockZ, cellScale);
         long key = toCellKey(cellX, cellZ);
 
-        Long2IntLinkedOpenHashMap map = cache.get();
-
-        int existingId = map.get(key);
-        if (existingId >= 0) return ClinkerRegistries.PROTO_BIOME_REGISTRY.byIdOrThrow(existingId);
-
         ProtoBiomeNeighborhood neighborhood = threadNeighborhood.get();
-        int newId = createCellAt(neighborhood, cellX, cellZ).id;
-        map.putAndMoveToFirst(key, newId);
-        if (map.size() > cacheSize) map.removeLastInt();
-
-        return ClinkerRegistries.PROTO_BIOME_REGISTRY.byIdOrThrow(newId);
+        int id = cache.get(key, (cellKey) -> createCellAt(neighborhood, cellX, cellZ).id);
+        return ClinkerRegistries.PROTO_BIOME_REGISTRY.byIdOrThrow(id);
     }
 
     private ProtoBiome createCellAt(ProtoBiomeNeighborhood neighborhood, int cellX, int cellZ) {
