@@ -20,9 +20,11 @@ public final class BiomeLayer {
     private final UncachedNoiseContext context;
     private final BiomeLayerOperation[] operations;
     private final int cellScale, cellSizeBlocks;
-    private final Cache<Long, Integer> cache;
 
-    private final ThreadLocal<ProtoBiomeNeighborhood> threadNeighborhood = ThreadLocal.withInitial(ProtoBiomeNeighborhood::new);
+    private final ThreadLocal<int[]> threadNeighborhood = ThreadLocal.withInitial(() -> new int[9]);
+
+    private final int cacheSize;
+    private final ThreadLocal<Long2IntLinkedOpenHashMap> threadCache;
 
     public BiomeLayer(
             @Nullable BiomeLayer previousLayer,
@@ -37,46 +39,52 @@ public final class BiomeLayer {
         this.cellScale = cellScale;
         this.cellSizeBlocks = 1 << cellScale;
 
-        this.cache = Caffeine.newBuilder()
-                .maximumSize(512)
-                .executor(Runnable::run)
-                .build();
+        this.cacheSize = 1024;
+        this.threadCache = ThreadLocal.withInitial(() -> {
+            Long2IntLinkedOpenHashMap cache = new Long2IntLinkedOpenHashMap(this.cacheSize + 1);
+            cache.defaultReturnValue(-1);
+            return cache;
+        });
     }
 
     public ProtoBiome getOrCreateCellAt(int blockX, int blockZ) {
+        return ClinkerRegistries.PROTO_BIOME_REGISTRY.byIdOrThrow(getIdAt(blockX, blockZ));
+    }
+
+    int getIdAt(int blockX, int blockZ) {
         int cellX = toCellPos(blockX, cellScale),
             cellZ = toCellPos(blockZ, cellScale);
         long key = toCellKey(cellX, cellZ);
 
-        ProtoBiomeNeighborhood neighborhood = threadNeighborhood.get();
-        int id = cache.get(key, (cellKey) -> createCellAt(neighborhood, cellX, cellZ).id);
-        return ClinkerRegistries.PROTO_BIOME_REGISTRY.byIdOrThrow(id);
+        Long2IntLinkedOpenHashMap cache = threadCache.get();
+        int cached = cache.getAndMoveToFirst(key);
+        if (cached >= 0) return cached;
+
+        int id = createCellAt(threadNeighborhood.get(), cellX, cellZ);
+        if (cache.size() >= cacheSize) cache.removeLastInt();
+        cache.putAndMoveToFirst(key, id);
+
+        return id;
     }
 
-    private ProtoBiome createCellAt(ProtoBiomeNeighborhood neighborhood, int cellX, int cellZ) {
-        // populate neighborhood
+    private int createCellAt(int[] neighborhood, int cellX, int cellZ) {
         if (previousLayer == null) {
-            Arrays.fill(neighborhood.array, ClinkerProtoBiomes.UNINITIALIZED.get());
+            Arrays.fill(neighborhood, ClinkerProtoBiomes.UNINITIALIZED.get().id);
         } else {
             int i = 0;
             for (int z = -1; z <= 1; z++) {
                 int offsetZ = fromCellPos(cellZ + z, cellScale);
                 for (int x = -1; x <= 1; x++) {
                     int offsetX = fromCellPos(cellX + x, cellScale);
-                    neighborhood.array[i++] = previousLayer.getOrCreateCellAt(offsetX, offsetZ);
+                    neighborhood[i++] = previousLayer.getIdAt(offsetX, offsetZ);
                 }
             }
         }
-        // y = cellScale ensures that differently sized layers have different randoms
         RandomSource cellRandom = randomFactory.at(cellX, cellScale, cellZ);
-        ProtoBiome current = neighborhood.array[4];
-        for (BiomeLayerOperation operation : operations)
-            current = operation.apply(
-                    fromCellPos(cellX, cellScale),
-                    fromCellPos(cellZ, cellScale),
-                    current, neighborhood, cellRandom, context
-            );
-        return current;
+        int currentId = neighborhood[4];
+        for (BiomeLayerOperation op : operations)
+            currentId = op.apply(fromCellPos(cellX, cellScale), fromCellPos(cellZ, cellScale), currentId, neighborhood, cellRandom, context);
+        return currentId;
     }
 
     public static long toCellKey(int cellX, int cellZ) {

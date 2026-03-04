@@ -1,11 +1,11 @@
 package birsy.clinker.core.registry.worldgen;
 
-import birsy.clinker.common.world.level.gen.OthershoreBiomeSource;
 import birsy.clinker.common.world.level.gen.OthershoreGenerationConstants;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseComputer;
 import birsy.clinker.common.world.level.gen.system.noise.field.FieldFactory;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldFiller;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldTypes;
+import birsy.clinker.common.world.level.gen.system.noise.voronoi.VoronoiDefinition;
 import birsy.clinker.common.world.level.gen.system.noise.voronoi.VoronoiEvaluator;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerRegistries;
@@ -18,34 +18,42 @@ import java.util.function.Supplier;
 public class ClinkerNoiseComputers {
     public static final DeferredRegister<NoiseComputer> NOISE_COMPUTERS = DeferredRegister.create(ClinkerRegistries.NOISE_COMPUTER_REGISTRY, Clinker.MOD_ID);
 
-    public static final Supplier<NoiseComputer> STRATIFIED_Y = NOISE_COMPUTERS.register(
-            "stratified_y",
+    // reusable noise arrays
+    public static final Supplier<NoiseComputer>[] BASE_NOISE = baseNoiseArray("base_noise", 10, false);
+    public static final Supplier<NoiseComputer>[] BASE_NOISE_ALT = baseNoiseArray("base_noise_alt", 10, false);
+    public static final Supplier<NoiseComputer>[] BASE_NOISE_2D = baseNoiseArray("base_noise_2d", 10, true);
+    public static final Supplier<NoiseComputer>[] BASE_NOISE_2D_ALT = baseNoiseArray("base_noise_2d_alt", 10, true);
+
+    public static final Supplier<NoiseComputer> STRATIFIED_Y_COARSE = NOISE_COMPUTERS.register(
+            "stratified_y_coarse",
             () -> new NoiseComputer(
-                    () -> FieldFactory.voronoi3d(24, 3),
+                    () -> FieldFactory.voronoi3d(64, 8),
+                    (dependencies, registry) -> {},
+                    (x, y, z, context) -> y
+            )
+    );
+    public static final Supplier<NoiseComputer> STRATIFIED_Y_FINE = NOISE_COMPUTERS.register(
+            "stratified_y_fine",
+            () -> new NoiseComputer(
+                    () -> FieldFactory.voronoi3d(32, 7),
                     (dependencies, registry) -> {},
                     (x, y, z, context) -> y
             )
     );
 
-    public static final Supplier<NoiseComputer> CLIFF_CRACKS = NOISE_COMPUTERS.register(
-            "cliff_cracks",
+    public static final Supplier<NoiseComputer> CLIFF_STRATIFIED_Y = NOISE_COMPUTERS.register(
+            "cliff_stratified_y",
             () -> new NoiseComputer(
-                    () -> FieldFactory.standard(NoiseFieldTypes.FINE_2D),
+                    () -> FieldFactory.standard(NoiseFieldTypes.FINE),
                     (dependencies, registry) -> {
-                        registry.registerVoronoi2d("cliff_cracks", 32);
+                        dependencies.addDependency(STRATIFIED_Y_COARSE);
+                        dependencies.addDependency(STRATIFIED_Y_FINE);
+                        dependencies.addDependency(BASE_NOISE_2D[7]);
                     },
                     (x, y, z, context) -> {
-                        VoronoiEvaluator evaluator = context.getVoronoi("cliff_cracks");
-                        long packedIndices = evaluator.getPackedF1F2Indices(x, y, z);
-                        int f1 = VoronoiEvaluator.unpackF1(packedIndices),
-                            f2 = VoronoiEvaluator.unpackF2(packedIndices);
-                        double f1X = evaluator.cellCenterX(x, y, z, f1),
-                               f1Z = evaluator.cellCenterX(x, y, z, f1);
-                        double f1Dist = Mth.length(x - f1X, z - f1Z);
-                        double f2X = evaluator.cellCenterX(x, y, z, f2),
-                               f2Z = evaluator.cellCenterX(x, y, z, f2);
-                        double f2Dist = Mth.length(x - f2X, z - f2Z);
-                        return f2Dist - f1Dist;
+                        double erosion = context.retrieve(BASE_NOISE_2D[7], x, y, z);
+                        return Mth.clampedMap((erosion - 0.5) * 5, -1, 1,
+                                context.retrieve(STRATIFIED_Y_COARSE, x, y, z), context.retrieve(STRATIFIED_Y_FINE, x, y, z));
                     }
             )
     );
@@ -99,6 +107,24 @@ public class ClinkerNoiseComputers {
             )
     );
 
+    // placeholder gen stuff
+    public static final Supplier<NoiseComputer> UPPER_SHELF_HEIGHT = NOISE_COMPUTERS.register(
+            "upper_shelf_height",
+            () -> new NoiseComputer(
+                    () -> FieldFactory.standard(NoiseFieldTypes.VERY_COARSE_2D),
+                    (dependencies, registry) -> {},
+                    (x, y, z, context) -> OthershoreGenerationConstants.UPPER_SHELF_HEIGHT
+            )
+    );
+    public static final Supplier<NoiseComputer> LOWER_SHELF_HEIGHT = NOISE_COMPUTERS.register(
+            "lower_shelf_height",
+            () -> new NoiseComputer(
+                    () -> FieldFactory.standard(NoiseFieldTypes.VERY_COARSE_2D),
+                    (dependencies, registry) -> {},
+                    (x, y, z, context) -> OthershoreGenerationConstants.SEA_HEIGHT + 30
+            )
+    );
+
 
 
     private static final double CLIFF_ROCK_FREQUENCY = 1 / 20.0;
@@ -110,6 +136,16 @@ public class ClinkerNoiseComputers {
             )
     );
 
+    public static final Supplier<NoiseComputer> BIG_CRACKLE = NOISE_COMPUTERS.register(
+            "big_crackle",
+            () -> new NoiseComputer(
+                    () -> FieldFactory.standard(NoiseFieldTypes.FINE_2D),
+                    (dependencies, registry) -> {
+                        registry.registerVoronoi("big_crackle", () -> VoronoiDefinition.twoDimensional(40));
+                    },
+                    (x, y, z, context) -> context.getVoronoi("big_crackle").distanceToBorder(x, y, z)
+            )
+    );
 
     public static final Supplier<NoiseComputer> SHATTERED_ISLANDS = NOISE_COMPUTERS.register("shattered_islands",
             () -> new NoiseComputer(
@@ -301,11 +337,7 @@ public class ClinkerNoiseComputers {
             )
     );
 
-    // reusable noise arrays
-    public static final Supplier<NoiseComputer>[] BASE_NOISE = baseNoiseArray("base_noise", 10, false);
-    public static final Supplier<NoiseComputer>[] BASE_NOISE_ALT = baseNoiseArray("base_noise_alt", 10, false);
-    public static final Supplier<NoiseComputer>[] BASE_NOISE_2D = baseNoiseArray("base_noise_2d", 10, true);
-    public static final Supplier<NoiseComputer>[] BASE_NOISE_2D_ALT = baseNoiseArray("base_noise_2d_alt", 10, true);
+
     private static Supplier<NoiseComputer> baseNoise(String name, int index, int size, boolean twoDimensional) {
         String concatenatedName = name + "_" + index;
         Supplier<FieldFactory> fieldType;

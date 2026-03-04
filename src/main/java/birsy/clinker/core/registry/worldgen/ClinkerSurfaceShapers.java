@@ -34,6 +34,13 @@ public class ClinkerSurfaceShapers {
     public static final Supplier<BiomeSurfaceShaper> SHORE =
             register("shore", ClinkerBiomes.SHORE, new ShoreSurfaceShaper());
 
+    public static final Supplier<BiomeSurfaceShaper> UPPER_SHELF =
+            register("placeholder_upper_shelf", ClinkerBiomes.PLACEHOLDER_UPPER_SHELF, new UpperShelfSurfaceShaper());
+    public static final Supplier<BiomeSurfaceShaper> LOWER_SHELF =
+            register("placeholder_lower_shelf", ClinkerBiomes.PLACEHOLDER_LOWER_SHELF, new LowerShelfSurfaceShaper());
+    public static final Supplier<BiomeSurfaceShaper> SHELF_BORDER =
+            register("placeholder_shelf_border", ClinkerBiomes.PLACEHOLDER_SHELF_BORDER, new ShelfBorderSurfaceShaper());
+
     public static Supplier<BiomeSurfaceShaper> register(String name, ResourceKey<Biome> biome, SurfaceShaper shaper) {
         return SURFACE_SHAPERS.register(name, () -> new BiomeSurfaceShaper(biome, shaper));
     }

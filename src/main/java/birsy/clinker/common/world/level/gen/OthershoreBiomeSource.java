@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.IntPredicate;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -84,51 +85,64 @@ public class OthershoreBiomeSource extends BiomeSource {
     }
 
     public static LayeredBiomeResolver createSurfaceBiomeResolver(Function<ResourceLocation, PositionalRandomFactory> randomState, UncachedNoiseContext noiseContext) {
-//        if (true) {
-//            return LayeredBiomeResolver.builder(8)
-//                    .layer(new BiomeLayerOperations.Biome(LOWER_SNAKES.get()))
-//                    .build(randomState, noiseContext);
-//        }
+        if (true) {
+            return LayeredBiomeResolver.builder(6)
+                    .layer(BiomeLayerOperations.Mutate.builder(UNINITIALIZED.get())
+                                    .entry(LOWER_SHELF.get(), 1)
+                                    .entry(UPPER_SHELF.get(), 1)
+                                    .build())
+                    .layer(new BiomeLayerOperations.Smooth())
+                    .layer(new BiomeLayerOperations.Smooth())
+                    .zoom()
+                    .layer(new BiomeLayerOperations.CreateBorders(LOWER_SHELF.get(), UPPER_SHELF.get(), SHELF_BORDER.get()))
+                    .zoom()
+                    .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1))
+                    .layer(new BiomeLayerOperations.Smooth())
+                    .zoom()
+                    .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1))
+                    .layer(new BiomeLayerOperations.Smooth(), new BiomeLayerOperations.Expand(SHELF_BORDER.get()))
+                    .zoom()
+                    .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1))
+                    .layer(new BiomeLayerOperations.Smooth())
+                    .zoom()
+                    .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1))
+                    .layer(new BiomeLayerOperations.Smooth())
+                    .build(randomState, noiseContext);
+        }
 
         return LayeredBiomeResolver.builder(8)
                 .layer((x, z, current, neighborhood, random, context) -> {
                     double surfaceHeight = context.retrieve(ClinkerNoiseComputers.BASE_ELEVATION, x, 0, z);
                     if (surfaceHeight < OthershoreGenerationConstants.SEA_HEIGHT + 20) {
-                        return LOWER_SHELF.get();
+                        return LOWER_SHELF.get().id;
                     }
-                    return UPPER_SHELF.get();
+                    return UPPER_SHELF.get().id;
                 })
                 .layer(new BiomeLayerOperations.CreateBorders(UPPER_SHELF.get(), LOWER_SHELF.get(), SHORE.get()))
-                .layer(new BiomeLayerOperations.Mutate(UPPER_SHELF.get(),
-                          SimpleWeightedRandomList.<ProtoBiome>builder()
-                                  .add(ASH_STEPPE.get(), 10)
-                                  .add(HEATH.get(), 7)
-                                  .build()
-                        ),
-                        new BiomeLayerOperations.Mutate(LOWER_SHELF.get(),
-                                SimpleWeightedRandomList.<ProtoBiome>builder()
-                                        .add(BRINE_SWAMP.get(), 10)
-                                        .add(BRINE_SNAKES.get(), 7)
-                                        .build()
-                        )
+                .layer(BiomeLayerOperations.Mutate.builder(UPPER_SHELF.get())
+                                .entry(ASH_STEPPE.get(), 10)
+                                .entry(HEATH.get(), 7)
+                                .build(),
+                        BiomeLayerOperations.Mutate.builder(LOWER_SHELF.get())
+                                .entry(BRINE_SWAMP.get(), 10)
+                                .entry(BRINE_SNAKES.get(), 7)
+                                .build()
                 )
-                .layer(new BiomeLayerOperations.SmoothSpecific(Predicate.not(Predicate.isEqual(SHORE.get()))))
+                .layer(new BiomeLayerOperations.SmoothSpecific((IntPredicate) Predicate.not(Predicate.isEqual(SHORE.get().id))))
                 .layer(new BiomeLayerOperations.Smooth())
                 .zoom()
                 .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1))
-                .layer(new BiomeLayerOperations.Mutate(HEATH.get(),
-                                SimpleWeightedRandomList.<ProtoBiome>builder()
-                                        .add(HEATH.get(), 10)
-                                        .add(HEATH_THICKET.get(), 3)
+                .layer(BiomeLayerOperations.Mutate.builder(UPPER_SHELF.get())
+                                        .entry(HEATH.get(), 10)
+                                        .entry(HEATH_THICKET.get(), 3)
                                         .build()
-                        )
                 )
                 .layer(new BiomeLayerOperations.Smooth())
                 .layer(new BiomeLayerOperations.CreateBorders(HEATH_THICKET.get(), HEATH.get(), HEATH_THICKET.get()),
                        new BiomeLayerOperations.CreateBorders(
-                               (biome) -> biome != HEATH_THICKET.get() && biome != HEATH.get(),
-                               Predicate.isEqual(HEATH_THICKET.get()),
-                               HEATH.get()))
+                               (biome) -> biome != HEATH_THICKET.get().id && biome != HEATH.get().id,
+                               (IntPredicate) Predicate.isEqual(HEATH_THICKET.get().id),
+                               HEATH.get().id))
                 .zoom()
                 .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1))
                 .zoom()

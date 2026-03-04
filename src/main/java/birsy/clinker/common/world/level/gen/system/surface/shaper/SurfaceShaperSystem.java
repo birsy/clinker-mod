@@ -196,7 +196,8 @@ public class SurfaceShaperSystem {
             shaper.fillSurfaceDensityField(surfaceDensityField, cache, chunkHeight, minX, minY, minZ, heightmap, heightmapGradient, distanceToHeightmap, lowerBound, upperBound, biomeWeightField);
         }
 
-        this.createCliffs(cache, surfaceBiomeCache, heightmapInfo, blendingInfo, surfaceDensityField, lowerBound, upperBound, minX, minY, minZ, chunkHeight);
+        if (surfaceBiomeCache.containedBiomes().size() > 1)
+            this.createCliffs(cache, surfaceBiomeCache, heightmapInfo, blendingInfo, surfaceDensityField, lowerBound, upperBound, minX, minY, minZ, chunkHeight);
 
         for (ModifiesSurfaceDensity worldFeature : surfaceDensityModifyingWorldFeatures)
             worldFeature.modifySurfaceDensity(minX, minY, minZ, cache, surfaceDensityField, worldContext);
@@ -233,8 +234,8 @@ public class SurfaceShaperSystem {
                               NoiseField surfaceDensityField,
                               int lowerSurfaceBound, int upperSurfaceBound,
                               int minX, int minY, int minZ, int chunkHeight) {
-        NoiseField stratifiedYField = cache.fillNoiseField(lowerSurfaceBound, upperSurfaceBound, ClinkerNoiseComputers.STRATIFIED_Y);
-        NoiseField cliffCracksField = cache.fillNoiseField(lowerSurfaceBound, upperSurfaceBound, ClinkerNoiseComputers.CLIFF_CRACKS);
+        NoiseField stratifiedYField = cache.fillNoiseField(lowerSurfaceBound, upperSurfaceBound, ClinkerNoiseComputers.CLIFF_STRATIFIED_Y);
+        NoiseField cliffCracksField = cache.fillNoiseField(lowerSurfaceBound, upperSurfaceBound, ClinkerNoiseComputers.BASE_NOISE[5]);
 
         NoiseField borderDistanceField = NoiseFieldTypes.COARSE_2D.create(chunkHeight, 0);
         double[] borderDistanceArray = borderDistanceField.array();
@@ -259,8 +260,8 @@ public class SurfaceShaperSystem {
             surfaceDensityField.byBlock(lowerSurfaceBound - minY, upperSurfaceBound - minY,
                     (index, x, y, z) -> {
                         double stratifiedY = stratifiedYField.retrieve(x, y, z);
-                        stratifiedY = Mth.lerp(-0.2, stratifiedY, y + minY);
-                        double biomeHeight = biomeHeightmapField.retrieve(x, y, z) - 5;
+                        stratifiedY = Mth.lerp(0.2, stratifiedY, y + minY);
+                        double biomeHeight = biomeHeightmapField.retrieve(x, y, z) - 3;
                         double combinedHeight = heightmapInfo.combinedHeightmapField.retrieve(x, y, z);
                         stratifiedY = Mth.lerp(Mth.clampedMap(biomeHeight - y, 5, 15, 0, 1), stratifiedY, y);
 
@@ -271,8 +272,9 @@ public class SurfaceShaperSystem {
                         double baseFlareRadius = Mth.clampedMap(biomeHeight - combinedHeight, 0, 30, 5, 16);
                         lateralCliffDistance -= baseFlare * baseFlareRadius;
                         double cliffDistance = -MathUtils.smoothMinExpo(-lateralCliffDistance, -verticalCliffDistance, 5);
-                        cliffDistance += Mth.clampedMap(cliffCracksField.retrieve(x, y, z), 0, 3, 4, 0);
-                        surfaceDensityFieldArray[index] = MathUtils.smoothMinExpo(surfaceDensityFieldArray[index], cliffDistance, 3);
+                        double cliffCracks = Mth.clampedMap(Math.abs(cliffCracksField.retrieve(x, y, z)), 0, 0.5, 4, 0);
+                        cliffDistance += cliffCracks;
+                        surfaceDensityFieldArray[index] = MathUtils.smoothMinExpo(surfaceDensityFieldArray[index], cliffDistance, 2);
                     }
             );
         }

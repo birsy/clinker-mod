@@ -1,6 +1,7 @@
 package birsy.clinker.datagen.providers;
 
 import birsy.clinker.core.Clinker;
+import birsy.clinker.core.registration.ClinkerBiome;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.ClinkerItems;
 import birsy.clinker.core.registry.entity.ClinkerEntities;
@@ -36,8 +37,8 @@ public class ClinkerEnglishLanguageProvider extends LanguageProvider {
         for (DeferredHolder<EntityType<?>, ? extends EntityType> entry : ClinkerEntities.ENTITY_TYPES.getEntries()) {
             this.addEntityType(entry, localizedNameFromRegistryName(entry.getId().getPath()));
         }
-        for (ResourceKey<Biome> biome : ClinkerBiomes.BIOMES) {
-            this.add("biome.clinker." + biome.location().getPath(), localizedNameFromRegistryName(biome.location().getPath()));
+        for (ClinkerBiome biome : ClinkerBiomes.BIOMES) {
+            this.add("biome.clinker." + biome.key().location().getPath(), localizedNameFromRegistryName(biome.key().location().getPath()));
         }
 
         this.add("itemGroup.clinker.clinker", "Clinker");

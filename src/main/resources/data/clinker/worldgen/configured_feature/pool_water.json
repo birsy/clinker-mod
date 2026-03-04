@@ -1,5 +1,5 @@
 {
-  "type": "clinker:pool",
+  "type": "clinker:fluid_pool",
   "config": {
     "radius": 5,
     "state_provider": {

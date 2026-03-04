@@ -1,6 +1,7 @@
 package birsy.clinker.core.registry.worldgen;
 
 import birsy.clinker.core.Clinker;
+import birsy.clinker.core.registration.ClinkerConfiguredFeature;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
@@ -22,5 +23,4 @@ public class ClinkerConfiguredFeatures {
 
     public static final ResourceKey<ConfiguredFeature<?, ?>> PATCH_SALTMOSS_SPROUTS = ResourceKey.create(Registries.CONFIGURED_FEATURE, Clinker.resource("patch_saltmoss_sprouts"));
     public static final ResourceKey<ConfiguredFeature<?, ?>> SALTMOSS_BLOOM = ResourceKey.create(Registries.CONFIGURED_FEATURE, Clinker.resource("saltmoss_bloom"));
-
 }

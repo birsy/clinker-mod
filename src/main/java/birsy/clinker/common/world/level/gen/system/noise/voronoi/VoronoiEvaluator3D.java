@@ -96,6 +96,10 @@ public final class VoronoiEvaluator3D implements VoronoiEvaluator {
                     dnZ = bZ - cellCenters[neighborCellIndex * 3 + 2];
             double neighborDistanceSq = dnX * dnX + dnY * dnY + dnZ * dnZ;
             if (neighborDistanceSq < closestDistanceSq) {
+                if (closestDistanceSq < secondClosestDistanceSq) {
+                    secondClosestCellIndex = closestCellIndex;
+                    secondClosestDistanceSq = closestDistanceSq;
+                }
                 closestCellIndex = neighborCellIndex;
                 closestDistanceSq = neighborDistanceSq;
             } else if (neighborDistanceSq < secondClosestDistanceSq) {
