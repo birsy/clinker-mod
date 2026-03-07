@@ -35,11 +35,19 @@ public class ClinkerSurfaceShapers {
             register("shore", ClinkerBiomes.SHORE, new ShoreSurfaceShaper());
 
     public static final Supplier<BiomeSurfaceShaper> UPPER_SHELF =
-            register("placeholder_upper_shelf", ClinkerBiomes.PLACEHOLDER_UPPER_SHELF, new UpperShelfSurfaceShaper());
+            register("template_upper_shelf", ClinkerBiomes.TEMPLATE_UPPER_SHELF, new UpperShelfSurfaceShaper());
+    public static final Supplier<BiomeSurfaceShaper> UPPER_SHELF_PLATEAU =
+            register("template_upper_shelf_plateau", ClinkerBiomes.TEMPLATE_UPPER_SHELF_PLATEAU, new UpperShelfPlateauSurfaceShaper());
     public static final Supplier<BiomeSurfaceShaper> LOWER_SHELF =
-            register("placeholder_lower_shelf", ClinkerBiomes.PLACEHOLDER_LOWER_SHELF, new LowerShelfSurfaceShaper());
+            register("template_lower_shelf", ClinkerBiomes.TEMPLATE_LOWER_SHELF, new LowerShelfSurfaceShaper());
     public static final Supplier<BiomeSurfaceShaper> SHELF_BORDER =
-            register("placeholder_shelf_border", ClinkerBiomes.PLACEHOLDER_SHELF_BORDER, new ShelfBorderSurfaceShaper());
+            register("template_shelf_border", ClinkerBiomes.TEMPLATE_SHELF_BORDER, new ShelfBorderSurfaceShaper());
+    public static final Supplier<BiomeSurfaceShaper> SHELF_BORDER_CRACKLE =
+            register("template_shelf_border_crackle", ClinkerBiomes.TEMPLATE_SHELF_BORDER_CRACKLE, new CrackledShelfBorderSurfaceShaper());
+    public static final Supplier<BiomeSurfaceShaper> BEACH =
+            register("template_beach", ClinkerBiomes.TEMPLATE_BEACH, new BeachSurfaceShaper());
+    public static final Supplier<BiomeSurfaceShaper> SEA =
+            register("template_sea", ClinkerBiomes.TEMPLATE_SEA, new SeaSurfaceShaper());
 
     public static Supplier<BiomeSurfaceShaper> register(String name, ResourceKey<Biome> biome, SurfaceShaper shaper) {
         return SURFACE_SHAPERS.register(name, () -> new BiomeSurfaceShaper(biome, shaper));

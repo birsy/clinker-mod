@@ -13,8 +13,7 @@ public class ClinkerProtoBiomes {
     public static final Supplier<ProtoBiome> UNINITIALIZED =
             PROTO_BIOMES.register("uninitialized", () -> new ProtoBiome());
 
-    public static final Supplier<ProtoBiome> UPPER_SHELF =
-            PROTO_BIOMES.register("upper_shelf", () -> new ProtoBiome(ClinkerBiomes.PLACEHOLDER_UPPER_SHELF));
+
     public static final Supplier<ProtoBiome> ASH_STEPPE =
             PROTO_BIOMES.register("ash_steppe", () -> new ProtoBiome(ClinkerBiomes.ASH_STEPPE));
     public static final Supplier<ProtoBiome> HEATH =
@@ -22,8 +21,7 @@ public class ClinkerProtoBiomes {
     public static final Supplier<ProtoBiome> HEATH_THICKET =
             PROTO_BIOMES.register("heath_thicket", () -> new ProtoBiome(ClinkerBiomes.HEATH_THICKET));
 
-    public static final Supplier<ProtoBiome> LOWER_SHELF =
-            PROTO_BIOMES.register("lower_shelf", () -> new ProtoBiome(ClinkerBiomes.PLACEHOLDER_LOWER_SHELF));
+
     public static final Supplier<ProtoBiome> SHORE =
             PROTO_BIOMES.register("shore", () -> new ProtoBiome(ClinkerBiomes.SHORE));
     public static final Supplier<ProtoBiome> BRINE_SNAKES =
@@ -31,6 +29,18 @@ public class ClinkerProtoBiomes {
     public static final Supplier<ProtoBiome> BRINE_SWAMP =
             PROTO_BIOMES.register("brine_swamp", () -> new ProtoBiome(ClinkerBiomes.BRINE_SWAMP));
 
+    public static final Supplier<ProtoBiome> UPPER_SHELF =
+            PROTO_BIOMES.register("upper_shelf", () -> new ProtoBiome(ClinkerBiomes.TEMPLATE_UPPER_SHELF));
+    public static final Supplier<ProtoBiome> UPPER_SHELF_PLATEAU =
+            PROTO_BIOMES.register("upper_shelf_plateau", () -> new ProtoBiome(ClinkerBiomes.TEMPLATE_UPPER_SHELF_PLATEAU));
+    public static final Supplier<ProtoBiome> LOWER_SHELF =
+            PROTO_BIOMES.register("lower_shelf", () -> new ProtoBiome(ClinkerBiomes.TEMPLATE_LOWER_SHELF));
     public static final Supplier<ProtoBiome> SHELF_BORDER =
-            PROTO_BIOMES.register("shelf_border", () -> new ProtoBiome(ClinkerBiomes.PLACEHOLDER_SHELF_BORDER));
+            PROTO_BIOMES.register("shelf_border", () -> new ProtoBiome(ClinkerBiomes.TEMPLATE_SHELF_BORDER));
+    public static final Supplier<ProtoBiome> SHELF_BORDER_CRACKLE =
+            PROTO_BIOMES.register("shelf_border_crackle", () -> new ProtoBiome(ClinkerBiomes.TEMPLATE_SHELF_BORDER_CRACKLE));
+    public static final Supplier<ProtoBiome> BEACH =
+            PROTO_BIOMES.register("beach", () -> new ProtoBiome(ClinkerBiomes.TEMPLATE_BEACH));
+    public static final Supplier<ProtoBiome> SEA =
+            PROTO_BIOMES.register("sea", () -> new ProtoBiome(ClinkerBiomes.TEMPLATE_SEA));
 }

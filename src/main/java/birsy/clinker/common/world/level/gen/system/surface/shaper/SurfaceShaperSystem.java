@@ -263,7 +263,7 @@ public class SurfaceShaperSystem {
                         stratifiedY = Mth.lerp(0.2, stratifiedY, y + minY);
                         double biomeHeight = biomeHeightmapField.retrieve(x, y, z) - 3;
                         double combinedHeight = heightmapInfo.combinedHeightmapField.retrieve(x, y, z);
-                        stratifiedY = Mth.lerp(Mth.clampedMap(biomeHeight - y, 5, 15, 0, 1), stratifiedY, y);
+                        //stratifiedY = Mth.lerp(Mth.clampedMap(biomeHeight - y, 5, 15, 0, 1), stratifiedY, y);
 
                         double verticalCliffDistance = stratifiedY - biomeHeight;
                         double lateralCliffDistance = borderDistanceField.retrieve(x, y, z);

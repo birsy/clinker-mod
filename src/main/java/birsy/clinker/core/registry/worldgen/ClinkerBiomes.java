@@ -62,9 +62,13 @@ public class ClinkerBiomes {
     public static final ResourceKey<Biome> UNDERGROUND = register("underground");
     public static final ResourceKey<Biome> AQUIFER = register("aquifer");
 
-    public static final ResourceKey<Biome> PLACEHOLDER_UPPER_SHELF = register("placeholder_upper_shelf");
-    public static final ResourceKey<Biome> PLACEHOLDER_LOWER_SHELF = register("placeholder_lower_shelf");
-    public static final ResourceKey<Biome> PLACEHOLDER_SHELF_BORDER = register("placeholder_shelf_border");
+    public static final ResourceKey<Biome> TEMPLATE_UPPER_SHELF_PLATEAU = register("template_upper_shelf_plateau");
+    public static final ResourceKey<Biome> TEMPLATE_UPPER_SHELF = register("template_upper_shelf");
+    public static final ResourceKey<Biome> TEMPLATE_LOWER_SHELF = register("template_lower_shelf");
+    public static final ResourceKey<Biome> TEMPLATE_SHELF_BORDER = register("template_shelf_border");
+    public static final ResourceKey<Biome> TEMPLATE_SHELF_BORDER_CRACKLE = register("template_shelf_border_crackle");
+    public static final ResourceKey<Biome> TEMPLATE_BEACH = register("template_beach");
+    public static final ResourceKey<Biome> TEMPLATE_SEA = register("template_sea");
 
     private static ClinkerBiome register(ClinkerBiome biome) {
         BIOMES.add(biome);

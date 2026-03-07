@@ -2,19 +2,18 @@ package birsy.clinker.common.world.level.gen.content.surface.shaper;
 
 import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
-import birsy.clinker.core.util.MathUtils;
-import net.minecraft.util.Mth;
 
-import static birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers.*;
+import static birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers.LOWER_SHELF_HEIGHT;
+import static birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers.SEA_FLOOR_HEIGHT;
 
-public class ShelfBorderSurfaceShaper extends SimpleSurfaceShaper {
+public class SeaSurfaceShaper extends SimpleSurfaceShaper {
     @Override
     public void prefillHeightmapNoiseFields(NoiseFieldCache cache) {
-        cache.fillNoiseField(LOWER_SHELF_HEIGHT);
+        cache.fillNoiseField(SEA_FLOOR_HEIGHT);
     }
     @Override
     public double getHeight(int x, int z, double weight, NoiseContext context) {
-        return context.retrieve(LOWER_SHELF_HEIGHT, x, 0, z) + 10;
+        return context.retrieve(SEA_FLOOR_HEIGHT, x, 0, z);
     }
 
     @Override

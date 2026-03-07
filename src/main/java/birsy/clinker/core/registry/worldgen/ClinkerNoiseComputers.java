@@ -124,6 +124,22 @@ public class ClinkerNoiseComputers {
                     (x, y, z, context) -> OthershoreGenerationConstants.SEA_HEIGHT + 30
             )
     );
+    public static final Supplier<NoiseComputer> BEACH_HEIGHT = NOISE_COMPUTERS.register(
+            "beach_height",
+            () -> new NoiseComputer(
+                    () -> FieldFactory.standard(NoiseFieldTypes.VERY_COARSE_2D),
+                    (dependencies, registry) -> {},
+                    (x, y, z, context) -> OthershoreGenerationConstants.SEA_HEIGHT + 1
+            )
+    );
+    public static final Supplier<NoiseComputer> SEA_FLOOR_HEIGHT = NOISE_COMPUTERS.register(
+            "sea_floor_height",
+            () -> new NoiseComputer(
+                    () -> FieldFactory.standard(NoiseFieldTypes.VERY_COARSE_2D),
+                    (dependencies, registry) -> {},
+                    (x, y, z, context) -> OthershoreGenerationConstants.SEA_HEIGHT - 5
+            )
+    );
 
 
 
