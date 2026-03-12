@@ -1,6 +1,5 @@
 package birsy.clinker.common.world.entity.gnomad;
 
-import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.SupplyDepotSensor;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.Brain;
@@ -51,8 +50,7 @@ public class GnomadSoldierEntity extends GnomadEntity implements SmartBrainOwner
     public List<? extends ExtendedSensor<? extends GnomadSoldierEntity>> getSensors() {
         return ObjectArrayList.of(
                 new NearbyLivingEntitySensor<GnomadSoldierEntity>().setRadius(24),
-                new HurtBySensor<>(),
-                new SupplyDepotSensor<GnomadSoldierEntity>().setRadius(24)
+                new HurtBySensor<>()
         );
     }
 

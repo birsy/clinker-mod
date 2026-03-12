@@ -54,9 +54,9 @@ public record ClientboundBrainDebugPacket(BrainDebugPayload.BrainDump dump) impl
             for (MemoryModuleType<?> memoryModuleType : entity.getBrain().getMemories().keySet()) memories.add(memoryModuleType.toString());
 
             Set<BlockPos> POIs = new HashSet<>();
-            if (BrainUtils.hasMemory(entity, ClinkerMemoryModules.RELAXATION_SPOT.get())) {
-                POIs.add(BrainUtils.getMemory(entity, ClinkerMemoryModules.RELAXATION_SPOT.get()).pos());
-            }
+//            if (BrainUtils.hasMemory(entity, ClinkerMemoryModules.RELAXATION_SPOT.get())) {
+//                POIs.add(BrainUtils.getMemory(entity, ClinkerMemoryModules.RELAXATION_SPOT.get()).pos());
+//            }
 
             return new BrainDebugPayload.BrainDump(
                     entity.getUUID(),

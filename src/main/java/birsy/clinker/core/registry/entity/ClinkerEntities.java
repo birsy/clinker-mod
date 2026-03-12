@@ -6,6 +6,9 @@ import birsy.clinker.client.entity.slabcrab.SlabCrabRenderer;
 import birsy.clinker.common.world.entity.*;
 import birsy.clinker.common.world.entity.gnomad.*;
 import birsy.clinker.common.world.entity.gnomad.mogul.GnomadMogulEntity;
+import birsy.clinker.common.world.entity.gnomad.testing.SquadTestingLeaderEntity;
+import birsy.clinker.common.world.entity.gnomad.testing.SquadTestingSupplierEntity;
+import birsy.clinker.common.world.entity.gnomad.testing.SquadTestingThrowerEntity;
 import birsy.clinker.common.world.entity.homunculoids.SpitterHomunculoid;
 import birsy.clinker.common.world.entity.mold.MoldEntity;
 import birsy.clinker.common.world.entity.projectile.FlechetteEntity;
@@ -99,6 +102,20 @@ public class ClinkerEntities {
                     .sized(1.0F, 0.5F)
                     .build(Clinker.resource("slab_crab").toString()));
 
+
+    public static final Supplier<EntityType<SquadTestingLeaderEntity>> SQUAD_TESTING_LEADER = ENTITY_TYPES.register("squad_testing_leader", () ->
+            EntityType.Builder.of(SquadTestingLeaderEntity::new, MobCategory.MONSTER)
+                    .sized(2.25f, 3.5f)
+                    .build(Clinker.resource("squad_testing_leader").toString()));
+    public static final Supplier<EntityType<SquadTestingThrowerEntity>> SQUAD_TESTING_THROWER = ENTITY_TYPES.register("squad_testing_thrower", () ->
+            EntityType.Builder.of(SquadTestingThrowerEntity::new, MobCategory.MONSTER)
+                    .sized(1.0f, 1.7f)
+                    .build(Clinker.resource("squad_testing_thrower").toString()));
+    public static final Supplier<EntityType<SquadTestingSupplierEntity>> SQUAD_TESTING_SUPPLIER = ENTITY_TYPES.register("squad_testing_supplier", () ->
+            EntityType.Builder.of(SquadTestingSupplierEntity::new, MobCategory.MONSTER)
+                    .sized(0.5F, 0.8F)
+                    .build(Clinker.resource("squad_testing_supplier").toString()));
+
     @SubscribeEvent
     public static void registerEntityAttribute(EntityAttributeCreationEvent event) {
         event.put(GNOMAD.get(), Zombie.createAttributes().build());
@@ -112,29 +129,37 @@ public class ClinkerEntities {
         event.put(AI_TEST.get(), Zombie.createAttributes().build());
 
         event.put(SLAB_CRAB.get(), SlabCrabEntity.createAttributes().build());
+
+        event.put(SQUAD_TESTING_LEADER.get(), Zombie.createAttributes().build());
+        event.put(SQUAD_TESTING_THROWER.get(), Zombie.createAttributes().build());
+        event.put(SQUAD_TESTING_SUPPLIER.get(), Zombie.createAttributes().build());
     }
 
     @SubscribeEvent
     public static void registerEntityRenders(EntityRenderersEvent.RegisterRenderers event) {
-        event.registerEntityRenderer(ClinkerEntities.ORDNANCE.get(), OrdnanceRenderer::new);
-        event.registerEntityRenderer(ClinkerEntities.FLECHETTE.get(), FlechetteRenderer::new);
+        event.registerEntityRenderer(ORDNANCE.get(), OrdnanceRenderer::new);
+        event.registerEntityRenderer(FLECHETTE.get(), FlechetteRenderer::new);
 
-        event.registerEntityRenderer(ClinkerEntities.WARHOOK.get(), WarhookRenderer::new);
-        event.registerEntityRenderer(ClinkerEntities.REROLL_FLASK.get(), ThrownItemRenderer::new);
+        event.registerEntityRenderer(WARHOOK.get(), WarhookRenderer::new);
+        event.registerEntityRenderer(REROLL_FLASK.get(), ThrownItemRenderer::new);
 
-        event.registerEntityRenderer(ClinkerEntities.GNOMAD.get(), DebugEntityRenderer::new);
-        event.registerEntityRenderer(ClinkerEntities.GNOMAD_MOGUL.get(), MogulRenderer::new);
+        event.registerEntityRenderer(GNOMAD.get(), DebugEntityRenderer::new);
+        event.registerEntityRenderer(GNOMAD_MOGUL.get(), MogulRenderer::new);
 
-        event.registerEntityRenderer(ClinkerEntities.MOLD.get(), MoldRenderer::new);
+        event.registerEntityRenderer(MOLD.get(), MoldRenderer::new);
 
-        event.registerEntityRenderer(ClinkerEntities.FALLING_LAYER.get(), FallingBlockRenderer::new);
-        event.registerEntityRenderer(ClinkerEntities.COLLIDER.get(), NoopRenderer::new);
-        event.registerEntityRenderer(ClinkerEntities.TEST_ROPE.get(), DebugRopeEntityRenderer::new);
+        event.registerEntityRenderer(FALLING_LAYER.get(), FallingBlockRenderer::new);
+        event.registerEntityRenderer(COLLIDER.get(), NoopRenderer::new);
+        event.registerEntityRenderer(TEST_ROPE.get(), DebugRopeEntityRenderer::new);
 
-        event.registerEntityRenderer(ClinkerEntities.SPITTER_HOMUNCULOID.get(), DebugEntityRenderer::new);
+        event.registerEntityRenderer(SPITTER_HOMUNCULOID.get(), DebugEntityRenderer::new);
 
-        event.registerEntityRenderer(ClinkerEntities.AI_TEST.get(), DebugEntityRenderer::new);
+        event.registerEntityRenderer(AI_TEST.get(), DebugEntityRenderer::new);
 
-        event.registerEntityRenderer(ClinkerEntities.SLAB_CRAB.get(), SlabCrabRenderer::new);
+        event.registerEntityRenderer(SLAB_CRAB.get(), SlabCrabRenderer::new);
+
+        event.registerEntityRenderer(SQUAD_TESTING_LEADER.get(), DebugEntityRenderer::new);
+        event.registerEntityRenderer(SQUAD_TESTING_THROWER.get(), DebugEntityRenderer::new);
+        event.registerEntityRenderer(SQUAD_TESTING_SUPPLIER.get(), DebugEntityRenderer::new);
     }
 }

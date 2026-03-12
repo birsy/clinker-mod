@@ -1,30 +1,24 @@
 package birsy.clinker.common.world.entity.gnomad;
 
 import birsy.clinker.common.world.entity.GroundLocomotionEntity;
-import birsy.clinker.common.world.entity.gnomad.gnomind.squad.GnomadSquad;
-import birsy.clinker.common.world.entity.gnomad.gnomind.squad.GnomadSquads;
+import birsy.clinker.common.world.entity.gnomad.gnomind.squad.Squad;
 import birsy.clinker.core.Clinker;
 import net.minecraft.network.protocol.game.DebugEntityNameGenerator;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 
 
 import static net.minecraft.world.entity.monster.Monster.createMonsterAttributes;
 
 public abstract class GnomadEntity extends GroundLocomotionEntity implements Enemy {
-    public GnomadSquad squad;
+    public Squad squad;
 
-    
-    public Vec3 acceleration = Vec3.ZERO;
-    private Vec3 deltaPosition = Vec3.ZERO;
     private static final EntityDataAccessor<Byte> DATA_ANIMATION_FLAGS_ID = SynchedEntityData.defineId(GnomadEntity.class, EntityDataSerializers.BYTE);
 
     public GnomadEntity(EntityType<? extends GnomadEntity> pEntityType, Level pLevel) {
@@ -49,23 +43,12 @@ public abstract class GnomadEntity extends GroundLocomotionEntity implements Ene
     @Override
     public void onAddedToLevel() {
         super.onAddedToLevel();
-        if (this.level() instanceof ServerLevel level) GnomadSquads.getInstance(level).createSquad(this);
+        //if (this.level() instanceof ServerLevel level) GnomadSquads.getInstance(level).createSquad(this);
     }
 
     @Override
     public void tick() {
         super.tick();
-
-        if (this.level().isClientSide()) {
-            updateAcceleration();
-        }
-    }
-
-    
-    public void updateAcceleration() {
-        Vec3 pDeltaPosition = new Vec3(this.deltaPosition.x, this.deltaPosition.y, this.deltaPosition.z);
-        this.deltaPosition = this.getDeltaMovement();
-        this.acceleration = pDeltaPosition.subtract(this.deltaPosition);
     }
 
     public void setSitting(boolean sitting) {

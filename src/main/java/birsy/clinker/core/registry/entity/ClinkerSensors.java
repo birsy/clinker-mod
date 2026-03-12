@@ -1,8 +1,9 @@
 package birsy.clinker.core.registry.entity;
 
-import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.GnomadSquadSensor;
-import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.TargetSupplyDepotSensor;
-import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.SupplyDepotSensor;
+import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.ActiveSquadTasksSensor;
+import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.SquadSensor;
+import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.NearestSupplyDepotSensor;
+import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.PostedSquadTasksSensor;
 import birsy.clinker.core.Clinker;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.ai.sensing.SensorType;
@@ -13,7 +14,13 @@ import java.util.function.Supplier;
 public class ClinkerSensors {
     public static final DeferredRegister<SensorType<?>> SENSOR_TYPES = DeferredRegister.create(BuiltInRegistries.SENSOR_TYPE, Clinker.MOD_ID);
 
-    public static final Supplier<SensorType<GnomadSquadSensor<?>>> GNOMAD_SQUAD_SENSOR = SENSOR_TYPES.register("gnomad_squad_sensor", () -> new SensorType<>(GnomadSquadSensor::new));
-    public static final Supplier<SensorType<SupplyDepotSensor<?>>> SUPPLY_DEPOT_SENSOR = SENSOR_TYPES.register("supply_depot_sensor", () -> new SensorType<>(SupplyDepotSensor::new));
-    public static final Supplier<SensorType<TargetSupplyDepotSensor<?>>> TARGET_SUPPLY_DEPOT_SENSOR = SENSOR_TYPES.register("target_supply_depot_sensor", () -> new SensorType<>(TargetSupplyDepotSensor::new));
+    public static final Supplier<SensorType<PostedSquadTasksSensor<?>>> POSTED_SQUAD_TASKS =
+            SENSOR_TYPES.register("posted_squad_tasks", () -> new SensorType<>(PostedSquadTasksSensor::new));
+    public static final Supplier<SensorType<ActiveSquadTasksSensor<?>>> ACTIVE_SQUAD_TASK =
+            SENSOR_TYPES.register("active_squad_task", () -> new SensorType<>(ActiveSquadTasksSensor::new));
+
+    public static final Supplier<SensorType<SquadSensor<?>>> GNOMAD_SQUAD =
+            SENSOR_TYPES.register("gnomad_squad", () -> new SensorType<>(SquadSensor::new));
+    public static final Supplier<SensorType<NearestSupplyDepotSensor<?>>> NEAREST_SUPPLY_DEPOT =
+            SENSOR_TYPES.register("nearest_supply_depot", () -> new SensorType<>(NearestSupplyDepotSensor::new));
 }

@@ -2,12 +2,12 @@ package birsy.clinker.common.world.entity.gnomad.mogul;
 
 import birsy.clinker.client.entity.mogul.MogulAnimator;
 import birsy.clinker.client.entity.mogul.MogulSkeleton;
-import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
+import birsy.clinker.common.world.entity.GroundLocomotionEntity;
 import birsy.clinker.common.world.entity.ai.behaviors.*;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.*;
-import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.GnomadSquadSensor;
-import birsy.clinker.common.world.entity.gnomad.gnomind.squad.squadtasks.RestWithFriendsTask;
-import birsy.clinker.core.Clinker;
+import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.SquadSensor;
+import birsy.clinker.common.world.entity.gnomad.gnomind.squad.Squad;
+import birsy.clinker.common.world.entity.gnomad.gnomind.squad.SquadMember;
 import foundry.veil.api.client.necromancer.SkeletonParent;
 import foundry.veil.api.client.necromancer.animation.Animator;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -24,6 +24,7 @@ import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
+import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.ClipContext;
@@ -37,7 +38,6 @@ import net.tslat.smartbrainlib.api.core.BrainActivityGroup;
 import net.tslat.smartbrainlib.api.core.SmartBrainProvider;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.look.LookAtTarget;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.move.FloatToSurfaceOfFluid;
-import net.tslat.smartbrainlib.api.core.behaviour.custom.move.MoveToWalkTarget;
 import net.tslat.smartbrainlib.api.core.navigation.SmoothGroundNavigation;
 import net.tslat.smartbrainlib.api.core.sensor.ExtendedSensor;
 import net.tslat.smartbrainlib.api.core.sensor.custom.GenericAttackTargetSensor;
@@ -45,7 +45,6 @@ import net.tslat.smartbrainlib.api.core.sensor.vanilla.HurtBySensor;
 import net.tslat.smartbrainlib.api.core.sensor.vanilla.InWaterSensor;
 import net.tslat.smartbrainlib.api.core.sensor.vanilla.NearbyLivingEntitySensor;
 import net.tslat.smartbrainlib.api.core.sensor.vanilla.NearbyPlayersSensor;
-import net.tslat.smartbrainlib.util.RandomUtil;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
@@ -53,20 +52,18 @@ import java.util.List;
 
 import static net.minecraft.world.entity.monster.Monster.createMonsterAttributes;
 
-public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<GnomadMogulEntity>, SkeletonParent<GnomadMogulEntity, MogulSkeleton> {
+public class GnomadMogulEntity extends GroundLocomotionEntity implements Enemy, SquadMember<GnomadMogulEntity>, SmartBrainOwner<GnomadMogulEntity>, SkeletonParent<GnomadMogulEntity, MogulSkeleton> {
     private static final int[] ROBE_COLORS = new int[]{0x4d423c, 0x513337, 0x4a4751, 0x505049, 0x4f4c4b};
     private static final EntityDataAccessor<Integer> DATA_ROBE_COLOR = SynchedEntityData.defineId(GnomadMogulEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> DATA_FLOATING = SynchedEntityData.defineId(GnomadMogulEntity.class, EntityDataSerializers.BOOLEAN);
 
+    private Squad squad;
     private final MogulAttackHandler attackHandler;
-
-    private final double maxYOffset = 1;
-    private double smoothedY, prevSmoothedY;
 
     private boolean canStartFloating = true;
     private int ticksFloating = 0;
 
-    public GnomadMogulEntity(EntityType<? extends GnomadEntity> pEntityType, Level pLevel) {
+    public GnomadMogulEntity(EntityType<? extends GnomadMogulEntity> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         this.attackHandler = new MogulAttackHandler(this);
     }
@@ -117,14 +114,14 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
     public void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
         pCompound.putInt("RobeColor", this.getRobeColor());
+        this.serializeSquad(pCompound);
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
-        if (pCompound.contains("RobeColor")) {
-            this.setRobeColor(pCompound.getInt("RobeColor"));
-        }
+        this.setRobeColor(pCompound.getInt("RobeColor"));
+        this.deserializeSquad(pCompound);
     }
 
     // ai
@@ -221,7 +218,7 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
                         .setPredicate((other, me) -> other instanceof Player),
                 new HurtBySensor<>(),
                 new InWaterSensor<>(),
-                new GnomadSquadSensor<>()
+                new SquadSensor<>()
         );
     }
 
@@ -230,8 +227,6 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
         return BrainActivityGroup.coreTasks(
                 new LookAtTarget<>(),
                 new InvalidateLookAtTarget<>(),
-                new InvalidateCurrentSquadTask<>(),
-                new MoveToWalkTarget<GnomadMogulEntity>().startCondition(mob -> !mob.isSitting()),
                 new FloatToSurfaceOfFluid<>()
         );
     }
@@ -239,34 +234,7 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
     @Override
     public BrainActivityGroup<GnomadMogulEntity> getIdleTasks() {
         return BrainActivityGroup.idleTasks(
-                // look behaviors
-//                new FirstApplicableBehaviour(
-//                        new SetRandomLookTargetImproved<>()
-//                                .lookTime(mob -> RandomUtil.randomNumberBetween(0, 16 * 20))
-//                                .lookChance(ConstantFloat.of(0.2F)),
-//                        new LookAtNearestPlayerExpiring<>()
-//                                .expirationTime(mob -> RandomUtil.randomNumberBetween(0, 8 * 20))
-//                                .startCondition(mob -> RandomUtil.fiftyFifty()), // 50/50 chance of looking at player or a friend.
-//                        new LookAtNearestEntity<>()
-//                                .expirationTime(mob -> RandomUtil.randomNumberBetween(0, 8 * 20))
-//                                .predicate((entity, mob) -> entity.getType().is(ClinkerTags.GNOMADS))
-//                ),
-                // walking behaviors
-//                new FirstApplicableBehaviour(
-//                        // if we have a rest task, run that!
-//                        RestWithFriendsTask.createBehavior(),
-//                        new CustomBehaviour<GnomadMogulEntity>(mob -> mob.setSitting(false)).startCondition(GnomadEntity::isSitting),
-//                        new StayNearSquad().radius(16, 16),
-//                        new OneRandomBehaviour(
-//                                new SetRandomWalkTarget<>().speedModifier(0.7F),
-//                                new Idle<>().runFor(mob -> RandomUtil.randomNumberBetween(30, 120))
-//                        )
-//                ),
-                new MogulCombatStateMachine(),
-                new VolunteerForSquadTask<>()
-                        .shouldVolunteer((mob, task) -> task instanceof RestWithFriendsTask)
-                        .startCondition((mob) -> RandomUtil.oneInNChance(15 * 20)),
-                new InitiateRelaxWithSquad<>().startCondition((mob) -> RandomUtil.oneInNChance(60 * 20))
+                new MogulCombatStateMachine()
         );
     }
 
@@ -293,6 +261,10 @@ public class GnomadMogulEntity extends GnomadEntity implements SmartBrainOwner<G
         this.entityData.set(DATA_FLOATING, floating);
     }
 
+    @Override
+    public @Nullable Squad getSquad() { return squad; }
+    @Override
+    public void setSquad(@Nullable Squad squad) { this.squad = squad; }
 
     MogulSkeleton skeleton;
     MogulAnimator animator;

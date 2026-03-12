@@ -131,14 +131,14 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
             skeleton.MogulBody.rotation.rotateAxis(deathFactor * 70 * Mth.DEG_TO_RAD, Mth.sqrt(2), 0, Mth.sqrt(2));
         }
 
-        smoothedAcceleration.lerp(temp.set(entity.acceleration.x(), entity.acceleration.y(), entity.acceleration.z()), 0.15F);
-
-        Vector3f axis = smoothedAcceleration.mul(1, 0, 1, temp);
-        if (axis.lengthSquared() > 0) {
-            float angle = axis.length();
-            axis = axis.normalize().cross(0, 1, 0);
-            skeleton.MogulRoot.rotation.rotateAxis(angle * 2, axis);
-        }
+//        smoothedAcceleration.lerp(temp.set(entity.acceleration.x(), entity.acceleration.y(), entity.acceleration.z()), 0.15F);
+//
+//        Vector3f axis = smoothedAcceleration.mul(1, 0, 1, temp);
+//        if (axis.lengthSquared() > 0) {
+//            float angle = axis.length();
+//            axis = axis.normalize().cross(0, 1, 0);
+//            skeleton.MogulRoot.rotation.rotateAxis(angle * 2, axis);
+//        }
     }
 
     private static class MaskAnimation extends Animation<GnomadMogulEntity, MogulSkeleton> {

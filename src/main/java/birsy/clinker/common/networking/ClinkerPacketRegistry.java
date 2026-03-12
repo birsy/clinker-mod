@@ -3,8 +3,6 @@ package birsy.clinker.common.networking;
 import birsy.clinker.common.networking.packet.*;
 import birsy.clinker.common.networking.packet.debug.ClientboundBrainDebugPacket;
 import birsy.clinker.common.networking.packet.debug.ClientboundPathfindingDebugPacket;
-import birsy.clinker.common.networking.packet.debug.GnomadSquadDebugPacket;
-import birsy.clinker.common.networking.packet.debug.GnomadSquadRemovalDebugPacket;
 import birsy.clinker.common.networking.packet.ropeentity.ClientboundRopeEntityInitPacket;
 import birsy.clinker.common.networking.packet.ropeentity.ClientboundRopeEntitySegmentAddPacket;
 import birsy.clinker.common.networking.packet.ropeentity.ClientboundRopeEntitySyncPacket;
@@ -72,13 +70,6 @@ public class ClinkerPacketRegistry {
                 ServerboundWorkstationLoadRequestPacket::handle);
 
         //debug packets
-        registrar.playToClient(GnomadSquadDebugPacket.TYPE,
-                GnomadSquadDebugPacket.STREAM_CODEC,
-                GnomadSquadDebugPacket::handle);
-        registrar.playToClient(GnomadSquadRemovalDebugPacket.TYPE,
-                GnomadSquadRemovalDebugPacket.STREAM_CODEC,
-                GnomadSquadRemovalDebugPacket::handle);
-
         registrar.playToClient(ClientboundPathfindingDebugPacket.TYPE,
                 ClientboundPathfindingDebugPacket.STREAM_CODEC,
                 ClientboundPathfindingDebugPacket::handle);
