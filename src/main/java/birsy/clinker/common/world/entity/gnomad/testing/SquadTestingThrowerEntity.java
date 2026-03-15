@@ -35,8 +35,10 @@ public class SquadTestingThrowerEntity extends SquadTestingEntity<SquadTestingTh
     protected void customServerAiStep() {
         super.customServerAiStep();
         if (this.outOfSupplies()) {
+            this.setCustomNameVisible(true);
             this.setCustomName(Component.literal("no supplies!"));
         } else {
+            this.setCustomNameVisible(false);
             this.setCustomName(null);
         }
     }
@@ -80,7 +82,7 @@ public class SquadTestingThrowerEntity extends SquadTestingEntity<SquadTestingTh
         double d3 = target.getZ() - this.getZ();
         double d4 = Math.sqrt(d1 * d1 + d3 * d3) * 0.2F;
         snowball.shoot(d1, d2 + d4, d3, 1.6F, 12.0F);
-        this.playSound(SoundEvents.SNOW_GOLEM_SHOOT, 1.0F, 0.4F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
+        this.playSound(SoundEvents.SNOW_GOLEM_SHOOT, 0.2F, 0.4F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
         this.level().addFreshEntity(snowball);
     }
 }

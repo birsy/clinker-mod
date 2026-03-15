@@ -3,8 +3,12 @@ package birsy.clinker.core.registry.worldgen;
 import birsy.clinker.common.world.level.gen.system.biome.resolver.ProtoBiome;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerRegistries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.biome.Biome;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
 public class ClinkerProtoBiomes {
@@ -43,4 +47,12 @@ public class ClinkerProtoBiomes {
             PROTO_BIOMES.register("beach", () -> new ProtoBiome(ClinkerBiomes.TEMPLATE_BEACH));
     public static final Supplier<ProtoBiome> SEA =
             PROTO_BIOMES.register("sea", () -> new ProtoBiome(ClinkerBiomes.TEMPLATE_SEA));
+
+    public static final Supplier<ProtoBiome>[] BASE_SECTIONS = registerProtoBiomeArray("base_section", 5, null);
+
+    private static DeferredHolder<ProtoBiome, ProtoBiome>[] registerProtoBiomeArray(String name, int count, @Nullable ResourceKey<Biome> result) {
+        DeferredHolder<ProtoBiome, ProtoBiome>[] protoBiomes = new DeferredHolder[count];
+        for (int i = 0; i < count; i++) protoBiomes[i] = PROTO_BIOMES.register(name + "_" + i, () -> new ProtoBiome(result));
+        return protoBiomes;
+    }
 }

@@ -26,9 +26,11 @@ public class SquadTestingSupplierEntity extends SquadTestingEntity<SquadTestingS
     protected void customServerAiStep() {
         super.customServerAiStep();
         if (this.isHoldingDelivery()) {
+            this.setCustomNameVisible(true);
             this.setCustomName(Component.literal("carrying delivery!"));
         } else {
-            this.setCustomName(Component.empty());
+            this.setCustomNameVisible(false);
+            this.setCustomName(null);
         }
     }
 

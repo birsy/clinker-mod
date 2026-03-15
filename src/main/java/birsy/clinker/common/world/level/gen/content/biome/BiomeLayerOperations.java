@@ -11,9 +11,28 @@ import net.minecraft.util.random.SimpleWeightedRandomList;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.function.IntPredicate;
+import java.util.stream.Collectors;
 
 public class BiomeLayerOperations {
+    public record Replace(IntPredicate shouldReplace, int replacement) implements BiomeLayerOperation {
+        public Replace(Set<ProtoBiome> targets, ProtoBiome replacement) {
+            this(Util.make(() -> {
+                Set<Integer> ids = targets
+                        .stream()
+                        .map(protoBiome -> protoBiome.id)
+                        .collect(Collectors.toUnmodifiableSet());
+                return ids::contains;
+            }), replacement.id);
+        }
+        @Override
+        public int apply(int blockX, int blockZ, int currentId, int[] neighborhood, RandomSource random, NoiseContext noiseContext) {
+            if (shouldReplace.test(currentId)) return replacement;
+            return currentId;
+        }
+    }
+
     public record Smooth() implements BiomeLayerOperation {
         private static final ThreadLocal<int[]> threadedCounts =
                 ThreadLocal.withInitial(() -> new int[ClinkerRegistries.PROTO_BIOME_REGISTRY.size()]);
@@ -98,6 +117,9 @@ public class BiomeLayerOperations {
         public static MutateBuilder builder(ProtoBiome target) {
             return new MutateBuilder(target);
         }
+        public static MutateBuilder builder(Set<ProtoBiome> targets) {
+            return new MutateBuilder(targets);
+        }
 
         @Override
         public int apply(int blockX, int blockZ, int currentId, int[] neighborhood, RandomSource random, NoiseContext noiseContext) {
@@ -116,6 +138,16 @@ public class BiomeLayerOperations {
         private MutateBuilder(ProtoBiome target) {
             this((id) -> id == target.id);
         }
+        private MutateBuilder(Set<ProtoBiome> targets) {
+            this(Util.make(() -> {
+                Set<Integer> ids = targets
+                        .stream()
+                        .map(protoBiome -> protoBiome.id)
+                        .collect(Collectors.toUnmodifiableSet());
+                return (IntPredicate) ids::contains;
+            }));
+        }
+
         public MutateBuilder entry(ProtoBiome biome, int weight) {
             results.add(biome);
             weights.add(weight);
@@ -144,6 +176,23 @@ public class BiomeLayerOperations {
     public record CreateBorders(IntPredicate biomeA, IntPredicate biomeB, int borderBiomeId) implements BiomeLayerOperation {
         public CreateBorders(ProtoBiome a, ProtoBiome b, ProtoBiome border) {
             this(id -> id == a.id, id -> id == b.id, border.id);
+        }
+        public CreateBorders(Set<ProtoBiome> a, Set<ProtoBiome> b, ProtoBiome border) {
+            this(Util.make(() -> {
+                        Set<Integer> ids = a
+                                .stream()
+                                .map(protoBiome -> protoBiome.id)
+                                .collect(Collectors.toUnmodifiableSet());
+                        return ids::contains;
+                    }),
+                 Util.make(() -> {
+                        Set<Integer> ids = b
+                                .stream()
+                                .map(protoBiome -> protoBiome.id)
+                                .collect(Collectors.toUnmodifiableSet());
+                        return ids::contains;
+                    }),
+                 border.id);
         }
         @Override
         public int apply(int blockX, int blockZ, int currentId, int[] neighborhood, RandomSource random, NoiseContext noiseContext) {

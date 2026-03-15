@@ -43,13 +43,13 @@ class DeliverSuppliesToDeliveryTarget<E extends LivingEntity & SuppliesDeliverer
         // if we're far away from the delivery target, we can't deliver supplies!
         SuppliesHolder deliveryTarget = BrainUtils.getMemory(mob, ClinkerMemoryModules.DELIVERY_TARGET.get());
         Vec3 deliveryPoint = deliveryTarget.position();
-        return deliveryPoint.distanceTo(mob.position()) <= 1.5F;
+        return deliveryPoint.distanceTo(mob.position()) <= 2.0F;
     }
 
     protected boolean doTick(E mob) {
         SuppliesHolder deliveryTarget = BrainUtils.getMemory(mob, ClinkerMemoryModules.DELIVERY_TARGET.get());
         if (deliveryTarget == null) return false;
-        if (deliveryTarget.position().distanceTo(mob.position()) > 1.5F) return false;
+        if (deliveryTarget.position().distanceTo(mob.position()) > 2.0F) return false;
 
         // keep moving towards the target and looking at them
         BrainUtils.setMemory(

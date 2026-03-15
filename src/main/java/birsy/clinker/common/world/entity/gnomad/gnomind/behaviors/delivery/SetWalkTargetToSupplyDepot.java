@@ -49,7 +49,7 @@ class SetWalkTargetToSupplyDepot<E extends LivingEntity & SuppliesDeliverer> ext
                 mob, MemoryModuleType.WALK_TARGET,
                 new WalkTarget(
                         BrainUtils.getMemory(mob, ClinkerMemoryModules.NEAREST_SUPPLY_DEPOT.get()).pos(),
-                        1.0F, 1
+                        1.5F, 1
                 )
         );
     }
