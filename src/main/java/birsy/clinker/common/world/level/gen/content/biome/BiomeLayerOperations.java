@@ -102,43 +102,32 @@ public class BiomeLayerOperations {
         }
     }
 
-    public record Mutate(IntPredicate target, SimpleWeightedRandomList<Integer> results) implements BiomeLayerOperation {
-        public Mutate(ProtoBiome target, ProtoBiome... results) {
-            this((id) -> id == target.id, Util.make(() -> {
-                SimpleWeightedRandomList.Builder<Integer> b = SimpleWeightedRandomList.builder();
-                for (ProtoBiome r : results) b.add(r.id);
-                return b.build();
-            }));
-        }
-
-        public static MutateBuilder builder(IntPredicate target) {
-            return new MutateBuilder(target);
-        }
-        public static MutateBuilder builder(ProtoBiome target) {
-            return new MutateBuilder(target);
-        }
-        public static MutateBuilder builder(Set<ProtoBiome> targets) {
-            return new MutateBuilder(targets);
-        }
-
+    private record WeightedRandomListMutate(IntPredicate target, SimpleWeightedRandomList<Integer> results) implements BiomeLayerOperation {
         @Override
         public int apply(int blockX, int blockZ, int currentId, int[] neighborhood, RandomSource random, NoiseContext noiseContext) {
             return target.test(currentId) ? results.getRandomValue(random).orElse(currentId) : currentId;
         }
     }
-
+    private record FlatMutate(IntPredicate target, int[] results) implements BiomeLayerOperation {
+        @Override
+        public int apply(int blockX, int blockZ, int currentId, int[] neighborhood, RandomSource random, NoiseContext noiseContext) {
+            if (!target.test(currentId)) return currentId;
+            return results[random.nextInt(results.length)];
+        }
+    }
     public static class MutateBuilder {
         final IntPredicate target;
         final List<ProtoBiome> results = new ArrayList<>();
         final List<Integer> weights = new ArrayList<>();
+        private static final int FLAT_ARRAY_THRESHOLD = 64;
 
-        private MutateBuilder(IntPredicate target) {
+        public MutateBuilder(IntPredicate target) {
             this.target = target;
         }
-        private MutateBuilder(ProtoBiome target) {
+        public MutateBuilder(ProtoBiome target) {
             this((id) -> id == target.id);
         }
-        private MutateBuilder(Set<ProtoBiome> targets) {
+        public MutateBuilder(Set<ProtoBiome> targets) {
             this(Util.make(() -> {
                 Set<Integer> ids = targets
                         .stream()
@@ -147,16 +136,26 @@ public class BiomeLayerOperations {
                 return (IntPredicate) ids::contains;
             }));
         }
-
         public MutateBuilder entry(ProtoBiome biome, int weight) {
             results.add(biome);
             weights.add(weight);
             return this;
         }
-        public Mutate build() {
-            SimpleWeightedRandomList.Builder<Integer> builder = SimpleWeightedRandomList.builder();
-            for (int i = 0; i < results.size(); i++) builder.add(results.get(i).id, weights.get(i));
-            return new Mutate(target, builder.build());
+        public BiomeLayerOperation build() {
+            int total = weights.stream().mapToInt(Integer::intValue).sum();
+            if (total <= FLAT_ARRAY_THRESHOLD) {
+                int[] arr = new int[total];
+                int i = 0;
+                for (int j = 0; j < results.size(); j++)
+                    for (int w = 0; w < weights.get(j); w++)
+                        arr[i++] = results.get(j).id;
+                return new FlatMutate(target, arr);
+            } else {
+                SimpleWeightedRandomList.Builder<Integer> builder = SimpleWeightedRandomList.builder();
+                for (int i = 0; i < results.size(); i++)
+                    builder.add(results.get(i).id, weights.get(i));
+                return new WeightedRandomListMutate(target, builder.build());
+            }
         }
     }
 

@@ -91,7 +91,7 @@ public class OthershoreBiomeSource extends BiomeSource {
     public static LayeredBiomeResolver createSurfaceBiomeResolver(Function<ResourceLocation, PositionalRandomFactory> randomState, UncachedNoiseContext noiseContext) {
         if (true) {
             LayeredBiomeResolver.Builder builder = LayeredBiomeResolver.builder(8);
-            BiomeLayerOperations.MutateBuilder baseMutationBuilder = BiomeLayerOperations.Mutate.builder(UNINITIALIZED.get());
+            BiomeLayerOperations.MutateBuilder baseMutationBuilder = new BiomeLayerOperations.MutateBuilder(UNINITIALIZED.get());
             for (int i = 0; i < 4; i++) {
                 Supplier<ProtoBiome> baseSection = BASE_SECTIONS[i];
                 baseMutationBuilder.entry(baseSection.get(), 10);
@@ -107,6 +107,10 @@ public class OthershoreBiomeSource extends BiomeSource {
                     .zoom()
                     .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1))
                     .layer(new BiomeLayerOperations.Smooth())
+                    .layer(new BiomeLayerOperations.MutateBuilder(SEA.get())
+                            .entry(SEA.get(), 48)
+                            .entry(ISLAND.get(), 1)
+                            .build())
                     .zoom()
                     .layer(new BiomeLayerOperations.CreateBorders(
                             Set.of(BASE_SECTIONS[0].get(), BASE_SECTIONS[1].get()),
@@ -121,10 +125,19 @@ public class OthershoreBiomeSource extends BiomeSource {
                            )
                     )
                     .layer(new BiomeLayerOperations.Expand(LOWER_SHELF.get()),
-                           new BiomeLayerOperations.Expand(SEA.get()))
-                    .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1))
+                           new BiomeLayerOperations.Expand(SEA.get()),
+                           new BiomeLayerOperations.Expand(ISLAND.get()))
+                    .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1),
+                            new BiomeLayerOperations.MutateBuilder(ISLAND.get())
+                                    .entry(SEA.get(), 1)
+                                    .entry(ISLAND.get(), 1)
+                                    .build())
                     .layer(new BiomeLayerOperations.Smooth())
-                    .layer(new BiomeLayerOperations.Expand(UPPER_SHELF.get()))
+                    .layer(new BiomeLayerOperations.CreateBorders(LOWER_SHELF.get(), UPPER_SHELF.get(), UNINITIALIZED.get()),
+                           new BiomeLayerOperations.MutateBuilder(UNINITIALIZED.get())
+                                   .entry(LOWER_SHELF.get(), 1)
+                                   .entry(UPPER_SHELF.get(), 2)
+                                   .build())
                     .layer(new BiomeLayerOperations.CreateBorders(UPPER_SHELF.get(), LOWER_SHELF.get(), SHELF_BORDER.get()),
                            new BiomeLayerOperations.CreateBorders(
                                    Set.of(UPPER_SHELF.get(), LOWER_SHELF.get(), SHELF_BORDER.get()),
@@ -132,33 +145,33 @@ public class OthershoreBiomeSource extends BiomeSource {
                                    BEACH.get()
                            )
                     )
-                    .layer(BiomeLayerOperations.Mutate.builder(SHELF_BORDER.get())
+                    .layer(new BiomeLayerOperations.MutateBuilder(SHELF_BORDER.get())
                                     .entry(SHELF_BORDER_CRACKLE.get(), 5)
                                     .entry(SHELF_BORDER.get(), 6)
                                     .entry(LOWER_SHELF.get(), 1)
                                     .entry(UPPER_SHELF.get(), 1)
                                     .build(),
-                            BiomeLayerOperations.Mutate.builder(LOWER_SHELF.get())
+                            new BiomeLayerOperations.MutateBuilder(LOWER_SHELF.get())
                                     .entry(LOWER_SHELF.get(), 48)
                                     .entry(UPPER_SHELF.get(), 1)
                                     .build(),
-                            BiomeLayerOperations.Mutate.builder(UPPER_SHELF.get())
+                            new BiomeLayerOperations.MutateBuilder(UPPER_SHELF.get())
                                     .entry(UPPER_SHELF.get(), 48)
                                     .entry(UPPER_SHELF_PLATEAU.get(), 1)
                                     .build()
                     )
                     .layer(new BiomeLayerOperations.CreateBorders(LOWER_SHELF.get(), UPPER_SHELF.get(), UNINITIALIZED.get()),
-                            BiomeLayerOperations.Mutate.builder(UNINITIALIZED.get())
+                            new BiomeLayerOperations.MutateBuilder(UNINITIALIZED.get())
                                     .entry(LOWER_SHELF.get(), 2)
                                     .entry(UPPER_SHELF.get(), 1)
                                     .build(),
                             new BiomeLayerOperations.CreateBorders(UPPER_SHELF.get(), UPPER_SHELF_PLATEAU.get(), UNINITIALIZED.get()),
-                            BiomeLayerOperations.Mutate.builder(UNINITIALIZED.get())
+                            new BiomeLayerOperations.MutateBuilder(UNINITIALIZED.get())
                                     .entry(UPPER_SHELF.get(), 2)
                                     .entry(UPPER_SHELF_PLATEAU.get(), 1)
                                     .build(),
                             new BiomeLayerOperations.CreateBorders(UPPER_SHELF.get(), BEACH.get(), BEACH.get()),
-                            BiomeLayerOperations.Mutate.builder(BEACH.get())
+                            new BiomeLayerOperations.MutateBuilder(BEACH.get())
                                     .entry(BEACH.get(), 2)
                                     .entry(LOWER_SHELF.get(), 1)
                                     .entry(UPPER_SHELF.get(), 1)
@@ -179,7 +192,7 @@ public class OthershoreBiomeSource extends BiomeSource {
         }
         if (true) {
             return LayeredBiomeResolver.builder(6)
-                    .layer(BiomeLayerOperations.Mutate.builder(UNINITIALIZED.get())
+                    .layer(new BiomeLayerOperations.MutateBuilder(UNINITIALIZED.get())
                                     .entry(SEA.get(), 2)
                                     .entry(LOWER_SHELF.get(), 3)
                                     .entry(UPPER_SHELF.get(), 4)
@@ -190,24 +203,24 @@ public class OthershoreBiomeSource extends BiomeSource {
                     .zoom()
                     .layer(new BiomeLayerOperations.Surround(SEA.get(), BEACH.get()))
                     .layer(new BiomeLayerOperations.CreateBorders(UPPER_SHELF.get(), BEACH.get(), UNINITIALIZED.get()),
-                           BiomeLayerOperations.Mutate.builder(UNINITIALIZED.get())
+                           new BiomeLayerOperations.MutateBuilder(UNINITIALIZED.get())
                                     .entry(BEACH.get(), 2)
                                     .entry(LOWER_SHELF.get(), 5)
                                     .entry(UPPER_SHELF.get(), 1)
                                     .build()
                     )
                     .layer(new BiomeLayerOperations.CreateBorders(LOWER_SHELF.get(), UPPER_SHELF.get(), SHELF_BORDER.get()))
-                    .layer(BiomeLayerOperations.Mutate.builder(SHELF_BORDER.get())
+                    .layer(new BiomeLayerOperations.MutateBuilder(SHELF_BORDER.get())
                             .entry(SHELF_BORDER_CRACKLE.get(), 5)
                             .entry(SHELF_BORDER.get(), 6)
                             .entry(LOWER_SHELF.get(), 1)
                             .entry(UPPER_SHELF.get(), 1)
                             .build(),
-                          BiomeLayerOperations.Mutate.builder(LOWER_SHELF.get())
+                          new BiomeLayerOperations.MutateBuilder(LOWER_SHELF.get())
                                     .entry(LOWER_SHELF.get(), 48)
                                     .entry(UPPER_SHELF.get(), 1)
                                     .build(),
-                          BiomeLayerOperations.Mutate.builder(UPPER_SHELF.get())
+                          new BiomeLayerOperations.MutateBuilder(UPPER_SHELF.get())
                                     .entry(UPPER_SHELF.get(), 48)
                                     .entry(UPPER_SHELF_PLATEAU.get(), 1)
                                     .build()
@@ -215,12 +228,12 @@ public class OthershoreBiomeSource extends BiomeSource {
                     .zoom()
                     .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1))
                     .layer(new BiomeLayerOperations.CreateBorders(LOWER_SHELF.get(), UPPER_SHELF.get(), UNINITIALIZED.get()),
-                           BiomeLayerOperations.Mutate.builder(UNINITIALIZED.get())
+                           new BiomeLayerOperations.MutateBuilder(UNINITIALIZED.get())
                                     .entry(LOWER_SHELF.get(), 2)
                                     .entry(UPPER_SHELF.get(), 1)
                                     .build(),
                           new BiomeLayerOperations.CreateBorders(UPPER_SHELF.get(), UPPER_SHELF_PLATEAU.get(), UNINITIALIZED.get()),
-                          BiomeLayerOperations.Mutate.builder(UNINITIALIZED.get())
+                          new BiomeLayerOperations.MutateBuilder(UNINITIALIZED.get())
                                     .entry(UPPER_SHELF.get(), 2)
                                     .entry(UPPER_SHELF_PLATEAU.get(), 1)
                                     .build()
@@ -249,11 +262,11 @@ public class OthershoreBiomeSource extends BiomeSource {
                     return UPPER_SHELF.get().id;
                 })
                 .layer(new BiomeLayerOperations.CreateBorders(UPPER_SHELF.get(), LOWER_SHELF.get(), SHORE.get()))
-                .layer(BiomeLayerOperations.Mutate.builder(UPPER_SHELF.get())
+                .layer(new BiomeLayerOperations.MutateBuilder(UPPER_SHELF.get())
                                 .entry(ASH_STEPPE.get(), 10)
                                 .entry(HEATH.get(), 7)
                                 .build(),
-                        BiomeLayerOperations.Mutate.builder(LOWER_SHELF.get())
+                        new BiomeLayerOperations.MutateBuilder(LOWER_SHELF.get())
                                 .entry(BRINE_SWAMP.get(), 10)
                                 .entry(BRINE_SNAKES.get(), 7)
                                 .build()
@@ -262,7 +275,7 @@ public class OthershoreBiomeSource extends BiomeSource {
                 .layer(new BiomeLayerOperations.Smooth())
                 .zoom()
                 .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1))
-                .layer(BiomeLayerOperations.Mutate.builder(UPPER_SHELF.get())
+                .layer(new BiomeLayerOperations.MutateBuilder(UPPER_SHELF.get())
                                         .entry(HEATH.get(), 10)
                                         .entry(HEATH_THICKET.get(), 3)
                                         .build()

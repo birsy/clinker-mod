@@ -47,6 +47,8 @@ public class ClinkerProtoBiomes {
             PROTO_BIOMES.register("beach", () -> new ProtoBiome(ClinkerBiomes.TEMPLATE_BEACH));
     public static final Supplier<ProtoBiome> SEA =
             PROTO_BIOMES.register("sea", () -> new ProtoBiome(ClinkerBiomes.TEMPLATE_SEA));
+    public static final Supplier<ProtoBiome> ISLAND =
+            PROTO_BIOMES.register("island", () -> new ProtoBiome(ClinkerBiomes.TEMPLATE_BEACH));
 
     public static final Supplier<ProtoBiome>[] BASE_SECTIONS = registerProtoBiomeArray("base_section", 5, null);
 
