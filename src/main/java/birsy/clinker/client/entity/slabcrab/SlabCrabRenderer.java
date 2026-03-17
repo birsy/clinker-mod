@@ -29,7 +29,7 @@ public class SlabCrabRenderer extends NecromancerEntityRenderer<SlabCrabEntity, 
             }
             @Override
             public Skin getSkin(SlabCrabEntity parent) {
-                return SlabCrabSkin.SKIN;
+                return SlabCrabSkin.INSTANCE;
             }
             @Override
             protected void renderSkin(SlabCrabEntity parent, SlabCrabSkeleton skeleton, Skin skin, RenderType renderType, NecromancerRenderer renderer, MatrixStack matrixStack, int packedLight, float partialTicks) {

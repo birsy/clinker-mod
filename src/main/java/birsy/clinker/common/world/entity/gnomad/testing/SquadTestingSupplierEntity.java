@@ -1,10 +1,15 @@
 package birsy.clinker.common.world.entity.gnomad.testing;
 
+import birsy.clinker.client.entity.gnomad.GnomadSkeleton;
+import birsy.clinker.client.entity.gnomadrunt.GnomadRuntSkeleton;
 import birsy.clinker.common.world.entity.gnomad.SuppliesDeliverer;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.ClaimSquadTask;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.PostSquadTask;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.delivery.FetchAndDeliverSupplies;
 import birsy.clinker.common.world.entity.gnomad.gnomind.squad.squadtasks.ResupplyTask;
+import foundry.veil.api.client.necromancer.Skeleton;
+import foundry.veil.api.client.necromancer.SkeletonParent;
+import foundry.veil.api.client.necromancer.animation.Animator;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -14,8 +19,9 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.level.Level;
 import net.tslat.smartbrainlib.api.core.BrainActivityGroup;
+import org.jetbrains.annotations.Nullable;
 
-public class SquadTestingSupplierEntity extends SquadTestingEntity<SquadTestingSupplierEntity> implements SuppliesDeliverer {
+public class SquadTestingSupplierEntity extends SquadTestingEntity<SquadTestingSupplierEntity> implements SuppliesDeliverer, SkeletonParent<SquadTestingSupplierEntity, GnomadRuntSkeleton> {
     private static final EntityDataAccessor<Boolean> DATA_HOLDING_DELIVERY =
             SynchedEntityData.defineId(SquadTestingSupplierEntity.class, EntityDataSerializers.BOOLEAN);
 
@@ -66,4 +72,11 @@ public class SquadTestingSupplierEntity extends SquadTestingEntity<SquadTestingS
                 FetchAndDeliverSupplies.<SquadTestingSupplierEntity>behavior()
         );
     }
+
+    private GnomadRuntSkeleton skeleton;
+    private Animator<SquadTestingSupplierEntity, GnomadRuntSkeleton> animator;
+    @Override public void setSkeleton(@Nullable GnomadRuntSkeleton skeleton) { this.skeleton = skeleton; }
+    @Override public void setAnimator(@Nullable Animator<SquadTestingSupplierEntity, GnomadRuntSkeleton> animator) { this.animator = animator; }
+    @Override public @Nullable GnomadRuntSkeleton getSkeleton() { return skeleton; }
+    @Override public @Nullable Animator<SquadTestingSupplierEntity, GnomadRuntSkeleton> getAnimator() { return animator; }
 }

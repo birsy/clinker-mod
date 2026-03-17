@@ -1,11 +1,10 @@
-package birsy.clinker.client.entity.mogul;
+package birsy.clinker.client.entity.gnomadmogul;
 
 import birsy.clinker.core.Clinker;
-import foundry.veil.api.client.necromancer.Skeleton;
 import foundry.veil.api.client.necromancer.render.Skin;
 import net.minecraft.resources.ResourceLocation;
 
-public class MogulWeaponSkins {
+public class GnomadMogulWeaponSkins {
     public static final ResourceLocation WARHOOK_TEXTURE_LOCATION = Clinker.resource("textures/entity/mogul_warhook.png");
     public static final ResourceLocation WARHOOK_CHAIN_TEXTURE_LOCATION = Clinker.resource("textures/entity/mogul_warhook_chain.png");
 

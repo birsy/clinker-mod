@@ -1,4 +1,4 @@
-package birsy.clinker.client.entity.mogul;
+package birsy.clinker.client.entity.gnomadmogul;
 
 import foundry.veil.api.client.necromancer.Bone;
 import foundry.veil.api.client.necromancer.Skeleton;
@@ -6,11 +6,11 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
-public class MogulSkeleton extends Skeleton {
+public class GnomadMogulSkeleton extends Skeleton {
     protected Bone MogulRoot, MogulBody, MogulFrontRobe, MogulBackRobe, MogulLeftRobe, MogulRightRobe, MogulRightArm, MogulRightLeg, MogulLeftLeg, MogulLeftArm, MogulNeck, MogulHead, MogulFace, MogulNose, MogulHelmetBase, MogulHelmetUpper, MogulHelmetOrnament, MogulBackHelmetFlap, MogulLeftHelmetFlap, MogulRightHelmetFlap;
     public Bone MogulRightArmGrasp, MogulLeftArmGrasp;
 
-    public MogulSkeleton() {
+    public GnomadMogulSkeleton() {
         super();
         Bone MogulRootBone = new Bone("MogulRoot");
         MogulRootBone.setBaseAttributes(new Vector3f(0F, 0F, -1.5F), new Quaternionf().rotationZYX(0F, 0F, 0F), new Vector3f(0.0F), new Vector3f(1.0F), new Vector4f(1.0F));

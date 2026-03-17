@@ -1,7 +1,9 @@
 package birsy.clinker.core.registry.entity;
 
 import birsy.clinker.client.entity.*;
-import birsy.clinker.client.entity.mogul.MogulRenderer;
+import birsy.clinker.client.entity.gnomad.GnomadRenderer;
+import birsy.clinker.client.entity.gnomadmogul.GnomadMogulRenderer;
+import birsy.clinker.client.entity.gnomadrunt.GnomadRuntRenderer;
 import birsy.clinker.client.entity.slabcrab.SlabCrabRenderer;
 import birsy.clinker.common.world.entity.*;
 import birsy.clinker.common.world.entity.gnomad.*;
@@ -144,7 +146,7 @@ public class ClinkerEntities {
         event.registerEntityRenderer(REROLL_FLASK.get(), ThrownItemRenderer::new);
 
         event.registerEntityRenderer(GNOMAD.get(), DebugEntityRenderer::new);
-        event.registerEntityRenderer(GNOMAD_MOGUL.get(), MogulRenderer::new);
+        event.registerEntityRenderer(GNOMAD_MOGUL.get(), GnomadMogulRenderer::new);
 
         event.registerEntityRenderer(MOLD.get(), MoldRenderer::new);
 
@@ -159,7 +161,7 @@ public class ClinkerEntities {
         event.registerEntityRenderer(SLAB_CRAB.get(), SlabCrabRenderer::new);
 
         event.registerEntityRenderer(SQUAD_TESTING_LEADER.get(), DebugEntityRenderer::new);
-        event.registerEntityRenderer(SQUAD_TESTING_THROWER.get(), DebugEntityRenderer::new);
-        event.registerEntityRenderer(SQUAD_TESTING_SUPPLIER.get(), DebugEntityRenderer::new);
+        event.registerEntityRenderer(SQUAD_TESTING_THROWER.get(), GnomadRenderer::new);
+        event.registerEntityRenderer(SQUAD_TESTING_SUPPLIER.get(), GnomadRuntRenderer::new);
     }
 }

@@ -1,6 +1,6 @@
 package birsy.clinker.common.world.entity.gnomad.mogul;
 
-import birsy.clinker.client.entity.mogul.MogulAnimator;
+import birsy.clinker.client.entity.gnomadmogul.GnomadMogulAnimator;
 import birsy.clinker.core.Clinker;
 import foundry.veil.api.client.necromancer.animation.Animator;
 import net.minecraft.server.level.ServerLevel;
@@ -46,7 +46,7 @@ public class MogulAttackHandler {
             attack.update();
         }
     }
-    public void handleAnimationEvent(byte event, MogulAnimator animator) {
+    public void handleAnimationEvent(byte event, GnomadMogulAnimator animator) {
         if ((event & ANIMATION_FLAG_LABEL) == 0) return;
 
         Animator.TimedAnimationEntry<?, ?> entry = null;

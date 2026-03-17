@@ -1,9 +1,9 @@
-package birsy.clinker.client.entity.mogul;
+package birsy.clinker.client.entity.gnomadmogul;
 
 import foundry.veil.api.client.necromancer.render.Skin;
 
-public class MogulSkin {
-    protected static final Skin MOGUL_SKIN;
+public class GnomadMogulSkin {
+    protected static final Skin INSTANCE;
     static {
         Skin.Builder builder = Skin.builder( 256, 256);
         builder.startBone("MogulRoot");
@@ -76,6 +76,6 @@ public class MogulSkin {
         builder.startBone("MogulRightHelmetFlap");
         builder.addCube(15F, 10F, 2F, -7.5F, -10F, -1F, 0F, 0F, 0F, 0F, 101F, false);
 
-        MOGUL_SKIN = builder.build();
+        INSTANCE = builder.build();
     }
 }

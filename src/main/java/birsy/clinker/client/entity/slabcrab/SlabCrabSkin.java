@@ -3,7 +3,7 @@ package birsy.clinker.client.entity.slabcrab;
 import foundry.veil.api.client.necromancer.render.Skin;
 
 public class SlabCrabSkin {
-    protected static final Skin SKIN;
+    protected static final Skin INSTANCE;
     static {
         Skin.Builder builder = Skin.builder(64, 64);
         builder.startBone("body");
@@ -56,6 +56,6 @@ public class SlabCrabSkin {
 
         builder.startBone("root");
 
-        SKIN = builder.build();
+        INSTANCE = builder.build();
     }
 }

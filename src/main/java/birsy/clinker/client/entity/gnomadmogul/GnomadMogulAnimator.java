@@ -1,4 +1,4 @@
-package birsy.clinker.client.entity.mogul;
+package birsy.clinker.client.entity.gnomadmogul;
 
 import birsy.clinker.common.world.entity.gnomad.mogul.MogulAttackHandler;
 import birsy.clinker.core.util.MathUtils;
@@ -11,7 +11,7 @@ import net.minecraft.world.phys.Vec3;
 import net.tslat.smartbrainlib.util.RandomUtil;
 import org.joml.Vector3f;
 
-public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
+public class GnomadMogulAnimator extends Animator<GnomadMogulEntity, GnomadMogulSkeleton> {
     public final AnimationEntry<?, ?> idleAnim, maskAnim, walkAnim, strafeAnim, floatAnim;
     public final Animator.TimedAnimationEntry<?, ?> upSwingAnim, leftSwingAnim, rightSwingAnim;
     private int maskShakeTime = 0, maskShakeDuration = 1;
@@ -22,7 +22,7 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
     private final Vector3f smoothedAcceleration = new Vector3f();
     private static final Vector3f temp = new Vector3f();
 
-    protected MogulAnimator(GnomadMogulEntity parent, MogulSkeleton skeleton) {
+    protected GnomadMogulAnimator(GnomadMogulEntity parent, GnomadMogulSkeleton skeleton) {
         super(parent, skeleton);
         this.upSwingAnim = this.addTimedAnimation(UpAttackAnimation.INSTANCE, 3, UpAttackAnimation.INSTANCE.animLength);
         this.leftSwingAnim = this.addTimedAnimation(LeftAttackAnimation.INSTANCE, 3, LeftAttackAnimation.INSTANCE.animLength);
@@ -141,10 +141,10 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
 //        }
     }
 
-    private static class MaskAnimation extends Animation<GnomadMogulEntity, MogulSkeleton> {
+    private static class MaskAnimation extends Animation<GnomadMogulEntity, GnomadMogulSkeleton> {
         protected static MaskAnimation INSTANCE = new MaskAnimation();
         @Override
-        public void apply(GnomadMogulEntity entity, MogulSkeleton skeleton, float mixFactor, float time) {
+        public void apply(GnomadMogulEntity entity, GnomadMogulSkeleton skeleton, float mixFactor, float time) {
             float headShake = Mth.sin(time * 0.44F) * mixFactor * 0.05F * Mth.RAD_TO_DEG;
             float faceShake = Mth.sin(0.5F + time * 0.44F) * mixFactor * 0.25F * Mth.RAD_TO_DEG;
 
@@ -156,11 +156,11 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
         }
     }
 
-    private static class IdleAnimation extends Animation<GnomadMogulEntity, MogulSkeleton> {
+    private static class IdleAnimation extends Animation<GnomadMogulEntity, GnomadMogulSkeleton> {
         protected static IdleAnimation INSTANCE = new IdleAnimation();
 
         @Override
-        public void apply(GnomadMogulEntity entity, MogulSkeleton skeleton, float mixFactor, float time) {
+        public void apply(GnomadMogulEntity entity, GnomadMogulSkeleton skeleton, float mixFactor, float time) {
             float bodyYaw = Mth.wrapDegrees(180 - entity.yBodyRot);
 
             float headYaw = Mth.wrapDegrees(180 - entity.yHeadRot);
@@ -200,16 +200,16 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
         }
     }
 
-    private static class WalkAnimation extends Animation<GnomadMogulEntity, MogulSkeleton> {
+    private static class WalkAnimation extends Animation<GnomadMogulEntity, GnomadMogulSkeleton> {
         protected static WalkAnimation INSTANCE = new WalkAnimation();
 
         @Override
-        public boolean running(GnomadMogulEntity parent, MogulSkeleton skeleton, float mixFactor, float time) {
+        public boolean running(GnomadMogulEntity parent, GnomadMogulSkeleton skeleton, float mixFactor, float time) {
             return mixFactor != 0;
         }
 
         @Override
-        public void apply(GnomadMogulEntity parent, MogulSkeleton skeleton, float mixFactor, float time) {
+        public void apply(GnomadMogulEntity parent, GnomadMogulSkeleton skeleton, float mixFactor, float time) {
             float globalDegree = 1.0F;
 
             float legBobAmountH = 12;
@@ -259,16 +259,16 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
         }
     }
 
-    private static class StrafeAnimation extends Animation<GnomadMogulEntity, MogulSkeleton> {
+    private static class StrafeAnimation extends Animation<GnomadMogulEntity, GnomadMogulSkeleton> {
         protected static StrafeAnimation INSTANCE = new StrafeAnimation();
 
         @Override
-        public boolean running(GnomadMogulEntity parent, MogulSkeleton skeleton, float mixFactor, float time) {
+        public boolean running(GnomadMogulEntity parent, GnomadMogulSkeleton skeleton, float mixFactor, float time) {
             return mixFactor != 0;
         }
 
         @Override
-        public void apply(GnomadMogulEntity parent, MogulSkeleton skeleton, float mixFactor, float time) {
+        public void apply(GnomadMogulEntity parent, GnomadMogulSkeleton skeleton, float mixFactor, float time) {
             float globalDegree = 1.0F;
 
             float legBobAmountH = 12;
@@ -315,7 +315,7 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
         }
     }
 
-    private static class FloatAnimation extends Animation<GnomadMogulEntity, MogulSkeleton> {
+    private static class FloatAnimation extends Animation<GnomadMogulEntity, GnomadMogulSkeleton> {
         protected static FloatAnimation INSTANCE = new FloatAnimation();
 
         private FloatAnimation() {
@@ -323,7 +323,7 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
         }
 
         @Override
-        public void apply(GnomadMogulEntity parent, MogulSkeleton skeleton, float mixFactor, float time) {
+        public void apply(GnomadMogulEntity parent, GnomadMogulSkeleton skeleton, float mixFactor, float time) {
             float globalDegree = 1.0F;
             float robeRotationFactor = (float) Math.clamp(parent.getDeltaMovement().y / -0.05F, 0, 1);
             skeleton.MogulLeftRobe.rotateDeg(15 * mixFactor * globalDegree * robeRotationFactor, Direction.Axis.X);
@@ -387,7 +387,7 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
         }
     }
 
-    private static class AttackAnimation extends Animation<GnomadMogulEntity, MogulSkeleton> {
+    private static class AttackAnimation extends Animation<GnomadMogulEntity, GnomadMogulSkeleton> {
         protected final int animLength, windupLength, swingLength, recoveryLength;
         private AttackAnimation(MogulAttackHandler.MogulAttackType attackType) {
             this.animLength = attackType.length;
@@ -405,7 +405,7 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
         }
 
         @Override
-        public void apply(GnomadMogulEntity parent, MogulSkeleton skeleton, float mixFactor, float time) {
+        public void apply(GnomadMogulEntity parent, GnomadMogulSkeleton skeleton, float mixFactor, float time) {
             float timeDelayed = time - 0.2F;
             float blend = 1 - Mth.clamp((time - (windupLength + swingLength)) / recoveryLength, 0, 1);
             blend = MathUtils.smoothstep(blend) * mixFactor;
@@ -475,7 +475,7 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
         }
 
         @Override
-        public void apply(GnomadMogulEntity parent, MogulSkeleton skeleton, float mixFactor, float time) {
+        public void apply(GnomadMogulEntity parent, GnomadMogulSkeleton skeleton, float mixFactor, float time) {
             float timeDelayed = time - 0.1F;
             float blend = 1 - Mth.clamp((time - (windupLength + swingLength)) / recoveryLength, 0, 1);
 
@@ -550,7 +550,7 @@ public class MogulAnimator extends Animator<GnomadMogulEntity, MogulSkeleton> {
         }
 
         @Override
-        public void apply(GnomadMogulEntity parent, MogulSkeleton skeleton, float mixFactor, float time) {
+        public void apply(GnomadMogulEntity parent, GnomadMogulSkeleton skeleton, float mixFactor, float time) {
             float timeDelayed = time - 0.2F;
             float timeDelayedForward = time + 0.1F;
 

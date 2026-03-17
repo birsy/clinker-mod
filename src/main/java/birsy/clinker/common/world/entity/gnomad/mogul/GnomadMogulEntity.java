@@ -1,7 +1,7 @@
 package birsy.clinker.common.world.entity.gnomad.mogul;
 
-import birsy.clinker.client.entity.mogul.MogulAnimator;
-import birsy.clinker.client.entity.mogul.MogulSkeleton;
+import birsy.clinker.client.entity.gnomadmogul.GnomadMogulAnimator;
+import birsy.clinker.client.entity.gnomadmogul.GnomadMogulSkeleton;
 import birsy.clinker.common.world.entity.GroundLocomotionEntity;
 import birsy.clinker.common.world.entity.ai.behaviors.*;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.*;
@@ -52,7 +52,7 @@ import java.util.List;
 
 import static net.minecraft.world.entity.monster.Monster.createMonsterAttributes;
 
-public class GnomadMogulEntity extends GroundLocomotionEntity implements Enemy, SquadMember<GnomadMogulEntity>, SmartBrainOwner<GnomadMogulEntity>, SkeletonParent<GnomadMogulEntity, MogulSkeleton> {
+public class GnomadMogulEntity extends GroundLocomotionEntity implements Enemy, SquadMember<GnomadMogulEntity>, SmartBrainOwner<GnomadMogulEntity>, SkeletonParent<GnomadMogulEntity, GnomadMogulSkeleton> {
     private static final int[] ROBE_COLORS = new int[]{0x4d423c, 0x513337, 0x4a4751, 0x505049, 0x4f4c4b};
     private static final EntityDataAccessor<Integer> DATA_ROBE_COLOR = SynchedEntityData.defineId(GnomadMogulEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> DATA_FLOATING = SynchedEntityData.defineId(GnomadMogulEntity.class, EntityDataSerializers.BOOLEAN);
@@ -266,22 +266,22 @@ public class GnomadMogulEntity extends GroundLocomotionEntity implements Enemy, 
     @Override
     public void setSquad(@Nullable Squad squad) { this.squad = squad; }
 
-    MogulSkeleton skeleton;
-    MogulAnimator animator;
+    GnomadMogulSkeleton skeleton;
+    GnomadMogulAnimator animator;
     @Override
-    public void setSkeleton(MogulSkeleton skeleton) {
+    public void setSkeleton(GnomadMogulSkeleton skeleton) {
         this.skeleton = skeleton;
     }
     @Override
-    public MogulSkeleton getSkeleton() {
+    public GnomadMogulSkeleton getSkeleton() {
         return this.skeleton;
     }
     @Override
-    public void setAnimator(Animator<GnomadMogulEntity, MogulSkeleton> animator) {
-        this.animator = (MogulAnimator) animator;
+    public void setAnimator(Animator<GnomadMogulEntity, GnomadMogulSkeleton> animator) {
+        this.animator = (GnomadMogulAnimator) animator;
     }
     @Override
-    public MogulAnimator getAnimator() {
+    public GnomadMogulAnimator getAnimator() {
         return animator;
     }
 }

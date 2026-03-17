@@ -1,6 +1,6 @@
 package birsy.clinker.client.entity;
 
-import birsy.clinker.client.entity.mogul.MogulWeaponSkins;
+import birsy.clinker.client.entity.gnomadmogul.GnomadMogulWeaponSkins;
 import birsy.clinker.common.world.entity.projectile.WarhookEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -45,6 +45,6 @@ public class WarhookRenderer extends EntityRenderer<WarhookEntity> {
 
     @Override
     public ResourceLocation getTextureLocation(WarhookEntity pEntity) {
-        return MogulWeaponSkins.WARHOOK_TEXTURE_LOCATION;
+        return GnomadMogulWeaponSkins.WARHOOK_TEXTURE_LOCATION;
     }
 }
