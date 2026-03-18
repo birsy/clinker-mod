@@ -1,12 +1,32 @@
 package birsy.clinker.common.world.level.gen.content.surface.shaper;
 
+import birsy.clinker.common.world.level.gen.system.noise.NoiseComputer;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
 import birsy.clinker.core.util.MathUtils;
 
 import static birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers.*;
 
-public class HeathSurfaceShaper extends UpperShelfSurfaceShaper {
+public class RockySurfaceShaper extends SimpleSurfaceShaper {
+    final NoiseComputer heightmapComputer;
+    final double cliffMultiplier, heightmapOffset;
+
+    public RockySurfaceShaper(NoiseComputer heightmapComputer, double cliffMultiplier, double heightmapOffset) {
+        this.heightmapComputer = heightmapComputer;
+        this.cliffMultiplier = cliffMultiplier;
+        this.heightmapOffset = heightmapOffset;
+    }
+
+    @Override
+    public void prefillHeightmapNoiseFields(NoiseFieldCache cache) {
+        cache.fillNoiseField(heightmapComputer);
+    }
+
+    @Override
+    public double getHeight(int x, int z, double weight, NoiseContext context) {
+        return context.retrieve(heightmapComputer, x, 0, z) + heightmapOffset;
+    }
+
     @Override
     public void prefillDensityNoiseFields(NoiseFieldCache cache, int minSurfaceHeight, int maxSurfaceHeight) {
         cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, BASE_NOISE_2D[4]);
@@ -40,6 +60,6 @@ public class HeathSurfaceShaper extends UpperShelfSurfaceShaper {
 
         double cliffHeight = (-MathUtils.smoothMinExpo(-cliff0, -cliff1, 10) + verticalVarianceNoise) * biomeWeight;
         double surfaceHeight = -MathUtils.smoothMinExpo(-cliffHeight, -surface, 5);
-        return (y - heightmapHeight) + baseNoise - surfaceHeight * 0.5;
+        return (y - heightmapHeight) + baseNoise - surfaceHeight * cliffMultiplier;
     }
 }
