@@ -44,7 +44,7 @@ public class GroundLocomotionEntity extends PathfinderMob {
     protected GroundLocomotionEntity(EntityType<? extends PathfinderMob> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         this.moveControl = new GroundMoveControl(this);
-        this.lookControl = new GroundLookAngleControl(this);
+        this.lookControl = new GroundLookAngleControl(this, 80, 60);
     }
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {

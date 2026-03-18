@@ -53,7 +53,7 @@ public class StayNearSquadCenter<E extends PathfinderMob & SquadMember<E>> exten
         double distToSquadCenterSqr = entity.distanceToSqr(squadCenter);
         if (distToSquadCenterSqr <= this.maximumDistanceSqr) return false;
 
-        int radius = (int)(Math.sqrt(distToSquadCenterSqr) - this.maximumDistance) + 8;
+        int radius = (int)(Math.sqrt(distToSquadCenterSqr) - this.maximumDistance) + 12;
         Vec3 targetPos = DefaultRandomPos.getPosTowards(entity, radius, 7, squadCenter, Mth.HALF_PI * 0.5);
         if (targetPos == null) return false;
 

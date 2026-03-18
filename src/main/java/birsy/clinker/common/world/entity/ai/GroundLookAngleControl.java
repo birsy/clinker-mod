@@ -9,10 +9,12 @@ import java.util.Optional;
 
 public class GroundLookAngleControl extends LookControl {
     public final LookTargetController lookTargetController;
-
-    public GroundLookAngleControl(GroundLocomotionEntity mob) {
+    final float pitchLimits, yawLimits;
+    public GroundLookAngleControl(GroundLocomotionEntity mob, float pitchLimits, float yawLimits) {
         super(mob);
         this.lookTargetController = new LookTargetController(mob);
+        this.pitchLimits = pitchLimits;
+        this.yawLimits = yawLimits;
     }
 
     public GroundLocomotionEntity getEntity() {
@@ -25,11 +27,18 @@ public class GroundLookAngleControl extends LookControl {
         GroundLocomotionEntity me = this.getEntity();
         float yaw = this.lookTargetController.getDesiredYaw().orElse(me.getYHeadRot()),
               pitch = this.lookTargetController.getDesiredPitch().orElse(me.getXRot());
-
         float lerpFactor = this.lookTargetController.getRotationSpeed();
-//        me.setYHeadRot(yaw);
-//        me.setXRot(pitch);
+
+        float currentBodyYaw = this.getEntity().getSyncedBodyRotation();
+        float netYaw = Mth.degreesDifference(currentBodyYaw, yaw);
+        netYaw = Mth.clamp(netYaw, -yawLimits, yawLimits);
+        yaw = currentBodyYaw + netYaw;
         me.setYHeadRot(Mth.rotLerp(lerpFactor, me.getYHeadRot(), yaw));
+
+        float currentBodyPitch = 0.0F;
+        float netPitch = Mth.degreesDifference(currentBodyPitch, pitch);
+        netPitch = Mth.clamp(netPitch, -pitchLimits, pitchLimits);
+        pitch = currentBodyPitch + netPitch;
         me.setXRot(Mth.rotLerp(lerpFactor, me.getXRot(), pitch));
     }
 }

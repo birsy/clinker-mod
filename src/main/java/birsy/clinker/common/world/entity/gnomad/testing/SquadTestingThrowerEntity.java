@@ -83,7 +83,7 @@ public class SquadTestingThrowerEntity extends SquadTestingEntity<SquadTestingTh
                 new FirstApplicableBehaviour<>(
                         new StayNearSquadCenter<SquadTestingThrowerEntity>()
                                 .maximumDistance(10.0F)
-                                .speedModifier(2.0F),
+                                .speedModifier(1.0F),
                         new OneRandomBehaviour<SquadTestingThrowerEntity>(
                                 new SetRandomWalkTarget<>().speedModifier(0.5F),
                                 new Idle<>().runFor(mob -> mob.getRandom().nextInt(30, 60))
