@@ -1,6 +1,6 @@
-package birsy.clinker.client.entity.gnomadmogul;
+package birsy.clinker.client.entity.gnomad.mogul;
 
-import birsy.clinker.client.entity.gnomadmogul.layer.GnomadMogulWeaponRenderLayer;
+import birsy.clinker.client.entity.gnomad.mogul.layer.GnomadMogulWeaponRenderLayer;
 import birsy.clinker.common.world.entity.gnomad.mogul.GnomadMogulEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;

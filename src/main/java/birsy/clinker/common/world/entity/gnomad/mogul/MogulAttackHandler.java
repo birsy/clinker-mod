@@ -1,6 +1,6 @@
 package birsy.clinker.common.world.entity.gnomad.mogul;
 
-import birsy.clinker.client.entity.gnomadmogul.GnomadMogulAnimator;
+import birsy.clinker.client.entity.gnomad.mogul.GnomadMogulAnimator;
 import birsy.clinker.core.Clinker;
 import foundry.veil.api.client.necromancer.animation.Animator;
 import net.minecraft.server.level.ServerLevel;

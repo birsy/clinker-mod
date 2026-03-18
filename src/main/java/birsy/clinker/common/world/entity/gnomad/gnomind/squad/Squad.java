@@ -4,7 +4,9 @@ import birsy.clinker.core.Clinker;
 import net.minecraft.network.protocol.game.DebugEntityNameGenerator;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.Vec3;
 
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -32,6 +34,10 @@ public class Squad {
     public List<SquadMember<?>> getMembers() {
         return members.stream().filter(Predicate.not(this::isMemberInvalid)).toList();
     }
+    public int size() {
+        return this.members.size();
+    }
+
     public void addTask(SquadTask task) {
         // sorted insert
         for (int i = 0; i < tasks.size(); i++) {
@@ -68,5 +74,19 @@ public class Squad {
         Clinker.LOGGER.info("removing squad {}", this.uuid);
         for (SquadTask task : tasks) task.fail(SquadTask.FailureType.SQUAD_DISBANDED);
         tasks.clear();
+    }
+
+    public Vec3 getCenter(@Nullable SquadMember<?> memberToExclude) {
+        double x = 0, y = 0, z = 0;
+        int count = 0;
+        for (SquadMember<?> member : this.members) {
+            if (member == memberToExclude) continue;
+            if (isMemberInvalid(member)) continue;
+            count++;
+            x += member.asEntity().getX();
+            y += member.asEntity().getY();
+            z += member.asEntity().getZ();
+        }
+        return new Vec3(x / count, y / count, z / count);
     }
 }

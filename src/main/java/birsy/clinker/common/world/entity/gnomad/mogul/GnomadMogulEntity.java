@@ -1,7 +1,7 @@
 package birsy.clinker.common.world.entity.gnomad.mogul;
 
-import birsy.clinker.client.entity.gnomadmogul.GnomadMogulAnimator;
-import birsy.clinker.client.entity.gnomadmogul.GnomadMogulSkeleton;
+import birsy.clinker.client.entity.gnomad.mogul.GnomadMogulAnimator;
+import birsy.clinker.client.entity.gnomad.mogul.GnomadMogulSkeleton;
 import birsy.clinker.common.world.entity.GroundLocomotionEntity;
 import birsy.clinker.common.world.entity.ai.behaviors.*;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.*;

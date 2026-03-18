@@ -1,6 +1,9 @@
 package birsy.clinker.common.world.entity.gnomad;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 
@@ -23,6 +26,10 @@ public interface SuppliesHolder {
         return getSupplyCount() <= 0;
     }
     default void addSupplies(int count) {
+        this.suppliesHolderAsEntity().playSound(
+                SoundEvents.ARMOR_EQUIP_IRON.value(),
+                1.0F, 1.0F
+        );
         this.setSupplyCount(getSupplyCount() + count);
     }
     default boolean tryConsumeSupplies() {

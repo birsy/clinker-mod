@@ -11,7 +11,6 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
@@ -40,6 +39,7 @@ public class GroundLocomotionEntity extends PathfinderMob {
     protected float cumulativeLocomotionAmount = 0, cumulativeLocomotionAmountGoal = 0;
     protected final Scheduler scheduler = new Scheduler();
     protected LookTargetController.LookTargetHandle baseLookHandle;
+    protected LookTargetController.LookTargetHandle baseBodyRotationHandle;
 
     protected GroundLocomotionEntity(EntityType<? extends PathfinderMob> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -113,12 +113,28 @@ public class GroundLocomotionEntity extends PathfinderMob {
         }
         PacketDistributor.sendToPlayersTrackingEntity(this, new ClientboundMobLocomotionSyncPacket(this.getId(), this.locomotionVector, this.cumulativeLocomotionAmount));
 
-        this.updateBaseLookDirection();
+        this.updateBaseLookRotation();
+        this.updateBaseBodyRotation();
     }
 
-    public void updateBaseLookDirection() {
+    protected void updateBaseLookRotation() {
         if (baseLookHandle == null) baseLookHandle = this.getLookControl().lookTargetController.createHandle(0.5F, Integer.MIN_VALUE);
         baseLookHandle.face(0, this.getSyncedBodyRotation());
+    }
+
+    protected void updateBaseBodyRotation() {
+        if (baseBodyRotationHandle == null) baseBodyRotationHandle = this.getBodyRotationControl().lookTargetController.createHandle(0.2F, Integer.MIN_VALUE);
+        if (locomotionVector.x != 0 && locomotionVector.z != 0) {
+            if (!getMoveControl().isStrafing()) {
+                float yaw = (float) (Mth.atan2(locomotionVector.z, locomotionVector.x) * Mth.RAD_TO_DEG) - 90.0F;
+                baseBodyRotationHandle.face(0, yaw);
+            }
+        } else {
+            float headYaw = this.getLookControl().lookTargetController.getDesiredYaw().orElse(baseBodyRotationHandle.desiredYaw);
+            if (Mth.degreesDifferenceAbs(baseBodyRotationHandle.desiredYaw, headYaw) > 60) {
+                baseBodyRotationHandle.face(0, headYaw);
+            }
+        }
     }
 
     public void setSyncedBodyRotation(float rotation) {

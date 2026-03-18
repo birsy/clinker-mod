@@ -24,6 +24,10 @@ public class GroundMoveControl extends MoveControl {
         return (GroundLocomotionEntity) this.mob;
     }
 
+    public boolean isStrafing() {
+        return this.operation == Operation.STRAFE;
+    }
+
     @Override
     public void tick() {
         GroundLocomotionEntity me = mob();
@@ -80,7 +84,7 @@ public class GroundMoveControl extends MoveControl {
     }
 
     private void applyDesiredVelocity(GroundLocomotionEntity me) {
-        float acceleration = operation == Operation.WAIT ? 0.008F : 0.1F;
+        float acceleration = operation == Operation.WAIT ? 0.1F : 0.1F;
         me.setLocomotionVector(
                 Mth.approach(me.previousLocomotionVector.x, locomotionVector.x, acceleration),
                 0,

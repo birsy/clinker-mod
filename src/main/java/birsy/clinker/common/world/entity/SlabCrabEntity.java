@@ -36,7 +36,6 @@ import net.tslat.smartbrainlib.api.core.sensor.vanilla.NearbyPlayersSensor;
 import java.util.List;
 
 public class SlabCrabEntity extends GroundLocomotionEntity implements SmartBrainOwner<SlabCrabEntity>, SkeletonParent<SlabCrabEntity, SlabCrabSkeleton> {
-    LookTargetController.LookTargetHandle bodyRotationHandle;
 
     public SlabCrabEntity(EntityType<? extends PathfinderMob> entityType, Level level) {
         super(entityType, level);
@@ -58,11 +57,11 @@ public class SlabCrabEntity extends GroundLocomotionEntity implements SmartBrain
     protected void customServerAiStep() {
         tickBrain(this);
         super.customServerAiStep();
-        updateBodyRotation();
     }
 
-    public void updateBodyRotation() {
-        if (bodyRotationHandle == null) bodyRotationHandle = this.getBodyRotationControl().lookTargetController.createHandle(1.0F, 0);
+    @Override
+    protected void updateBaseBodyRotation() {
+        super.updateBaseBodyRotation();
 
         BlockPos targetPos = this.getNavigation().getTargetPos();
         if (targetPos != null && Mth.length(this.locomotionVector.x, this.locomotionVector.z) > 0.05F) {
@@ -82,12 +81,12 @@ public class SlabCrabEntity extends GroundLocomotionEntity implements SmartBrain
                     desiredAngle = angleToTarget - 90;
                 }
             }
-            bodyRotationHandle.face(0, Mth.rotLerp(0.25F, this.getSyncedBodyRotation(), desiredAngle));
+            baseBodyRotationHandle.face(0, Mth.rotLerp(0.25F, this.getSyncedBodyRotation(), desiredAngle));
             return;
         }
 
         // stop interpolating direction if there's no target or we're not fast enough.
-        bodyRotationHandle.face(0.0F, this.getSyncedBodyRotation());
+        baseBodyRotationHandle.face(0.0F, this.getSyncedBodyRotation());
     }
 
     @Override

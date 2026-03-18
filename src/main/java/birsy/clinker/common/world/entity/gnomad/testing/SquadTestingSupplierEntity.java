@@ -1,13 +1,11 @@
 package birsy.clinker.common.world.entity.gnomad.testing;
 
-import birsy.clinker.client.entity.gnomad.GnomadSkeleton;
-import birsy.clinker.client.entity.gnomadrunt.GnomadRuntSkeleton;
+import birsy.clinker.client.entity.gnomad.runt.GnomadRuntSkeleton;
 import birsy.clinker.common.world.entity.gnomad.SuppliesDeliverer;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.ClaimSquadTask;
-import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.PostSquadTask;
+import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.StayNearSquadCenter;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.delivery.FetchAndDeliverSupplies;
 import birsy.clinker.common.world.entity.gnomad.gnomind.squad.squadtasks.ResupplyTask;
-import foundry.veil.api.client.necromancer.Skeleton;
 import foundry.veil.api.client.necromancer.SkeletonParent;
 import foundry.veil.api.client.necromancer.animation.Animator;
 import net.minecraft.nbt.CompoundTag;
@@ -19,6 +17,12 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.level.Level;
 import net.tslat.smartbrainlib.api.core.BrainActivityGroup;
+import net.tslat.smartbrainlib.api.core.behaviour.FirstApplicableBehaviour;
+import net.tslat.smartbrainlib.api.core.behaviour.OneRandomBehaviour;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.misc.Idle;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.path.SetRandomWalkTarget;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.target.SetPlayerLookTarget;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.target.SetRandomLookTarget;
 import org.jetbrains.annotations.Nullable;
 
 public class SquadTestingSupplierEntity extends SquadTestingEntity<SquadTestingSupplierEntity> implements SuppliesDeliverer, SkeletonParent<SquadTestingSupplierEntity, GnomadRuntSkeleton> {
@@ -69,7 +73,20 @@ public class SquadTestingSupplierEntity extends SquadTestingEntity<SquadTestingS
     public BrainActivityGroup<SquadTestingSupplierEntity> getIdleTasks() {
         return BrainActivityGroup.idleTasks(
                 new ClaimSquadTask<>().of(task -> task instanceof ResupplyTask && task.isPending()),
-                FetchAndDeliverSupplies.<SquadTestingSupplierEntity>behavior()
+                new FirstApplicableBehaviour<>(
+                        FetchAndDeliverSupplies.<SquadTestingSupplierEntity>behavior(),
+                        new StayNearSquadCenter<SquadTestingSupplierEntity>()
+                                .maximumDistance(10.0F)
+                                .speedModifier(2.0F),
+                        new FirstApplicableBehaviour<SquadTestingSupplierEntity>(
+                                new SetPlayerLookTarget<>(),
+                                new SetRandomLookTarget<>()
+                        ),
+                        new OneRandomBehaviour<SquadTestingSupplierEntity>(
+                                new SetRandomWalkTarget<>().speedModifier(0.5F),
+                                new Idle<>().runFor(mob -> mob.getRandom().nextInt(30, 60))
+                        )
+                )
         );
     }
 

@@ -1,9 +1,9 @@
 package birsy.clinker.core.registry.entity;
 
 import birsy.clinker.client.entity.*;
-import birsy.clinker.client.entity.gnomad.GnomadRenderer;
-import birsy.clinker.client.entity.gnomadmogul.GnomadMogulRenderer;
-import birsy.clinker.client.entity.gnomadrunt.GnomadRuntRenderer;
+import birsy.clinker.client.entity.gnomad.basic.GnomadRenderer;
+import birsy.clinker.client.entity.gnomad.mogul.GnomadMogulRenderer;
+import birsy.clinker.client.entity.gnomad.runt.GnomadRuntRenderer;
 import birsy.clinker.client.entity.slabcrab.SlabCrabRenderer;
 import birsy.clinker.common.world.entity.*;
 import birsy.clinker.common.world.entity.gnomad.*;

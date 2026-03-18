@@ -1,6 +1,6 @@
 package birsy.clinker.client.entity;
 
-import birsy.clinker.client.entity.gnomadmogul.GnomadMogulWeaponSkins;
+import birsy.clinker.client.entity.gnomad.mogul.GnomadMogulWeaponSkins;
 import birsy.clinker.common.world.entity.projectile.WarhookEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;

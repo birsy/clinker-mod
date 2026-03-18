@@ -23,6 +23,7 @@ class SetWalkTargetToSupplyDepot<E extends LivingEntity & SuppliesDeliverer> ext
             .hasMemory(ClinkerMemoryModules.CURRENTLY_ASSIGNED_SQUAD_TASK.get())
             .hasMemory(ClinkerMemoryModules.IS_CURRENTLY_ASSIGNED_SQUAD_TASK_ACTIVE.get())
             .usesMemory(MemoryModuleType.WALK_TARGET);
+    float minimumDistance = 2.5F, minimumDistanceSqr = minimumDistance * minimumDistance;
 
     @Override
     protected List<Pair<MemoryModuleType<?>, MemoryStatus>> getMemoryRequirements() {
@@ -35,10 +36,10 @@ class SetWalkTargetToSupplyDepot<E extends LivingEntity & SuppliesDeliverer> ext
         if (mob.isHoldingDelivery()) return false;
         // check if our current task is a resupply task
         SquadTask currentTask = BrainUtils.getMemory(mob, ClinkerMemoryModules.CURRENTLY_ASSIGNED_SQUAD_TASK.get());
-        if (!(currentTask instanceof ResupplyTask)) return false;
+        if (!(currentTask instanceof ResupplyTask) || !currentTask.isActive()) return false;
         // if we're already close to the supply depot, we don't need to move towards it
         BlockPos supplyDepotPos = BrainUtils.getMemory(mob, ClinkerMemoryModules.NEAREST_SUPPLY_DEPOT.get()).pos();
-        if (Math.sqrt(supplyDepotPos.distToCenterSqr(mob.position())) < 1.5F) return false;
+        if (supplyDepotPos.distToCenterSqr(mob.position()) < minimumDistanceSqr) return false;
         // if we're not holding a delivery + are resupplying + far away from the depot, move to the depot
         return true;
     }
@@ -49,7 +50,7 @@ class SetWalkTargetToSupplyDepot<E extends LivingEntity & SuppliesDeliverer> ext
                 mob, MemoryModuleType.WALK_TARGET,
                 new WalkTarget(
                         BrainUtils.getMemory(mob, ClinkerMemoryModules.NEAREST_SUPPLY_DEPOT.get()).pos(),
-                        1.5F, 1
+                        1.5F, 2
                 )
         );
     }

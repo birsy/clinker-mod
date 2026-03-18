@@ -1,4 +1,4 @@
-package birsy.clinker.client.entity.gnomad;
+package birsy.clinker.client.entity.gnomad.basic;
 
 import birsy.clinker.common.world.entity.gnomad.testing.SquadTestingThrowerEntity;
 import birsy.clinker.core.Clinker;

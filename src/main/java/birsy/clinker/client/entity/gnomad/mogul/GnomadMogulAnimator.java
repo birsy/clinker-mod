@@ -1,4 +1,4 @@
-package birsy.clinker.client.entity.gnomadmogul;
+package birsy.clinker.client.entity.gnomad.mogul;
 
 import birsy.clinker.common.world.entity.gnomad.mogul.MogulAttackHandler;
 import birsy.clinker.core.util.MathUtils;

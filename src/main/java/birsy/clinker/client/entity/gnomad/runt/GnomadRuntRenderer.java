@@ -1,5 +1,6 @@
-package birsy.clinker.client.entity.gnomadrunt;
+package birsy.clinker.client.entity.gnomad.runt;
 
+import birsy.clinker.client.entity.gnomad.layer.HeldSuppliesLayer;
 import birsy.clinker.common.world.entity.gnomad.testing.SquadTestingSupplierEntity;
 import birsy.clinker.core.Clinker;
 import foundry.veil.api.client.necromancer.animation.Animator;
@@ -38,6 +39,7 @@ public class GnomadRuntRenderer extends NecromancerEntityRenderer<SquadTestingSu
                 super.renderSkin(parent, skeleton, skin, renderType, renderer, matrixStack, packedLight, partialTicks);
             }
         });
+        this.addLayer(new HeldSuppliesLayer<>(this));
     }
 
     @Override

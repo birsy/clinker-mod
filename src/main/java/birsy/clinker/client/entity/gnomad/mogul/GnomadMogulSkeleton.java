@@ -1,4 +1,4 @@
-package birsy.clinker.client.entity.gnomadmogul;
+package birsy.clinker.client.entity.gnomad.mogul;
 
 import foundry.veil.api.client.necromancer.Bone;
 import foundry.veil.api.client.necromancer.Skeleton;

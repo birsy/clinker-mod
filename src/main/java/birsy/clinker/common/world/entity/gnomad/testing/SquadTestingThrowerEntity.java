@@ -1,11 +1,10 @@
 package birsy.clinker.common.world.entity.gnomad.testing;
 
-import birsy.clinker.client.entity.gnomad.GnomadSkeleton;
+import birsy.clinker.client.entity.gnomad.basic.GnomadSkeleton;
 import birsy.clinker.common.world.entity.gnomad.SuppliesHolder;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.PostSquadTask;
+import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.StayNearSquadCenter;
 import birsy.clinker.common.world.entity.gnomad.gnomind.squad.squadtasks.ResupplyTask;
-import birsy.clinker.core.Clinker;
-import foundry.veil.api.client.necromancer.Skeleton;
 import foundry.veil.api.client.necromancer.SkeletonParent;
 import foundry.veil.api.client.necromancer.animation.Animator;
 import net.minecraft.nbt.CompoundTag;
@@ -13,14 +12,18 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.animal.SnowGolem;
 import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.projectile.Snowball;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.tslat.smartbrainlib.api.core.BrainActivityGroup;
+import net.tslat.smartbrainlib.api.core.behaviour.FirstApplicableBehaviour;
+import net.tslat.smartbrainlib.api.core.behaviour.OneRandomBehaviour;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.attack.AnimatableRangedAttack;
-import net.tslat.smartbrainlib.api.core.behaviour.custom.target.SetAttackTarget;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.misc.Idle;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.path.SetRandomWalkTarget;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.target.SetPlayerLookTarget;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.target.SetRandomLookTarget;
 import org.jetbrains.annotations.Nullable;
 
 public class SquadTestingThrowerEntity extends SquadTestingEntity<SquadTestingThrowerEntity>
@@ -40,7 +43,7 @@ public class SquadTestingThrowerEntity extends SquadTestingEntity<SquadTestingTh
     protected void customServerAiStep() {
         super.customServerAiStep();
         if (this.outOfSupplies()) {
-            this.setCustomNameVisible(false);
+            this.setCustomNameVisible(true);
             this.setCustomName(Component.literal("no supplies!"));
         } else {
             this.setCustomNameVisible(false);
@@ -72,7 +75,20 @@ public class SquadTestingThrowerEntity extends SquadTestingEntity<SquadTestingTh
                         .startCondition(SuppliesHolder::outOfSupplies),
                 new AnimatableRangedAttack<SquadTestingThrowerEntity>
                         (0)
-                        .startCondition(mob -> !outOfSupplies())
+                        .startCondition(mob -> !outOfSupplies()),
+                new FirstApplicableBehaviour<SquadTestingThrowerEntity>(
+                        new SetPlayerLookTarget<>(),
+                        new SetRandomLookTarget<>()
+                ),
+                new FirstApplicableBehaviour<>(
+                        new StayNearSquadCenter<SquadTestingThrowerEntity>()
+                                .maximumDistance(10.0F)
+                                .speedModifier(2.0F),
+                        new OneRandomBehaviour<SquadTestingThrowerEntity>(
+                                new SetRandomWalkTarget<>().speedModifier(0.5F),
+                                new Idle<>().runFor(mob -> mob.getRandom().nextInt(30, 60))
+                        )
+                )
         );
     }
 

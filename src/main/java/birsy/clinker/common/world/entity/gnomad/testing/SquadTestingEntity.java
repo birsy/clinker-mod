@@ -1,5 +1,7 @@
 package birsy.clinker.common.world.entity.gnomad.testing;
 
+import birsy.clinker.common.world.entity.GroundLocomotionEntity;
+import birsy.clinker.common.world.entity.ai.behaviors.LocomotorLookAtTarget;
 import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.ActiveSquadTasksSensor;
 import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.SquadSensor;
 import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.PostedSquadTasksSensor;
@@ -30,7 +32,7 @@ import java.util.List;
 
 import static net.minecraft.world.entity.monster.Monster.createMonsterAttributes;
 
-public class SquadTestingEntity<E extends SquadTestingEntity<E>> extends PathfinderMob implements SquadMember<E>, SmartBrainOwner<E> {
+public class SquadTestingEntity<E extends SquadTestingEntity<E>> extends GroundLocomotionEntity implements SquadMember<E>, SmartBrainOwner<E> {
     private Squad squad;
 
     public SquadTestingEntity(EntityType<? extends PathfinderMob> entityType, Level level) {
@@ -71,7 +73,7 @@ public class SquadTestingEntity<E extends SquadTestingEntity<E>> extends Pathfin
         return BrainActivityGroup.coreTasks(
                 new SetAttackTarget<>(false)
                         .targetFinder(mob -> EntityRetrievalUtil.getNearestPlayer(mob, 32.0F)),
-                new LookAtTarget<>(),
+                new LocomotorLookAtTarget<>(),
                 new MoveToWalkTarget<>()
         );
     }

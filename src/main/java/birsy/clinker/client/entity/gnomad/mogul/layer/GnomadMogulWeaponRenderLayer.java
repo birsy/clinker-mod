@@ -1,9 +1,9 @@
-package birsy.clinker.client.entity.gnomadmogul.layer;
+package birsy.clinker.client.entity.gnomad.mogul.layer;
 
 import birsy.clinker.client.entity.SingleBoneSkeleton;
-import birsy.clinker.client.entity.gnomadmogul.GnomadMogulRenderer;
-import birsy.clinker.client.entity.gnomadmogul.GnomadMogulSkeleton;
-import birsy.clinker.client.entity.gnomadmogul.GnomadMogulWeaponSkins;
+import birsy.clinker.client.entity.gnomad.mogul.GnomadMogulRenderer;
+import birsy.clinker.client.entity.gnomad.mogul.GnomadMogulSkeleton;
+import birsy.clinker.client.entity.gnomad.mogul.GnomadMogulWeaponSkins;
 import birsy.clinker.common.world.entity.gnomad.mogul.GnomadMogulEntity;
 import foundry.veil.api.client.necromancer.Skeleton;
 import foundry.veil.api.client.necromancer.render.*;
@@ -32,9 +32,9 @@ public class GnomadMogulWeaponRenderLayer extends NecromancerEntityRenderLayer<G
         RenderType renderType = VeilRenderType.get(GnomadMogulRenderer.RENDERTYPE, GnomadMogulWeaponSkins.WARHOOK_TEXTURE_LOCATION);
         matrixStack.matrixPush();
 
-        graspPosition.set(0, 0, 0);
         skeleton.MogulRightArmGrasp.getModelTransform(graspTransform.identity(), graspOrientation.identity(), partialTicks);
 
+        graspPosition.set(0, 0, 0);
         graspTransform.getTranslation(graspPosition);
         matrixStack.translate(graspPosition.x, graspPosition.y, graspPosition.z);
 

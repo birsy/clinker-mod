@@ -2,11 +2,13 @@ package birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.delivery;
 
 import birsy.clinker.common.world.entity.gnomad.SuppliesHolder;
 import birsy.clinker.common.world.entity.gnomad.SuppliesDeliverer;
+import birsy.clinker.common.world.entity.gnomad.gnomind.squad.Squad;
 import birsy.clinker.common.world.entity.gnomad.gnomind.squad.SquadTask;
 import birsy.clinker.common.world.entity.gnomad.gnomind.squad.squadtasks.ResupplyTask;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.behavior.EntityTracker;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
@@ -24,6 +26,7 @@ class DeliverSuppliesToDeliveryTarget<E extends LivingEntity & SuppliesDeliverer
             .hasMemory(ClinkerMemoryModules.DELIVERY_TARGET.get())
             .usesMemory(MemoryModuleType.WALK_TARGET)
             .usesMemory(MemoryModuleType.LOOK_TARGET);
+    SuppliesHolder currentDeliveryTarget;
 
     DeliverSuppliesToDeliveryTarget() {
         super();
@@ -46,28 +49,59 @@ class DeliverSuppliesToDeliveryTarget<E extends LivingEntity & SuppliesDeliverer
         return deliveryPoint.distanceTo(mob.position()) <= 2.0F;
     }
 
+    @Override
+    protected void start(E mob) {
+        super.start(mob);
+        this.currentDeliveryTarget = BrainUtils.getMemory(mob, ClinkerMemoryModules.DELIVERY_TARGET.get());
+    }
+
     protected boolean doTick(E mob) {
-        SuppliesHolder deliveryTarget = BrainUtils.getMemory(mob, ClinkerMemoryModules.DELIVERY_TARGET.get());
-        if (deliveryTarget == null) return false;
-        if (deliveryTarget.position().distanceTo(mob.position()) > 2.0F) return false;
+        LivingEntity currentDeliveryTargetEntity = currentDeliveryTarget.suppliesHolderAsEntity();
+        if (currentDeliveryTarget == null) return false;
+        if (currentDeliveryTargetEntity.isDeadOrDying() || currentDeliveryTargetEntity.isRemoved()) return false;
+        if (currentDeliveryTarget.position().distanceTo(mob.position()) > 2.0F) return false;
 
         // keep moving towards the target and looking at them
         BrainUtils.setMemory(
                 mob, MemoryModuleType.WALK_TARGET,
-                new WalkTarget(deliveryTarget.suppliesHolderAsEntity(), 1F, 1)
+                new WalkTarget(currentDeliveryTargetEntity, 1F, 1)
         );
         BrainUtils.setMemory(
                 mob, MemoryModuleType.LOOK_TARGET,
-                new EntityTracker(deliveryTarget.suppliesHolderAsEntity(), true)
+                new EntityTracker(currentDeliveryTargetEntity, true)
         );
+
+        // we're too far away to deliver, abort
+        Vec3 deliveryPoint = currentDeliveryTarget.position();
+        if (deliveryPoint.distanceTo(mob.position()) > 2.0F) {
+            return false;
+        }
 
         // stand there for one second and then give the delivery
         if (this.runningTime > 20) {
-            mob.setHoldingDelivery(false);
-            deliveryTarget.addSupplies(deliveryTarget.supplyDeliveryAmount());
+            finishDeliveringSupplies(mob);
             // this will fulfill the task, if it exists!
             return false;
         }
         return true;
+    }
+
+    protected void finishDeliveringSupplies(E mob) {
+        // give them the delivery
+        mob.setHoldingDelivery(false);
+        currentDeliveryTarget.addSupplies(currentDeliveryTarget.supplyDeliveryAmount());
+
+        // if we've just finished the delivery, then forget about it and move on
+        SquadTask currentTask = BrainUtils.getMemory(mob, ClinkerMemoryModules.CURRENTLY_ASSIGNED_SQUAD_TASK.get());
+        if (currentTask instanceof ResupplyTask && currentTask.isFinished()) {
+            BrainUtils.clearMemory(mob, ClinkerMemoryModules.CURRENTLY_ASSIGNED_SQUAD_TASK.get());
+            BrainUtils.clearMemory(mob, ClinkerMemoryModules.IS_CURRENTLY_ASSIGNED_SQUAD_TASK_ACTIVE.get());
+        }
+    }
+
+    @Override
+    protected void stop(E mob) {
+        super.stop(mob);
+        this.currentDeliveryTarget = null;
     }
 }

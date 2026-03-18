@@ -1,12 +1,14 @@
-package birsy.clinker.client.entity.gnomadrunt;
+package birsy.clinker.client.entity.gnomad.runt;
 
+import birsy.clinker.client.entity.gnomad.SuppliesDelivererSkeleton;
 import foundry.veil.api.client.necromancer.Bone;
 import foundry.veil.api.client.necromancer.Skeleton;
+import foundry.veil.api.client.render.MatrixStack;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
-public class GnomadRuntSkeleton extends Skeleton {
+public class GnomadRuntSkeleton extends Skeleton implements SuppliesDelivererSkeleton {
     protected Bone rightArm, leftLeg, rightLeg, leftArm, torso, head, face, hat, root;
     protected GnomadRuntSkeleton() {
         super();
@@ -55,5 +57,14 @@ public class GnomadRuntSkeleton extends Skeleton {
         this.root.addChild(this.rightLeg);
         this.root.addChild(this.torso);
         this.buildRoots();
+    }
+
+    @Override
+    public Bone suppliesParentBone() {
+        return this.torso;
+    }
+    @Override
+    public void suppliesOffset(MatrixStack matrixStack) {
+        matrixStack.translate(0, 0.8, -0.5);
     }
 }

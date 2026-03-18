@@ -1,4 +1,4 @@
-package birsy.clinker.client.entity.gnomad;
+package birsy.clinker.client.entity.gnomad.basic;
 
 import foundry.veil.api.client.necromancer.render.Skin;
 import org.joml.Matrix4f;

@@ -120,7 +120,7 @@ public class LookTargetController {
         final LookTargetController controller;
         final float lookSpeed;
 
-        float desiredPitch, desiredYaw;
+        public float desiredPitch, desiredYaw;
         float weight = 1f;
 
         FadeType fadeType = FadeType.NONE;
