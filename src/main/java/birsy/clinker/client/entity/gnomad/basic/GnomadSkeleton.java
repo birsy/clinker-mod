@@ -1,13 +1,17 @@
 package birsy.clinker.client.entity.gnomad.basic;
 
+import birsy.clinker.client.entity.layer.HeldItemsLayer;
 import foundry.veil.api.client.necromancer.Bone;
 import foundry.veil.api.client.necromancer.Skeleton;
+import foundry.veil.api.client.render.MatrixStack;
+import net.minecraft.util.Mth;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
-public class GnomadSkeleton extends Skeleton {
+public class GnomadSkeleton extends Skeleton implements HeldItemsLayer.ItemHoldingSkeleton {
     protected Bone face, nose, head, torso, bag, hat, neck, headJoint, rightArm, leftArm, leftLeg, rightLeg, skirt, root;
+    protected Bone leftHandPivot, rightHandPivot;
     protected GnomadSkeleton() {
         super();
         this.face = new Bone("face");
@@ -66,6 +70,13 @@ public class GnomadSkeleton extends Skeleton {
         this.root.setBaseAttributes(new Vector3f(0F, 0F, 0F), new Quaternionf().rotationZYX(0F, 0F, 0F), new Vector3f(0.0F), new Vector3f(1.0F), new Vector4f(1.0F));
         this.addBone(this.root);
 
+        this.leftHandPivot = new Bone("leftHandPivot");
+        this.leftHandPivot.setBaseAttributes(new Vector3f(0F, -10F, 0F), new Quaternionf().rotationZYX(0F, 0F, -Mth.HALF_PI), new Vector3f(0.0F), new Vector3f(1.0F), new Vector4f(1.0F));
+        this.addBone(this.leftHandPivot);
+        this.rightHandPivot = new Bone("rightHandPivot");
+        this.rightHandPivot.setBaseAttributes(new Vector3f(0F, -10F, 0F), new Quaternionf().rotationZYX(0F, 0F, -Mth.HALF_PI), new Vector3f(0.0F), new Vector3f(1.0F), new Vector4f(1.0F));
+        this.addBone(this.rightHandPivot);
+
         this.face.addChild(this.nose);
         this.head.addChild(this.face);
         this.head.addChild(this.hat);
@@ -79,6 +90,11 @@ public class GnomadSkeleton extends Skeleton {
         this.root.addChild(this.torso);
         this.root.addChild(this.rightLeg);
         this.root.addChild(this.leftLeg);
+        this.leftArm.addChild(this.leftHandPivot);
+        this.rightArm.addChild(this.rightHandPivot);
         this.buildRoots();
     }
+
+    @Override public Bone leftHandPivotBone() { return this.leftHandPivot; }
+    @Override public Bone rightHandPivotBone() { return this.rightHandPivot; }
 }

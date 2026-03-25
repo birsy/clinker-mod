@@ -18,6 +18,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.joml.Matrix4x3f;
+import org.joml.Quaternionf;
 
 public class HeldSuppliesLayer<E extends LivingEntity & SuppliesDeliverer & SkeletonParent<E, S>, S extends Skeleton & SuppliesDelivererSkeleton> extends NecromancerEntityRenderLayer<E, S> {
     private static final ItemStack[] SUPPLIES_ITEMS = {
@@ -29,7 +30,8 @@ public class HeldSuppliesLayer<E extends LivingEntity & SuppliesDeliverer & Skel
             Items.ARROW.getDefaultInstance(),
     };
     private final ItemRenderer itemRenderer;
-    private final Matrix4x3f parentTransform = new Matrix4x3f();
+    private final Matrix4x3f scratchTransform = new Matrix4x3f();
+    private final Quaternionf scratchRotation = new Quaternionf();
 
     public HeldSuppliesLayer(NecromancerEntityRenderer<E, S> renderer) {
         super(renderer);
@@ -41,7 +43,9 @@ public class HeldSuppliesLayer<E extends LivingEntity & SuppliesDeliverer & Skel
         if (!parent.isHoldingDelivery()) return;
 
         matrixStack.matrixPush();
-        matrixStack.position().mul(skeleton.suppliesParentBone().getModelTransform(parentTransform.identity(), partialTicks));
+        matrixStack.position().mul(
+                skeleton.suppliesParentBone().getModelTransform(scratchTransform.identity(), scratchRotation.identity(), partialTicks)
+        );
         matrixStack.applyScale(10.0F);
         skeleton.suppliesOffset(matrixStack);
 

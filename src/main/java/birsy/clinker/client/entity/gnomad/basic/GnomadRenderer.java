@@ -1,5 +1,6 @@
 package birsy.clinker.client.entity.gnomad.basic;
 
+import birsy.clinker.client.entity.layer.HeldItemsLayer;
 import birsy.clinker.common.world.entity.gnomad.testing.SquadTestingThrowerEntity;
 import birsy.clinker.core.Clinker;
 import foundry.veil.api.client.necromancer.animation.Animator;
@@ -38,6 +39,7 @@ public class GnomadRenderer extends NecromancerEntityRenderer<SquadTestingThrowe
                 super.renderSkin(parent, skeleton, skin, renderType, renderer, matrixStack, packedLight, partialTicks);
             }
         });
+        this.addLayer(new HeldItemsLayer<>(this));
     }
 
     @Override
