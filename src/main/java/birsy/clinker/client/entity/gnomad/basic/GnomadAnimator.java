@@ -4,22 +4,30 @@ import birsy.clinker.client.entity.gnomad.mogul.GnomadMogulAnimator;
 import birsy.clinker.client.entity.gnomad.mogul.GnomadMogulSkeleton;
 import birsy.clinker.common.world.entity.gnomad.mogul.GnomadMogulEntity;
 import birsy.clinker.common.world.entity.gnomad.testing.SquadTestingThrowerEntity;
+import birsy.clinker.core.Clinker;
 import foundry.veil.api.client.necromancer.animation.Animation;
 import foundry.veil.api.client.necromancer.animation.Animator;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
+import net.tslat.smartbrainlib.util.RandomUtil;
+import org.joml.Vector3fc;
 
 import static net.minecraft.core.Direction.Axis.*;
 import static birsy.clinker.client.AnimationUtilities.*;
 
 
 public class GnomadAnimator extends Animator<SquadTestingThrowerEntity, GnomadSkeleton> {
-    public final AnimationEntry<?, ?> idleAnim, walkAnim, strafeAnim;
+    public final AnimationEntry<?, ?> idleAnim, walkAnim, strafeAnim, hurtAnim, maskAnim;
+    private int maskShakeTime = 0, maskShakeDuration = 1;
+    private boolean maskShaking = false;
+
     protected GnomadAnimator(SquadTestingThrowerEntity parent, GnomadSkeleton skeleton) {
         super(parent, skeleton);
         this.idleAnim = this.addAnimation(IdleAnimation.INSTANCE, 0);
         this.walkAnim = this.addAnimation(WalkAnimation.INSTANCE, 1);
         this.strafeAnim = this.addAnimation(StrafeAnimation.INSTANCE, 2);
+        this.hurtAnim = this.addAnimation(HurtAnimation.INSTANCE, 3);
+        this.maskAnim = this.addAnimation(MaskAnimation.INSTANCE, 4);
     }
 
     @Override
@@ -30,7 +38,7 @@ public class GnomadAnimator extends Animator<SquadTestingThrowerEntity, GnomadSk
         this.idleAnim.setMixFactor(1.0F);
         this.idleAnim.setTime(entity.tickCount);
 
-        float moveTime = entity.getCumulativeLocomotionAmount() * 1.5F;
+        float moveTime = entity.getCumulativeLocomotionAmount() * 1.7F;
 
         float walkFac = Mth.clamp(12 * entity.getForwardLocomotionAmount(1.0F), -2.0F, 2.0F);
         this.walkAnim.setMixFactor(walkFac);
@@ -40,25 +48,74 @@ public class GnomadAnimator extends Animator<SquadTestingThrowerEntity, GnomadSk
         this.strafeAnim.setMixFactor(strafeFac);
         this.strafeAnim.setTime(moveTime);
 
-        // flinch
         if (entity.hurtDuration > 0) {
-            float flinchTime = entity.tickCount * 0.9F;
-            float flinchFactor = (float) entity.hurtTime / entity.hurtDuration;
-            skeleton.root.rotateDeg(Mth.sin(flinchTime) * 8 * flinchFactor, Direction.Axis.X);
-            skeleton.root.rotateDeg(Mth.cos(flinchTime) * 8 * flinchFactor, Direction.Axis.Z);
+            float hurtMixFactor = (float) entity.hurtTime / entity.hurtDuration;
+            this.hurtAnim.setTime(entity.tickCount * 0.28F);
+            this.hurtAnim.setMixFactor(hurtMixFactor);
 
-            skeleton.head.rotateDeg(Mth.sin(flinchTime - 1) * 8 * flinchFactor, Direction.Axis.X);
-            skeleton.head.rotateDeg(Mth.cos(flinchTime - 1) * 8 * flinchFactor, Direction.Axis.Z);
+            Vector3fc hurtDirection = entity.getLastHitDirection();
+            if (hurtDirection.x() != 0 || hurtDirection.z() != 0) {
+                float hurtRotationAxisX = -hurtDirection.z(),
+                        hurtRotationAxisZ = hurtDirection.x();
+                skeleton.root.rotation.rotateAxis(-30 * Mth.DEG_TO_RAD * hurtMixFactor, hurtRotationAxisX, 0, hurtRotationAxisZ);
+            }
+        } else {
+            this.hurtAnim.setMixFactor(0.0F);
+        }
 
-            skeleton.rightArm.rotateDeg(Mth.sin(flinchTime - 1) * 15 * flinchFactor, Direction.Axis.X);
-            skeleton.rightArm.rotateDeg(Mth.cos(flinchTime - 1) * 15 * flinchFactor, Direction.Axis.Z);
-            skeleton.leftArm.rotateDeg(Mth.sin(flinchTime - 1) * 15 * flinchFactor, Direction.Axis.X);
-            skeleton.leftArm.rotateDeg(Mth.cos(flinchTime - 1) * -15 * flinchFactor, Direction.Axis.Z);
+        // randomly start shaking face
+        if (maskShaking) {
+            this.maskShakeTime++;
+            // if we're out of time, stop shaking
+            if (this.maskShakeTime > this.maskShakeDuration) {
+                this.maskShaking = false;
+                this.maskShakeTime = 0;
+            }
+        } else if (RandomUtil.oneInNChance(100)) {
+            this.maskShaking = true;
+            this.maskShakeTime = 0;
+            this.maskShakeDuration = RandomUtil.randomNumberBetween(2 * 20, 12 * 20);
+        }
+        float normalizedTime = (float) this.maskShakeTime / this.maskShakeDuration;
+        float shakeAmount = Mth.clamp(-4.0F*normalizedTime*normalizedTime + 4.0F*normalizedTime, 0, 1);
+        shakeAmount = shakeAmount * shakeAmount * shakeAmount * shakeAmount * 0.5F;
+        this.maskAnim.setMixFactor(shakeAmount);
+        this.maskAnim.setTime(entity.tickCount);
 
-            skeleton.leftLeg.rotateDeg(Mth.sin(flinchTime - 1) * 15 * flinchFactor, Direction.Axis.X);
-            skeleton.leftLeg.rotateDeg(Mth.cos(flinchTime - 1) * -15 * flinchFactor, Direction.Axis.Z);
-            skeleton.rightLeg.rotateDeg(Mth.sin(flinchTime - 1) * 15 * flinchFactor, Direction.Axis.X);
-            skeleton.rightLeg.rotateDeg(Mth.cos(flinchTime - 1) * 15 * flinchFactor, Direction.Axis.Z);
+        this.skeleton.leftHandPivot.offsetZ(-1);
+        this.skeleton.rightHandPivot.offsetZ(-1);
+    }
+
+    private static class MaskAnimation extends Animation<SquadTestingThrowerEntity, GnomadSkeleton> {
+        protected static MaskAnimation INSTANCE = new MaskAnimation();
+        @Override
+        public void apply(SquadTestingThrowerEntity entity, GnomadSkeleton skeleton, float mixFactor, float time) {
+            float headShake = Mth.sin(time * 0.44F) * mixFactor * 0.05F * Mth.RAD_TO_DEG;
+            float faceShake = Mth.sin(0.5F + time * 0.44F) * mixFactor * 0.25F * Mth.RAD_TO_DEG;
+            skeleton.head.rotateDeg(headShake, Direction.Axis.Z);
+            skeleton.face.rotateDeg(faceShake, Direction.Axis.Z);
+        }
+    }
+
+    private static class HurtAnimation extends Animation<SquadTestingThrowerEntity, GnomadSkeleton> {
+        protected static HurtAnimation INSTANCE = new HurtAnimation();
+
+        public void apply(SquadTestingThrowerEntity entity, GnomadSkeleton skeleton, float mixFactor, float time) {
+            skeleton.root.rotateDeg(nSin(0.0F + time) * 8 * mixFactor, Direction.Axis.X);
+            skeleton.root.rotateDeg(nSin(0.5F + time) * 8 * mixFactor, Direction.Axis.Z);
+
+            skeleton.head.rotateDeg(nSin(0.0F + time - 1) * 8 * mixFactor, Direction.Axis.X);
+            skeleton.head.rotateDeg(nSin(0.5F + time - 1) * 8 * mixFactor, Direction.Axis.Z);
+
+            skeleton.rightArm.rotateDeg(nSin(0.0F + time - 1) * 15 * mixFactor, Direction.Axis.X);
+            skeleton.rightArm.rotateDeg(nSin(0.5F + time - 1) * 15 * mixFactor, Direction.Axis.Z);
+            skeleton.leftArm.rotateDeg(nSin(0.0F + time - 1) * 15 * mixFactor, Direction.Axis.X);
+            skeleton.leftArm.rotateDeg(nSin(0.5F + time - 1) * -15 * mixFactor, Direction.Axis.Z);
+
+            skeleton.leftLeg.rotateDeg(nSin(0.0F + time - 1) * 15 * mixFactor, Direction.Axis.X);
+            skeleton.leftLeg.rotateDeg(nSin(0.5F + time - 1) * -15 * mixFactor, Direction.Axis.Z);
+            skeleton.rightLeg.rotateDeg(nSin(0.0F + time - 1) * 15 * mixFactor, Direction.Axis.X);
+            skeleton.rightLeg.rotateDeg(nSin(0.5F + time - 1) * 15 * mixFactor, Direction.Axis.Z);
         }
     }
 
@@ -128,7 +185,7 @@ public class GnomadAnimator extends Animator<SquadTestingThrowerEntity, GnomadSk
             float squaredMixFactor = mixFactor * mixFactor;
 
             skeleton.root.offsetY(Math.abs(nSin(time + 0.5F)) * 1.0F * bounceMixFactor * degree);
-            skeleton.root.offsetX(nSin(time * 2) * 0.5F * bounceMixFactor * sign * degree);
+            skeleton.root.offsetZ(nSin(time * 2) * 0.5F * bounceMixFactor * sign * degree);
 
             skeleton.root.rotateDeg(nSin(time) * 1 * bounceMixFactor * sign * degree, Z);
 
@@ -190,13 +247,12 @@ public class GnomadAnimator extends Animator<SquadTestingThrowerEntity, GnomadSk
             skeleton.leftLeg.rotateDeg(-nSin(time) * 10 * mixFactor * sign * degree, Z);
 
             float armSwingMixFactor = mixFactor * mixFactor;
-            skeleton.rightArm.rotateDeg(nSin(time + 0.2F) * -10 * armSwingMixFactor * sign * degree, X);
-            skeleton.leftArm.rotateDeg(-nSin(time + 0.2F) * -10 * armSwingMixFactor * sign * degree, X);
+            skeleton.rightArm.rotateDeg(nSin(time + 0.2F) * -12 * armSwingMixFactor * sign * degree, X);
+            skeleton.leftArm.rotateDeg(-nSin(time + 0.2F) * -12 * armSwingMixFactor * sign * degree, X);
 
             skeleton.neck.offsetY(nSin(time * 2 + 0.15F) * 0.10F * bounceMixFactor * degree);
             skeleton.head.offsetY(nSin(time * 2 + 0.30F) * 0.05F * bounceMixFactor * degree);
             skeleton.bag.offsetY(nSin(time * 2 + 0.4F) * 0.1F * bounceMixFactor * degree);
         }
     }
-
 }

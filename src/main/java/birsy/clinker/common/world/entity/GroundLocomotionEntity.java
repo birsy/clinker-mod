@@ -3,6 +3,7 @@ package birsy.clinker.common.world.entity;
 import birsy.clinker.common.networking.packet.ClientboundMobLocomotionSyncPacket;
 import birsy.clinker.common.world.entity.ai.*;
 import birsy.clinker.core.Clinker;
+import net.minecraft.SharedConstants;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
@@ -24,6 +25,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 
+import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.tslat.smartbrainlib.util.EntityRetrievalUtil;
 import org.joml.Vector3f;
@@ -32,6 +34,8 @@ import org.joml.Vector3fc;
 public class GroundLocomotionEntity extends PathfinderMob {
     protected static final EntityDataAccessor<Float> DATA_SYNCED_BODY_ROTATION =
             SynchedEntityData.defineId(GroundLocomotionEntity.class, EntityDataSerializers.FLOAT);
+    protected static final EntityDataAccessor<Vector3f> DATA_LAST_HIT_DIRECTION =
+            SynchedEntityData.defineId(GroundLocomotionEntity.class, EntityDataSerializers.VECTOR3);
     public final Vector3f locomotionVector = new Vector3f(),
                           previousLocomotionVector = new Vector3f(),
                           smoothedLocomotionVector = new Vector3f(),
@@ -40,6 +44,7 @@ public class GroundLocomotionEntity extends PathfinderMob {
     protected final Scheduler scheduler = new Scheduler();
     protected LookTargetController.LookTargetHandle baseLookHandle;
     protected LookTargetController.LookTargetHandle baseBodyRotationHandle;
+
 
     protected GroundLocomotionEntity(EntityType<? extends PathfinderMob> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -50,6 +55,7 @@ public class GroundLocomotionEntity extends PathfinderMob {
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(DATA_SYNCED_BODY_ROTATION, 0.0F);
+        builder.define(DATA_LAST_HIT_DIRECTION, new Vector3f(0, 0, 1));
     }
     @Override
     protected PathNavigation createNavigation(Level pLevel) {
@@ -69,6 +75,19 @@ public class GroundLocomotionEntity extends PathfinderMob {
     }
     public GroundBodyAngleControl getBodyRotationControl() {
         return (GroundBodyAngleControl) this.bodyRotationControl;
+    }
+
+    @Override
+    public void onDamageTaken(DamageContainer damageContainer) {
+        super.onDamageTaken(damageContainer);
+        Vec3 damageSourcePos = damageContainer.getSource().getSourcePosition();
+        if (damageSourcePos == null) return;
+        setLastHitDirection(
+                (float) (this.getX() - damageSourcePos.x),
+                (float) ((this.getY() + this.getBbHeight() * 0.5F) - damageSourcePos.y),
+                (float) (this.getZ() - damageSourcePos.z)
+        );
+        Clinker.LOGGER.info("{}, {}, {}", this.getLastHitDirection().x(), this.getLastHitDirection().y(), this.getLastHitDirection().z());
     }
 
     @Override
@@ -94,7 +113,7 @@ public class GroundLocomotionEntity extends PathfinderMob {
 
     @Override
     protected void customServerAiStep() {
-        this.debugMove();
+        if (SharedConstants.IS_RUNNING_IN_IDE) this.debugMove();
         this.setYya(locomotionVector.y);
         if (this.locomotionVector.x != 0 || this.locomotionVector.y != 0 || this.locomotionVector.z != 0) this.setSpeed(0.5F);
         if (this.locomotionVector.x != 0 || this.locomotionVector.z != 0) {
@@ -164,6 +183,9 @@ public class GroundLocomotionEntity extends PathfinderMob {
 
     public void setCumulativeLocomotionAmount(float amount) { this.cumulativeLocomotionAmountGoal = amount; }
     public float getCumulativeLocomotionAmount() { return cumulativeLocomotionAmount; }
+
+    public void setLastHitDirection(float x, float y, float z) { getEntityData().set(DATA_LAST_HIT_DIRECTION, new Vector3f(x, y, z)); }
+    public Vector3fc getLastHitDirection() { return getEntityData().get(DATA_LAST_HIT_DIRECTION); }
 
     private void debugMove() {
         float maxSpeed = 1.0F;

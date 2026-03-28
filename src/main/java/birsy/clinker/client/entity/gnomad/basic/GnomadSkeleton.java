@@ -71,10 +71,10 @@ public class GnomadSkeleton extends Skeleton implements HeldItemsLayer.ItemHoldi
         this.addBone(this.root);
 
         this.leftHandPivot = new Bone("leftHandPivot");
-        this.leftHandPivot.setBaseAttributes(new Vector3f(0F, -10F, 0F), new Quaternionf().rotationZYX(0F, 0F, -Mth.HALF_PI), new Vector3f(0.0F), new Vector3f(1.0F), new Vector4f(1.0F));
+        this.leftHandPivot.setBaseAttributes(new Vector3f(0F, -10F, -1F), new Quaternionf().rotationZYX(0F, 0F, -Mth.HALF_PI), new Vector3f(0.0F), new Vector3f(1.0F), new Vector4f(1.0F));
         this.addBone(this.leftHandPivot);
         this.rightHandPivot = new Bone("rightHandPivot");
-        this.rightHandPivot.setBaseAttributes(new Vector3f(0F, -10F, 0F), new Quaternionf().rotationZYX(0F, 0F, -Mth.HALF_PI), new Vector3f(0.0F), new Vector3f(1.0F), new Vector4f(1.0F));
+        this.rightHandPivot.setBaseAttributes(new Vector3f(0F, -10F, -1F), new Quaternionf().rotationZYX(0F, 0F, -Mth.HALF_PI), new Vector3f(0.0F), new Vector3f(1.0F), new Vector4f(1.0F));
         this.addBone(this.rightHandPivot);
 
         this.face.addChild(this.nose);
