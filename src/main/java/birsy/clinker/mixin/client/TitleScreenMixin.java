@@ -2,6 +2,7 @@ package birsy.clinker.mixin.client;
 
 import birsy.clinker.client.gui.debug.BiomeLayerDebugViewScreen;
 import birsy.clinker.core.Clinker;
+import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
@@ -20,7 +21,7 @@ public abstract class TitleScreenMixin extends Screen {
     @Inject(method = "init", at = @At("RETURN"))
     private void clinker$addTitleScreenButtons(CallbackInfo ci) {
         // debug!!
-        if (!FMLLoader.isProduction()) {
+        if (SharedConstants.IS_RUNNING_IN_IDE) {
             Clinker.LOGGER.info("added debug widgets to title screen");
             this.addRenderableWidget(
                     Button.builder(Component.literal("clinker's epic biome layer debug view"), button -> this.minecraft.setScreen(new BiomeLayerDebugViewScreen()))

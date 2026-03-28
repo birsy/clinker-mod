@@ -13,6 +13,7 @@ import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import birsy.clinker.core.registry.entity.ClinkerSensors;
 import birsy.clinker.core.registry.worldgen.*;
 import birsy.clinker.core.util.ClinkMeCommand;
+import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -98,8 +99,9 @@ public class Clinker {
     }
 
     @SubscribeEvent
-    public static void registerListeners(RegisterCommandsEvent event) {
-        if (!FMLLoader.isProduction()) {
+    public static void registerCommands(RegisterCommandsEvent event) {
+        // debug commands
+        if (SharedConstants.IS_RUNNING_IN_IDE) {
             ClinkMeCommand.register(event.getDispatcher(), event.getBuildContext());
         }
     }

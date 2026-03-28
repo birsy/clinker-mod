@@ -58,7 +58,6 @@ public class StayNearSquadCenter<E extends PathfinderMob & SquadMember<E>> exten
         if (targetPos == null) return false;
 
         this.path = entity.getNavigation().createPath(targetPos.x, targetPos.y, targetPos.z, 0);
-        Clinker.LOGGER.info(this.path);
         return this.path != null;
     }
 
