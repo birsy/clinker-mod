@@ -7,6 +7,7 @@ import birsy.clinker.common.world.entity.ai.behaviors.*;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.*;
 import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.SquadSensor;
 import birsy.clinker.common.world.entity.gnomad.gnomind.squad.Squad;
+import birsy.clinker.common.world.entity.gnomad.gnomind.squad.SquadManager;
 import birsy.clinker.common.world.entity.gnomad.gnomind.squad.SquadMember;
 import foundry.veil.api.client.necromancer.SkeletonParent;
 import foundry.veil.api.client.necromancer.animation.Animator;
@@ -45,10 +46,12 @@ import net.tslat.smartbrainlib.api.core.sensor.vanilla.HurtBySensor;
 import net.tslat.smartbrainlib.api.core.sensor.vanilla.InWaterSensor;
 import net.tslat.smartbrainlib.api.core.sensor.vanilla.NearbyLivingEntitySensor;
 import net.tslat.smartbrainlib.api.core.sensor.vanilla.NearbyPlayersSensor;
+import net.tslat.smartbrainlib.util.EntityRetrievalUtil;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 import java.util.List;
+import java.util.UUID;
 
 import static net.minecraft.world.entity.monster.Monster.createMonsterAttributes;
 
@@ -146,9 +149,30 @@ public class GnomadMogulEntity extends GroundLocomotionEntity implements Enemy, 
 
     @Override
     protected void customServerAiStep() {
-        tickBrain(this);
+        super.customServerAiStep();
+        recruitNearbyGnomads();
+        updateFloating();
+    }
 
-        // update floating
+    void recruitNearbyGnomads() {
+        if (this.level() instanceof ServerLevel serverLevel) {
+            // leaders create new squads
+            if (this.getSquad() == null) this.setSquad(SquadManager.get(serverLevel).getOrCreate(UUID.randomUUID()));
+            List<SquadMember<?>> nearbyPotentialRecruits = EntityRetrievalUtil.getEntities(
+                    this,
+                    10, 10, 10,
+                    entity -> {
+                        if (entity instanceof SquadMember<?> squadMember) return squadMember.getSquad() == null;
+                        return false;
+                    }
+            );
+            for (SquadMember<?> nearbyPotentialRecruit : nearbyPotentialRecruits) {
+                nearbyPotentialRecruit.setSquad(this.getSquad());
+            }
+        }
+    }
+
+    void updateFloating() {
         boolean isFloating = this.isFloating();
         boolean isMovingUp = this.getDeltaMovement().y > 0;
         if (!this.onGround()) {
@@ -189,12 +213,9 @@ public class GnomadMogulEntity extends GroundLocomotionEntity implements Enemy, 
         } else {
             // we're on the ground.
             this.canStartFloating = true;
-
             // we can't float if we're on the ground.
             if (isFloating && !isMovingUp) this.setFloating(false);
         }
-
-        super.customServerAiStep();
     }
 
     @Override
@@ -233,9 +254,7 @@ public class GnomadMogulEntity extends GroundLocomotionEntity implements Enemy, 
 
     @Override
     public BrainActivityGroup<GnomadMogulEntity> getIdleTasks() {
-        return BrainActivityGroup.idleTasks(
-                new MogulCombatStateMachine()
-        );
+        return BrainActivityGroup.idleTasks();
     }
 
     @Override
@@ -248,7 +267,6 @@ public class GnomadMogulEntity extends GroundLocomotionEntity implements Enemy, 
     public int getRobeColor() {
         return this.entityData.get(DATA_ROBE_COLOR);
     }
-
     public void setRobeColor(int robeColor) {
         this.entityData.set(DATA_ROBE_COLOR, robeColor);
     }
@@ -256,32 +274,23 @@ public class GnomadMogulEntity extends GroundLocomotionEntity implements Enemy, 
     public boolean isFloating() {
         return this.entityData.get(DATA_FLOATING);
     }
-
     public void setFloating(boolean floating) {
         this.entityData.set(DATA_FLOATING, floating);
     }
 
-    @Override
-    public @Nullable Squad getSquad() { return squad; }
-    @Override
-    public void setSquad(@Nullable Squad squad) { this.squad = squad; }
+    @Override public @Nullable Squad getSquad() { return squad; }
+    @Override public void setSquad(@Nullable Squad squad) { this.squad = squad; }
 
     GnomadMogulSkeleton skeleton;
     GnomadMogulAnimator animator;
-    @Override
-    public void setSkeleton(GnomadMogulSkeleton skeleton) {
+    @Override public void setSkeleton(GnomadMogulSkeleton skeleton) {
         this.skeleton = skeleton;
     }
-    @Override
-    public GnomadMogulSkeleton getSkeleton() {
+    @Override public GnomadMogulSkeleton getSkeleton() {
         return this.skeleton;
     }
-    @Override
-    public void setAnimator(Animator<GnomadMogulEntity, GnomadMogulSkeleton> animator) {
-        this.animator = (GnomadMogulAnimator) animator;
-    }
-    @Override
-    public GnomadMogulAnimator getAnimator() {
+    @Override public void setAnimator(Animator<GnomadMogulEntity, GnomadMogulSkeleton> animator) {this.animator = (GnomadMogulAnimator) animator;}
+    @Override public GnomadMogulAnimator getAnimator() {
         return animator;
     }
 }
