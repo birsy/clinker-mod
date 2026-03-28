@@ -4,6 +4,8 @@ import birsy.clinker.client.entity.gnomad.mogul.GnomadMogulAnimator;
 import birsy.clinker.client.entity.gnomad.mogul.GnomadMogulSkeleton;
 import birsy.clinker.common.world.entity.GroundLocomotionEntity;
 import birsy.clinker.common.world.entity.ai.behaviors.*;
+import birsy.clinker.common.world.entity.gnomad.BaseGnomadEntity;
+import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.*;
 import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.SquadSensor;
 import birsy.clinker.common.world.entity.gnomad.gnomind.squad.Squad;
@@ -37,8 +39,11 @@ import net.minecraft.world.phys.Vec3;
 import net.tslat.smartbrainlib.api.SmartBrainOwner;
 import net.tslat.smartbrainlib.api.core.BrainActivityGroup;
 import net.tslat.smartbrainlib.api.core.SmartBrainProvider;
+import net.tslat.smartbrainlib.api.core.behaviour.FirstApplicableBehaviour;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.look.LookAtTarget;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.move.FloatToSurfaceOfFluid;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.target.SetPlayerLookTarget;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.target.SetRandomLookTarget;
 import net.tslat.smartbrainlib.api.core.navigation.SmoothGroundNavigation;
 import net.tslat.smartbrainlib.api.core.sensor.ExtendedSensor;
 import net.tslat.smartbrainlib.api.core.sensor.custom.GenericAttackTargetSensor;
@@ -55,7 +60,7 @@ import java.util.UUID;
 
 import static net.minecraft.world.entity.monster.Monster.createMonsterAttributes;
 
-public class GnomadMogulEntity extends GroundLocomotionEntity implements Enemy, SquadMember<GnomadMogulEntity>, SmartBrainOwner<GnomadMogulEntity>, SkeletonParent<GnomadMogulEntity, GnomadMogulSkeleton> {
+public class GnomadMogulEntity extends BaseGnomadEntity<GnomadMogulEntity> implements SkeletonParent<GnomadMogulEntity, GnomadMogulSkeleton> {
     private static final int[] ROBE_COLORS = new int[]{0x4d423c, 0x513337, 0x4a4751, 0x505049, 0x4f4c4b};
     private static final EntityDataAccessor<Integer> DATA_ROBE_COLOR = SynchedEntityData.defineId(GnomadMogulEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> DATA_FLOATING = SynchedEntityData.defineId(GnomadMogulEntity.class, EntityDataSerializers.BOOLEAN);
@@ -117,26 +122,15 @@ public class GnomadMogulEntity extends GroundLocomotionEntity implements Enemy, 
     public void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
         pCompound.putInt("RobeColor", this.getRobeColor());
-        this.serializeSquad(pCompound);
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
         this.setRobeColor(pCompound.getInt("RobeColor"));
-        this.deserializeSquad(pCompound);
     }
 
     // ai
-    @Override
-    protected Brain.Provider<?> brainProvider() {
-        return new SmartBrainProvider<>(this);
-    }
-    @Override
-    protected PathNavigation createNavigation(Level pLevel) {
-        return new SmoothGroundNavigation(this, pLevel);
-    }
-
     private boolean canFallSafely() {
         double safeFallDist = this.getAttributeValue(Attributes.SAFE_FALL_DISTANCE);
         return this.level().clip(new ClipContext(
@@ -223,38 +217,15 @@ public class GnomadMogulEntity extends GroundLocomotionEntity implements Enemy, 
         return this.isFloating() ? super.getDefaultGravity() * 0.07 : super.getDefaultGravity();
     }
 
-    @Override
-    public void tick() {
-        super.tick();
-    }
-
-    @Override
-    public List<ExtendedSensor<GnomadMogulEntity>> getSensors() {
-        return ObjectArrayList.of(
-                new NearbyLivingEntitySensor<GnomadMogulEntity>()
-                        .setRadius(28.0F),
-                new NearbyPlayersSensor<GnomadMogulEntity>()
-                        .setRadius(28.0F),
-                new GenericAttackTargetSensor<GnomadMogulEntity>()
-                        .setPredicate((other, me) -> other instanceof Player),
-                new HurtBySensor<>(),
-                new InWaterSensor<>(),
-                new SquadSensor<>()
-        );
-    }
-
-    @Override
-    public BrainActivityGroup<GnomadMogulEntity> getCoreTasks() {
-        return BrainActivityGroup.coreTasks(
-                new LookAtTarget<>(),
-                new InvalidateLookAtTarget<>(),
-                new FloatToSurfaceOfFluid<>()
-        );
-    }
 
     @Override
     public BrainActivityGroup<GnomadMogulEntity> getIdleTasks() {
-        return BrainActivityGroup.idleTasks();
+        return BrainActivityGroup.idleTasks(
+                new FirstApplicableBehaviour<GnomadEntity>(
+                        new SetPlayerLookTarget<>(),
+                        new SetRandomLookTarget<>()
+                )
+        );
     }
 
     @Override
@@ -278,18 +249,15 @@ public class GnomadMogulEntity extends GroundLocomotionEntity implements Enemy, 
         this.entityData.set(DATA_FLOATING, floating);
     }
 
-    @Override public @Nullable Squad getSquad() { return squad; }
-    @Override public void setSquad(@Nullable Squad squad) { this.squad = squad; }
-
     GnomadMogulSkeleton skeleton;
     GnomadMogulAnimator animator;
     @Override public void setSkeleton(GnomadMogulSkeleton skeleton) {
         this.skeleton = skeleton;
     }
+    @Override public void setAnimator(Animator<GnomadMogulEntity, GnomadMogulSkeleton> animator) {this.animator = (GnomadMogulAnimator) animator;}
     @Override public GnomadMogulSkeleton getSkeleton() {
         return this.skeleton;
     }
-    @Override public void setAnimator(Animator<GnomadMogulEntity, GnomadMogulSkeleton> animator) {this.animator = (GnomadMogulAnimator) animator;}
     @Override public GnomadMogulAnimator getAnimator() {
         return animator;
     }

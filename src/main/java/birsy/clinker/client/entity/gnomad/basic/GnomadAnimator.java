@@ -1,10 +1,7 @@
 package birsy.clinker.client.entity.gnomad.basic;
 
-import birsy.clinker.client.entity.gnomad.mogul.GnomadMogulAnimator;
-import birsy.clinker.client.entity.gnomad.mogul.GnomadMogulSkeleton;
-import birsy.clinker.common.world.entity.gnomad.mogul.GnomadMogulEntity;
-import birsy.clinker.common.world.entity.gnomad.testing.SquadTestingThrowerEntity;
-import birsy.clinker.core.Clinker;
+import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
+import birsy.clinker.core.util.MathUtils;
 import foundry.veil.api.client.necromancer.animation.Animation;
 import foundry.veil.api.client.necromancer.animation.Animator;
 import net.minecraft.core.Direction;
@@ -16,12 +13,12 @@ import static net.minecraft.core.Direction.Axis.*;
 import static birsy.clinker.client.AnimationUtilities.*;
 
 
-public class GnomadAnimator extends Animator<SquadTestingThrowerEntity, GnomadSkeleton> {
+public class GnomadAnimator extends Animator<GnomadEntity, GnomadSkeleton> {
     public final AnimationEntry<?, ?> idleAnim, walkAnim, strafeAnim, hurtAnim, maskAnim;
     private int maskShakeTime = 0, maskShakeDuration = 1;
     private boolean maskShaking = false;
 
-    protected GnomadAnimator(SquadTestingThrowerEntity parent, GnomadSkeleton skeleton) {
+    protected GnomadAnimator(GnomadEntity parent, GnomadSkeleton skeleton) {
         super(parent, skeleton);
         this.idleAnim = this.addAnimation(IdleAnimation.INSTANCE, 0);
         this.walkAnim = this.addAnimation(WalkAnimation.INSTANCE, 1);
@@ -33,7 +30,7 @@ public class GnomadAnimator extends Animator<SquadTestingThrowerEntity, GnomadSk
     @Override
     public void animate() {
         super.animate();
-        SquadTestingThrowerEntity entity = this.parent;
+        GnomadEntity entity = this.parent;
 
         this.idleAnim.setMixFactor(1.0F);
         this.idleAnim.setTime(entity.tickCount);
@@ -84,12 +81,21 @@ public class GnomadAnimator extends Animator<SquadTestingThrowerEntity, GnomadSk
 
         this.skeleton.leftHandPivot.offsetZ(-1);
         this.skeleton.rightHandPivot.offsetZ(-1);
+
+        // death
+        if (entity.isDeadOrDying()) {
+            float deathFactor = Mth.clamp(entity.deathTime / 17F, 0, 1);
+            deathFactor = MathUtils.ease(deathFactor, MathUtils.EasingType.easeOutBack);
+            skeleton.root.rotation.rotateLocalZ(
+                    deathFactor * 70 * Mth.DEG_TO_RAD
+            );
+        }
     }
 
-    private static class MaskAnimation extends Animation<SquadTestingThrowerEntity, GnomadSkeleton> {
+    private static class MaskAnimation extends Animation<GnomadEntity, GnomadSkeleton> {
         protected static MaskAnimation INSTANCE = new MaskAnimation();
         @Override
-        public void apply(SquadTestingThrowerEntity entity, GnomadSkeleton skeleton, float mixFactor, float time) {
+        public void apply(GnomadEntity entity, GnomadSkeleton skeleton, float mixFactor, float time) {
             float headShake = Mth.sin(time * 0.44F) * mixFactor * 0.05F * Mth.RAD_TO_DEG;
             float faceShake = Mth.sin(0.5F + time * 0.44F) * mixFactor * 0.25F * Mth.RAD_TO_DEG;
             skeleton.head.rotateDeg(headShake, Direction.Axis.Z);
@@ -97,10 +103,10 @@ public class GnomadAnimator extends Animator<SquadTestingThrowerEntity, GnomadSk
         }
     }
 
-    private static class HurtAnimation extends Animation<SquadTestingThrowerEntity, GnomadSkeleton> {
+    private static class HurtAnimation extends Animation<GnomadEntity, GnomadSkeleton> {
         protected static HurtAnimation INSTANCE = new HurtAnimation();
 
-        public void apply(SquadTestingThrowerEntity entity, GnomadSkeleton skeleton, float mixFactor, float time) {
+        public void apply(GnomadEntity entity, GnomadSkeleton skeleton, float mixFactor, float time) {
             skeleton.root.rotateDeg(nSin(0.0F + time) * 8 * mixFactor, Direction.Axis.X);
             skeleton.root.rotateDeg(nSin(0.5F + time) * 8 * mixFactor, Direction.Axis.Z);
 
@@ -119,10 +125,10 @@ public class GnomadAnimator extends Animator<SquadTestingThrowerEntity, GnomadSk
         }
     }
 
-    private static class IdleAnimation extends Animation<SquadTestingThrowerEntity, GnomadSkeleton> {
+    private static class IdleAnimation extends Animation<GnomadEntity, GnomadSkeleton> {
         protected static IdleAnimation INSTANCE = new IdleAnimation();
 
-        public void apply(SquadTestingThrowerEntity entity, GnomadSkeleton skeleton, float mixFactor, float time) {
+        public void apply(GnomadEntity entity, GnomadSkeleton skeleton, float mixFactor, float time) {
             float bodyYaw = Mth.wrapDegrees(180 - entity.yBodyRot);
             float headYaw = Mth.wrapDegrees(180 - entity.yHeadRot);
             float netHeadYaw = Mth.degreesDifference(bodyYaw, headYaw);
@@ -164,16 +170,16 @@ public class GnomadAnimator extends Animator<SquadTestingThrowerEntity, GnomadSk
         }
     }
 
-    private static class WalkAnimation extends Animation<SquadTestingThrowerEntity, GnomadSkeleton> {
+    private static class WalkAnimation extends Animation<GnomadEntity, GnomadSkeleton> {
         protected static WalkAnimation INSTANCE = new WalkAnimation();
 
         @Override
-        public boolean running(SquadTestingThrowerEntity entity, GnomadSkeleton skeleton, float mixFactor, float time) {
+        public boolean running(GnomadEntity entity, GnomadSkeleton skeleton, float mixFactor, float time) {
             return mixFactor != 0;
         }
 
         @Override
-        public void apply(SquadTestingThrowerEntity entity, GnomadSkeleton skeleton, float mixFactor, float time) {
+        public void apply(GnomadEntity entity, GnomadSkeleton skeleton, float mixFactor, float time) {
             float degree = 1.0F;
             float sign = Mth.sign(mixFactor);
             mixFactor = Mth.abs(mixFactor);
@@ -214,16 +220,16 @@ public class GnomadAnimator extends Animator<SquadTestingThrowerEntity, GnomadSk
         }
     }
 
-    private static class StrafeAnimation extends Animation<SquadTestingThrowerEntity, GnomadSkeleton> {
+    private static class StrafeAnimation extends Animation<GnomadEntity, GnomadSkeleton> {
         protected static StrafeAnimation INSTANCE = new StrafeAnimation();
 
         @Override
-        public boolean running(SquadTestingThrowerEntity entity, GnomadSkeleton skeleton, float mixFactor, float time) {
+        public boolean running(GnomadEntity entity, GnomadSkeleton skeleton, float mixFactor, float time) {
             return mixFactor != 0;
         }
 
         @Override
-        public void apply(SquadTestingThrowerEntity entity, GnomadSkeleton skeleton, float mixFactor, float time) {
+        public void apply(GnomadEntity entity, GnomadSkeleton skeleton, float mixFactor, float time) {
             float degree = 1.0F;
             float sign = Mth.sign(mixFactor);
             mixFactor = Mth.abs(mixFactor);

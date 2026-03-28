@@ -1,6 +1,7 @@
-package birsy.clinker.common.world.entity.gnomad.testing;
+package birsy.clinker.common.world.entity.gnomad;
 
 import birsy.clinker.common.world.entity.GroundLocomotionEntity;
+import birsy.clinker.common.world.entity.ai.behaviors.InvalidateLookAtTarget;
 import birsy.clinker.common.world.entity.ai.behaviors.LocomotorLookAtTarget;
 import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.ActiveSquadTasksSensor;
 import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.SquadSensor;
@@ -15,16 +16,17 @@ import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.level.Level;
 import net.tslat.smartbrainlib.api.SmartBrainOwner;
 import net.tslat.smartbrainlib.api.core.BrainActivityGroup;
 import net.tslat.smartbrainlib.api.core.SmartBrainProvider;
-import net.tslat.smartbrainlib.api.core.behaviour.custom.look.LookAtTarget;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.move.MoveToWalkTarget;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.target.SetAttackTarget;
 import net.tslat.smartbrainlib.api.core.sensor.ExtendedSensor;
 import net.tslat.smartbrainlib.api.core.sensor.vanilla.HurtBySensor;
 import net.tslat.smartbrainlib.api.core.sensor.vanilla.NearbyLivingEntitySensor;
+import net.tslat.smartbrainlib.api.core.sensor.vanilla.NearbyPlayersSensor;
 import net.tslat.smartbrainlib.util.EntityRetrievalUtil;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,10 +34,10 @@ import java.util.List;
 
 import static net.minecraft.world.entity.monster.Monster.createMonsterAttributes;
 
-public class SquadTestingEntity<E extends SquadTestingEntity<E>> extends GroundLocomotionEntity implements SquadMember<E>, SmartBrainOwner<E> {
+public class BaseGnomadEntity<E extends BaseGnomadEntity<E>> extends GroundLocomotionEntity implements SquadMember<E>, SmartBrainOwner<E>, Enemy {
     private Squad squad;
 
-    public SquadTestingEntity(EntityType<? extends PathfinderMob> entityType, Level level) {
+    public BaseGnomadEntity(EntityType<? extends PathfinderMob> entityType, Level level) {
         super(entityType, level);
     }
 
@@ -59,6 +61,7 @@ public class SquadTestingEntity<E extends SquadTestingEntity<E>> extends GroundL
     @Override
     public List<? extends ExtendedSensor<E>> getSensors() {
         return ObjectArrayList.of(
+                new NearbyPlayersSensor<>(),
                 new NearbyLivingEntitySensor<>(),
                 new HurtBySensor<>(),
                 new SquadSensor<>(),
@@ -73,6 +76,7 @@ public class SquadTestingEntity<E extends SquadTestingEntity<E>> extends GroundL
         return BrainActivityGroup.coreTasks(
                 new SetAttackTarget<>(false)
                         .targetFinder(mob -> EntityRetrievalUtil.getNearestPlayer(mob, 32.0F)),
+                new InvalidateLookAtTarget<>(),
                 new LocomotorLookAtTarget<>(),
                 new MoveToWalkTarget<>()
         );

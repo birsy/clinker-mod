@@ -1,7 +1,6 @@
 package birsy.clinker.client.entity.gnomad.runt;
 
-import birsy.clinker.client.entity.gnomad.basic.GnomadAnimator;
-import birsy.clinker.common.world.entity.gnomad.testing.SquadTestingSupplierEntity;
+import birsy.clinker.common.world.entity.gnomad.GnomadRuntEntity;
 import foundry.veil.api.client.necromancer.animation.Animation;
 import foundry.veil.api.client.necromancer.animation.Animator;
 import net.minecraft.core.Direction;
@@ -11,9 +10,9 @@ import org.joml.Vector3fc;
 import static birsy.clinker.client.AnimationUtilities.nSin;
 import static net.minecraft.core.Direction.Axis.*;
 
-public class GnomadRuntAnimator extends Animator<SquadTestingSupplierEntity, GnomadRuntSkeleton> {
+public class GnomadRuntAnimator extends Animator<GnomadRuntEntity, GnomadRuntSkeleton> {
     public final AnimationEntry<?, ?> idleAnim, walkAnim, strafeAnim, hurtAnim;
-    protected GnomadRuntAnimator(SquadTestingSupplierEntity parent, GnomadRuntSkeleton skeleton) {
+    protected GnomadRuntAnimator(GnomadRuntEntity parent, GnomadRuntSkeleton skeleton) {
         super(parent, skeleton);
         this.idleAnim = this.addAnimation(IdleAnimation.INSTANCE, 0);
         this.walkAnim = this.addAnimation(WalkAnimation.INSTANCE, 1);
@@ -26,7 +25,7 @@ public class GnomadRuntAnimator extends Animator<SquadTestingSupplierEntity, Gno
         super.animate();
         skeleton.root.size.mul(0.8F);
 
-        SquadTestingSupplierEntity entity = this.parent;
+        GnomadRuntEntity entity = this.parent;
 
         this.idleAnim.setMixFactor(1.0F);
         this.idleAnim.setTime(entity.tickCount);
@@ -64,10 +63,10 @@ public class GnomadRuntAnimator extends Animator<SquadTestingSupplierEntity, Gno
         }
     }
 
-    private static class HurtAnimation extends Animation<SquadTestingSupplierEntity, GnomadRuntSkeleton> {
+    private static class HurtAnimation extends Animation<GnomadRuntEntity, GnomadRuntSkeleton> {
         protected static HurtAnimation INSTANCE = new HurtAnimation();
 
-        public void apply(SquadTestingSupplierEntity entity, GnomadRuntSkeleton skeleton, float mixFactor, float time) {
+        public void apply(GnomadRuntEntity entity, GnomadRuntSkeleton skeleton, float mixFactor, float time) {
             skeleton.root.rotateDeg(nSin(0.0F + time) * 12 * mixFactor, Direction.Axis.X);
             skeleton.root.rotateDeg(nSin(0.5F + time) * 12 * mixFactor, Direction.Axis.Z);
             skeleton.torso.rotateDeg(nSin(0.0F + time - 0.3F) * 12 * mixFactor, Direction.Axis.X);
@@ -88,10 +87,10 @@ public class GnomadRuntAnimator extends Animator<SquadTestingSupplierEntity, Gno
         }
     }
 
-    private static class IdleAnimation extends Animation<SquadTestingSupplierEntity, GnomadRuntSkeleton> {
+    private static class IdleAnimation extends Animation<GnomadRuntEntity, GnomadRuntSkeleton> {
         protected static IdleAnimation INSTANCE = new IdleAnimation();
 
-        public void apply(SquadTestingSupplierEntity entity, GnomadRuntSkeleton skeleton, float mixFactor, float time) {
+        public void apply(GnomadRuntEntity entity, GnomadRuntSkeleton skeleton, float mixFactor, float time) {
             float speed = 1.0F / 40.0F;
             float degree = 1.0F;
 
@@ -126,16 +125,16 @@ public class GnomadRuntAnimator extends Animator<SquadTestingSupplierEntity, Gno
         }
     }
 
-    private static class WalkAnimation extends Animation<SquadTestingSupplierEntity, GnomadRuntSkeleton> {
+    private static class WalkAnimation extends Animation<GnomadRuntEntity, GnomadRuntSkeleton> {
         protected static WalkAnimation INSTANCE = new WalkAnimation();
 
         @Override
-        public boolean running(SquadTestingSupplierEntity entity, GnomadRuntSkeleton skeleton, float mixFactor, float time) {
+        public boolean running(GnomadRuntEntity entity, GnomadRuntSkeleton skeleton, float mixFactor, float time) {
             return mixFactor != 0;
         }
 
         @Override
-        public void apply(SquadTestingSupplierEntity entity, GnomadRuntSkeleton skeleton, float mixFactor, float time) {
+        public void apply(GnomadRuntEntity entity, GnomadRuntSkeleton skeleton, float mixFactor, float time) {
             float degree = 1.0F;
             float sign = Mth.sign(mixFactor);
             mixFactor = Mth.abs(mixFactor);
@@ -172,16 +171,16 @@ public class GnomadRuntAnimator extends Animator<SquadTestingSupplierEntity, Gno
         }
     }
 
-    private static class StrafeAnimation extends Animation<SquadTestingSupplierEntity, GnomadRuntSkeleton> {
+    private static class StrafeAnimation extends Animation<GnomadRuntEntity, GnomadRuntSkeleton> {
         protected static StrafeAnimation INSTANCE = new StrafeAnimation();
 
         @Override
-        public boolean running(SquadTestingSupplierEntity entity, GnomadRuntSkeleton skeleton, float mixFactor, float time) {
+        public boolean running(GnomadRuntEntity entity, GnomadRuntSkeleton skeleton, float mixFactor, float time) {
             return mixFactor != 0;
         }
 
         @Override
-        public void apply(SquadTestingSupplierEntity entity, GnomadRuntSkeleton skeleton, float mixFactor, float time) {
+        public void apply(GnomadRuntEntity entity, GnomadRuntSkeleton skeleton, float mixFactor, float time) {
             float degree = 1.0F;
             float sign = Mth.sign(mixFactor);
             mixFactor = Mth.abs(mixFactor);

@@ -5,9 +5,10 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
+import net.tslat.smartbrainlib.api.core.navigation.MultiFluidSmoothGroundNavigation;
 import net.tslat.smartbrainlib.api.core.navigation.SmoothGroundNavigation;
 
-public class GroundNavigationControl extends SmoothGroundNavigation {
+public class GroundNavigationControl extends MultiFluidSmoothGroundNavigation {
     protected final float minDistanceToNode;
 
     public GroundNavigationControl(Mob mob, Level level, float minDistanceToNode) {

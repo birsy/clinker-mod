@@ -6,11 +6,9 @@ import birsy.clinker.client.entity.gnomad.mogul.GnomadMogulRenderer;
 import birsy.clinker.client.entity.gnomad.runt.GnomadRuntRenderer;
 import birsy.clinker.client.entity.slabcrab.SlabCrabRenderer;
 import birsy.clinker.common.world.entity.*;
-import birsy.clinker.common.world.entity.gnomad.*;
 import birsy.clinker.common.world.entity.gnomad.mogul.GnomadMogulEntity;
-import birsy.clinker.common.world.entity.gnomad.testing.SquadTestingLeaderEntity;
-import birsy.clinker.common.world.entity.gnomad.testing.SquadTestingSupplierEntity;
-import birsy.clinker.common.world.entity.gnomad.testing.SquadTestingThrowerEntity;
+import birsy.clinker.common.world.entity.gnomad.GnomadRuntEntity;
+import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
 import birsy.clinker.common.world.entity.homunculoids.SpitterHomunculoid;
 import birsy.clinker.common.world.entity.mold.MoldEntity;
 import birsy.clinker.common.world.entity.projectile.FlechetteEntity;
@@ -38,11 +36,6 @@ import java.util.function.Supplier;
 @EventBusSubscriber(modid = Clinker.MOD_ID, value = Dist.CLIENT)
 public class ClinkerEntities {
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, Clinker.MOD_ID);
-
-    public static final Supplier<EntityType<GnomadMogulEntity>> GNOMAD_MOGUL = ENTITY_TYPES.register("gnomad_mogul", () ->
-            EntityType.Builder.of(GnomadMogulEntity::new, MobCategory.MONSTER)
-                    .sized(2.25f, 3.5f)
-                    .build(Clinker.resource("gnomad_mogul").toString()));
 
     public static final Supplier<EntityType<OrdnanceEntity>> ORDNANCE = ENTITY_TYPES.register("ordnance", () ->
             EntityType.Builder.of(OrdnanceEntity::new, MobCategory.MISC)
@@ -100,22 +93,21 @@ public class ClinkerEntities {
                     .build(Clinker.resource("slab_crab").toString()));
 
 
-    public static final Supplier<EntityType<SquadTestingLeaderEntity>> SQUAD_TESTING_LEADER = ENTITY_TYPES.register("squad_testing_leader", () ->
-            EntityType.Builder.of(SquadTestingLeaderEntity::new, MobCategory.MONSTER)
+    public static final Supplier<EntityType<GnomadMogulEntity>> GNOMAD_MOGUL = ENTITY_TYPES.register("gnomad_mogul", () ->
+            EntityType.Builder.of(GnomadMogulEntity::new, MobCategory.MONSTER)
                     .sized(2.25f, 3.5f)
-                    .build(Clinker.resource("squad_testing_leader").toString()));
-    public static final Supplier<EntityType<SquadTestingThrowerEntity>> SQUAD_TESTING_THROWER = ENTITY_TYPES.register("squad_testing_thrower", () ->
-            EntityType.Builder.of(SquadTestingThrowerEntity::new, MobCategory.MONSTER)
+                    .build(Clinker.resource("gnomad_mogul").toString()));
+    public static final Supplier<EntityType<GnomadEntity>> GNOMAD = ENTITY_TYPES.register("gnomad", () ->
+            EntityType.Builder.of(GnomadEntity::new, MobCategory.MONSTER)
                     .sized(1.0f, 1.7f)
-                    .build(Clinker.resource("squad_testing_thrower").toString()));
-    public static final Supplier<EntityType<SquadTestingSupplierEntity>> SQUAD_TESTING_SUPPLIER = ENTITY_TYPES.register("squad_testing_supplier", () ->
-            EntityType.Builder.of(SquadTestingSupplierEntity::new, MobCategory.MONSTER)
+                    .build(Clinker.resource("gnomad").toString()));
+    public static final Supplier<EntityType<GnomadRuntEntity>> GNOMAD_RUNT = ENTITY_TYPES.register("gnomad_runt", () ->
+            EntityType.Builder.of(GnomadRuntEntity::new, MobCategory.MONSTER)
                     .sized(0.5F, 0.8F)
-                    .build(Clinker.resource("squad_testing_supplier").toString()));
+                    .build(Clinker.resource("gnomad_runt").toString()));
 
     @SubscribeEvent
     public static void registerEntityAttribute(EntityAttributeCreationEvent event) {
-        event.put(GNOMAD_MOGUL.get(), GnomadMogulEntity.createAttributes().build());
         event.put(TEST_ROPE.get(), Zombie.createAttributes().build());
 
         event.put(MOLD.get(), MoldEntity.createAttributes().build());
@@ -126,9 +118,9 @@ public class ClinkerEntities {
 
         event.put(SLAB_CRAB.get(), SlabCrabEntity.createAttributes().build());
 
-        event.put(SQUAD_TESTING_LEADER.get(), Zombie.createAttributes().build());
-        event.put(SQUAD_TESTING_THROWER.get(), Zombie.createAttributes().build());
-        event.put(SQUAD_TESTING_SUPPLIER.get(), Zombie.createAttributes().build());
+        event.put(GNOMAD_MOGUL.get(), GnomadMogulEntity.createAttributes().build());
+        event.put(GNOMAD.get(), Zombie.createAttributes().build());
+        event.put(GNOMAD_RUNT.get(), Zombie.createAttributes().build());
     }
 
     @SubscribeEvent
@@ -153,8 +145,8 @@ public class ClinkerEntities {
 
         event.registerEntityRenderer(SLAB_CRAB.get(), SlabCrabRenderer::new);
 
-        event.registerEntityRenderer(SQUAD_TESTING_LEADER.get(), DebugEntityRenderer::new);
-        event.registerEntityRenderer(SQUAD_TESTING_THROWER.get(), GnomadRenderer::new);
-        event.registerEntityRenderer(SQUAD_TESTING_SUPPLIER.get(), GnomadRuntRenderer::new);
+        event.registerEntityRenderer(GNOMAD_MOGUL.get(), GnomadMogulRenderer::new);
+        event.registerEntityRenderer(GNOMAD.get(), GnomadRenderer::new);
+        event.registerEntityRenderer(GNOMAD_RUNT.get(), GnomadRuntRenderer::new);
     }
 }

@@ -1,34 +1,41 @@
 package birsy.clinker.common.world.entity.ai;
 
 import birsy.clinker.core.Clinker;
-import birsy.clinker.core.util.VectorUtils;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import java.util.*;
+import java.util.function.Supplier;
 
 public class LookTargetController {
     final Mob entity;
+    final Supplier<Float> defaultPitch, defaultYaw, defaultRotationalSpeed;
     final List<LookTargetHandle> lookTargets = new ArrayList<>(8);
     protected boolean priorityNeedsUpdate;
-
-    boolean anyActive = false;
     float combinedDesiredPitch, combinedDesiredYaw, combinedRotationalSpeed;
 
-    public LookTargetController(Mob entity) {
+    public LookTargetController(Mob entity,
+                                Supplier<Float> defaultPitch,
+                                Supplier<Float> defaultYaw,
+                                Supplier<Float> defaultRotationalSpeed) {
         this.entity = entity;
+
+        this.defaultPitch = defaultPitch;
+        this.defaultYaw = defaultYaw;
+        this.defaultRotationalSpeed = defaultRotationalSpeed;
     }
 
-    public Optional<Float> getDesiredPitch() {
-        return anyActive ? Optional.of(combinedDesiredPitch) : Optional.empty();
+    public float getDesiredPitch() {
+        return combinedDesiredPitch;
     }
-    public Optional<Float> getDesiredYaw() {
-        return anyActive ? Optional.of(combinedDesiredYaw) : Optional.empty();
+    public float getDesiredYaw() {
+        return combinedDesiredYaw;
     }
     public float getRotationSpeed() {
-        return anyActive ? combinedRotationalSpeed : 0.0F;
+        return combinedRotationalSpeed;
     }
 
     public LookTargetHandle createHandle(float lookSpeed, int priority) {
@@ -38,14 +45,10 @@ public class LookTargetController {
         return handle;
     }
 
-    private final Vector3f scratch0 = new Vector3f(), scratch1 = new Vector3f();
+    private final Quaternionf scratchHandleRotation = new Quaternionf(),
+                              scratchCombinedRotation = new Quaternionf();
+    private final Vector3f scratchEulerAngles = new Vector3f();
     protected void tick() {
-        // skip if nothing's active
-        if (this.lookTargets.isEmpty()) {
-            anyActive = false;
-            return;
-        }
-
         // update fades
         for (Iterator<LookTargetHandle> iterator = this.lookTargets.iterator(); iterator.hasNext(); ) {
             LookTargetHandle lookTarget = iterator.next();
@@ -62,7 +65,6 @@ public class LookTargetController {
                     if (lookTarget.fadeAmount <= 0.0F) {
                         lookTarget.fadeType = FadeType.NONE;
                         iterator.remove();
-                        this.priorityNeedsUpdate = true;
                     }
                 }
             }
@@ -75,44 +77,36 @@ public class LookTargetController {
             this.priorityNeedsUpdate = false;
         }
 
-        // update by weight order
-        int maxIndex = 0;
+        // find the highest "effective" index
+        // (e.g. all computed rotations before won't matter because it'll override them)
+        int maxEffectiveIndex = -1;
         for (int i = 0; i < this.lookTargets.size(); i++) {
             LookTargetHandle lookTarget = this.lookTargets.get(i);
-            if (lookTarget.effectiveWeight() >= 0.999) {
-                maxIndex = i;
-                break;
-            }
+            maxEffectiveIndex = i;
+            float weight = lookTarget.effectiveWeight();
+            if (weight >= 0.999) break;
         }
 
-        anyActive = false;
-        float rotationalSpeed = 0.0F;
-        for (int i = maxIndex; i >= 0; i--) {
+        float rotationalSpeed = defaultRotationalSpeed.get();
+        // todo: un-gimble lock this
+        float pitch = defaultPitch.get();
+        float yaw = defaultYaw.get();
+        float defaultYaw = yaw;
+        // loop from the highest effective index backwards.
+        // meaning highest priority weights will come last and override previous ones
+        for (int i = maxEffectiveIndex; i >= 0; i--) {
             LookTargetHandle lookTarget = this.lookTargets.get(i);
             float weight = lookTarget.effectiveWeight();
             if (weight <= 0) continue;
 
-            float pitchRadians = lookTarget.desiredPitch * Mth.DEG_TO_RAD;
-            float desiredY = Mth.sin(pitchRadians), pitchCos = Mth.cos(pitchRadians);
-
-            float yawRadians = lookTarget.desiredYaw * Mth.DEG_TO_RAD;
-            float desiredX = Mth.cos(yawRadians) * pitchCos,
-                  desiredZ = Mth.sin(yawRadians) * pitchCos;
-            scratch1.set(desiredX, desiredY, desiredZ);
-
-            if (!anyActive) {
-                rotationalSpeed = lookTarget.lookSpeed;
-                scratch0.set(scratch1);
-                anyActive = true;
-            } else {
-                rotationalSpeed = Mth.lerp(weight, rotationalSpeed, lookTarget.lookSpeed);
-                VectorUtils.slerp(scratch0, scratch1, weight, scratch0);
-            }
+            rotationalSpeed = Mth.lerp(weight, rotationalSpeed, lookTarget.lookSpeed);
+            pitch = Mth.rotLerp(weight, pitch, lookTarget.desiredPitch);
+            yaw = Mth.rotLerp(weight, yaw, lookTarget.desiredYaw);
         }
 
         this.combinedRotationalSpeed = rotationalSpeed;
-        this.combinedDesiredPitch = (float) (Mth.atan2(scratch0.y(), Mth.sqrt(scratch0.x() * scratch0.x() + scratch0.z() * scratch0.z())) * Mth.RAD_TO_DEG);
-        this.combinedDesiredYaw = (float) (Mth.atan2(scratch0.z(), scratch0.x()) * Mth.RAD_TO_DEG);
+        this.combinedDesiredPitch = pitch;
+        this.combinedDesiredYaw = yaw;
     }
 
     public static class LookTargetHandle {

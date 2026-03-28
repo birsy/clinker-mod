@@ -1,22 +1,18 @@
-package birsy.clinker.common.world.entity.gnomad.testing;
+package birsy.clinker.common.world.entity.gnomad;
 
 import birsy.clinker.client.entity.gnomad.basic.GnomadSkeleton;
-import birsy.clinker.common.world.entity.gnomad.SuppliesHolder;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.PostSquadTask;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.StayNearSquadCenter;
 import birsy.clinker.common.world.entity.gnomad.gnomind.squad.squadtasks.ResupplyTask;
-import birsy.clinker.core.registry.ClinkerItems;
 import foundry.veil.api.client.necromancer.SkeletonParent;
 import foundry.veil.api.client.necromancer.animation.Animator;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.DifficultyInstance;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.projectile.Snowball;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.tslat.smartbrainlib.api.core.BrainActivityGroup;
@@ -29,10 +25,10 @@ import net.tslat.smartbrainlib.api.core.behaviour.custom.target.SetPlayerLookTar
 import net.tslat.smartbrainlib.api.core.behaviour.custom.target.SetRandomLookTarget;
 import org.jetbrains.annotations.Nullable;
 
-public class SquadTestingThrowerEntity extends SquadTestingEntity<SquadTestingThrowerEntity>
-        implements SuppliesHolder, RangedAttackMob, SkeletonParent<SquadTestingThrowerEntity, GnomadSkeleton> {
+public class GnomadEntity extends BaseGnomadEntity<GnomadEntity>
+        implements SuppliesHolder, RangedAttackMob, SkeletonParent<GnomadEntity, GnomadSkeleton> {
     int supplies;
-    public SquadTestingThrowerEntity(EntityType<? extends PathfinderMob> entityType, Level level) {
+    public GnomadEntity(EntityType<? extends PathfinderMob> entityType, Level level) {
         super(entityType, level);
     }
 
@@ -71,23 +67,23 @@ public class SquadTestingThrowerEntity extends SquadTestingEntity<SquadTestingTh
     @Override
     public void setSupplyCount(int count) { this.supplies = count; }
     @Override
-    public BrainActivityGroup<SquadTestingThrowerEntity> getIdleTasks() {
+    public BrainActivityGroup<GnomadEntity> getIdleTasks() {
         return BrainActivityGroup.idleTasks(
-                new PostSquadTask<SquadTestingThrowerEntity, ResupplyTask>
+                new PostSquadTask<GnomadEntity, ResupplyTask>
                         (ResupplyTask.class, ResupplyTask::new)
                         .startCondition(SuppliesHolder::outOfSupplies),
-                new AnimatableRangedAttack<SquadTestingThrowerEntity>
+                new AnimatableRangedAttack<GnomadEntity>
                         (0)
                         .startCondition(mob -> !outOfSupplies()),
-                new FirstApplicableBehaviour<SquadTestingThrowerEntity>(
+                new FirstApplicableBehaviour<GnomadEntity>(
                         new SetPlayerLookTarget<>(),
                         new SetRandomLookTarget<>()
                 ),
                 new FirstApplicableBehaviour<>(
-                        new StayNearSquadCenter<SquadTestingThrowerEntity>()
+                        new StayNearSquadCenter<GnomadEntity>()
                                 .maximumDistance(10.0F)
                                 .speedModifier(1.0F),
-                        new OneRandomBehaviour<SquadTestingThrowerEntity>(
+                        new OneRandomBehaviour<GnomadEntity>(
                                 new SetRandomWalkTarget<>().speedModifier(0.5F),
                                 new Idle<>().runFor(mob -> mob.getRandom().nextInt(30, 60))
                         )
@@ -111,9 +107,9 @@ public class SquadTestingThrowerEntity extends SquadTestingEntity<SquadTestingTh
     }
 
     private GnomadSkeleton skeleton;
-    private Animator<SquadTestingThrowerEntity, GnomadSkeleton> animator;
+    private Animator<GnomadEntity, GnomadSkeleton> animator;
     @Override public void setSkeleton(@Nullable GnomadSkeleton skeleton) { this.skeleton = skeleton; }
-    @Override public void setAnimator(@Nullable Animator<SquadTestingThrowerEntity, GnomadSkeleton> animator) { this.animator = animator; }
+    @Override public void setAnimator(@Nullable Animator<GnomadEntity, GnomadSkeleton> animator) { this.animator = animator; }
     @Override public @Nullable GnomadSkeleton getSkeleton() { return skeleton; }
-    @Override public @Nullable Animator<SquadTestingThrowerEntity, GnomadSkeleton> getAnimator() { return animator; }
+    @Override public @Nullable Animator<GnomadEntity, GnomadSkeleton> getAnimator() { return animator; }
 }

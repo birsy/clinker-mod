@@ -60,10 +60,9 @@ public class SlabCrabEntity extends GroundLocomotionEntity implements SmartBrain
     }
 
     @Override
-    protected void updateBaseBodyRotation() {
-        super.updateBaseBodyRotation();
-
+    protected float getDefaultBodyYaw() {
         BlockPos targetPos = this.getNavigation().getTargetPos();
+        float currentBodyRotation = this.getSyncedBodyRotation();
         if (targetPos != null && Mth.length(this.locomotionVector.x, this.locomotionVector.z) > 0.05F) {
             double dX = (targetPos.getX() + 0.5) - this.getX(),
                    dZ = (targetPos.getZ() + 0.5) - this.getZ();
@@ -81,12 +80,11 @@ public class SlabCrabEntity extends GroundLocomotionEntity implements SmartBrain
                     desiredAngle = angleToTarget - 90;
                 }
             }
-            baseBodyRotationHandle.face(0, Mth.rotLerp(0.25F, this.getSyncedBodyRotation(), desiredAngle));
-            return;
+            return Mth.rotLerp(0.25F, currentBodyRotation, desiredAngle);
         }
 
         // stop interpolating direction if there's no target or we're not fast enough.
-        baseBodyRotationHandle.face(0.0F, this.getSyncedBodyRotation());
+        return currentBodyRotation;
     }
 
     @Override

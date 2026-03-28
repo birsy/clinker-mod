@@ -2,7 +2,6 @@ package birsy.clinker.common.world.entity;
 
 import birsy.clinker.common.networking.packet.ClientboundMobLocomotionSyncPacket;
 import birsy.clinker.common.world.entity.ai.*;
-import birsy.clinker.core.Clinker;
 import net.minecraft.SharedConstants;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
@@ -36,20 +35,18 @@ public class GroundLocomotionEntity extends PathfinderMob {
             SynchedEntityData.defineId(GroundLocomotionEntity.class, EntityDataSerializers.FLOAT);
     protected static final EntityDataAccessor<Vector3f> DATA_LAST_HIT_DIRECTION =
             SynchedEntityData.defineId(GroundLocomotionEntity.class, EntityDataSerializers.VECTOR3);
+
     public final Vector3f locomotionVector = new Vector3f(),
                           previousLocomotionVector = new Vector3f(),
                           smoothedLocomotionVector = new Vector3f(),
                           smoothedLocomotionGoalVector = new Vector3f();
     protected float cumulativeLocomotionAmount = 0, cumulativeLocomotionAmountGoal = 0;
     protected final Scheduler scheduler = new Scheduler();
-    protected LookTargetController.LookTargetHandle baseLookHandle;
-    protected LookTargetController.LookTargetHandle baseBodyRotationHandle;
-
 
     protected GroundLocomotionEntity(EntityType<? extends PathfinderMob> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
-        this.moveControl = new GroundMoveControl(this);
-        this.lookControl = new GroundLookAngleControl(this, 80, 60);
+        this.moveControl = createMoveControl();
+        this.lookControl = createLookControl();
     }
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
@@ -57,24 +54,30 @@ public class GroundLocomotionEntity extends PathfinderMob {
         builder.define(DATA_SYNCED_BODY_ROTATION, 0.0F);
         builder.define(DATA_LAST_HIT_DIRECTION, new Vector3f(0, 0, 1));
     }
-    @Override
-    protected PathNavigation createNavigation(Level pLevel) {
+
+    @Override protected PathNavigation createNavigation(Level pLevel) {
         return new GroundNavigationControl(this, pLevel, 0.5F);
     }
-    @Override
-    protected BodyRotationControl createBodyControl() {
-        return new GroundBodyAngleControl(this);
-    }
-    @Override
-    public GroundMoveControl getMoveControl() {
+
+    @Override public GroundMoveControl getMoveControl() {
         return (GroundMoveControl) super.getMoveControl();
     }
-    @Override
-    public GroundLookAngleControl getLookControl() {
-        return (GroundLookAngleControl) super.getLookControl();
+    protected GroundMoveControl createMoveControl() {
+        return new GroundMoveControl(this);
     }
-    public GroundBodyAngleControl getBodyRotationControl() {
-        return (GroundBodyAngleControl) this.bodyRotationControl;
+
+    public GroundBodyAngleControl getBodyRotationControl() { return (GroundBodyAngleControl) this.bodyRotationControl; }
+    @Override protected BodyRotationControl createBodyControl() {
+        return new GroundBodyAngleControl(this, this::getDefaultBodyYaw, this::getDefaultBodyTurnSpeed);
+    }
+
+    @Override public GroundLookAngleControl getLookControl() { return (GroundLookAngleControl) super.getLookControl(); }
+    protected GroundLookAngleControl createLookControl() {
+        return new GroundLookAngleControl(this,
+                () -> 0F, 80,
+                this::getSyncedBodyRotation, 60,
+                () -> 0.5F
+        );
     }
 
     @Override
@@ -87,7 +90,6 @@ public class GroundLocomotionEntity extends PathfinderMob {
                 (float) ((this.getY() + this.getBbHeight() * 0.5F) - damageSourcePos.y),
                 (float) (this.getZ() - damageSourcePos.z)
         );
-        Clinker.LOGGER.info("{}, {}, {}", this.getLastHitDirection().x(), this.getLastHitDirection().y(), this.getLastHitDirection().z());
     }
 
     @Override
@@ -131,37 +133,34 @@ public class GroundLocomotionEntity extends PathfinderMob {
             this.cumulativeLocomotionAmount += (float) lateralDistanceMoved;
         }
         PacketDistributor.sendToPlayersTrackingEntity(this, new ClientboundMobLocomotionSyncPacket(this.getId(), this.locomotionVector, this.cumulativeLocomotionAmount));
-
-        this.updateBaseLookRotation();
-        this.updateBaseBodyRotation();
     }
 
-    protected void updateBaseLookRotation() {
-        if (baseLookHandle == null) baseLookHandle = this.getLookControl().lookTargetController.createHandle(0.5F, Integer.MIN_VALUE);
-        baseLookHandle.face(0, this.getSyncedBodyRotation());
-    }
-
-    protected void updateBaseBodyRotation() {
-        if (baseBodyRotationHandle == null) baseBodyRotationHandle = this.getBodyRotationControl().lookTargetController.createHandle(0.2F, Integer.MIN_VALUE);
-        if (locomotionVector.x != 0 && locomotionVector.z != 0) {
+    protected float getDefaultBodyYaw() {
+        // if we're moving, turn to face that direction
+        if (locomotionVector != null && (locomotionVector.x != 0 || locomotionVector.z != 0)) {
+            // but don't turn while strafing
             if (!getMoveControl().isStrafing()) {
-                float yaw = (float) (Mth.atan2(locomotionVector.z, locomotionVector.x) * Mth.RAD_TO_DEG) - 90.0F;
-                baseBodyRotationHandle.face(0, yaw);
-            }
-        } else {
-            float headYaw = this.getLookControl().lookTargetController.getDesiredYaw().orElse(baseBodyRotationHandle.desiredYaw);
-            if (Mth.degreesDifferenceAbs(baseBodyRotationHandle.desiredYaw, headYaw) > 60) {
-                baseBodyRotationHandle.face(0, headYaw);
+                return (float) -Mth.atan2(locomotionVector.x, locomotionVector.z) * Mth.RAD_TO_DEG;
             }
         }
+        // look where the head is trying to look
+        float headYaw = this.getLookControl().lookTargetController.getDesiredYaw();
+        float currentBodyYaw = this.getBodyRotationControl().lookTargetController.getDesiredYaw();
+        if (Mth.degreesDifferenceAbs(currentBodyYaw, headYaw) > 60) {
+            return headYaw;
+        }
+        // just return whatever it currently is
+        return currentBodyYaw;
+    }
+    protected float getDefaultBodyTurnSpeed() {
+        if (locomotionVector != null && (locomotionVector.x != 0 || locomotionVector.z != 0)) {
+            return 0.2F;
+        }
+        return 0.05F;
     }
 
-    public void setSyncedBodyRotation(float rotation) {
-        this.getEntityData().set(DATA_SYNCED_BODY_ROTATION, rotation);
-    }
-    public float getSyncedBodyRotation() {
-        return this.getEntityData().get(DATA_SYNCED_BODY_ROTATION);
-    }
+    public void setSyncedBodyRotation(float rotation) { this.getEntityData().set(DATA_SYNCED_BODY_ROTATION, rotation); }
+    public float getSyncedBodyRotation() { return this.getEntityData().get(DATA_SYNCED_BODY_ROTATION); }
 
     public void setLocomotionVector(float x, float y, float z) { this.locomotionVector.set(x, y, z);}
     public void setLocomotionVector(Vector3fc vec) { this.setLocomotionVector(vec.x(), vec.y(), vec.z()); }
