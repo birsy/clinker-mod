@@ -17,7 +17,7 @@ import net.tslat.smartbrainlib.util.BrainUtils;
 
 import java.util.List;
 
-class SetWalkTargetToSupplyDepot<E extends LivingEntity & SuppliesDeliverer> extends ExtendedBehaviour<E> {
+public class SetWalkTargetToSupplyDepot<E extends LivingEntity & SuppliesDeliverer> extends ExtendedBehaviour<E> {
     private static final MemoryTest MEMORY_REQUIREMENTS = MemoryTest.builder(4)
             .hasMemory(ClinkerMemoryModules.NEAREST_SUPPLY_DEPOT.get())
             .hasMemory(ClinkerMemoryModules.CURRENTLY_ASSIGNED_SQUAD_TASK.get())

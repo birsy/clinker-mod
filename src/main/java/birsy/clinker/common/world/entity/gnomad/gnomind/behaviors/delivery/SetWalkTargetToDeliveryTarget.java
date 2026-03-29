@@ -23,7 +23,7 @@ import net.tslat.smartbrainlib.util.EntityRetrievalUtil;
 import java.util.List;
 import java.util.function.Predicate;
 
-class SetWalkTargetToDeliveryTarget<E extends LivingEntity & SuppliesDeliverer> extends ExtendedBehaviour<E> {
+public class SetWalkTargetToDeliveryTarget<E extends LivingEntity & SuppliesDeliverer> extends ExtendedBehaviour<E> {
     private static final MemoryTest MEMORY_REQUIREMENTS = MemoryTest.builder(5)
             .usesMemory(ClinkerMemoryModules.DELIVERY_TARGET.get())
             .usesMemory(ClinkerMemoryModules.CURRENTLY_ASSIGNED_SQUAD_TASK.get())

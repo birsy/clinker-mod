@@ -8,11 +8,11 @@ import java.util.List;
 
 public class ClinkerDebugRenderers {
     public static boolean shouldRender = true;
-    //public static GnomadSquadDebugRenderer gnomadSquadDebugRenderer;
+    public static SquadDebugRenderer squadDebugRenderer;
     public static List<DebugRenderer.SimpleDebugRenderer> renderers = new ArrayList<>();
 
     public static void initialize() {
-//        gnomadSquadDebugRenderer = new GnomadSquadDebugRenderer(Minecraft.getInstance());
-//        renderers.add(gnomadSquadDebugRenderer);
+        squadDebugRenderer = new SquadDebugRenderer(Minecraft.getInstance());
+        renderers.add(squadDebugRenderer);
     }
 }

@@ -120,7 +120,7 @@ public class ClinkerEntities {
 
         event.put(GNOMAD_MOGUL.get(), GnomadMogulEntity.createAttributes().build());
         event.put(GNOMAD.get(), Zombie.createAttributes().build());
-        event.put(GNOMAD_RUNT.get(), Zombie.createAttributes().build());
+        event.put(GNOMAD_RUNT.get(), GnomadRuntEntity.createAttributes().build());
     }
 
     @SubscribeEvent

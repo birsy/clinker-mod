@@ -20,7 +20,7 @@ import net.tslat.smartbrainlib.util.BrainUtils;
 import java.util.List;
 
 public class StayNearSquadCenter<E extends PathfinderMob & SquadMember<E>> extends ExtendedBehaviour<E> {
-    private static final MemoryTest MEMORY_REQUIREMENTS = MemoryTest.builder(2)
+    private static final MemoryTest MEMORY_REQUIREMENTS = MemoryTest.builder(1)
             .hasMemory(ClinkerMemoryModules.SQUAD.get());
 
     private float maximumDistance = 16.0F, maximumDistanceSqr = maximumDistance * maximumDistance;

@@ -59,7 +59,8 @@ public abstract class DebugRendererMixin {
     @Inject(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;DDD)V", at = @At("TAIL"))
     private void clinker$render(PoseStack poseStack, MultiBufferSource.BufferSource bufferSource, double a, double b, double c, CallbackInfo ci) {
         for (DebugRenderer.SimpleDebugRenderer renderer : ClinkerDebugRenderers.renderers) {
-            if (SharedConstants.IS_RUNNING_IN_IDE && ClinkerDebugRenderers.shouldRender) renderer.render(poseStack, bufferSource, a, b, c);
+            if (SharedConstants.IS_RUNNING_IN_IDE && ClinkerDebugRenderers.shouldRender)
+                renderer.render(poseStack, bufferSource, a, b, c);
         }
 
         this.pathfindingRenderer.render(poseStack, bufferSource, a, b, c);

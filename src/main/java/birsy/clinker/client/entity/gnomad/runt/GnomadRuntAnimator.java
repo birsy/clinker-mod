@@ -56,7 +56,7 @@ public class GnomadRuntAnimator extends Animator<GnomadRuntEntity, GnomadRuntSke
             if (hurtDirection.x() != 0 || hurtDirection.z() != 0) {
                 float hurtRotationAxisX = -hurtDirection.z(),
                         hurtRotationAxisZ = hurtDirection.x();
-                skeleton.root.rotation.rotateAxis(-60 * Mth.DEG_TO_RAD * hurtMixFactor, hurtRotationAxisX, 0, hurtRotationAxisZ);
+                skeleton.root.rotation.rotateAxis(-80 * Mth.DEG_TO_RAD * hurtMixFactor, hurtRotationAxisX, 0, hurtRotationAxisZ);
             }
         } else {
             this.hurtAnim.setMixFactor(0.0F);

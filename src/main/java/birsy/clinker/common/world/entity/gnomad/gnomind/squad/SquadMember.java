@@ -13,10 +13,19 @@ public interface SquadMember<E extends LivingEntity> {
 
     default E asEntity() { return (E) this; }
     default void serializeSquad(CompoundTag nbt) {
-        if (this.getSquad() != null) nbt.putUUID("SquadUUID", this.getSquad().uuid);
+        if (this.getSquad() != null) {
+            nbt.putUUID("SquadUUID", this.getSquad().uuid);
+            nbt.putBoolean("SquadLeader", this.getSquad().leader == this);
+        }
     }
     default void deserializeSquad(CompoundTag nbt) {
-        if (nbt.contains("SquadUUID") && this.asEntity().level() instanceof ServerLevel serverLevel)
-            this.setSquad(SquadManager.get(serverLevel).getOrCreate(nbt.getUUID("SquadUUID")));
+        if (nbt.contains("SquadUUID") && this.asEntity().level() instanceof ServerLevel serverLevel) {
+            Squad squad = SquadManager.get(serverLevel).getOrCreate(nbt.getUUID("SquadUUID"));
+            this.setSquad(squad);
+            if (nbt.getBoolean("SquadLeader")) squad.setLeader(this);
+        }
+    }
+    default float squadPositionWeight() {
+        return 1.0F;
     }
 }

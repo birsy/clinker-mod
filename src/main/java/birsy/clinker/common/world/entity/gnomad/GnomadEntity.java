@@ -2,8 +2,10 @@ package birsy.clinker.common.world.entity.gnomad;
 
 import birsy.clinker.client.entity.gnomad.basic.GnomadSkeleton;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.PostSquadTask;
+import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.SharedGnomadBehaviorSets;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.StayNearSquadCenter;
 import birsy.clinker.common.world.entity.gnomad.gnomind.squad.squadtasks.ResupplyTask;
+import birsy.clinker.common.world.entity.gnomad.mogul.GnomadMogulEntity;
 import foundry.veil.api.client.necromancer.SkeletonParent;
 import foundry.veil.api.client.necromancer.animation.Animator;
 import net.minecraft.nbt.CompoundTag;
@@ -41,13 +43,6 @@ public class GnomadEntity extends BaseGnomadEntity<GnomadEntity>
     @Override
     protected void customServerAiStep() {
         super.customServerAiStep();
-        if (this.outOfSupplies()) {
-            this.setCustomNameVisible(true);
-            this.setCustomName(Component.literal("no supplies!"));
-        } else {
-            this.setCustomNameVisible(false);
-            this.setCustomName(null);
-        }
     }
 
     @Override
@@ -75,10 +70,7 @@ public class GnomadEntity extends BaseGnomadEntity<GnomadEntity>
                 new AnimatableRangedAttack<GnomadEntity>
                         (0)
                         .startCondition(mob -> !outOfSupplies()),
-                new FirstApplicableBehaviour<GnomadEntity>(
-                        new SetPlayerLookTarget<>(),
-                        new SetRandomLookTarget<>()
-                ),
+                SharedGnomadBehaviorSets.<GnomadMogulEntity>setIdleLookTargets(),
                 new FirstApplicableBehaviour<>(
                         new StayNearSquadCenter<GnomadEntity>()
                                 .maximumDistance(10.0F)

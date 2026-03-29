@@ -3,12 +3,11 @@ package birsy.clinker.common.world.entity.gnomad;
 import birsy.clinker.common.world.entity.GroundLocomotionEntity;
 import birsy.clinker.common.world.entity.ai.behaviors.InvalidateLookAtTarget;
 import birsy.clinker.common.world.entity.ai.behaviors.LocomotorLookAtTarget;
-import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.ActiveSquadTasksSensor;
-import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.SquadSensor;
-import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.PostedSquadTasksSensor;
-import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.NearestSupplyDepotSensor;
+import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.ReportKnownEnemyLocations;
+import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.*;
 import birsy.clinker.common.world.entity.gnomad.gnomind.squad.Squad;
 import birsy.clinker.common.world.entity.gnomad.gnomind.squad.SquadMember;
+import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.EntityType;
@@ -49,6 +48,17 @@ public class BaseGnomadEntity<E extends BaseGnomadEntity<E>> extends GroundLocom
     }
 
     @Override
+    public void addAdditionalSaveData(CompoundTag nbt) {
+        super.addAdditionalSaveData(nbt);
+        this.serializeSquad(nbt);
+    }
+    @Override
+    public void readAdditionalSaveData(CompoundTag nbt) {
+        super.readAdditionalSaveData(nbt);
+        this.deserializeSquad(nbt);
+    }
+
+    @Override
     protected void customServerAiStep() {
         super.customServerAiStep();
         tickBrain((E)this);
@@ -67,7 +77,8 @@ public class BaseGnomadEntity<E extends BaseGnomadEntity<E>> extends GroundLocom
                 new SquadSensor<>(),
                 new PostedSquadTasksSensor<>(),
                 new ActiveSquadTasksSensor<>(),
-                new NearestSupplyDepotSensor<>()
+                new NearestSupplyDepotSensor<>(),
+                new LastKnownEnemyPositionSensor<>()
         );
     }
 
@@ -76,21 +87,12 @@ public class BaseGnomadEntity<E extends BaseGnomadEntity<E>> extends GroundLocom
         return BrainActivityGroup.coreTasks(
                 new SetAttackTarget<>(false)
                         .targetFinder(mob -> EntityRetrievalUtil.getNearestPlayer(mob, 32.0F)),
+                new ReportKnownEnemyLocations<>()
+                        .cooldownFor((entity) -> 10), // run every ten ticks
                 new InvalidateLookAtTarget<>(),
                 new LocomotorLookAtTarget<>(),
                 new MoveToWalkTarget<>()
         );
-    }
-
-    @Override
-    public void addAdditionalSaveData(CompoundTag nbt) {
-        super.addAdditionalSaveData(nbt);
-        this.serializeSquad(nbt);
-    }
-    @Override
-    public void readAdditionalSaveData(CompoundTag nbt) {
-        super.readAdditionalSaveData(nbt);
-        this.deserializeSquad(nbt);
     }
 
     @Override

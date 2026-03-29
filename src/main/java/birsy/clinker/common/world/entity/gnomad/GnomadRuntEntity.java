@@ -2,6 +2,7 @@ package birsy.clinker.common.world.entity.gnomad;
 
 import birsy.clinker.client.entity.gnomad.runt.GnomadRuntSkeleton;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.ClaimSquadTask;
+import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.SharedGnomadBehaviorSets;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.StayNearSquadCenter;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.delivery.FetchAndDeliverSupplies;
 import birsy.clinker.common.world.entity.gnomad.gnomind.squad.squadtasks.ResupplyTask;
@@ -12,8 +13,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.level.Level;
 import net.tslat.smartbrainlib.api.core.BrainActivityGroup;
 import net.tslat.smartbrainlib.api.core.behaviour.FirstApplicableBehaviour;
@@ -24,6 +30,8 @@ import net.tslat.smartbrainlib.api.core.behaviour.custom.target.SetPlayerLookTar
 import net.tslat.smartbrainlib.api.core.behaviour.custom.target.SetRandomLookTarget;
 import org.jetbrains.annotations.Nullable;
 
+import static net.minecraft.world.entity.monster.Monster.createMonsterAttributes;
+
 public class GnomadRuntEntity extends BaseGnomadEntity<GnomadRuntEntity> implements SuppliesDeliverer, SkeletonParent<GnomadRuntEntity, GnomadRuntSkeleton> {
     private static final EntityDataAccessor<Boolean> DATA_HOLDING_DELIVERY =
             SynchedEntityData.defineId(GnomadRuntEntity.class, EntityDataSerializers.BOOLEAN);
@@ -32,15 +40,20 @@ public class GnomadRuntEntity extends BaseGnomadEntity<GnomadRuntEntity> impleme
         super(entityType, level);
     }
 
+    public static AttributeSupplier.Builder createAttributes() {
+        return createMonsterAttributes()
+                .add(Attributes.MOVEMENT_SPEED, 0.23F)
+                .add(Attributes.ATTACK_DAMAGE, 1.0);
+    }
+
+    @Override
+    public void knockback(double strength, double x, double z) {
+        // runts take much additional knockback
+        super.knockback(strength * 3, x, z);
+    }
+
     protected void customServerAiStep() {
         super.customServerAiStep();
-        if (this.isHoldingDelivery()) {
-            this.setCustomNameVisible(true);
-            this.setCustomName(Component.literal("carrying delivery!"));
-        } else {
-            this.setCustomNameVisible(false);
-            this.setCustomName(null);
-        }
     }
 
     @Override
@@ -73,14 +86,11 @@ public class GnomadRuntEntity extends BaseGnomadEntity<GnomadRuntEntity> impleme
         return BrainActivityGroup.idleTasks(
                 new ClaimSquadTask<>().of(task -> task instanceof ResupplyTask && task.isPending()),
                 new FirstApplicableBehaviour<>(
-                        FetchAndDeliverSupplies.<GnomadRuntEntity>behavior(),
+                        SharedGnomadBehaviorSets.<GnomadRuntEntity>fetchAndDeliverSupplies(),
                         new StayNearSquadCenter<GnomadRuntEntity>()
                                 .maximumDistance(10.0F)
                                 .speedModifier(2.0F),
-                        new FirstApplicableBehaviour<GnomadRuntEntity>(
-                                new SetPlayerLookTarget<>(),
-                                new SetRandomLookTarget<>()
-                        ),
+                        SharedGnomadBehaviorSets.<GnomadRuntEntity>setIdleLookTargets(),
                         new OneRandomBehaviour<GnomadRuntEntity>(
                                 new SetRandomWalkTarget<>().speedModifier(0.5F),
                                 new Idle<>().runFor(mob -> mob.getRandom().nextInt(30, 60))

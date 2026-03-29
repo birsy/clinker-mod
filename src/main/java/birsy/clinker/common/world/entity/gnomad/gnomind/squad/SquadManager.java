@@ -1,7 +1,9 @@
 package birsy.clinker.common.world.entity.gnomad.gnomind.squad;
 
+import birsy.clinker.common.networking.packet.debug.ClientboundSquadDebugPacket;
 import birsy.clinker.core.Clinker;
 import com.google.common.collect.Maps;
+import net.minecraft.SharedConstants;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -10,6 +12,7 @@ import net.minecraft.world.level.saveddata.SavedData;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -27,7 +30,7 @@ public class SquadManager extends SavedData {
     public static SquadManager get(ServerLevel level) {
         return level.getDataStorage().computeIfAbsent(
                 new Factory<>(() -> new SquadManager(level), (data, registry) -> new SquadManager(level), null),
-                "GnomadSquadManager"
+                "SquadManager"
         );
     }
 
@@ -58,8 +61,17 @@ public class SquadManager extends SavedData {
     public static void tickSquads(LevelTickEvent.Post event) {
         if (event.getLevel() instanceof ServerLevel level) {
             ProfilerFiller profiler = level.getServer().getProfiler();
-            profiler.push("tickGnomadSquads");
-            get(level).tick();
+            profiler.push("tickSquads");
+
+            SquadManager managerForLevel = get(level);
+            managerForLevel.tick();
+
+            if (SharedConstants.IS_RUNNING_IN_IDE && level.getGameTime() % 5 == 0) {
+                PacketDistributor.sendToPlayersInDimension(level,
+                        ClientboundSquadDebugPacket.of(managerForLevel.squads.values())
+                );
+            }
+
             profiler.pop();
         }
     }

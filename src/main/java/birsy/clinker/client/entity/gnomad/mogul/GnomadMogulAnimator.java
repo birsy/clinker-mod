@@ -10,12 +10,15 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.tslat.smartbrainlib.util.RandomUtil;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 public class GnomadMogulAnimator extends Animator<GnomadMogulEntity, GnomadMogulSkeleton> {
     public final AnimationEntry<?, ?> idleAnim, maskAnim, walkAnim, strafeAnim, floatAnim;
     public final Animator.TimedAnimationEntry<?, ?> upSwingAnim, leftSwingAnim, rightSwingAnim;
     private int maskShakeTime = 0, maskShakeDuration = 1;
     private boolean maskShaking = false;
+    private float desiredLookPitchOffset = 0, lookPitchOffset = 0,
+            desiredLookYawOffset = 0, lookYawOffset = 0;
 
     private float floatingTransition = 0;
 
@@ -76,6 +79,16 @@ public class GnomadMogulAnimator extends Animator<GnomadMogulEntity, GnomadMogul
         this.maskAnim.setMixFactor(shakeAmount);
         this.maskAnim.setTime(entity.tickCount);
 
+        // look around a little randomly
+        if (RandomUtil.oneInNChance(40)) desiredLookYawOffset = (float) RandomUtil.randomScaledGaussianValue(1.5F);
+        if (RandomUtil.oneInNChance(40)) desiredLookPitchOffset = (float) RandomUtil.randomScaledGaussianValue(2.0F);
+        lookYawOffset = Mth.approach(lookYawOffset, desiredLookYawOffset, 0.7F);
+        lookPitchOffset = Mth.approach(lookPitchOffset, desiredLookPitchOffset, 0.7F);
+        skeleton.MogulNeck.rotateDeg(lookYawOffset * 0.5F, Direction.Axis.Y);
+        skeleton.MogulHead.rotateDeg(lookYawOffset * 0.5F, Direction.Axis.Y);
+        skeleton.MogulNeck.rotateDeg(lookPitchOffset * 0.5F, Direction.Axis.X);
+        skeleton.MogulHead.rotateDeg(lookPitchOffset * 0.5F, Direction.Axis.X);
+
         // mask shake noise
         // todo: make some kind of "woosh-y" noise for this
 //        if (shakeAmount > 0.05) {
@@ -122,6 +135,13 @@ public class GnomadMogulAnimator extends Animator<GnomadMogulEntity, GnomadMogul
             skeleton.MogulRightArm.rotateDeg(Mth.cos(flinchTime - 1) * 8 * flinchFactor, Direction.Axis.Z);
             skeleton.MogulLeftArm.rotateDeg(Mth.sin(flinchTime - 1) * 8 * flinchFactor, Direction.Axis.X);
             skeleton.MogulLeftArm.rotateDeg(Mth.cos(flinchTime - 1) * 8 * flinchFactor, Direction.Axis.Z);
+
+            Vector3fc hurtDirection = entity.getLastHitDirection();
+            if (hurtDirection.x() != 0 || hurtDirection.z() != 0) {
+                float hurtRotationAxisX = -hurtDirection.z(),
+                        hurtRotationAxisZ = hurtDirection.x();
+                skeleton.MogulRoot.rotation.rotateAxis(-10 * Mth.DEG_TO_RAD * flinchFactor, hurtRotationAxisX, 0, hurtRotationAxisZ);
+            }
         }
 
         // death

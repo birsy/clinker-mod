@@ -21,14 +21,14 @@ import net.tslat.smartbrainlib.util.BrainUtils;
 
 import java.util.List;
 
-class DeliverSuppliesToDeliveryTarget<E extends LivingEntity & SuppliesDeliverer> extends HeldBehaviour<E> {
+public class DeliverSuppliesToDeliveryTarget<E extends LivingEntity & SuppliesDeliverer> extends HeldBehaviour<E> {
     private static final MemoryTest MEMORY_REQUIREMENTS = MemoryTest.builder(3)
             .hasMemory(ClinkerMemoryModules.DELIVERY_TARGET.get())
             .usesMemory(MemoryModuleType.WALK_TARGET)
             .usesMemory(MemoryModuleType.LOOK_TARGET);
     SuppliesHolder currentDeliveryTarget;
 
-    DeliverSuppliesToDeliveryTarget() {
+    public DeliverSuppliesToDeliveryTarget() {
         super();
         this.onTick(this::doTick);
     }

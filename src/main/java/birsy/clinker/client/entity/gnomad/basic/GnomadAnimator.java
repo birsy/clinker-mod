@@ -135,12 +135,15 @@ public class GnomadAnimator extends Animator<GnomadEntity, GnomadSkeleton> {
             netHeadYaw = Mth.clamp(netHeadYaw, -80, 80);
             float headPitch = -entity.getViewXRot(1.0F);
             skeleton.root.rotateDeg(bodyYaw, Y);
-            skeleton.neck.rotateDeg(netHeadYaw, Y);
+
+            float torsoHeadTurn = netHeadYaw * 0.1F;
+            skeleton.torso.rotateDeg(torsoHeadTurn, Y);
+            skeleton.neck.rotateDeg(netHeadYaw - torsoHeadTurn, Y);
             skeleton.head.rotateDeg(headPitch, X);
 
             float torsoRotation = -5;
             skeleton.torso.rotateDeg(torsoRotation, X);
-            skeleton.torso.rotation.conjugate(skeleton.skirt.rotation);
+            skeleton.skirt.rotateDeg(-torsoRotation, X);
 
             skeleton.rightArm.rotateDeg(-torsoRotation, X);
             skeleton.leftArm.rotateDeg(-torsoRotation, X);

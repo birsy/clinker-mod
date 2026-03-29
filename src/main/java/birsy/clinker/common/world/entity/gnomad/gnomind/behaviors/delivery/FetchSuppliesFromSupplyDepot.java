@@ -18,7 +18,7 @@ import net.tslat.smartbrainlib.util.BrainUtils;
 
 import java.util.List;
 
-class FetchSuppliesFromSupplyDepot<E extends LivingEntity & SuppliesDeliverer> extends HeldBehaviour<E> {
+public class FetchSuppliesFromSupplyDepot<E extends LivingEntity & SuppliesDeliverer> extends HeldBehaviour<E> {
     private static final MemoryTest MEMORY_REQUIREMENTS = MemoryTest.builder(5)
             .hasMemory(ClinkerMemoryModules.NEAREST_SUPPLY_DEPOT.get())
             .hasMemory(ClinkerMemoryModules.CURRENTLY_ASSIGNED_SQUAD_TASK.get())
@@ -28,7 +28,7 @@ class FetchSuppliesFromSupplyDepot<E extends LivingEntity & SuppliesDeliverer> e
 
     float minimumDistance = 2.5F, minimumDistanceSqr = minimumDistance * minimumDistance;
 
-    FetchSuppliesFromSupplyDepot() {
+    public FetchSuppliesFromSupplyDepot() {
         super();
         this.onTick(this::doTick);
     }

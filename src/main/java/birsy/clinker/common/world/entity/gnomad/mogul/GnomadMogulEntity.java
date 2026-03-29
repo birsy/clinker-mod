@@ -6,6 +6,7 @@ import birsy.clinker.common.world.entity.GroundLocomotionEntity;
 import birsy.clinker.common.world.entity.ai.behaviors.*;
 import birsy.clinker.common.world.entity.gnomad.BaseGnomadEntity;
 import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
+import birsy.clinker.common.world.entity.gnomad.GnomadRuntEntity;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.*;
 import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.SquadSensor;
 import birsy.clinker.common.world.entity.gnomad.gnomind.squad.Squad;
@@ -40,6 +41,7 @@ import net.tslat.smartbrainlib.api.SmartBrainOwner;
 import net.tslat.smartbrainlib.api.core.BrainActivityGroup;
 import net.tslat.smartbrainlib.api.core.SmartBrainProvider;
 import net.tslat.smartbrainlib.api.core.behaviour.FirstApplicableBehaviour;
+import net.tslat.smartbrainlib.api.core.behaviour.OneRandomBehaviour;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.look.LookAtTarget;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.move.FloatToSurfaceOfFluid;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.target.SetPlayerLookTarget;
@@ -76,6 +78,16 @@ public class GnomadMogulEntity extends BaseGnomadEntity<GnomadMogulEntity> imple
         this.attackHandler = new MogulAttackHandler(this);
     }
 
+    public static AttributeSupplier.Builder createAttributes() {
+        return createMonsterAttributes()
+                .add(Attributes.MAX_HEALTH, 20.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.23)
+                .add(Attributes.ATTACK_DAMAGE, 2.0)
+                .add(Attributes.ARMOR, 2.0)
+                .add(Attributes.STEP_HEIGHT, 1.1)
+                .add(Attributes.KNOCKBACK_RESISTANCE, 0.5);
+    }
+
     private Vector3f knockbackVector = new Vector3f();
     protected void attack(LivingEntity entity, float damage, float knockbackX, float knockbackY, float knockbackZ) {
         float attackDamage = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * damage;
@@ -93,15 +105,6 @@ public class GnomadMogulEntity extends BaseGnomadEntity<GnomadMogulEntity> imple
             this.setLastHurtMob(entity);
             this.playAttackSound();
         }
-    }
-
-    public static AttributeSupplier.Builder createAttributes() {
-        return createMonsterAttributes()
-                .add(Attributes.MAX_HEALTH, 20.0D)
-                .add(Attributes.MOVEMENT_SPEED, 0.23F)
-                .add(Attributes.ATTACK_DAMAGE, 2.0)
-                .add(Attributes.ARMOR, 2.0)
-                .add(Attributes.STEP_HEIGHT, 1.1D);
     }
 
     @Override
@@ -150,18 +153,25 @@ public class GnomadMogulEntity extends BaseGnomadEntity<GnomadMogulEntity> imple
 
     void recruitNearbyGnomads() {
         if (this.level() instanceof ServerLevel serverLevel) {
-            // leaders create new squads
-            if (this.getSquad() == null) this.setSquad(SquadManager.get(serverLevel).getOrCreate(UUID.randomUUID()));
-            List<SquadMember<?>> nearbyPotentialRecruits = EntityRetrievalUtil.getEntities(
+            // if we aren't currently in a squad,
+            // create one and become the leader!
+            if (this.getSquad() == null) {
+                Squad newSquad = SquadManager.get(serverLevel).getOrCreate(UUID.randomUUID());
+                this.setSquad(newSquad);
+                newSquad.setLeader(this);
+            }
+            // recruit nearby gnomads into our squad
+            List<SquadMember<?>> nearbyRecruits = EntityRetrievalUtil.getEntities(
                     this,
                     10, 10, 10,
                     entity -> {
-                        if (entity instanceof SquadMember<?> squadMember) return squadMember.getSquad() == null;
+                        if (entity instanceof BaseGnomadEntity<?> potentialRecruit)
+                            return potentialRecruit.getSquad() == null;
                         return false;
                     }
             );
-            for (SquadMember<?> nearbyPotentialRecruit : nearbyPotentialRecruits) {
-                nearbyPotentialRecruit.setSquad(this.getSquad());
+            for (SquadMember<?> recruit : nearbyRecruits) {
+                recruit.setSquad(this.getSquad());
             }
         }
     }
@@ -221,10 +231,7 @@ public class GnomadMogulEntity extends BaseGnomadEntity<GnomadMogulEntity> imple
     @Override
     public BrainActivityGroup<GnomadMogulEntity> getIdleTasks() {
         return BrainActivityGroup.idleTasks(
-                new FirstApplicableBehaviour<GnomadEntity>(
-                        new SetPlayerLookTarget<>(),
-                        new SetRandomLookTarget<>()
-                )
+                SharedGnomadBehaviorSets.<GnomadMogulEntity>setIdleLookTargets()
         );
     }
 
@@ -247,6 +254,11 @@ public class GnomadMogulEntity extends BaseGnomadEntity<GnomadMogulEntity> imple
     }
     public void setFloating(boolean floating) {
         this.entityData.set(DATA_FLOATING, floating);
+    }
+
+    @Override
+    public float squadPositionWeight() {
+        return 2.5F;
     }
 
     GnomadMogulSkeleton skeleton;
