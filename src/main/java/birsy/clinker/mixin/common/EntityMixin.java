@@ -21,7 +21,7 @@ public abstract class EntityMixin {
     @Inject(method = "isInvulnerableTo", at = @At("HEAD"), cancellable = true)
     private void clinker$invulnerableTo(DamageSource source, CallbackInfoReturnable<Boolean> cir) {
         EntityType<?> self = ((Entity) (Object) this).getType();
-        if (source.is(ClinkerTags.THORNY) && self.is(ClinkerTags.THORN_IMMUNE))
+        if (source.is(ClinkerTags.DamageTypes.THORNY) && self.is(ClinkerTags.Entities.THORN_IMMUNE))
             cir.setReturnValue(true);
     }
 }

@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.item.components;
+package birsy.clinker.common.world.components;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -6,7 +6,6 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 public record LoadedItemStack(ItemStack stack, int lastCount) {
     public static final LoadedItemStack EMPTY = new LoadedItemStack(ItemStack.EMPTY, 0);

@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.item.components;
+package birsy.clinker.common.world.components;
 
 import birsy.clinker.client.render.ClinkerFonts;
 import birsy.clinker.common.page.Page;

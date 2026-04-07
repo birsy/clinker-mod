@@ -1,8 +1,7 @@
 package birsy.clinker.common.world.item;
 
-import birsy.clinker.common.world.item.components.CrossbowState;
-import birsy.clinker.common.world.item.components.LoadedItemStack;
-import birsy.clinker.core.Clinker;
+import birsy.clinker.common.world.components.CrossbowState;
+import birsy.clinker.common.world.components.LoadedItemStack;
 import birsy.clinker.core.registry.ClinkerDataComponents;
 import birsy.clinker.core.registry.ClinkerTags;
 import net.minecraft.ChatFormatting;
@@ -64,7 +63,7 @@ public class AlchemistsCrossbowItem extends ProjectileWeaponItem {
 
     @Override
     public boolean isValidRepairItem(ItemStack stack, ItemStack repairCandidate) {
-        return repairCandidate.is(ClinkerTags.ALCHEMISTS_CROSSBOW_REPAIRABLE);
+        return repairCandidate.is(ClinkerTags.Items.ALCHEMISTS_CROSSBOW_REPAIRABLE);
     }
 
     @Override

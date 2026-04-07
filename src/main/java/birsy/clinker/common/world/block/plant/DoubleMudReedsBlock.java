@@ -31,7 +31,7 @@ public class DoubleMudReedsBlock extends DoublePlantBlock implements SimpleWater
 
     @Override
     protected boolean mayPlaceOn(BlockState pState, BlockGetter pLevel, BlockPos pPos) {
-        return pState.is(ClinkerTags.OTHERSHORE_SOIL) && pState.isFaceSturdy(pLevel, pPos, Direction.UP);
+        return pState.is(ClinkerTags.Blocks.OTHERSHORE_SOIL) && pState.isFaceSturdy(pLevel, pPos, Direction.UP);
     }
 
     public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {

@@ -5,23 +5,18 @@ import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import foundry.veil.api.client.util.DebugRenderHelper;
-import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Quaternionf;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
 
 public class OrdnanceRenderer extends EntityRenderer<OrdnanceEntity> {
     private static final ResourceLocation ORDNANCE_LOCATION = Clinker.resource("textures/entity/ordnance.png");
@@ -40,9 +35,10 @@ public class OrdnanceRenderer extends EntityRenderer<OrdnanceEntity> {
         float bigPuffTime = 110;
         if (fuseFactor > bigPuffTime) bombFlash = Math.max((float) (1 - Math.pow((fuseFactor - 120) / (120 - bigPuffTime), 4)) * fuseTime, bombFlash);
 
+        BlockPos lightPos = BlockPos.containing(pEntity.getX(), pEntity.getY() + pEntity.getBbHeight() * 0.5, pEntity.getZ());
         int overlay = OverlayTexture.pack(bombFlash, pEntity.hurtMarked);
-        int blockLight = pEntity.level().getBrightness(LightLayer.BLOCK, pEntity.blockPosition()),
-            skyLight = pEntity.level().getBrightness(LightLayer.SKY, pEntity.blockPosition());
+        int blockLight = pEntity.level().getBrightness(LightLayer.BLOCK, lightPos),
+            skyLight = pEntity.level().getBrightness(LightLayer.SKY, lightPos);
         int light = LightTexture.pack(Math.max((int) (bombFlash * 16), blockLight), skyLight);
 
         Vec3 directionTowardsCamera = this.entityRenderDispatcher.camera.getPosition().subtract(pEntity.getPosition(pPartialTick)).normalize();
@@ -97,71 +93,6 @@ public class OrdnanceRenderer extends EntityRenderer<OrdnanceEntity> {
                 .setLight(pPackedLight)
                 .setNormal(pose, 0, 0, 1);
         stack.popPose();
-    }
-
-    public void drawRope(PoseStack stack, VertexConsumer consumer, float xV, float yV, float zV, int pPackedLight, int overlayTexture, OrdnanceEntity pEntity, float pPartialTick, Vec3 directionTowardsCamera) {
-        stack.pushPose();
-        Vector3f offsetVector = new Vector3f(0, 5.5f, 0);
-        offsetVector = this.entityRenderDispatcher.cameraOrientation().rotateLocalZ(pEntity.getSpin(pPartialTick), new Quaternionf()).transform(offsetVector);
-
-        Vector3f localYVector = new Vector3f(xV, yV, zV);
-        Vector3f localXVector = localYVector.cross((float) directionTowardsCamera.x(), (float) directionTowardsCamera.y(), (float) directionTowardsCamera.z(), new Vector3f()).normalize().mul(5.5F);
-
-        float u0 = 12.0F / 32.0F;
-        float u1 = 1;
-        float v0 = 0;
-        float v1 = 11.0F / 16.0F;
-
-        Vertex[] verticies = new Vertex[]{
-                new Vertex(localXVector.mul(-1, new Vector3f()).add(localYVector).add(offsetVector), u1, v0),
-                new Vertex(localXVector.mul(-1, new Vector3f()).add(offsetVector), u0, v0),
-                new Vertex(localXVector.mul( 1, new Vector3f()).add(offsetVector), u0, v1),
-                new Vertex(localXVector.mul( 1, new Vector3f()).add(localYVector).add(offsetVector), u1, v1)};
-        for (Vertex vertex : verticies) {
-            Vector4f vert = new Vector4f(vertex.position, 1.0F);
-            vert = stack.last().pose().transform(vert);
-            vertex.position.set(vert.x, vert.y, vert.z);
-        }
-        Vector3f normal = new Vector3f(0, 0, -1);
-        normal = stack.last(). normal().transform(normal);
-        int color = FastColor.ARGB32.colorFromFloat(1, 1, 1, 1);
-        consumer.addVertex(verticies[0].x(), verticies[0].y(), verticies[0].z(), color, verticies[0].u(), verticies[0].v(), overlayTexture, pPackedLight, normal.x, normal.y, normal.z);
-        consumer.addVertex(verticies[1].x(), verticies[1].y(), verticies[1].z(), color, verticies[1].u(), verticies[1].v(), overlayTexture, pPackedLight, normal.x, normal.y, normal.z);
-        consumer.addVertex(verticies[2].x(), verticies[2].y(), verticies[2].z(), color, verticies[2].u(), verticies[2].v(), overlayTexture, pPackedLight, normal.x, normal.y, normal.z);
-        consumer.addVertex(verticies[3].x(), verticies[3].y(), verticies[3].z(), color, verticies[3].u(), verticies[3].v(), overlayTexture, pPackedLight, normal.x, normal.y, normal.z);
-
-        stack.popPose();
-    }
-
-    private static class Vertex {
-        final Vector3f position;
-        final Vector2f textureCoordinates;
-
-        private Vertex(float x, float y, float z, float u, float v) {
-            this.position = new Vector3f(x, y, z);
-            this.textureCoordinates = new Vector2f(u, v);
-        }
-
-        private Vertex(Vector3f pos, float u, float v) {
-            this.position = pos;
-            this.textureCoordinates = new Vector2f(u, v);
-        }
-        
-        float x() {
-            return position.x();
-        }
-        float y() {
-            return position.y();
-        }
-        float z() {
-            return position.z();
-        }
-        float u() {
-            return textureCoordinates.x();
-        }
-        float v() {
-            return textureCoordinates.y();
-        }
     }
 
     @Override

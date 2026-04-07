@@ -34,10 +34,10 @@ public class ClinkerBlockTagProvider extends BlockTagsProvider {
             if (entry.get() instanceof WallBlock wall) wallTag.add(wall);
         }
 
-        IntrinsicTagAppender<Block> othershoreSoil = this.tag(ClinkerTags.OTHERSHORE_SOIL).replace(false);
+        IntrinsicTagAppender<Block> othershoreSoil = this.tag(ClinkerTags.Blocks.OTHERSHORE_SOIL).replace(false);
         othershoreSoil.add(ClinkerBlocks.ASH.get());
         othershoreSoil.add(ClinkerBlocks.ASH_LAYER.get());
-        othershoreSoil.add(ClinkerBlocks.ASHEN_REGOLITH.get());
+        othershoreSoil.add(ClinkerBlocks.PACKED_ASH.get());
         othershoreSoil.add(ClinkerBlocks.BRIMSTONE.get());
         othershoreSoil.add(ClinkerBlocks.BARRIERROCK.get());
         othershoreSoil.add(ClinkerBlocks.SALTMOSS.get());
@@ -49,13 +49,13 @@ public class ClinkerBlockTagProvider extends BlockTagsProvider {
         IntrinsicTagAppender<Block> climbables = this.tag(BlockTags.CLIMBABLE).replace(false);
         climbables.add(ClinkerBlocks.THORNY_STEM.get());
 
-        IntrinsicTagAppender<Block> brambleFlowers = this.tag(ClinkerTags.BRAMBLE_FLOWERS).replace(false);
+        IntrinsicTagAppender<Block> brambleFlowers = this.tag(ClinkerTags.Blocks.BRAMBLE_FLOWERS).replace(false);
         brambleFlowers.add(ClinkerBlocks.BRAMBLE_BLOSSOM.get());
         brambleFlowers.add(ClinkerBlocks.WITHERING_BRAMBLE_BLOSSOM.get());
         brambleFlowers.add(ClinkerBlocks.CORPSE_LILY_BUD.get());
         brambleFlowers.add(ClinkerBlocks.CORPSE_LILY_BULB.get());
 
-        IntrinsicTagAppender<Block> brambles = this.tag(ClinkerTags.BRAMBLES).replace(false);
+        IntrinsicTagAppender<Block> brambles = this.tag(ClinkerTags.Blocks.BRAMBLES).replace(false);
         brambles.add(ClinkerBlocks.THORNY_STEM.get());
         brambles.add(ClinkerBlocks.SALTY_STEM.get());
 

@@ -80,6 +80,8 @@ public class Clinker {
         ClinkerWorldFeatures.Types.WORLD_FEATURE_TYPES.register(modEventBus);
         ClinkerWorldFeatures.Spawns.WORLD_FEATURE_SPAWNS.register(modEventBus);
 
+        ClinkerOrdnanceModifierTypes.ORDNANCE_MODIFIER_TYPES.register(modEventBus);
+
         modEventBus.addListener(this::setup);
         modEventBus.addListener(this::doClientStuff);
     }
@@ -91,6 +93,7 @@ public class Clinker {
     private void setup(final FMLCommonSetupEvent event) {
         DispenserBlock.registerProjectileBehavior(ClinkerItems.ORDNANCE.get());
         ClinkerBlocks.defineFlammability((FireBlock) Blocks.FIRE);
+        ClinkerOrdnanceModifierTypes.defineMutualExclusivities();
     }
 
     @SubscribeEvent

@@ -11,11 +11,11 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "clinker:ashen_regolith"
+          "name": "clinker:packed_ash"
         }
       ],
       "rolls": 1.0
     }
   ],
-  "random_sequence": "clinker:blocks/ashen_regolith"
+  "random_sequence": "clinker:blocks/packed_ash"
 }

@@ -1,6 +1,5 @@
 package birsy.clinker.client.sound;
 
-import birsy.clinker.common.world.entity.projectile.OrdnanceEntity;
 import birsy.clinker.core.registry.ClinkerSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
@@ -8,7 +7,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
 
 
 import java.util.function.Supplier;

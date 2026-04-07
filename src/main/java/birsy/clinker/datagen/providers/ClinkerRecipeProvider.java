@@ -76,16 +76,16 @@ public class ClinkerRecipeProvider extends RecipeProvider {
 
         // mortar & pestle
         ShapedRecipeBuilder.shaped(RecipeCategory.BREWING, MORTAR)
-                .define('#', ClinkerTags.BASALT)
+                .define('#', ClinkerTags.Items.BASALT)
                 .pattern("# #")
                 .pattern("###")
-                .unlockedBy("has_any_basalt", has(ClinkerTags.BASALT)).save(output);
+                .unlockedBy("has_any_basalt", has(ClinkerTags.Items.BASALT)).save(output);
         ShapedRecipeBuilder.shaped(RecipeCategory.BREWING, PESTLE)
-                .define('#', ClinkerTags.BASALT)
+                .define('#', ClinkerTags.Items.BASALT)
                 .pattern("#")
                 .pattern("#")
                 .pattern("#")
-                .unlockedBy("has_any_basalt", has(ClinkerTags.BASALT)).save(output);
+                .unlockedBy("has_any_basalt", has(ClinkerTags.Items.BASALT)).save(output);
     }
 
     protected static void stoneSlab(RecipeOutput recipeOutput, ItemLike slab, ItemLike material) {

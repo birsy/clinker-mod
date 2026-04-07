@@ -54,7 +54,7 @@ public class CorpseLilyCenterBlock extends OthershorePlantBlock {
 
     @Override
     public boolean mayPlaceOn(BlockState state, BlockGetter level, BlockPos pos) {
-        return super.mayPlaceOn(state, level, pos) || state.is(ClinkerTags.OTHERSHORE_SOIL) || state.is(ClinkerBlocks.THORNY_STEM.get());
+        return super.mayPlaceOn(state, level, pos) || state.is(ClinkerTags.Blocks.OTHERSHORE_SOIL) || state.is(ClinkerBlocks.THORNY_STEM.get());
     }
 
     @Override

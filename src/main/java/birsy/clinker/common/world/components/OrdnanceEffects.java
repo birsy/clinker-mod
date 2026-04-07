@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.item.components;
+package birsy.clinker.common.world.components;
 
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.codecs.ExtraByteBufCodecs;
@@ -9,7 +9,6 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -19,7 +18,6 @@ import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.alchemy.PotionContents;
-import net.minecraft.world.item.component.FireworkExplosion;
 import net.minecraft.world.item.component.TooltipProvider;
 
 import java.util.ArrayList;
@@ -109,8 +107,6 @@ public record OrdnanceEffects(
             }
         }
     }
-
-
 
     public enum DetonationType implements StringRepresentable {
         NORMAL("normal"), DUD("dud"), FLECHETTE("flechette"), OIL("oil");

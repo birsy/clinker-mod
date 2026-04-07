@@ -3,17 +3,12 @@ package birsy.clinker.datagen.providers;
 import birsy.clinker.common.world.block.MothBallBlock;
 import birsy.clinker.common.world.block.plant.*;
 import birsy.clinker.core.Clinker;
-import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.models.blockstates.Variant;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.properties.*;
-import net.neoforged.neoforge.client.model.CompositeModel;
 import net.neoforged.neoforge.client.model.generators.*;
 import net.neoforged.neoforge.client.model.generators.loaders.CompositeModelBuilder;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
@@ -361,6 +356,22 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
                     polishedCalcWallSide, polishedCalcWallTop, polishedCalcWallBottom,
                     polishedCalcTop, polishedCalcWallBottom, polishedCalcWallBottom
             );
+        }
+
+        // ash
+        {
+            String packedAshName = name(PACKED_ASH.get());
+            this.simpleBlockWithVariationAndTransformation(
+                    PACKED_ASH.get(),
+                    (i) -> this.models().cubeAll(packedAshName, this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + packedAshName)),
+                    (i) -> this.models().singleTexture(packedAshName + "_mirrored",
+                            this.mcLoc(ModelProvider.BLOCK_FOLDER + "/cube_mirrored_all"),
+                            "all",
+                            this.modLoc( ModelProvider.BLOCK_FOLDER + "/" + packedAshName)
+                    ),
+                    1, false, true
+            );
+            this.simpleBlockItem(PACKED_ASH.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + packedAshName)));
         }
 
         // dismal aspen

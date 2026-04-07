@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.item.components;
+package birsy.clinker.common.world.components;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

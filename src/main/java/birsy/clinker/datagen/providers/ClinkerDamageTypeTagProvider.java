@@ -21,7 +21,7 @@ public class ClinkerDamageTypeTagProvider extends DamageTypeTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider provider) {
-        TagsProvider.TagAppender<DamageType> thornImmune = this.tag(ClinkerTags.THORNY).replace(false);
+        TagsProvider.TagAppender<DamageType> thornImmune = this.tag(ClinkerTags.DamageTypes.THORNY).replace(false);
         thornImmune.add(DamageTypes.CACTUS, DamageTypes.THORNS);
     }
 }

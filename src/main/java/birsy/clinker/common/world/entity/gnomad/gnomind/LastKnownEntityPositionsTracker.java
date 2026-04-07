@@ -7,6 +7,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -76,6 +77,11 @@ public class LastKnownEntityPositionsTracker {
                             id -> new LastKnownEntityPosition(position.uuid())
                     ).update(position);
         }
+    }
+
+    @Nullable
+    public LastKnownEntityPosition lastKnownPosition(UUID entityId) {
+        return this.lastKnownEnemyPositions.getOrDefault(entityId, null);
     }
 
     public Collection<LastKnownEntityPosition> locations() {

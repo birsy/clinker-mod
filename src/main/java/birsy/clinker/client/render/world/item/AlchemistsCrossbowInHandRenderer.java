@@ -1,8 +1,8 @@
 package birsy.clinker.client.render.world.item;
 
 import birsy.clinker.common.world.item.AlchemistsCrossbowItem;
-import birsy.clinker.common.world.item.components.CrossbowState;
-import birsy.clinker.common.world.item.components.LoadedItemStack;
+import birsy.clinker.common.world.components.CrossbowState;
+import birsy.clinker.common.world.components.LoadedItemStack;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.systems.RenderSystem;

@@ -1,14 +1,9 @@
 package birsy.clinker.common.world.entity.gnomad.gnomind.squad;
 
-import birsy.clinker.common.world.entity.gnomad.gnomind.LastKnownEntityPosition;
 import birsy.clinker.common.world.entity.gnomad.gnomind.LastKnownEntityPositionsTracker;
 import birsy.clinker.core.Clinker;
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.DebugEntityNameGenerator;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 
@@ -44,7 +39,7 @@ public class Squad {
     boolean shouldBeRemoved() { return members.isEmpty(); }
     public void cleanup() {
         Clinker.LOGGER.info("removing squad {}", this.uuid);
-        for (SquadTask task : tasks) task.fail(SquadTask.FailureType.SQUAD_DISBANDED);
+        for (SquadTask task : tasks) task.fail(SquadTask.FailureReason.SQUAD_DISBANDED);
         tasks.clear();
     }
 

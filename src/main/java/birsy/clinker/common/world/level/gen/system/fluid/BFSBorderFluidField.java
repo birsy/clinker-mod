@@ -18,7 +18,8 @@ import java.util.List;
 public class BFSBorderFluidField extends CellularFluidField {
     // really approximate euclidean distance
     // trying to keep this as small as possible since the smaller it is the faster dial's algorithm runs
-    static final int ADJACENT_COST = 3, DIAGONAL_2_COST = 4, DIAGONAL_3_COST = 5;
+    static final int ADJACENT_COST = 3,
+            DIAGONAL_2_COST = 4, DIAGONAL_3_COST = 5;
     static final float UP_COST_MULTIPLIER = 1.5F;
     static final int[] NEIGHBOR_COSTS = Util.make(() -> {
         int[] costs = new int[NEIGHBOR_OFFSETS.length];

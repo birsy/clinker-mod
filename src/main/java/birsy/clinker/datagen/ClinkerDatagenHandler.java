@@ -38,6 +38,7 @@ public class ClinkerDatagenHandler {
         generator.addProvider(true, new ClinkerItemTagProvider(output, lookupProvider, blockTags.contentsGetter(), existingFileHelper));
         generator.addProvider(true, new ClinkerEntityTagProvider(output, lookupProvider, existingFileHelper));
         generator.addProvider(true, new ClinkerDamageTypeTagProvider(output, lookupProvider, existingFileHelper));
+        generator.addProvider(true, new ClinkerOrdnanceModifierTagProvider(output, lookupProvider, existingFileHelper));
 
         generator.addProvider(true, new ClinkerRecipeProvider(output, lookupProvider));
 

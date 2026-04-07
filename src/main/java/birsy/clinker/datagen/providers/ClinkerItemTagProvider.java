@@ -31,7 +31,7 @@ public class ClinkerItemTagProvider extends ItemTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider provider) {
-        this.tag(ClinkerTags.NOT_BUOYANT)
+        this.tag(ClinkerTags.Items.NOT_BUOYANT)
                 .add(ClinkerItems.RAW_LEAD.get(),
                     ClinkerItems.LEAD_INGOT.get(),
                     ClinkerItems.LEAD_NUGGET.get(),
@@ -42,10 +42,10 @@ public class ClinkerItemTagProvider extends ItemTagsProvider {
                     ClinkerItems.LEAD_PICKAXE.get(),
                     ClinkerItems.LEAD_SHOVEL.get(),
                     ClinkerItems.LEAD_HOE.get());
-        this.tag(ClinkerTags.ALCHEMISTS_CROSSBOW_REPAIRABLE)
+        this.tag(ClinkerTags.Items.ALCHEMISTS_CROSSBOW_REPAIRABLE)
                 .addTag(ItemTags.PLANKS)
                 .addTag(Tags.Items.RODS_WOODEN);
-        this.tag(ClinkerTags.BASALT)
+        this.tag(ClinkerTags.Items.BASALT)
                 .add(Items.BASALT,
                      Items.POLISHED_BASALT,
                      Items.SMOOTH_BASALT);

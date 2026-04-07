@@ -19,7 +19,7 @@ public abstract class ItemEntityMixin {
     @Inject(method = "setUnderwaterMovement()V", at = @At("HEAD"), cancellable = true)
     private void clinker$setUnderwaterMovement(CallbackInfo ci) {
         ItemEntity me = (ItemEntity)(Object)this;
-        if (this.getItem().is(ClinkerTags.NOT_BUOYANT)) {
+        if (this.getItem().is(ClinkerTags.Items.NOT_BUOYANT)) {
             Vec3 vec3 = me.getDeltaMovement();
             me.setDeltaMovement(vec3.x * 0.99F, vec3.y + (double)(vec3.y > -0.06F ? 5.0E-4F : 0.0F), vec3.z * 0.99F);
             ci.cancel();

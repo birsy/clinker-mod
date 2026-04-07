@@ -25,7 +25,7 @@ public class SheetMossBlock extends OthershorePlantBlock implements IShearable {
     }
 
     public static boolean canPlaceOn(BlockState pState, BlockGetter pLevel, BlockPos pPos) {
-        return pState.is(ClinkerTags.OTHERSHORE_SOIL) && pState.isFaceSturdy(pLevel, pPos, Direction.DOWN);
+        return pState.is(ClinkerTags.Blocks.OTHERSHORE_SOIL) && pState.isFaceSturdy(pLevel, pPos, Direction.DOWN);
     }
 
     @Override

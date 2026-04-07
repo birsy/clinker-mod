@@ -1,9 +1,11 @@
 package birsy.clinker.datagen.providers;
 
+import birsy.clinker.common.world.ordnance.OrdnanceModifierType;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registration.ClinkerBiome;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.ClinkerItems;
+import birsy.clinker.core.registry.ClinkerOrdnanceModifierTypes;
 import birsy.clinker.core.registry.entity.ClinkerEntities;
 import birsy.clinker.core.registry.worldgen.ClinkerBiomes;
 import net.minecraft.data.PackOutput;
@@ -41,6 +43,20 @@ public class ClinkerEnglishLanguageProvider extends LanguageProvider {
             this.add("biome.clinker." + biome.key().location().getPath(), localizedNameFromRegistryName(biome.key().location().getPath()));
         }
 
+        this.add("ordnance_modifier.clinker.dud", "Dud");
+        for (DeferredHolder<OrdnanceModifierType<?>, ? extends OrdnanceModifierType<?>> entry : ClinkerOrdnanceModifierTypes.ORDNANCE_MODIFIER_TYPES.getEntries()) {
+            this.add("ordnance_modifier." + entry.getId().toLanguageKey(), localizedNameFromRegistryName(entry.getId().getPath()));
+        }
+        this.add("ordnance_modifier.clinker.fuse_time", "%s second fuse");
+        this.add("ordnance_modifier.clinker.explosive.-2", "Worthless Explosive");
+        this.add("ordnance_modifier.clinker.explosive.-1", "Piddling Explosive");
+        this.add("ordnance_modifier.clinker.explosive.0", "Quaint Explosive");
+        this.add("ordnance_modifier.clinker.explosive.1", "Middling Explosive");
+        this.add("ordnance_modifier.clinker.explosive.2", "Superior Explosive");
+        this.add("ordnance_modifier.clinker.explosive.3", "Exceptional Explosive");
+        this.add("ordnance_modifier.clinker.flechette", "Releases Flechettes");
+
+
         this.add("itemGroup.clinker.clinker", "Clinker");
         this.add("itemGroup.clinker.pages", "Pages");
 
@@ -53,16 +69,16 @@ public class ClinkerEnglishLanguageProvider extends LanguageProvider {
         this.addItem(ClinkerItems.MUSIC_DISC_CODA, "Music Disc");
         this.add("jukebox_song.clinker.coda", "Squire - CODA");
 
-        this.add("item.clinker.ordnance.fuse_duration", "Fuse lasts %s seconds");
-        this.add("item.clinker.ordnance.detonation_dud", "Dud");
-        this.add("item.clinker.ordnance.detonation_flechette", "Releases Flechettes");
-        this.add("item.clinker.ordnance.detonation_oil", "Bursts into Oil");
-        this.add("item.clinker.ordnance.touch_detonate", "Detonates on Impact");
-        this.add("item.clinker.ordnance.touch_stick", "Sticky");
-        this.add("item.clinker.ordnance.touch_bounce", "Bouncy");
-        this.add("item.clinker.ordnance.electrified", "Electrified");
-        this.add("item.clinker.ordnance.trail", "Smoke Trail");
-        this.add("item.clinker.ordnance.potion", "Potion: %s");
+//        this.add("item.clinker.ordnance.fuse_duration", "Fuse lasts %s seconds");
+//        this.add("item.clinker.ordnance.detonation_dud", "Dud");
+//        this.add("item.clinker.ordnance.detonation_flechette", "Releases Flechettes");
+//        this.add("item.clinker.ordnance.detonation_oil", "Bursts into Oil");
+//        this.add("item.clinker.ordnance.touch_detonate", "Detonates on Impact");
+//        this.add("item.clinker.ordnance.touch_stick", "Sticky");
+//        this.add("item.clinker.ordnance.touch_bounce", "Bouncy");
+//        this.add("item.clinker.ordnance.electrified", "Electrified");
+//        this.add("item.clinker.ordnance.trail", "Smoke Trail");
+//        this.add("item.clinker.ordnance.potion", "Potion: %s");
 
         // pages
         this.add("page.clinker.title.blank", "Blank Page");

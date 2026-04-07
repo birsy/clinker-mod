@@ -2,10 +2,11 @@ package birsy.clinker.core.registry;
 
 import birsy.clinker.client.render.ClinkerFonts;
 import birsy.clinker.common.world.item.*;
-import birsy.clinker.common.world.item.components.FuseTimer;
-import birsy.clinker.common.world.item.components.LoadedItemStack;
-import birsy.clinker.common.world.item.components.OrdnanceEffects;
-import birsy.clinker.common.world.item.components.PageContents;
+import birsy.clinker.common.world.components.FuseTimer;
+import birsy.clinker.common.world.components.LoadedItemStack;
+import birsy.clinker.common.world.components.OrdnanceEffects;
+import birsy.clinker.common.world.components.PageContents;
+import birsy.clinker.common.world.ordnance.OrdnanceModifierSet;
 import birsy.clinker.core.Clinker;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
@@ -13,7 +14,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.*;
 
 import net.minecraft.world.item.component.ItemLore;
@@ -60,7 +60,7 @@ public class ClinkerItems
     public static final DeferredItem<OrdnanceItem> ORDNANCE = ITEMS.register("ordnance", () ->
             new OrdnanceItem(new Item.Properties()
                     .stacksTo(24)
-                    .component(ClinkerDataComponents.ORDNANCE_EFFECTS.get(), OrdnanceEffects.DEFAULT)
+                    .component(ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.NONE)
                     .component(ClinkerDataComponents.FUSE_TIMER.get(), FuseTimer.EMPTY)
             )
     );

@@ -1,14 +1,13 @@
 package birsy.clinker.common.world.item;
 
 import birsy.clinker.client.sound.OrdnanceSoundInstance;
+import birsy.clinker.common.world.components.FuseTimer;
 import birsy.clinker.common.world.entity.projectile.OrdnanceEntity;
-import birsy.clinker.common.world.item.components.FuseTimer;
-import birsy.clinker.common.world.item.components.OrdnanceEffects;
-import birsy.clinker.core.Clinker;
+import birsy.clinker.common.world.ordnance.OrdnanceModifierSet;
+import birsy.clinker.common.world.ordnance.modifiers.FuseTimeModifier;
 import birsy.clinker.core.registry.ClinkerDataComponents;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Position;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -20,7 +19,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.*;
-import net.minecraft.world.item.component.Fireworks;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
@@ -35,8 +33,8 @@ public class OrdnanceItem extends Item implements ProjectileItem {
         super(pProperties);
     }
 
-    private static OrdnanceEffects getOrdnanceEffects(ItemStack stack) {
-        return stack.getOrDefault(ClinkerDataComponents.ORDNANCE_EFFECTS.get(), OrdnanceEffects.DEFAULT);
+    private static OrdnanceModifierSet getOrdnanceModifiers(ItemStack stack) {
+        return stack.getOrDefault(ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.NONE);
     }
     private static FuseTimer getFuseTimer(ItemStack stack) {
         return stack.getOrDefault(ClinkerDataComponents.FUSE_TIMER.get(), FuseTimer.EMPTY);
@@ -44,8 +42,8 @@ public class OrdnanceItem extends Item implements ProjectileItem {
 
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        OrdnanceEffects effects = getOrdnanceEffects(stack);
-        effects.addToTooltip(context, tooltipComponents::add, tooltipFlag);
+        OrdnanceModifierSet modifiers = getOrdnanceModifiers(stack);
+        modifiers.addToTooltip(context, tooltipComponents::add, tooltipFlag);
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
     }
 
@@ -70,7 +68,7 @@ public class OrdnanceItem extends Item implements ProjectileItem {
 
     @Override
     public int getUseDuration(ItemStack stack, LivingEntity entity) {
-        return this.getOrdnanceEffects(stack).fuseTime() + 1;
+        return Math.min(FuseTimeModifier.getFuseTicks(getOrdnanceModifiers(stack)), 72000) + 1;
     }
 
     @Override
@@ -82,10 +80,10 @@ public class OrdnanceItem extends Item implements ProjectileItem {
         );
 
         FuseTimer fuseTimer = getFuseTimer(stack);
-        OrdnanceEffects effects = getOrdnanceEffects(stack);
+        OrdnanceModifierSet modifiers = getOrdnanceModifiers(stack);
         if (!pLevel.isClientSide) {
             OrdnanceEntity ordnance = OrdnanceEntity.toss(pLevel, pEntityLiving);
-            ordnance.setEffects(effects);
+            ordnance.setModifiers(modifiers);
             ordnance.setFuseTime(fuseTimer.tickCount());
             pLevel.addFreshEntity(ordnance);
         }
@@ -111,17 +109,15 @@ public class OrdnanceItem extends Item implements ProjectileItem {
         return UseAnim.BOW;
     }
 
-
     @Override
     public void inventoryTick(ItemStack stack, Level pLevel, Entity pEntity, int pSlotId, boolean pIsSelected) {
         super.inventoryTick(stack, pLevel, pEntity, pSlotId, pIsSelected);
         FuseTimer fuseTimer = getFuseTimer(stack);
         if (!fuseTimer.lit()) return;
 
-        OrdnanceEffects effects = getOrdnanceEffects(stack);
-
-        if (fuseTimer.tickCount() > effects.fuseTime()) {
-            OrdnanceEntity.createOrdnanceExplosion(pEntity.position(), pLevel, pEntity, null, effects);
+        OrdnanceModifierSet modifiers = getOrdnanceModifiers(stack);
+        if (fuseTimer.tickCount() > FuseTimeModifier.getFuseTicks(modifiers)) {
+            // todo: kaboom!
             this.use(pEntity, stack);
         } else {
             stack.set(ClinkerDataComponents.FUSE_TIMER.get(), new FuseTimer(fuseTimer.tickCount() + 1, true));
@@ -131,9 +127,9 @@ public class OrdnanceItem extends Item implements ProjectileItem {
     @Override
     public Projectile asProjectile(Level level, Position pos, ItemStack stack, Direction direction) {
         FuseTimer fuseTimer = getFuseTimer(stack);
-        OrdnanceEffects effects = getOrdnanceEffects(stack);
+        OrdnanceModifierSet modifiers = getOrdnanceModifiers(stack);
         OrdnanceEntity ordnance = OrdnanceEntity.create(level, pos.x(), pos.y(), pos.z());
-        ordnance.setEffects(effects);
+        ordnance.setModifiers(modifiers);
         ordnance.setFuseTime(fuseTimer.tickCount());
         return ordnance;
     }

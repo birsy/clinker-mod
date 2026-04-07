@@ -1,7 +1,7 @@
 package birsy.clinker.common.world.item;
 
 import birsy.clinker.common.page.Page;
-import birsy.clinker.common.world.item.components.PageContents;
+import birsy.clinker.common.world.components.PageContents;
 import birsy.clinker.core.registry.ClinkerDataComponents;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;

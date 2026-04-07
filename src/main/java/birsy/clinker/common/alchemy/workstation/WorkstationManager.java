@@ -71,9 +71,9 @@ public class WorkstationManager {
         // doing this so it doesnt keep crashing while im rebuilding the fucking mod
         // todo: remove this before release
         try {
-            if (event.getState().is(ClinkerTags.WORKSTATION) && workstationAtPos == null) {
+            if (event.getState().is(ClinkerTags.Blocks.WORKSTATION) && workstationAtPos == null) {
                 manager.addWorkstationBlock(event.getPos());
-            } else if (!event.getState().is(ClinkerTags.WORKSTATION) && workstationAtPos != null) {
+            } else if (!event.getState().is(ClinkerTags.Blocks.WORKSTATION) && workstationAtPos != null) {
                 manager.removeWorkstationBlockFromUUID(event.getPos(), workstationAtPos.uuid);
             }
         } catch (NoClassDefFoundError e) {
@@ -90,9 +90,9 @@ public class WorkstationManager {
         // doing this so it doesnt keep crashing while im rebuilding the fucking mod
         // todo: remove this before release
         try {
-            if (event.getState().is(ClinkerTags.WORKSTATION) && workstationAtPos == null) {
+            if (event.getState().is(ClinkerTags.Blocks.WORKSTATION) && workstationAtPos == null) {
                 manager.addWorkstationBlock(event.getPos());
-            } else if (!event.getState().is(ClinkerTags.WORKSTATION) && workstationAtPos != null) {
+            } else if (!event.getState().is(ClinkerTags.Blocks.WORKSTATION) && workstationAtPos != null) {
                 manager.removeWorkstationBlockFromUUID(event.getPos(), workstationAtPos.uuid);
             }
         } catch (NoClassDefFoundError e) {

@@ -9,19 +9,15 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.ColorRGBA;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.PlaceOnWaterBlockItem;
 import net.minecraft.world.item.component.SuspiciousStewEffects;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.block.state.properties.WoodType;
-import net.minecraft.world.level.levelgen.feature.WaterloggedVegetationPatchFeature;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.registries.DeferredBlock;
-import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.List;
@@ -54,8 +50,9 @@ public class ClinkerBlocks
     //Soils
     public static final DeferredBlock<Block> ASH = createBlock("ash", () -> new ColoredFallingBlock(new ColorRGBA(8616308), Block.Properties.of().mapColor(MapColor.COLOR_GRAY).strength(0.5F).sound(SoundType.SNOW)));
     public static final DeferredBlock<Block> ASH_LAYER = createBlock("ash_layers", () -> new FallingLayerBlock(new ColorRGBA(8616308), BlockBehaviour.Properties.ofFullCopy(Blocks.SNOW).mapColor(MapColor.COLOR_GRAY)));
-
-    public static final DeferredBlock<Block> ASHEN_REGOLITH = createBlock("ashen_regolith", () -> new MudBlock(Block.Properties.of().mapColor(MapColor.COLOR_GRAY).strength(0.5F).sound(SoundType.NYLIUM)));
+    public static final DeferredBlock<Block> PACKED_ASH = createBlock("packed_ash",
+            () -> new MudBlock(Block.Properties.of().mapColor(MapColor.COLOR_GRAY).strength(0.5F).sound(SoundType.NYLIUM))
+    );
 
     public static final DeferredBlock<Block> MUD = createBlock("mud", () -> new SulfricMudBlock(Block.Properties.of().mapColor(MapColor.TERRACOTTA_BROWN).strength(0.5F).sound(SoundType.WET_GRASS)));
 

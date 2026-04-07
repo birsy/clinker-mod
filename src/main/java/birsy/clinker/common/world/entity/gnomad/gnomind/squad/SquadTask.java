@@ -13,7 +13,7 @@ public abstract class SquadTask {
     protected final List<SquadMember<?>> assignees = new ArrayList<>();
 
     Status status = Status.UNASSIGNED;
-    FailureType failureType = null;
+    FailureReason failureReason = null;
     final protected int waitTimeout, executionTimeout;
     protected int ticksExisted, stageTime;
 
@@ -82,29 +82,29 @@ public abstract class SquadTask {
     }
     protected void onBegin() {}
 
-    protected Optional<FailureType> shouldFail() {
+    protected Optional<FailureReason> shouldFail() {
         if (status == Status.UNASSIGNED && waitTimeout >= 0 && stageTime > waitTimeout)
-            return Optional.of(FailureType.TIMED_OUT);
+            return Optional.of(FailureReason.TIMED_OUT);
 
         if (status == Status.IN_PROGRESS && executionTimeout >= 0 && stageTime > executionTimeout)
-            return Optional.of(FailureType.TIMED_OUT);
+            return Optional.of(FailureReason.TIMED_OUT);
 
         if (taskMaster.getSquad() == null)
-            return Optional.of(FailureType.SQUAD_DISBANDED);
+            return Optional.of(FailureReason.SQUAD_DISBANDED);
 
         LivingEntity taskMasterEntity = taskMaster.asEntity();
         if (taskMasterEntity.isRemoved() || taskMasterEntity.isDeadOrDying() || taskMasterEntity.level() != taskMaster.getSquad().level)
-            return Optional.of(FailureType.TASKMASTER_DIED);
+            return Optional.of(FailureReason.TASKMASTER_DIED);
 
         if (status == Status.IN_PROGRESS) {
-            if (assignees.size() < minAssignees) return Optional.of(FailureType.NOT_ENOUGH_ASSIGNEES);
+            if (assignees.size() < minAssignees) return Optional.of(FailureReason.NOT_ENOUGH_ASSIGNEES);
         }
 
         return Optional.empty();
     }
-    public void fail(FailureType failureType) {
+    public void fail(FailureReason failureReason) {
         this.status = Status.FAILED;
-        this.failureType = failureType;
+        this.failureReason = failureReason;
         this.stageTime = 0;
         onFailure();
     }
@@ -119,5 +119,5 @@ public abstract class SquadTask {
     protected void onSuccess() {}
 
     protected enum Status { UNASSIGNED, IN_PROGRESS, SUCCEEDED, FAILED }
-    public enum FailureType { TIMED_OUT, NOT_ENOUGH_ASSIGNEES, TASKMASTER_DIED, SQUAD_DISBANDED }
+    public enum FailureReason { NONE, TIMED_OUT, NOT_ENOUGH_ASSIGNEES, TASKMASTER_DIED, SQUAD_DISBANDED }
 }

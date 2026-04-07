@@ -1,0 +1,36 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "clinker:block/packed_ash"
+      },
+      {
+        "model": "clinker:block/packed_ash_mirrored"
+      },
+      {
+        "model": "clinker:block/packed_ash",
+        "y": 90
+      },
+      {
+        "model": "clinker:block/packed_ash_mirrored",
+        "y": 90
+      },
+      {
+        "model": "clinker:block/packed_ash",
+        "y": 180
+      },
+      {
+        "model": "clinker:block/packed_ash_mirrored",
+        "y": 180
+      },
+      {
+        "model": "clinker:block/packed_ash",
+        "y": 270
+      },
+      {
+        "model": "clinker:block/packed_ash_mirrored",
+        "y": 270
+      }
+    ]
+  }
+}

@@ -64,7 +64,7 @@ public class HeathThicketSurfaceDecorator extends SurfaceDecorator {
 
             BlockState soilState = ClinkerBlocks.PEAT_MOSS.get().defaultBlockState();
             if (wiggleNoise - 0.3 + random.triangle(0, 0.25) > 0) {
-                soilState = ClinkerBlocks.ASHEN_REGOLITH.get().defaultBlockState();
+                soilState = ClinkerBlocks.PACKED_ASH.get().defaultBlockState();
             }
             chunk.setBlockState(pos, placeSoil ? soilState : ClinkerBlocks.BRIMSTONE.get().defaultBlockState(), false);
 

@@ -14,7 +14,6 @@ import net.minecraft.world.phys.Vec3;
 import java.util.UUID;
 import java.util.function.Function;
 
-// i fucking hate codecs
 public class ExtraByteBufCodecs {
     public static <B, C, T1, T2, T3, T4, T5, T6, T7> StreamCodec<B, C> composite(
             final StreamCodec<? super B, T1> codec1,

@@ -11,6 +11,7 @@ import birsy.clinker.common.world.level.gen.system.surface.shaper.BiomeSurfaceSh
 import birsy.clinker.common.world.level.gen.system.surface.shaper.SurfaceShapers;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureType;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.WorldFeatureCapability;
+import birsy.clinker.common.world.ordnance.OrdnanceModifierType;
 import birsy.clinker.core.Clinker;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -38,6 +39,14 @@ public class ClinkerRegistries {
     public static final Registry<Class<? extends WorldFeatureCapability>> WORLD_FEATURE_CAPABILITY_REGISTRY = new RegistryBuilder<>(WORLD_FEATURE_CAPABILITY_REGISTRY_KEY)
             .sync(false)
             .create();
+
+    public static final ResourceKey<Registry<OrdnanceModifierType<?>>> ORDNANCE_MODIFIER_TYPE_REGISTRY_KEY =
+            ResourceKey.createRegistryKey(Clinker.resource("ordnance_modifier_type"));
+    public static final Registry<OrdnanceModifierType<?>> ORDNANCE_MODIFIER_TYPE_REGISTRY =
+            new RegistryBuilder<>(ORDNANCE_MODIFIER_TYPE_REGISTRY_KEY)
+                    .sync(true)
+                    .withIntrusiveHolders() // todo: figure out a better way of doing this
+                    .create();
 
     public static final ResourceKey<Registry<PageElementType<?>>> PAGE_ELEMENT_TYPE_REGISTRY_KEY =
             ResourceKey.createRegistryKey(Clinker.resource("page_element_type"));
@@ -139,12 +148,14 @@ public class ClinkerRegistries {
 
     @SubscribeEvent
     public static void registerRegistries(NewRegistryEvent event) {
+        event.register(PAGE_ELEMENT_TYPE_REGISTRY);
+        event.register(ALCHEMY_KNOWLEDGE_TYPE_REGISTRY);
+        event.register(ORDNANCE_MODIFIER_TYPE_REGISTRY);
+
         event.register(WORLD_FEATURE_CAPABILITY_REGISTRY);
         event.register(WORLD_FEATURE_REGISTRY);
         event.register(WORLD_FEATURE_SPAWN_SET_REGISTRY);
 
-        event.register(PAGE_ELEMENT_TYPE_REGISTRY);
-        event.register(ALCHEMY_KNOWLEDGE_TYPE_REGISTRY);
         event.register(NOISE_COMPUTER_REGISTRY);
         event.register(SURFACE_DECORATOR_REGISTRY);
         event.register(SURFACE_SHAPER_REGISTRY);

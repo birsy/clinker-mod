@@ -145,7 +145,7 @@ public class SpotreedBlock extends Block implements SimpleWaterloggedBlock, Bone
         BlockState rootState = level.getBlockState(rootPos);
         if (rootState.is(this) && rootState.getValue(VERTICAL_DIRECTION) == growthDirection) return true;
         return rootState.isFaceSturdy(level, pos, growthDirection, SupportType.CENTER) &&
-                (rootState.is(ClinkerTags.OTHERSHORE_SOIL) || rootState.is(BlockTags.DIRT) || rootState.getBlock() instanceof FarmBlock);
+                (rootState.is(ClinkerTags.Blocks.OTHERSHORE_SOIL) || rootState.is(BlockTags.DIRT) || rootState.getBlock() instanceof FarmBlock);
     }
 
     @Override

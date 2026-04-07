@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.item.components;
+package birsy.clinker.common.world.components;
 
 import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
@@ -6,7 +6,6 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ByIdMap;
 import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.item.Rarity;
 
 import java.util.function.IntFunction;
 
