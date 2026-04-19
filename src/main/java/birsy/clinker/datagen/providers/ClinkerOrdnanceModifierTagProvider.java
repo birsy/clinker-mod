@@ -5,12 +5,9 @@ import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerOrdnanceModifierTypes;
 import birsy.clinker.core.registry.ClinkerRegistries;
 import birsy.clinker.core.registry.ClinkerTags;
-import birsy.clinker.core.registry.entity.ClinkerEntities;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.IntrinsicHolderTagsProvider;
-import net.minecraft.tags.EntityTypeTags;
-import net.minecraft.world.entity.EntityType;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,10 +23,16 @@ public class ClinkerOrdnanceModifierTagProvider extends IntrinsicHolderTagsProvi
 
     @Override
     protected void addTags(HolderLookup.Provider provider) {
-        IntrinsicTagAppender<OrdnanceModifierType<?>> hasFuse = this.tag(ClinkerTags.OrdnanceModifiers.HAS_FUSE).replace(false);
-        hasFuse.add(
+        IntrinsicTagAppender<OrdnanceModifierType<?>> detonates = this.tag(ClinkerTags.OrdnanceModifiers.DETONATES).replace(false);
+        detonates.add(
                 ClinkerOrdnanceModifierTypes.EXPLOSIVE.get(),
                 ClinkerOrdnanceModifierTypes.FLECHETTES.get()
+        );
+
+        IntrinsicTagAppender<OrdnanceModifierType<?>> causesDetonation = this.tag(ClinkerTags.OrdnanceModifiers.CAUSES_DETONATION).replace(false);
+        causesDetonation.add(
+                ClinkerOrdnanceModifierTypes.FUSE_TIME.get(),
+                ClinkerOrdnanceModifierTypes.UNSTABLE.get()
         );
     }
 }

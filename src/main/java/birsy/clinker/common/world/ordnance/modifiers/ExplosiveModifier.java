@@ -1,5 +1,6 @@
 package birsy.clinker.common.world.ordnance.modifiers;
 
+import birsy.clinker.common.world.ordnance.OrdnanceGradient;
 import birsy.clinker.common.world.ordnance.OrdnanceModifier;
 import birsy.clinker.common.world.ordnance.OrdnanceModifierSet;
 import birsy.clinker.common.world.ordnance.OrdnanceModifierType;
@@ -13,6 +14,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.FastColor;
+import net.minecraft.util.Mth;
 
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
@@ -37,6 +39,11 @@ public record ExplosiveModifier(int power) implements OrdnanceModifier<Explosive
         }
         return colors;
     });
+
+    public float getExplosionRadius() {
+        return Mth.map(this.power, 0, MAX_POWER, 4F, 8F);
+    }
+
     @Override
     public boolean canMerge(OrdnanceModifier modifier) {
         return modifier instanceof ExplosiveModifier;
@@ -60,5 +67,21 @@ public record ExplosiveModifier(int power) implements OrdnanceModifier<Explosive
     @Override
     public OrdnanceModifierType<?> type() {
         return ClinkerOrdnanceModifierTypes.EXPLOSIVE.get();
+    }
+
+    @Override
+    public int gradientModificationOrder() { return 1; }
+    @Override
+    public OrdnanceGradient mutateGradient(OrdnanceGradient gradient) {
+        float factor = (float) Mth.clamp(this.power(), 0, MAX_POWER) / MAX_POWER;
+        return new OrdnanceGradient(
+                gradient.startRed(), gradient.startGreen(), gradient.startBlue(),
+
+                Mth.lerp(factor, gradient.endRed(), 1.0F),
+                Mth.lerp(factor, gradient.endGreen(), 0.8F),
+                Mth.lerp(factor, gradient.endBlue(), 0.4F),
+
+                gradient.overlayRed(), gradient.overlayGreen(), gradient.overlayBlue(), gradient.overlayAlpha()
+        );
     }
 }

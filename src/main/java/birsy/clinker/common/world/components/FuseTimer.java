@@ -1,22 +1,32 @@
 package birsy.clinker.common.world.components;
 
+import birsy.clinker.core.registry.ClinkerDataComponents;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.level.Level;
 
-public record FuseTimer(int tickCount, boolean lit) {
-    public static final FuseTimer EMPTY = new FuseTimer(0, false);
+public record FuseTimer(long gameTimeAtOpening) {
     public static final Codec<FuseTimer> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
-                    Codec.INT.fieldOf("tick_count").forGetter(FuseTimer::tickCount),
-                    Codec.BOOL.fieldOf("lit").forGetter(FuseTimer::lit)
+                    Codec.LONG.fieldOf("game_time_at_opening").forGetter(FuseTimer::gameTimeAtOpening)
             ).apply(instance, FuseTimer::new)
     );
     public static final StreamCodec<RegistryFriendlyByteBuf, FuseTimer> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.INT, FuseTimer::tickCount,
-            ByteBufCodecs.BOOL, FuseTimer::lit,
+            ByteBufCodecs.VAR_LONG, FuseTimer::gameTimeAtOpening,
             FuseTimer::new
     );
+
+    public FuseTimer(int ticksSinceOpening, Level level) {
+        this(level.getGameTime() - ticksSinceOpening);
+    }
+    public FuseTimer(Level level) {
+        this(level.getGameTime());
+    }
+
+    public long ticksSinceOpening(Level level) {
+        return level.getGameTime() - this.gameTimeAtOpening();
+    }
 }

@@ -3,7 +3,6 @@ package birsy.clinker.core.registry;
 import birsy.clinker.common.page.Page;
 import birsy.clinker.common.world.components.PageContents;
 import birsy.clinker.common.world.ordnance.OrdnanceModifierSet;
-import birsy.clinker.common.world.ordnance.OrdnanceModifierType;
 import birsy.clinker.common.world.ordnance.modifiers.*;
 import birsy.clinker.core.Clinker;
 import net.minecraft.core.Holder;
@@ -16,8 +15,6 @@ import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-
-import java.util.function.Supplier;
 
 import static birsy.clinker.core.registry.ClinkerBlocks.*;
 import static birsy.clinker.core.registry.ClinkerItems.*;

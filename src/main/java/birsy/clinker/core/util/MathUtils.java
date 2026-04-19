@@ -94,8 +94,26 @@ public class MathUtils {
         return min;
     }
 
+    public static Vector3d[] generateSpherePoints(int points) {
+        Vector3d[] directions = new Vector3d[points];
+        double goldenRatio = (1 + Math.sqrt(5)) / 2;
+        double angleIncrement = Math.PI * 2 * goldenRatio;
+
+        for (int i = 0; i < points; i++) {
+            double t = (float) i / points;
+            double inclination = Math.acos(1 - 2 * t);
+            double azimuth = angleIncrement * i;
+
+            double x = Math.sin(inclination) * Math.cos(azimuth);
+            double y = Math.sin(inclination) * Math.sin(azimuth);
+            double z = Math.cos(inclination);
+            directions[i] = new Vector3d(x, y, z);
+        }
+        return directions;
+    }
+
     // thanks sebastian lague
-    public static Vec3[] generateSpherePoints(int points) {
+    public static Vec3[] generateSpherePointsVec3(int points) {
         Vec3[] directions = new Vec3[points];
         double goldenRatio = (1 + Math.sqrt(5)) / 2;
         double angleIncrement = Math.PI * 2 * goldenRatio;

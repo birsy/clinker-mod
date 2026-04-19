@@ -1,15 +1,19 @@
 package birsy.clinker.common.world.entity.projectile;
 
+import birsy.clinker.client.particle.OrdnanceTrailParticle;
+import birsy.clinker.client.sound.OrdnanceFuseSoundInstance;
 import birsy.clinker.common.world.components.FuseTimer;
+import birsy.clinker.common.world.ordnance.OrdnanceGradient;
+import birsy.clinker.common.world.ordnance.OrdnanceHelper;
 import birsy.clinker.common.world.ordnance.OrdnanceModifierSet;
+import birsy.clinker.common.world.ordnance.OrdnanceModifierType;
 import birsy.clinker.common.world.ordnance.modifiers.FuseTimeModifier;
 import birsy.clinker.core.Clinker;
-import birsy.clinker.core.registry.ClinkerDataComponents;
-import birsy.clinker.core.registry.ClinkerItems;
-import birsy.clinker.core.registry.ClinkerOrdnanceModifierTypes;
-import birsy.clinker.core.registry.ClinkerSounds;
+import birsy.clinker.core.registry.*;
 import birsy.clinker.core.registry.entity.ClinkerEntities;
 import com.google.common.base.Predicates;
+import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
+import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -19,22 +23,19 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.commands.GiveCommand;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
@@ -64,7 +65,12 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
     private static final EntityDataAccessor<Vector3f> DATA_STICKY_OFFSET = SynchedEntityData.defineId(OrdnanceEntity.class, EntityDataSerializers.VECTOR3);
 
     protected OrdnanceModifierSet modifiers = OrdnanceModifierSet.NONE;
+    protected OrdnanceModifierCache modifierCache = new OrdnanceModifierCache(this.modifiers);
+    protected OrdnanceGradient gradient = modifiers.gradient();
+
     protected final Set<Entity> lastEntityCollisions = new HashSet<>(4);
+
+    private OrdnanceFuseSoundInstance fuseSound;
 
     boolean xCollision, zCollision;
     float spin, pSpin;
@@ -81,7 +87,7 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
     public static OrdnanceEntity toss(Level pLevel, LivingEntity thrower) {
         OrdnanceEntity entity = new OrdnanceEntity(ClinkerEntities.ORDNANCE.get(), pLevel);
         entity.setOwner(thrower);
-        entity.shootFromRotation(thrower, thrower.getXRot(), thrower.getYRot(), 0.0F, 0.8F, 0.0F);
+        entity.shootFromRotation(thrower, thrower.getXRot(), thrower.getYRot(), 0.0F, 1.5F, 0.0F);
         entity.setPos(thrower.getEyePosition().add(entity.getDeltaMovement().normalize()));
         return entity;
     }
@@ -91,9 +97,9 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
         Vec3 delta = targetPosition.subtract(currentPosition);
         Vec3 acceleration = new Vec3(0, -0.024, 0);
 
-        double velocityX = (delta.x - (0.5 * acceleration.x * timeSquared)) / (double)timeInTicks;
-        double velocityY = (delta.y - (0.5 * acceleration.y * timeSquared)) / (double)timeInTicks;
-        double velocityZ = (delta.z - (0.5 * acceleration.z * timeSquared)) / (double)timeInTicks;
+        double velocityX = (delta.x - (0.5 * acceleration.x * timeSquared)) / (double) timeInTicks;
+        double velocityY = (delta.y - (0.5 * acceleration.y * timeSquared)) / (double) timeInTicks;
+        double velocityZ = (delta.z - (0.5 * acceleration.z * timeSquared)) / (double) timeInTicks;
         entity.setDeltaMovement(velocityX, velocityY, velocityZ);
 
         return entity;
@@ -110,7 +116,7 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
     }
     @Override
     public void readSpawnData(RegistryFriendlyByteBuf buffer) {
-        this.modifiers = OrdnanceModifierSet.deserialize(buffer.readNbt(), buffer.registryAccess());
+        this.setModifiers(OrdnanceModifierSet.deserialize(buffer.readNbt(), buffer.registryAccess()));
     }
 
     @Override
@@ -132,7 +138,7 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
     protected void readAdditionalSaveData(CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
         setFuseTime(pCompound.getInt("FuseTime"));
-        modifiers = OrdnanceModifierSet.deserialize(pCompound.get("Modifiers"), this.registryAccess());
+        setModifiers(OrdnanceModifierSet.deserialize(pCompound.get("Modifiers"), this.registryAccess()));
         this.deserializeStickyAttachment(pCompound);
     }
 
@@ -143,15 +149,14 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
         super.tick();
         this.updateStickyAttachment();
         this.tickPhysics();
-        if (this.level().isClientSide()) tickClient();
 
-        this.incrementFuseTime();
+        if (this.level().isClientSide())
+            this.updateSpin();
+
+        this.updateFuse();
     }
 
-    protected void tickClient() {
-        this.updateSpin();
-    }
-
+    public float getSpin(float partialTicks) { return Mth.lerp(partialTicks, this.pSpin, this.spin); }
     public void updateSpin() {
         this.pSpin = this.spin;
         if (this.isStickyAttached()) return;
@@ -173,6 +178,7 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
         this.spin += spinInRadians * angleBasedSpinMultiplier;
     }
 
+    // physics
     private final Vector3d scratchVelocity = new Vector3d();
     void tickPhysics() {
         Vec3 deltaMovement = this.getDeltaMovement();
@@ -435,25 +441,56 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
     }
 
     double elasticCoefficient() {
-        if (this.modifiers.hasModifier(ClinkerOrdnanceModifierTypes.BOUNCY.get())) return 0.995;
-        if (this.modifiers.hasModifier(ClinkerOrdnanceModifierTypes.STICKY.get())) return 0.0;
+        if (this.hasModifier(ClinkerOrdnanceModifierTypes.BOUNCY.get())) return 0.995;
+        if (this.hasModifier(ClinkerOrdnanceModifierTypes.STICKY.get())) return 0.0;
         return 0.5;
     }
     double radius() { return this.getBbHeight() * 0.5; }
     @Override protected double getDefaultGravity() { return 0.06; }
     @Override public float maxUpStep() { return 0.2F; }
+    @Override public boolean canBeCollidedWith() { return false; }
+    @Override public boolean isPushable() { return !this.isStickyAttached(); }
+    @Override
+    public void push(Entity entity) {
+        if (!this.isPassengerOfSameVehicle(entity)) {
+            if (!entity.noPhysics && !this.noPhysics) {
+                double d0 = entity.getX() - this.getX();
+                double d1 = entity.getZ() - this.getZ();
+                double d2 = Mth.absMax(d0, d1);
+                if (d2 >= 0.01F) {
+                    d2 = Math.sqrt(d2);
+                    d0 /= d2;
+                    d1 /= d2;
+                    double d3 = 1.0 / d2;
+                    if (d3 > 1.0) {
+                        d3 = 1.0;
+                    }
 
+                    d0 *= d3;
+                    d1 *= d3;
+                    d0 *= 0.05F;
+                    d1 *= 0.05F;
+                    if (!this.isVehicle() && this.isPushable()) {
+                        this.push(-d0 * 2, 0.0, -d1 * 2);
+                    }
+                }
+            }
+        }
+    }
+
+    // hit reactions
     double blockHitSpeedThreshold() {
-        if (this.modifiers.hasModifier(ClinkerOrdnanceModifierTypes.BOUNCY.get())) return 0.08;
+        if (this.hasModifier(ClinkerOrdnanceModifierTypes.BOUNCY.get())) return 0.08;
         return 0.06;
     }
     @Override
     protected void onHitBlock(BlockHitResult result) {
         super.onHitBlock(result);
-        Clinker.LOGGER.info("Hit block! {} {} {}", level().getBlockState(result.getBlockPos()), result.getBlockPos(), result.getDirection());
         if (canStickyAttach() && !this.isStickyAttached()) {
             this.stickToBlock(result.getBlockPos());
         }
+        if (this.hasModifier(ClinkerOrdnanceModifierTypes.UNSTABLE.get()))
+            this.detonate();
     }
     void playBlockCollisionSound(float speed) {
         double speedThreshold = blockHitSpeedThreshold();
@@ -462,14 +499,13 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
         float volume = 0.5F * (float) Mth.clampedMap(speed, speedThreshold, speedThreshold * 2, 0, 1);
         float pitch = 0.6F * (random.nextFloat() + 0.5F);
 
-        this.level().playSound(null, this.getX(), this.getY() + this.radius(), this.getZ(), getBlockCollisionSound(), SoundSource.PLAYERS, volume, pitch);
+        this.level().playSound(null, this.getX(), this.getY() + this.radius(), this.getZ(), getBlockCollisionSound(), this.getSoundSource(), volume, pitch);
     }
     SoundEvent getBlockCollisionSound() {
-        // todo: custom sounds!
         if (this.getModifiers().hasModifier(ClinkerOrdnanceModifierTypes.STICKY.get()))
-            return SoundEvents.HONEY_BLOCK_STEP;
+            return ClinkerSounds.ORDNANCE_BOUNCE_STICKY.get();
         if (this.getModifiers().hasModifier(ClinkerOrdnanceModifierTypes.BOUNCY.get()))
-            return SoundEvents.SLIME_SQUISH;
+            return ClinkerSounds.ORDNANCE_BOUNCE_BOUNCY.get();
         return ClinkerSounds.ORDNANCE_BOUNCE.get();
     }
 
@@ -503,54 +539,28 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
         float volume = 0.2F;
         float pitch = 0.6F * (random.nextFloat() + 0.5F);
 
+        if (this.hasModifier(ClinkerOrdnanceModifierTypes.THORNED.get()))
+            this.level().playSound(null, this.getX(), this.getY() + this.radius(), this.getZ(), SoundEvents.THORNS_HIT, this.getSoundSource(), volume, pitch);
         if (speed > baseSpeedThreshold)
-            this.level().playSound(null, this.getX(), this.getY() + this.radius(), this.getZ(), SoundEvents.PLAYER_ATTACK_STRONG, SoundSource.PLAYERS, volume, pitch);
+            this.level().playSound(null, this.getX(), this.getY() + this.radius(), this.getZ(), SoundEvents.PLAYER_ATTACK_STRONG, this.getSoundSource(), volume, pitch);
         if (speed > hitSpeedThreshold)
-            this.level().playSound(null, this.getX(), this.getY() + this.radius(), this.getZ(), SoundEvents.PLAYER_ATTACK_CRIT, SoundSource.PLAYERS,  volume, pitch);
+            this.level().playSound(null, this.getX(), this.getY() + this.radius(), this.getZ(), SoundEvents.PLAYER_ATTACK_CRIT, this.getSoundSource(),  volume, pitch);
     }
 
-    @Override public boolean canBeCollidedWith() { return false; }
-    @Override public boolean isPushable() { return !this.isStickyAttached(); }
-    // no pushing for us!
-    @Override
-    public void push(Entity entity) {
-        if (!this.isPassengerOfSameVehicle(entity)) {
-            if (!entity.noPhysics && !this.noPhysics) {
-                double d0 = entity.getX() - this.getX();
-                double d1 = entity.getZ() - this.getZ();
-                double d2 = Mth.absMax(d0, d1);
-                if (d2 >= 0.01F) {
-                    d2 = Math.sqrt(d2);
-                    d0 /= d2;
-                    d1 /= d2;
-                    double d3 = 1.0 / d2;
-                    if (d3 > 1.0) {
-                        d3 = 1.0;
-                    }
-
-                    d0 *= d3;
-                    d1 *= d3;
-                    d0 *= 0.05F;
-                    d1 *= 0.05F;
-                    if (!this.isVehicle() && this.isPushable()) {
-                        this.push(-d0 * 2, 0.0, -d1 * 2);
-                    }
-                }
-            }
-        }
-    }
-
+    // interaction
     @Override
     public @org.jetbrains.annotations.Nullable ItemStack getPickResult() {
         ItemStack itemStack = ClinkerItems.ORDNANCE.toStack();
         itemStack.set(ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), this.modifiers);
-        itemStack.set(ClinkerDataComponents.FUSE_TIMER.get(), new FuseTimer(this.getFuseTime(), false));
+        if (this.hasFuse()) {
+            itemStack.set(ClinkerDataComponents.FUSE_TIMER.get(), new FuseTimer(this.getFuseTime(), this.level()));
+        }
         return itemStack;
     }
-
+    @Override
+    public float getPickRadius() { return (float) this.radius(); }
     @Override
     public boolean isPickable() { return true; }
-
     @Override
     public InteractionResult interact(Player player, InteractionHand hand) {
         if (!this.level().isClientSide()) {
@@ -560,7 +570,6 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
         }
         return InteractionResult.sidedSuccess(this.level().isClientSide());
     }
-
     @Override
     public boolean hurt(DamageSource pSource, float pAmount) {
         if (this.isInvulnerableTo(pSource)) {
@@ -570,10 +579,10 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
             if (entity != null) {
                 if (entity instanceof OrdnanceEntity) return false;
                 if (!this.level().isClientSide) {
-                    Vec3 vec3 = entity.getLookAngle();
-                    this.setDeltaMovement(this.getDeltaMovement().add(entity.getDeltaMovement()).add(vec3.scale(0.2)));
+                    Vec3 velocityAddend = entity.getDeltaMovement().add(entity.getLookAngle().scale(0.2));
+                    this.addDeltaMovement(velocityAddend);
                     this.setOwner(entity);
-                    this.level().playSound(null, this.position().x(), this.position().y(), this.position().z(), SoundEvents.TRIDENT_HIT, SoundSource.BLOCKS, 0.5F, 1.0F);
+                    this.level().playSound(null, this.position().x(), this.position().y(), this.position().z(), SoundEvents.TRIDENT_HIT, this.getSoundSource(), 0.5F, 1.0F);
                     this.unstick();
                 }
                 this.markHurt();
@@ -581,6 +590,103 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
             } else {
                 return false;
             }
+        }
+    }
+
+    // fuse stuff
+    public boolean canDetonate() {
+        return this.hasModifier(ClinkerTags.OrdnanceModifiers.DETONATES) &&
+                this.hasModifier(ClinkerTags.OrdnanceModifiers.CAUSES_DETONATION);
+    }
+    public void detonate() {
+        OrdnanceHelper.detonate(this.modifiers, this.getX(), this.getY() + this.radius(), this.getZ(), this.level(), this, this.getOwner());
+    }
+
+    void updateFuse() {
+        FuseTimeModifier modifier = this.modifiers.getModifier(ClinkerOrdnanceModifierTypes.FUSE_TIME.get());
+        if (modifier == null) return;
+
+        if (this.level().isClientSide()) {
+            this.createFuseParticles();
+            // todo: 'fuse pulse'
+            if (this.getFuseTime() < modifier.getFuseTicks()) {
+                // create a fuse sound if it should be playing
+                if (this.fuseSound == null) {
+                    this.fuseSound = new OrdnanceFuseSoundInstance(this, this.getMaxFuseTime(), () -> (float)this.getFuseTime());
+                    Minecraft.getInstance().getSoundManager().play(this.fuseSound);
+                }
+            } else {
+                // and remove it if it shouldn't...
+                if (this.fuseSound != null) {
+                    this.fuseSound.stopPlaying();
+                    this.fuseSound = null;
+                }
+            }
+            return;
+        }
+
+        int newFuseTime = this.getFuseTime() + 1;
+        this.setFuseTime(newFuseTime);
+        // we should probably detonate now.
+        if (newFuseTime == modifier.getFuseTicks()) {
+            if (this.canDetonate()) {
+                detonate();
+            } else {
+                // dud...
+                this.level().playSound(null,
+                        this.getX(), this.getY(), this.getZ(),
+                        SoundEvents.SQUID_SQUIRT, this.getSoundSource(),
+                        0.5F, 1.8F
+                );
+            }
+        }
+    }
+    public boolean hasFuse() {
+        FuseTimeModifier modifier = this.modifiers.getModifier(ClinkerOrdnanceModifierTypes.FUSE_TIME.get());
+        if (modifier == null) return false;
+
+        int fuseTime = this.getFuseTime();
+        int maxFuseTime = modifier.getFuseTicks();
+        return fuseTime < maxFuseTime;
+    }
+    public int getMaxFuseTime() {
+        FuseTimeModifier modifier = this.modifiers.getModifier(ClinkerOrdnanceModifierTypes.FUSE_TIME.get());
+        if (modifier == null) return Integer.MAX_VALUE;
+        return modifier.getFuseTicks();
+    }
+    public void setFuseTime(int time) { this.entityData.set(DATA_FUSE_TIME, time); }
+    public int getFuseTime() { return this.entityData.get(DATA_FUSE_TIME); }
+    private final Vector3d fuseParticlePos = new Vector3d(), lastFuseParticlePos = new Vector3d();
+    public void createFuseParticles() {
+        if (!this.hasFuse()) return;
+
+        lastFuseParticlePos.set(fuseParticlePos);
+        // get the fuse position
+        Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
+
+        double radius = this.radius();
+        fuseParticlePos.set(camera.up);
+        fuseParticlePos.rotateAxis(this.spin, camera.forwards.x(), camera.forwards.y(), camera.forwards.z());
+        fuseParticlePos.add(camera.forwards.x() * 0.25, camera.forwards.y() * 0.25, camera.forwards.z() * 0.25);
+        fuseParticlePos.mul(radius).add(this.getX(), this.getY() + radius, this.getZ());
+
+        // dont spawn particles frame one
+        if (this.tickCount <= 1) return;
+
+        // spawn particles, accounting for distance travelled between frames...
+        double distance = lastFuseParticlePos.distance(fuseParticlePos);
+        double distanceBetweenParticles = 0.1;
+        int count = Math.clamp((int) Math.ceil(distance / distanceBetweenParticles), 1, 10);
+        for (int i = 0; i < count; i++) {
+            float factor = (float) i / count;
+            double x = Mth.lerp(factor, lastFuseParticlePos.x, fuseParticlePos.x),
+                    y = Mth.lerp(factor, lastFuseParticlePos.y, fuseParticlePos.y),
+                    z = Mth.lerp(factor, lastFuseParticlePos.z, fuseParticlePos.z);
+            this.level().addParticle(
+                    new OrdnanceTrailParticle.Options(this.gradient, 2.0F + (float) (random.nextGaussian() * 0.3F)),
+                    x, y, z,
+                    random.nextGaussian() * 0.01F, Math.abs(random.nextGaussian()) * 0.01F * 2, random.nextGaussian() * 0.01F
+            );
         }
     }
 
@@ -755,17 +861,32 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
         this.getEntityData().set(DATA_STICKY_OFFSET, new Vector3f(0));
         this.cachedStickyBlockState = null;
         this.noPhysics = false;
-        Clinker.LOGGER.info("UNSTICKING!!!");
     }
 
-    // data
 
-
-    public float getSpin(float partialTicks) { return Mth.lerp(partialTicks, this.pSpin, this.spin); }
-    public void incrementFuseTime() { this.setFuseTime(this.getFuseTime() + 1); }
-    public void setFuseTime(int time) { this.entityData.set(DATA_FUSE_TIME, time); }
-    public int getFuseTime() { return this.entityData.get(DATA_FUSE_TIME); }
-    public int getMaxFuseTime() { return FuseTimeModifier.getFuseTicks(modifiers); }
     public OrdnanceModifierSet getModifiers() { return modifiers; }
-    public void setModifiers(OrdnanceModifierSet modifiers) { this.modifiers = modifiers; }
+    public void setModifiers(OrdnanceModifierSet modifiers) {
+        this.modifiers = modifiers;
+        this.modifierCache = new OrdnanceModifierCache(modifiers);
+        this.gradient = modifiers.gradient();
+    }
+    public boolean hasModifier(OrdnanceModifierType<?> type) { return modifierCache.hasType(type); }
+    public boolean hasModifier(TagKey<OrdnanceModifierType<?>> type) { return modifierCache.hasType(type); }
+
+    // classes
+    // cache for quickly evaluating if we contain a type or tag
+    protected static class OrdnanceModifierCache {
+        final OrdnanceModifierSet set;
+        final Object2BooleanMap<OrdnanceModifierType<?>> hasTypeMap = new Object2BooleanOpenHashMap<>();
+        final Object2BooleanMap<TagKey<OrdnanceModifierType<?>>> hasKeyMap = new Object2BooleanOpenHashMap<>();
+
+        private OrdnanceModifierCache(OrdnanceModifierSet set) { this.set = set; }
+
+        public boolean hasType(OrdnanceModifierType<?> type) {
+            return hasTypeMap.computeIfAbsent(type, val -> set.hasModifier(type));
+        }
+        public boolean hasType(TagKey<OrdnanceModifierType<?>> type) {
+            return hasKeyMap.computeIfAbsent(type, val -> set.hasModifier(type));
+        }
+    }
 }

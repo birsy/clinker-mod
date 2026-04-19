@@ -36,10 +36,10 @@ public class ClinkerParticles
     public static final Supplier<SimpleParticleType> FIRE_SPEW = register("fire_spew");
     public static final Supplier<SimpleParticleType> WRITHING_MAGGOT = register("writhing_maggot");
 
-    public static final Supplier<ParticleType<DustColorTransitionOptions>> ORDNANCE_TRAIL = register("ordnance_trail",
+    public static final Supplier<ParticleType<OrdnanceTrailParticle.Options>> ORDNANCE_TRAIL = register("ordnance_trail",
             false,
-            type -> DustColorTransitionOptions.CODEC,
-            type -> DustColorTransitionOptions.STREAM_CODEC);
+            type -> OrdnanceTrailParticle.Options.CODEC,
+            type -> OrdnanceTrailParticle.Options.STREAM_CODEC);
     public static final Supplier<ParticleType<DustColorTransitionOptions>> ORDNANCE_EXPLOSION = register("ordnance_explosion",
             false,
             type -> DustColorTransitionOptions.CODEC,

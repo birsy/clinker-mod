@@ -48,6 +48,8 @@ public class ClinkerEnglishLanguageProvider extends LanguageProvider {
             this.add("ordnance_modifier." + entry.getId().toLanguageKey(), localizedNameFromRegistryName(entry.getId().getPath()));
         }
         this.add("ordnance_modifier.clinker.fuse_time", "%s second fuse");
+        this.add("ordnance_modifier.clinker.fuseless", "Lacks fuse!");
+
         this.add("ordnance_modifier.clinker.explosive.-2", "Worthless Explosive");
         this.add("ordnance_modifier.clinker.explosive.-1", "Piddling Explosive");
         this.add("ordnance_modifier.clinker.explosive.0", "Quaint Explosive");
@@ -55,6 +57,9 @@ public class ClinkerEnglishLanguageProvider extends LanguageProvider {
         this.add("ordnance_modifier.clinker.explosive.2", "Superior Explosive");
         this.add("ordnance_modifier.clinker.explosive.3", "Exceptional Explosive");
         this.add("ordnance_modifier.clinker.flechette", "Releases Flechettes");
+
+        this.add("ordnance_modifier.clinker.about_to_explode", "Oh dear.");
+        this.add("ordnance_modifier.clinker.about_to_explode_description", "You probably shouldn't be reading this...");
 
 
         this.add("itemGroup.clinker.clinker", "Clinker");
@@ -99,7 +104,6 @@ public class ClinkerEnglishLanguageProvider extends LanguageProvider {
         for (String word : words) localizedName.append(Character.toTitleCase(word.charAt(0)))
                     .append(word.substring(1))
                     .append(" ");
-
         return localizedName.toString().trim();
     }
 }

@@ -117,8 +117,34 @@
     "subtitle": "subtitles.entity.ordnance.bounce",
     "sounds": [
       {
-        "name": "clinker:entity/ordnance/ordnance_bounce",
-        "stream": true
+        "name": "clinker:entity/ordnance/ordnance_bounce"
+      }
+    ]
+  },
+  "entity.ordnance.bounce.bouncy": {
+    "category": "entity",
+    "subtitle": "subtitles.entity.ordnance.bounce.bouncy",
+    "sounds": [
+      {
+        "name": "clinker:entity/ordnance/ordnance_bounce_bouncy"
+      }
+    ]
+  },
+  "entity.ordnance.bounce.sticky": {
+    "category": "entity",
+    "subtitle": "subtitles.entity.ordnance.bounce.sticky",
+    "sounds": [
+      {
+        "name": "clinker:entity/ordnance/ordnance_bounce_sticky"
+      }
+    ]
+  },
+  "entity.ordnance.bounce.thorny": {
+    "category": "entity",
+    "subtitle": "subtitles.entity.ordnance.bounce.thorny",
+    "sounds": [
+      {
+        "name": "clinker:entity/ordnance/ordnance_bounce_thorny"
       }
     ]
   },
@@ -127,15 +153,15 @@
     "subtitle": "subtitles.entity.ordnance.explode",
     "sounds": [
       {
-        "name": "clinker:entity/ordnance/ordnance_explode", "stream": false}
+        "name": "clinker:entity/ordnance/ordnance_explode"
+      }
     ]
   },
   "entity.ordnance.sparkle": {
     "category": "entity",
     "sounds": [
       {
-        "name": "clinker:entity/ordnance/ordnance_sparkle",
-        "stream": true
+        "name": "clinker:entity/ordnance/ordnance_sparkle"
       }
     ]
   },

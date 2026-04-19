@@ -61,14 +61,12 @@ public class ClinkerItems
             new OrdnanceItem(new Item.Properties()
                     .stacksTo(24)
                     .component(ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.NONE)
-                    .component(ClinkerDataComponents.FUSE_TIMER.get(), FuseTimer.EMPTY)
             )
     );
     public static final DeferredItem<AlchemistsCrossbowItem> ALCHEMISTS_CROSSBOW = ITEMS.register("alchemists_crossbow", () ->
             new AlchemistsCrossbowItem(new Item.Properties()
                     .stacksTo(1).durability(384)
                     .component(ClinkerDataComponents.LOADED_ITEM_STACK.get(), LoadedItemStack.EMPTY)
-                    .component(ClinkerDataComponents.FUSE_TIMER.get(), FuseTimer.EMPTY)
                     .component(ClinkerDataComponents.TICK_DELAY.get(), 0)
             )
     );

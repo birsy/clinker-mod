@@ -32,6 +32,12 @@ public class ClinkerSounds {
 
     public static final DeferredHolder<SoundEvent, SoundEvent> ORDNANCE_BOUNCE = SOUNDS.register("entity.ordnance.bounce",
             () -> SoundEvent.createVariableRangeEvent(Clinker.resource("entity.ordnance.bounce")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> ORDNANCE_BOUNCE_STICKY = SOUNDS.register("entity.ordnance.bounce.sticky",
+            () -> SoundEvent.createVariableRangeEvent(Clinker.resource("entity.ordnance.bounce.sticky")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> ORDNANCE_BOUNCE_BOUNCY = SOUNDS.register("entity.ordnance.bounce.bouncy",
+            () -> SoundEvent.createVariableRangeEvent(Clinker.resource("entity.ordnance.bounce.bouncy")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> ORDNANCE_BOUNCE_THORNY = SOUNDS.register("entity.ordnance.bounce.thorny",
+            () -> SoundEvent.createVariableRangeEvent(Clinker.resource("entity.ordnance.bounce.thorny")));
 
     public static final DeferredHolder<SoundEvent, SoundEvent> ORDNANCE_EXPLODE = SOUNDS.register("entity.ordnance.explode",
             () -> SoundEvent.createVariableRangeEvent(Clinker.resource("entity.ordnance.explode")));

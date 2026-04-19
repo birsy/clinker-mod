@@ -12,12 +12,12 @@ import net.minecraft.world.phys.Vec3;
 import java.util.function.Supplier;
 
 
-public class OrdnanceSoundInstance extends AbstractTickableSoundInstance {
+public class OrdnanceFuseSoundInstance extends AbstractTickableSoundInstance {
     private final Entity entity;
     private final float maxFuseTime;
     private final Supplier<Float> fuseTimeSupplier;
 
-    public OrdnanceSoundInstance(Entity pEntity, float maxFuseTime, Supplier<Float> fuseTimeSupplier) {
+    public OrdnanceFuseSoundInstance(Entity pEntity, float maxFuseTime, Supplier<Float> fuseTimeSupplier) {
         super(ClinkerSounds.ORDNANCE_SPARKLE_LOOP.get(),  SoundSource.BLOCKS, RandomSource.create(0));
         this.maxFuseTime = maxFuseTime;
         this.fuseTimeSupplier = fuseTimeSupplier;
@@ -49,7 +49,8 @@ public class OrdnanceSoundInstance extends AbstractTickableSoundInstance {
                 return;
             }
             float dist = (float) Minecraft.getInstance().cameraEntity.position().distanceTo(new Vec3(this.x, this.y, this.z));
-            this.volume = (1.0F / (dist * dist)) * 3;
+            dist = Math.max(1, dist);
+            this.volume = (1.0F / (dist * dist)) * 4;
         }
     }
 

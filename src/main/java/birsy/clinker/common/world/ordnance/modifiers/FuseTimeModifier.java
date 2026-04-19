@@ -32,16 +32,8 @@ public record FuseTimeModifier(int level) implements OrdnanceModifier<FuseTimeMo
     public static final int DEFAULT_FUSE_TIME = 120;
     public static final int MIN_LEVEL = -2, MAX_LEVEL = 2;
 
-    public static int getFuseTicks(OrdnanceModifierSet modifiers) {
-        if (modifiers == null) return DEFAULT_FUSE_TIME;
-        if (!modifiers.hasModifier(ClinkerTags.OrdnanceModifiers.HAS_FUSE)) return Integer.MAX_VALUE;
-        if (!modifiers.hasModifier(ClinkerOrdnanceModifierTypes.FUSE_TIME.get())) return DEFAULT_FUSE_TIME;
-        FuseTimeModifier modifier = modifiers.getModifier(ClinkerOrdnanceModifierTypes.FUSE_TIME.get());
-        return DEFAULT_FUSE_TIME + modifier.level * 30;
-    }
-
-    public static int getFuseTicks(int level) {
-        return DEFAULT_FUSE_TIME + level * 30;
+    public int getFuseTicks() {
+        return DEFAULT_FUSE_TIME + level() * 30;
     }
 
     @Override
@@ -58,11 +50,10 @@ public record FuseTimeModifier(int level) implements OrdnanceModifier<FuseTimeMo
 
     @Override
     public void tooltip(@Nullable OrdnanceModifierSet set, Consumer<Component> tooltipAdder) {
-        if (set == null || set.hasModifier(ClinkerTags.OrdnanceModifiers.HAS_FUSE))
-            tooltipAdder.accept(
-                    Component.translatable("ordnance_modifier.clinker.fuse_time", getFuseTicks(this.level()) / 20.0)
-                             .withStyle(Style.EMPTY.withColor(ChatFormatting.GRAY))
-            );
+        tooltipAdder.accept(
+                Component.translatable("ordnance_modifier.clinker.fuse_time", getFuseTicks() / 20.0)
+                        .withStyle(Style.EMPTY.withColor(ChatFormatting.GRAY))
+        );
     }
 
     @Override

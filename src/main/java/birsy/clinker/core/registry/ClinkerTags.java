@@ -42,6 +42,7 @@ public class ClinkerTags {
     }
 
     public static class OrdnanceModifiers {
-        public static final TagKey<OrdnanceModifierType<?>> HAS_FUSE = TagKey.create(ClinkerRegistries.ORDNANCE_MODIFIER_TYPE_REGISTRY_KEY, Clinker.resource("has_fuse"));
+        public static final TagKey<OrdnanceModifierType<?>> DETONATES = TagKey.create(ClinkerRegistries.ORDNANCE_MODIFIER_TYPE_REGISTRY_KEY, Clinker.resource("detonates"));
+        public static final TagKey<OrdnanceModifierType<?>> CAUSES_DETONATION = TagKey.create(ClinkerRegistries.ORDNANCE_MODIFIER_TYPE_REGISTRY_KEY, Clinker.resource("causes_detonation"));
     }
 }

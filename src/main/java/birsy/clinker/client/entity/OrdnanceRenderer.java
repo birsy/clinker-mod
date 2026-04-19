@@ -29,11 +29,15 @@ public class OrdnanceRenderer extends EntityRenderer<OrdnanceEntity> {
     public void render(OrdnanceEntity pEntity, float pEntityYaw, float pPartialTick, PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight) {
         VertexConsumer consumer = pBuffer.getBuffer(RenderType.entityCutout(this.getTextureLocation(pEntity)));
 
-        float fuseTime = (pEntity.getFuseTime() + pPartialTick) / (pEntity.getMaxFuseTime() + 1.0F);
-        float fuseFactor = fuseTime * 120;
-        float bombFlash = Mth.clamp(Mth.sin(((fuseFactor * fuseFactor * Mth.PI) / 20.0F) * 0.02F), 0, 1) * fuseTime;
-        float bigPuffTime = 110;
-        if (fuseFactor > bigPuffTime) bombFlash = Math.max((float) (1 - Math.pow((fuseFactor - 120) / (120 - bigPuffTime), 4)) * fuseTime, bombFlash);
+        // todo: redo all of this it sucks ASS!!!
+        float bombFlash = 0;
+        if (pEntity.hasFuse() && pEntity.canDetonate()) {
+            float fuseTime = (pEntity.getFuseTime() + pPartialTick) / (pEntity.getMaxFuseTime() + 1.0F);
+            float fuseFactor = fuseTime * 120;
+            bombFlash = Mth.clamp(Mth.sin(((fuseFactor * fuseFactor * Mth.PI) / 20.0F) * 0.02F), 0, 1) * fuseTime;
+            float bigPuffTime = 110;
+            if (fuseFactor > bigPuffTime) bombFlash = Math.max((float) (1 - Math.pow((fuseFactor - 120) / (120 - bigPuffTime), 4)) * fuseTime, bombFlash);
+        }
 
         BlockPos lightPos = BlockPos.containing(pEntity.getX(), pEntity.getY() + pEntity.getBbHeight() * 0.5, pEntity.getZ());
         int overlay = OverlayTexture.pack(bombFlash, pEntity.hurtMarked);
@@ -59,10 +63,10 @@ public class OrdnanceRenderer extends EntityRenderer<OrdnanceEntity> {
     public void drawBomb(PoseStack stack, VertexConsumer consumer, int pPackedLight, int overlayTexture, OrdnanceEntity pEntity, float pPartialTick, Vec3 directionTowardsCamera) {
         stack.pushPose();
         Vec3 dir = directionTowardsCamera.scale(8 / 16.0F);
-        stack.translate(dir.x(), dir.y(), dir.z());
+        stack.translate(dir.x(), dir.y() - 1, dir.z());
         stack.mulPose(this.entityRenderDispatcher.cameraOrientation());
         stack.mulPose(Axis.ZP.rotation(-pEntity.getSpin(pPartialTick)));
-        stack.translate(0, 2 / 16.0F, 0);
+        stack.translate(0, 1.5, 0);
 
         float u0 = 0, u1 = 12.0F / 32.0F;
         float v0 = 0, v1 = 1.0F;

@@ -1,5 +1,6 @@
 package birsy.clinker.common.world.ordnance;
 
+import birsy.clinker.common.world.ordnance.modifiers.FuseTimeModifier;
 import birsy.clinker.core.registry.ClinkerOrdnanceModifierTypes;
 import birsy.clinker.core.registry.ClinkerRegistries;
 import birsy.clinker.core.registry.ClinkerTags;
@@ -11,7 +12,6 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -24,8 +24,8 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipProvider;
-import org.checkerframework.checker.units.qual.N;
 
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -66,8 +66,9 @@ public record OrdnanceModifierSet(ImmutableMap<OrdnanceModifierType<?>, Ordnance
         return CODEC.parse(registryAccess.createSerializationContext(NbtOps.INSTANCE), tag).result().orElse(NONE);
     }
 
+    @Nullable
     public <T extends OrdnanceModifier<T>> T getModifier(OrdnanceModifierType<T> modifierType) {
-        return (T) map.get(modifierType);
+        return (T) map.getOrDefault(modifierType, null);
     }
 
     public boolean hasModifier(TagKey<OrdnanceModifierType<?>> tag) {
@@ -91,10 +92,12 @@ public record OrdnanceModifierSet(ImmutableMap<OrdnanceModifierType<?>, Ordnance
 
     public OrdnanceGradient gradient() {
         OrdnanceGradient gradient = new OrdnanceGradient();
-        map.values().stream().sorted(
-                Comparator.<OrdnanceModifier>comparingInt(OrdnanceModifier::gradientModificationOrder)
-                          .thenComparingInt(modifier -> ClinkerRegistries.ORDNANCE_MODIFIER_TYPE_REGISTRY.getIdOrThrow(modifier.type()))
-        ).forEachOrdered(ordnanceModifier -> ordnanceModifier.mutateGradient(gradient));
+        List<OrdnanceModifier> modifiersByGradientOrder = new ArrayList<>(this.map().values());
+        modifiersByGradientOrder.sort(Comparator.<OrdnanceModifier>comparingInt(OrdnanceModifier::gradientModificationOrder)
+                                                .thenComparingInt(modifier -> ClinkerRegistries.ORDNANCE_MODIFIER_TYPE_REGISTRY.getIdOrThrow(modifier.type())));
+        for (OrdnanceModifier ordnanceModifier : modifiersByGradientOrder) {
+            gradient = ordnanceModifier.mutateGradient(gradient);
+        }
         return gradient;
     }
 
@@ -126,8 +129,15 @@ public record OrdnanceModifierSet(ImmutableMap<OrdnanceModifierType<?>, Ordnance
     }
 
     public void appendTooltips(Consumer<Component> tooltipAdder) {
-        if (!this.hasModifier(ClinkerTags.OrdnanceModifiers.HAS_FUSE))
+        boolean hasDetonationModifier = this.hasModifier(ClinkerTags.OrdnanceModifiers.DETONATES);
+        boolean hasDetonationCausingModifier = this.hasModifier(ClinkerTags.OrdnanceModifiers.CAUSES_DETONATION);
+
+        if (!hasDetonationModifier)
             tooltipAdder.accept(Component.translatable("ordnance_modifier.clinker.dud").withStyle(Style.EMPTY.withColor(ChatFormatting.DARK_GRAY)));
+
+        if (hasDetonationModifier && !hasDetonationCausingModifier)
+            tooltipAdder.accept(Component.translatable("ordnance_modifier.clinker.fuseless").withStyle(Style.EMPTY.withColor(ChatFormatting.GRAY)));
+
         this.map().values().stream().sorted(
                 Comparator.<OrdnanceModifier>comparingInt(OrdnanceModifier::textOrder)
                         .thenComparingInt(modifier -> ClinkerRegistries.ORDNANCE_MODIFIER_TYPE_REGISTRY.getIdOrThrow(modifier.type()))

@@ -1,9 +1,7 @@
 package birsy.clinker.common.world.entity.projectile;
 
 import birsy.clinker.client.particle.OrdnanceExplosionParticle;
-import birsy.clinker.client.particle.OrdnanceTrailParticle;
-import birsy.clinker.client.sound.OrdnanceSoundInstance;
-import birsy.clinker.common.networking.packet.ClientboundOrdnanceExplosionPacket;
+import birsy.clinker.client.sound.OrdnanceFuseSoundInstance;
 import birsy.clinker.common.world.components.OrdnanceEffects;
 import birsy.clinker.core.registry.entity.ClinkerEntities;
 import birsy.clinker.core.registry.ClinkerParticles;
@@ -29,21 +27,19 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.*;
 
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 @Deprecated
 public class OldOrdnanceEntity extends Projectile implements IEntityWithComplexSpawn {
-    private static final Vec3[] FLECHETTE_POINTS = MathUtils.generateSpherePoints(128);
-    private static final Vec3[] PARTICLE_POINTS = MathUtils.generateSpherePoints(500);
+    private static final Vec3[] FLECHETTE_POINTS = MathUtils.generateSpherePointsVec3(128);
+    private static final Vec3[] PARTICLE_POINTS = MathUtils.generateSpherePointsVec3(500);
 
     private static final EntityDataAccessor<Integer> DATA_FUSE_TIME = SynchedEntityData.defineId(OldOrdnanceEntity.class, EntityDataSerializers.INT);
     protected OrdnanceEffects effects = OrdnanceEffects.DEFAULT;
@@ -53,7 +49,7 @@ public class OldOrdnanceEntity extends Projectile implements IEntityWithComplexS
     float stuckEntityAngleOffset, stuckEntityHeightOffset;
     Vec3 stuckDirection;
 
-    private OrdnanceSoundInstance sound;
+    private OrdnanceFuseSoundInstance sound;
     
     private float spin, pSpin;
 
@@ -293,16 +289,16 @@ public class OldOrdnanceEntity extends Projectile implements IEntityWithComplexS
             Vec3 particlePosition = this.getPosition(1);
             for (float distance = 0; distance < direction.length(); distance+=spaceBetweenParticles) {
                 particlePosition = particlePosition.add(offset);
-                this.level().addParticle(
-                        new OrdnanceTrailParticle.Options(baseColor, smokeColor, 2.0F + (float) (random.nextGaussian() * 0.3F)),
-                        particlePosition.x(), particlePosition.y(), particlePosition.z(),
-                        random.nextGaussian() * speed, Math.abs(random.nextGaussian()) * speed * 2, random.nextGaussian() * speed
-                );
+//                this.level().addParticle(
+//                        new OrdnanceTrailParticle.Options(baseColor, smokeColor, 2.0F + (float) (random.nextGaussian() * 0.3F)),
+//                        particlePosition.x(), particlePosition.y(), particlePosition.z(),
+//                        random.nextGaussian() * speed, Math.abs(random.nextGaussian()) * speed * 2, random.nextGaussian() * speed
+//                );
             }
         }
 
         if (this.sound == null) {
-            this.sound = new OrdnanceSoundInstance(this, this.getMaxFuseTime(), () -> (float)this.getFuseTime());
+            this.sound = new OrdnanceFuseSoundInstance(this, this.getMaxFuseTime(), () -> (float)this.getFuseTime());
             Minecraft.getInstance().getSoundManager().play(this.sound);
         }
     }
@@ -401,10 +397,10 @@ public class OldOrdnanceEntity extends Projectile implements IEntityWithComplexS
             level.playLocalSound(location.x(), location.y(), location.z(), SoundEvents.FIREWORK_ROCKET_TWINKLE_FAR, SoundSource.BLOCKS, 0.1F, Mth.lerp(level.random.nextFloat(), 0.7F, 0.9F), false);
         } else {
             if (level instanceof ServerLevel serverLevel) {
-                PacketDistributor.sendToPlayersTrackingChunk(serverLevel,
-                        new ChunkPos(BlockPos.containing(location)),
-                        new ClientboundOrdnanceExplosionPacket(location, effects.serialize(level.registryAccess()))
-                );
+//                PacketDistributor.sendToPlayersTrackingChunk(serverLevel,
+//                        new ChunkPos(BlockPos.containing(location)),
+//                        new ClientboundOrdnanceExplosionPacket(location, effects.serialize(level.registryAccess()))
+//                );
             }
 
             if (effects.detonationType() == OrdnanceEffects.DetonationType.FLECHETTE) {

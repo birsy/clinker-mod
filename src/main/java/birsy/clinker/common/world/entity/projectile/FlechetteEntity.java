@@ -194,12 +194,12 @@ public class FlechetteEntity extends Projectile implements IEntityWithComplexSpa
 
     @Override
     public double getDefaultGravity() {
-        float gravity = -0.024F;
+        float gravity = -0.024F * 2;
         if (this.isUnderWater()) gravity *= -0.1F;
         return gravity;
     }
     protected float getDrag() {
-        float drag = 0.99F;
+        float drag = 0.95F;
         if (this.isUnderWater()) drag = 0.9F;
         return drag;
     }
