@@ -1,6 +1,6 @@
 package birsy.clinker.common.world.entity.gnomad.gnomind.behaviors;
 
-import birsy.clinker.common.world.entity.gnomad.gnomind.squad.SquadMember;
+import birsy.clinker.common.world.entity.system.squad.SquadMember;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.Util;
@@ -10,12 +10,9 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.behavior.EntityTracker;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
-import net.minecraft.world.entity.player.Player;
 import net.tslat.smartbrainlib.api.core.behaviour.ExtendedBehaviour;
-import net.tslat.smartbrainlib.api.core.behaviour.custom.target.SetPlayerLookTarget;
 import net.tslat.smartbrainlib.object.MemoryTest;
 import net.tslat.smartbrainlib.util.BrainUtils;
-import net.tslat.smartbrainlib.util.SensoryUtils;
 
 import java.util.List;
 import java.util.function.BiPredicate;

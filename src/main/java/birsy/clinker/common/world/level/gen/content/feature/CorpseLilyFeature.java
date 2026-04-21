@@ -9,6 +9,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
+import net.minecraft.world.level.levelgen.feature.OreFeature;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 
 public class CorpseLilyFeature extends Feature<NoneFeatureConfiguration> {
@@ -30,7 +31,6 @@ public class CorpseLilyFeature extends Feature<NoneFeatureConfiguration> {
             } else {
                 CorpseLilyBulbBlock.place(level, origin, true);
             }
-
             return true;
         }
 

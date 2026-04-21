@@ -1,11 +1,10 @@
 package birsy.clinker.common.networking.packet.debug;
 
 import birsy.clinker.client.render.debug.ClinkerDebugRenderers;
-import birsy.clinker.common.world.entity.gnomad.gnomind.squad.Squad;
-import birsy.clinker.common.world.entity.gnomad.gnomind.squad.SquadDebugDataDump;
+import birsy.clinker.common.world.entity.system.squad.Squad;
+import birsy.clinker.common.world.entity.system.squad.SquadDebugDataDump;
 import birsy.clinker.core.Clinker;
 import net.minecraft.SharedConstants;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;

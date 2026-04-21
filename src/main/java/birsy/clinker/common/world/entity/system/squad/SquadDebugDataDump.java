@@ -1,16 +1,13 @@
-package birsy.clinker.common.world.entity.gnomad.gnomind.squad;
+package birsy.clinker.common.world.entity.system.squad;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.game.DebugEntityNameGenerator;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.IntFunction;
 
 public record SquadDebugDataDump(UUID id, int leaderId, 
                                  double centerX, double centerY, double centerZ,

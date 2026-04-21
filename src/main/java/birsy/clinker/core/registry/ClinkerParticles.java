@@ -45,10 +45,10 @@ public class ClinkerParticles
             type -> DustColorTransitionOptions.CODEC,
             type -> DustColorTransitionOptions.STREAM_CODEC);
     public static final Supplier<SimpleParticleType> EXPLOSION_LIGHT = register("explosion_light");
-    public static final Supplier<ParticleType<ChainLightningParticle.ChainLightningParticleOptions>> CHAIN_LIGHTNING = register("chain_lightning",
+    public static final Supplier<ParticleType<ChainLightningParticle.Options>> CHAIN_LIGHTNING = register("chain_lightning",
             true,
-            type -> ChainLightningParticle.ChainLightningParticleOptions.CODEC,
-            type -> ChainLightningParticle.ChainLightningParticleOptions.STREAM_CODEC);
+            type -> ChainLightningParticle.Options.CODEC,
+            type -> ChainLightningParticle.Options.STREAM_CODEC);
     public static final Supplier<ParticleType<BlossomBugParticle.BlossomBugParticleOptions>> BLOSSOM_BUG = register("blossom_bug",
             true,
             type -> BlossomBugParticle.BlossomBugParticleOptions.CODEC,

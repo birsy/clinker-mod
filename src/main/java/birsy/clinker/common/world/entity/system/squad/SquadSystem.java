@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.entity.gnomad.gnomind.squad;
+package birsy.clinker.common.world.entity.system.squad;
 
 import birsy.clinker.common.networking.packet.debug.ClientboundSquadDebugPacket;
 import birsy.clinker.core.Clinker;
@@ -19,18 +19,18 @@ import java.util.HashMap;
 import java.util.UUID;
 
 @EventBusSubscriber(modid = Clinker.MOD_ID)
-public class SquadManager extends SavedData {
+public class SquadSystem extends SavedData {
     private final HashMap<UUID, Squad> squads = Maps.newHashMap();
     private final ServerLevel level;
 
-    public SquadManager(ServerLevel level) {
+    public SquadSystem(ServerLevel level) {
         this.level = level;
     }
 
-    public static SquadManager get(ServerLevel level) {
+    public static SquadSystem get(ServerLevel level) {
         return level.getDataStorage().computeIfAbsent(
-                new Factory<>(() -> new SquadManager(level), (data, registry) -> new SquadManager(level), null),
-                "SquadManager"
+                new Factory<>(() -> new SquadSystem(level), (data, registry) -> new SquadSystem(level), null),
+                "SquadSystem"
         );
     }
 
@@ -61,9 +61,9 @@ public class SquadManager extends SavedData {
     public static void tickSquads(LevelTickEvent.Post event) {
         if (event.getLevel() instanceof ServerLevel level) {
             ProfilerFiller profiler = level.getServer().getProfiler();
-            profiler.push("tickSquads");
+            profiler.push("clinker.tickSquads");
 
-            SquadManager managerForLevel = get(level);
+            SquadSystem managerForLevel = get(level);
             managerForLevel.tick();
 
             if (SharedConstants.IS_RUNNING_IN_IDE && level.getGameTime() % 5 == 0) {

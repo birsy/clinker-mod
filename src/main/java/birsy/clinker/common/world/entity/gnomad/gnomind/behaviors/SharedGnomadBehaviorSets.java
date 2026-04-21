@@ -6,7 +6,7 @@ import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.delivery.Deliv
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.delivery.FetchSuppliesFromSupplyDepot;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.delivery.SetWalkTargetToDeliveryTarget;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.delivery.SetWalkTargetToSupplyDepot;
-import birsy.clinker.common.world.entity.gnomad.gnomind.squad.SquadMember;
+import birsy.clinker.common.world.entity.system.squad.SquadMember;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.tslat.smartbrainlib.api.core.behaviour.ExtendedBehaviour;

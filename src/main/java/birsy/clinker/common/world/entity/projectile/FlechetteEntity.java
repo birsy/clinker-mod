@@ -1,7 +1,8 @@
 package birsy.clinker.common.world.entity.projectile;
 
-import birsy.clinker.common.alchemy.effects.ChainLightningHandler;
-import birsy.clinker.common.world.components.OrdnanceEffects;
+import birsy.clinker.common.world.ordnance.OrdnanceHelper;
+import birsy.clinker.common.world.ordnance.OrdnanceModifierSet;
+import birsy.clinker.core.registry.ClinkerOrdnanceModifierTypes;
 import birsy.clinker.core.util.VectorUtils;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -10,10 +11,8 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.ClipContext;
@@ -30,7 +29,7 @@ import org.joml.Vector3f;
 public class FlechetteEntity extends Projectile implements IEntityWithComplexSpawn {
     private static final EntityDataAccessor<Quaternionf> DATA_ORIENTATION = SynchedEntityData.defineId(FlechetteEntity.class, EntityDataSerializers.QUATERNION);
 
-    protected OrdnanceEffects effects = OrdnanceEffects.DEFAULT;
+    protected OrdnanceModifierSet modifierSet;
     final Quaternionf currentOrientation = new Quaternionf(), previousOrientation = new Quaternionf();
 
     boolean stuck = false;
@@ -46,21 +45,21 @@ public class FlechetteEntity extends Projectile implements IEntityWithComplexSpa
     // networking & serialization
     @Override
     public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
-        buffer.writeNbt(this.effects.serialize(buffer.registryAccess()));
+        buffer.writeNbt(this.modifierSet.serialize(buffer.registryAccess()));
     }
     @Override
     public void readSpawnData(RegistryFriendlyByteBuf buffer) {
-        this.effects = OrdnanceEffects.deserialize(buffer.readNbt(), buffer.registryAccess());
+        this.modifierSet = OrdnanceModifierSet.deserialize(buffer.readNbt(), buffer.registryAccess());
     }
     @Override
     protected void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
-        effects.serialize(this.registryAccess());
+        modifierSet.serialize(this.registryAccess());
     }
     @Override
     protected void readAdditionalSaveData(CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
-        this.effects = OrdnanceEffects.deserialize(pCompound, this.registryAccess());
+        this.modifierSet = OrdnanceModifierSet.deserialize(pCompound, this.registryAccess());
     }
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
@@ -162,13 +161,15 @@ public class FlechetteEntity extends Projectile implements IEntityWithComplexSpa
             if (this.canCollideWith(entity)) this.setDeltaMovement(this.getDeltaMovement().scale(-1));
             return;
         }
-        // todo: custom damage type
-        entity.hurt(entity.damageSources().source(DamageTypes.ARROW, this.getOwner(), this), 4.0F);
-        if (entity instanceof LivingEntity livingentity) {
-            if (!this.level().isClientSide) livingentity.setArrowCount(livingentity.getArrowCount() + 1);
-            for (MobEffectInstance effect : this.effects.potion().getAllEffects()) livingentity.addEffect(effect, this.getOwner());
-            if (this.effects.electrified()) ChainLightningHandler.shock(this, livingentity);
-        }
+
+        OrdnanceHelper.hurt(
+                entity,
+                DamageTypes.ARROW, 4.0F,
+                this.modifierSet,
+                this.getX(), this.getY(), this.getZ(), this.level(),
+                0, 0, 0,
+                this, this.getOwner(),
+                0);
     }
 
     @Override
@@ -176,7 +177,7 @@ public class FlechetteEntity extends Projectile implements IEntityWithComplexSpa
         super.onHitBlock(pResult);
         this.level().gameEvent(GameEvent.PROJECTILE_LAND, pResult.getLocation(), GameEvent.Context.of(this, null));
 
-        if (this.effects.touchType() == OrdnanceEffects.TouchType.BOUNCE) {
+        if (this.modifierSet.hasModifier(ClinkerOrdnanceModifierTypes.BOUNCY.get())) {
             Vec3 normal = new Vec3(pResult.getDirection().getStepX(), pResult.getDirection().getStepY(), pResult.getDirection().getStepZ());
             this.setDeltaMovement( VectorUtils.reflect(normal, this.getDeltaMovement()) );
         } else {

@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.entity.gnomad.gnomind.squad;
+package birsy.clinker.common.world.entity.system.squad;
 
 import birsy.clinker.common.world.entity.gnomad.gnomind.LastKnownEntityPositionsTracker;
 import birsy.clinker.core.Clinker;

@@ -489,7 +489,7 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
         if (canStickyAttach() && !this.isStickyAttached()) {
             this.stickToBlock(result.getBlockPos());
         }
-        if (this.hasModifier(ClinkerOrdnanceModifierTypes.UNSTABLE.get()))
+        if (this.hasModifier(ClinkerOrdnanceModifierTypes.UNSTABLE.get()) && this.canDetonate())
             this.detonate();
     }
     void playBlockCollisionSound(float speed) {
@@ -521,6 +521,9 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
                     (float) Mth.clampedMap(velocityTowardsEntity, 0, 0.8, 0, 3)
             );
         }
+
+        if (this.hasModifier(ClinkerOrdnanceModifierTypes.UNSTABLE.get()) && this.canDetonate())
+            this.detonate();
 
         // disable attaching to entities for now
         // it's just a little too janky
@@ -596,7 +599,7 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
     // fuse stuff
     public boolean canDetonate() {
         return this.hasModifier(ClinkerTags.OrdnanceModifiers.DETONATES) &&
-                this.hasModifier(ClinkerTags.OrdnanceModifiers.CAUSES_DETONATION);
+               this.hasModifier(ClinkerTags.OrdnanceModifiers.CAUSES_DETONATION);
     }
     public void detonate() {
         OrdnanceHelper.detonate(this.modifiers, this.getX(), this.getY() + this.radius(), this.getZ(), this.level(), this, this.getOwner());

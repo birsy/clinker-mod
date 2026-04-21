@@ -4,6 +4,7 @@ import birsy.clinker.client.particle.OrdnanceTrailParticle;
 import birsy.clinker.common.networking.packet.ClientboundOrdnanceExplosionPacket;
 import birsy.clinker.common.world.entity.projectile.FlechetteEntity;
 import birsy.clinker.common.world.entity.projectile.OrdnanceEntity;
+import birsy.clinker.common.world.entity.system.chainlightning.ChainLightningSystem;
 import birsy.clinker.common.world.ordnance.modifiers.ExplosiveModifier;
 import birsy.clinker.common.world.ordnance.modifiers.FlechettesModifier;
 import birsy.clinker.core.registry.ClinkerOrdnanceModifierTypes;
@@ -13,12 +14,13 @@ import birsy.clinker.core.registry.entity.ClinkerEntities;
 import birsy.clinker.core.util.MathUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageSources;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -31,6 +33,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
 
 import java.util.Collection;
+import java.util.UUID;
 
 public class OrdnanceHelper {
     private static final Vector3d[] PARTICLE_POINTS = MathUtils.generateSpherePoints(500);
@@ -79,10 +82,12 @@ public class OrdnanceHelper {
 
                 if (distanceToBomb == 0) distanceToBomb = 1.0;
                 Vector3d knockbackVector = directionToBomb.mul((1.0 / distanceToBomb) * power * -0.6);
-                hurt(entity, (float) power, modifierSet,
-                        x, y, z, level,
-                        knockbackVector.x, knockbackVector.y, knockbackVector.z,
-                        bomb, throwerOrHolder);
+                hurt(entity,
+                     DamageTypes.EXPLOSION, (float) power,
+                     modifierSet,
+                     x, y, z, level,
+                     knockbackVector.x, knockbackVector.y, knockbackVector.z,
+                     bomb, throwerOrHolder, 0);
             }
         }
 
@@ -117,27 +122,48 @@ public class OrdnanceHelper {
         if (bomb != null && !isClient) bomb.discard();
     }
 
-    public static void hurt(Entity entity, float power, OrdnanceModifierSet modifierSet,
+    public static void hurt(Entity entity, ResourceKey<DamageType> damageType, float damage, OrdnanceModifierSet modifierSet,
                             double x, double y, double z, Level level,
-                            double explosionKnockbackX, double explosionKnockbackY, double explosionKnockbackZ,
-                            @Nullable OrdnanceEntity bomb, @Nullable Entity throwerOrHolder) {
+                            double extraKnockbackX, double extraKnockbackY, double extraKnockbackZ,
+                            @Nullable Entity directSource, @Nullable Entity throwerOrHolder,
+                            int recursionDepth) {
         DamageSource damageSource = new DamageSource(
-                entity.damageSources().damageTypes.getHolderOrThrow(DamageTypes.EXPLOSION),
-                bomb, throwerOrHolder,
+                entity.damageSources().damageTypes.getHolderOrThrow(damageType),
+                directSource, throwerOrHolder,
                 new Vec3(x, y, z)
         );
-        if (entity instanceof LivingEntity blockingEntity && blockingEntity.isDamageSourceBlocked(damageSource)) {
-            level.playSound(
-                    null,
-                    blockingEntity.getX(), blockingEntity.getY(), blockingEntity.getZ(),
-                    SoundEvents.WIND_CHARGE_BURST,
-                    blockingEntity.getSoundSource(),
-                    0.5F, 1.0F
-            );
-            entity.addDeltaMovement(new Vec3(explosionKnockbackX * 2.5, explosionKnockbackY * 2.5, explosionKnockbackZ * 2.5));
-        } else {
-            entity.addDeltaMovement(new Vec3(explosionKnockbackX, explosionKnockbackY, explosionKnockbackZ));
+        entity.hurt(damageSource, damage);
+
+        // knockback stuffs
+        if (extraKnockbackX != 0 || extraKnockbackY != 0 || extraKnockbackZ != 0) {
+            if (entity instanceof LivingEntity blockingEntity && blockingEntity.isDamageSourceBlocked(damageSource)) {
+                level.playSound(
+                        null,
+                        blockingEntity.getX(), blockingEntity.getY(), blockingEntity.getZ(),
+                        SoundEvents.WIND_CHARGE_BURST,
+                        blockingEntity.getSoundSource(),
+                        0.5F, 1.0F
+                );
+                entity.addDeltaMovement(new Vec3(extraKnockbackX * 2.5, extraKnockbackY * 2.5, extraKnockbackZ * 2.5));
+            } else {
+                entity.addDeltaMovement(new Vec3(extraKnockbackX, extraKnockbackY, extraKnockbackZ));
+            }
         }
-        entity.hurt(damageSource, power);
+
+        // apply chain lightning, which transfers other modifier effects
+        if (modifierSet.hasModifier(ClinkerOrdnanceModifierTypes.ELECTRIFIED.get()) && recursionDepth == 0 && level instanceof ServerLevel serverLevel) {
+            UUID sourceId = UUID.randomUUID();
+            if (directSource != null) sourceId = directSource.getUUID();
+            if (throwerOrHolder != null) sourceId = throwerOrHolder.getUUID();
+            ChainLightningSystem.get(serverLevel)
+                    .emit(sourceId,
+                          (chainLightning, chainedEntity) -> hurt(
+                                entity, DamageTypes.LIGHTNING_BOLT, damage, modifierSet,
+                                x, y, z, level, 0, 0, 0,
+                                directSource, throwerOrHolder, 1
+                          ),
+                          entity
+                    );
+        }
     }
 }

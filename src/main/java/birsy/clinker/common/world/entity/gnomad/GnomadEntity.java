@@ -4,12 +4,11 @@ import birsy.clinker.client.entity.gnomad.basic.GnomadSkeleton;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.PostSquadTask;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.SharedGnomadBehaviorSets;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.StayNearSquadCenter;
-import birsy.clinker.common.world.entity.gnomad.gnomind.squad.squadtasks.ResupplyTask;
+import birsy.clinker.common.world.entity.system.squad.squadtasks.ResupplyTask;
 import birsy.clinker.common.world.entity.gnomad.mogul.GnomadMogulEntity;
 import foundry.veil.api.client.necromancer.SkeletonParent;
 import foundry.veil.api.client.necromancer.animation.Animator;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.*;
@@ -23,8 +22,6 @@ import net.tslat.smartbrainlib.api.core.behaviour.OneRandomBehaviour;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.attack.AnimatableRangedAttack;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.misc.Idle;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.path.SetRandomWalkTarget;
-import net.tslat.smartbrainlib.api.core.behaviour.custom.target.SetPlayerLookTarget;
-import net.tslat.smartbrainlib.api.core.behaviour.custom.target.SetRandomLookTarget;
 import org.jetbrains.annotations.Nullable;
 
 public class GnomadEntity extends BaseGnomadEntity<GnomadEntity>

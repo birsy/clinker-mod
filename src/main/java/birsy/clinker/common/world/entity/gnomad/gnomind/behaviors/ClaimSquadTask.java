@@ -1,8 +1,8 @@
 package birsy.clinker.common.world.entity.gnomad.gnomind.behaviors;
 
-import birsy.clinker.common.world.entity.gnomad.gnomind.squad.Squad;
-import birsy.clinker.common.world.entity.gnomad.gnomind.squad.SquadMember;
-import birsy.clinker.common.world.entity.gnomad.gnomind.squad.SquadTask;
+import birsy.clinker.common.world.entity.system.squad.Squad;
+import birsy.clinker.common.world.entity.system.squad.SquadMember;
+import birsy.clinker.common.world.entity.system.squad.SquadTask;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import com.mojang.datafixers.util.Pair;

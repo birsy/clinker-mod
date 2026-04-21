@@ -1,8 +1,8 @@
-package birsy.clinker.common.world.entity.gnomad.gnomind.squad.squadtasks;
+package birsy.clinker.common.world.entity.system.squad.squadtasks;
 
 import birsy.clinker.common.world.entity.gnomad.SuppliesHolder;
-import birsy.clinker.common.world.entity.gnomad.gnomind.squad.SquadMember;
-import birsy.clinker.common.world.entity.gnomad.gnomind.squad.SquadTask;
+import birsy.clinker.common.world.entity.system.squad.SquadMember;
+import birsy.clinker.common.world.entity.system.squad.SquadTask;
 
 public class ResupplyTask extends SquadTask {
     public ResupplyTask(SquadMember<? extends SuppliesHolder> taskmaster) {

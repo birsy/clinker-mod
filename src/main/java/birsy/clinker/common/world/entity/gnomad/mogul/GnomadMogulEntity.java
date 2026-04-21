@@ -2,19 +2,13 @@ package birsy.clinker.common.world.entity.gnomad.mogul;
 
 import birsy.clinker.client.entity.gnomad.mogul.GnomadMogulAnimator;
 import birsy.clinker.client.entity.gnomad.mogul.GnomadMogulSkeleton;
-import birsy.clinker.common.world.entity.GroundLocomotionEntity;
-import birsy.clinker.common.world.entity.ai.behaviors.*;
 import birsy.clinker.common.world.entity.gnomad.BaseGnomadEntity;
-import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
-import birsy.clinker.common.world.entity.gnomad.GnomadRuntEntity;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.*;
-import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.SquadSensor;
-import birsy.clinker.common.world.entity.gnomad.gnomind.squad.Squad;
-import birsy.clinker.common.world.entity.gnomad.gnomind.squad.SquadManager;
-import birsy.clinker.common.world.entity.gnomad.gnomind.squad.SquadMember;
+import birsy.clinker.common.world.entity.system.squad.Squad;
+import birsy.clinker.common.world.entity.system.squad.SquadSystem;
+import birsy.clinker.common.world.entity.system.squad.SquadMember;
 import foundry.veil.api.client.necromancer.SkeletonParent;
 import foundry.veil.api.client.necromancer.animation.Animator;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -24,12 +18,8 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.navigation.PathNavigation;
-import net.minecraft.world.entity.monster.Enemy;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
@@ -37,22 +27,7 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
-import net.tslat.smartbrainlib.api.SmartBrainOwner;
 import net.tslat.smartbrainlib.api.core.BrainActivityGroup;
-import net.tslat.smartbrainlib.api.core.SmartBrainProvider;
-import net.tslat.smartbrainlib.api.core.behaviour.FirstApplicableBehaviour;
-import net.tslat.smartbrainlib.api.core.behaviour.OneRandomBehaviour;
-import net.tslat.smartbrainlib.api.core.behaviour.custom.look.LookAtTarget;
-import net.tslat.smartbrainlib.api.core.behaviour.custom.move.FloatToSurfaceOfFluid;
-import net.tslat.smartbrainlib.api.core.behaviour.custom.target.SetPlayerLookTarget;
-import net.tslat.smartbrainlib.api.core.behaviour.custom.target.SetRandomLookTarget;
-import net.tslat.smartbrainlib.api.core.navigation.SmoothGroundNavigation;
-import net.tslat.smartbrainlib.api.core.sensor.ExtendedSensor;
-import net.tslat.smartbrainlib.api.core.sensor.custom.GenericAttackTargetSensor;
-import net.tslat.smartbrainlib.api.core.sensor.vanilla.HurtBySensor;
-import net.tslat.smartbrainlib.api.core.sensor.vanilla.InWaterSensor;
-import net.tslat.smartbrainlib.api.core.sensor.vanilla.NearbyLivingEntitySensor;
-import net.tslat.smartbrainlib.api.core.sensor.vanilla.NearbyPlayersSensor;
 import net.tslat.smartbrainlib.util.EntityRetrievalUtil;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
@@ -156,7 +131,7 @@ public class GnomadMogulEntity extends BaseGnomadEntity<GnomadMogulEntity> imple
             // if we aren't currently in a squad,
             // create one and become the leader!
             if (this.getSquad() == null) {
-                Squad newSquad = SquadManager.get(serverLevel).getOrCreate(UUID.randomUUID());
+                Squad newSquad = SquadSystem.get(serverLevel).getOrCreate(UUID.randomUUID());
                 this.setSquad(newSquad);
                 newSquad.setLeader(this);
             }

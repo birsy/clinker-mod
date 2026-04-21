@@ -1,6 +1,6 @@
 package birsy.clinker.client.render.debug;
 
-import birsy.clinker.common.world.entity.gnomad.gnomind.squad.SquadDebugDataDump;
+import birsy.clinker.common.world.entity.system.squad.SquadDebugDataDump;
 import com.mojang.blaze3d.vertex.PoseStack;
 import foundry.veil.api.client.util.DebugRenderHelper;
 import net.minecraft.client.Minecraft;

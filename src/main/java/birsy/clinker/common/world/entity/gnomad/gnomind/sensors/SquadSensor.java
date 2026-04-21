@@ -1,6 +1,6 @@
 package birsy.clinker.common.world.entity.gnomad.gnomind.sensors;
 
-import birsy.clinker.common.world.entity.gnomad.gnomind.squad.SquadMember;
+import birsy.clinker.common.world.entity.system.squad.SquadMember;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import birsy.clinker.core.registry.entity.ClinkerSensors;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;

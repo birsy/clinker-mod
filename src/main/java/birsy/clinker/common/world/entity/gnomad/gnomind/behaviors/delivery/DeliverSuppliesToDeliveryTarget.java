@@ -2,13 +2,11 @@ package birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.delivery;
 
 import birsy.clinker.common.world.entity.gnomad.SuppliesHolder;
 import birsy.clinker.common.world.entity.gnomad.SuppliesDeliverer;
-import birsy.clinker.common.world.entity.gnomad.gnomind.squad.Squad;
-import birsy.clinker.common.world.entity.gnomad.gnomind.squad.SquadTask;
-import birsy.clinker.common.world.entity.gnomad.gnomind.squad.squadtasks.ResupplyTask;
+import birsy.clinker.common.world.entity.system.squad.SquadTask;
+import birsy.clinker.common.world.entity.system.squad.squadtasks.ResupplyTask;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.behavior.EntityTracker;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;

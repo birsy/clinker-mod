@@ -1,9 +1,8 @@
-package birsy.clinker.common.world.entity.gnomad.gnomind.squad.squadtasks;
+package birsy.clinker.common.world.entity.system.squad.squadtasks;
 
-import birsy.clinker.common.world.entity.gnomad.gnomind.LastKnownEntityPosition;
 import birsy.clinker.common.world.entity.gnomad.gnomind.LastKnownEntityPositionsTracker;
-import birsy.clinker.common.world.entity.gnomad.gnomind.squad.SquadMember;
-import birsy.clinker.common.world.entity.gnomad.gnomind.squad.SquadTask;
+import birsy.clinker.common.world.entity.system.squad.SquadMember;
+import birsy.clinker.common.world.entity.system.squad.SquadTask;
 
 import java.util.Optional;
 import java.util.UUID;

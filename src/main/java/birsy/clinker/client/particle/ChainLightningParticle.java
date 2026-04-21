@@ -1,7 +1,6 @@
 package birsy.clinker.client.particle;
 
 import birsy.clinker.client.render.utilities.RenderUtils;
-import birsy.clinker.common.alchemy.effects.ChainLightningHandler;
 import birsy.clinker.core.registry.ClinkerParticles;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -64,11 +63,11 @@ public class ChainLightningParticle extends Particle {
         for (int i = 1; i < boltPositions.size(); i++) {
             Vec3 pos1 = boltPositions.get(i - 1);
             Vec3 pos2 = boltPositions.get(i);
-            this.totalDistance += pos1.distanceTo(pos2);
+            this.totalDistance += (float) pos1.distanceTo(pos2);
             boltDistances.add(this.totalDistance);
         }
 
-        this.setLifetime(ChainLightningHandler.BOLT_TRAVEL_TIME);
+        this.setLifetime(15);
     }
 
     @Override
@@ -112,30 +111,30 @@ public class ChainLightningParticle extends Particle {
             float v2 = Mth.lerp(1.0f - d2, sprite.getV0(), sprite.getV1());
 
             RenderUtils.drawFaceBetweenPoints(pBuffer, posestack, 0.05f, pos1, tangent1, biTangent1, normal1, sprite.getU0(), v1, 1, 1, 1, time,
-                                                                                       pos2, tangent2, biTangent2, normal2, sprite.getU1(), v2, 1, 1, 1, time);
+                                                                                pos2, tangent2, biTangent2, normal2, sprite.getU1(), v2, 1, 1, 1, time);
         }
     }
 
     
-    public static class Provider implements ParticleProvider<ChainLightningParticleOptions>, ParticleEngine.SpriteParticleRegistration<ChainLightningParticleOptions> {
+    public static class Provider implements ParticleProvider<Options>, ParticleEngine.SpriteParticleRegistration<Options> {
         private final SpriteSet sprites;
 
         public Provider(SpriteSet pSprites) {
             this.sprites = pSprites;
         }
 
-        public Particle createParticle(ChainLightningParticleOptions pType, ClientLevel pLevel, double pX, double pY, double pZ, double pXSpeed, double pYSpeed, double pZSpeed) {
+        public Particle createParticle(Options pType, ClientLevel pLevel, double pX, double pY, double pZ, double pXSpeed, double pYSpeed, double pZSpeed) {
             return new ChainLightningParticle(pLevel, new Vec3(pType.startX, pType.startY, pType.startZ), new Vec3(pType.endX, pType.endY, pType.endZ), this.sprites);
         }
 
         @Override
-        public ParticleProvider<ChainLightningParticleOptions> create(SpriteSet pSprites) {
+        public ParticleProvider<Options> create(SpriteSet pSprites) {
             return new Provider(pSprites);
         }
     }
 
-    public static class ChainLightningParticleOptions implements ParticleOptions {
-        public static final MapCodec<ChainLightningParticleOptions> CODEC = RecordCodecBuilder.mapCodec(
+    public static class Options implements ParticleOptions {
+        public static final MapCodec<Options> CODEC = RecordCodecBuilder.mapCodec(
                 builder -> builder.group(
                                 Codec.DOUBLE.fieldOf("startX").forGetter(particleOptions -> particleOptions.startX),
                                 Codec.DOUBLE.fieldOf("startY").forGetter(particleOptions -> particleOptions.startY),
@@ -143,37 +142,28 @@ public class ChainLightningParticle extends Particle {
                                 Codec.DOUBLE.fieldOf("endX").forGetter(particleOptions -> particleOptions.endX),
                                 Codec.DOUBLE.fieldOf("endY").forGetter(particleOptions -> particleOptions.endY),
                                 Codec.DOUBLE.fieldOf("endZ").forGetter(particleOptions -> particleOptions.endZ)
-                        ).apply(builder, ChainLightningParticleOptions::new)
+                        ).apply(builder, Options::new)
         );
-        public static final StreamCodec<RegistryFriendlyByteBuf, ChainLightningParticleOptions> STREAM_CODEC = StreamCodec.composite(
+        public static final StreamCodec<RegistryFriendlyByteBuf, Options> STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.DOUBLE, particleOptions -> particleOptions.startX,
                 ByteBufCodecs.DOUBLE, particleOptions -> particleOptions.startY,
                 ByteBufCodecs.DOUBLE, particleOptions -> particleOptions.startZ,
                 ByteBufCodecs.DOUBLE, particleOptions -> particleOptions.endX,
                 ByteBufCodecs.DOUBLE, particleOptions -> particleOptions.endY,
                 ByteBufCodecs.DOUBLE, particleOptions -> particleOptions.endZ,
-                ChainLightningParticleOptions::new
+                Options::new
         );
 
-        protected final double startX, startY, startZ;
-        protected final double endX, endY, endZ;
+        protected final double startX, startY, startZ, endX, endY, endZ;
 
-        public ChainLightningParticleOptions(double startX, double startY, double startZ, double endX, double endY, double endZ) {
-            this.startX = startX;
-            this.startY = startY;
-            this.startZ = startZ;
-            this.endX = endX;
-            this.endY = endY;
-            this.endZ = endZ;
+        public Options(double startX, double startY, double startZ, double endX, double endY, double endZ) {
+            this.startX = startX; this.startY = startY; this.startZ = startZ;
+            this.endX = endX; this.endY = endY; this.endZ = endZ;
         }
 
-        public ChainLightningParticleOptions(Vec3 start, Vec3 end) {
-            this.startX = start.x();
-            this.startY = start.y();
-            this.startZ = start.z();
-            this.endX = end.x();
-            this.endY = end.y();
-            this.endZ = end.z();
+        public Options(Vec3 start, Vec3 end) {
+            this.startX = start.x(); this.startY = start.y(); this.startZ = start.z();
+            this.endX = end.x(); this.endY = end.y(); this.endZ = end.z();
         }
 
         @Override
