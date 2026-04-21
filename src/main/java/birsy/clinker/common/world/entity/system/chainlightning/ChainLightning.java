@@ -1,13 +1,16 @@
 package birsy.clinker.common.world.entity.system.chainlightning;
 
 import birsy.clinker.client.particle.ChainLightningParticle;
+import net.minecraft.Util;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.behavior.ShufflingList;
 import net.minecraft.world.phys.Vec3;
 import net.tslat.smartbrainlib.util.EntityRetrievalUtil;
+import net.tslat.smartbrainlib.util.RandomUtil;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -57,10 +60,10 @@ public class ChainLightning {
             if (conductionRadius <= 0.01) return true;
 
             List<Entity> nearbyEntities = EntityRetrievalUtil.getEntities(entity, conductionRadius, e -> !visitedEntities.contains(e));
-            nearbyEntities.sort(Comparator.comparingDouble(e -> e.distanceTo(entity)));
 
-            // we can shock a maximum of five neighbors.
-            int entitiesToIterate = Math.min(5, nearbyEntities.size());
+            int maximumShockableNeighbors = 3;
+            if (nearbyEntities.size() > maximumShockableNeighbors) Util.shuffle(nearbyEntities, level.getRandom());
+            int entitiesToIterate = Math.min(maximumShockableNeighbors, nearbyEntities.size());
             for (int i = 0; i < entitiesToIterate; i++) {
                 Entity nearby = nearbyEntities.get(i);
                 entitiesToShock.add(nearby);
