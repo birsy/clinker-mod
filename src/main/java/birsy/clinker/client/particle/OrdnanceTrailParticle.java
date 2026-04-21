@@ -76,10 +76,8 @@ public class OrdnanceTrailParticle extends DustParticleBase<OrdnanceTrailParticl
                         ).apply(instance, Options::new)
         );
         public static final StreamCodec<RegistryFriendlyByteBuf, OrdnanceTrailParticle.Options> STREAM_CODEC = StreamCodec.composite(
-                OrdnanceGradient.STREAM_CODEC,
-                options -> options.gradient,
-                ByteBufCodecs.FLOAT,
-                ScalableParticleOptionsBase::getScale,
+                OrdnanceGradient.STREAM_CODEC, options -> options.gradient,
+                ByteBufCodecs.FLOAT, ScalableParticleOptionsBase::getScale,
                 OrdnanceTrailParticle.Options::new
         );
 

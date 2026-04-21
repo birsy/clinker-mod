@@ -19,16 +19,18 @@ import net.minecraft.resources.ResourceLocation;
 
 public class ClinkerParticleRenderTypes {
     public static final ParticleRenderType CHAIN_LIGHTNING = new ParticleRenderType() {
+        private static final ResourceLocation TEXTURE = Clinker.resource("textures/particle/chain_lightning.png");
         @Override
         public BufferBuilder begin(Tesselator tesselator, TextureManager textureManager) {
             RenderSystem.depthMask(false); // no writing depth
-            RenderSystem.setShader(ClinkerShaders::getChainLightningShader); // chain lighting shader
-            RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_PARTICLES); // particle texture
+            ShaderProgram shader = VeilRenderSystem.setShader(ClinkerShaders.PARTICLE_CHAIN_LIGHTNING);
+            shader.setDefaultUniforms(VertexFormat.Mode.QUADS);
+
+            RenderSystem.setShaderTexture(0, TEXTURE);
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE); // additive blending
             RenderSystem.disableCull(); // no backface culling
-            Minecraft.getInstance().gameRenderer.lightTexture().turnOnLightLayer(); // light texture
-            return tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.NEW_ENTITY);
+            return tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
         }
 
         @Override

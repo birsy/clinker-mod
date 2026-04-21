@@ -1,16 +1,12 @@
 package birsy.clinker.common.world.entity.system.chainlightning;
 
-import birsy.clinker.client.particle.ChainLightningParticle;
+import birsy.clinker.client.particle.ChainLightningBoltParticle;
 import net.minecraft.Util;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.Mth;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.behavior.ShufflingList;
-import net.minecraft.world.phys.Vec3;
 import net.tslat.smartbrainlib.util.EntityRetrievalUtil;
-import net.tslat.smartbrainlib.util.RandomUtil;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -37,45 +33,59 @@ public class ChainLightning {
 
     public void shock(Entity entity) {
         if (visitedEntities.contains(entity)) return;
-        damageCallback.accept(this, entity);
+        addEntity(entity, 0);
+    }
+
+    void addEntity(Entity entity, int travelTime) {
+        pendingEntities.put(entity, travelTime);
         visitedEntities.add(entity);
-        pendingEntities.put(entity, 10 + level.random.nextIntBetweenInclusive(-5, 5));
     }
 
     void tick() {
         if (markedForRemoval) return;
 
-        // decrement counters and try to shock neighbors!
-        Set<Entity> entitiesToShock = new HashSet<>(4);
+        // decrement counters
         pendingEntities.replaceAll((entity, ticks) -> ticks - 1);
+
+        // if an entity has 0 left on their counter, remove them from
+        // pending entities set and make them shock
+        Set<Entity> shockers = new HashSet<>(4);
         pendingEntities.entrySet().removeIf(entry -> {
             Entity entity = entry.getKey();
             if (entry.getValue() > 0) return false;
-
-            if  (entity.isRemoved() || entity.isSpectator() ||
+            // entity is invalid, skip
+            if ( entity.isRemoved() || entity.isSpectator() ||
                 !entity.isAddedToLevel() || entity.level() != level ||
-                (entity instanceof LivingEntity living && living.isDeadOrDying())) return true;
+                (entity instanceof LivingEntity living && living.isDeadOrDying()))
+                return true;
 
-            double conductionRadius = getConductionRadius(entity);
-            if (conductionRadius <= 0.01) return true;
+            shockers.add(entity);
+            return true;
+        });
 
-            List<Entity> nearbyEntities = EntityRetrievalUtil.getEntities(entity, conductionRadius, e -> !visitedEntities.contains(e));
+        for (Entity shocker : shockers) {
+            damageCallback.accept(this, shocker);
+
+            double conductionRadius = getConductionRadius(shocker);
+            if (conductionRadius <= 0.01) continue;
+
+            List<Entity> nearbyEntities = EntityRetrievalUtil.getEntities(shocker, conductionRadius, e -> !visitedEntities.contains(e));
 
             int maximumShockableNeighbors = 3;
             if (nearbyEntities.size() > maximumShockableNeighbors) Util.shuffle(nearbyEntities, level.getRandom());
             int entitiesToIterate = Math.min(maximumShockableNeighbors, nearbyEntities.size());
+
             for (int i = 0; i < entitiesToIterate; i++) {
                 Entity nearby = nearbyEntities.get(i);
-                entitiesToShock.add(nearby);
+                int travelTime = 10 + level.random.nextIntBetweenInclusive(-5, 5);
+                addEntity(nearby, travelTime);
                 spawnBoltParticle(
-                        entity.getX(), entity.getY() + entity.getBbHeight() * 0.5, entity.getZ(),
-                        nearby.getX(), nearby.getY() + nearby.getBbHeight() * 0.5, nearby.getZ()
+                        shocker.getX(), shocker.getY(0.5), shocker.getZ(),
+                        nearby.getX(), nearby.getY(0.5), nearby.getZ(),
+                        travelTime
                 );
             }
-            return true;
-        });
-
-        for (Entity entityToShock : entitiesToShock) shock(entityToShock);
+        }
 
         if (pendingEntities.isEmpty())
             markedForRemoval = true;
@@ -92,20 +102,11 @@ public class ChainLightning {
     }
 
     private void spawnBoltParticle(double x1, double y1, double z1,
-                                   double x2, double y2, double z2) {
-        double distance = Mth.length(x1 - x2, y1 - y2, z1 - z2);
-        double particleCount = distance * 3;
-        for (int i = 0; i < particleCount; i++) {
-            double factor = i / particleCount;
-            double x = Mth.lerp(factor, x1, x2), y = Mth.lerp(factor, y1, y2), z = Mth.lerp(factor, z1, z2);
-            level.sendParticles(
-                    ParticleTypes.END_ROD,
+                                   double x2, double y2, double z2,
+                                   int travelTicks) {
+        double x = (x1 + x2) * 0.5, y = (y1 + y2) * 0.5, z = (z1 + z2) * 0.5;
+        level.sendParticles(
+                new ChainLightningBoltParticle.Options(x1, y1, z1, x2, y2, z2, FastColor.ARGB32.colorFromFloat(0.2F, 1.0F, 1.0F, 1.0F), travelTicks),
                 x, y, z, 1, 0, 0, 0, 0);
-        }
-//
-//        double x = (x1 + x2) * 0.5, y = (y1 + y2) * 0.5, z = (z1 + z2) * 0.5;
-//        level.sendParticles(
-//                new ChainLightningParticle.Options(x1, y1, z1, x2, y2, z2),
-//                x, y, z, 1, 0, 0, 0, 0);
     }
 }

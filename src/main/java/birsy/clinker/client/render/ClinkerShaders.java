@@ -25,6 +25,7 @@ public class ClinkerShaders {
     public static final ResourceLocation LIGHT_RIM = Clinker.resource("light/rim");
 
     public static final ResourceLocation PARTICLE_BLOSSOM_BUG = Clinker.resource("particle/blossom_bug");
+    public static final ResourceLocation PARTICLE_CHAIN_LIGHTNING = Clinker.resource("particle/chain_lightning");
 
     public static final ResourceLocation FOG_LAYER = Clinker.resource("fog_layer");
 

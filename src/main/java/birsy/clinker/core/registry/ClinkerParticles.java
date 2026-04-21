@@ -45,10 +45,10 @@ public class ClinkerParticles
             type -> DustColorTransitionOptions.CODEC,
             type -> DustColorTransitionOptions.STREAM_CODEC);
     public static final Supplier<SimpleParticleType> EXPLOSION_LIGHT = register("explosion_light");
-    public static final Supplier<ParticleType<ChainLightningParticle.Options>> CHAIN_LIGHTNING = register("chain_lightning",
+    public static final Supplier<ParticleType<ChainLightningBoltParticle.Options>> CHAIN_LIGHTNING_BOLT = register("chain_lightning_bolt",
             true,
-            type -> ChainLightningParticle.Options.CODEC,
-            type -> ChainLightningParticle.Options.STREAM_CODEC);
+            type -> ChainLightningBoltParticle.Options.CODEC,
+            type -> ChainLightningBoltParticle.Options.STREAM_CODEC);
     public static final Supplier<ParticleType<BlossomBugParticle.BlossomBugParticleOptions>> BLOSSOM_BUG = register("blossom_bug",
             true,
             type -> BlossomBugParticle.BlossomBugParticleOptions.CODEC,
@@ -94,11 +94,13 @@ public class ClinkerParticles
         event.registerSpriteSet(ORDNANCE_TRAIL.get(), OrdnanceTrailParticle.Provider::new);
         event.registerSpriteSet(ORDNANCE_EXPLOSION.get(), OrdnanceExplosionParticle.Provider::new);
         event.registerSpriteSet(EXPLOSION_LIGHT.get(), ExplosionLightParticle.Provider::new);
-        event.registerSpriteSet(CHAIN_LIGHTNING.get(), ChainLightningParticle.Provider::new);
         event.registerSpriteSet(FIRE_SPEW.get(), FireSpewParticle.Provider::new);
         event.registerSpriteSet(BLOSSOM_BUG.get(), BlossomBugParticle.Provider::new);
         event.registerSpriteSet(WRITHING_MAGGOT.get(), WrithingMaggotParticle.Provider::new);
         event.registerSpriteSet(SALTPETRE_LEACH.get(), SaltpetreLeachParticle.Provider::new);
+
+        event.registerSpecial(CHAIN_LIGHTNING_BOLT.get(), new ChainLightningBoltParticle.Provider());
+
         registerDripParticle(event, DRIPPING_SALTPETRE.get(), ClinkerDripParticles::createSaltPetreDripHangParticle);
         registerDripParticle(event, FALLING_SALTPETRE.get(), ClinkerDripParticles::createSaltPetreDripFallParticle);
         registerDripParticle(event, LANDING_SALTPETRE.get(), ClinkerDripParticles::createSaltPetreDripLandParticle);
