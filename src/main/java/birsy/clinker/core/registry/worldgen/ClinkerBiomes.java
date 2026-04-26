@@ -32,12 +32,12 @@ public class ClinkerBiomes {
             DeferredRegister.create(ClinkerRegistries.SURFACE_DECORATOR_REGISTRY, Clinker.MOD_ID);
 
     public static final ClinkerBiome ASH_PLAINS = register(ClinkerBiome.builder("ash_plains")
-            .loopSound(ClinkerSounds.AMBIENT_ASH_PLAINS_LOOP)
+            .loopSound(ClinkerSounds.AMBIENT_ASH_PLAINS_LOOP.holder())
             .moodSound(new AmbientMoodSettings(
                     SoundEvents.AMBIENT_BASALT_DELTAS_MOOD,
                     6000, 8, 2.0))
             .additionsSound(new AmbientAdditionsSettings(
-                    ClinkerSounds.AMBIENT_ASH_PLAINS_ADDITIONS,
+                    ClinkerSounds.AMBIENT_ASH_PLAINS_ADDITIONS.holder(),
                     0.0005))
             .music(ClinkerMusic.OTHERSHORE_SURFACE)
             .particle(new AmbientParticleSettings(ParticleTypes.WHITE_ASH, 0.01f))

@@ -1,67 +1,78 @@
 package birsy.clinker.core.registry;
 
 import birsy.clinker.core.Clinker;
+import birsy.clinker.core.registration.SoundHolder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvent;
 
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 public class ClinkerSounds {
     public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, Clinker.MOD_ID);
-    
-    //Block Sounds
-    public static final DeferredHolder<SoundEvent, SoundEvent> BLOCK_STOVE_LOOP = SOUNDS.register("block.stove.loop",
-            () -> SoundEvent.createVariableRangeEvent(Clinker.resource("block.stove.loop")));
+    public static final List<SoundHolder> SOUND_HOLDERS = new ArrayList<>();
 
-    //Entity Sounds
-    public static final DeferredHolder<SoundEvent, SoundEvent> ENTITY_GNOME_AMBIENT = SOUNDS.register("entity.gnome.ambient",
-            () -> SoundEvent.createVariableRangeEvent(Clinker.resource("entity.gnome.ambient")));
-    
-    public static final DeferredHolder<SoundEvent, SoundEvent> ENTITY_GNOME_HURT = SOUNDS.register("entity.gnome.hurt",
-            () -> SoundEvent.createVariableRangeEvent(Clinker.resource("entity.gnome.hurt")));
-    
-    public static final DeferredHolder<SoundEvent, SoundEvent> ENTITY_GNOME_CHAT = SOUNDS.register("entity.gnome.chat",
-            () -> SoundEvent.createVariableRangeEvent(Clinker.resource("entity.gnome.chat")));
-    
-    public static final DeferredHolder<SoundEvent, SoundEvent> ENTITY_GNOME_DEATH = SOUNDS.register("entity.gnome.death",
-            () -> SoundEvent.createVariableRangeEvent(Clinker.resource("entity.gnome.death")));
+    public static final SoundHolder BLOCK_STOVE_LOOP = SoundHolder.builder(SOUNDS, "block.stove.heat_loop")
+            .noSubtitle()
+            .stream().build(SOUND_HOLDERS);
 
+    public static final SoundHolder GNOME_IDLE = SoundHolder.builder(SOUNDS, "entity.gnome.idle")
+            .variants(6).build(SOUND_HOLDERS);
+    public static final SoundHolder GNOME_HURT = SoundHolder.builder(SOUNDS, "entity.gnome.hurt")
+            .variants(7).build(SOUND_HOLDERS);
+    public static final SoundHolder GNOME_CHAT = SoundHolder.builder(SOUNDS, "entity.gnome.chat")
+            .variants(3).build(SOUND_HOLDERS);
+    public static final SoundHolder GNOME_DEATH = SoundHolder.builder(SOUNDS, "entity.gnome.death")
+            .variants(4).build(SOUND_HOLDERS);
 
-    public static final DeferredHolder<SoundEvent, SoundEvent> ORDNANCE_BOUNCE = SOUNDS.register("entity.ordnance.bounce",
-            () -> SoundEvent.createVariableRangeEvent(Clinker.resource("entity.ordnance.bounce")));
-    public static final DeferredHolder<SoundEvent, SoundEvent> ORDNANCE_BOUNCE_STICKY = SOUNDS.register("entity.ordnance.bounce.sticky",
-            () -> SoundEvent.createVariableRangeEvent(Clinker.resource("entity.ordnance.bounce.sticky")));
-    public static final DeferredHolder<SoundEvent, SoundEvent> ORDNANCE_BOUNCE_BOUNCY = SOUNDS.register("entity.ordnance.bounce.bouncy",
-            () -> SoundEvent.createVariableRangeEvent(Clinker.resource("entity.ordnance.bounce.bouncy")));
-    public static final DeferredHolder<SoundEvent, SoundEvent> ORDNANCE_BOUNCE_THORNY = SOUNDS.register("entity.ordnance.bounce.thorny",
-            () -> SoundEvent.createVariableRangeEvent(Clinker.resource("entity.ordnance.bounce.thorny")));
+    public static final SoundHolder ORDNANCE_BOUNCE = SoundHolder.builder(SOUNDS, "entity.ordnance.bounce")
+            .build(SOUND_HOLDERS);
+    public static final SoundHolder ORDNANCE_BOUNCE_STICKY = SoundHolder.builder(SOUNDS, "entity.ordnance.bounce_sticky")
+            .build(SOUND_HOLDERS);
+    public static final SoundHolder ORDNANCE_BOUNCE_BOUNCY = SoundHolder.builder(SOUNDS, "entity.ordnance.bounce_bouncy")
+            .build(SOUND_HOLDERS);
+    public static final SoundHolder ORDNANCE_BOUNCE_THORNY = SoundHolder.builder(SOUNDS, "entity.ordnance.bounce_thorny")
+            .build(SOUND_HOLDERS);
+    public static final SoundHolder ORDNANCE_EXPLODE = SoundHolder.builder(SOUNDS, "entity.ordnance.explode")
+            .build(SOUND_HOLDERS);
+    public static final SoundHolder ORDNANCE_FUSE_LOOP = SoundHolder.builder(SOUNDS, "entity.ordnance.fuse_loop")
+            .noSubtitle()
+            .build(SOUND_HOLDERS);
 
-    public static final DeferredHolder<SoundEvent, SoundEvent> ORDNANCE_EXPLODE = SOUNDS.register("entity.ordnance.explode",
-            () -> SoundEvent.createVariableRangeEvent(Clinker.resource("entity.ordnance.explode")));
+    public static final SoundHolder AMBIENT_ASH_PLAINS_ADDITIONS = SoundHolder.builder(SOUNDS, "ambient.ash_plains.additions")
+            .noSubtitle().stream().volume(0.6f)
+            .variants("ambient/othershore/ash_plains/bubbling1", "ambient/othershore/ash_plains/bubbling2")
+            .build(SOUND_HOLDERS);
+    public static final SoundHolder AMBIENT_ASH_PLAINS_LOOP = SoundHolder.builder(SOUNDS, "ambient.ash_plains.loop")
+            .noSubtitle().stream().volume(0.6f)
+            .variants("ambient/othershore/ash_plains/chimney1")
+            .build(SOUND_HOLDERS);
 
-    public static final DeferredHolder<SoundEvent, SoundEvent> ORDNANCE_SPARKLE_LOOP = SOUNDS.register("entity.ordnance.sparkle",
-            () -> SoundEvent.createVariableRangeEvent(Clinker.resource("entity.ordnance.sparkle")));
-
-    //Ambient Sounds
-    public static final DeferredHolder<SoundEvent, SoundEvent> AMBIENT_ASH_PLAINS_ADDITIONS = SOUNDS.register("ambient.ash_plains.additions",
-            () -> SoundEvent.createVariableRangeEvent(Clinker.resource("ambient.ash_plains.additions")));
-
-    public static final DeferredHolder<SoundEvent, SoundEvent> AMBIENT_ASH_PLAINS_LOOP = SOUNDS.register("ambient.ash_plains.loop",
-            () -> SoundEvent.createVariableRangeEvent(Clinker.resource("ambient.ash_plains.loop")));
-
-    // music
-    public static final DeferredHolder<SoundEvent, SoundEvent> MUSIC_DISC_CODA = SOUNDS.register("music_disc.coda",
-            () -> SoundEvent.createVariableRangeEvent(Clinker.resource("music_disc.coda")));
-
-    public static final DeferredHolder<SoundEvent, SoundEvent> MUSIC_OTHERSHORE_SURFACE = SOUNDS.register("music.othershore.surface",
-            () -> SoundEvent.createVariableRangeEvent(Clinker.resource("music.othershore.surface")));
-
-    public static final DeferredHolder<SoundEvent, SoundEvent> MUSIC_OTHERSHORE_SUBTERRANEAN = SOUNDS.register("music.othershore.subterranean",
-            () -> SoundEvent.createVariableRangeEvent(Clinker.resource("music.othershore.subterranean")));
-
-    public static final DeferredHolder<SoundEvent, SoundEvent> MUSIC_OTHERSHORE_AQUIFER = SOUNDS.register("music.othershore.aquifer",
-            () -> SoundEvent.createVariableRangeEvent(Clinker.resource("music.othershore.aquifer")));
+    public static final SoundHolder MUSIC_DISC_CODA = SoundHolder.builder(SOUNDS, "music_disc.coda")
+            .noSubtitle().stream().variants("records/coda")
+            .build(SOUND_HOLDERS);
+    public static final SoundHolder MUSIC_OTHERSHORE_SURFACE = SoundHolder.builder(SOUNDS, "music.othershore.surface")
+            .noSubtitle().stream().volume(0.5f)
+            .variants(
+                    "music/game/burckhardt",
+                    "music/game/foot_of_worm",
+                    "music/game/memoir",
+                    "music/game/tableland",
+                    "music/game/withered_history",
+                    "music/game/zosimus"
+            ).build(SOUND_HOLDERS);
+    public static final SoundHolder MUSIC_OTHERSHORE_SUBTERRANEAN = SoundHolder.builder(SOUNDS, "music.othershore.subterranean")
+            .noSubtitle().stream()
+            .variant("music/game/subterranean/hive_bound", v -> v.volume(0.3f))
+            .variant("music/game/subterranean/sardine", v -> v.volume(0.5f))
+            .variant("music/game/subterranean/unplumbed", v -> v.volume(0.8f))
+            .build(SOUND_HOLDERS);
+    public static final SoundHolder MUSIC_OTHERSHORE_AQUIFER = SoundHolder.builder(SOUNDS, "music.othershore.aquifer")
+            .noSubtitle()
+            .variants("music/game/silence")
+            .build(SOUND_HOLDERS);
 }

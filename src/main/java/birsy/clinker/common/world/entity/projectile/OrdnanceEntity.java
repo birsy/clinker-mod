@@ -74,6 +74,7 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
 
     boolean xCollision, zCollision;
     float spin, pSpin;
+    int onFireTicks = 0;
 
     public OrdnanceEntity(EntityType<? extends Projectile> entityType, Level level) {
         super(entityType, level);
@@ -153,6 +154,10 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
         if (this.level().isClientSide())
             this.updateSpin();
 
+        if (this.isOnFire()) onFireTicks++;
+        else onFireTicks = 0;
+        if (onFireTicks > 20 && this.canDetonate()) this.detonate();
+        
         this.updateFuse();
     }
 

@@ -18,7 +18,7 @@ public class OrdnanceFuseSoundInstance extends AbstractTickableSoundInstance {
     private final Supplier<Float> fuseTimeSupplier;
 
     public OrdnanceFuseSoundInstance(Entity pEntity, float maxFuseTime, Supplier<Float> fuseTimeSupplier) {
-        super(ClinkerSounds.ORDNANCE_SPARKLE_LOOP.get(),  SoundSource.BLOCKS, RandomSource.create(0));
+        super(ClinkerSounds.ORDNANCE_FUSE_LOOP.get(),  SoundSource.BLOCKS, RandomSource.create(0));
         this.maxFuseTime = maxFuseTime;
         this.fuseTimeSupplier = fuseTimeSupplier;
         this.volume = 1;

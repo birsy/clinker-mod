@@ -129,12 +129,6 @@ public class ClinkerBlocks
             () -> new ColoredFallingBlock(new ColorRGBA(0x777472), BlockBehaviour.Properties.ofFullCopy(Blocks.GRAVEL).sound(SoundType.SOUL_SOIL))
     );
 
-//    public static final DeferredBlock<Block> WATER_FERN = createBlockNoItem("water_fern", () -> new WaterFernBlock(
-//            BlockBehaviour.Properties.of()
-//                    .instabreak().replaceable()
-//                    .mapColor(MapColor.PLANT).sound(SoundType.BIG_DRIPLEAF).pushReaction(PushReaction.DESTROY)
-//                    .noOcclusion().noCollission().noLootTable()));
-
     public static final DeferredBlock<SeaShellBlock> SEA_SHELL = createBlock("sea_shell", () -> new SeaShellBlock(
             BlockBehaviour.Properties.of()
                     .sound(SoundType.CALCITE)

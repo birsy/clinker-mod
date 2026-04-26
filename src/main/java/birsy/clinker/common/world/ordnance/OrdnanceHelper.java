@@ -74,16 +74,17 @@ public class OrdnanceHelper {
                 level.playLocalSound(x, y, z, SoundEvents.FIREWORK_ROCKET_LARGE_BLAST, SoundSource.BLOCKS, 4F, Mth.lerp(level.random.nextFloat(), 0.7F, 0.9F), false);
                 level.playLocalSound(x, y, z, SoundEvents.FIREWORK_ROCKET_TWINKLE_FAR, SoundSource.BLOCKS, 0.1F, Mth.lerp(level.random.nextFloat(), 0.7F, 0.9F), false);
             }
-            Collection<Entity> entities = EntityRetrievalUtil.getEntities(level, new Vec3(x, y, z), radius);
+            Collection<Entity> entities = EntityRetrievalUtil.getEntities(level, new Vec3(x, y, z), radius * 2);
             for (Entity entity : entities) {
                 Vector3d directionToBomb = vec.set(x, y, z).sub(entity.getX(), entity.getY() + entity.getBbHeight() * 0.5, entity.getZ());
                 double distanceToBomb = directionToBomb.length();
-                double power = Mth.clampedMap(distanceToBomb, radius * 0.25, radius, explosiveModifier.power(), explosiveModifier.power() * 0.5);
-
+                if (distanceToBomb > radius) continue;
+                double power = Mth.clampedMap(distanceToBomb, radius * 0.5, radius, explosiveModifier.power(), explosiveModifier.power() * 0.5);
+                // todo: compute per-entity "exposure"
                 if (distanceToBomb == 0) distanceToBomb = 1.0;
                 Vector3d knockbackVector = directionToBomb.mul((1.0 / distanceToBomb) * power * -0.6);
                 hurt(entity,
-                     DamageTypes.EXPLOSION, (float) power,
+                     DamageTypes.EXPLOSION, (float) power * 10,
                      modifierSet,
                      x, y, z, level,
                      knockbackVector.x, knockbackVector.y, knockbackVector.z,

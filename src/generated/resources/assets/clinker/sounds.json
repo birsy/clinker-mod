@@ -1,0 +1,174 @@
+{
+  "ambient.ash_plains.additions": {
+    "sounds": [
+      {
+        "name": "clinker:ambient/othershore/ash_plains/bubbling1",
+        "stream": true,
+        "volume": 0.6
+      },
+      {
+        "name": "clinker:ambient/othershore/ash_plains/bubbling2",
+        "stream": true,
+        "volume": 0.6
+      }
+    ]
+  },
+  "ambient.ash_plains.loop": {
+    "sounds": [
+      {
+        "name": "clinker:ambient/othershore/ash_plains/chimney1",
+        "stream": true,
+        "volume": 0.6
+      }
+    ]
+  },
+  "block.stove.heat_loop": {
+    "sounds": [
+      {
+        "name": "clinker:block/stove/heat_loop",
+        "stream": true
+      }
+    ]
+  },
+  "entity.gnome.chat": {
+    "sounds": [
+      "clinker:entity/gnome/chat1",
+      "clinker:entity/gnome/chat2",
+      "clinker:entity/gnome/chat3"
+    ],
+    "subtitle": "subtitles.entity.gnome.chat"
+  },
+  "entity.gnome.death": {
+    "sounds": [
+      "clinker:entity/gnome/death1",
+      "clinker:entity/gnome/death2",
+      "clinker:entity/gnome/death3",
+      "clinker:entity/gnome/death4"
+    ],
+    "subtitle": "subtitles.entity.gnome.death"
+  },
+  "entity.gnome.hurt": {
+    "sounds": [
+      "clinker:entity/gnome/hurt1",
+      "clinker:entity/gnome/hurt2",
+      "clinker:entity/gnome/hurt3",
+      "clinker:entity/gnome/hurt4",
+      "clinker:entity/gnome/hurt5",
+      "clinker:entity/gnome/hurt6",
+      "clinker:entity/gnome/hurt7"
+    ],
+    "subtitle": "subtitles.entity.gnome.hurt"
+  },
+  "entity.gnome.idle": {
+    "sounds": [
+      "clinker:entity/gnome/idle1",
+      "clinker:entity/gnome/idle2",
+      "clinker:entity/gnome/idle3",
+      "clinker:entity/gnome/idle4",
+      "clinker:entity/gnome/idle5",
+      "clinker:entity/gnome/idle6"
+    ],
+    "subtitle": "subtitles.entity.gnome.idle"
+  },
+  "entity.ordnance.bounce": {
+    "sounds": [
+      "clinker:entity/ordnance/bounce"
+    ],
+    "subtitle": "subtitles.entity.ordnance.bounce"
+  },
+  "entity.ordnance.bounce_bouncy": {
+    "sounds": [
+      "clinker:entity/ordnance/bounce_bouncy"
+    ],
+    "subtitle": "subtitles.entity.ordnance.bounce_bouncy"
+  },
+  "entity.ordnance.bounce_sticky": {
+    "sounds": [
+      "clinker:entity/ordnance/bounce_sticky"
+    ],
+    "subtitle": "subtitles.entity.ordnance.bounce_sticky"
+  },
+  "entity.ordnance.bounce_thorny": {
+    "sounds": [
+      "clinker:entity/ordnance/bounce_thorny"
+    ],
+    "subtitle": "subtitles.entity.ordnance.bounce_thorny"
+  },
+  "entity.ordnance.explode": {
+    "sounds": [
+      "clinker:entity/ordnance/explode"
+    ],
+    "subtitle": "subtitles.entity.ordnance.explode"
+  },
+  "entity.ordnance.fuse_loop": {
+    "sounds": [
+      "clinker:entity/ordnance/fuse_loop"
+    ]
+  },
+  "music.othershore.aquifer": {
+    "sounds": [
+      "clinker:music/game/silence"
+    ]
+  },
+  "music.othershore.subterranean": {
+    "sounds": [
+      {
+        "name": "clinker:music/game/subterranean/hive_bound",
+        "stream": true,
+        "volume": 0.3
+      },
+      {
+        "name": "clinker:music/game/subterranean/sardine",
+        "stream": true,
+        "volume": 0.5
+      },
+      {
+        "name": "clinker:music/game/subterranean/unplumbed",
+        "stream": true,
+        "volume": 0.8
+      }
+    ]
+  },
+  "music.othershore.surface": {
+    "sounds": [
+      {
+        "name": "clinker:music/game/burckhardt",
+        "stream": true,
+        "volume": 0.5
+      },
+      {
+        "name": "clinker:music/game/foot_of_worm",
+        "stream": true,
+        "volume": 0.5
+      },
+      {
+        "name": "clinker:music/game/memoir",
+        "stream": true,
+        "volume": 0.5
+      },
+      {
+        "name": "clinker:music/game/tableland",
+        "stream": true,
+        "volume": 0.5
+      },
+      {
+        "name": "clinker:music/game/withered_history",
+        "stream": true,
+        "volume": 0.5
+      },
+      {
+        "name": "clinker:music/game/zosimus",
+        "stream": true,
+        "volume": 0.5
+      }
+    ]
+  },
+  "music_disc.coda": {
+    "sounds": [
+      {
+        "name": "clinker:records/coda",
+        "stream": true
+      }
+    ]
+  }
+}

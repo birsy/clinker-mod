@@ -77,7 +77,7 @@ public class ChainLightning {
 
             for (int i = 0; i < entitiesToIterate; i++) {
                 Entity nearby = nearbyEntities.get(i);
-                int travelTime = 10 + level.random.nextIntBetweenInclusive(-5, 5);
+                int travelTime = 5 + level.random.nextIntBetweenInclusive(-3, 3);
                 addEntity(nearby, travelTime);
                 spawnBoltParticle(
                         shocker.getX(), shocker.getY(0.5), shocker.getZ(),

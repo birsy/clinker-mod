@@ -1,6 +1,7 @@
 package birsy.clinker.datagen;
 
 import birsy.clinker.core.Clinker;
+import birsy.clinker.core.registry.ClinkerSounds;
 import birsy.clinker.datagen.providers.*;
 import birsy.clinker.datagen.providers.loottable.ClinkerBlockLootTableProvider;
 import birsy.clinker.datagen.providers.loottable.ClinkerMiscLootTableProvider;
@@ -45,6 +46,8 @@ public class ClinkerDatagenHandler {
         generator.addProvider(event.includeClient(), new ClinkerBlockStateProvider(output, existingFileHelper));
         generator.addProvider(event.includeClient(), new ClinkerItemModelProvider(output, existingFileHelper));
         generator.addProvider(event.includeClient(), new ClinkerEnglishLanguageProvider(output));
+
+        generator.addProvider(event.includeClient(), new ClinkerSoundDefinitionsProvider(output, existingFileHelper, Clinker.MOD_ID, ClinkerSounds.SOUND_HOLDERS));
 
         event.createProvider((providerOutput, providerLookupProvider) -> new LootTableProvider(providerOutput, Set.of(),
                 List.of(

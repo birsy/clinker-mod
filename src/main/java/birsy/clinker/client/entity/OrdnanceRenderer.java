@@ -19,7 +19,7 @@ import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.phys.Vec3;
 
 public class OrdnanceRenderer extends EntityRenderer<OrdnanceEntity> {
-    private static final ResourceLocation ORDNANCE_LOCATION = Clinker.resource("textures/entity/ordnance.png");
+    private static final ResourceLocation ORDNANCE_LOCATION = Clinker.resource("textures/entity/ordnance/ordnance.png");
 
     public OrdnanceRenderer(EntityRendererProvider.Context pContext) {
         super(pContext);
@@ -27,7 +27,6 @@ public class OrdnanceRenderer extends EntityRenderer<OrdnanceEntity> {
 
     @Override
     public void render(OrdnanceEntity pEntity, float pEntityYaw, float pPartialTick, PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight) {
-        VertexConsumer consumer = pBuffer.getBuffer(RenderType.entityCutout(this.getTextureLocation(pEntity)));
 
         // todo: redo all of this it sucks ASS!!!
         float bombFlash = 0;
@@ -51,52 +50,52 @@ public class OrdnanceRenderer extends EntityRenderer<OrdnanceEntity> {
         pPoseStack.translate(0, pEntity.getBbHeight() * 0.5F, 0);
         float size = 1 / 16.0F;
         size *= 1 + Mth.sqrt(bombFlash) * 0.2F;
-        size *= 0.6F;
+        size *= 0.7F;
         pPoseStack.scale(size, size, size);
+        pPoseStack.translate(0, 1, 0);
 
-        drawBomb(pPoseStack, consumer, light, overlay, pEntity, pPartialTick, directionTowardsCamera);
+        Vec3 dir = directionTowardsCamera.scale(8 / 16.0F);
+        pPoseStack.translate(dir.x(), dir.y() - 1, dir.z());
+        pPoseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
+        pPoseStack.mulPose(Axis.ZP.rotation(-pEntity.getSpin(pPartialTick)));
+
+        VertexConsumer consumer = pBuffer.getBuffer(RenderType.entityCutout(this.getTextureLocation(pEntity)));
+        drawBomb(pPoseStack, consumer, light, overlay);
+
         pPoseStack.popPose();
 
         super.render(pEntity, pEntityYaw, pPartialTick, pPoseStack, pBuffer, pPackedLight);
     }
     
-    public void drawBomb(PoseStack stack, VertexConsumer consumer, int pPackedLight, int overlayTexture, OrdnanceEntity pEntity, float pPartialTick, Vec3 directionTowardsCamera) {
-        stack.pushPose();
-        Vec3 dir = directionTowardsCamera.scale(8 / 16.0F);
-        stack.translate(dir.x(), dir.y() - 1, dir.z());
-        stack.mulPose(this.entityRenderDispatcher.cameraOrientation());
-        stack.mulPose(Axis.ZP.rotation(-pEntity.getSpin(pPartialTick)));
-        stack.translate(0, 1.5, 0);
-
-        float u0 = 0, u1 = 12.0F / 32.0F;
-        float v0 = 0, v1 = 1.0F;
+    public void drawBomb(PoseStack stack, VertexConsumer consumer, int pPackedLight, int overlayTexture) {
+        float u0 = 5F / 32F, u1 = 27F / 32F;
+        float v0 = 6F / 32F, v1 = 26F / 32F;
         int color = FastColor.ARGB32.colorFromFloat(1, 1, 1, 1);
         PoseStack.Pose pose = stack.last();
-        consumer.addVertex(pose, 6.0F, -9.0F, 0)
+        consumer.addVertex(pose, 10F, -10F, 0)
                 .setColor(color)
                 .setUv(u0, v1)
                 .setOverlay(overlayTexture)
                 .setLight(pPackedLight)
                 .setNormal(pose, 0, 0, 1);
-        consumer.addVertex(pose, 6.0F, 9.0F, 0)
+        consumer.addVertex(pose, 10F, 10F, 0)
                 .setColor(color)
                 .setUv(u0, v0)
                 .setOverlay(overlayTexture)
                 .setLight(pPackedLight)
                 .setNormal(pose, 0, 0, 1);
-        consumer.addVertex(pose, -6.0F, 9.0F, 0)
+        consumer.addVertex(pose, -10F, 10F, 0)
                 .setColor(color)
                 .setUv(u1, v0)
                 .setOverlay(overlayTexture)
                 .setLight(pPackedLight)
                 .setNormal(pose, 0, 0, 1);
-        consumer.addVertex(pose, -6.0F, -9.0F, 0)
+        consumer.addVertex(pose, -10F, -10F, 0)
                 .setColor(color)
                 .setUv(u1, v1)
                 .setOverlay(overlayTexture)
                 .setLight(pPackedLight)
                 .setNormal(pose, 0, 0, 1);
-        stack.popPose();
     }
 
     @Override

@@ -20,7 +20,7 @@ float map(float value, float min1, float max1, float min2, float max2) {
 
 void main() {
     vec4 color = texture(Sampler0, texCoord0);
-    vec4 warbleColor = texture(Sampler0, texCoord0 + vec2(0, GameTime * -600));
+    vec4 warbleColor = texture(Sampler0, texCoord0 + vec2(0, GameTime * -1000));
     
     float lightningSDF = color.r;
     
@@ -39,3 +39,4 @@ void main() {
     vec4 lightningColor = vec4(vertexColor.rgb * lightningAlpha, lightningAlpha);
     fragColor = linear_fog(lightningColor, vertexDistance, FogStart, FogEnd, vec4(0.0));
 }
+
