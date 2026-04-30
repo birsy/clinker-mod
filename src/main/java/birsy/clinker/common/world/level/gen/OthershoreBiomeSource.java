@@ -124,18 +124,7 @@ public class OthershoreBiomeSource extends BiomeSource {
                                    .map(Supplier::get)
                                    .collect(Collectors.toUnmodifiableSet()),
                                    UPPER_SHELF.get()
-                           ),
-                           MutateOperation.builder()
-                                   .scale(8, randomState.apply(Clinker.resource("heath_mutation")))
-                                   .set(10).endSet()
-                                   .set(1)
-                                        .entry(UPPER_SHELF.get()).result(HEATH.get()).endEntry()
-                                        .entry(LOWER_SHELF.get()).result(HEATH_THICKET.get()).endEntry()
-                                   .endSet()
-                                   .set(3)
-                                       .entry(UPPER_SHELF.get()).result(ASH_STEPPE.get()).endEntry()
-                                   .endSet()
-                                   .build()
+                           )
                     )
                     .layer(new BiomeLayerOperations.Expand(LOWER_SHELF.get(), HEATH_THICKET.get()),
                            new BiomeLayerOperations.Expand(SEA.get()),
@@ -200,7 +189,25 @@ public class OthershoreBiomeSource extends BiomeSource {
                             UPPER_SHELF.get(),
                             SEA.get(),
                             BEACH.get()
-                    ))
+                            ),
+                            MutateOperation.builder()
+                                    .scale(8, randomState.apply(Clinker.resource("upper_shelf_biomes")))
+                                    .set(1)
+                                    .entry(UPPER_SHELF.get()).result(HEATH.get()).endEntry()
+                                    .entry(LOWER_SHELF.get()).result(HEATH_THICKET.get()).endEntry()
+                                    .endSet()
+                                    .set(3)
+                                    .entry(UPPER_SHELF.get()).result(ASH_STEPPE.get()).endEntry()
+                                    .endSet()
+                                    .build(),
+                            MutateOperation.builder()
+                                    .scale(8, randomState.apply(Clinker.resource("sea_biomes")))
+                                    .set(1).endSet()
+                                    .set(1)
+                                    .entry(SEA.get()).result(BRINE_SWAMP.get()).endEntry()
+                                    .endSet()
+                                    .build()
+                    )
                     .zoom()
                     .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1))
                     .layer(new BiomeLayerOperations.Smooth())

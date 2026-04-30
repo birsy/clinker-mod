@@ -30,7 +30,7 @@ public class AshSteppeSurfaceDecorator extends SurfaceDecorator {
         if (pos.getY() < (surfaceContext.surfaceHeight() - 20)) return;
 
         float ditherRandom = (random.nextFloat() * 2) - 1;
-        ditherRandom *= 0.3F;
+        ditherRandom *= 0.1F;
 
         double ashGroundNoise = noiseContext.retrieve(BASE_NOISE_2D[6], pos.getX(), pos.getY(), pos.getZ());
         boolean shouldPlaceAsh = ashGroundNoise + ditherRandom > -0.5;
