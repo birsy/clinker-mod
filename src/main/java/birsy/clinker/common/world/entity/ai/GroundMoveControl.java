@@ -32,7 +32,7 @@ public class GroundMoveControl extends MoveControl {
     public void tick() {
         GroundLocomotionEntity me = mob();
 
-        float baseSpeed = (float) (this.getSpeedModifier() * me.getAttributeValue(Attributes.MOVEMENT_SPEED));
+        float baseSpeed = (float) (this.getSpeedModifier() * me.getAttributeValue(Attributes.MOVEMENT_SPEED) * me.speedModifier);
 
         this.locomotionVector.zero();
         me.setLocomotionVector(0, 0, 0);

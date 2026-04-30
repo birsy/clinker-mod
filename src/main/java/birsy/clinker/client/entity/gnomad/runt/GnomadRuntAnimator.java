@@ -1,5 +1,6 @@
 package birsy.clinker.client.entity.gnomad.runt;
 
+import birsy.clinker.client.AnimationUtilities;
 import birsy.clinker.common.world.entity.gnomad.GnomadRuntEntity;
 import foundry.veil.api.client.necromancer.animation.Animation;
 import foundry.veil.api.client.necromancer.animation.Animator;
@@ -12,6 +13,8 @@ import static net.minecraft.core.Direction.Axis.*;
 
 public class GnomadRuntAnimator extends Animator<GnomadRuntEntity, GnomadRuntSkeleton> {
     public final AnimationEntry<?, ?> idleAnim, walkAnim, strafeAnim, hurtAnim;
+    public final AnimationUtilities.SurveyorWheel stepCounter = new AnimationUtilities.SurveyorWheel(0.22F);
+
     protected GnomadRuntAnimator(GnomadRuntEntity parent, GnomadRuntSkeleton skeleton) {
         super(parent, skeleton);
         this.idleAnim = this.addAnimation(IdleAnimation.INSTANCE, 0);
@@ -30,15 +33,19 @@ public class GnomadRuntAnimator extends Animator<GnomadRuntEntity, GnomadRuntSke
         this.idleAnim.setMixFactor(1.0F);
         this.idleAnim.setTime(entity.tickCount);
 
-        float moveTime = entity.getCumulativeLocomotionAmount() * 2.5F;
+        float walkAmount = entity.getForwardLocomotionAmount(1.0F),
+              strafeAmount = entity.getStrafeLocomotionAmount(1.0F);
+        float strideLength = Mth.clampedMap((float) Mth.length(walkAmount, strafeAmount), 0, 2.0F, 0.3F, 0.4F);
+        this.stepCounter.update(strideLength, entity.getCumulativeLocomotionAmount());
+        float stepsTaken = stepCounter.angle();
 
-        float walkFac = Mth.clamp(12 * entity.getForwardLocomotionAmount(1.0F), -2.0F, 2.0F);
+        float walkFac = Mth.clamp(12 * walkAmount, -2.0F, 2.0F);
         this.walkAnim.setMixFactor(walkFac);
-        this.walkAnim.setTime(moveTime);
+        this.walkAnim.setTime(stepsTaken);
 
-        float strafeFac = Mth.clamp(12 * entity.getStrafeLocomotionAmount(1.0F), -1.0F, 1.0F);
+        float strafeFac = Mth.clamp(12 * strafeAmount, -1.0F, 1.0F);
         this.strafeAnim.setMixFactor(strafeFac);
-        this.strafeAnim.setTime(moveTime);
+        this.strafeAnim.setTime(stepsTaken);
 
         if (entity.isHoldingDelivery()) {
             skeleton.rightArm.rotateDeg(80, Direction.Axis.Y);

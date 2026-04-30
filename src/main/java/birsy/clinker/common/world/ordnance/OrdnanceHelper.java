@@ -72,7 +72,7 @@ public class OrdnanceHelper {
 
                 level.playLocalSound(x, y, z, ClinkerSounds.ORDNANCE_EXPLODE.get(), SoundSource.BLOCKS, 3F, Mth.lerp(level.random.nextFloat(), 0.4F, 0.6F), false);
                 level.playLocalSound(x, y, z, SoundEvents.FIREWORK_ROCKET_LARGE_BLAST, SoundSource.BLOCKS, 4F, Mth.lerp(level.random.nextFloat(), 0.7F, 0.9F), false);
-                level.playLocalSound(x, y, z, SoundEvents.FIREWORK_ROCKET_TWINKLE_FAR, SoundSource.BLOCKS, 0.1F, Mth.lerp(level.random.nextFloat(), 0.7F, 0.9F), false);
+                //level.playLocalSound(x, y, z, SoundEvents.FIREWORK_ROCKET_TWINKLE_FAR, SoundSource.BLOCKS, 0.1F, Mth.lerp(level.random.nextFloat(), 0.7F, 0.9F), false);
             }
             Collection<Entity> entities = EntityRetrievalUtil.getEntities(level, new Vec3(x, y, z), radius * 2);
             for (Entity entity : entities) {

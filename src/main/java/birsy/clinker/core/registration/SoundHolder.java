@@ -5,7 +5,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -17,6 +16,7 @@ import java.util.function.Supplier;
 public record SoundHolder(
         DeferredHolder<SoundEvent, SoundEvent> holder,
         Optional<String> subtitleKey,
+        Optional<String> subtitleText,
         List<SoundVariant> variants
 ) implements Supplier<SoundEvent> {
 
@@ -29,7 +29,7 @@ public record SoundHolder(
         final String key;
 
         Optional<Float> range = Optional.empty();
-        Optional<String> subtitleKey;
+        Optional<String> subtitleKey, subtitleText;
 
         SoundVariantProperties defaultProperties = new SoundVariantProperties();
         final LinkedHashMap<ResourceLocation, Consumer<SoundVariantProperties>> variantEntries = new LinkedHashMap<>();
@@ -37,11 +37,19 @@ public record SoundHolder(
         Builder(DeferredRegister<SoundEvent> registry, String key) {
             this.registry = registry;
             this.key = key;
-            this.subtitleKey = Optional.of("subtitles." + key);
+            this.subtitleKey = Optional.of("subtitles." + registry.getNamespace() + "." + key);
         }
 
-        public Builder noSubtitle() { this.subtitleKey = Optional.empty(); return this; }
-        public Builder subtitle(String key) { this.subtitleKey = Optional.of(key); return this; }
+        public Builder noSubtitle() {
+            this.subtitleKey = Optional.empty();
+            this.subtitleText = Optional.empty();
+            return this;
+        }
+        public Builder subtitle(String defaultEnglishText) {
+            this.subtitleText = Optional.of(defaultEnglishText);
+            return this;
+        }
+
         public Builder fixedRange(float range) { this.range = Optional.of(range); return this; }
 
         public Builder volume(float volume) { defaultProperties.volume = volume; return this; }
@@ -72,6 +80,12 @@ public record SoundHolder(
         }
 
         public SoundHolder build() {
+            if (subtitleText == null) {
+                throw new IllegalStateException(
+                        "sound '" + key + "' has a subtitle key but no english subtitle text!"
+                );
+            }
+
             if (variantEntries.isEmpty()) {
                 variantEntries.put(loc(key.replace('.', '/')), (properties) -> {});
             }
@@ -90,7 +104,7 @@ public record SoundHolder(
                                .orElse(SoundEvent.createVariableRangeEvent(location))
             );
 
-            return new SoundHolder(holder, subtitleKey, builtVariants);
+            return new SoundHolder(holder, subtitleKey, subtitleText, builtVariants);
         }
 
         public SoundHolder build(Collection<SoundHolder> list) {
@@ -99,13 +113,8 @@ public record SoundHolder(
             return holder;
         }
 
-        private ResourceLocation loc(String path) {
-            return ResourceLocation.fromNamespaceAndPath(registry.getNamespace(), path);
-        }
-
-        private ResourceLocation parseLoc(String path) {
-            return path.contains(":") ? ResourceLocation.parse(path) : loc(path);
-        }
+        private ResourceLocation loc(String path) { return ResourceLocation.fromNamespaceAndPath(registry.getNamespace(), path); }
+        private ResourceLocation parseLoc(String path) { return path.contains(":") ? ResourceLocation.parse(path) : loc(path); }
     }
 
     public static class SoundVariantProperties {

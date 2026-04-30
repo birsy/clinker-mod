@@ -207,5 +207,14 @@
   "ordnance_modifier.clinker.thorned": "Thorned",
   "ordnance_modifier.clinker.unstable": "Unstable",
   "page.clinker.title.blank": "Blank Page",
-  "page.clinker.title.test": "Testing Page"
+  "page.clinker.title.test": "Testing Page",
+  "subtitles.clinker.entity.gnome.chat": "Gnome makes conversation",
+  "subtitles.clinker.entity.gnome.death": "Gnome dies",
+  "subtitles.clinker.entity.gnome.hurt": "Gnome hurts",
+  "subtitles.clinker.entity.gnome.idle": "Gnome grunts",
+  "subtitles.clinker.entity.ordnance.bounce": "Ordnance bounces",
+  "subtitles.clinker.entity.ordnance.bounce_bouncy": "Ordnance bounces bounce-ily",
+  "subtitles.clinker.entity.ordnance.bounce_sticky": "Sticky ordnance bounces",
+  "subtitles.clinker.entity.ordnance.bounce_thorny": "Spiked ordnance bounces",
+  "subtitles.clinker.entity.ordnance.explode": "Ordnance detonates"
 }

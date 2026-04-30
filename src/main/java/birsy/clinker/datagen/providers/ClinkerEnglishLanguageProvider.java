@@ -3,9 +3,11 @@ package birsy.clinker.datagen.providers;
 import birsy.clinker.common.world.ordnance.OrdnanceModifierType;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registration.ClinkerBiome;
+import birsy.clinker.core.registration.SoundHolder;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.ClinkerItems;
 import birsy.clinker.core.registry.ClinkerOrdnanceModifierTypes;
+import birsy.clinker.core.registry.ClinkerSounds;
 import birsy.clinker.core.registry.entity.ClinkerEntities;
 import birsy.clinker.core.registry.worldgen.ClinkerBiomes;
 import net.minecraft.data.PackOutput;
@@ -42,11 +44,18 @@ public class ClinkerEnglishLanguageProvider extends LanguageProvider {
         for (ClinkerBiome biome : ClinkerBiomes.BIOMES) {
             this.add("biome.clinker." + biome.key().location().getPath(), localizedNameFromRegistryName(biome.key().location().getPath()));
         }
+        for (SoundHolder soundHolder : ClinkerSounds.SOUND_HOLDERS) {
+            if (soundHolder.subtitleKey().isPresent())
+                this.add(soundHolder.subtitleKey().get(),
+                        soundHolder.subtitleText()
+                                .orElse("! ERROR ! No subtitle text present for key " + soundHolder.subtitleKey().get())
+                );
+        }
 
-        this.add("ordnance_modifier.clinker.dud", "Dud");
         for (DeferredHolder<OrdnanceModifierType<?>, ? extends OrdnanceModifierType<?>> entry : ClinkerOrdnanceModifierTypes.ORDNANCE_MODIFIER_TYPES.getEntries()) {
             this.add("ordnance_modifier." + entry.getId().toLanguageKey(), localizedNameFromRegistryName(entry.getId().getPath()));
         }
+        this.add("ordnance_modifier.clinker.dud", "Dud");
         this.add("ordnance_modifier.clinker.fuse_time", "%s second fuse");
         this.add("ordnance_modifier.clinker.fuseless", "Lacks fuse!");
 
@@ -56,7 +65,7 @@ public class ClinkerEnglishLanguageProvider extends LanguageProvider {
         this.add("ordnance_modifier.clinker.explosive.1", "Middling Explosive");
         this.add("ordnance_modifier.clinker.explosive.2", "Superior Explosive");
         this.add("ordnance_modifier.clinker.explosive.3", "Exceptional Explosive");
-        this.add("ordnance_modifier.clinker.flechette", "Releases Flechettes");
+        this.add("ordnance_modifier.clinker.flechettes", "Releases Flechettes");
 
         this.add("ordnance_modifier.clinker.about_to_explode", "Oh dear.");
         this.add("ordnance_modifier.clinker.about_to_explode_description", "You probably shouldn't be reading this...");

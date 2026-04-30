@@ -42,7 +42,6 @@ public class GnomadMogulEntity extends BaseGnomadEntity<GnomadMogulEntity> imple
     private static final EntityDataAccessor<Integer> DATA_ROBE_COLOR = SynchedEntityData.defineId(GnomadMogulEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> DATA_FLOATING = SynchedEntityData.defineId(GnomadMogulEntity.class, EntityDataSerializers.BOOLEAN);
 
-    private Squad squad;
     private final MogulAttackHandler attackHandler;
 
     private boolean canStartFloating = true;

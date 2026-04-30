@@ -1,5 +1,6 @@
 package birsy.clinker.common.world.entity.gnomad;
 
+import birsy.clinker.client.entity.gnomad.runt.GnomadRuntAnimator;
 import birsy.clinker.client.entity.gnomad.runt.GnomadRuntSkeleton;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.ClaimSquadTask;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.SharedGnomadBehaviorSets;
@@ -93,9 +94,9 @@ public class GnomadRuntEntity extends BaseGnomadEntity<GnomadRuntEntity> impleme
     }
 
     private GnomadRuntSkeleton skeleton;
-    private Animator<GnomadRuntEntity, GnomadRuntSkeleton> animator;
+    private GnomadRuntAnimator animator;
     @Override public void setSkeleton(@Nullable GnomadRuntSkeleton skeleton) { this.skeleton = skeleton; }
-    @Override public void setAnimator(@Nullable Animator<GnomadRuntEntity, GnomadRuntSkeleton> animator) { this.animator = animator; }
+    @Override public void setAnimator(@Nullable Animator<GnomadRuntEntity, GnomadRuntSkeleton> animator) { this.animator = (GnomadRuntAnimator) animator; }
     @Override public @Nullable GnomadRuntSkeleton getSkeleton() { return skeleton; }
-    @Override public @Nullable Animator<GnomadRuntEntity, GnomadRuntSkeleton> getAnimator() { return animator; }
+    @Override public @Nullable GnomadRuntAnimator getAnimator() { return animator; }
 }

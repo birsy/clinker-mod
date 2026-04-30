@@ -4,6 +4,7 @@ import birsy.clinker.client.entity.*;
 import birsy.clinker.client.entity.gnomad.basic.GnomadRenderer;
 import birsy.clinker.client.entity.gnomad.mogul.GnomadMogulRenderer;
 import birsy.clinker.client.entity.gnomad.runt.GnomadRuntRenderer;
+import birsy.clinker.client.entity.leggy.LeggyRenderer;
 import birsy.clinker.client.entity.slabcrab.SlabCrabRenderer;
 import birsy.clinker.common.world.entity.*;
 import birsy.clinker.common.world.entity.gnomad.mogul.GnomadMogulEntity;
@@ -89,6 +90,10 @@ public class ClinkerEntities {
                     .sized(1.0F, 0.5F)
                     .build(Clinker.resource("slab_crab").toString()));
 
+    public static final Supplier<EntityType<GiantLeggyCritterEntity>> GIANT_LEGGY_CRITTER = ENTITY_TYPES.register("leggy", () ->
+            EntityType.Builder.of(GiantLeggyCritterEntity::new, MobCategory.CREATURE)
+                    .sized(1.0F, 1.0F)
+                    .build(Clinker.resource("leggy").toString()));
 
     public static final Supplier<EntityType<GnomadMogulEntity>> GNOMAD_MOGUL = ENTITY_TYPES.register("gnomad_mogul", () ->
             EntityType.Builder.of(GnomadMogulEntity::new, MobCategory.MONSTER)
@@ -112,6 +117,7 @@ public class ClinkerEntities {
         event.put(SPITTER_HOMUNCULOID.get(), SpitterHomunculoid.createAttributes().build());
 
         event.put(AI_TEST.get(), Zombie.createAttributes().build());
+        event.put(GIANT_LEGGY_CRITTER.get(), Zombie.createAttributes().build());
 
         event.put(SLAB_CRAB.get(), SlabCrabEntity.createAttributes().build());
 
@@ -139,6 +145,7 @@ public class ClinkerEntities {
         event.registerEntityRenderer(SPITTER_HOMUNCULOID.get(), DebugEntityRenderer::new);
 
         event.registerEntityRenderer(AI_TEST.get(), DebugEntityRenderer::new);
+        event.registerEntityRenderer(GIANT_LEGGY_CRITTER.get(), LeggyRenderer::new);
 
         event.registerEntityRenderer(SLAB_CRAB.get(), SlabCrabRenderer::new);
 

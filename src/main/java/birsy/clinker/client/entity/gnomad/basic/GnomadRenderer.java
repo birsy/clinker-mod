@@ -1,5 +1,6 @@
 package birsy.clinker.client.entity.gnomad.basic;
 
+import birsy.clinker.client.entity.layer.DebugSurveyorWheelRenderer;
 import birsy.clinker.client.entity.layer.HeldItemsLayer;
 import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
 import birsy.clinker.core.Clinker;
@@ -40,6 +41,7 @@ public class GnomadRenderer extends NecromancerEntityRenderer<GnomadEntity, Gnom
             }
         });
         this.addLayer(new HeldItemsLayer<>(this));
+        this.addLayer(new DebugSurveyorWheelRenderer<>(this, (entity) -> entity.getAnimator().stepCounter));
     }
 
     @Override

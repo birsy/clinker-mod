@@ -43,6 +43,8 @@ public class GroundLocomotionEntity extends PathfinderMob {
     protected float cumulativeLocomotionAmount = 0, cumulativeLocomotionAmountGoal = 0;
     protected final Scheduler scheduler = new Scheduler();
 
+    public float speedModifier = 1.0F;
+
     protected GroundLocomotionEntity(EntityType<? extends PathfinderMob> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         this.moveControl = createMoveControl();
@@ -143,14 +145,12 @@ public class GroundLocomotionEntity extends PathfinderMob {
                 return (float) -Mth.atan2(locomotionVector.x, locomotionVector.z) * Mth.RAD_TO_DEG;
             }
         }
+
         // look where the head is trying to look
         float headYaw = this.getLookControl().lookTargetController.getDesiredYaw();
         float currentBodyYaw = this.getBodyRotationControl().lookTargetController.getDesiredYaw();
-        if (Mth.degreesDifferenceAbs(currentBodyYaw, headYaw) > 60) {
-            return headYaw;
-        }
-        // just return whatever it currently is
-        return currentBodyYaw;
+        float degreesDiff = Mth.degreesDifference(currentBodyYaw, headYaw);
+        return Mth.approachDegrees(currentBodyYaw, headYaw + Mth.clamp(degreesDiff, -60, 60), 5);
     }
     protected float getDefaultBodyTurnSpeed() {
         if (locomotionVector != null && (locomotionVector.x != 0 || locomotionVector.z != 0)) {
@@ -187,7 +187,7 @@ public class GroundLocomotionEntity extends PathfinderMob {
     public Vector3fc getLastHitDirection() { return getEntityData().get(DATA_LAST_HIT_DIRECTION); }
 
     private void debugMove() {
-        float maxSpeed = 1.0F;
+        float maxSpeed = 0.8F;
         Player target = EntityRetrievalUtil.getNearestEntity(this, 40.0F, (entity -> entity instanceof Player));
 
         if (target == null) {

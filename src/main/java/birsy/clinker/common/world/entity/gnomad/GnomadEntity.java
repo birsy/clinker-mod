@@ -1,16 +1,19 @@
 package birsy.clinker.common.world.entity.gnomad;
 
+import birsy.clinker.client.entity.gnomad.basic.GnomadAnimator;
 import birsy.clinker.client.entity.gnomad.basic.GnomadSkeleton;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.PostSquadTask;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.SharedGnomadBehaviorSets;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.StayNearSquadCenter;
 import birsy.clinker.common.world.entity.system.squad.squadtasks.ResupplyTask;
 import birsy.clinker.common.world.entity.gnomad.mogul.GnomadMogulEntity;
+import birsy.clinker.core.registry.ClinkerItems;
 import foundry.veil.api.client.necromancer.SkeletonParent;
 import foundry.veil.api.client.necromancer.animation.Animator;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.projectile.Snowball;
@@ -34,6 +37,12 @@ public class GnomadEntity extends BaseGnomadEntity<GnomadEntity>
     @Override
     public @Nullable SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
         this.supplies = this.supplyDeliveryAmount();
+        this.setLeftHanded(this.getRandom().nextBoolean());
+        this.setItemInHand(InteractionHand.MAIN_HAND,
+                this.getRandom().nextBoolean() ?
+                        ClinkerItems.LEAD_AXE.toStack() :
+                        ClinkerItems.LEAD_SWORD.toStack()
+                );
         return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
     }
 
@@ -71,10 +80,10 @@ public class GnomadEntity extends BaseGnomadEntity<GnomadEntity>
                 new FirstApplicableBehaviour<>(
                         new StayNearSquadCenter<GnomadEntity>()
                                 .maximumDistance(10.0F)
-                                .speedModifier(1.0F),
+                                .speedModifier(0.5F),
                         new OneRandomBehaviour<GnomadEntity>(
                                 new SetRandomWalkTarget<>().speedModifier(0.5F),
-                                new Idle<>().runFor(mob -> mob.getRandom().nextInt(30, 60))
+                                new Idle<>().runFor(mob -> mob.getRandom().nextInt(30, 120))
                         )
                 )
         );
@@ -83,6 +92,7 @@ public class GnomadEntity extends BaseGnomadEntity<GnomadEntity>
     // just throw snowballs at them :P
     @Override
     public void performRangedAttack(LivingEntity target, float velocity) {
+        if (true) return;
         if (!this.tryConsumeSupplies()) return;
         Snowball snowball = new Snowball(this.level(), this);
         double d0 = target.getEyeY() - 1.1F;
@@ -96,9 +106,9 @@ public class GnomadEntity extends BaseGnomadEntity<GnomadEntity>
     }
 
     private GnomadSkeleton skeleton;
-    private Animator<GnomadEntity, GnomadSkeleton> animator;
+    private GnomadAnimator animator;
     @Override public void setSkeleton(@Nullable GnomadSkeleton skeleton) { this.skeleton = skeleton; }
-    @Override public void setAnimator(@Nullable Animator<GnomadEntity, GnomadSkeleton> animator) { this.animator = animator; }
+    @Override public void setAnimator(@Nullable Animator<GnomadEntity, GnomadSkeleton> animator) { this.animator = (GnomadAnimator) animator; }
     @Override public @Nullable GnomadSkeleton getSkeleton() { return skeleton; }
-    @Override public @Nullable Animator<GnomadEntity, GnomadSkeleton> getAnimator() { return animator; }
+    @Override public @Nullable GnomadAnimator getAnimator() { return animator; }
 }

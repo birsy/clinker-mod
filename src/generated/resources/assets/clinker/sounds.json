@@ -36,7 +36,7 @@
       "clinker:entity/gnome/chat2",
       "clinker:entity/gnome/chat3"
     ],
-    "subtitle": "subtitles.entity.gnome.chat"
+    "subtitle": "subtitles.clinker.entity.gnome.chat"
   },
   "entity.gnome.death": {
     "sounds": [
@@ -45,7 +45,7 @@
       "clinker:entity/gnome/death3",
       "clinker:entity/gnome/death4"
     ],
-    "subtitle": "subtitles.entity.gnome.death"
+    "subtitle": "subtitles.clinker.entity.gnome.death"
   },
   "entity.gnome.hurt": {
     "sounds": [
@@ -57,7 +57,7 @@
       "clinker:entity/gnome/hurt6",
       "clinker:entity/gnome/hurt7"
     ],
-    "subtitle": "subtitles.entity.gnome.hurt"
+    "subtitle": "subtitles.clinker.entity.gnome.hurt"
   },
   "entity.gnome.idle": {
     "sounds": [
@@ -68,37 +68,37 @@
       "clinker:entity/gnome/idle5",
       "clinker:entity/gnome/idle6"
     ],
-    "subtitle": "subtitles.entity.gnome.idle"
+    "subtitle": "subtitles.clinker.entity.gnome.idle"
   },
   "entity.ordnance.bounce": {
     "sounds": [
       "clinker:entity/ordnance/bounce"
     ],
-    "subtitle": "subtitles.entity.ordnance.bounce"
+    "subtitle": "subtitles.clinker.entity.ordnance.bounce"
   },
   "entity.ordnance.bounce_bouncy": {
     "sounds": [
       "clinker:entity/ordnance/bounce_bouncy"
     ],
-    "subtitle": "subtitles.entity.ordnance.bounce_bouncy"
+    "subtitle": "subtitles.clinker.entity.ordnance.bounce_bouncy"
   },
   "entity.ordnance.bounce_sticky": {
     "sounds": [
       "clinker:entity/ordnance/bounce_sticky"
     ],
-    "subtitle": "subtitles.entity.ordnance.bounce_sticky"
+    "subtitle": "subtitles.clinker.entity.ordnance.bounce_sticky"
   },
   "entity.ordnance.bounce_thorny": {
     "sounds": [
       "clinker:entity/ordnance/bounce_thorny"
     ],
-    "subtitle": "subtitles.entity.ordnance.bounce_thorny"
+    "subtitle": "subtitles.clinker.entity.ordnance.bounce_thorny"
   },
   "entity.ordnance.explode": {
     "sounds": [
       "clinker:entity/ordnance/explode"
     ],
-    "subtitle": "subtitles.entity.ordnance.explode"
+    "subtitle": "subtitles.clinker.entity.ordnance.explode"
   },
   "entity.ordnance.fuse_loop": {
     "sounds": [

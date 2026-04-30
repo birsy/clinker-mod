@@ -22,9 +22,6 @@ public class GnomadMogulAnimator extends Animator<GnomadMogulEntity, GnomadMogul
 
     private float floatingTransition = 0;
 
-    private final Vector3f smoothedAcceleration = new Vector3f();
-    private static final Vector3f temp = new Vector3f();
-
     protected GnomadMogulAnimator(GnomadMogulEntity parent, GnomadMogulSkeleton skeleton) {
         super(parent, skeleton);
         this.upSwingAnim = this.addTimedAnimation(UpAttackAnimation.INSTANCE, 3, UpAttackAnimation.INSTANCE.animLength);

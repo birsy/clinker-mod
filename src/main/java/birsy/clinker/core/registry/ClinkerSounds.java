@@ -16,32 +16,41 @@ public class ClinkerSounds {
     public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, Clinker.MOD_ID);
     public static final List<SoundHolder> SOUND_HOLDERS = new ArrayList<>();
 
-    public static final SoundHolder BLOCK_STOVE_LOOP = SoundHolder.builder(SOUNDS, "block.stove.heat_loop")
-            .noSubtitle()
-            .stream().build(SOUND_HOLDERS);
-
     public static final SoundHolder GNOME_IDLE = SoundHolder.builder(SOUNDS, "entity.gnome.idle")
+            .subtitle("Gnome grunts")
             .variants(6).build(SOUND_HOLDERS);
     public static final SoundHolder GNOME_HURT = SoundHolder.builder(SOUNDS, "entity.gnome.hurt")
+            .subtitle("Gnome hurts")
             .variants(7).build(SOUND_HOLDERS);
     public static final SoundHolder GNOME_CHAT = SoundHolder.builder(SOUNDS, "entity.gnome.chat")
+            .subtitle("Gnome makes conversation")
             .variants(3).build(SOUND_HOLDERS);
     public static final SoundHolder GNOME_DEATH = SoundHolder.builder(SOUNDS, "entity.gnome.death")
+            .subtitle("Gnome dies")
             .variants(4).build(SOUND_HOLDERS);
 
     public static final SoundHolder ORDNANCE_BOUNCE = SoundHolder.builder(SOUNDS, "entity.ordnance.bounce")
+            .subtitle("Ordnance bounces")
             .build(SOUND_HOLDERS);
     public static final SoundHolder ORDNANCE_BOUNCE_STICKY = SoundHolder.builder(SOUNDS, "entity.ordnance.bounce_sticky")
+            .subtitle("Sticky ordnance sticks")
             .build(SOUND_HOLDERS);
     public static final SoundHolder ORDNANCE_BOUNCE_BOUNCY = SoundHolder.builder(SOUNDS, "entity.ordnance.bounce_bouncy")
+            .subtitle("Ordnance bounces bounce-ily")
             .build(SOUND_HOLDERS);
     public static final SoundHolder ORDNANCE_BOUNCE_THORNY = SoundHolder.builder(SOUNDS, "entity.ordnance.bounce_thorny")
+            .subtitle("Spiked ordnance bounces")
             .build(SOUND_HOLDERS);
     public static final SoundHolder ORDNANCE_EXPLODE = SoundHolder.builder(SOUNDS, "entity.ordnance.explode")
+            .subtitle("Ordnance detonates")
             .build(SOUND_HOLDERS);
     public static final SoundHolder ORDNANCE_FUSE_LOOP = SoundHolder.builder(SOUNDS, "entity.ordnance.fuse_loop")
-            .noSubtitle()
+            .subtitle("Ordnance fuse sizzles")
             .build(SOUND_HOLDERS);
+
+    public static final SoundHolder BLOCK_STOVE_LOOP = SoundHolder.builder(SOUNDS, "block.stove.heat_loop")
+            .noSubtitle()
+            .stream().build(SOUND_HOLDERS);
 
     public static final SoundHolder AMBIENT_ASH_PLAINS_ADDITIONS = SoundHolder.builder(SOUNDS, "ambient.ash_plains.additions")
             .noSubtitle().stream().volume(0.6f)

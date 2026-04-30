@@ -14,17 +14,21 @@ import static birsy.clinker.client.AnimationUtilities.*;
 
 
 public class GnomadAnimator extends Animator<GnomadEntity, GnomadSkeleton> {
-    public final AnimationEntry<?, ?> idleAnim, walkAnim, strafeAnim, hurtAnim, maskAnim;
+    public final AnimationEntry<?, ?> idleAnim, walkAnim, strafeAnim, hurtAnim, maskAnim, sitAnim;
     private int maskShakeTime = 0, maskShakeDuration = 1;
     private boolean maskShaking = false;
+    public final SurveyorWheel stepCounter = new SurveyorWheel(0.4F);
 
+    private boolean sitTest = false;
+    private float sitFactor = 0.0F;
     protected GnomadAnimator(GnomadEntity parent, GnomadSkeleton skeleton) {
         super(parent, skeleton);
         this.idleAnim = this.addAnimation(IdleAnimation.INSTANCE, 0);
-        this.walkAnim = this.addAnimation(WalkAnimation.INSTANCE, 1);
-        this.strafeAnim = this.addAnimation(StrafeAnimation.INSTANCE, 2);
-        this.hurtAnim = this.addAnimation(HurtAnimation.INSTANCE, 3);
-        this.maskAnim = this.addAnimation(MaskAnimation.INSTANCE, 4);
+        this.sitAnim = this.addAnimation(SitAnimation.INSTANCE, 1);
+        this.walkAnim = this.addAnimation(WalkAnimation.INSTANCE, 2);
+        this.strafeAnim = this.addAnimation(StrafeAnimation.INSTANCE, 3);
+        this.hurtAnim = this.addAnimation(HurtAnimation.INSTANCE, 4);
+        this.maskAnim = this.addAnimation(MaskAnimation.INSTANCE, 5);
     }
 
     @Override
@@ -32,18 +36,28 @@ public class GnomadAnimator extends Animator<GnomadEntity, GnomadSkeleton> {
         super.animate();
         GnomadEntity entity = this.parent;
 
+        // sit anim testing
+//        if (RandomUtil.oneInNChance(120) && (sitFactor == 0 || sitFactor == 1)) sitTest = !sitTest;
+//        sitFactor = Mth.approach(sitFactor, sitTest ? 1 : 0,  sitTest ? 0.05F : 0.025F);
+//        this.sitAnim.setMixFactor(sitFactor);
+//        this.sitAnim.setTime(sitTest ? 0 : 1);
+
         this.idleAnim.setMixFactor(1.0F);
         this.idleAnim.setTime(entity.tickCount);
 
-        float moveTime = entity.getCumulativeLocomotionAmount() * 1.7F;
+        float walkAmount = entity.getForwardLocomotionAmount(1.0F),
+              strafeAmount = entity.getStrafeLocomotionAmount(1.0F);
+        float strideLength = Mth.clampedMap((float) Mth.length(walkAmount, strafeAmount), 0, 2.0F, 0.4F, 2.3F);
+        this.stepCounter.update(strideLength, entity.getCumulativeLocomotionAmount());
+        float stepsTaken = stepCounter.angle();
 
-        float walkFac = Mth.clamp(12 * entity.getForwardLocomotionAmount(1.0F), -2.0F, 2.0F);
+        float walkFac = Mth.clamp(12 * walkAmount, -2.0F, 2.0F);
         this.walkAnim.setMixFactor(walkFac);
-        this.walkAnim.setTime(moveTime);
+        this.walkAnim.setTime(stepsTaken);
 
-        float strafeFac = Mth.clamp(12 * entity.getStrafeLocomotionAmount(1.0F), -2.0F, 2.0F);
+        float strafeFac = Mth.clamp(12 * strafeAmount, -2.0F, 2.0F);
         this.strafeAnim.setMixFactor(strafeFac);
-        this.strafeAnim.setTime(moveTime);
+        this.strafeAnim.setTime(stepsTaken);
 
         if (entity.hurtDuration > 0) {
             float hurtMixFactor = (float) entity.hurtTime / entity.hurtDuration;
@@ -194,7 +208,7 @@ public class GnomadAnimator extends Animator<GnomadEntity, GnomadSkeleton> {
             float squaredMixFactor = mixFactor * mixFactor;
 
             skeleton.root.offsetY(Math.abs(nSin(time + 0.5F)) * 1.0F * bounceMixFactor * degree);
-            skeleton.root.offsetZ(nSin(time * 2) * 0.5F * bounceMixFactor * sign * degree);
+            skeleton.torso.offsetZ(nSin(time * 2) * 0.5F * bounceMixFactor * sign * degree);
 
             skeleton.root.rotateDeg(nSin(time) * 1 * bounceMixFactor * sign * degree, Z);
 
@@ -264,4 +278,54 @@ public class GnomadAnimator extends Animator<GnomadEntity, GnomadSkeleton> {
             skeleton.bag.offsetY(nSin(time * 2 + 0.4F) * 0.1F * bounceMixFactor * degree);
         }
     }
+
+    private static class SitAnimation extends Animation<GnomadEntity, GnomadSkeleton> {
+        protected static SitAnimation INSTANCE = new SitAnimation();
+
+        @Override
+        public void apply(GnomadEntity entity, GnomadSkeleton skeleton, float mixFactor, float time) {
+            boolean standing = time > 0.5F;
+
+            float sitFactor = MathUtils.ease(mixFactor, standing ? MathUtils.EasingType.easeInBack : MathUtils.EasingType.easeInOutCubic);
+
+            skeleton.root.offsetY(3 * sitFactor);
+            skeleton.torso.offsetY(-5 * sitFactor);
+            skeleton.rightLeg.offsetY(-5 * sitFactor);
+            skeleton.leftLeg.offsetY(-5 * sitFactor);
+
+            skeleton.root.rotateDeg(70 * sitFactor, X);
+            skeleton.torso.rotateDeg(-80 * sitFactor, X);
+            skeleton.skirt.rotateDeg(15 * sitFactor, X);
+
+            skeleton.neck.rotateDeg(30 * sitFactor, X);
+            skeleton.headJoint.rotateDeg(-20 * sitFactor, X);
+
+            skeleton.leftArm.rotateDeg(25 * sitFactor, X);
+            skeleton.rightArm.rotateDeg(25 * sitFactor, X);
+
+            skeleton.rightLeg.rotateDeg(10 * sitFactor, Z);
+            skeleton.leftLeg.rotateDeg(-10 * sitFactor, Z);
+
+            int timeExisted = entity.tickCount;
+            skeleton.rightLeg.rotateDeg(nSin(timeExisted * 0.02F) * 2 * sitFactor, Z);
+            skeleton.leftLeg.rotateDeg(nSin(timeExisted * 0.025F) * 2 * sitFactor, Z);
+
+            if (standing) {
+                float biasedMiddleFactor = nSin(mixFactor * mixFactor);
+
+                skeleton.leftArm.rotateDeg(-20 * biasedMiddleFactor, X);
+                skeleton.rightArm.rotateDeg(-20 * biasedMiddleFactor, X);
+
+                skeleton.leftArm.offsetY(-2 * biasedMiddleFactor);
+                skeleton.rightArm.offsetY(-2 * biasedMiddleFactor);
+                skeleton.leftArm.offsetZ(3 * biasedMiddleFactor);
+                skeleton.rightArm.offsetZ(3 * biasedMiddleFactor);
+
+                skeleton.torso.rotateDeg(-10 * biasedMiddleFactor, X);
+                skeleton.neck.rotateDeg(-10 * biasedMiddleFactor, X);
+            }
+
+        }
+    }
+
 }

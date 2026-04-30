@@ -1,6 +1,7 @@
 package birsy.clinker.client.entity.gnomad.runt;
 
 import birsy.clinker.client.entity.gnomad.layer.HeldSuppliesLayer;
+import birsy.clinker.client.entity.layer.DebugSurveyorWheelRenderer;
 import birsy.clinker.common.world.entity.gnomad.GnomadRuntEntity;
 import birsy.clinker.core.Clinker;
 import foundry.veil.api.client.necromancer.animation.Animator;
@@ -40,6 +41,7 @@ public class GnomadRuntRenderer extends NecromancerEntityRenderer<GnomadRuntEnti
             }
         });
         this.addLayer(new HeldSuppliesLayer<>(this));
+        this.addLayer(new DebugSurveyorWheelRenderer<>(this, (entity) -> entity.getAnimator().stepCounter));
     }
 
     @Override
