@@ -43,7 +43,7 @@ public class AshSteppeSurfaceShaper extends SimpleSurfaceShaper {
 
         double heightmap = stratifiedBaseNoise * 10 + detailNoise * 2;
 
-        heightmap *= context.retrieve(BASE_NOISE_2D[7], x, y, z);
+        heightmap *= Mth.map(context.retrieve(BASE_NOISE_2D[7], x, y, z), -1, 1, 0, 1);
 
         double baseTerrain = (y - heightmapHeight) + heightmap;
 

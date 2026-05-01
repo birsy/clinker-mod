@@ -49,6 +49,8 @@ public class ClinkerDatagenHandler {
 
         generator.addProvider(event.includeClient(), new ClinkerSoundDefinitionsProvider(output, existingFileHelper, Clinker.MOD_ID, ClinkerSounds.SOUND_HOLDERS));
 
+        generator.addProvider(true, new ClinkerDataMapProvider(output, lookupProvider));
+
         event.createProvider((providerOutput, providerLookupProvider) -> new LootTableProvider(providerOutput, Set.of(),
                 List.of(
                         new LootTableProvider.SubProviderEntry(ClinkerBlockLootTableProvider::new, LootContextParamSets.BLOCK),

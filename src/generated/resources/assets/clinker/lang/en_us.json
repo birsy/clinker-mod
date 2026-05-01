@@ -1,4 +1,5 @@
 {
+  "attribute.clinker.name.generic.conductivity": "Conductivity",
   "biome.clinker.ash_plains": "Ash Plains",
   "block.clinker.ash": "Ash",
   "block.clinker.ash_layers": "Ash Layers",
@@ -145,8 +146,10 @@
   "entity.clinker.gnomad": "Gnomad",
   "entity.clinker.gnomad_mogul": "Gnomad Mogul",
   "entity.clinker.gnomad_runt": "Gnomad Runt",
+  "entity.clinker.leggy": "Leggy",
   "entity.clinker.mold": "Mold",
   "entity.clinker.ordnance": "Ordnance",
+  "entity.clinker.red_lightning_bolt": "Red Lightning Bolt",
   "entity.clinker.slab_crab": "Slab Crab",
   "entity.clinker.spitter_homunculoid": "Spitter Homunculoid",
   "entity.clinker.test_rope": "Test Rope",
@@ -198,8 +201,7 @@
   "ordnance_modifier.clinker.explosive.1": "Middling Explosive",
   "ordnance_modifier.clinker.explosive.2": "Superior Explosive",
   "ordnance_modifier.clinker.explosive.3": "Exceptional Explosive",
-  "ordnance_modifier.clinker.flechette": "Releases Flechettes",
-  "ordnance_modifier.clinker.flechettes": "Flechettes",
+  "ordnance_modifier.clinker.flechettes": "Releases Flechettes",
   "ordnance_modifier.clinker.fuse_time": "%s second fuse",
   "ordnance_modifier.clinker.fuseless": "Lacks fuse!",
   "ordnance_modifier.clinker.phosphorus": "Phosphorus",
@@ -214,7 +216,8 @@
   "subtitles.clinker.entity.gnome.idle": "Gnome grunts",
   "subtitles.clinker.entity.ordnance.bounce": "Ordnance bounces",
   "subtitles.clinker.entity.ordnance.bounce_bouncy": "Ordnance bounces bounce-ily",
-  "subtitles.clinker.entity.ordnance.bounce_sticky": "Sticky ordnance bounces",
+  "subtitles.clinker.entity.ordnance.bounce_sticky": "Sticky ordnance sticks",
   "subtitles.clinker.entity.ordnance.bounce_thorny": "Spiked ordnance bounces",
-  "subtitles.clinker.entity.ordnance.explode": "Ordnance detonates"
+  "subtitles.clinker.entity.ordnance.explode": "Ordnance detonates",
+  "subtitles.clinker.entity.ordnance.fuse_loop": "Ordnance fuse sizzles"
 }

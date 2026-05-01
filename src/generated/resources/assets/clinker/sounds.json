@@ -103,7 +103,8 @@
   "entity.ordnance.fuse_loop": {
     "sounds": [
       "clinker:entity/ordnance/fuse_loop"
-    ]
+    ],
+    "subtitle": "subtitles.clinker.entity.ordnance.fuse_loop"
   },
   "music.othershore.aquifer": {
     "sounds": [

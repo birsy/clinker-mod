@@ -23,6 +23,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11C.GL_TEXTURE_2D;
 
 @EventBusSubscriber(modid = Clinker.MOD_ID, value = Dist.CLIENT)
 public class GasRenderer {
@@ -69,7 +70,7 @@ public class GasRenderer {
         bufferManager.bind();
         AbstractTexture abstracttexture = Minecraft.getInstance().getTextureManager()
                 .getTexture(Minecraft.getInstance().gameRenderer.lightTexture().lightTextureLocation);
-        shader.setSampler("LightTextureSampler", abstracttexture.getId());
+        shader.setTexture("LightTextureSampler", GL_TEXTURE_2D, abstracttexture.getId());
         shader.bind();
         shader.bindSamplers(0);
         shader.setDefaultUniforms(VertexFormat.Mode.TRIANGLE_STRIP);

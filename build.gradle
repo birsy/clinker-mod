@@ -39,6 +39,17 @@ repositories {
             includeGroup "maven.modrinth"
         }
     }
+    exclusiveContent {
+        forRepository {
+            maven {
+                url = "https://maven.ryanhcode.dev/releases"
+                name = "RyanHCode Maven"
+            }
+        }
+        filter {
+            includeGroup("foundry.imguimc")
+        }
+    }
 }
 
 base {
@@ -112,6 +123,8 @@ dependencies {
     implementation("net.tslat.smartbrainlib:SmartBrainLib-neoforge-${project.minecraft_version}:${project.sbl_version}")
     localRuntime "maven.modrinth:spark:1.10.124-neoforge-1.21.1"
     localRuntime "maven.modrinth:sodium:mc1.21.1-0.6.13-neoforge"
+
+    localRuntime "foundry.imguimc:imguimc-neoforge-1.21.1:1.1.1"
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

@@ -111,16 +111,16 @@ public class OthershoreFogLayerRenderer {
 
             ShaderProgram shader = VeilRenderSystem.setShader(ClinkerShaders.FOG_LAYER);
             shader.setDefaultUniforms(VertexFormat.Mode.TRIANGLE_FAN);
-            shader.getOrCreateUniform("MaxFogDistance")
+            shader.getUniformSafe("MaxFogDistance")
                     .setFloat(renderDistance);
-            shader.getOrCreateUniform("FogLayerHeight")
+            shader.getUniformSafe("FogLayerHeight")
                     .setFloat(fogLayerHeight);
-            shader.getOrCreateUniform("FogLayerColor")
+            shader.getUniformSafe("FogLayerColor")
                     .setVector(red, green, blue, 0.9F);
-            shader.getOrCreateUniform("FogLayerDensity")
+            shader.getUniformSafe("FogLayerDensity")
                     .setFloat(density * fogAlpha);
 
-            shader.getOrCreateUniform("ScreenResolution")
+            shader.getUniformSafe("ScreenResolution")
                     .setVector(AdvancedFbo.getMainFramebuffer().getWidth(), AdvancedFbo.getMainFramebuffer().getHeight());
 
             vbo.bind();

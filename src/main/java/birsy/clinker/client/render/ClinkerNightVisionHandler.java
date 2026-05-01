@@ -53,8 +53,8 @@ public class ClinkerNightVisionHandler {
             float scale = Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), previousNightVisionScale, nightVisionScale);
 
             PostPipeline pipeline = VeilRenderSystem.renderer().getPostProcessingManager().getPipeline(ClinkerPostPipelines.BRIGHTNESS_CONTRAST_PIPELINE);
-            pipeline.getOrCreateUniform("Brightness").setFloat(Mth.lerp(scale, 0, 1.5F));
-            pipeline.getOrCreateUniform("Contrast").setFloat(Mth.lerp(scale, 1.0F, 4.0F));
+            pipeline.getUniformSafe("Brightness").setFloat(Mth.lerp(scale, 0, 1.5F));
+            pipeline.getUniformSafe("Contrast").setFloat(Mth.lerp(scale, 1.0F, 4.0F));
 
             VeilRenderSystem.renderer().getPostProcessingManager().runPipeline(pipeline);
         }

@@ -17,6 +17,8 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
 
+import static org.lwjgl.opengl.GL11C.GL_TEXTURE_2D;
+
 public class ClinkerParticleRenderTypes {
     public static final ParticleRenderType CHAIN_LIGHTNING = new ParticleRenderType() {
         private static final ResourceLocation TEXTURE = Clinker.resource("textures/particle/chain_lightning.png");
@@ -45,7 +47,7 @@ public class ClinkerParticleRenderTypes {
             ShaderProgram shader = VeilRenderSystem.setShader(ClinkerShaders.PARTICLE_BLOSSOM_BUG); // blossom bug shader
             if (shader != null) {
                 shader.getUniform("ScreenResolution").setVector(AdvancedFbo.getMainFramebuffer().getWidth(), AdvancedFbo.getMainFramebuffer().getHeight());
-                shader.setSampler("DiffuseDepthSampler", AdvancedFbo.getMainFramebuffer().getDepthTextureAttachment().getId());
+                shader.setTexture("DiffuseDepthSampler", GL_TEXTURE_2D, AdvancedFbo.getMainFramebuffer().getDepthTextureAttachment().getId());
             }
             RenderSystem.setShaderTexture(0, TEXTURE); // particle texture
             RenderSystem.enableBlend();

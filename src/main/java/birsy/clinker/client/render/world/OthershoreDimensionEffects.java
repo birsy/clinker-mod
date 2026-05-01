@@ -62,8 +62,8 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
 
             lightningFlicker *= 0.45F;
             r = r * (1.0F - lightningFlicker) + 0.8F * lightningFlicker;
-            g = g * (1.0F - lightningFlicker) + 0.8F * lightningFlicker;
-            b = b * (1.0F - lightningFlicker) + lightningFlicker;
+            g = g * (1.0F - lightningFlicker) + 0.2F * lightningFlicker;
+            b = b * (1.0F - lightningFlicker);
         }
 
         return skyColor.set(r, g, b);

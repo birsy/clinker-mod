@@ -8,11 +8,13 @@ import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.ClinkerItems;
 import birsy.clinker.core.registry.ClinkerOrdnanceModifierTypes;
 import birsy.clinker.core.registry.ClinkerSounds;
+import birsy.clinker.core.registry.entity.ClinkerAttributes;
 import birsy.clinker.core.registry.entity.ClinkerEntities;
 import birsy.clinker.core.registry.worldgen.ClinkerBiomes;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
@@ -40,6 +42,11 @@ public class ClinkerEnglishLanguageProvider extends LanguageProvider {
         }
         for (DeferredHolder<EntityType<?>, ? extends EntityType> entry : ClinkerEntities.ENTITY_TYPES.getEntries()) {
             this.addEntityType(entry, localizedNameFromRegistryName(entry.getId().getPath()));
+        }
+        for (DeferredHolder<Attribute, ? extends Attribute> entry : ClinkerAttributes.ATTRIBUTES.getEntries()) {
+            String name = entry.getId().getPath();
+            int lastDot = name.lastIndexOf('.');
+            this.add(entry.get().getDescriptionId(), localizedNameFromRegistryName(lastDot == -1 ? name : name.substring(lastDot + 1)));
         }
         for (ClinkerBiome biome : ClinkerBiomes.BIOMES) {
             this.add("biome.clinker." + biome.key().location().getPath(), localizedNameFromRegistryName(biome.key().location().getPath()));

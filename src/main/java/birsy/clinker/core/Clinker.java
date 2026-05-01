@@ -7,10 +7,7 @@ import birsy.clinker.client.render.debug.ClinkerDebugRenderers;
 import birsy.clinker.client.render.page.PageAtlas;
 import birsy.clinker.client.render.world.item.AlchemistsCrossbowInHandRenderer;
 import birsy.clinker.core.registry.*;
-import birsy.clinker.core.registry.entity.ClinkerBlockEntities;
-import birsy.clinker.core.registry.entity.ClinkerEntities;
-import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
-import birsy.clinker.core.registry.entity.ClinkerSensors;
+import birsy.clinker.core.registry.entity.*;
 import birsy.clinker.core.registry.worldgen.*;
 import birsy.clinker.core.util.ClinkMeCommand;
 import net.minecraft.SharedConstants;
@@ -39,12 +36,14 @@ import net.minecraft.client.renderer.RenderType;
 @EventBusSubscriber
 @Mod(Clinker.MOD_ID)
 public class Clinker {
-    // terrible, terrible hack
-    public static float FONT_WIGGLINESS = 0.0F;
     public static final String MOD_ID = "clinker";
     public static final Logger LOGGER = LogManager.getLogger(MOD_ID.toUpperCase());
 
+    // terrible, terrible hack
+    public static float FONT_WIGGLINESS = 0.0F;
+
     public Clinker(IEventBus modEventBus) throws InterruptedException {
+        ClinkerAttributes.ATTRIBUTES.register(modEventBus);
         ClinkerSounds.SOUNDS.register(modEventBus);
         ClinkerDataComponents.DATA_COMPONENT_TYPES.register(modEventBus);
         ClinkerFluids.FLUID_TYPES.register(modEventBus);

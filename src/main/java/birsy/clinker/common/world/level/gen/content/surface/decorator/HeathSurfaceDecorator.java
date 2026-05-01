@@ -68,7 +68,7 @@ public class HeathSurfaceDecorator extends SurfaceDecorator {
             }
             chunk.setBlockState(pos, placeSoil ? soilState : ClinkerBlocks.BRIMSTONE.get().defaultBlockState(), false);
 
-            if (maxElevationIncrease == 1) {
+            if (maxElevationIncrease == 1 && maxElevationDecrease == 0) {
                 double ashNoise = wiggleNoise + 0.5;
                 ashNoise += random.triangle(0, 0.5);
                 int ashAmount = (int) (Math.clamp(ashNoise, 0, 1) * 5);

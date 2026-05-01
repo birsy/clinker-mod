@@ -21,6 +21,8 @@ import org.joml.Vector3fc;
 
 import javax.annotation.Nullable;
 
+import static org.lwjgl.opengl.GL11C.GL_TEXTURE_2D;
+
 
 public class OthershoreCloudRenderer {
     public static final float CLOUDS_START = 250.0F;
@@ -85,8 +87,8 @@ public class OthershoreCloudRenderer {
         float[] fogColors = RenderSystem.getShaderFogColor();
         cloudShader.getUniform("FogCol").setVector(fogColors[0], fogColors[1], fogColors[2]);
         cloudShader.getUniform("ScreenResolution").setVector(AdvancedFbo.getMainFramebuffer().getWidth(), AdvancedFbo.getMainFramebuffer().getHeight());
-        cloudShader.setSampler("CloudDensity", cloudDensityFBO.getId());
-        cloudShader.setSampler("DiffuseDepthSampler", AdvancedFbo.getMainFramebuffer().getDepthTextureAttachment().getId());
+        cloudShader.setTexture("CloudDensity", GL_TEXTURE_2D, cloudDensityFBO.getId());
+        cloudShader.setTexture("DiffuseDepthSampler", GL_TEXTURE_2D, AdvancedFbo.getMainFramebuffer().getDepthTextureAttachment().getId());
 
         if (camY < CLOUDS_START + CLOUD_LAYER_THICKNESS) {
             cloudLayerDownBuffer.bind();

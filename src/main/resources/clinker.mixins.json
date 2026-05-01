@@ -30,6 +30,7 @@
     "common.EntityMixin",
     "common.FarmlandBlockMixin",
     "common.ItemEntityMixin",
+    "common.LivingEntityMixin",
     "common.PlayerMixin",
     "common.RandomizableContainerBlockEntityMixin",
     "common.RandomStateMixin",

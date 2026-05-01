@@ -55,6 +55,14 @@ public class ClinkerEntities {
                     .sized(0.25F, 0.25F)
                     .build(Clinker.resource("transmogrifying_flask").toString()));
 
+    public static final Supplier<EntityType<RedLightningBoltEntity>> RED_LIGHTNING_BOLT = ENTITY_TYPES.register("red_lightning_bolt", () ->
+            EntityType.Builder.of(RedLightningBoltEntity::new, MobCategory.MISC)
+                    .sized(0.0F, 0.0F)
+                    .clientTrackingRange(16)
+                    .updateInterval(Integer.MAX_VALUE)
+                    .noSave()
+                    .build(Clinker.resource("red_lightning_bolt").toString()));
+
     public static final Supplier<EntityType<MoldEntity>> MOLD = ENTITY_TYPES.register("mold", () ->
             EntityType.Builder.of(MoldEntity::new, MobCategory.MONSTER)
                     .sized(1.0F, 1.0F)
@@ -134,8 +142,8 @@ public class ClinkerEntities {
         event.registerEntityRenderer(WARHOOK.get(), WarhookRenderer::new);
         event.registerEntityRenderer(REROLL_FLASK.get(), ThrownItemRenderer::new);
 
-        event.registerEntityRenderer(GNOMAD_MOGUL.get(), GnomadMogulRenderer::new);
-
+        event.registerEntityRenderer(RED_LIGHTNING_BOLT.get(), RedLightningBoltRenderer::new);
+        
         event.registerEntityRenderer(MOLD.get(), MoldRenderer::new);
 
         event.registerEntityRenderer(FALLING_LAYER.get(), FallingBlockRenderer::new);

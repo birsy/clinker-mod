@@ -73,7 +73,7 @@ public class ChainLightningSystem extends SavedData {
             ChainLightningSystem chainLightningSystem = get(level);
             chainLightningSystem.emit(
                     event.getLightning().getUUID(),
-                    event.getEntity()
+                    event.getLightning()
             );
         }
     }
