@@ -32,7 +32,7 @@ public class ChainLightningSystem extends SavedData {
                         () -> new ChainLightningSystem(level),
                         (data, registry) -> new ChainLightningSystem(level),
                         null
-                ), "ChainLightningSystem"
+                ), "chain_lightning_tracker"
         );
     }
 

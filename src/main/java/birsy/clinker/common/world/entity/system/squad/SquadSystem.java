@@ -30,7 +30,7 @@ public class SquadSystem extends SavedData {
     public static SquadSystem get(ServerLevel level) {
         return level.getDataStorage().computeIfAbsent(
                 new Factory<>(() -> new SquadSystem(level), (data, registry) -> new SquadSystem(level), null),
-                "SquadSystem"
+                "squads"
         );
     }
 

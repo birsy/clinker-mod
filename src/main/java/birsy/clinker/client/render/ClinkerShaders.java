@@ -18,8 +18,11 @@ public class ClinkerShaders {
     // veil shaders
     public static final ResourceLocation PAGE_TEXTURE = Clinker.resource("page/texture");
     public static final ResourceLocation VOLUME = Clinker.resource("volume/volume");
-    public static final ResourceLocation CLOUD_DENSITY = Clinker.resource("cloud/cloud_density");
+
     public static final ResourceLocation CLOUD = Clinker.resource("cloud/cloud");
+    public static final ResourceLocation CLOUD_DENSITY = Clinker.resource("cloud/cloud_density");
+    public static final ResourceLocation CLOUD_SPRITE = Clinker.resource("cloud/cloud_sprite");
+    public static final ResourceLocation INSTANCED_CLOUD_BILLBOARD = Clinker.resource("cloud/instanced_cloud_billboard");
 
     public static final ResourceLocation LIGHT_GREASE = Clinker.resource("light/grease");
     public static final ResourceLocation LIGHT_RIM = Clinker.resource("light/rim");

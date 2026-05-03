@@ -10,4 +10,5 @@ public class ClinkerFramebuffers {
     public static final ResourceLocation RECIPE_MAP = Clinker.resource("recipe_map");
 
     public static final ResourceLocation CLOUD_DENSITY = Clinker.resource("cloud_density");
+    public static final ResourceLocation CLOUD_SPRITE = Clinker.resource("cloud_sprite");
 }

@@ -1,0 +1,14 @@
+{
+  "vertex": "clinker:cloud/instanced_cloud_billboard",
+  "fragment": "clinker:cloud/instanced_cloud_billboard",
+  "textures": {
+    "CloudDensitySampler": {
+      "type": "framebuffer",
+      "name": "clinker:cloud_density"
+    },
+    "CloudSpriteSampler": {
+      "type": "framebuffer",
+      "name": "clinker:cloud_sprite"
+    }
+  }
+}

@@ -6,7 +6,7 @@
     "wrapX": "repeat",
     "blur": true
   },
-  "format": "R8",
   "width": 1024.0,
-  "height": 1024.0
+  "height": 1024.0,
+  "format": "R16"
 }

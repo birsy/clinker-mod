@@ -26,12 +26,12 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
     private final Minecraft mc = Minecraft.getInstance();
 
     OthershoreSkyRenderer skyRenderer;
-    OthershoreCloudRenderer cloudRenderer;
+    CloudRendererExperiments cloudRenderer;
 
     public OthershoreDimensionEffects() {
         super(256.0F, true, SkyType.NORMAL, false, false);
         this.skyRenderer = new OthershoreSkyRenderer(RandomSource.create(1337));
-        this.cloudRenderer = new OthershoreCloudRenderer();
+        this.cloudRenderer = new CloudRendererExperiments();
     }
 
     @Override

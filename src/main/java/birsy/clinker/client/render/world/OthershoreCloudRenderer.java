@@ -83,7 +83,7 @@ public class OthershoreCloudRenderer {
         cloudShader.bindSamplers(0);
         cloudShader.setDefaultUniforms(VertexFormat.Mode.TRIANGLES);
         cloudShader.getUniform("CameraPos").setVector((float) camX, (float) camY, (float) camZ);
-        cloudShader.getUniform("SkyCol").setVector(skyColor.x() * 0.8F, skyColor.y() * 0.8F, skyColor.z() * 0.8F);
+        cloudShader.getUniform("SkyCol").setVector(skyColor.x() * 0.8F, skyColor.y() * 0.8F, skyColor.z() * 0.8F, 1.0F);
         float[] fogColors = RenderSystem.getShaderFogColor();
         cloudShader.getUniform("FogCol").setVector(fogColors[0], fogColors[1], fogColors[2]);
         cloudShader.getUniform("ScreenResolution").setVector(AdvancedFbo.getMainFramebuffer().getWidth(), AdvancedFbo.getMainFramebuffer().getHeight());
@@ -103,74 +103,6 @@ public class OthershoreCloudRenderer {
         ShaderProgram.unbind();
 
         poseStack.popPose();
-    }
-
-    private void drawCloudLayer(float height, float radius, float thickness, boolean lower, Vector3fc skyColor, float fadeLerp,
-                                double camX, double camY, double camZ,
-                                PoseStack poseStack, Matrix4f projectionMatrix, ShaderInstance shader) {
-        int layers = 16;
-        float layerThickness = (thickness / layers);
-        float[] fogColors = RenderSystem.getShaderFogColor();
-
-        if (camY < height + layers * layerThickness) {
-            for (int i = layers - 1; i >= 0; i--) {
-                poseStack.pushPose();
-                float y = height + i* layerThickness;
-                poseStack.translate(0, y, 0);
-                poseStack.scale(1, layerThickness, 1);
-
-                setShaderUniform(shader, "SkyColor",
-                        Mth.lerp(fadeLerp, skyColor.x() * 0.8F, fogColors[0]),
-                        Mth.lerp(fadeLerp, skyColor.y() * 0.8F, fogColors[1]),
-                        Mth.lerp(fadeLerp, skyColor.z() * 0.8F, fogColors[2]),
-                        1.0F);
-                setShaderUniform(shader, "FogColor", fogColors);
-                setShaderUniform(shader, "UVOffset", (float)((camX * 0.5F)), (float)((camZ * 0.5F)));
-                float depth = (float) i / (layers - 2);
-                if (!lower) depth = 1.0F - depth;
-                setShaderUniform(shader, "Depth", depth);
-                setShaderUniform(shader, "Radius", radius);
-                setShaderUniform(shader, "Facing", lower ? 0.0F : 0.4F);
-
-                if (y + layerThickness > camY) {
-                    cloudLayerDownBuffer.bind();
-                    cloudLayerDownBuffer.drawWithShader(poseStack.last().pose(), projectionMatrix, shader);
-                    VertexBuffer.unbind();
-                }
-
-                poseStack.popPose();
-            }
-        }
-
-        if (camY > height) {
-            for (int i = 0; i < layers; i++) {
-                poseStack.pushPose();
-                float y = height + i* layerThickness;
-                poseStack.translate(0, y, 0);
-                poseStack.scale(1, layerThickness, 1);
-
-                setShaderUniform(shader, "SkyColor",
-                        Mth.lerp(fadeLerp, skyColor.x() * 0.8F, fogColors[0]),
-                        Mth.lerp(fadeLerp, skyColor.y() * 0.8F, fogColors[1]),
-                        Mth.lerp(fadeLerp, skyColor.z() * 0.8F, fogColors[2]),
-                        1.0F);
-                setShaderUniform(shader, "FogColor", fogColors);
-                setShaderUniform(shader, "UVOffset", (float)((camX * 0.5F)), (float)((camZ * 0.5F)));
-                float depth = (float) i / (layers - 2);
-                if (!lower) depth = 1.0F - depth;
-                setShaderUniform(shader, "Depth", depth);
-                setShaderUniform(shader, "Radius", radius);
-                setShaderUniform(shader, "Facing", lower ? 0.0F : 0.4F);
-
-                if (y - layerThickness < camY){
-                    cloudLayerUpBuffer.bind();
-                    cloudLayerUpBuffer.drawWithShader(poseStack.last().pose(), projectionMatrix, shader);
-                    VertexBuffer.unbind();
-                }
-
-                poseStack.popPose();
-            }
-        }
     }
 
     private VertexBuffer buildCloudBuffer(@Nullable VertexBuffer vbo, int resolution, int layers, boolean down, float radius, float thickness) {

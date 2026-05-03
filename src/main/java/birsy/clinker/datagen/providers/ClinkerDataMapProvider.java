@@ -28,6 +28,7 @@ public class ClinkerDataMapProvider extends DataMapProvider {
                 .add(Items.LEATHER_BOOTS.builtInRegistryHolder(), -2F, false)
 
                 // resistive
+                .add(Items.TURTLE_HELMET.builtInRegistryHolder(), -0.5F, false)
                 // leather and wood
                 .add(Items.WOODEN_SWORD.builtInRegistryHolder(), -1F, false)
                 .add(Items.WOODEN_PICKAXE.builtInRegistryHolder(), -1F, false)
