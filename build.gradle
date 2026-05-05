@@ -124,7 +124,7 @@ dependencies {
     localRuntime "maven.modrinth:spark:1.10.124-neoforge-1.21.1"
     localRuntime "maven.modrinth:sodium:mc1.21.1-0.6.13-neoforge"
 
-    localRuntime "foundry.imguimc:imguimc-neoforge-1.21.1:1.1.1"
+    localRuntime "foundry.imguimc:imguimc-neoforge-${project.minecraft_version}:${project.imguimc_version}"
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
