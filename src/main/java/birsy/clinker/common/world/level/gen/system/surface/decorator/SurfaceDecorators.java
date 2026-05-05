@@ -8,6 +8,7 @@ import net.minecraft.world.level.biome.Biome;
 import java.util.Map;
 
 public class SurfaceDecorators {
+    // filled during registration
     public static final Map<ResourceKey<Biome>, SurfaceDecorator> decoratorByBiome = new Object2ObjectOpenHashMap<>();
     public static final Map<TagKey<Biome>, SurfaceDecorator> decoratorByBiomeTag = new Object2ObjectOpenHashMap<>();
 }

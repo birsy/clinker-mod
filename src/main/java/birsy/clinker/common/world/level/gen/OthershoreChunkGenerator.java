@@ -19,6 +19,7 @@ import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabi
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesFinalDensity;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlocks;
+import birsy.clinker.core.registry.worldgen.ClinkerBiomes;
 import birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers;
 import birsy.clinker.core.registry.worldgen.ClinkerWorldFeatureCapabilities;
 import birsy.clinker.core.util.MathUtils;
@@ -48,6 +49,8 @@ import net.minecraft.world.level.levelgen.blending.Blender;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
+import static birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers.UPPER_SHELF_HEIGHT;
+
 public class OthershoreChunkGenerator extends ChunkGenerator {
     public static final MapCodec<OthershoreChunkGenerator> CODEC = RecordCodecBuilder.mapCodec(
             obj -> obj.group(RegistryOps.retrieveGetter(Registries.BIOME),
@@ -65,22 +68,16 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
     final SurfaceDecorationSystem surfaceDecorationSystem;
     final WorldFeatureContext worldContext;
 
-
-    // reused between chunk generation stages
-    //final SyncedChunkCache<BiomeBlender.ChunkBiomeBlendingWeights> biomeWeightCache = new SyncedChunkCache<>();
-    //final SyncedChunkCache<SurfaceShaperSystem.ChunkSurfaceHeightmap> heightmapCache = new SyncedChunkCache<>();
+    private static final Map<Holder<Biome>, Integer> biomeSeaHeight = new HashMap<>();
 
     public OthershoreChunkGenerator(HolderGetter<Biome> biomeGetter, OthershoreBiomeSource biomeSource) {
         super(biomeSource);
         this.biomeList = biomeSource.biomeList;
         this.biomeBlender = new BiomeBlender(this.biomeList, biomeSource);
         this.surfaceShaperSystem = new SurfaceShaperSystem(biomeGetter, this.biomeList);
-        this.surfaceDecorationSystem = new SurfaceDecorationSystem(
-                8, OthershoreGenerationConstants.SEA_HEIGHT,
-                ClinkerBlocks.BRIMSTONE.get().defaultBlockState(), biomeGetter);
+        this.surfaceDecorationSystem = new SurfaceDecorationSystem(ClinkerBlocks.BRIMSTONE.get().defaultBlockState(), biomeGetter);
 
         this.worldContext = new WorldFeatureContext(biomeList, biomeBlender, surfaceShaperSystem);
-
         biomeSource.initFromChunkGenerator(this);
     }
 
@@ -231,7 +228,8 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         final FluidFieldFiller fluidFiller = (x, y, z, context) -> {
             double surfaceHeight = heightmapInfo.combinedHeightmapField().retrieve(x - minX, y - minY, z - minZ);
             // sea level
-            if (y > surfaceHeight - cellHeight) return new FluidLevel(OthershoreGenerationConstants.SEA_HEIGHT, Blocks.WATER.defaultBlockState());
+            int seaLevel = biomeSeaHeight.getOrDefault(surfaceBiomes.retrieve(QuartPos.fromBlock(x), QuartPos.fromBlock(z)), OthershoreGenerationConstants.SEA_HEIGHT);
+            if (y > surfaceHeight - cellHeight) return new FluidLevel(seaLevel, Blocks.WATER.defaultBlockState());
             // the aquifer
             if (y < 0) return new FluidLevel(-40, Blocks.WATER.defaultBlockState());
             return FluidLevel.EMPTY;

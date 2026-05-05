@@ -49,7 +49,7 @@ public final class Direct2DNoiseField extends NoiseField2D {
         for (int z = 0; z < paddedWidth; z++) {
             int bZ = z - paddingBlocks;
             for (int x = 0; x < paddedWidth; x++) {
-                int bX = z - paddingBlocks;
+                int bX = x - paddingBlocks;
                 visitor.visit(index++, bX, 0, bZ);
             }
         }
@@ -69,7 +69,7 @@ public final class Direct2DNoiseField extends NoiseField2D {
         for (int z = 0; z < paddedWidth; z++) {
             int bZ = z - paddingBlocks;
             for (int x = 0; x < paddedWidth; x++) {
-                int bX = z - paddingBlocks;
+                int bX = x - paddingBlocks;
                 visitor.visit(index++, bX, 0, bZ, x, 0, z);
             }
         }

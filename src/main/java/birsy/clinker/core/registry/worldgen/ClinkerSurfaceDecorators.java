@@ -1,5 +1,6 @@
 package birsy.clinker.core.registry.worldgen;
 
+import birsy.clinker.common.world.level.gen.OthershoreGenerationConstants;
 import birsy.clinker.common.world.level.gen.content.surface.decorator.AshSteppeSurfaceDecorator;
 import birsy.clinker.common.world.level.gen.content.surface.decorator.BrineSwampSurfaceDecorator;
 import birsy.clinker.common.world.level.gen.content.surface.decorator.HeathSurfaceDecorator;
@@ -22,19 +23,13 @@ public class ClinkerSurfaceDecorators {
     public static final Supplier<BiomeSurfaceDecorator> ASH_STEPPE =
             register("ash_steppe", ClinkerBiomes.ASH_STEPPE, new AshSteppeSurfaceDecorator());
     public static final Supplier<BiomeSurfaceDecorator> BRINE_SWAMP =
-            register("brine_swamp", ClinkerBiomes.BRINE_SWAMP, new BrineSwampSurfaceDecorator());
+            register("brine_swamp", ClinkerBiomes.BRINE_SWAMP, new BrineSwampSurfaceDecorator(OthershoreGenerationConstants.SEA_HEIGHT));
     public static final Supplier<BiomeSurfaceDecorator> HEATH =
             register("heath", ClinkerBiomes.HEATH, new HeathSurfaceDecorator());
     public static final Supplier<BiomeSurfaceDecorator> HEATH_THICKET =
             register("heath_thicket", ClinkerBiomes.HEATH_THICKET, new HeathSurfaceDecorator());
     public static final Supplier<BiomeSurfaceDecorator> BRINE_SNAKES =
-            register("brine_snakes", ClinkerBiomes.BRINE_SNAKES, new SnakesSurfaceDecorator());
-//    public static final Supplier<BiomeSurfaceDecorator> BRINE_SWAMP =
-//            register("brine_swamp", ClinkerBiomes.BRINE_SWAMP, new BrineSwampSurfaceDecorator());
-//    public static final Supplier<BiomeSurfaceDecorator> UNDERGROUND =
-//            register("underground", ClinkerBiomes.UNDERGROUND, new DefaultSurfaceDecorator());
-//    public static final Supplier<BiomeSurfaceDecorator> AQUIFER =
-//            register("aquifer", ClinkerBiomes.AQUIFER, new DefaultSurfaceDecorator());
+            register("brine_snakes", ClinkerBiomes.BRINE_SNAKES, new SnakesSurfaceDecorator(OthershoreGenerationConstants.SEA_HEIGHT));
 
     public static Supplier<BiomeSurfaceDecorator> register(String name, ResourceKey<Biome> biome, SurfaceDecorator decorator) {
         return SURFACE_DECORATORS.register(name, () -> new BiomeSurfaceDecorator(biome, decorator));

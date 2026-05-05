@@ -209,24 +209,6 @@ public class SurfaceShaperSystem {
     // surface shapers can't really handle that...
     // so we add on some rocky cliff textures to help make it look less smooth and 1.12 biomes o' plenty mountains-y
     private static final int MIN_CLIFF_HEIGHT_DIFFERENCE = 10;
-    private NoiseField createCliffModifiedHeightmap(BiomeCache2d surfaceBiomeCache, NoiseField mergedHeightmapField, NoiseField[] heightmapByBiome) {
-        NoiseField cliffModifiedHeightmapField = NoiseFieldTypes.COARSE_2D.create(0, 0);
-        double[] cliffModifiedHeightmapArray = cliffModifiedHeightmapField.array();
-        for (Holder<Biome> biome : surfaceBiomeCache.containedBiomes()) {
-            NoiseField biomeHeightmapField = heightmapByBiome[this.biomeList.getId(biome)];
-            if (biomeHeightmapField == null) continue;
-            cliffModifiedHeightmapField.byBlock(
-                    (index, x, y, z) -> {
-                        double biomeHeight = biomeHeightmapField.retrieve(x, y, z);
-                        double combinedHeight = mergedHeightmapField.retrieve(x, y, z);
-                        double cliffFactor = Math.clamp((biomeHeight - combinedHeight) / MIN_CLIFF_HEIGHT_DIFFERENCE, 0, 1);
-                        cliffModifiedHeightmapArray[index] = Mth.lerp(cliffFactor, combinedHeight, biomeHeight);
-                    }
-            );
-        }
-
-        return cliffModifiedHeightmapField;
-    }
     private void createCliffs(NoiseFieldCache cache,
                               BiomeCache2d surfaceBiomeCache,
                               ChunkSurfaceHeightmap heightmapInfo,
@@ -263,7 +245,6 @@ public class SurfaceShaperSystem {
                         stratifiedY = Mth.lerp(0.2, stratifiedY, y + minY);
                         double biomeHeight = biomeHeightmapField.retrieve(x, y, z) - 3;
                         double combinedHeight = heightmapInfo.combinedHeightmapField.retrieve(x, y, z);
-                        //stratifiedY = Mth.lerp(Mth.clampedMap(biomeHeight - y, 5, 15, 0, 1), stratifiedY, y);
 
                         double verticalCliffDistance = stratifiedY - biomeHeight;
                         double lateralCliffDistance = borderDistanceField.retrieve(x, y, z);

@@ -1,18 +1,19 @@
 package birsy.clinker.common.world.level.gen.system.surface.decorator;
 
-import birsy.clinker.common.world.level.gen.system.noise.CachedNoiseContext;
+import birsy.clinker.common.world.level.gen.content.surface.decorator.DebugSurfaceDecorator;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
 import birsy.clinker.core.Clinker;
+import birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.core.*;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -20,24 +21,14 @@ import net.minecraft.world.level.levelgen.RandomState;
 
 import java.util.*;
 
-// constructs the surface layer for a chunk
 public class SurfaceDecorationSystem {
     private static final ResourceLocation SURFACE_BUILDER_RANDOM = Clinker.resource("surface_builder_random");
 
-    protected final int maxElevationDifference;
-    protected final int seaLevel;
     protected final BlockState defaultBlock;
 
     final Object2ObjectOpenHashMap<Holder<Biome>, SurfaceDecorator> biomeToDecorator;
-
-    private final ThreadLocal<List<SurfaceToDecorate>> surfaces =
-            ThreadLocal.withInitial(() -> new ArrayList<>(16 * 16 * 3));
-    private final ThreadLocal<Set<SurfaceDecorator>> containedSurfaceDecorators =
-            ThreadLocal.withInitial(() -> new HashSet<>(5));
-
-    public SurfaceDecorationSystem(int maxElevationDifference, int seaLevel, BlockState defaultBlock, HolderGetter<Biome> biomeGetter) {
-        this.maxElevationDifference = maxElevationDifference;
-        this.seaLevel = seaLevel;
+    final SurfaceDecorator debugDecorator = new DebugSurfaceDecorator();
+    public SurfaceDecorationSystem(BlockState defaultBlock, HolderGetter<Biome> biomeGetter) {
         this.defaultBlock = defaultBlock;
 
         this.biomeToDecorator = new Object2ObjectOpenHashMap<>();
@@ -56,144 +47,129 @@ public class SurfaceDecorationSystem {
     public void decorate(NoiseFieldCache noiseFieldCache,
                          NoiseField heightmapField, NoiseField heightmapGradientField,
                          WorldGenLevel level, ChunkAccess chunk, RandomState randomState) {
+
+        List<BlockSpan>[][] spans = this.buildSpansForChunk(level, chunk);
+
+        NoiseField[] offsetFields = {
+                noiseFieldCache.fillNoiseField(ClinkerNoiseComputers.SURFACE_DECORATOR_OFFSET_X),
+                noiseFieldCache.fillNoiseField(ClinkerNoiseComputers.SURFACE_DECORATOR_OFFSET_Z)
+        };
+        Set<SurfaceDecorator> prefilled = new HashSet<>(4);
+
+        ChunkPos chunkPos = chunk.getPos();
+        int minX = chunkPos.getMinBlockX(), minZ = chunkPos.getMinBlockZ();
+        List<BlockSpan>[] adjacencies = new List[4];
+        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         RandomSource random = randomState.getOrCreateRandomFactory(SURFACE_BUILDER_RANDOM)
                 .at(chunk.getPos().x, 0, chunk.getPos().z);
-        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(),
-                                 scratchPos = new BlockPos.MutableBlockPos();
-
-        List<SurfaceToDecorate> surfaces = this.surfaces.get();
-        surfaces.clear();
-        Set<SurfaceDecorator> containedDecorators = this.containedSurfaceDecorators.get();
-        containedDecorators.clear();
-
-        this.findSurfaces(pos, scratchPos, heightmapField, heightmapGradientField, level, chunk, random, surfaces, containedDecorators);
-
-        this.applySurfaceDecorations(pos, level, chunk, random, noiseFieldCache, surfaces, containedDecorators);
-    }
-
-    private void findSurfaces(BlockPos.MutableBlockPos pos, BlockPos.MutableBlockPos scratchPos,
-                              NoiseField heightmapField, NoiseField heightmapGradientField,
-                              WorldGenLevel level, ChunkAccess chunk, RandomSource random,
-                              List<SurfaceToDecorate> surfaces, Set<SurfaceDecorator> containedDecorators) {
         for (int x = 0; x < 16; x++) {
+            int cX = x + 1, wX = x + minX;
+
             for (int z = 0; z < 16; z++) {
-                searchColumnForSurfaces(
-                        x, z,
-                        pos, scratchPos,
-                        heightmapField, heightmapGradientField,
-                        level, chunk, random,
-                        surfaces, containedDecorators
-                );
+                int cZ = z + 1, wZ = z + minZ;
+
+                List<BlockSpan> column = spans[cX][cZ];
+                int i = 0;
+                for (Direction direction : Direction.Plane.HORIZONTAL)
+                    adjacencies[i++] = spans[cX + direction.getStepX()][cZ + direction.getStepZ()];
+
+                decorateColumn(pos, wX, wZ, x, z, column, adjacencies, offsetFields, prefilled, chunkPos, noiseFieldCache, level, chunk, random);
             }
         }
     }
 
-    private void searchColumnForSurfaces(int localX, int localZ,
-                                         BlockPos.MutableBlockPos pos,
-                                         BlockPos.MutableBlockPos scratchPos,
-                                         NoiseField heightmapField, NoiseField heightmapGradientField,
-                                         WorldGenLevel level, ChunkAccess chunk, RandomSource random,
-                                         List<SurfaceToDecorate> surfaces, Set<SurfaceDecorator> containedDecorators) {
-        int startY = chunk.getHeight(Heightmap.Types.OCEAN_FLOOR_WG, localX, localZ);
-        int worldX = localX + chunk.getPos().getMinBlockX();
-        int worldZ = localZ + chunk.getPos().getMinBlockZ();
+    List<BlockSpan>[][] buildSpansForChunk(WorldGenLevel level, ChunkAccess chunk) {
+        List<BlockSpan>[][] spans = new List[18][18];
 
-        double heightmapHeight = heightmapField.retrieve(localX, 0, localZ);
-        double heightmapGradient = Math.sqrt(heightmapGradientField.retrieve(localX, 0, localZ));
+        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+        int minBuildHeight = chunk.getMinBuildHeight();
+        int minBlockX = chunk.getPos().getMinBlockX() - 1,
+            minBlockZ = chunk.getPos().getMinBlockZ() - 1;
 
-        boolean visibleToSky = true;
+        for (int localX = 0; localX < 18; localX++) {
+            int worldX = localX + minBlockX;
+            for (int localZ = 0; localZ < 18; localZ++) {
+                int worldZ = localZ + minBlockZ;
+                int startY = level.getHeight(Heightmap.Types.OCEAN_FLOOR_WG, worldX, worldZ);
+                spans[localX][localZ] = buildSpansForColumn(
+                        level, pos,
+                        worldX, worldZ,
+                        startY, minBuildHeight
+                );
+            }
+        }
+        return spans;
+    }
+    List<BlockSpan> buildSpansForColumn(WorldGenLevel level, BlockPos.MutableBlockPos pos, int worldX, int worldZ, int startY, int minBuildHeight) {
+        List<BlockSpan> result = new ArrayList<>();
+        boolean solid = false;
+        // maybe should be infinity? from the "upper void" down to the first solid surface.
+        int spanTopY = level.getMaxBuildHeight();
 
         pos.set(worldX, startY, worldZ);
-        BlockState previousBlockState = Blocks.AIR.defaultBlockState();
-        while (pos.getY() > chunk.getMinBuildHeight() + 1) {
-            BlockState state = level.getBlockState(pos);
-            if (state == defaultBlock && previousBlockState.isAir()) {
-                createSurface(
-                        pos, scratchPos, heightmapHeight, heightmapGradient, visibleToSky,
-                        level, chunk, random,
-                        surfaces, containedDecorators
-                );
-                visibleToSky = false;
+        for (int y = startY; y >= minBuildHeight; y--) {
+            pos.setY(y);
+            boolean nextSolid = level.getBlockState(pos).isSolid();
+            if (solid != nextSolid) {
+                result.add(new BlockSpan(y + 1, spanTopY, solid));
+                solid = nextSolid;
+                spanTopY = y;
             }
-            previousBlockState = state;
-            pos.move(Direction.DOWN);
         }
+        // finish off the final span
+        result.add(new BlockSpan(minBuildHeight, spanTopY, solid));
+        return result;
     }
 
-    private void createSurface(BlockPos.MutableBlockPos pos,
-                               BlockPos.MutableBlockPos scratchPos,
-                               double heightmapHeight, double heightmapGradient, boolean visibleToSky,
-                               WorldGenLevel level, ChunkAccess chunk, RandomSource random,
-                               List<SurfaceToDecorate> surfaces, Set<SurfaceDecorator> containedDecorators) {
-        int biomeOffsetX = Math.clamp(pos.getX() + random.nextIntBetweenInclusive(-1, 1), chunk.getPos().getMinBlockX(), chunk.getPos().getMaxBlockX()),
-            biomeOffsetZ = Math.clamp(pos.getZ() + random.nextIntBetweenInclusive(-1, 1), chunk.getPos().getMinBlockZ(), chunk.getPos().getMaxBlockZ());
-        Holder<Biome> biome = chunk.getNoiseBiome(
-                QuartPos.fromBlock(biomeOffsetX),
-                QuartPos.fromBlock(pos.getY()),
-                QuartPos.fromBlock(biomeOffsetZ)
-        );
-        SurfaceDecorator decorator = this.biomeToDecorator.getOrDefault(biome, null);
-        if (decorator == null) return;
-        containedDecorators.add(decorator);
+    void decorateColumn(BlockPos.MutableBlockPos pos, int x, int z, int localX, int localZ,
+                        List<BlockSpan> column, List<BlockSpan>[] adjacentColumns, NoiseField[] offsetFields, Set<SurfaceDecorator> prefilledSurfaceDecorators,
+                        ChunkPos chunkPos, NoiseFieldCache cache, WorldGenLevel level, ChunkAccess chunk, RandomSource random) {
+        // skip the first span, as it is always air
+        for (int i = 1; i < column.size(); i++) {
+            BlockSpan previousSpan = column.get(i - 1);
+            BlockSpan span = column.get(i);
 
-        // compute depth
-        int depth = 1;
-        scratchPos.set(pos);
-        while (scratchPos.getY() > chunk.getMinBuildHeight() + 1) {
-            scratchPos.move(Direction.DOWN);
-            if (level.getBlockState(scratchPos) != defaultBlock) break;
-            depth++;
-        }
+            int surfaceY = span.topY();
+            boolean floor = span.solid();
+            if (!floor) surfaceY++;
+            // determine biome
+            double biomeOffsetX = offsetFields[0].retrieve(localX, 0, localZ),
+                   biomeOffsetZ = offsetFields[1].retrieve(localX, 0, localZ);
+            int bX = (int) Math.round(x + biomeOffsetX), bY = surfaceY,
+                bZ = (int) Math.round(z + biomeOffsetZ);
+            Holder<Biome> biome = level.getNoiseBiome(QuartPos.fromBlock(bX), QuartPos.fromBlock(bY), QuartPos.fromBlock(bZ));
+            SurfaceDecorator decorator = this.biomeToDecorator.getOrDefault(biome, null);
+            if (decorator == null) continue;
 
-        // compute elevation changes
-        int maxElevationIncrease = 0,
-            maxElevationDecrease = 0;
-        if (decorator.shouldCalculateElevationChange(visibleToSky, pos.getY(), heightmapHeight)) {
-            for (Direction dir : Direction.Plane.HORIZONTAL) {
-                scratchPos.set(pos).move(dir);
-                boolean solid = level.getBlockState(scratchPos).isSolidRender(level, scratchPos);
-                Direction step = solid ? Direction.UP : Direction.DOWN;
-
-                for (int i = 0; i <= maxElevationDifference; i++) {
-                    scratchPos.move(step);
-                    if (scratchPos.getY() <= chunk.getMinBuildHeight()) break;
-                    if (solid)
-                        maxElevationIncrease = Math.max(maxElevationIncrease, i);
-                    else
-                        maxElevationDecrease = Math.max(maxElevationDecrease, i + 1);
-                    boolean surfaceReached = solid != level.getBlockState(scratchPos).isSolidRender(level, scratchPos);
-
-                    if (surfaceReached) break;
+            // determine slope
+            int maxUpwardsOffset = 0, maxDownwardsOffset = 0;
+            for (int j = 0; j < adjacentColumns.length; j++) {
+                BlockSpan adjacentSpan = BlockSpan.spanAtY(adjacentColumns[j], surfaceY);
+                if (floor) {
+                    int sY = surfaceY + 1;
+                    if (adjacentSpan.solid()) maxUpwardsOffset = Math.max(maxUpwardsOffset, adjacentSpan.topY() - sY + 1);
+                    else maxDownwardsOffset = Math.max(maxDownwardsOffset, sY - adjacentSpan.bottomY());
+                } else {
+                    int sY = surfaceY - 1;
+                    if (adjacentSpan.solid()) maxDownwardsOffset = Math.max(maxDownwardsOffset, sY - adjacentSpan.bottomY());
+                    else maxUpwardsOffset = Math.max(maxUpwardsOffset, adjacentSpan.topY() - sY);
                 }
             }
-        }
 
-        surfaces.add(new SurfaceToDecorate(
-                decorator,
-                pos.getX(), pos.getY(), pos.getZ(),
-                new SurfaceDecorationContext(
-                        visibleToSky,
-                        depth,
-                        maxElevationIncrease, maxElevationDecrease,
-                        heightmapHeight, heightmapGradient)
-                )
-        );
-    }
+            boolean visibleToSky = i == 1;
+            int maximumDepth = floor ? span.height() : previousSpan.height();
+            Direction surfaceNormal = floor ? Direction.DOWN : Direction.UP;
 
-
-    private void applySurfaceDecorations(BlockPos.MutableBlockPos pos,
-                                        WorldGenLevel level, ChunkAccess chunk, RandomSource random,
-                                        NoiseFieldCache noiseFieldCache,
-                                         List<SurfaceToDecorate> surfaces, Set<SurfaceDecorator> containedDecorators) {
-        for (SurfaceDecorator decorator : containedDecorators)
-            decorator.prefillNoiseFields(noiseFieldCache);
-
-        CachedNoiseContext noiseContext = noiseFieldCache.context;
-        for (SurfaceToDecorate surface : surfaces) {
-            pos.set(surface.x, surface.y, surface.z);
-            surface.decorator.decorateSurface(pos, seaLevel, chunk, noiseContext, random, surface.context);
+            if (!prefilledSurfaceDecorators.contains(decorator)) {
+                decorator.prefillNoiseFields(cache);
+                prefilledSurfaceDecorators.add(decorator);
+            }
+            pos.set(x, surfaceY, z);
+            decorator.decorateSurface(
+                    pos, surfaceNormal,
+                    maxUpwardsOffset, maxDownwardsOffset, maximumDepth, visibleToSky,
+                    level, chunk, cache.context, random
+            );
         }
     }
-
-    private record SurfaceToDecorate(SurfaceDecorator decorator, int x, int y, int z, SurfaceDecorationContext context) {}
 }

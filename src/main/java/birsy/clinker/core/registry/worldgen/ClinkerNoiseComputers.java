@@ -24,6 +24,34 @@ public class ClinkerNoiseComputers {
     public static final Supplier<NoiseComputer>[] BASE_NOISE_2D = baseNoiseArray("base_noise_2d", 10, true);
     public static final Supplier<NoiseComputer>[] BASE_NOISE_2D_ALT = baseNoiseArray("base_noise_2d_alt", 10, true);
 
+    public static final Supplier<NoiseComputer> SURFACE_DECORATOR_OFFSET_X = NOISE_COMPUTERS.register(
+            "surface_decorator_offset_x",
+            () -> new NoiseComputer(
+                    () -> FieldFactory.standard(NoiseFieldTypes.DIRECT_2D),
+                    (dependencies, registry) -> {
+                        registry.registerNoise("surface_decorator_offset_x");
+                        registry.registerNoise("surface_decorator_offset_x_fine");
+                    },
+                    (x, y, z, context) ->
+                            context.sample("surface_decorator_offset_x", x / 24.0, z / 24.0) * 8 +
+                                    context.sample("surface_decorator_offset_x_fine", x, z)
+            )
+    );
+    public static final Supplier<NoiseComputer> SURFACE_DECORATOR_OFFSET_Z = NOISE_COMPUTERS.register(
+            "surface_decorator_offset_z",
+            () -> new NoiseComputer(
+                    () -> FieldFactory.standard(NoiseFieldTypes.DIRECT_2D),
+                    (dependencies, registry) -> {
+                        registry.registerNoise("surface_decorator_offset_z");
+                        registry.registerNoise("surface_decorator_offset_z_fine");
+                    },
+                    (x, y, z, context) ->
+                            context.sample("surface_decorator_offset_z", x / 24.0, z / 24.0) * 8 +
+                            context.sample("surface_decorator_offset_z_fine", x, z)
+            )
+    );
+
+
     public static final Supplier<NoiseComputer> STRATIFIED_Y_COARSE = NOISE_COMPUTERS.register(
             "stratified_y_coarse",
             () -> new NoiseComputer(
