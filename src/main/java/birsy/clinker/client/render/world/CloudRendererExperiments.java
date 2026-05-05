@@ -23,6 +23,8 @@ public class CloudRendererExperiments {
     DynamicShaderBlock<int[]> instancePositionsBlock;
     int instanceCount = 0;
 
+    static int LOWER_CLOUD_HEIGHT = 270, UPPER_CLOUD_HEIGHT = 290, CLOUD_HEIGHT = (LOWER_CLOUD_HEIGHT + UPPER_CLOUD_HEIGHT) / 2;
+
     public void render(ClientLevel level, int ticks, float partialTick, PoseStack poseStack, double camX, double camY, double camZ, Matrix4f projectionMatrix, Vector3fc skyColor) {
         renderCloudDensityTexture(ticks, partialTick);
         renderCloudSpriteTexture(ticks, partialTick);
@@ -41,17 +43,25 @@ public class CloudRendererExperiments {
 
         ShaderProgram cloudShader = VeilRenderSystem.setShader(ClinkerShaders.INSTANCED_CLOUD_BILLBOARD);
         cloudShader.getUniformSafe("SkyColor").setVector(skyColor.x() * 0.8F, skyColor.y() * 0.8F, skyColor.z() * 0.8F, 1.0F);
-        cloudShader.getUniformSafe("Transparent").setInt(0);
-        RenderSystem.depthMask(true);
-        RenderSystem.disableBlend();
-        RenderSystem.enableDepthTest();
-        renderBillboards(playerCloudX, playerCloudZ, cloudCellSize, cloudShader, pose, projectionMatrix);
 
-        cloudShader.getUniformSafe("Transparent").setInt(1);
-        RenderSystem.depthMask(false);
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        renderBillboards(playerCloudX, playerCloudZ, cloudCellSize, cloudShader, pose, projectionMatrix);
+        UPPER_CLOUD_HEIGHT = 300;
+        CLOUD_HEIGHT = (LOWER_CLOUD_HEIGHT + UPPER_CLOUD_HEIGHT) / 2;
+
+        int lowerThreshold = LOWER_CLOUD_HEIGHT - cloudCellSize * 2, upperThreshold = UPPER_CLOUD_HEIGHT + cloudCellSize * 2;
+        if (camY < lowerThreshold) {
+            renderCloudLayer(playerCloudX, playerCloudZ, cloudCellSize, true, cloudShader, pose, projectionMatrix);
+        } else if (camY > lowerThreshold && camY < upperThreshold) {
+            // closer one renders last
+            if (camY < CLOUD_HEIGHT) {
+                renderCloudLayer(playerCloudX, playerCloudZ, cloudCellSize, false, cloudShader, pose, projectionMatrix);
+                renderCloudLayer(playerCloudX, playerCloudZ, cloudCellSize, true, cloudShader, pose, projectionMatrix);
+            } else {
+                renderCloudLayer(playerCloudX, playerCloudZ, cloudCellSize, true, cloudShader, pose, projectionMatrix);
+                renderCloudLayer(playerCloudX, playerCloudZ, cloudCellSize, false, cloudShader, pose, projectionMatrix);
+            }
+        } else {
+            renderCloudLayer(playerCloudX, playerCloudZ, cloudCellSize, false, cloudShader, pose, projectionMatrix);
+        }
 
         poseStack.popPose();
     }
@@ -82,7 +92,21 @@ public class CloudRendererExperiments {
         AdvancedFbo.unbind();
     }
 
-    void renderBillboards(int playerCloudX, int playerCloudZ, int cloudCellSize, ShaderProgram cloudShader, Matrix4f pose, Matrix4f projectionMatrix) {
+    void renderCloudLayer(int playerCloudX, int playerCloudZ, int cloudCellSize, boolean down, ShaderProgram cloudShader, Matrix4f pose, Matrix4f projectionMatrix) {
+        cloudShader.getUniformSafe("Transparent").setInt(0);
+        RenderSystem.depthMask(true);
+        RenderSystem.disableBlend();
+        RenderSystem.enableDepthTest();
+        renderBillboards(playerCloudX, playerCloudZ, cloudCellSize, down, cloudShader, pose, projectionMatrix);
+
+        cloudShader.getUniformSafe("Transparent").setInt(1);
+        RenderSystem.depthMask(false);
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        renderBillboards(playerCloudX, playerCloudZ, cloudCellSize, down, cloudShader, pose, projectionMatrix);
+    }
+
+    void renderBillboards(int playerCloudX, int playerCloudZ, int cloudCellSize, boolean down, ShaderProgram cloudShader, Matrix4f pose, Matrix4f projectionMatrix) {
         cloudShader.bind();
         cloudShader.bindSamplers(0);
         cloudShader.setDefaultUniforms(VertexFormat.Mode.QUADS, pose, projectionMatrix);
@@ -91,6 +115,9 @@ public class CloudRendererExperiments {
         cloudShader.getUniformSafe("PlayerCloudCell").setVectorI(playerCloudX, playerCloudZ);
         cloudShader.getUniformSafe("CloudCellSize").setInt(cloudCellSize);
         cloudShader.getUniformSafe("InstanceCount").setInt(instanceCount);
+
+        cloudShader.getUniformSafe("DisplacementDirection").setVector(0, down ? -1 : 1, 0);
+        cloudShader.getUniformSafe("CloudHeight").setFloat(down ? LOWER_CLOUD_HEIGHT : UPPER_CLOUD_HEIGHT);
 
         billboardVBO.bind();
         VeilRenderSystem.drawInstanced(billboardVBO, instanceCount);

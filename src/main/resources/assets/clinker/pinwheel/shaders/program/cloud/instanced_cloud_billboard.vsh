@@ -16,8 +16,10 @@ uniform vec4 SkyColor;
 uniform mat4 ModelViewMat;
 uniform mat4 ProjMat;
 
+uniform vec3 DisplacementDirection;
 uniform ivec2 PlayerCloudCell;
 uniform int CloudCellSize;
+uniform float CloudHeight;
 uniform int InstanceCount;
 uniform int Transparent;
 
@@ -51,55 +53,35 @@ void main() {
 
     int textureSize = 5000;
     float cloudDensity = texture(CloudDensitySampler,
-        (mod(worldGridPos * CloudCellSize, textureSize) + randomOffset.xz) / float(textureSize)).r;
+    (mod(worldGridPos * CloudCellSize, textureSize) + randomOffset.xz) / float(textureSize)).r;
 
-    float maxYOffset = 10;
-    float yOffset = -(cloudDensity * 2 - 1) * maxYOffset;
-    center += vec3(0, 270 + yOffset, 0);
+    const float maxDisplacement = 10;
+    vec3 displacement = DisplacementDirection * maxDisplacement * (cloudDensity * 2 - 1);
+    center += vec3(0, CloudHeight, 0) + displacement;
 
     float radius = mix(7, 13, randoms.w);
     vec3 worldPos = center +
-        TexCoord.x * radius * Camera.IViewMat[0].xyz +
-        TexCoord.y * radius * Camera.IViewMat[1].xyz;
+    TexCoord.x * radius * Camera.IViewMat[0].xyz +
+    TexCoord.y * radius * Camera.IViewMat[1].xyz;
 
     vec4 viewPos = ModelViewMat * vec4(worldPos, 1.0);
     gl_Position  = ProjMat * viewPos;
 
     float dist = length(viewPos.xyz);
 
-    // #veil:normal
-    vec3 normal = vec3(0, 0, 1);
-
-    float cloudBrightness = mix(cloudDensity, smoothstep(280 + radius + maxYOffset, 280 - radius - maxYOffset, worldPos.y), 0.5);
+    float yBrightness = smoothstep(CloudHeight - (radius + maxDisplacement) * DisplacementDirection.y, CloudHeight + (radius + maxDisplacement) * DisplacementDirection.y, worldPos.y);
+    float cloudBrightness = mix(cloudDensity, yBrightness, 0.5);
     vec3 cloudColor = mix(SkyColor, FogColor * 1.1, smoothstep(0, 1, smoothstep(0, 1, cloudBrightness))).rgb;
     cloudColor = mix(cloudColor, FogColor.rgb * 1.5, smoothstep(0.8, 1, cloudBrightness));
     cloudColor = mix(cloudColor, SkyColor.rgb * 0.5, smoothstep(1.0, 0, cloudBrightness));
 
     texCoord = TexCoord;
     vertexColor = vec4(
-            cloudColor,
-            smoothstep(0, radius, -viewPos.z) * smoothstep(FogEnd, FogEnd * 0.3, dist) * smoothstep(FogEnd, FogEnd * 0.3, dist)
+        cloudColor,
+        smoothstep(0, radius, -viewPos.z) * smoothstep(FogEnd, FogEnd * 0.3, dist) * smoothstep(FogEnd, FogEnd * 0.3, dist)
     );
     billboardRadius = radius;
     distance = dist;
     centerDistance = -viewPos.z;
     billboardRandom = randoms;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
