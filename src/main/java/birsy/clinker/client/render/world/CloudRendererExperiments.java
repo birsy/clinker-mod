@@ -132,7 +132,7 @@ public class CloudRendererExperiments {
         if (instancePositionsBlock == null)
             instancePositionsBlock = ShaderBlock.dynamic(
                     ShaderBlock.BufferBinding.SHADER_STORAGE, size,
-                    (arr, buf) -> buf.asIntBuffer().put(arr)
+                    (arr, buf) -> { for (int v : arr) buf.putInt(v); }
             );
         if (instancePositionsBlock.getSize() != size)
             instancePositionsBlock.setSize(size);
