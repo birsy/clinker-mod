@@ -21,7 +21,7 @@ public class AshSteppeSurfaceDecorator extends SurfaceDecorator {
 
     @Override
     public void prefillNoiseFields(NoiseFieldCache cache) {
-        cache.fillNoiseField(BASE_NOISE_2D[6]);
+        cache.fillNoiseField(BASE_NOISE_2D[5]);
         cache.fillNoiseField(BASE_NOISE_2D_ALT[6]);
         cache.fillNoiseField(BASE_NOISE_2D[3]);
     }
@@ -34,8 +34,8 @@ public class AshSteppeSurfaceDecorator extends SurfaceDecorator {
 
         float ditherRandom = (random.nextFloat() * 2 - 1) * 0.1F;
 
-        double ashGroundNoise = context.retrieve(BASE_NOISE_2D[6], pos.getX(), pos.getY(), pos.getZ());
-        boolean shouldPlaceAsh = ashGroundNoise + ditherRandom > -0.5;
+        double ashGroundNoise = context.retrieve(BASE_NOISE_2D[5], pos.getX(), pos.getY(), pos.getZ());
+        boolean shouldPlaceAsh = ashGroundNoise + ditherRandom > -0.2;
 
         if (maxDownwardsOffset == 1) {
             double ashBorderNoise = context.retrieve(BASE_NOISE_2D_ALT[6], pos.getX(), pos.getY(), pos.getZ());

@@ -28,8 +28,9 @@ public class CrackledShelfBorderSurfaceShaper extends ShelfBorderSurfaceShaper {
         bigCrackle = Math.min(bigCrackle, 0.5);
 
         double xzDist = bigCrackle * -40 + Mth.clampedMap(baseNoise2d, -1, 1, 5, 12) + (1 - biomeWeight) * 50;
-        double lengthUpPillar = Mth.clampedMap(cliffY, heightmapHeight, upperShelfHeight, 0, 1);
-
+        double lengthUpPillar = upperShelfHeight > heightmapHeight
+                ? Mth.clampedMap(cliffY, heightmapHeight, upperShelfHeight, 0, 1)
+                : 0.0;
         double yDist = y - upperShelfHeight;
         if (yDist < 0) yDist = 0;
 

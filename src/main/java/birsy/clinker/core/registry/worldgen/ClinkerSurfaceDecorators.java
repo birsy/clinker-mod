@@ -24,6 +24,8 @@ public class ClinkerSurfaceDecorators {
             register("ash_steppe", ClinkerBiomes.ASH_STEPPE, new AshSteppeSurfaceDecorator());
     public static final Supplier<BiomeSurfaceDecorator> BRINE_SWAMP =
             register("brine_swamp", ClinkerBiomes.BRINE_SWAMP, new BrineSwampSurfaceDecorator(OthershoreGenerationConstants.SEA_HEIGHT));
+    public static final Supplier<BiomeSurfaceDecorator> BEACH =
+            register("beach", ClinkerBiomes.TEMPLATE_BEACH, new BrineSwampSurfaceDecorator(OthershoreGenerationConstants.SEA_HEIGHT));
     public static final Supplier<BiomeSurfaceDecorator> HEATH =
             register("heath", ClinkerBiomes.HEATH, new HeathSurfaceDecorator());
     public static final Supplier<BiomeSurfaceDecorator> HEATH_THICKET =

@@ -28,6 +28,12 @@ public class NoiseFieldTypes {
             (chunkHeight, paddingBlocks) ->
                     new InterpolatedNoiseField(chunkHeight, 4, 4, smallestCellScale(paddingBlocks));
 
+    public static final NoiseFieldType<InterpolatedNoiseField> FINE_Y =
+            (chunkHeight, paddingBlocks) ->
+                    new InterpolatedNoiseField(chunkHeight, 4, 1, smallestCellScale(paddingBlocks));
+    public static final NoiseFieldType<InterpolatedNoiseField> COARSE_Y =
+            (chunkHeight, paddingBlocks) ->
+                    new InterpolatedNoiseField(chunkHeight, 2, 4, smallestCellScale(paddingBlocks));
     public static int smallestCellScale(int targetSize) {
         if (targetSize <= 1) return 0;
         return 32 - Integer.numberOfLeadingZeros(targetSize - 1);

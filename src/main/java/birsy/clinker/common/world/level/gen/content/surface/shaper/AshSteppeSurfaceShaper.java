@@ -49,6 +49,9 @@ public class AshSteppeSurfaceShaper extends SimpleSurfaceShaper {
         double rockMask = Mth.map(context.retrieve(BASE_NOISE_2D_ALT[6], x, y, z), -1, -0.5, -1, 0);
         double rock = -MathUtils.smoothMinExpo(-rockMask, -(Math.abs(y - heightmapHeight + heightmap) - 8), 2);
 
+        if (Double.isNaN(Math.min(baseTerrain, rock))) {
+            Clinker.LOGGER.info("aaaaa");
+        }
         return Math.min(baseTerrain, rock);
     }
 }

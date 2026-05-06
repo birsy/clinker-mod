@@ -3,8 +3,7 @@ package birsy.clinker.common.world.level.gen.content.surface.shaper;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
 
-import static birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers.BEACH_HEIGHT;
-import static birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers.SEA_FLOOR_HEIGHT;
+import static birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers.*;
 
 public class BeachSurfaceShaper extends SimpleSurfaceShaper {
     @Override
@@ -17,9 +16,12 @@ public class BeachSurfaceShaper extends SimpleSurfaceShaper {
     }
 
     @Override
-    public void prefillDensityNoiseFields(NoiseFieldCache cache, int minSurfaceHeight, int maxSurfaceHeight) {}
+    public void prefillDensityNoiseFields(NoiseFieldCache cache, int minSurfaceHeight, int maxSurfaceHeight) {
+        cache.fillNoiseField(BASE_NOISE_2D[5]);
+    }
     @Override
     public double surfaceDensity(int x, int y, int z, double heightmapHeight, double heightmapGradient, double distanceToSurface, double biomeWeight, NoiseContext context) {
-        return distanceToSurface;
+        double noise5 = context.retrieve(BASE_NOISE_2D[5], x, y, z);
+        return distanceToSurface + noise5 * 3;
     }
 }

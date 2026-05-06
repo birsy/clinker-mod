@@ -9,7 +9,7 @@ import static birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers.*;
 public class HeathSurfaceShaper extends UpperShelfSurfaceShaper {
     @Override
     public double getHeight(int x, int z, double weight, NoiseContext context) {
-        return super.getHeight(x, z, weight, context) - 25;
+        return super.getHeight(x, z, weight, context) - 20;
     }
 
     @Override
@@ -20,7 +20,6 @@ public class HeathSurfaceShaper extends UpperShelfSurfaceShaper {
         cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, BASE_NOISE_2D[7]);
         cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, BASE_NOISE_2D_ALT[7]);
         cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, BASE_NOISE_2D[8]);
-
         cache.fillNoiseField(minSurfaceHeight, maxSurfaceHeight, BASE_NOISE[5]);
     }
 

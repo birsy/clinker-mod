@@ -11,6 +11,7 @@ import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldTypes;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureContext;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesHeightmap;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesSurfaceDensity;
+import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers;
 import birsy.clinker.core.util.MathUtils;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -228,7 +229,7 @@ public class SurfaceShaperSystem {
             if (distanceToBiomeEdgeField == null || biomeHeightmapField == null) continue;
 
             // create horizontal distance-to-biome map
-            Arrays.fill(borderDistanceArray, 100.0);
+            Arrays.fill(borderDistanceArray, 50.0);
             borderDistanceField.byBlock(
                     (index, x, y, z) -> {
                         double biomeHeight = biomeHeightmapField.retrieve(x, y, z);
@@ -255,7 +256,14 @@ public class SurfaceShaperSystem {
                         double cliffDistance = -MathUtils.smoothMinExpo(-lateralCliffDistance, -verticalCliffDistance, 5);
                         double cliffCracks = Mth.clampedMap(Math.abs(cliffCracksField.retrieve(x, y, z)), 0, 0.5, 4, 0);
                         cliffDistance += cliffCracks;
-                        surfaceDensityFieldArray[index] = MathUtils.smoothMinExpo(surfaceDensityFieldArray[index], cliffDistance, 2);
+
+                        double surfaceFieldDensity = surfaceDensityFieldArray[index];
+                        double density = MathUtils.smoothMinExpo(surfaceFieldDensity, cliffDistance, 2);
+                        if (Double.isNaN(density) || Double.isInfinite(density) || density > 100000 || density < -100000) {
+                            Clinker.LOGGER.info("WARNING! WARNING! SHITTY DENSITY! {}", density);
+                        }
+
+                        surfaceDensityFieldArray[index] = density;
                     }
             );
         }
