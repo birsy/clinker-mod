@@ -186,21 +186,21 @@ public class OthershoreBiomeSource extends BiomeSource {
                                     .build()
                     )
                     .layer(new BiomeLayerOperations.CreateBorders(
-                            UPPER_SHELF.get(),
-                            SEA.get(),
-                            BEACH.get()
+                                UPPER_SHELF.get(),
+                                SEA.get(),
+                                BEACH.get()
                             ),
-                            MutateOperation.builder()
+                            MutateOperation.builder(0L)
                                     .scale(8, randomState.apply(Clinker.resource("upper_shelf_biomes")))
                                     .set(1)
                                     .entry(UPPER_SHELF.get()).result(HEATH.get()).endEntry()
-                                    .entry(LOWER_SHELF.get()).result(HEATH_THICKET.get()).endEntry()
+                                    .entry(LOWER_SHELF.get(), SHELF_BORDER.get(), SHELF_BORDER_CRACKLE.get()).result(HEATH_THICKET.get()).endEntry()
                                     .endSet()
                                     .set(3)
                                     .entry(UPPER_SHELF.get()).result(ASH_STEPPE.get()).endEntry()
                                     .endSet()
                                     .build(),
-                            MutateOperation.builder()
+                            MutateOperation.builder(1L)
                                     .scale(8, randomState.apply(Clinker.resource("sea_biomes")))
                                     .set(1).endSet()
                                     .set(1)

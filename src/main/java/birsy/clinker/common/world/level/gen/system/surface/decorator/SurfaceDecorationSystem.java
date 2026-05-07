@@ -1,6 +1,5 @@
 package birsy.clinker.common.world.level.gen.system.surface.decorator;
 
-import birsy.clinker.common.world.level.gen.content.surface.decorator.DebugSurfaceDecorator;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
 import birsy.clinker.core.Clinker;
@@ -14,6 +13,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -27,7 +27,6 @@ public class SurfaceDecorationSystem {
     protected final BlockState defaultBlock;
 
     final Object2ObjectOpenHashMap<Holder<Biome>, SurfaceDecorator> biomeToDecorator;
-    final SurfaceDecorator debugDecorator = new DebugSurfaceDecorator();
     public SurfaceDecorationSystem(BlockState defaultBlock, HolderGetter<Biome> biomeGetter) {
         this.defaultBlock = defaultBlock;
 
@@ -62,6 +61,7 @@ public class SurfaceDecorationSystem {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         RandomSource random = randomState.getOrCreateRandomFactory(SURFACE_BUILDER_RANDOM)
                 .at(chunk.getPos().x, 0, chunk.getPos().z);
+        SurfaceDecorationContext surfaceDecorationContext = new SurfaceDecorationContext(level, chunk, noiseFieldCache.context, random);
         for (int x = 0; x < 16; x++) {
             int cX = x + 1, wX = x + minX;
 
@@ -73,7 +73,7 @@ public class SurfaceDecorationSystem {
                 for (Direction direction : Direction.Plane.HORIZONTAL)
                     adjacencies[i++] = spans[cX + direction.getStepX()][cZ + direction.getStepZ()];
 
-                decorateColumn(pos, wX, wZ, x, z, column, adjacencies, offsetFields, prefilled, chunkPos, noiseFieldCache, level, chunk, random);
+                decorateColumn(pos, wX, wZ, x, z, column, adjacencies, offsetFields, prefilled, level, noiseFieldCache, surfaceDecorationContext);
             }
         }
     }
@@ -103,31 +103,40 @@ public class SurfaceDecorationSystem {
     List<BlockSpan> buildSpansForColumn(WorldGenLevel level, BlockPos.MutableBlockPos pos, int worldX, int worldZ, int startY, int minBuildHeight) {
         List<BlockSpan> result = new ArrayList<>();
         boolean solid = false;
-        // maybe should be infinity? from the "upper void" down to the first solid surface.
-        int spanTopY = level.getMaxBuildHeight();
+        BlockState spanTopState = Blocks.VOID_AIR.defaultBlockState();
+        int spanTopY = Integer.MAX_VALUE;
 
         pos.set(worldX, startY, worldZ);
+        BlockState previousState = Blocks.VOID_AIR.defaultBlockState();
         for (int y = startY; y >= minBuildHeight; y--) {
             pos.setY(y);
-            boolean nextSolid = level.getBlockState(pos).isSolid();
+            BlockState currentState = level.getBlockState(pos);
+            boolean nextSolid = currentState.isSolid();
             if (solid != nextSolid) {
-                result.add(new BlockSpan(y + 1, spanTopY, solid));
+                result.add(new BlockSpan(previousState, y + 1, spanTopState, spanTopY, solid));
                 solid = nextSolid;
+                spanTopState = currentState;
                 spanTopY = y;
             }
+            previousState = currentState;
         }
         // finish off the final span
-        result.add(new BlockSpan(minBuildHeight, spanTopY, solid));
+        result.add(new BlockSpan(Blocks.VOID_AIR.defaultBlockState(), minBuildHeight, spanTopState, spanTopY, solid));
+        // void span
+        result.add(new BlockSpan(Blocks.VOID_AIR.defaultBlockState(), Integer.MIN_VALUE, Blocks.VOID_AIR.defaultBlockState(), minBuildHeight, solid));
+
         return result;
     }
 
     void decorateColumn(BlockPos.MutableBlockPos pos, int x, int z, int localX, int localZ,
                         List<BlockSpan> column, List<BlockSpan>[] adjacentColumns, NoiseField[] offsetFields, Set<SurfaceDecorator> prefilledSurfaceDecorators,
-                        ChunkPos chunkPos, NoiseFieldCache cache, WorldGenLevel level, ChunkAccess chunk, RandomSource random) {
+                        WorldGenLevel level, NoiseFieldCache cache, SurfaceDecorationContext context) {
         // skip the first span, as it is always air
-        for (int i = 1; i < column.size(); i++) {
+        // the last span, too, is the void
+        for (int i = 1; i < column.size() - 1; i++) {
             BlockSpan previousSpan = column.get(i - 1);
             BlockSpan span = column.get(i);
+            BlockSpan nextSpan = column.get(i + 1);
 
             int surfaceY = span.topY();
             boolean floor = span.solid();
@@ -159,17 +168,18 @@ public class SurfaceDecorationSystem {
             boolean visibleToSky = i == 1;
             int maximumDepth = floor ? span.height() : previousSpan.height();
             Direction surfaceNormal = floor ? Direction.DOWN : Direction.UP;
+            BlockState surfaceState = floor ? previousSpan.bottomState() : nextSpan.topState();
 
             if (!prefilledSurfaceDecorators.contains(decorator)) {
                 decorator.prefillNoiseFields(cache);
                 prefilledSurfaceDecorators.add(decorator);
             }
-            pos.set(x, surfaceY, z);
-            decorator.decorateSurface(
-                    pos, surfaceNormal,
-                    maxUpwardsOffset, maxDownwardsOffset, maximumDepth, visibleToSky,
-                    level, chunk, cache.context, random
+            context.updateForSurface(
+                    surfaceY, surfaceNormal, surfaceState,
+                    maxUpwardsOffset, maxDownwardsOffset, maximumDepth, visibleToSky
             );
+            pos.set(x, surfaceY, z);
+            decorator.decorateSurface(pos, context);
         }
     }
 }

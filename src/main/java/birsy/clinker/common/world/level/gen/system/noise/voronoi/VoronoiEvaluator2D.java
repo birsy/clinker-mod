@@ -41,7 +41,7 @@ public final class VoronoiEvaluator2D implements VoronoiEvaluator {
     @Override
     public double cellCenterX(int bX, int bY, int bZ, int cellIndex) { return cellCenters[cellIndex * 2 + 0]; }
     @Override
-    public double cellCenterY(int bX, int bY, int bZ, int cellIndex) { return bY; }
+    public double cellCenterY(int bX, int bY, int bZ, int cellIndex, boolean rescale) { return bY; }
     @Override
     public double cellCenterZ(int bX, int bY, int bZ, int cellIndex) { return cellCenters[cellIndex * 2 + 1]; }
     @Override

@@ -75,16 +75,18 @@ public class MutateOperation {
         public int result(int blockX, int blockZ, RandomSource random, NoiseContext noiseContext) { return results[random.nextInt(results.length)]; }
     }
 
-    public static Builder builder() { return new Builder(); }
+    public static Builder builder(long seed) { return new Builder(seed); }
 
     public static final class Builder {
-        private static int salt = 0;
         private final List<Integer> setWeights = new ArrayList<>();
         private final List<MutationEntry[]> builtSets = new ArrayList<>();
         private int scale = 0;
+        private RandomSource seedRandom;
         private PositionalRandomFactory scaleFactory;
 
-        private Builder() {}
+        private Builder(long seed) {
+            seedRandom = RandomSource.create(seed);
+        }
 
         public SetBuilder set(int weight) { return new SetBuilder(this, weight); }
 
@@ -99,19 +101,19 @@ public class MutateOperation {
         public BiomeLayerOperation build() {
             int totalWeight = setWeights.stream().mapToInt(Integer::intValue).sum();
             MutationEntry[][] sets = builtSets.toArray(new MutationEntry[0][]);
-            NormalNoise noise = NormalNoise.create(scaleFactory.fromSeed(salt), -scale, 1);
+            NormalNoise noise = NormalNoise.create(scaleFactory.fromSeed(seedRandom.nextLong()), -scale, 1);
             if (totalWeight <= FLAT_THRESHOLD) {
                 MutationEntry[][] flat = new MutationEntry[totalWeight][];
                 int i = 0;
                 for (int s = 0; s < sets.length; s++)
                     for (int w = 0; w < setWeights.get(s); w++)
                         flat[i++] = sets[s];
-                return new FlatMutate(flat, scale, salt++, noise, scaleFactory);
+                return new FlatMutate(flat, scale, seedRandom.nextInt(), noise, scaleFactory);
             } else {
                 SimpleWeightedRandomList.Builder<MutationEntry[]> listBuilder = SimpleWeightedRandomList.builder();
                 for (int s = 0; s < sets.length; s++)
                     listBuilder.add(sets[s], setWeights.get(s));
-                return new WeightedRandomListMutate(listBuilder.build(), scale, salt++, noise, scaleFactory);
+                return new WeightedRandomListMutate(listBuilder.build(), scale, seedRandom.nextInt(), noise, scaleFactory);
             }
         }
     }
@@ -128,6 +130,8 @@ public class MutateOperation {
 
         public EntryBuilder entry(IntPredicate target) { return new EntryBuilder(this, target); }
         public EntryBuilder entry(ProtoBiome target) { return entry(id -> id == target.id); }
+        public EntryBuilder entry(ProtoBiome... targets) { return entry(Set.of(targets)); }
+
         public EntryBuilder entry(Set<ProtoBiome> targets) {
             boolean[] allowed = new boolean[ClinkerRegistries.PROTO_BIOME_REGISTRY.size()];
             for (ProtoBiome t : targets) allowed[t.id] = true;

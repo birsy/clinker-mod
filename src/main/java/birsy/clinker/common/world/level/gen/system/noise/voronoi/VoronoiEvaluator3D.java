@@ -24,7 +24,9 @@ public final class VoronoiEvaluator3D implements VoronoiEvaluator {
                      maxCellX, maxCellY, maxCellZ;
     public final int cellCountX, cellCountY, cellCountZ, cellCount;
 
-    public final int cellSizeXZ, cellSizeY, cellStride;
+    public final int cellSize, cellStride;
+    public final double yScale, invYScale;
+
     public final int minBlockX, minBlockY, minBlockZ,
                      maxBlockX, maxBlockY, maxBlockZ;
 
@@ -33,7 +35,11 @@ public final class VoronoiEvaluator3D implements VoronoiEvaluator {
 
     final BitSet filledLayers, fillMask;
 
-    public VoronoiEvaluator3D(PositionalRandomFactory randomFactory, int cellSizeXZ, int cellSizeY, int minCellX, int minCellY, int minCellZ, int maxCellX, int maxCellY, int maxCellZ) {
+
+    public VoronoiEvaluator3D(PositionalRandomFactory randomFactory,
+                              int cellSize, double yScale,
+                              int minCellX, int minCellY, int minCellZ,
+                              int maxCellX, int maxCellY, int maxCellZ) {
         this.randomFactory = randomFactory;
         this.minCellX = minCellX; this.maxCellX = maxCellX;
         this.minCellY = minCellY; this.maxCellY = maxCellY;
@@ -45,13 +51,16 @@ public final class VoronoiEvaluator3D implements VoronoiEvaluator {
         this.cellHashes = new long[cellCount];
         this.cellCenters = new double[cellCount * 3];
 
-        this.cellSizeXZ = cellSizeXZ;
-        this.cellSizeY = cellSizeY;
-        this.minBlockX = minCellX * cellSizeXZ; this.maxBlockX = maxCellX * cellSizeXZ;
-        this.minBlockY = minCellY * cellSizeY; this.maxBlockY = maxCellY * cellSizeY;
-        this.minBlockZ = minCellZ * cellSizeXZ; this.maxBlockZ = maxCellZ * cellSizeXZ;
+        this.cellSize = cellSize;
+        this.minBlockX = minCellX * cellSize; this.maxBlockX = maxCellX * cellSize;
+        this.minBlockY = minCellY * cellSize; this.maxBlockY = maxCellY * cellSize;
+        this.minBlockZ = minCellZ * cellSize; this.maxBlockZ = maxCellZ * cellSize;
 
         this.cellStride = cellCountX * cellCountZ;
+
+        this.yScale = yScale;
+        this.invYScale = 1.0 / yScale;
+
         this.filledLayers = new BitSet(cellCountY);
         this.fillMask = new BitSet(cellCountY);
     }
@@ -59,62 +68,70 @@ public final class VoronoiEvaluator3D implements VoronoiEvaluator {
     @Override
     public double cellCenterX(int bX, int bY, int bZ, int cellIndex) { return cellCenters[cellIndex * 3 + 0]; }
     @Override
-    public double cellCenterY(int bX, int bY, int bZ, int cellIndex) { return cellCenters[cellIndex * 3 + 1]; }
+    public double cellCenterY(int bX, int bY, int bZ, int cellIndex, boolean rescale) {
+        double scaledY = cellCenters[cellIndex * 3 + 1];
+        return rescale ? scaledY * invYScale : scaledY;
+    }
     @Override
     public double cellCenterZ(int bX, int bY, int bZ, int cellIndex) { return cellCenters[cellIndex * 3 + 2]; }
     @Override
     public long cellHash(int bX, int bY, int bZ, int cellIndex) { return cellHashes[cellIndex]; }
 
     @Override
+    public double scaledInputY(int bY) { return bY * yScale; }
+
+    @Override
     public long getPackedF1F2Indices(int bX, int bY, int bZ) {
-        int cellX = Math.floorDiv(bX, cellSizeXZ),
-            cellY = Math.floorDiv(bY, cellSizeY),
-            cellZ = Math.floorDiv(bZ, cellSizeXZ);
+        double scaledY = bY * yScale;
+
+        int cellX = Math.floorDiv(bX, cellSize),
+            cellY = Math.floorDiv((int) scaledY, cellSize),
+            cellZ = Math.floorDiv(bZ, cellSize);
         int localCellX = cellX - minCellX,
             localCellY = cellY - minCellY,
             localCellZ = cellZ - minCellZ;
 
-        int closestCellIndex = localCellX + localCellZ * cellCountX + localCellY * cellStride;
-        double dX = bX - cellCenters[closestCellIndex * 3 + 0],
-               dY = bY - cellCenters[closestCellIndex * 3 + 1],
-               dZ = bZ - cellCenters[closestCellIndex * 3 + 2];
-        double closestDistanceSq = dX * dX + dY * dY + dZ * dZ;
+        int closestIndex = localCellX + localCellZ * cellCountX + localCellY * cellStride;
+        double dX = bX  - cellCenters[closestIndex * 3 + 0],
+                dY = scaledY - cellCenters[closestIndex * 3 + 1], // compare in scaled space
+                dZ = bZ  - cellCenters[closestIndex * 3 + 2];
+        double closestDistSq = dX*dX + dY*dY + dZ*dZ;
 
-        int secondClosestCellIndex = -1;
-        double secondClosestDistanceSq = Double.MAX_VALUE;
+        int secondIndex = -1;
+        double secondDistSq = Double.MAX_VALUE;
 
         for (int i = 0; i < NEIGHBOR_OFFSETS.length; i += 3) {
-            int neighborCellX = cellX + NEIGHBOR_OFFSETS[i + 0],
-                    neighborCellY = cellY + NEIGHBOR_OFFSETS[i + 1],
-                    neighborCellZ = cellZ + NEIGHBOR_OFFSETS[i + 2];
-            int localNeighborCellX = neighborCellX - minCellX,
-                    localNeighborCellY = neighborCellY - minCellY,
-                    localNeighborCellZ = neighborCellZ - minCellZ;
-            int neighborCellIndex = localNeighborCellX + localNeighborCellZ * cellCountX + localNeighborCellY * cellStride;
-            double dnX = bX - cellCenters[neighborCellIndex * 3 + 0],
-                    dnY = bY - cellCenters[neighborCellIndex * 3 + 1],
-                    dnZ = bZ - cellCenters[neighborCellIndex * 3 + 2];
-            double neighborDistanceSq = dnX * dnX + dnY * dnY + dnZ * dnZ;
-            if (neighborDistanceSq < closestDistanceSq) {
-                if (closestDistanceSq < secondClosestDistanceSq) {
-                    secondClosestCellIndex = closestCellIndex;
-                    secondClosestDistanceSq = closestDistanceSq;
+            int nCellX = cellX + NEIGHBOR_OFFSETS[i],
+                nCellY = cellY + NEIGHBOR_OFFSETS[i+1],
+                nCellZ = cellZ + NEIGHBOR_OFFSETS[i+2];
+            int lnX = nCellX - minCellX,
+                lnY = nCellY - minCellY,
+                lnZ = nCellZ - minCellZ;
+            int neighborIndex = lnX + lnZ * cellCountX + lnY * cellStride;
+            double dnX = bX  - cellCenters[neighborIndex * 3 + 0],
+                   dnY = scaledY - cellCenters[neighborIndex * 3 + 1],
+                   dnZ = bZ  - cellCenters[neighborIndex * 3 + 2];
+            double neighborDistSq = dnX*dnX + dnY*dnY + dnZ*dnZ;
+            if (neighborDistSq < closestDistSq) {
+                if (closestDistSq < secondDistSq) {
+                    secondIndex = closestIndex;
+                    secondDistSq = closestDistSq;
                 }
-                closestCellIndex = neighborCellIndex;
-                closestDistanceSq = neighborDistanceSq;
-            } else if (neighborDistanceSq < secondClosestDistanceSq) {
-                secondClosestCellIndex = neighborCellIndex;
-                secondClosestDistanceSq = neighborDistanceSq;
+                closestIndex = neighborIndex;
+                closestDistSq = neighborDistSq;
+            } else if (neighborDistSq < secondDistSq) {
+                secondIndex = neighborIndex;
+                secondDistSq = neighborDistSq;
             }
         }
 
-        return VoronoiEvaluator.packF1F2(closestCellIndex, secondClosestCellIndex);
+        return VoronoiEvaluator.packF1F2(closestIndex, secondIndex);
     }
 
     @Override
     public void fill(int startY, int endY) {
-        int localStartCellY = Math.max(0, Math.floorDiv(startY, cellSizeY) - minCellY),
-            localEndCellY = Math.min(cellCountY - 1, Math.ceilDiv(endY, cellSizeY) - minCellY);
+        int localStartCellY = Math.max(0, Math.floorDiv((int)(startY * yScale), cellSize) - minCellY);
+        int localEndCellY = Math.min(cellCountY - 1, Math.ceilDiv((int)(endY * yScale), cellSize) - minCellY);
         // find unfilled layers
         fillMask.clear();
         fillMask.set(localStartCellY, localEndCellY + 1);
@@ -145,9 +162,9 @@ public final class VoronoiEvaluator3D implements VoronoiEvaluator {
 
     void computeCellAttributes(int cX, int cY, int cZ, int i) {
         RandomSource cellRandom = randomFactory.at(cX, cY, cZ);
-        cellCenters[i * 3 + 0] = (cX + cellRandom.nextDouble()) * cellSizeXZ;
-        cellCenters[i * 3 + 1] = (cY + cellRandom.nextDouble()) * cellSizeY;
-        cellCenters[i * 3 + 2] = (cZ + cellRandom.nextDouble()) * cellSizeXZ;
+        cellCenters[i * 3 + 0] = (cX + cellRandom.nextDouble()) * cellSize;
+        cellCenters[i * 3 + 1] = (cY + cellRandom.nextDouble()) * cellSize;
+        cellCenters[i * 3 + 2] = (cZ + cellRandom.nextDouble()) * cellSize;
         cellHashes[i] = cellRandom.nextLong();
     }
 }

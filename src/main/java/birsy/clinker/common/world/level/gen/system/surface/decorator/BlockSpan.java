@@ -4,7 +4,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
 
-public record BlockSpan(int bottomY, int topY, boolean solid) {
+public record BlockSpan(BlockState bottomState, int bottomY, BlockState topState, int topY, boolean solid) {
     public int height() { return topY - bottomY + 1; }
 
     public static int spanIndexAtY(List<BlockSpan> column, int y) {

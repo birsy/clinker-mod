@@ -54,7 +54,7 @@ public class ClinkerNoiseComputers {
     public static final Supplier<NoiseComputer> STRATIFIED_Y_COARSE = NOISE_COMPUTERS.register(
             "stratified_y_coarse",
             () -> new NoiseComputer(
-                    () -> FieldFactory.voronoi3d(64, 8),
+                    () -> FieldFactory.voronoi3d(64, 6),
                     (dependencies, registry) -> {},
                     (x, y, z, context) -> y
             )
@@ -62,7 +62,7 @@ public class ClinkerNoiseComputers {
     public static final Supplier<NoiseComputer> STRATIFIED_Y_FINE = NOISE_COMPUTERS.register(
             "stratified_y_fine",
             () -> new NoiseComputer(
-                    () -> FieldFactory.voronoi3d(32, 7),
+                    () -> FieldFactory.voronoi3d(32, 3),
                     (dependencies, registry) -> {},
                     (x, y, z, context) -> y
             )

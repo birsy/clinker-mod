@@ -34,10 +34,9 @@ public final class VoronoiNoiseField extends NoiseField3D {
     @Override
     public void fill(int minLocalY, int maxLocalY, int minX, int minY, int minZ, NoiseContext context, NoiseFieldFiller filler) {
         this.evaluator.fill(minLocalY + minY, maxLocalY + minY);
-        int startCellY = Math.floorDiv(minLocalY + minY, evaluator.cellSizeY),
-            endCellY = Math.ceilDiv(maxLocalY + minY, evaluator.cellSizeY);
-        int localStartCellY = Math.max(0, startCellY - evaluator.minCellY),
-            localEndCellY = Math.min(evaluator.cellCountY - 1, endCellY - evaluator.minCellY);
+        int localStartCellY = Math.max(0, Math.floorDiv((int)((minLocalY + minY) * evaluator.yScale), evaluator.cellSize) - evaluator.minCellY);
+        int localEndCellY = Math.min(evaluator.cellCountY - 1, Math.ceilDiv((int)((maxLocalY + minY) * evaluator.yScale), evaluator.cellSize) - evaluator.minCellY);
+
         // find unfilled layers
         fillMask.clear();
         fillMask.set(localStartCellY, localEndCellY + 1);
@@ -68,10 +67,8 @@ public final class VoronoiNoiseField extends NoiseField3D {
 
     @Override
     public void byIndex(int minLocalY, int maxLocalY, NoiseFieldVisitors.IndexVisitor visitor) {
-        int startCellY = Math.floorDiv(minLocalY + minY, evaluator.cellSizeY),
-            endCellY = Math.ceilDiv(maxLocalY + minY, evaluator.cellSizeY);
-        int localStartCellY = Math.max(0, startCellY - evaluator.minCellY),
-            localEndCellY = Math.min(evaluator.cellCountY - 1, endCellY - evaluator.minCellY);
+        int localStartCellY = Math.max(0, Math.floorDiv((int)((minLocalY + minY) * evaluator.yScale), evaluator.cellSize) - evaluator.minCellY);
+        int localEndCellY = Math.min(evaluator.cellCountY - 1, Math.ceilDiv((int)((maxLocalY + minY) * evaluator.yScale), evaluator.cellSize) - evaluator.minCellY);
         int index = localStartCellY * evaluator.cellStride;
         for (int cellY = localStartCellY; cellY <= localEndCellY; cellY++) {
             for (int cellZ = 0; cellZ < evaluator.cellCountZ; cellZ++) {
@@ -83,10 +80,8 @@ public final class VoronoiNoiseField extends NoiseField3D {
     }
     @Override
     public void byCell(int minLocalY, int maxLocalY, NoiseFieldVisitors.PositionVisitor visitor) {
-        int startCellY = Math.floorDiv(minLocalY + minY, evaluator.cellSizeY),
-            endCellY = Math.ceilDiv(maxLocalY + minY, evaluator.cellSizeY);
-        int localStartCellY = Math.max(0, startCellY - evaluator.minCellY),
-            localEndCellY = Math.min(evaluator.cellCountY - 1, endCellY - evaluator.minCellY);
+        int localStartCellY = Math.max(0, Math.floorDiv((int)((minLocalY + minY) * evaluator.yScale), evaluator.cellSize) - evaluator.minCellY);
+        int localEndCellY = Math.min(evaluator.cellCountY - 1, Math.ceilDiv((int)((maxLocalY + minY) * evaluator.yScale), evaluator.cellSize) - evaluator.minCellY);
         int index = localStartCellY * evaluator.cellStride;
         for (int cellY = localStartCellY; cellY <= localEndCellY; cellY++) {
             for (int cellZ = 0; cellZ < evaluator.cellCountZ; cellZ++) {
@@ -98,10 +93,8 @@ public final class VoronoiNoiseField extends NoiseField3D {
     }
     @Override
     public void byBlock(int minLocalY, int maxLocalY, NoiseFieldVisitors.PositionVisitor visitor) {
-        int startCellY = Math.floorDiv(minLocalY + minY, evaluator.cellSizeY),
-            endCellY = Math.ceilDiv(maxLocalY + minY, evaluator.cellSizeY);
-        int localStartCellY = Math.max(0, startCellY - evaluator.minCellY),
-            localEndCellY = Math.min(evaluator.cellCountY - 1, endCellY - evaluator.minCellY);
+        int localStartCellY = Math.max(0, Math.floorDiv((int)((minLocalY + minY) * evaluator.yScale), evaluator.cellSize) - evaluator.minCellY);
+        int localEndCellY = Math.min(evaluator.cellCountY - 1, Math.ceilDiv((int)((maxLocalY + minY) * evaluator.yScale), evaluator.cellSize) - evaluator.minCellY);
         int index = localStartCellY * evaluator.cellStride;
         for (int cellY = localStartCellY; cellY <= localEndCellY; cellY++) {
             for (int cellZ = 0; cellZ < evaluator.cellCountZ; cellZ++) {
@@ -116,10 +109,8 @@ public final class VoronoiNoiseField extends NoiseField3D {
     }
     @Override
     public void visit(int minLocalY, int maxLocalY, NoiseFieldVisitors.BigVisitor visitor) {
-        int startCellY = Math.floorDiv(minLocalY + minY, evaluator.cellSizeY),
-            endCellY = Math.ceilDiv(maxLocalY + minY, evaluator.cellSizeY);
-        int localStartCellY = Math.max(0, startCellY - evaluator.minCellY),
-            localEndCellY = Math.min(evaluator.cellCountY - 1, endCellY - evaluator.minCellY);
+        int localStartCellY = Math.max(0, Math.floorDiv((int)((minLocalY + minY) * evaluator.yScale), evaluator.cellSize) - evaluator.minCellY);
+        int localEndCellY = Math.min(evaluator.cellCountY - 1, Math.ceilDiv((int)((maxLocalY + minY) * evaluator.yScale), evaluator.cellSize) - evaluator.minCellY);
         int index = localStartCellY * evaluator.cellStride;
         for (int cellY = localStartCellY; cellY <= localEndCellY; cellY++) {
             for (int cellZ = 0; cellZ < evaluator.cellCountZ; cellZ++) {

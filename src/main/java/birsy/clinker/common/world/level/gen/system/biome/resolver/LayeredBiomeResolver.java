@@ -33,7 +33,7 @@ public final class LayeredBiomeResolver {
     public static final class Builder {
         private final List<BiomeLayerOperation[]>[] unbuiltLayersByScale;
         private int scale;
-
+        int salt = 0;
         private Builder(int startingScale) {
             this.scale = startingScale;
             unbuiltLayersByScale = new List[startingScale + 1];
