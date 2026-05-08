@@ -228,7 +228,6 @@ public class RiverWorldFeature extends WorldFeature implements ModifiesCaveDensi
     @Override public int getCenterX() { return centerX; }
     @Override public int getCenterZ() { return centerZ; }
     @Override public boolean within(int minX, int minZ, int maxX, int maxZ) { return river.bvhRoot.intersectsRecursive(minX, Integer.MIN_VALUE, minZ, maxX, Integer.MAX_VALUE, maxZ); }
-    @Override public WorldFeatureType<? extends WorldFeature> type() { return ClinkerWorldFeatures.Types.RIVER.get(); }
 
     // class stuffs
     record RiverNode(int x, int y, int z, double radius) {}

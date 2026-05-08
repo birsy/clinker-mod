@@ -19,4 +19,6 @@ public final class ClinkerWorldFeatureCapabilities {
 
     public static final Supplier<Class<ModifiesFluids>> MODIFIES_FLUIDS = WORLD_FEATURE_CAPABILITIES.register("modifies_fluids", () -> ModifiesFluids.class);
     public static final Supplier<Class<ModifiesWaterfallPresence>> MODIFIES_WATERFALL_PRESENCE = WORLD_FEATURE_CAPABILITIES.register("modifies_waterfall_presence", () -> ModifiesWaterfallPresence.class);
+
+    public static final Supplier<Class<ModifiesSurfaceDecoration>> MODIFIES_SURFACE_DECORATION = WORLD_FEATURE_CAPABILITIES.register("modifies_surface_decoration", () -> ModifiesSurfaceDecoration.class);
 }

@@ -24,14 +24,14 @@ public class WorldFeatureSet {
 
     final Map<Class<? extends WorldFeatureCapability>, ObjectArrayList<WorldFeature>> byCapability;
 
-    public WorldFeatureSet(Collection<WorldFeature> worldFeatures) {
+    public WorldFeatureSet(Collection<WorldFeatureType.WorldFeatureInstance<?>> worldFeatures) {
         this.byCapability = new Object2ObjectArrayMap<>(ClinkerRegistries.WORLD_FEATURE_CAPABILITY_REGISTRY.size());
         worldFeatures.stream()
                 .sorted(Comparator.comparingInt(worldFeature -> worldFeature.type().priority()))
+                .map(WorldFeatureType.WorldFeatureInstance::feature)
                 .forEachOrdered(
                     worldFeature -> {
                         Class<? extends WorldFeature> worldFeatureClass = worldFeature.getClass();
-
                         Set<Class<? extends WorldFeatureCapability>> capabilitiesForFeature = CAPABILITY_CACHE.get(worldFeatureClass);
                         for (Class<? extends WorldFeatureCapability> capability : capabilitiesForFeature) {
                             byCapability.computeIfAbsent(capability, (key) -> new ObjectArrayList<>()).add(worldFeature);

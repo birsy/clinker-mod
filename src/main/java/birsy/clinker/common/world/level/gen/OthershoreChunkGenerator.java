@@ -6,6 +6,7 @@ import birsy.clinker.common.world.level.gen.system.fluid.BFSBorderFluidField;
 import birsy.clinker.common.world.level.gen.system.fluid.FluidField;
 import birsy.clinker.common.world.level.gen.system.fluid.FluidFieldFiller;
 import birsy.clinker.common.world.level.gen.system.fluid.FluidLevel;
+import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesSurfaceDecoration;
 import birsy.clinker.common.world.level.gen.system.surface.decorator.SurfaceDecorationSystem;
 import birsy.clinker.common.world.level.gen.system.noise.*;
 import birsy.clinker.common.world.level.gen.system.noise.field.*;
@@ -224,7 +225,6 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         // fluid combinedHeightmapField
         int cellWidth = fluidCellWidth, cellHeight = fluidCellHeight;
 
-
         final FluidFieldFiller fluidFiller = (x, y, z, context) -> {
             double surfaceHeight = heightmapInfo.combinedHeightmapField().retrieve(x - minX, y - minY, z - minZ);
             // sea level
@@ -408,6 +408,13 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(minX, minY, minZ);
         PositionalRandomFactory randomFactory = randomState.getOrCreateRandomFactory(BEDROCK_RANDOM);
+
+        for (ModifiesSurfaceDecoration modifiesSurfaceDecoration : worldFeatures.byCapability(ClinkerWorldFeatureCapabilities.MODIFIES_SURFACE_DECORATION.get())) {
+            modifiesSurfaceDecoration.modifySurfaceDecoration(
+                    cache, level, chunk, randomState, worldContext
+            );
+        }
+
         createBarrierrockLayer(chunk, randomFactory, cache, pos, minX, minY, minZ);
         createBedrockLayer(chunk, randomFactory, cache, pos, minX, minY, minZ);
     }

@@ -241,37 +241,6 @@ public class ClinkerNoiseComputers {
             )
     );
 
-    private static final double CAVE_NOODLE_FREQUENCY = 1 / 150.0;
-    public static final Supplier<NoiseComputer> CAVE_NOODLE_A  = NOISE_COMPUTERS.register("cave_noodle_a",
-            () -> new NoiseComputer(
-                    () -> FieldFactory.standard(NoiseFieldTypes.COARSE),
-                    (dependencies, registry) -> {
-                        registry.registerNoise("cave_noodle_a_0");
-                        registry.registerNoise("cave_noodle_a_1");
-                    },
-                    (x, y, z, context) -> {
-                        return Math.min(
-                                context.sample("cave_noodle_a_0", x * CAVE_NOODLE_FREQUENCY, y * CAVE_NOODLE_FREQUENCY, z * CAVE_NOODLE_FREQUENCY),
-                                context.sample("cave_noodle_a_1", x * CAVE_NOODLE_FREQUENCY, y * CAVE_NOODLE_FREQUENCY, z * CAVE_NOODLE_FREQUENCY)
-                        );
-                    }
-            )
-    );
-    public static final Supplier<NoiseComputer> CAVE_NOODLE_B  = NOISE_COMPUTERS.register("cave_noodle_b",
-            () -> new NoiseComputer(
-                    () -> FieldFactory.standard(NoiseFieldTypes.COARSE),
-                    (dependencies, registry) -> {
-                        registry.registerNoise("cave_noodle_b_0");
-                        registry.registerNoise("cave_noodle_b_1");
-                    },
-                    (x, y, z, context) -> {
-                        return Math.min(
-                                context.sample("cave_noodle_b_0", x * CAVE_NOODLE_FREQUENCY, y * CAVE_NOODLE_FREQUENCY * 2, z * CAVE_NOODLE_FREQUENCY),
-                                context.sample("cave_noodle_b_1", x * CAVE_NOODLE_FREQUENCY, y * CAVE_NOODLE_FREQUENCY * 2, z * CAVE_NOODLE_FREQUENCY)
-                        );
-                    }
-            )
-    );
     public static final Supplier<NoiseComputer> CAVE_NOODLES  = NOISE_COMPUTERS.register("cave_noodles",
             () -> new NoiseComputer(
                     () -> FieldFactory.standard(NoiseFieldTypes.COARSE),
@@ -405,6 +374,21 @@ public class ClinkerNoiseComputers {
             )
     );
 
+    public static final Supplier<NoiseComputer> ORE_VEIN  = NOISE_COMPUTERS.register("ore_vein",
+            () -> new NoiseComputer(
+                    () -> FieldFactory.standard(NoiseFieldTypes.COARSE),
+                    (dependencies, registry) -> {
+                        registry.registerNoise("ore_vein_a");
+                        registry.registerNoise("ore_vein_b");
+                    },
+                    (x, y, z, context) -> {
+                        final double frequency = 1.0 / 40.0;
+                        double noiseA = context.sample("ore_vein_a", x * frequency, y * frequency, z * frequency);
+                        double noiseB = context.sample("ore_vein_b", x * frequency, y * frequency, z * frequency);
+                        return Math.sqrt(noiseA * noiseA + noiseB * noiseB) / frequency;
+                    }
+            )
+    );
 
     private static Supplier<NoiseComputer> baseNoise(String name, int index, int size, boolean twoDimensional) {
         String concatenatedName = name + "_" + index;

@@ -237,9 +237,10 @@ public class ClinkerBlocks
 
 
     //Metal Ores
-    public static final DeferredBlock<Block> LEAD_ORE = createBlock("lead_ore", () -> new Block(BlockBehaviour.Properties.ofFullCopy(BRIMSTONE.get())));
-    
-    
+    public static final DeferredBlock<Block> LEAD_ORE = createBlock("lead_ore",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(BRIMSTONE.get()).sound(SoundType.CALCITE))
+    );
+
     //Wood Types
     public static BlockBehaviour.Properties getOthershoreWoodProperties(MapColor colorIn) {
         return BlockBehaviour.Properties.of().mapColor(colorIn)

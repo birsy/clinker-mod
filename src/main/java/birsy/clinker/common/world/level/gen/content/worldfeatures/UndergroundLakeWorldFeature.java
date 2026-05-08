@@ -55,11 +55,6 @@ public class UndergroundLakeWorldFeature extends WorldFeature implements Modifie
                centerZ < maxZ + checkRadius;
     }
 
-    @Override
-    public WorldFeatureType<UndergroundLakeWorldFeature> type() {
-        return ClinkerWorldFeatures.Types.UNDERGROUND_LAKE.get();
-    }
-
     public static Optional<UndergroundLakeWorldFeature> realize(@Nullable BlockPos center,
                                                              LevelAccessor level,
                                                              int minX, int minZ, int maxX, int maxZ, int metaChunkDepth,

@@ -17,6 +17,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
+import static birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureType.*;
+
 public class MetaChunkMap {
     public static final int MAX_DEPTH_EXCLUSIVE = 10;
     private final ObjectArrayList<WorldFeatureSpawnSet>[] worldFeatureSetsByDepth;
@@ -62,8 +64,8 @@ public class MetaChunkMap {
             int minX = metaChunkX * size, maxX = minX + size - 1;
             int minZ = metaChunkZ * size, maxZ = minZ + size - 1;
 
-            Set<WorldFeature> worldFeaturesInChunk = new HashSet<>(16);
-            Consumer<WorldFeature> collector = worldFeaturesInChunk::add;
+            Set<WorldFeatureInstance<?>> worldFeaturesInChunk = new HashSet<>(16);
+            Consumer<WorldFeatureInstance<?>> collector = worldFeaturesInChunk::add;
             // generate "parents"
             if (depth < MAX_DEPTH_EXCLUSIVE - 1) {
                 int parentSize = getMetaChunkSizeForDepth(depth + 1);
@@ -78,10 +80,10 @@ public class MetaChunkMap {
                         );
 
                         // propagate features "downward" to "child"
-                        for (WorldFeature worldFeature : parent.worldFeatures) {
-                            if (worldFeature.within(minX, minZ, maxX, maxZ)) {
-                                worldFeaturesInChunk.add(worldFeature);
-                                worldFeature.collectChildFeatures(depth, collector);
+                        for (WorldFeatureInstance<?> instance : parent.worldFeatures) {
+                            if (instance.within(minX, minZ, maxX, maxZ)) {
+                                worldFeaturesInChunk.add(instance);
+                                instance.feature().collectChildFeatures(depth, collector);
                             }
                         }
                     }
@@ -93,30 +95,30 @@ public class MetaChunkMap {
         });
     }
 
-    void generateWorldFeatures(LevelAccessor level, int depth, int minX, int minZ, int maxX, int maxZ, Consumer<WorldFeature> collector, WorldFeatureContext worldContext) {
+    void generateWorldFeatures(LevelAccessor level, int depth, int minX, int minZ, int maxX, int maxZ, Consumer<WorldFeatureInstance<?>> collector, WorldFeatureContext worldContext) {
         if (depth <= 0) return;
         RandomSource random = metaChunkRandom.at(minX, depth, minZ);
 
-        List<WorldFeature> spawnSetFeatures = new ArrayList<>(16);
+        List<WorldFeatureInstance> spawnSetFeatures = new ArrayList<>(16);
 
         for (WorldFeatureSpawnSet spawnSet : this.worldFeatureSetsByDepth[depth]) {
             for (WorldFeatureSpawnSet.WorldFeatureSpawn featureSpawn : spawnSet.features()) {
                 int count = featureSpawn.count().sample(random);
                 NEXT_FEATURE:
                 for (int i = 0; i < count; i++) {
-                    Optional<? extends WorldFeature> maybeRealizedFeature = featureSpawn.featureType().realize(level, minX, minZ, maxX, maxZ, depth, random, uncachedNoiseContext, worldContext);
+                    Optional<? extends WorldFeatureType.WorldFeatureInstance<?>> maybeRealizedFeature =
+                            featureSpawn.featureType().realize(level, minX, minZ, maxX, maxZ, depth, random, uncachedNoiseContext, worldContext);
                     if (maybeRealizedFeature.isEmpty()) continue;
 
-                    WorldFeature realizedFeature = maybeRealizedFeature.get();
-                    int x = realizedFeature.getCenterX(),
-                        z = realizedFeature.getCenterZ();
+                    WorldFeatureInstance<?> featureInstance = maybeRealizedFeature.get();
 
-                    for (WorldFeature otherFeature : spawnSetFeatures) {
-                        double distance = Mth.length(x - otherFeature.getCenterX(), z - otherFeature.getCenterZ());
-                        if (distance < realizedFeature.type().separationRadius() + otherFeature.type().separationRadius()) continue NEXT_FEATURE;
+                    int x = featureInstance.centerX(), z = featureInstance.centerZ();
+                    for (WorldFeatureInstance otherFeature : spawnSetFeatures) {
+                        double distance = Mth.length(x - otherFeature.centerX(), z - otherFeature.centerZ());
+                        if (distance < featureInstance.type().separationRadius() + otherFeature.type().separationRadius()) continue NEXT_FEATURE;
                     }
-                    spawnSetFeatures.add(realizedFeature);
-                    collector.accept(realizedFeature);
+                    spawnSetFeatures.add(featureInstance);
+                    collector.accept(featureInstance);
                 }
             }
             spawnSetFeatures.clear();
