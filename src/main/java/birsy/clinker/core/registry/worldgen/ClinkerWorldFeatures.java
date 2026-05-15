@@ -57,7 +57,7 @@ public final class ClinkerWorldFeatures {
         public static final Supplier<WorldFeatureSpawnSet> LEAD_ORE_VEIN =
                 WORLD_FEATURE_SPAWNS.register("lead_ore_vein",
                         () -> WorldFeatureSpawnSet.builder(4)
-                                .add(Types.LEAD_ORE_VEIN.get(), 1, 2)
+                                .add(Types.LEAD_ORE_VEIN.get(), 1, 4)
                                 .build()
                 );
     }

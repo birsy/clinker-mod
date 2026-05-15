@@ -374,19 +374,19 @@ public class ClinkerNoiseComputers {
             )
     );
 
-    public static final Supplier<NoiseComputer> ORE_VEIN  = NOISE_COMPUTERS.register("ore_vein",
+    public static final double ORE_VEIN_FREQUENCY = 1.0 / 45.0;
+    public static final Supplier<NoiseComputer> ORE_VEIN_A  = NOISE_COMPUTERS.register("ore_vein_a",
             () -> new NoiseComputer(
                     () -> FieldFactory.standard(NoiseFieldTypes.COARSE),
-                    (dependencies, registry) -> {
-                        registry.registerNoise("ore_vein_a");
-                        registry.registerNoise("ore_vein_b");
-                    },
-                    (x, y, z, context) -> {
-                        final double frequency = 1.0 / 40.0;
-                        double noiseA = context.sample("ore_vein_a", x * frequency, y * frequency, z * frequency);
-                        double noiseB = context.sample("ore_vein_b", x * frequency, y * frequency, z * frequency);
-                        return Math.sqrt(noiseA * noiseA + noiseB * noiseB) / frequency;
-                    }
+                    (dependencies, registry) -> registry.registerNoise("ore_vein_a"),
+                    (x, y, z, context) -> context.sample("ore_vein_a", x * ORE_VEIN_FREQUENCY, y * ORE_VEIN_FREQUENCY, z * ORE_VEIN_FREQUENCY)
+            )
+    );
+    public static final Supplier<NoiseComputer> ORE_VEIN_B  = NOISE_COMPUTERS.register("ore_vein_b",
+            () -> new NoiseComputer(
+                    () -> FieldFactory.standard(NoiseFieldTypes.COARSE),
+                    (dependencies, registry) -> registry.registerNoise("ore_vein_b"),
+                    (x, y, z, context) -> context.sample("ore_vein_b", x * ORE_VEIN_FREQUENCY, y * ORE_VEIN_FREQUENCY, z * ORE_VEIN_FREQUENCY)
             )
     );
 

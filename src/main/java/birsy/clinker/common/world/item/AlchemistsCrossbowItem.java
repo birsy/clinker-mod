@@ -291,20 +291,4 @@ public class AlchemistsCrossbowItem extends ProjectileWeaponItem {
     public boolean useOnRelease(ItemStack stack) {
         return false;
     }
-
-    public static class AlchemistsCrossbowClientItemExtension implements IClientItemExtensions {
-        @Override
-        public HumanoidModel.@Nullable ArmPose getArmPose(LivingEntity entity, InteractionHand hand, ItemStack crossbow) {
-            CrossbowState crossbowState = getCrossbowState(crossbow);
-            switch (crossbowState) {
-                case FIRING, LOADED -> {
-                    if (!entity.swinging) return HumanoidModel.ArmPose.CROSSBOW_HOLD;
-                }
-                case LOADING -> {
-                    //return HumanoidModel.ArmPose.CROSSBOW_CHARGE;
-                }
-            }
-            return IClientItemExtensions.super.getArmPose(entity, hand, crossbow);
-        }
-    }
 }

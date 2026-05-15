@@ -98,7 +98,8 @@ public class OreVeinWorldFeature extends WorldFeature implements ModifiesSurface
         int maxHeight = Math.min(maxWorldHeight, maxY + 16),
             minHeight = Math.max(level.getMinBuildHeight(), minY - 16);
 
-        NoiseField oreVeinNoise = cache.fillNoiseField(minHeight, maxHeight, ClinkerNoiseComputers.ORE_VEIN);
+        NoiseField oreVeinANoise = cache.fillNoiseField(minHeight, maxHeight, ClinkerNoiseComputers.ORE_VEIN_A),
+                   oreVeinBNoise = cache.fillNoiseField(minHeight, maxHeight, ClinkerNoiseComputers.ORE_VEIN_B);
 
         RandomSource ditherRandom = randomState.random.at(centerX, centerY, centerZ);
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
@@ -115,14 +116,15 @@ public class OreVeinWorldFeature extends WorldFeature implements ModifiesSurface
                 for (int wY = maxHeight; wY > minHeight; wY--) {
                     if (ditherRandom.nextInt(3) == 0) continue;
 
-                    double veinRadius = 6.2;
+                    double veinRadius = 6.5;
                     // horizontal tapering
                     veinRadius *= horizontalVeinRadiusTaper;
                     // vertical tapering
                     veinRadius *= Mth.clampedMap(Mth.abs(wY - centerY), verticalRadius * 0.25, verticalRadius, 1, 0);
 
-
-                    double veinNoise = oreVeinNoise.retrieve(wX - cache.minX, wY - cache.minY, wZ - cache.minZ);
+                    double noiseA = oreVeinANoise.retrieve(wX - cache.minX, wY - cache.minY, wZ - cache.minZ),
+                           noiseB = oreVeinBNoise.retrieve(wX - cache.minX, wY - cache.minY, wZ - cache.minZ);
+                    double veinNoise = Math.sqrt(noiseA * noiseA + noiseB * noiseB) / ClinkerNoiseComputers.ORE_VEIN_FREQUENCY;
                     if (veinNoise == 0) continue; // hack: skip unfilled areas?
                     veinNoise += ditherRandom.triangle(0, 1.2);
                     if (veinNoise > veinRadius) continue;
@@ -130,7 +132,7 @@ public class OreVeinWorldFeature extends WorldFeature implements ModifiesSurface
                     pos.set(wX, wY, wZ);
                     if (!chunk.getBlockState(pos).is(ClinkerBlocks.BRIMSTONE.get())) continue;
 
-                    BlockState state = veinNoise > 1 ? oreState : coreState;
+                    BlockState state = veinNoise <= 0.75 && ditherRandom.nextInt(3) == 0 ? coreState : oreState;
                     chunk.setBlockState(pos, state, false);
                 }
             }

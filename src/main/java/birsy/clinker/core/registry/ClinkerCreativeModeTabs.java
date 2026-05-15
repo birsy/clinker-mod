@@ -215,6 +215,10 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(SALTPETRE.get());
 
         pOutput.accept(FAIRY_FRUIT.get());
+        pOutput.accept(LEAD_HELMET.get());
+        pOutput.accept(LEAD_CHESTPLATE.get());
+        pOutput.accept(LEAD_LEGGINGS.get());
+        pOutput.accept(LEAD_BOOTS.get());
         pOutput.accept(LEAD_SWORD.get());
         pOutput.accept(LEAD_AXE.get());
         pOutput.accept(LEAD_PICKAXE.get());

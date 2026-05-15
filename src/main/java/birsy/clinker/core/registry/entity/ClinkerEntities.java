@@ -4,6 +4,7 @@ import birsy.clinker.client.entity.*;
 import birsy.clinker.client.entity.gnomad.basic.GnomadRenderer;
 import birsy.clinker.client.entity.gnomad.mogul.GnomadMogulRenderer;
 import birsy.clinker.client.entity.gnomad.runt.GnomadRuntRenderer;
+import birsy.clinker.client.entity.item.LeadArmorRenderer;
 import birsy.clinker.client.entity.leggy.LeggyRenderer;
 import birsy.clinker.client.entity.slabcrab.SlabCrabRenderer;
 import birsy.clinker.common.world.entity.*;
@@ -160,5 +161,10 @@ public class ClinkerEntities {
         event.registerEntityRenderer(GNOMAD_MOGUL.get(), GnomadMogulRenderer::new);
         event.registerEntityRenderer(GNOMAD.get(), GnomadRenderer::new);
         event.registerEntityRenderer(GNOMAD_RUNT.get(), GnomadRuntRenderer::new);
+    }
+
+    @SubscribeEvent
+    public static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
+        event.registerLayerDefinition(LeadArmorRenderer.Model.LAYER_LOCATION, LeadArmorRenderer.Model::createMesh);
     }
 }

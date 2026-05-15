@@ -1,4 +1,4 @@
-package birsy.clinker.client.render.world.item;
+package birsy.clinker.client.entity.item;
 
 // todo: redo this.
 public class AlchemyBookRenderer {

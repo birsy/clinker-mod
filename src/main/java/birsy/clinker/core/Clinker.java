@@ -5,7 +5,7 @@ import birsy.clinker.client.render.GUIRenderer;
 import birsy.clinker.client.gui.AlchemyBundleGUIRenderer;
 import birsy.clinker.client.render.debug.ClinkerDebugRenderers;
 import birsy.clinker.client.render.page.PageAtlas;
-import birsy.clinker.client.render.world.item.AlchemistsCrossbowInHandRenderer;
+import birsy.clinker.client.entity.item.AlchemistsCrossbowRenderer;
 import birsy.clinker.core.registry.*;
 import birsy.clinker.core.registry.entity.*;
 import birsy.clinker.core.registry.worldgen.*;
@@ -14,7 +14,6 @@ import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.item.ItemProperties;
-import net.minecraft.core.dispenser.ProjectileDispenseBehavior;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DispenserBlock;
@@ -25,7 +24,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import org.apache.logging.log4j.LogManager;
@@ -49,6 +47,7 @@ public class Clinker {
         ClinkerFluids.FLUID_TYPES.register(modEventBus);
         ClinkerFluids.FLUIDS.register(modEventBus);
         ClinkerItems.ITEMS.register(modEventBus);
+        ClinkerItems.ARMOR_MATERIALS.register(modEventBus);
         ClinkerBlocks.BLOCKS.register(modEventBus);
         ClinkerBlocks.BLOCK_ITEMS.register(modEventBus);
         ClinkerBlockEntities.BLOCK_ENTITY_TYPES.register(modEventBus);
@@ -121,7 +120,7 @@ public class Clinker {
 
         GUIRenderer.alchemyBundleGUIRenderer = new AlchemyBundleGUIRenderer(Minecraft.getInstance());
 
-        ItemProperties.register(ClinkerItems.ALCHEMISTS_CROSSBOW.get(), Clinker.resource("pull"), AlchemistsCrossbowInHandRenderer::getPullPercentage);
+        ItemProperties.register(ClinkerItems.ALCHEMISTS_CROSSBOW.get(), Clinker.resource("pull"), AlchemistsCrossbowRenderer::getPullPercentage);
 
         PageAtlas.INSTANCE = new PageAtlas(2, 2);
         //VeilRenderSystem.renderer().getPostProcessingManager().add(GasRenderer.VOLUME_POST);

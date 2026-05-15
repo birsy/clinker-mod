@@ -1,4 +1,4 @@
-package birsy.clinker.client.render.world.item;
+package birsy.clinker.client.entity.item;
 
 import birsy.clinker.common.world.item.AlchemistsCrossbowItem;
 import birsy.clinker.common.world.components.CrossbowState;
@@ -9,6 +9,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
@@ -25,16 +26,32 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderHandEvent;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import org.joml.Quaternionf;
 
 import javax.annotation.Nullable;
 
+import static birsy.clinker.common.world.item.AlchemistsCrossbowItem.getCrossbowState;
+
 @EventBusSubscriber(modid = Clinker.MOD_ID, value = Dist.CLIENT)
-public class AlchemistsCrossbowInHandRenderer {
-    float handMoveDown = 0;
+public class AlchemistsCrossbowRenderer implements IClientItemExtensions {
+    @Override
+    public HumanoidModel.@org.jetbrains.annotations.Nullable ArmPose getArmPose(LivingEntity entity, InteractionHand hand, ItemStack crossbow) {
+        CrossbowState crossbowState = getCrossbowState(crossbow);
+        switch (crossbowState) {
+            case FIRING, LOADED -> {
+                if (!entity.swinging) return HumanoidModel.ArmPose.CROSSBOW_HOLD;
+            }
+            case LOADING -> {
+                //return HumanoidModel.ArmPose.CROSSBOW_CHARGE;
+            }
+        }
+        return IClientItemExtensions.super.getArmPose(entity, hand, crossbow);
+    }
+
     public static float getPullPercentage(ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity entity, int seed) {
         if (entity == null) return 0.0F;
-        CrossbowState crossbowState = AlchemistsCrossbowItem.getCrossbowState(stack);
+        CrossbowState crossbowState = getCrossbowState(stack);
 
         switch (crossbowState) {
             case LOADING -> {
@@ -61,7 +78,7 @@ public class AlchemistsCrossbowInHandRenderer {
         InteractionHand oppositeHand = event.getHand() == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND;
         ItemStack oppositeHandItem = player.getItemInHand(oppositeHand);
         if (crossbow.getItem() instanceof AlchemistsCrossbowItem) {
-            CrossbowState crossbowState = AlchemistsCrossbowItem.getCrossbowState(crossbow);
+            CrossbowState crossbowState = getCrossbowState(crossbow);
             if (crossbowState == CrossbowState.STANDBY) return;
             HumanoidArm arm = event.getHand() == InteractionHand.MAIN_HAND ? player.getMainArm() : player.getMainArm().getOpposite();
             float direction = arm == HumanoidArm.LEFT ? -1 : 1;
@@ -220,7 +237,7 @@ public class AlchemistsCrossbowInHandRenderer {
 
         crossbow = oppositeHandItem;
         if (crossbow.getItem() instanceof AlchemistsCrossbowItem) {
-            CrossbowState crossbowState = AlchemistsCrossbowItem.getCrossbowState(crossbow);
+            CrossbowState crossbowState = getCrossbowState(crossbow);
             if (crossbowState == CrossbowState.LOADING || crossbowState == CrossbowState.LOADED || crossbowState == CrossbowState.FIRING) {
                 event.setCanceled(true);
             }
