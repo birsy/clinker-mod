@@ -1,0 +1,120 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_lead_axe": {
+      "conditions": {
+        "items": [
+          {
+            "items": "clinker:lead_axe"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_lead_boots": {
+      "conditions": {
+        "items": [
+          {
+            "items": "clinker:lead_boots"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_lead_chestplate": {
+      "conditions": {
+        "items": [
+          {
+            "items": "clinker:lead_chestplate"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_lead_helmet": {
+      "conditions": {
+        "items": [
+          {
+            "items": "clinker:lead_helmet"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_lead_hoe": {
+      "conditions": {
+        "items": [
+          {
+            "items": "clinker:lead_hoe"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_lead_leggings": {
+      "conditions": {
+        "items": [
+          {
+            "items": "clinker:lead_leggings"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_lead_pickaxe": {
+      "conditions": {
+        "items": [
+          {
+            "items": "clinker:lead_pickaxe"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_lead_shovel": {
+      "conditions": {
+        "items": [
+          {
+            "items": "clinker:lead_shovel"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_lead_sword": {
+      "conditions": {
+        "items": [
+          {
+            "items": "clinker:lead_sword"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "clinker:decomposing_lead_nugget_from_smelting"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_lead_sword",
+      "has_lead_pickaxe",
+      "has_lead_axe",
+      "has_lead_shovel",
+      "has_lead_hoe",
+      "has_lead_helmet",
+      "has_lead_chestplate",
+      "has_lead_leggings",
+      "has_lead_boots"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "clinker:decomposing_lead_nugget_from_smelting"
+    ]
+  }
+}

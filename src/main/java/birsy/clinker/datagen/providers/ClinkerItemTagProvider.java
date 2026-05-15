@@ -49,5 +49,12 @@ public class ClinkerItemTagProvider extends ItemTagsProvider {
         this.tag(ItemTags.LOGS_THAT_BURN)
                 .add(ClinkerBlocks.DISMAL_ASPEN_LOG.asItem())
                 .add(ClinkerBlocks.BUNDLED_DISMAL_ASPEN_LOGS.asItem());
+
+        this.tag(ItemTags.STONE_CRAFTING_MATERIALS)
+                .add(ClinkerBlocks.COBBLED_BRIMSTONE.asItem())
+                .add(ClinkerBlocks.BRIMSTONE.asItem());
+        this.tag(ItemTags.STONE_TOOL_MATERIALS)
+                .add(ClinkerBlocks.COBBLED_BRIMSTONE.asItem())
+                .add(ClinkerBlocks.BRIMSTONE.asItem());
     }
 }

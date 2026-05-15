@@ -3,11 +3,9 @@ package birsy.clinker.client.entity.item;
 import birsy.clinker.core.Clinker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.*;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -129,14 +127,14 @@ public class LeadArmorRenderer implements IClientItemExtensions {
         @Override
         public void setupAnim(LivingEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
             //super.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
-            this.aventailLeft.zRot = -0.2F;
-            this.aventailRight.zRot = 0.2F;
-            this.aventailBack.xRot = 0.2F;
+            this.aventailLeft.zRot = -0.3F;
+            this.aventailRight.zRot = 0.3F;
+            this.aventailBack.xRot = 0.3F;
 
             this.tassetFront.xRot = Math.min(0, Math.min(this.leftLeg.xRot, this.rightLeg.xRot) - this.body.xRot) - 0.2F;
             this.tassetBack.xRot = Math.max(0, Math.max(this.leftLeg.xRot, this.rightLeg.xRot) - this.body.xRot) + 0.2F;
-            this.tassetLeft.zRot = -0.2F;
-            this.tassetRight.zRot = 0.2F;
+            this.tassetLeft.zRot = -0.3F;
+            this.tassetRight.zRot = 0.3F;
 
             if (entity.isCrouching()) {
                 this.tassetFront.z = this.tassetFront.getInitialPose().z - 1.2F;

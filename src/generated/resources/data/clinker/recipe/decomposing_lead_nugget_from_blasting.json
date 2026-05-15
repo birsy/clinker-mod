@@ -1,0 +1,39 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "cookingtime": 100,
+  "experience": 0.1,
+  "ingredient": [
+    {
+      "item": "clinker:lead_sword"
+    },
+    {
+      "item": "clinker:lead_pickaxe"
+    },
+    {
+      "item": "clinker:lead_axe"
+    },
+    {
+      "item": "clinker:lead_shovel"
+    },
+    {
+      "item": "clinker:lead_hoe"
+    },
+    {
+      "item": "clinker:lead_helmet"
+    },
+    {
+      "item": "clinker:lead_chestplate"
+    },
+    {
+      "item": "clinker:lead_leggings"
+    },
+    {
+      "item": "clinker:lead_boots"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clinker:lead_nugget"
+  }
+}

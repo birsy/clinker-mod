@@ -1,6 +1,7 @@
 package birsy.clinker.datagen.providers;
 
 import birsy.clinker.core.Clinker;
+import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.ClinkerTags;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
@@ -86,6 +87,157 @@ public class ClinkerRecipeProvider extends RecipeProvider {
                 .pattern("#")
                 .pattern("#")
                 .unlockedBy("has_any_basalt", has(ClinkerTags.Items.BASALT)).save(output);
+
+        // lead stuff
+        oreSmelting(output, List.of(LEAD_ORE), RecipeCategory.MISC, LEAD_INGOT, 0.7F, 200, "lead_ingot");
+        oreBlasting(output, List.of(LEAD_ORE), RecipeCategory.MISC, LEAD_INGOT, 0.7F, 100, "lead_ingot");
+        oreSmelting(output, List.of(RAW_LEAD), RecipeCategory.MISC, LEAD_INGOT, 0.7F, 200, "lead_ingot");
+        oreBlasting(output, List.of(RAW_LEAD), RecipeCategory.MISC, LEAD_INGOT, 0.7F, 100, "lead_ingot");
+        oreSmelting(output, List.of(RAW_LEAD_BLOCK), RecipeCategory.MISC, LEAD_BLOCK, 0.7F, 200 * 7, "lead_block");
+        oreBlasting(output, List.of(RAW_LEAD_BLOCK), RecipeCategory.MISC, LEAD_BLOCK, 0.7F, 100 * 7, "lead_block");
+        storage(output, RAW_LEAD, RAW_LEAD_BLOCK);
+        storage(output, LEAD_INGOT, LEAD_BLOCK);
+        storage(output, LEAD_NUGGET, LEAD_INGOT);
+        toolSet(output, LEAD_INGOT, LEAD_NUGGET,
+                LEAD_SWORD, LEAD_PICKAXE, LEAD_AXE, LEAD_SHOVEL, LEAD_HOE,
+                LEAD_HELMET, LEAD_CHESTPLATE, LEAD_LEGGINGS, LEAD_BOOTS);
+    }
+
+
+
+    protected static void sword(RecipeOutput recipeOutput, ItemLike tool, ItemLike material) {
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, tool, 1)
+                .define('#', material)
+                .define('/', Items.STICK)
+                .pattern("#")
+                .pattern("#")
+                .pattern("/")
+                .unlockedBy(getHasName(material), has(material))
+                .save(recipeOutput);
+    }
+    protected static void pickaxe(RecipeOutput recipeOutput, ItemLike tool, ItemLike material) {
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, tool, 1)
+                .define('#', material)
+                .define('/', Items.STICK)
+                .pattern("###")
+                .pattern(" / ")
+                .pattern(" / ")
+                .unlockedBy(getHasName(material), has(material))
+                .save(recipeOutput);
+    }
+    protected static void axe(RecipeOutput recipeOutput, ItemLike tool, ItemLike material) {
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, tool, 1)
+                .define('#', material)
+                .define('/', Items.STICK)
+                .pattern("##")
+                .pattern("#/")
+                .pattern(" /")
+                .unlockedBy(getHasName(material), has(material))
+                .save(recipeOutput);
+    }
+    protected static void shovel(RecipeOutput recipeOutput, ItemLike tool, ItemLike material) {
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, tool, 1)
+                .define('#', material)
+                .define('/', Items.STICK)
+                .pattern("#")
+                .pattern("/")
+                .pattern("/")
+                .unlockedBy(getHasName(material), has(material))
+                .save(recipeOutput);
+    }
+    protected static void hoe(RecipeOutput recipeOutput, ItemLike tool, ItemLike material) {
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, tool, 1)
+                .define('#', material)
+                .define('/', Items.STICK)
+                .pattern("##")
+                .pattern(" /")
+                .pattern(" /")
+                .unlockedBy(getHasName(material), has(material))
+                .save(recipeOutput);
+    }
+    protected static void helmet(RecipeOutput recipeOutput, ItemLike armor, ItemLike material) {
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, armor, 1)
+                .define('#', material)
+                .pattern("###")
+                .pattern("# #")
+                .unlockedBy(getHasName(material), has(material))
+                .save(recipeOutput);
+    }
+    protected static void chestplate(RecipeOutput recipeOutput, ItemLike armor, ItemLike material) {
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, armor, 1)
+                .define('#', material)
+                .pattern("# #")
+                .pattern("###")
+                .pattern("###")
+                .unlockedBy(getHasName(material), has(material))
+                .save(recipeOutput);
+    }
+    protected static void leggings(RecipeOutput recipeOutput, ItemLike armor, ItemLike material) {
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, armor, 1)
+                .define('#', material)
+                .pattern("###")
+                .pattern("# #")
+                .pattern("# #")
+                .unlockedBy(getHasName(material), has(material))
+                .save(recipeOutput);
+    }
+    protected static void boots(RecipeOutput recipeOutput, ItemLike armor, ItemLike material) {
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, armor, 1)
+                .define('#', material)
+                .pattern("# #")
+                .pattern("# #")
+                .unlockedBy(getHasName(material), has(material))
+                .save(recipeOutput);
+    }
+    protected static void toolSet(RecipeOutput recipeOutput, ItemLike material, ItemLike nugget,
+                                      ItemLike sword, ItemLike pickaxe, ItemLike axe, ItemLike shovel, ItemLike hoe,
+                                      ItemLike helmet, ItemLike chestplate, ItemLike leggings, ItemLike boots) {
+        sword(recipeOutput, sword, material);
+        pickaxe(recipeOutput, pickaxe, material);
+        axe(recipeOutput, axe, material);
+        shovel(recipeOutput, shovel, material);
+        hoe(recipeOutput, hoe, material);
+
+        helmet(recipeOutput, helmet, material);
+        chestplate(recipeOutput, chestplate, material);
+        leggings(recipeOutput, leggings, material);
+        boots(recipeOutput, boots, material);
+
+        ItemLike[] items = {sword, pickaxe, axe, shovel, hoe, helmet, chestplate, leggings, boots};
+
+        SimpleCookingRecipeBuilder smeltBuilder = SimpleCookingRecipeBuilder.smelting(
+                Ingredient.of(items),
+                RecipeCategory.MISC,
+                nugget,
+                0.1F,
+                200);
+        for (ItemLike item : items) smeltBuilder.unlockedBy(getHasName(item), has(item));
+        smeltBuilder.save(recipeOutput, Clinker.resource("decomposing_" + BuiltInRegistries.ITEM.getKey(nugget.asItem()).getPath() + "_from_smelting"));
+
+        SimpleCookingRecipeBuilder blastBuilder = SimpleCookingRecipeBuilder.blasting(
+                Ingredient.of(items),
+                RecipeCategory.MISC,
+                nugget,
+                0.1F,
+                100);
+        for (ItemLike item : items) blastBuilder.unlockedBy(getHasName(item), has(item));
+        blastBuilder.save(recipeOutput, Clinker.resource("decomposing_" + BuiltInRegistries.ITEM.getKey(nugget.asItem()).getPath() + "_from_blasting"));
+    }
+
+    protected static void storage(RecipeOutput recipeOutput, ItemLike unpacked, ItemLike packed) {
+        String unpackedName = BuiltInRegistries.ITEM.getKey(unpacked.asItem()).getPath();
+        String packedName = BuiltInRegistries.ITEM.getKey(packed.asItem()).getPath();
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, packed, 1)
+                .define('#', unpacked)
+                .pattern("###")
+                .pattern("###")
+                .pattern("###")
+                .unlockedBy(getHasName(unpacked), has(unpacked))
+                .save(recipeOutput, Clinker.resource(packedName + "_from_" + unpackedName));
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, unpacked, 9)
+                .requires(packed)
+                .unlockedBy(getHasName(packed), has(packed))
+                .save(recipeOutput, Clinker.resource(unpackedName + "_from_" + packedName));
     }
 
     protected static void stoneSlab(RecipeOutput recipeOutput, ItemLike slab, ItemLike material) {

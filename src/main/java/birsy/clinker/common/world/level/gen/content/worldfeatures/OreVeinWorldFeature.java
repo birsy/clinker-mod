@@ -114,7 +114,7 @@ public class OreVeinWorldFeature extends WorldFeature implements ModifiesSurface
                 if (horizontalVeinRadiusTaper <= 0) continue;
 
                 for (int wY = maxHeight; wY > minHeight; wY--) {
-                    if (ditherRandom.nextInt(3) == 0) continue;
+                    if (ditherRandom.nextInt(2) == 0) continue;
 
                     double veinRadius = 6.5;
                     // horizontal tapering

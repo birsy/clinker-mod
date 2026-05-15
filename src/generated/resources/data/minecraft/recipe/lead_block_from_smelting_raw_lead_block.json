@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:smelting",
+  "category": "blocks",
+  "cookingtime": 1400,
+  "experience": 0.7,
+  "group": "lead_block",
+  "ingredient": {
+    "item": "clinker:raw_lead_block"
+  },
+  "result": {
+    "count": 1,
+    "id": "clinker:lead_block"
+  }
+}

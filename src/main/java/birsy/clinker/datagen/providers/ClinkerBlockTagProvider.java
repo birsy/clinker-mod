@@ -5,6 +5,7 @@ import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.ClinkerTags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
+import net.minecraft.data.recipes.packs.VanillaRecipeProvider;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.FenceBlock;
@@ -35,29 +36,35 @@ public class ClinkerBlockTagProvider extends BlockTagsProvider {
         }
 
         IntrinsicTagAppender<Block> othershoreSoil = this.tag(ClinkerTags.Blocks.OTHERSHORE_SOIL).replace(false);
-        othershoreSoil.add(ClinkerBlocks.ASH.get());
-        othershoreSoil.add(ClinkerBlocks.ASH_LAYER.get());
-        othershoreSoil.add(ClinkerBlocks.PACKED_ASH.get());
-        othershoreSoil.add(ClinkerBlocks.BRIMSTONE.get());
-        othershoreSoil.add(ClinkerBlocks.BARRIERROCK.get());
-        othershoreSoil.add(ClinkerBlocks.SALTMOSS.get());
-        othershoreSoil.add(ClinkerBlocks.CALC.get());
-        othershoreSoil.add(ClinkerBlocks.MUD.get());
-        othershoreSoil.add(ClinkerBlocks.SALT_GRAVEL.get());
-        othershoreSoil.add(ClinkerBlocks.PEAT_MOSS.get());
+        othershoreSoil.add(
+                ClinkerBlocks.ASH.get(),
+                ClinkerBlocks.ASH_LAYER.get(),
+                ClinkerBlocks.PACKED_ASH.get(),
+                ClinkerBlocks.BRIMSTONE.get(),
+                ClinkerBlocks.BARRIERROCK.get(),
+                ClinkerBlocks.SALTMOSS.get(),
+                ClinkerBlocks.CALC.get(),
+                ClinkerBlocks.MUD.get(),
+                ClinkerBlocks.SALT_GRAVEL.get(),
+                ClinkerBlocks.PEAT_MOSS.get()
+        );
 
         IntrinsicTagAppender<Block> climbables = this.tag(BlockTags.CLIMBABLE).replace(false);
         climbables.add(ClinkerBlocks.THORNY_STEM.get());
 
         IntrinsicTagAppender<Block> brambleFlowers = this.tag(ClinkerTags.Blocks.BRAMBLE_FLOWERS).replace(false);
-        brambleFlowers.add(ClinkerBlocks.BRAMBLE_BLOSSOM.get());
-        brambleFlowers.add(ClinkerBlocks.WITHERING_BRAMBLE_BLOSSOM.get());
-        brambleFlowers.add(ClinkerBlocks.CORPSE_LILY_BUD.get());
-        brambleFlowers.add(ClinkerBlocks.CORPSE_LILY_BULB.get());
+        brambleFlowers.add(
+                ClinkerBlocks.BRAMBLE_BLOSSOM.get(),
+                ClinkerBlocks.WITHERING_BRAMBLE_BLOSSOM.get(),
+                ClinkerBlocks.CORPSE_LILY_BUD.get(),
+                ClinkerBlocks.CORPSE_LILY_BULB.get()
+        );
 
         IntrinsicTagAppender<Block> brambles = this.tag(ClinkerTags.Blocks.BRAMBLES).replace(false);
-        brambles.add(ClinkerBlocks.THORNY_STEM.get());
-        brambles.add(ClinkerBlocks.SALTY_STEM.get());
+        brambles.add(
+                ClinkerBlocks.THORNY_STEM.get(),
+                ClinkerBlocks.SALTY_STEM.get()
+        );
 
         IntrinsicTagAppender<Block> usesPickaxe = this.tag(BlockTags.MINEABLE_WITH_PICKAXE).replace(false);
         IntrinsicTagAppender<Block> usesAxe = this.tag(BlockTags.MINEABLE_WITH_AXE).replace(false);
@@ -65,22 +72,27 @@ public class ClinkerBlockTagProvider extends BlockTagsProvider {
         IntrinsicTagAppender<Block> usesHoe = this.tag(BlockTags.MINEABLE_WITH_HOE).replace(false);
         IntrinsicTagAppender<Block> usesSword = this.tag(BlockTags.SWORD_EFFICIENT).replace(false);
 
-        usesSword.add(ClinkerBlocks.THORNY_STEM.get());
-        usesSword.add(ClinkerBlocks.BRAMBLE_BLOSSOM.get());
-        usesSword.add(ClinkerBlocks.WITHERING_BRAMBLE_BLOSSOM.get());
+        usesSword.add(
+                ClinkerBlocks.THORNY_STEM.get(),
+                ClinkerBlocks.BRAMBLE_BLOSSOM.get(),
+                ClinkerBlocks.WITHERING_BRAMBLE_BLOSSOM.get()
+        );
 
         usesPickaxe.add(ClinkerBlocks.SALTMOSS.get());
-        usesShovel.add(ClinkerBlocks.SALTMOSS.get());
-        usesShovel.add(ClinkerBlocks.SALT_GRAVEL.get());
-        usesShovel.add(ClinkerBlocks.SALTPETRE_LEACHED_DIRT.get());
+        usesShovel.add(
+                ClinkerBlocks.SALT_GRAVEL.get(),
+                ClinkerBlocks.SALTPETRE_LEACHED_DIRT.get(),
+                ClinkerBlocks.PEAT_MOSS.get()
+        );
 
-        usesShovel.add(ClinkerBlocks.PEAT_MOSS.get());
-        usesHoe.add(ClinkerBlocks.PEAT_MOSS.get());
+        usesHoe.add(
+                ClinkerBlocks.PEAT_MOSS.get(),
+                ClinkerBlocks.SPOTREED.get()
+        );
 
-        usesAxe.add(ClinkerBlocks.SPOTREED.get());
-        //usesAxe.add(ClinkerBlocks.TANGLED_SPOTREED.get());
-        usesHoe.add(ClinkerBlocks.SPOTREED.get());
-        //usesHoe.add(ClinkerBlocks.TANGLED_SPOTREED.get());
+        usesAxe.add(
+                ClinkerBlocks.SPOTREED.get()
+        );
 
         for (DeferredHolder<Block, ? extends Block> block : ClinkerBlocks.BLOCKS.getEntries()) {
             String name = block.getRegisteredName().toLowerCase();
@@ -88,7 +100,8 @@ public class ClinkerBlockTagProvider extends BlockTagsProvider {
                 name.contains("calc") ||
                 name.contains("calamine") ||
                 name.contains("capstone") ||
-                name.contains("shale")) {
+                name.contains("shale") ||
+                name.contains("_ore")) {
                 usesPickaxe.add(block.get());
             }
             if (name.contains("ash")) {

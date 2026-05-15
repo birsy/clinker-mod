@@ -68,6 +68,7 @@
     "clinker:small_shale_bricks",
     "clinker:small_shale_bricks_slab",
     "clinker:small_shale_bricks_stairs",
-    "clinker:small_shale_bricks_fence"
+    "clinker:small_shale_bricks_fence",
+    "clinker:lead_ore"
   ]
 }
