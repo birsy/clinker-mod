@@ -8,6 +8,8 @@ import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.ZombifiedPiglin;
+import net.minecraft.world.entity.monster.piglin.Piglin;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.common.util.Lazy;
@@ -139,9 +141,24 @@ public class LeadArmorRenderer implements IClientItemExtensions {
             if (entity.isCrouching()) {
                 this.tassetFront.z = this.tassetFront.getInitialPose().z - 1.2F;
                 this.tassetFront.y = this.tassetFront.getInitialPose().y - 1.2F;
+                this.tassetBack.xRot -= 0.4F;
             } else {
                 this.tassetFront.z = this.tassetFront.getInitialPose().z;
                 this.tassetFront.y = this.tassetFront.getInitialPose().y;
+            }
+
+            this.head.y = this.head.getInitialPose().y;
+            this.head.xScale = 1.0F;
+            this.aventailLeft.y = this.aventailLeft.getInitialPose().y;
+            this.aventailRight.y = this.aventailRight.getInitialPose().y;
+            if (entity instanceof Piglin || entity instanceof ZombifiedPiglin) {
+                this.head.y -= 1.0F;
+                this.head.xScale = 1.2F;
+
+                this.aventailLeft.zRot -= 0.4F;
+                this.aventailRight.zRot += 0.4F;
+                this.aventailLeft.y -= 0.5F;
+                this.aventailRight.y -= 0.5F;
             }
         }
     }
