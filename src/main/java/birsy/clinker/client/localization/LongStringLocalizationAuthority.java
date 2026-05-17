@@ -50,14 +50,8 @@ public class LongStringLocalizationAuthority {
         return this.getLabelledLongString(id).text();
     }
 
-    public static ResourceLocation validatePath(ResourceLocation rid) {
-        if(!rid.getPath().contains(".")) {
-            rid = rid.withSuffix(".default");
-        }
-        return rid;
-    }
-
-    public LongStringLocalizationAuthority() {
-
+    public static ResourceLocation validatePath(ResourceLocation id) {
+        if(!id.getPath().contains(".")) id = id.withSuffix(".default");
+        return id;
     }
 }

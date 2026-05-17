@@ -1,6 +1,5 @@
 package birsy.clinker.client.localization;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.Minecraft;
@@ -14,27 +13,26 @@ import java.util.Objects;
 import java.util.Optional;
 
 public class LongStringContents implements ComponentContents {
-
-    public static final MapCodec<LongStringContents> CODEC = RecordCodecBuilder.mapCodec((p_337512_) -> p_337512_.group(Codec.STRING.fieldOf("long_string").forGetter((p_304759_) -> p_304759_.id.toString())).apply(p_337512_, LongStringContents::create));
+    public static final MapCodec<LongStringContents> CODEC = RecordCodecBuilder.mapCodec(
+            (instance) -> instance.group(
+                        ResourceLocation.CODEC.fieldOf("long_string").forGetter((longString) -> longString.id)
+                    ).apply(instance, LongStringContents::new)
+    );
     public static final ComponentContents.Type<LongStringContents> TYPE = new ComponentContents.Type<>(CODEC, "translatable");
 
-    private String cloc;
-    private String render = "";
+    private String currentLocalization;
+    private String resolvedContents = "";
     private final ResourceLocation id;
 
     public LongStringContents(ResourceLocation id) {
         id = LongStringLocalizationAuthority.validatePath(id);
-        this.cloc = Minecraft.getInstance().getLanguageManager().getSelected();
+        this.currentLocalization = Minecraft.getInstance().getLanguageManager().getSelected();
         this.id = id;
-        this.render = LongStringLocalizationAuthority.get().getLongString(id);
+        this.resolvedContents = LongStringLocalizationAuthority.get().getLongString(id);
     }
 
     public static MutableComponent create(ResourceLocation id) {
         return MutableComponent.create(new LongStringContents(id));
-    }
-
-    private static LongStringContents create(String id) {
-        return new LongStringContents(ResourceLocation.parse(id));
     }
 
     @Override
@@ -50,11 +48,11 @@ public class LongStringContents implements ComponentContents {
     }
 
     private String render() {
-        if(!Objects.equals(this.cloc, Minecraft.getInstance().getLanguageManager().getSelected())) {
-            this.cloc = Minecraft.getInstance().getLanguageManager().getSelected();
-            this.render = LongStringLocalizationAuthority.get().getLongString(id);
+        if(!Objects.equals(this.currentLocalization, Minecraft.getInstance().getLanguageManager().getSelected())) {
+            this.currentLocalization = Minecraft.getInstance().getLanguageManager().getSelected();
+            this.resolvedContents = LongStringLocalizationAuthority.get().getLongString(id);
         }
-        return this.render;
+        return this.resolvedContents;
     }
 
     @Override
@@ -63,6 +61,6 @@ public class LongStringContents implements ComponentContents {
     }
 
     public String toString() {
-        return "loc_long_string{"+ this.cloc + ", [" + this.id.toString() + "], " + this.render + "}";
+        return "loc_long_string{"+ this.currentLocalization + ", [" + this.id.toString() + "], " + this.resolvedContents + "}";
     }
 }

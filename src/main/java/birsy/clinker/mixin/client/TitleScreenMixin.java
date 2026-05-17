@@ -1,6 +1,7 @@
 package birsy.clinker.mixin.client;
 
 import birsy.clinker.client.gui.debug.BiomeLayerDebugViewScreen;
+import birsy.clinker.client.gui.debug.PageEditorScreen;
 import birsy.clinker.core.Clinker;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.components.Button;
@@ -25,7 +26,13 @@ public abstract class TitleScreenMixin extends Screen {
             Clinker.LOGGER.info("added debug widgets to title screen");
             this.addRenderableWidget(
                     Button.builder(Component.literal("clinker's epic biome layer debug view"), button -> this.minecraft.setScreen(new BiomeLayerDebugViewScreen()))
-                            .bounds(this.width - 202, this.height - 40, 200, 20)
+                            .bounds(this.width - 202, this.height - 42, 200, 20)
+                            .build()
+            );
+
+            this.addRenderableWidget(
+                    Button.builder(Component.literal("clinker's epic page editor"), button -> this.minecraft.setScreen(new PageEditorScreen()))
+                            .bounds(this.width - 202, this.height - 84, 200, 20)
                             .build()
             );
         }

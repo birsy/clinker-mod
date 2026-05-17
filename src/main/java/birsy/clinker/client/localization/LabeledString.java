@@ -3,7 +3,6 @@ package birsy.clinker.client.localization;
 import com.google.common.collect.ImmutableList;
 
 public record LabeledString(String rawText, String text, ImmutableList<Label> labels) {
-
     public static LabeledString parse(String text) {
         StringBuilder visible = new StringBuilder();
         ImmutableList.Builder<Label> labels = ImmutableList.builder();
