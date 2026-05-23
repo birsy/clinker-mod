@@ -1,5 +1,6 @@
 package birsy.clinker.client.render.world;
 
+import birsy.clinker.client.render.world.cloud.OthershoreCloudRenderer;
 import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -26,12 +27,12 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
     private final Minecraft mc = Minecraft.getInstance();
 
     OthershoreSkyRenderer skyRenderer;
-    CloudRendererExperiments cloudRenderer;
+    OthershoreCloudRenderer cloudRenderer;
 
     public OthershoreDimensionEffects() {
         super(256.0F, true, SkyType.NORMAL, false, false);
         this.skyRenderer = new OthershoreSkyRenderer(RandomSource.create(1337));
-        this.cloudRenderer = new CloudRendererExperiments();
+        this.cloudRenderer = new OthershoreCloudRenderer();
     }
 
     @Override

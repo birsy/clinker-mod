@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.components;
+package birsy.clinker.common.world.item.components;
 
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.codecs.ExtraByteBufCodecs;

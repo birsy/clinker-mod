@@ -1,7 +1,7 @@
 package birsy.clinker.core.registry;
 
 import birsy.clinker.common.page.Page;
-import birsy.clinker.common.world.components.PageContents;
+import birsy.clinker.common.world.item.components.PageContents;
 import birsy.clinker.common.world.ordnance.OrdnanceModifierSet;
 import birsy.clinker.common.world.ordnance.modifiers.*;
 import birsy.clinker.core.Clinker;
@@ -146,6 +146,7 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(SALTMOSS_BLOSSOM.get());
         pOutput.accept(YARROW.get());
         pOutput.accept(CAVE_SPROUTS.get());
+        pOutput.accept(CAVE_IVY.get());
 
         pOutput.accept(STROMATOLITE.get());
 

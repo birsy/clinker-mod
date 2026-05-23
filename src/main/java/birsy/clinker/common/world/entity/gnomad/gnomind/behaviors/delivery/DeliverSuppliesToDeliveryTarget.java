@@ -3,7 +3,7 @@ package birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.delivery;
 import birsy.clinker.common.world.entity.gnomad.SuppliesHolder;
 import birsy.clinker.common.world.entity.gnomad.SuppliesDeliverer;
 import birsy.clinker.common.world.entity.system.squad.SquadTask;
-import birsy.clinker.common.world.entity.system.squad.squadtasks.ResupplyTask;
+import birsy.clinker.common.world.entity.gnomad.gnomind.squadtasks.ResupplyTask;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.server.level.ServerLevel;

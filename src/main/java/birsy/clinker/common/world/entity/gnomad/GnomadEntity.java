@@ -5,7 +5,7 @@ import birsy.clinker.client.entity.gnomad.basic.GnomadSkeleton;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.PostSquadTask;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.SharedGnomadBehaviorSets;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.StayNearSquadCenter;
-import birsy.clinker.common.world.entity.system.squad.squadtasks.ResupplyTask;
+import birsy.clinker.common.world.entity.gnomad.gnomind.squadtasks.ResupplyTask;
 import birsy.clinker.common.world.entity.gnomad.mogul.GnomadMogulEntity;
 import birsy.clinker.core.registry.ClinkerItems;
 import foundry.veil.api.client.necromancer.SkeletonParent;
@@ -76,8 +76,9 @@ public class GnomadEntity extends BaseGnomadEntity<GnomadEntity>
                 new AnimatableRangedAttack<GnomadEntity>
                         (0)
                         .startCondition(mob -> !outOfSupplies()),
-                SharedGnomadBehaviorSets.<GnomadMogulEntity>setIdleLookTargets(),
+                SharedGnomadBehaviorSets.<GnomadEntity>setIdleLookTargets(),
                 new FirstApplicableBehaviour<>(
+                        SharedGnomadBehaviorSets.<GnomadEntity>sitAndRelax(),
                         new StayNearSquadCenter<GnomadEntity>()
                                 .maximumDistance(10.0F)
                                 .speedModifier(0.5F),

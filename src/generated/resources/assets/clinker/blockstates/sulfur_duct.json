@@ -1,0 +1,187 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "clinker:block/sulfur_duct_end",
+        "uvlock": true,
+        "x": 90
+      },
+      "when": {
+        "input": "down"
+      }
+    },
+    {
+      "apply": {
+        "model": "clinker:block/sulfur_duct_end",
+        "uvlock": true,
+        "x": 90
+      },
+      "when": {
+        "output": "down"
+      }
+    },
+    {
+      "apply": {
+        "model": "clinker:block/sulfur_duct_side",
+        "uvlock": true,
+        "x": 90
+      },
+      "when": {
+        "input": "up|north|south|west|east",
+        "output": "up|north|south|west|east"
+      }
+    },
+    {
+      "apply": {
+        "model": "clinker:block/sulfur_duct_end",
+        "uvlock": true,
+        "x": 270
+      },
+      "when": {
+        "input": "up"
+      }
+    },
+    {
+      "apply": {
+        "model": "clinker:block/sulfur_duct_end",
+        "uvlock": true,
+        "x": 270
+      },
+      "when": {
+        "output": "up"
+      }
+    },
+    {
+      "apply": {
+        "model": "clinker:block/sulfur_duct_side",
+        "uvlock": true,
+        "x": 270
+      },
+      "when": {
+        "input": "down|north|south|west|east",
+        "output": "down|north|south|west|east"
+      }
+    },
+    {
+      "apply": {
+        "model": "clinker:block/sulfur_duct_end",
+        "uvlock": true
+      },
+      "when": {
+        "input": "north"
+      }
+    },
+    {
+      "apply": {
+        "model": "clinker:block/sulfur_duct_end",
+        "uvlock": true
+      },
+      "when": {
+        "output": "north"
+      }
+    },
+    {
+      "apply": {
+        "model": "clinker:block/sulfur_duct_side",
+        "uvlock": true
+      },
+      "when": {
+        "input": "down|up|south|west|east",
+        "output": "down|up|south|west|east"
+      }
+    },
+    {
+      "apply": {
+        "model": "clinker:block/sulfur_duct_end",
+        "uvlock": true,
+        "y": 180
+      },
+      "when": {
+        "input": "south"
+      }
+    },
+    {
+      "apply": {
+        "model": "clinker:block/sulfur_duct_end",
+        "uvlock": true,
+        "y": 180
+      },
+      "when": {
+        "output": "south"
+      }
+    },
+    {
+      "apply": {
+        "model": "clinker:block/sulfur_duct_side",
+        "uvlock": true,
+        "y": 180
+      },
+      "when": {
+        "input": "down|up|north|west|east",
+        "output": "down|up|north|west|east"
+      }
+    },
+    {
+      "apply": {
+        "model": "clinker:block/sulfur_duct_end",
+        "uvlock": true,
+        "y": 270
+      },
+      "when": {
+        "input": "west"
+      }
+    },
+    {
+      "apply": {
+        "model": "clinker:block/sulfur_duct_end",
+        "uvlock": true,
+        "y": 270
+      },
+      "when": {
+        "output": "west"
+      }
+    },
+    {
+      "apply": {
+        "model": "clinker:block/sulfur_duct_side",
+        "uvlock": true,
+        "y": 270
+      },
+      "when": {
+        "input": "down|up|north|south|east",
+        "output": "down|up|north|south|east"
+      }
+    },
+    {
+      "apply": {
+        "model": "clinker:block/sulfur_duct_end",
+        "uvlock": true,
+        "y": 90
+      },
+      "when": {
+        "input": "east"
+      }
+    },
+    {
+      "apply": {
+        "model": "clinker:block/sulfur_duct_end",
+        "uvlock": true,
+        "y": 90
+      },
+      "when": {
+        "output": "east"
+      }
+    },
+    {
+      "apply": {
+        "model": "clinker:block/sulfur_duct_side",
+        "uvlock": true,
+        "y": 90
+      },
+      "when": {
+        "input": "down|up|north|south|west",
+        "output": "down|up|north|south|west"
+      }
+    }
+  ]
+}

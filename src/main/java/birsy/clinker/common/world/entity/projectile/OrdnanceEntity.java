@@ -2,7 +2,7 @@ package birsy.clinker.common.world.entity.projectile;
 
 import birsy.clinker.client.particle.OrdnanceTrailParticle;
 import birsy.clinker.client.sound.OrdnanceFuseSoundInstance;
-import birsy.clinker.common.world.components.FuseTimer;
+import birsy.clinker.common.world.item.components.FuseTimer;
 import birsy.clinker.common.world.ordnance.OrdnanceGradient;
 import birsy.clinker.common.world.ordnance.OrdnanceHelper;
 import birsy.clinker.common.world.ordnance.OrdnanceModifierSet;

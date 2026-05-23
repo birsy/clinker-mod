@@ -1,0 +1,45 @@
+{
+  "multipart": [
+    {
+      "apply": [
+        {
+          "model": "clinker:block/cave_ivy"
+        },
+        {
+          "model": "clinker:block/cave_ivy_mirrored"
+        }
+      ],
+      "when": {
+        "tip": "false"
+      }
+    },
+    {
+      "apply": [
+        {
+          "model": "clinker:block/cave_ivy_tip"
+        },
+        {
+          "model": "clinker:block/cave_ivy_tip_mirrored"
+        },
+        {
+          "model": "clinker:block/cave_ivy_tip_1"
+        },
+        {
+          "model": "clinker:block/cave_ivy_tip_mirrored_1"
+        }
+      ],
+      "when": {
+        "tip": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "clinker:block/cave_ivy_roots",
+        "x": 180
+      },
+      "when": {
+        "rooted": "true"
+      }
+    }
+  ]
+}

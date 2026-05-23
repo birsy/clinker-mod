@@ -5,7 +5,7 @@ import birsy.clinker.client.entity.gnomad.runt.GnomadRuntSkeleton;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.ClaimSquadTask;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.SharedGnomadBehaviorSets;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.StayNearSquadCenter;
-import birsy.clinker.common.world.entity.system.squad.squadtasks.ResupplyTask;
+import birsy.clinker.common.world.entity.gnomad.gnomind.squadtasks.ResupplyTask;
 import foundry.veil.api.client.necromancer.SkeletonParent;
 import foundry.veil.api.client.necromancer.animation.Animator;
 import net.minecraft.nbt.CompoundTag;

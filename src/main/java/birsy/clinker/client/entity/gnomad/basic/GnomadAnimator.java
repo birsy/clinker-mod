@@ -18,9 +18,8 @@ public class GnomadAnimator extends Animator<GnomadEntity, GnomadSkeleton> {
     private int maskShakeTime = 0, maskShakeDuration = 1;
     private boolean maskShaking = false;
     public final SurveyorWheel stepCounter = new SurveyorWheel(0.4F);
-
-    private boolean sitTest = false;
     private float sitFactor = 0.0F;
+
     protected GnomadAnimator(GnomadEntity parent, GnomadSkeleton skeleton) {
         super(parent, skeleton);
         this.idleAnim = this.addAnimation(IdleAnimation.INSTANCE, 0);
@@ -36,11 +35,10 @@ public class GnomadAnimator extends Animator<GnomadEntity, GnomadSkeleton> {
         super.animate();
         GnomadEntity entity = this.parent;
 
-        // sit anim testing
-//        if (RandomUtil.oneInNChance(120) && (sitFactor == 0 || sitFactor == 1)) sitTest = !sitTest;
-//        sitFactor = Mth.approach(sitFactor, sitTest ? 1 : 0,  sitTest ? 0.05F : 0.025F);
-//        this.sitAnim.setMixFactor(sitFactor);
-//        this.sitAnim.setTime(sitTest ? 0 : 1);
+        boolean sitting = entity.isSitting();
+        this.sitFactor = Mth.approach(sitFactor, sitting ? 1 : 0, sitting ? 0.05F : 0.025F);
+        this.sitAnim.setMixFactor(sitFactor);
+        this.sitAnim.setTime(sitting ? 0 : 1);
 
         this.idleAnim.setMixFactor(1.0F);
         this.idleAnim.setTime(entity.tickCount);

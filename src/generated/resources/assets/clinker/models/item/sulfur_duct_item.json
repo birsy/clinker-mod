@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "clinker:block/sulfur_duct_end",
+    "side": "clinker:block/sulfur_duct_side"
+  }
+}

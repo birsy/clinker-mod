@@ -2,7 +2,7 @@ package birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.delivery;
 
 import birsy.clinker.common.world.entity.gnomad.SuppliesDeliverer;
 import birsy.clinker.common.world.entity.system.squad.SquadTask;
-import birsy.clinker.common.world.entity.system.squad.squadtasks.ResupplyTask;
+import birsy.clinker.common.world.entity.gnomad.gnomind.squadtasks.ResupplyTask;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
@@ -31,6 +31,12 @@ public class FetchSuppliesFromSupplyDepot<E extends LivingEntity & SuppliesDeliv
     public FetchSuppliesFromSupplyDepot() {
         super();
         this.onTick(this::doTick);
+    }
+
+    public FetchSuppliesFromSupplyDepot<E> minimumDistance(float distance) {
+        minimumDistance = distance;
+        minimumDistanceSqr = minimumDistance * minimumDistance;
+        return this;
     }
 
     @Override

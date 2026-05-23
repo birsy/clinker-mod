@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 import static birsy.clinker.common.world.entity.gnomad.gnomind.LastKnownEntityPosition.State.*;
 
@@ -58,6 +59,10 @@ public class LastKnownEntityPositionsTracker {
                 pos.updateState(level, UNCERTAIN);
             }
         }
+    }
+
+    public void prune(Predicate<LastKnownEntityPosition> filter) {
+        lastKnownEnemyPositions.values().removeIf(filter);
     }
 
     // returns the previous state

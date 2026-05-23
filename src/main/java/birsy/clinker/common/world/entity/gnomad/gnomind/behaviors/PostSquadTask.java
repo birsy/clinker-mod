@@ -47,6 +47,8 @@ public class PostSquadTask<E extends LivingEntity & SquadMember<E>, T extends Sq
     @Override
     protected void start(E mob) {
         T newTask = taskFactory.apply(mob);
+        if (newTask == null) return;
+
         Squad squad = BrainUtils.getMemory(mob, ClinkerMemoryModules.SQUAD.get());
         squad.addTask(newTask);
 

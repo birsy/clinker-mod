@@ -1,0 +1,6 @@
+{
+  "parent": "clinker:block/template_north_face",
+  "textures": {
+    "texture": "clinker:block/sulfur_duct_end"
+  }
+}

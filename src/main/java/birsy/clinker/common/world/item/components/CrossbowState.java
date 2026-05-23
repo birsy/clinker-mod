@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.components;
+package birsy.clinker.common.world.item.components;
 
 import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;

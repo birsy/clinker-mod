@@ -1,6 +1,5 @@
-package birsy.clinker.common.world.components;
+package birsy.clinker.common.world.item.components;
 
-import birsy.clinker.core.registry.ClinkerDataComponents;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryFriendlyByteBuf;

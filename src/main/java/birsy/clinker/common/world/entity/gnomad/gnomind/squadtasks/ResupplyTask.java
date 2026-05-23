@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.entity.system.squad.squadtasks;
+package birsy.clinker.common.world.entity.gnomad.gnomind.squadtasks;
 
 import birsy.clinker.common.world.entity.gnomad.SuppliesHolder;
 import birsy.clinker.common.world.entity.system.squad.SquadMember;

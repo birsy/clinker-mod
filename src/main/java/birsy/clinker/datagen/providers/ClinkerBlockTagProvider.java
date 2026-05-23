@@ -50,7 +50,7 @@ public class ClinkerBlockTagProvider extends BlockTagsProvider {
         );
 
         IntrinsicTagAppender<Block> climbables = this.tag(BlockTags.CLIMBABLE).replace(false);
-        climbables.add(ClinkerBlocks.THORNY_STEM.get());
+        climbables.add(ClinkerBlocks.THORNY_STEM.get(), ClinkerBlocks.CAVE_IVY.get());
 
         IntrinsicTagAppender<Block> brambleFlowers = this.tag(ClinkerTags.Blocks.BRAMBLE_FLOWERS).replace(false);
         brambleFlowers.add(

@@ -1,6 +1,7 @@
 package birsy.clinker.datagen.providers;
 
 import birsy.clinker.common.world.block.MothBallBlock;
+import birsy.clinker.common.world.block.SulfurDuctBlock;
 import birsy.clinker.common.world.block.plant.*;
 import birsy.clinker.core.Clinker;
 import net.minecraft.core.Direction;
@@ -358,22 +359,6 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
             );
         }
 
-        // ash
-        {
-            String packedAshName = name(PACKED_ASH.get());
-            this.simpleBlockWithVariationAndTransformation(
-                    PACKED_ASH.get(),
-                    (i) -> this.models().cubeAll(packedAshName, this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + packedAshName)),
-                    (i) -> this.models().singleTexture(packedAshName + "_mirrored",
-                            this.mcLoc(ModelProvider.BLOCK_FOLDER + "/cube_mirrored_all"),
-                            "all",
-                            this.modLoc( ModelProvider.BLOCK_FOLDER + "/" + packedAshName)
-                    ),
-                    1, false, true
-            );
-            this.simpleBlockItem(PACKED_ASH.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + packedAshName)));
-        }
-
         // dismal aspen
         {
             String name = "dismal_aspen";
@@ -421,6 +406,73 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
             this.simpleBlockItem(DISMAL_ASPEN_TRAPDOOR.get(),
                     this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name + "_trapdoor_bottom"))
             );
+        }
+
+        // ash
+        {
+            String packedAshName = name(PACKED_ASH.get());
+            this.simpleBlockWithVariationAndTransformation(
+                    PACKED_ASH.get(),
+                    (i) -> this.models().cubeAll(packedAshName, this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + packedAshName)),
+                    (i) -> this.models().singleTexture(packedAshName + "_mirrored",
+                            this.mcLoc(ModelProvider.BLOCK_FOLDER + "/cube_mirrored_all"),
+                            "all",
+                            this.modLoc( ModelProvider.BLOCK_FOLDER + "/" + packedAshName)
+                    ),
+                    1, false, true
+            );
+            this.simpleBlockItem(PACKED_ASH.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + packedAshName)));
+        }
+
+        // sulfur
+        {
+            String sulfurCoreName = name(SULFUR_CORE.get());
+            ResourceLocation sulfurCoreTexture = this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + sulfurCoreName);
+            this.simpleBlockWithItem(SULFUR_CORE.get(), this.models().cubeAll(sulfurCoreName, sulfurCoreTexture));
+
+            String sulfurDuctName = name(SULFUR_DUCT.get());
+            ResourceLocation sulfurDuctSideTexture = this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + sulfurDuctName + "_side");
+            ResourceLocation sulfurDuctEndTexture = this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + sulfurDuctName + "_end");
+
+            ResourceLocation parent = this.modLoc(ModelProvider.BLOCK_FOLDER + "/template_north_face");
+            BlockModelBuilder sideFaceModel = this.models().singleTexture(sulfurDuctName + "_side", parent, sulfurDuctSideTexture);
+            BlockModelBuilder endFaceModel = this.models().singleTexture(sulfurDuctName + "_end", parent, sulfurDuctEndTexture);
+
+            MultiPartBlockStateBuilder multipartBuilder = this.getMultipartBuilder(SULFUR_DUCT.get());
+            for (Direction dir : Direction.values()) {
+                int xRot = 0, yRot = 0;
+                switch (dir) {
+                    case NORTH -> { xRot = 0; yRot = 0; }
+                    case SOUTH -> { xRot = 0; yRot = 180; }
+                    case EAST -> { xRot = 0; yRot = 90; }
+                    case WEST -> { xRot = 0; yRot = 270; }
+                    case UP -> { xRot = 270; yRot = 0; }
+                    case DOWN -> { xRot = 90; yRot = 0; }
+                }
+
+                multipartBuilder
+                        .part()
+                        .modelFile(endFaceModel).rotationX(xRot).rotationY(yRot).uvLock(true).addModel()
+                        .condition(SulfurDuctBlock.INPUT_FACE, dir)
+                        .end()
+
+                        .part()
+                        .modelFile(endFaceModel).rotationX(xRot).rotationY(yRot).uvLock(true).addModel()
+                        .condition(SulfurDuctBlock.OUTPUT_FACE, dir)
+                        .end();
+
+                Direction[] otherDirs = java.util.Arrays.stream(Direction.values())
+                        .filter(d -> d != dir)
+                        .toArray(Direction[]::new);
+
+                multipartBuilder
+                        .part()
+                        .modelFile(sideFaceModel).rotationX(xRot).rotationY(yRot).uvLock(true).addModel()
+                        .condition(SulfurDuctBlock.INPUT_FACE, otherDirs)
+                        .condition(SulfurDuctBlock.OUTPUT_FACE, otherDirs)
+                        .end();
+            }
+            this.simpleBlockItem(SULFUR_DUCT.get(), this.itemModels().cubeColumn(sulfurDuctName + "_item", sulfurDuctSideTexture, sulfurDuctEndTexture));
         }
 
         // salt moss
@@ -627,6 +679,45 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
                     2, false, false
             );
             this.flatBlockItem(CAVE_SPROUTS.get());
+
+            // cave ivy
+            {
+                String caveIvyName = name(CAVE_IVY.get());
+
+                MultiPartBlockStateBuilder builder = this.getMultipartBuilder(CAVE_IVY.get());
+                builder.part()
+                        .modelFile(this.cross(CAVE_IVY.get()).renderType("cutout"))
+                        .nextModel()
+                        .modelFile(this.crossMirrored(caveIvyName + "_mirrored", this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + "cave_ivy")).renderType("cutout"))
+                        .addModel()
+                        .condition(CaveIvyBlock.TIP, false)
+                        .end();
+                builder.part()
+                        .modelFile(this.models().cross(caveIvyName + "_tip", this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + "cave_ivy_tip")).renderType("cutout"))
+                        .nextModel()
+                        .modelFile(this.crossMirrored(caveIvyName + "_tip_mirrored", this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + "cave_ivy_tip")).renderType("cutout"))
+                        .nextModel()
+                        .modelFile(this.models().cross(caveIvyName + "_tip_1", this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + "cave_ivy_tip_1")).renderType("cutout"))
+                        .nextModel()
+                        .modelFile(this.crossMirrored(caveIvyName + "_tip_mirrored_1", this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + "cave_ivy_tip_1")).renderType("cutout"))
+                        .addModel()
+                        .condition(CaveIvyBlock.TIP, true)
+                        .end();
+                builder.part()
+                        .modelFile(
+                                this.models().singleTexture(
+                                        caveIvyName + "_roots",
+                                        this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + "template_fan"),
+                                        this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + "cave_ivy_roots")
+                                )
+                        ).rotationX(180)
+                        .addModel()
+                        .condition(CaveIvyBlock.ROOTED, true)
+                        .end();
+
+                this.flatBlockItem(CAVE_IVY.get(), this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + "cave_ivy_tip_1"));
+            }
+
 
             this.simpleBlockItem(
                     PEAT_MOSS.get(),

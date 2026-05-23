@@ -1,8 +1,9 @@
 package birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.delivery;
 
 import birsy.clinker.common.world.entity.gnomad.SuppliesDeliverer;
+import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.relax.SetWalkTargetToRelaxationPoint;
 import birsy.clinker.common.world.entity.system.squad.SquadTask;
-import birsy.clinker.common.world.entity.system.squad.squadtasks.ResupplyTask;
+import birsy.clinker.common.world.entity.gnomad.gnomind.squadtasks.ResupplyTask;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
@@ -24,6 +25,12 @@ public class SetWalkTargetToSupplyDepot<E extends LivingEntity & SuppliesDeliver
             .hasMemory(ClinkerMemoryModules.IS_CURRENTLY_ASSIGNED_SQUAD_TASK_ACTIVE.get())
             .usesMemory(MemoryModuleType.WALK_TARGET);
     float minimumDistance = 2.5F, minimumDistanceSqr = minimumDistance * minimumDistance;
+
+    public SetWalkTargetToSupplyDepot<E> minimumDistance(float distance) {
+        minimumDistance = distance;
+        minimumDistanceSqr = minimumDistance * minimumDistance;
+        return this;
+    }
 
     @Override
     protected List<Pair<MemoryModuleType<?>, MemoryStatus>> getMemoryRequirements() {

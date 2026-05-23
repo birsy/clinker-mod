@@ -1,7 +1,7 @@
 package birsy.clinker.common.world.item;
 
 import birsy.clinker.client.sound.OrdnanceFuseSoundInstance;
-import birsy.clinker.common.world.components.FuseTimer;
+import birsy.clinker.common.world.item.components.FuseTimer;
 import birsy.clinker.common.world.entity.projectile.OrdnanceEntity;
 import birsy.clinker.common.world.ordnance.OrdnanceHelper;
 import birsy.clinker.common.world.ordnance.OrdnanceModifierSet;
@@ -9,7 +9,6 @@ import birsy.clinker.common.world.ordnance.modifiers.FuseTimeModifier;
 import birsy.clinker.core.registry.ClinkerDataComponents;
 import birsy.clinker.core.registry.ClinkerOrdnanceModifierTypes;
 import birsy.clinker.core.registry.ClinkerTags;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Position;
 import net.minecraft.network.chat.Component;

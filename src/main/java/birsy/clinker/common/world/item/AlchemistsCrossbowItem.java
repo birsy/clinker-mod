@@ -1,12 +1,11 @@
 package birsy.clinker.common.world.item;
 
-import birsy.clinker.common.world.components.CrossbowState;
-import birsy.clinker.common.world.components.LoadedItemStack;
+import birsy.clinker.common.world.item.components.CrossbowState;
+import birsy.clinker.common.world.item.components.LoadedItemStack;
 import birsy.clinker.core.registry.ClinkerDataComponents;
 import birsy.clinker.core.registry.ClinkerTags;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -23,7 +22,6 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.Snowball;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;

@@ -147,12 +147,10 @@ public class LeadArmorRenderer implements IClientItemExtensions {
                 this.tassetFront.y = this.tassetFront.getInitialPose().y;
             }
 
-            this.head.y = this.head.getInitialPose().y;
             this.head.xScale = 1.0F;
             this.aventailLeft.y = this.aventailLeft.getInitialPose().y;
             this.aventailRight.y = this.aventailRight.getInitialPose().y;
             if (entity instanceof Piglin || entity instanceof ZombifiedPiglin) {
-                this.head.y -= 1.0F;
                 this.head.xScale = 1.2F;
 
                 this.aventailLeft.zRot -= 0.4F;

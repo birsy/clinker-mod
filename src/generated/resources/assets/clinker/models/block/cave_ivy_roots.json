@@ -1,0 +1,6 @@
+{
+  "parent": "clinker:block/template_fan",
+  "textures": {
+    "texture": "clinker:block/cave_ivy_roots"
+  }
+}

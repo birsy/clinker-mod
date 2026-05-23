@@ -2,7 +2,7 @@ package birsy.clinker.common.world.entity.projectile;
 
 import birsy.clinker.client.particle.OrdnanceExplosionParticle;
 import birsy.clinker.client.sound.OrdnanceFuseSoundInstance;
-import birsy.clinker.common.world.components.OrdnanceEffects;
+import birsy.clinker.common.world.item.components.OrdnanceEffects;
 import birsy.clinker.core.registry.entity.ClinkerEntities;
 import birsy.clinker.core.registry.ClinkerParticles;
 import birsy.clinker.core.registry.ClinkerSounds;

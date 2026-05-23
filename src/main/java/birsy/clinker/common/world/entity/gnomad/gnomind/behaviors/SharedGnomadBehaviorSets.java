@@ -8,6 +8,10 @@ import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.delivery.Deliv
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.delivery.FetchSuppliesFromSupplyDepot;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.delivery.SetWalkTargetToDeliveryTarget;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.delivery.SetWalkTargetToSupplyDepot;
+import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.relax.RelaxAtRelaxationPoint;
+import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.relax.SetWalkTargetToRelaxationPoint;
+import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.relax.TryInitiateRelaxation;
+import birsy.clinker.common.world.entity.gnomad.gnomind.squadtasks.RelaxWithSquadTask;
 import birsy.clinker.common.world.entity.system.squad.SquadMember;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
@@ -64,6 +68,16 @@ public class SharedGnomadBehaviorSets {
                 new SetWalkTargetToDeliveryTarget<>(),
                 new FetchSuppliesFromSupplyDepot<>(),
                 new SetWalkTargetToSupplyDepot<>()
+        );
+    }
+
+    public static <E extends LivingEntity & SquadMember<E>> FirstApplicableBehaviour<E> sitAndRelax() {
+        return new FirstApplicableBehaviour<>(
+                new RelaxAtRelaxationPoint<>(),
+                new SetWalkTargetToRelaxationPoint<>(),
+                new ClaimSquadTask<E>()
+                        .of(task -> task instanceof RelaxWithSquadTask),
+                new TryInitiateRelaxation<E>()
         );
     }
 }
