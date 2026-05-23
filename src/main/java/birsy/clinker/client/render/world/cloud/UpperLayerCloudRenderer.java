@@ -16,17 +16,17 @@ import org.joml.Vector3fc;
 import java.util.Arrays;
 import java.util.Comparator;
 
-public class UpperCloudLayerRenderer extends BillboardCloudRenderer {
+public class UpperLayerCloudRenderer extends BillboardCloudRenderer {
     DynamicShaderBlock<int[]> instancePositions;
     int instanceCount = 0;
-    static final int CLOUD_CELL_SIZE = 5,
+    public static final int CLOUD_CELL_SIZE = 5,
                      LOWER_CLOUD_HEIGHT = 270,
                      UPPER_CLOUD_HEIGHT = 300,
                      CLOUD_HEIGHT = (LOWER_CLOUD_HEIGHT + UPPER_CLOUD_HEIGHT) / 2;
 
     @Override
     void rebuild(int renderRadiusInBlocks) {
-        int[] data = createInstanceData(renderRadiusInBlocks);
+        int[] data = createInstanceData(renderRadiusInBlocks / CLOUD_CELL_SIZE);
         int size = data.length * Integer.BYTES;
 
         if (instancePositions == null)

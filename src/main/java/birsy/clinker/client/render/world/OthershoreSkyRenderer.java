@@ -1,6 +1,7 @@
 package birsy.clinker.client.render.world;
 
 import birsy.clinker.client.render.ClinkerShaders;
+import birsy.clinker.client.render.world.cloud.UpperLayerCloudRenderer;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -88,14 +89,13 @@ public class OthershoreSkyRenderer {
         poseStack.scale(scale, scale, scale);
 
 
-        float aboveCloudsDarken = 0.7F;
-        aboveCloudsDarken = Mth.lerp(
-                Mth.clamp(MathUtils.mapRange(OthershoreCloudRenderer.CLOUDS_END - OthershoreCloudRenderer.CLOUD_LAYER_THICKNESS*0.5F, OthershoreCloudRenderer.CLOUDS_END, 0F, 1F, (float)cameraPos.y), 0, 1),
-                1.0F,
-                aboveCloudsDarken
-        );
+        float aboveCloudsDarken = Mth.clampedMap((float) cameraPos.y,
+                UpperLayerCloudRenderer.LOWER_CLOUD_HEIGHT,
+                UpperLayerCloudRenderer.UPPER_CLOUD_HEIGHT,
+                1F, 0.7F);
+
         RenderSystem.setShaderFogColor(fogColor[0] * aboveCloudsDarken, fogColor[1] * aboveCloudsDarken, fogColor[2] * aboveCloudsDarken);
-        if (cameraPos.y > OthershoreCloudRenderer.CLOUDS_START + OthershoreCloudRenderer.CLOUD_LAYER_THICKNESS) {
+        if (cameraPos.y > UpperLayerCloudRenderer.LOWER_CLOUD_HEIGHT) {
             drawOuterSky(level, ticks, partialTick, projMatrix, poseStack,
                     (float) cameraPos.x / scale, (float) cameraPos.z / scale,
                     //fogColor[0], fogColor[1], fogColor[2],

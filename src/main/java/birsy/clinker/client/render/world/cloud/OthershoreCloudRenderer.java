@@ -9,7 +9,6 @@ import foundry.veil.api.client.render.framebuffer.AdvancedFbo;
 import foundry.veil.api.client.render.shader.program.ShaderProgram;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.util.Mth;
 import net.neoforged.neoforge.client.GlStateBackup;
 import org.joml.Matrix4f;
 import org.joml.Vector3fc;
@@ -24,7 +23,7 @@ public class OthershoreCloudRenderer {
 
     public OthershoreCloudRenderer() {
         this.cloudRenderers = List.of(
-                new UpperCloudLayerRenderer()
+                new UpperLayerCloudRenderer()
         );
     }
 

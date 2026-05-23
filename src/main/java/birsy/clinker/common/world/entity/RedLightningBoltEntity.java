@@ -1,6 +1,7 @@
 package birsy.clinker.common.world.entity;
 
-import birsy.clinker.client.render.world.OthershoreCloudRenderer;
+import birsy.clinker.client.render.world.cloud.OthershoreCloudRenderer;
+import birsy.clinker.client.render.world.cloud.UpperLayerCloudRenderer;
 import foundry.veil.api.client.render.light.data.PointLightData;
 import foundry.veil.api.client.render.light.renderer.LightRenderHandle;
 import net.minecraft.util.Mth;
@@ -31,7 +32,7 @@ public class RedLightningBoltEntity extends LightningBolt {
 
         RandomSource randomSource = RandomSource.create(this.getId());
 
-        float cloudHeight = OthershoreCloudRenderer.CLOUDS_START + 30;
+        float cloudHeight = UpperLayerCloudRenderer.UPPER_CLOUD_HEIGHT;
         float approximateSegmentHeight = 10;
 
         // generate the primary branch, from the bottom up
