@@ -15,9 +15,11 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.neoforged.neoforge.client.GlStateBackup;
 import org.joml.Matrix4f;
 import org.joml.Vector3fc;
+import org.lwjgl.opengl.GL30;
 
 import java.util.List;
 
+import static com.mojang.blaze3d.platform.GlConst.GL_NEAREST;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11C.GL_COLOR_BUFFER_BIT;
 
@@ -71,7 +73,6 @@ public class OthershoreCloudRenderer {
         if (!initialized) {
             initialize();
         }
-
         int renderRadius = getRenderRadius();
         if (renderRadius != lastRenderRadius) {
             lastRenderRadius = renderRadius;
@@ -81,10 +82,11 @@ public class OthershoreCloudRenderer {
         GlStateBackup backup = new GlStateBackup();
         RenderSystem.backupGlState(backup);
 
-        AdvancedFbo cloud = VeilRenderSystem.renderer().getFramebufferManager().getFramebuffer(ClinkerFramebuffers.CLOUDS);
-        cloud.bind(true);
-        cloud.clear(0.0F, 0.0F, 0.0F, 0.0F, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        // blit depth into the weird temp depth buffer
+        AdvancedFbo tempDepthFbo = VeilRenderSystem.renderer().getFramebufferManager().getFramebuffer(ClinkerFramebuffers.CLOUDS_COMPOSITE_DEPTH);
+        tempDepthFbo.clear(0.0F, 0.0F, 0.0F, 0.0F, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        tempDepthFbo.bind(true);
         ShaderProgram depthBlitShader = VeilRenderSystem.setShader(ClinkerShaders.VEIL_BLIT_DEPTH);
         depthBlitShader.bind();
         TextureUniformAccess.setFramebufferSamplers(VeilRenderBridge.toShaderInstance(depthBlitShader), AdvancedFbo.getMainFramebuffer());
@@ -93,10 +95,26 @@ public class OthershoreCloudRenderer {
         VeilRenderSystem.drawScreenQuad();
         ShaderProgram.unbind();
 
+        // blit THAT into the cloud depth buffer, for culling.
+        AdvancedFbo cloudFbo = VeilRenderSystem.renderer().getFramebufferManager().getFramebuffer(ClinkerFramebuffers.CLOUDS);
+        cloudFbo.bind(true);
+        cloudFbo.clear(0.0F, 0.0F, 0.0F, 0.0F, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        tempDepthFbo.bindRead();
+        cloudFbo.bindDraw(true);
+        GlStateManager._glBlitFrameBuffer(
+                0, 0, tempDepthFbo.getWidth(), tempDepthFbo.getHeight(),
+                0, 0, cloudFbo.getWidth(), cloudFbo.getHeight(),
+                GL_DEPTH_BUFFER_BIT,
+                GL_NEAREST
+        );
+
+        // render other useful cloud textures
         renderCloudDensityTexture(ticks, partialTick);
         renderCloudSpriteTexture(ticks, partialTick);
 
-        cloud.bind(true);
+        // cloud drawing process
+        cloudFbo.bind(true);
 
         for (BillboardCloudRenderer cloudRenderer : cloudRenderers)
             cloudRenderer.preRender(this, level, ticks, partialTick, poseStack, camX, camY, camZ, projectionMatrix, skyColor);
@@ -122,11 +140,13 @@ public class OthershoreCloudRenderer {
 
         AdvancedFbo.unbind();
 
+        // composite with main scene
         ShaderProgram compositeShader = VeilRenderSystem.setShader(ClinkerShaders.CLOUD_COMPOSITE);
         compositeShader.bind();
         compositeShader.bindSamplers(0);
         compositeShader.setDefaultUniforms(VertexFormat.Mode.TRIANGLE_STRIP);
         RenderSystem.disableDepthTest();
+        RenderSystem.depthMask(false);
         RenderSystem.disableCull();
         RenderSystem.blendFunc(
                 GlStateManager.SourceFactor.SRC_ALPHA,
@@ -137,6 +157,7 @@ public class OthershoreCloudRenderer {
 
         RenderSystem.restoreGlState(backup);
     }
+
 
     void renderCloudDensityTexture(int ticks, double partialTicks) {
         AdvancedFbo fbo = VeilRenderSystem.renderer().getFramebufferManager().getFramebuffer(ClinkerFramebuffers.CLOUD_DENSITY);

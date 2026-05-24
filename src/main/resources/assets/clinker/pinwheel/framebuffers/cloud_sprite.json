@@ -3,6 +3,7 @@
   "filter": {
     "blur": true
   },
+  "levels": 3,
   "width": 256.0,
   "height": 256.0
 }

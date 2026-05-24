@@ -5,6 +5,14 @@
     "CloudsSampler": {
       "type": "framebuffer",
       "name": "clinker:clouds"
+    },
+    "CloudsResolutionDepthSampler": {
+      "type": "framebuffer",
+      "name": "clinker:clouds_composite_depth:depth"
+    },
+    "MainDepthSampler": {
+      "type": "framebuffer",
+      "name": "minecraft:main:depth"
     }
   }
 }
