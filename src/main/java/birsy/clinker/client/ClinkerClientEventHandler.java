@@ -2,6 +2,7 @@ package birsy.clinker.client;
 
 import birsy.clinker.client.render.page.PageAtlas;
 import birsy.clinker.client.render.page.PageRenderer;
+import birsy.clinker.client.render.world.OthershoreDimensionEffects;
 import birsy.clinker.common.page.Page;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerDataComponents;
@@ -11,6 +12,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.DimensionSpecialEffects;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
@@ -19,6 +22,8 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -33,10 +38,25 @@ public class ClinkerClientEventHandler {
 
     @SubscribeEvent
     public static void onRender(RenderLevelStageEvent event) {
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_LEVEL && Minecraft.getInstance().level != null) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return;
+        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_LEVEL) {
             Minecraft.getInstance().getProfiler().push("clinker.drawPageAtlas");
             if (PageAtlas.INSTANCE != null) PageAtlas.INSTANCE.update();
             Minecraft.getInstance().getProfiler().pop();
+        }
+        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_TRIPWIRE_BLOCKS) {
+            if (level.effects() instanceof OthershoreDimensionEffects effects) {
+                Vec3 camPos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+                effects.drawCloudsCustom(level,
+                        event.getRenderTick(),
+                        event.getPartialTick().getGameTimeDeltaTicks(),
+                        event.getPoseStack(),
+                        camPos.x, camPos.y, camPos.z,
+                        event.getModelViewMatrix(),
+                        event.getProjectionMatrix()
+                );
+            }
         }
     }
 

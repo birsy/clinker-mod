@@ -77,12 +77,15 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects implemen
 
     @Override
     public boolean renderClouds(ClientLevel level, int ticks, float partialTick, PoseStack pPoseStack, double camX, double camY, double camZ, Matrix4f modelViewMatrix, Matrix4f projectionMatrix) {
+        return true;
+    }
+
+    public void drawCloudsCustom(ClientLevel level, int ticks, float partialTick, PoseStack pPoseStack, double camX, double camY, double camZ, Matrix4f modelViewMatrix, Matrix4f projectionMatrix) {
         Minecraft.getInstance().getProfiler().push("clinker.drawClouds");
         PoseStack stack = new PoseStack();
         stack.mulPose(modelViewMatrix);
         this.cloudRenderer.render(level, ticks, partialTick, stack, camX, camY, camZ, projectionMatrix, this.getSkyColor(level, new Vec3(camX, camY, camZ), partialTick));
         Minecraft.getInstance().getProfiler().pop();
-        return true;
     }
 
     @Override

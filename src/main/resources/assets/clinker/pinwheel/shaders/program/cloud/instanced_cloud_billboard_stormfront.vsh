@@ -91,7 +91,7 @@ void main() {
     vec3 cloudColor = mix(SkyColor * depthDarkness, FogColor * 1.1, smoothstep(0.0, 1.0, smoothstep(0.0, 1.0, cloudBrightness))).rgb;
     cloudColor = mix(cloudColor, FogColor.rgb * 1.5, smoothstep(0.8, 1.0, cloudBrightness));
     cloudColor = mix(cloudColor, SkyColor.rgb * 0.5 * depthDarkness, smoothstep(1.0, 0.0, cloudBrightness));
-
+    cloudColor = mix(cloudColor, FogColor.rgb, smoothstep(FogStart, FogEnd, dist) * FogColor.a);
     float cloudAlpha = smoothstep(0.0, radius, -viewPos.z) * smoothstep(FogEnd, FogEnd * 0.3, horizontalDist) * smoothstep(FogEnd, FogEnd * 0.3, horizontalDist) * Fade;
 
     texCoord = TexCoord;

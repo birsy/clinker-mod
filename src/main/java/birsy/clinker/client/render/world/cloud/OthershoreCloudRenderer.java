@@ -83,7 +83,6 @@ public class OthershoreCloudRenderer {
 
         AdvancedFbo cloud = VeilRenderSystem.renderer().getFramebufferManager().getFramebuffer(ClinkerFramebuffers.CLOUDS);
         cloud.bind(true);
-
         cloud.clear(0.0F, 0.0F, 0.0F, 0.0F, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         ShaderProgram depthBlitShader = VeilRenderSystem.setShader(ClinkerShaders.VEIL_BLIT_DEPTH);
@@ -113,7 +112,7 @@ public class OthershoreCloudRenderer {
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(
                 GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
-                GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA
+                GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE
         );
         for (BillboardCloudRenderer cloudRenderer : cloudRenderers)
             cloudRenderer.renderTranslucent(this, level, ticks, partialTick, poseStack, camX, camY, camZ, projectionMatrix, skyColor);
@@ -130,7 +129,7 @@ public class OthershoreCloudRenderer {
         RenderSystem.disableDepthTest();
         RenderSystem.disableCull();
         RenderSystem.blendFunc(
-                GlStateManager.SourceFactor.ONE,
+                GlStateManager.SourceFactor.SRC_ALPHA,
                 GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA
         );
         VeilRenderSystem.drawScreenQuad();

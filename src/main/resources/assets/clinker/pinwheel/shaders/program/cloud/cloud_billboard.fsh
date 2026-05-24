@@ -44,13 +44,14 @@ void main() {
 
     float rad = length(pixellatedTexCoord * billboardRadius);
     if (rad > billboardRadius) discard;
-    vec4 col = vertexColor * texture(CloudSpriteSampler, pixellatedTexCoord * 0.5 + 0.5);
-    col *= vec4(1.0, 1.0, 1.0, cloudFade);
+    vec4 col = vertexColor;
+    float spriteAlpha = texture(CloudSpriteSampler, pixellatedTexCoord * 0.5 + 0.5).a;
+    col *= vec4(1.0, 1.0, 1.0, spriteAlpha * cloudFade);
 
     if (col.a < 0.01) discard;
     const float transparencyThreshold = 0.99;
     float isTransparent = step(transparencyThreshold, col.a);
     if (isTransparent == Transparent) discard;
 
-    fragColor = col;
+    fragColor = vec4(col.rgb, col.a);
 }
