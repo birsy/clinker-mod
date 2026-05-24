@@ -23,7 +23,7 @@ import org.joml.*;
 import java.lang.Math;
 
 
-public class OthershoreDimensionEffects extends DimensionSpecialEffects {
+public class OthershoreDimensionEffects extends DimensionSpecialEffects implements AutoCloseable {
     private final Minecraft mc = Minecraft.getInstance();
 
     OthershoreSkyRenderer skyRenderer;
@@ -165,5 +165,10 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects {
     @Override
     public boolean tickRain(ClientLevel level, int ticks, Camera camera) {
         return false;
+    }
+
+    @Override
+    public void close() throws Exception {
+        cloudRenderer.free();
     }
 }

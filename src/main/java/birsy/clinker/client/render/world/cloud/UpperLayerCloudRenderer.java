@@ -13,11 +13,13 @@ import net.minecraft.util.Mth;
 import org.joml.Matrix4f;
 import org.joml.Vector3fc;
 
-import java.util.Arrays;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
 public class UpperLayerCloudRenderer extends BillboardCloudRenderer {
-    DynamicShaderBlock<int[]> instancePositions;
+    DynamicShaderBlock<CloudPosition[]> instancePositions;
     int instanceCount = 0;
     public static final int CLOUD_CELL_SIZE = 5,
                      LOWER_CLOUD_HEIGHT = 270,
@@ -26,47 +28,48 @@ public class UpperLayerCloudRenderer extends BillboardCloudRenderer {
 
     @Override
     void rebuild(int renderRadiusInBlocks) {
-        int[] data = createInstanceData(renderRadiusInBlocks / CLOUD_CELL_SIZE);
-        int size = data.length * Integer.BYTES;
+        CloudPosition[] data = createInstanceData(renderRadiusInBlocks / CLOUD_CELL_SIZE + 3);
+        int size = data.length * CloudPosition.SIZE;
 
         if (instancePositions == null)
             instancePositions = ShaderBlock.dynamic(
                     ShaderBlock.BufferBinding.SHADER_STORAGE, size,
-                    (array, buf) -> { for (int pos : array) buf.putInt(pos); }
+                    (array, buf) -> { for (CloudPosition pos : array) pos.upload(buf); }
             );
         if (instancePositions.getSize() != size)
             instancePositions.setSize(size);
         instancePositions.set(data);
-
-        instanceCount = data.length / 2;
+        instanceCount = data.length;
     }
-    private int[] createInstanceData(int radius) {
+    private CloudPosition[] createInstanceData(int radius) {
         int diameter = radius * 2;
-        Position[] positions = new Position[diameter * diameter];
+        int r2 = radius * radius;
+        int area = (int) Math.ceil(Math.PI * r2);
+        List<CloudPosition> cloudPositions = new ArrayList<>(area + 5);
 
-        int i = 0;
         for (int x = 0; x < diameter; x++) {
             int pX = x - radius;
             for (int z = 0; z < diameter; z++) {
                 int pZ = z - radius;
-                positions[i++] = new Position(pX, pZ);
+                if (Mth.lengthSquared(pX, pZ) < r2)
+                    cloudPositions.add(new CloudPosition(pX, pZ));
             }
         }
 
-        Arrays.sort(positions, Comparator.comparingInt(pos -> pos.x * pos.x + pos.z * pos.z));
+        cloudPositions.sort(Comparator.comparingInt(pos -> pos.x * pos.x + pos.z * pos.z));
 
-        // output to flat array
-        int length = positions.length * 2;
-        int[] data = new int[length];
-        for (int j = 0; j < positions.length; j++) {
-            Position pos = positions[j];
-            data[j * 2 + 0] = pos.x;
-            data[j * 2 + 1] = pos.z;
-        }
-
-        return data;
+        return cloudPositions.toArray(new CloudPosition[0]);
     }
-    private record Position(int x, int z) {}
+    private record CloudPosition(int x, int z) {
+        static final int SIZE = Integer.BYTES * 2;
+        private void upload(ByteBuffer buffer) {
+            buffer.putInt(x); buffer.putInt(z);
+        }
+    }
+    @Override
+    void free() {
+        instancePositions.free();
+    }
 
     @Override
     void renderSolid(OthershoreCloudRenderer renderer, ClientLevel level, int ticks, float partialTick, PoseStack poseStack, double camX, double camY, double camZ, Matrix4f projectionMatrix, Vector3fc skyColor) {
@@ -88,19 +91,20 @@ public class UpperLayerCloudRenderer extends BillboardCloudRenderer {
         poseStack.translate(-camXOffset, -camY, -camZOffset);
         Matrix4f pose = poseStack.last().pose();
 
-        ShaderProgram cloudShader = VeilRenderSystem.setShader(ClinkerShaders.INSTANCED_CLOUD_BILLBOARD);
+        ShaderProgram cloudShader = VeilRenderSystem.setShader(ClinkerShaders.INSTANCED_CLOUD_BILLBOARD_LAYER);
 
         cloudShader.bind();
         cloudShader.bindSamplers(0);
         cloudShader.setDefaultUniforms(VertexFormat.Mode.QUADS, pose, projectionMatrix);
 
         cloudShader.getUniformSafe("PlayerCloudCell").setVectorI(playerCloudX, playerCloudZ);
+        cloudShader.getUniformSafe("PlayerCloudCellOffset").setFloats((float) camXOffset, (float) camZOffset);
         cloudShader.getUniformSafe("CloudCellSize").setInt(CLOUD_CELL_SIZE);
         cloudShader.getUniformSafe("InstanceCount").setInt(instanceCount);
         cloudShader.getUniformSafe("SkyColor").setVector(skyColor.x() * 0.8F, skyColor.y() * 0.8F, skyColor.z() * 0.8F, 1.0F);
         cloudShader.getUniformSafe("Transparent").setInt(transparent ? 1 : 0);
 
-        VeilRenderSystem.bind("InstancePositions", instancePositions);
+        VeilRenderSystem.bind("LayerInstancePositions", instancePositions);
 
         VertexBuffer vbo = renderer.getBillboardVbo();
 

@@ -1,6 +1,6 @@
 {
-  "vertex": "clinker:cloud/instanced_cloud_billboard",
-  "fragment": "clinker:cloud/instanced_cloud_billboard",
+  "vertex": "clinker:cloud/instanced_cloud_billboard_stormfront",
+  "fragment": "clinker:cloud/cloud_billboard",
   "textures": {
     "CloudDensitySampler": {
       "type": "framebuffer",
@@ -9,6 +9,10 @@
     "CloudSpriteSampler": {
       "type": "framebuffer",
       "name": "clinker:cloud_sprite"
+    },
+    "MainDepthSampler": {
+      "type": "framebuffer",
+      "name": "minecraft:main:depth"
     }
   }
 }

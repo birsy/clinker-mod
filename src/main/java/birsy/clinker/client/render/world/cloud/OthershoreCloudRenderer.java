@@ -2,11 +2,14 @@ package birsy.clinker.client.render.world.cloud;
 
 import birsy.clinker.client.render.ClinkerFramebuffers;
 import birsy.clinker.client.render.ClinkerShaders;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import foundry.veil.api.client.render.VeilRenderBridge;
 import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.api.client.render.framebuffer.AdvancedFbo;
 import foundry.veil.api.client.render.shader.program.ShaderProgram;
+import foundry.veil.api.client.render.shader.program.TextureUniformAccess;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.neoforged.neoforge.client.GlStateBackup;
@@ -14,6 +17,9 @@ import org.joml.Matrix4f;
 import org.joml.Vector3fc;
 
 import java.util.List;
+
+import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11C.GL_COLOR_BUFFER_BIT;
 
 public class OthershoreCloudRenderer {
     final List<BillboardCloudRenderer> cloudRenderers;
@@ -23,7 +29,8 @@ public class OthershoreCloudRenderer {
 
     public OthershoreCloudRenderer() {
         this.cloudRenderers = List.of(
-                new UpperLayerCloudRenderer()
+                new UpperLayerCloudRenderer(),
+                new StormFrontCloudRenderer()
         );
     }
 
@@ -54,7 +61,7 @@ public class OthershoreCloudRenderer {
             cloudRenderer.rebuild(renderRadius);
     }
 
-    void free() {
+    public void free() {
         for (BillboardCloudRenderer cloudRenderer : cloudRenderers)
             cloudRenderer.free();
         if (this.billboardVbo != null) this.billboardVbo.close();
@@ -71,28 +78,63 @@ public class OthershoreCloudRenderer {
             rebuild(renderRadius);
         }
 
+        GlStateBackup backup = new GlStateBackup();
+        RenderSystem.backupGlState(backup);
+
+        AdvancedFbo cloud = VeilRenderSystem.renderer().getFramebufferManager().getFramebuffer(ClinkerFramebuffers.CLOUDS);
+        cloud.bind(true);
+
+        cloud.clear(0.0F, 0.0F, 0.0F, 0.0F, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        ShaderProgram depthBlitShader = VeilRenderSystem.setShader(ClinkerShaders.VEIL_BLIT_DEPTH);
+        depthBlitShader.bind();
+        TextureUniformAccess.setFramebufferSamplers(VeilRenderBridge.toShaderInstance(depthBlitShader), AdvancedFbo.getMainFramebuffer());
+        RenderSystem.enableDepthTest();
+        RenderSystem.depthMask(true);
+        VeilRenderSystem.drawScreenQuad();
+        ShaderProgram.unbind();
+
         renderCloudDensityTexture(ticks, partialTick);
         renderCloudSpriteTexture(ticks, partialTick);
 
-        GlStateBackup backup = new GlStateBackup();
-        RenderSystem.backupGlState(backup);
+        cloud.bind(true);
 
         for (BillboardCloudRenderer cloudRenderer : cloudRenderers)
             cloudRenderer.preRender(this, level, ticks, partialTick, poseStack, camX, camY, camZ, projectionMatrix, skyColor);
 
-        RenderSystem.restoreGlState(backup);
-
         RenderSystem.depthMask(true);
         RenderSystem.enableDepthTest();
         RenderSystem.disableBlend();
+        RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         for (BillboardCloudRenderer cloudRenderer : cloudRenderers)
             cloudRenderer.renderSolid(this, level, ticks, partialTick, poseStack, camX, camY, camZ, projectionMatrix, skyColor);
 
         RenderSystem.depthMask(false);
         RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
+        RenderSystem.blendFuncSeparate(
+                GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+                GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA
+        );
         for (BillboardCloudRenderer cloudRenderer : cloudRenderers)
             cloudRenderer.renderTranslucent(this, level, ticks, partialTick, poseStack, camX, camY, camZ, projectionMatrix, skyColor);
+
+        for (BillboardCloudRenderer cloudRenderer : cloudRenderers)
+            cloudRenderer.postRender(this, level, ticks, partialTick, poseStack, camX, camY, camZ, projectionMatrix, skyColor);
+
+        AdvancedFbo.unbind();
+
+        ShaderProgram compositeShader = VeilRenderSystem.setShader(ClinkerShaders.CLOUD_COMPOSITE);
+        compositeShader.bind();
+        compositeShader.bindSamplers(0);
+        compositeShader.setDefaultUniforms(VertexFormat.Mode.TRIANGLE_STRIP);
+        RenderSystem.disableDepthTest();
+        RenderSystem.disableCull();
+        RenderSystem.blendFunc(
+                GlStateManager.SourceFactor.ONE,
+                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA
+        );
+        VeilRenderSystem.drawScreenQuad();
+        ShaderProgram.unbind();
 
         RenderSystem.restoreGlState(backup);
     }

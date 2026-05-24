@@ -8,5 +8,5 @@
   },
   "width": 1024.0,
   "height": 1024.0,
-  "format": "R16"
+  "format": "RGBA16F"
 }

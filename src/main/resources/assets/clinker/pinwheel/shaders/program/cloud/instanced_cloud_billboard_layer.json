@@ -1,0 +1,18 @@
+{
+  "vertex": "clinker:cloud/instanced_cloud_billboard_layer",
+  "fragment": "clinker:cloud/cloud_billboard",
+  "textures": {
+    "CloudDensitySampler": {
+      "type": "framebuffer",
+      "name": "clinker:cloud_density"
+    },
+    "CloudSpriteSampler": {
+      "type": "framebuffer",
+      "name": "clinker:cloud_sprite"
+    },
+    "MainDepthSampler": {
+      "type": "framebuffer",
+      "name": "minecraft:main:depth"
+    }
+  }
+}

@@ -22,4 +22,7 @@ public abstract class BillboardCloudRenderer {
     // called last without depth writing. should be rendered back-to-front.
     abstract void renderTranslucent(OthershoreCloudRenderer renderer, ClientLevel level, int ticks, float partialTick, PoseStack poseStack,
                                     double camX, double camY, double camZ, Matrix4f projectionMatrix, Vector3fc skyColor);
+
+    void postRender(OthershoreCloudRenderer renderer, ClientLevel level, int ticks, float partialTick, PoseStack poseStack,
+                   double camX, double camY, double camZ, Matrix4f projectionMatrix, Vector3fc skyColor) {}
 }

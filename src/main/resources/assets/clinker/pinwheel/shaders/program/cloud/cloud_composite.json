@@ -1,0 +1,10 @@
+{
+  "vertex": "veil:blit_screen",
+  "fragment": "clinker:cloud/cloud_composite",
+  "textures": {
+    "CloudsSampler": {
+      "type": "framebuffer",
+      "name": "clinker:clouds"
+    }
+  }
+}

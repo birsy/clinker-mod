@@ -31,7 +31,7 @@ void main() {
 		
 	vec2 offset = vec2(noiseA.r, noiseB.r) * -0.6 + time * vec2(-0.01, 0.005) * 2;
 	offset += bubbles * 0.05;
-	vec3 noiseC = texture(NoiseSampler, texCoord * 4 + offset).rgb;
+	vec3 noiseC = texture(NoiseSampler, texCoord + offset).rgb;
 	
 	float final = mix(noiseC.b, noiseC.g, smoothstep(0, 1, noiseA.r * noiseA.r * noiseA.r));
 	final = mix(final, noiseC.r, smoothstep(0, 1, noiseB.r) * noiseB.r);
@@ -40,8 +40,11 @@ void main() {
 	
 	final = bubbles + (ridgesAndWiggles * 2 - 1) * 0.5;
 	final = smoothstep(-0.5, 1.5, final);
-    fragColor = vec4(final, 0, 0, 1.0);
 
+	float dx = dFdx(final);
+	float dy = dFdy(final);
+	vec3 normal = normalize(vec3(dx, dy, 0.2));
+    fragColor = vec4(normal * 0.5 + 0.5, final);
 }
 
 

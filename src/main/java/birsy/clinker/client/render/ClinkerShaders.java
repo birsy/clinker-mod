@@ -2,13 +2,13 @@ package birsy.clinker.client.render;
 
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import foundry.veil.Veil;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterShadersEvent;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -22,7 +22,10 @@ public class ClinkerShaders {
     public static final ResourceLocation CLOUD = Clinker.resource("cloud/cloud");
     public static final ResourceLocation CLOUD_DENSITY = Clinker.resource("cloud/cloud_density");
     public static final ResourceLocation CLOUD_SPRITE = Clinker.resource("cloud/cloud_sprite");
-    public static final ResourceLocation INSTANCED_CLOUD_BILLBOARD = Clinker.resource("cloud/instanced_cloud_billboard");
+    public static final ResourceLocation CLOUD_COMPOSITE = Clinker.resource("cloud/cloud_composite");
+
+    public static final ResourceLocation INSTANCED_CLOUD_BILLBOARD_LAYER = Clinker.resource("cloud/instanced_cloud_billboard_layer");
+    public static final ResourceLocation INSTANCED_CLOUD_BILLBOARD_STORMFRONT = Clinker.resource("cloud/instanced_cloud_billboard_stormfront");
 
     public static final ResourceLocation LIGHT_GREASE = Clinker.resource("light/grease");
     public static final ResourceLocation LIGHT_RIM = Clinker.resource("light/rim");
@@ -31,6 +34,7 @@ public class ClinkerShaders {
     public static final ResourceLocation PARTICLE_CHAIN_LIGHTNING = Clinker.resource("particle/chain_lightning");
 
     public static final ResourceLocation FOG_LAYER = Clinker.resource("fog_layer");
+    public static final ResourceLocation VEIL_BLIT_DEPTH = Veil.veilPath("blit_depth");
 
     // vanilla shaders
     private static ShaderInstance rendertypeEntityCutoutUnlitShader;
