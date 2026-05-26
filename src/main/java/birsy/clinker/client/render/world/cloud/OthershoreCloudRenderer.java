@@ -12,6 +12,7 @@ import foundry.veil.api.client.render.shader.program.ShaderProgram;
 import foundry.veil.api.client.render.shader.program.TextureUniformAccess;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.world.level.material.FogType;
 import net.neoforged.neoforge.client.GlStateBackup;
 import org.joml.Matrix4f;
 import org.joml.Vector3fc;
@@ -70,6 +71,9 @@ public class OthershoreCloudRenderer {
     }
 
     public void render(ClientLevel level, int ticks, float partialTick, PoseStack poseStack, double camX, double camY, double camZ, Matrix4f projectionMatrix, Vector3fc skyColor) {
+        // dont render if youre under da sea
+        if (Minecraft.getInstance().gameRenderer.getMainCamera().getFluidInCamera() != FogType.NONE) return;
+
         if (!initialized) {
             initialize();
         }
@@ -123,8 +127,8 @@ public class OthershoreCloudRenderer {
         RenderSystem.enableDepthTest();
         RenderSystem.disableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        for (BillboardCloudRenderer cloudRenderer : cloudRenderers)
-            cloudRenderer.renderSolid(this, level, ticks, partialTick, poseStack, camX, camY, camZ, projectionMatrix, skyColor);
+//        for (BillboardCloudRenderer cloudRenderer : cloudRenderers)
+//            cloudRenderer.renderSolid(this, level, ticks, partialTick, poseStack, camX, camY, camZ, projectionMatrix, skyColor);
 
         RenderSystem.depthMask(false);
         RenderSystem.enableBlend();

@@ -49,9 +49,9 @@ void main() {
     col *= vec4(1.0, 1.0, 1.0, spriteAlpha * cloudFade);
 
     if (col.a < 0.01) discard;
-    const float transparencyThreshold = 0.99;
-    float isTransparent = step(transparencyThreshold, col.a);
-    if (isTransparent == Transparent) discard;
+//    const float transparencyThreshold = 0.99;
+//    float isTransparent = step(transparencyThreshold, col.a);
+//    if (isTransparent == Transparent) discard;
 
     fragColor = vec4(col.rgb, col.a);
 }

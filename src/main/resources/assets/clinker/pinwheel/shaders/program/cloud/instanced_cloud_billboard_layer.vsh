@@ -53,8 +53,7 @@ void main() {
     center += randomOffset;
 
     int textureSize = 5000;
-    vec4 cloudTexture = texture(CloudDensitySampler,
-    (mod(worldGridPos * CloudCellSize, textureSize) + randomOffset.xz) / float(textureSize));
+    vec4 cloudTexture = texture(CloudDensitySampler, (mod(worldGridPos * CloudCellSize, textureSize) + randomOffset.xz) / float(textureSize));
     float cloudDensity = cloudTexture.a;
 
     const float maxDisplacement = 10.0;
@@ -62,6 +61,7 @@ void main() {
     center += vec3(0.0, CloudHeight, 0.0) + displacement;
 
     float radius = mix(7.0, 13.0, randoms.w);
+
     vec3 worldPos = center +
     TexCoord.x * radius * Camera.IViewMat[0].xyz +
     TexCoord.y * radius * Camera.IViewMat[1].xyz;

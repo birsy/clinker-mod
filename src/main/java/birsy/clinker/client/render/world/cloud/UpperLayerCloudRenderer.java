@@ -1,6 +1,7 @@
 package birsy.clinker.client.render.world.cloud;
 
 import birsy.clinker.client.render.ClinkerShaders;
+import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexBuffer;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -29,7 +30,7 @@ public class UpperLayerCloudRenderer extends BillboardCloudRenderer {
 
     @Override
     void rebuild(int renderRadiusInBlocks) {
-        CloudPosition[] data = createInstanceData(renderRadiusInBlocks / CLOUD_CELL_SIZE + 3);
+        CloudPosition[] data = createInstanceData(renderRadiusInBlocks / CLOUD_CELL_SIZE + 5);
         int size = data.length * CloudPosition.SIZE;
 
         if (instancePositions == null)
@@ -99,7 +100,7 @@ public class UpperLayerCloudRenderer extends BillboardCloudRenderer {
         cloudShader.setDefaultUniforms(VertexFormat.Mode.QUADS, pose, projectionMatrix);
 
         cloudShader.getUniformSafe("PlayerCloudCell").setVectorI(playerCloudX, playerCloudZ);
-        cloudShader.getUniformSafe("PlayerCloudCellOffset").setFloats((float) camXOffset, (float) camZOffset);
+        cloudShader.getUniformSafe("PlayerCloudCellOffset").setVector((float) camXOffset, (float) camZOffset);
         cloudShader.getUniformSafe("CloudCellSize").setInt(CLOUD_CELL_SIZE);
         cloudShader.getUniformSafe("InstanceCount").setInt(instanceCount);
         cloudShader.getUniformSafe("SkyColor").setVector(skyColor.x() * 0.8F, skyColor.y() * 0.8F, skyColor.z() * 0.8F, 1.0F);
