@@ -24,9 +24,9 @@ public class OthershoreStormRenderHelper {
         if (weatherSystem.getWeather() instanceof StormApproachingWeather) {
             return Mth.clampedMap(StormApproachingWeather.getStormApproachProgress(weatherSystem, partialTicks),
                     0.93F, 0.95F, 0.0F, 1.0F);
-        } else if (weatherSystem.getWeather() instanceof StormWeather) {
-            // todo: fade out!
-            return 1.0F;
+        } else if (weatherSystem.getWeather() instanceof StormWeather storm) {
+            return Mth.clampedMap(storm.getStormProgress(weatherSystem, partialTicks),
+                    0.9F, 1.0F, 1.0F, 0.0F);
         }
 
         return 0.0F;

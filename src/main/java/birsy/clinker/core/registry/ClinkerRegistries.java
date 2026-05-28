@@ -47,9 +47,9 @@ public class ClinkerRegistries {
                     .sync(true)
                     .create();
 
-    public static final ResourceKey<Registry<OthershoreWeather.Type>> OTHERSHORE_WEATHER_TYPE_REGISTRY_KEY =
+    public static final ResourceKey<Registry<OthershoreWeather.Type<?>>> OTHERSHORE_WEATHER_TYPE_REGISTRY_KEY =
             ResourceKey.createRegistryKey(Clinker.resource("othershore_weather_type"));
-    public static final Registry<OthershoreWeather.Type> OTHERSHORE_WEATHER_TYPE_REGISTRY =
+    public static final Registry<OthershoreWeather.Type<?>> OTHERSHORE_WEATHER_TYPE_REGISTRY =
             new RegistryBuilder<>(OTHERSHORE_WEATHER_TYPE_REGISTRY_KEY)
                     .sync(true)
                     .create();

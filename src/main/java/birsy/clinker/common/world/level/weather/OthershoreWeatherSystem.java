@@ -30,7 +30,7 @@ public class OthershoreWeatherSystem {
         weatherTickCount++;
     }
 
-    public void setWeather(OthershoreWeather.Type weatherType) {
+    public void setWeather(OthershoreWeather.Type<?> weatherType) {
         setWeather(weatherType.factory().apply(this));
     }
 

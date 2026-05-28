@@ -26,7 +26,7 @@ public class ClinkWeatherCommand {
         );
     }
 
-    private static int setWeather(CommandSourceStack source, Holder.Reference<OthershoreWeather.Type> weather) throws CommandSyntaxException {
+    private static int setWeather(CommandSourceStack source, Holder.Reference<OthershoreWeather.Type<?>> weather) throws CommandSyntaxException {
         ServerOthershoreWeatherSystem system = ServerOthershoreWeatherSystem.getServerSystem(source.getLevel());
         if (system == null) throw INVALID_DIMENSION.create();
         system.system.setWeather(weather.value());

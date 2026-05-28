@@ -13,13 +13,13 @@ import net.minecraft.util.random.WeightedRandomList;
 import java.util.function.Supplier;
 
 public class NormalWeather extends OthershoreWeather {
-    public static final MapCodec<OthershoreWeather> CODEC =
+    public static final MapCodec<NormalWeather> CODEC =
             MapCodec.unit(NormalWeather::new);
-    public static final StreamCodec<RegistryFriendlyByteBuf, OthershoreWeather> STREAM_CODEC =
+    public static final StreamCodec<RegistryFriendlyByteBuf, NormalWeather> STREAM_CODEC =
             StreamCodec.of((buf, weather) -> {}, buf -> new NormalWeather());
 
     private static final int MINIMUM_TICKS_BETWEEN_STORMS = 10 * 60 * 20; // 10 minutes
-    private static final SimpleWeightedRandomList<Supplier<Type>> NEXT_TYPE_CHANCES = SimpleWeightedRandomList.<Supplier<Type>>builder()
+    private static final SimpleWeightedRandomList<Supplier<Type<?>>> NEXT_TYPE_CHANCES = SimpleWeightedRandomList.<Supplier<Type<?>>>builder()
             .add(ClinkerOthershoreWeatherTypes.NORMAL, 5 * 60 * 20)
             .add(ClinkerOthershoreWeatherTypes.STORM_APPROACHING, 1)
             .build();

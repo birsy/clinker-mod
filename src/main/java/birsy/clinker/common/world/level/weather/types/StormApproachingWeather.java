@@ -10,9 +10,9 @@ import net.minecraft.util.random.SimpleWeightedRandomList;
 
 public class StormApproachingWeather extends OthershoreWeather {
     public static final int APPROACH_TIME = 60 * 20; // one minute
-    public static final MapCodec<OthershoreWeather> CODEC =
+    public static final MapCodec<StormApproachingWeather> CODEC =
             MapCodec.unit(StormApproachingWeather::new);
-    public static final StreamCodec<RegistryFriendlyByteBuf, OthershoreWeather> STREAM_CODEC =
+    public static final StreamCodec<RegistryFriendlyByteBuf, StormApproachingWeather> STREAM_CODEC =
             StreamCodec.of((buf, weather) -> {}, buf -> new StormApproachingWeather());
 
     public StormApproachingWeather() { super(); }

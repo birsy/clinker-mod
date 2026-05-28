@@ -19,7 +19,7 @@ public abstract class OthershoreWeather {
 
     public OthershoreWeather() {}
 
-    public abstract OthershoreWeather.Type type();
+    public abstract OthershoreWeather.Type<?> type();
 
     // this is run when the weather event begins, but NOT when it is synced to a newly joining client!
     // use the constructor for that :P
@@ -32,13 +32,13 @@ public abstract class OthershoreWeather {
     public void uploadToSyncPacket(RegistryFriendlyByteBuf buffer) {}
     public void updateFromSyncPacket(RegistryFriendlyByteBuf buffer) {}
 
-    public record Type(
-            Function<OthershoreWeatherSystem, OthershoreWeather> factory,
-            MapCodec<OthershoreWeather> codec,
-            StreamCodec<RegistryFriendlyByteBuf, OthershoreWeather> streamCodec) {
-        public static final Codec<OthershoreWeather.Type> CODEC =
+    public record Type<T extends OthershoreWeather>(
+            Function<OthershoreWeatherSystem, T> factory,
+            MapCodec<T> codec,
+            StreamCodec<RegistryFriendlyByteBuf, T> streamCodec) {
+        public static final Codec<OthershoreWeather.Type<?>> CODEC =
                 ClinkerRegistries.OTHERSHORE_WEATHER_TYPE_REGISTRY.byNameCodec();
-        public static final StreamCodec<RegistryFriendlyByteBuf, OthershoreWeather.Type> STREAM_CODEC =
+        public static final StreamCodec<RegistryFriendlyByteBuf, OthershoreWeather.Type<?>> STREAM_CODEC =
                 ByteBufCodecs.registry(ClinkerRegistries.OTHERSHORE_WEATHER_TYPE_REGISTRY_KEY);
     }
 }
