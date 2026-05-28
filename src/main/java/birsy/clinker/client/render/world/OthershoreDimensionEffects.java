@@ -153,7 +153,7 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects implemen
         OthershoreWeatherSystem weatherSystem = ClientOthershoreWeatherSystem.get();
         float stormIntensity = 0;
         if (weatherSystem != null) {
-            stormIntensity = OthershoreStormRenderHelper.getStormIntensity(weatherSystem, partialTicks);
+            stormIntensity = OthershoreStormRenderHelper.getStormIntensity(Minecraft.getInstance().gameRenderer.getMainCamera().getPosition().y(), weatherSystem, partialTicks);
         }
         skyLightColor.mul(1.0F - stormIntensity);
 

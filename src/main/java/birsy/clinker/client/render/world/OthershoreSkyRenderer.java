@@ -74,7 +74,7 @@ public class OthershoreSkyRenderer {
 
         OthershoreWeatherSystem weatherSystem = ClientOthershoreWeatherSystem.get();
         float stormIntensity = 0;
-        if (weatherSystem != null) stormIntensity = OthershoreStormRenderHelper.getStormIntensity(weatherSystem, partialTick);
+        if (weatherSystem != null) stormIntensity = OthershoreStormRenderHelper.getStormIntensity(cameraPos.y(), weatherSystem, partialTick);
 
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F - stormIntensity);
         RenderSystem.enableBlend();
