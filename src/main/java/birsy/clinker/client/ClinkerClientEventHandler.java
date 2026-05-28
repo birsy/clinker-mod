@@ -50,7 +50,7 @@ public class ClinkerClientEventHandler {
                 Vec3 camPos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
                 effects.drawCloudsCustom(level,
                         event.getRenderTick(),
-                        event.getPartialTick().getGameTimeDeltaTicks(),
+                        event.getPartialTick().getGameTimeDeltaPartialTick(false),
                         event.getPoseStack(),
                         camPos.x, camPos.y, camPos.z,
                         event.getModelViewMatrix(),

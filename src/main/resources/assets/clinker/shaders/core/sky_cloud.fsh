@@ -92,5 +92,5 @@ void main() {
 
     noisevalue *= (1.0 - gradient) * (1 - RingDistance) * 0.5;
     if (value < 0.01) discard;
-    fragColor = vertexColor * vec4(1.0 + noisevalue, 1.0 + noisevalue, 1.0 + noisevalue, value);
+    fragColor = vertexColor * vec4(1.0 + noisevalue, 1.0 + noisevalue, 1.0 + noisevalue, value) * ColorModulator;
 }

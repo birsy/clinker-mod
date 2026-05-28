@@ -6,10 +6,11 @@ import birsy.clinker.client.gui.AlchemyBundleGUIRenderer;
 import birsy.clinker.client.render.debug.ClinkerDebugRenderers;
 import birsy.clinker.client.render.page.PageAtlas;
 import birsy.clinker.client.entity.item.AlchemistsCrossbowRenderer;
+import birsy.clinker.common.commands.ClinkWeatherCommand;
 import birsy.clinker.core.registry.*;
 import birsy.clinker.core.registry.entity.*;
 import birsy.clinker.core.registry.worldgen.*;
-import birsy.clinker.core.util.ClinkMeCommand;
+import birsy.clinker.common.commands.ClinkMeCommand;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -80,6 +81,8 @@ public class Clinker {
 
         ClinkerOrdnanceModifierTypes.ORDNANCE_MODIFIER_TYPES.register(modEventBus);
 
+        ClinkerOthershoreWeatherTypes.OTHERSHORE_WEATHER_TYPES.register(modEventBus);
+
         modEventBus.addListener(this::setup);
         modEventBus.addListener(this::doClientStuff);
     }
@@ -105,6 +108,7 @@ public class Clinker {
         if (SharedConstants.IS_RUNNING_IN_IDE) {
             ClinkMeCommand.register(event.getDispatcher(), event.getBuildContext());
         }
+        ClinkWeatherCommand.register(event.getDispatcher(), event.getBuildContext());
     }
 
     private void doClientStuff(final FMLClientSetupEvent event) {

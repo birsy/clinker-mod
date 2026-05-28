@@ -7,6 +7,10 @@ import birsy.clinker.common.networking.packet.debug.ClientboundSquadDebugPacket;
 import birsy.clinker.common.networking.packet.ropeentity.ClientboundRopeEntityInitPacket;
 import birsy.clinker.common.networking.packet.ropeentity.ClientboundRopeEntitySegmentAddPacket;
 import birsy.clinker.common.networking.packet.ropeentity.ClientboundRopeEntitySyncPacket;
+import birsy.clinker.common.networking.packet.weather.ClientboundOthershoreWeatherChangedPacket;
+import birsy.clinker.common.networking.packet.weather.ClientboundOthershoreWeatherInitPacket;
+import birsy.clinker.common.networking.packet.weather.ClientboundOthershoreWeatherSyncPacket;
+import birsy.clinker.common.networking.packet.weather.ServerboundOthershoreWeatherInitPacket;
 import birsy.clinker.common.networking.packet.workstation.ClientboundWorkstationChangeBlockPacket;
 import birsy.clinker.common.networking.packet.workstation.ClientboundWorkstationLoadPacket;
 import birsy.clinker.common.networking.packet.workstation.ClientboundWorkstationMergePacket;
@@ -65,10 +69,24 @@ public class ClinkerPacketRegistry {
                 ClientboundSaltpetreLeachPacket.STREAM_CODEC,
                 ClientboundSaltpetreLeachPacket::handle);
 
+        registrar.playToClient(ClientboundOthershoreWeatherInitPacket.TYPE,
+                ClientboundOthershoreWeatherInitPacket.STREAM_CODEC,
+                ClientboundOthershoreWeatherInitPacket::handle);
+        registrar.playToClient(ClientboundOthershoreWeatherChangedPacket.TYPE,
+                ClientboundOthershoreWeatherChangedPacket.STREAM_CODEC,
+                ClientboundOthershoreWeatherChangedPacket::handle);
+        registrar.playToClient(ClientboundOthershoreWeatherSyncPacket.TYPE,
+                ClientboundOthershoreWeatherSyncPacket.STREAM_CODEC,
+                ClientboundOthershoreWeatherSyncPacket::handle);
+
         // server bound
         registrar.playToServer(ServerboundWorkstationLoadRequestPacket.TYPE,
                 ServerboundWorkstationLoadRequestPacket.STREAM_CODEC,
                 ServerboundWorkstationLoadRequestPacket::handle);
+
+        registrar.playToServer(ServerboundOthershoreWeatherInitPacket.TYPE,
+                ServerboundOthershoreWeatherInitPacket.STREAM_CODEC,
+                ServerboundOthershoreWeatherInitPacket::handle);
 
         //debug packets
         registrar.playToClient(ClientboundPathfindingDebugPacket.TYPE,

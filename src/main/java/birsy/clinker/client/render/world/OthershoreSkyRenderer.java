@@ -2,6 +2,8 @@ package birsy.clinker.client.render.world;
 
 import birsy.clinker.client.render.ClinkerShaders;
 import birsy.clinker.client.render.world.cloud.UpperLayerCloudRenderer;
+import birsy.clinker.common.world.level.weather.ClientOthershoreWeatherSystem;
+import birsy.clinker.common.world.level.weather.OthershoreWeatherSystem;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -70,7 +72,11 @@ public class OthershoreSkyRenderer {
 
         float[] fogColor = RenderSystem.getShaderFogColor();
 
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        OthershoreWeatherSystem weatherSystem = ClientOthershoreWeatherSystem.get();
+        float stormIntensity = 0;
+        if (weatherSystem != null) stormIntensity = OthershoreStormRenderHelper.getStormIntensity(weatherSystem, partialTick);
+
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F - stormIntensity);
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(
                 GlStateManager.SourceFactor.SRC_ALPHA,

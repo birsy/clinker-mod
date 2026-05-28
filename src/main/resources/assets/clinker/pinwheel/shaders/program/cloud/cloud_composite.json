@@ -10,6 +10,10 @@
       "type": "framebuffer",
       "name": "clinker:clouds_composite_depth:depth"
     },
+    "MainSampler": {
+      "type": "framebuffer",
+      "name": "minecraft:main"
+    },
     "MainDepthSampler": {
       "type": "framebuffer",
       "name": "minecraft:main:depth"

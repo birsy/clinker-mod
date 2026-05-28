@@ -1,6 +1,8 @@
 package birsy.clinker.client.render.world;
 
 import birsy.clinker.client.render.world.cloud.OthershoreCloudRenderer;
+import birsy.clinker.common.world.level.weather.ClientOthershoreWeatherSystem;
+import birsy.clinker.common.world.level.weather.OthershoreWeatherSystem;
 import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -122,7 +124,6 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects implemen
 
         //colors.set(Math.max(skyL, blockL), Math.max(skyL, blockL), Math.max(skyL, blockL));
 
-
         // Start off with an orange base
         Vector3f blockLightColor = new Vector3f(255.0F / 255.0F, 96.0F / 255.0F, 0.0F / 255.0F);
         // Tone down the orange a tad.
@@ -149,12 +150,20 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects implemen
         skyLightColor.lerp(new Vector3f(), skyL);
         skyLightColor.mul(skyDarken);
 
+        OthershoreWeatherSystem weatherSystem = ClientOthershoreWeatherSystem.get();
+        float stormIntensity = 0;
+        if (weatherSystem != null) {
+            stormIntensity = OthershoreStormRenderHelper.getStormIntensity(weatherSystem, partialTicks);
+        }
+        skyLightColor.mul(1.0F - stormIntensity);
+
         colors.set(blockLightColor.x() + skyLightColor.x(), blockLightColor.y() + skyLightColor.y(), blockLightColor.z() + skyLightColor.z());
         float ambientBrightness = 0.02F;
         if (mc.player.hasEffect(MobEffects.NIGHT_VISION)) {
             float nvScale = GameRenderer.getNightVisionScale(mc.player, partialTicks);
             colors.add(ambientBrightness * nvScale, ambientBrightness * nvScale, ambientBrightness);
         } else {
+            ambientBrightness = Mth.lerp(ambientBrightness, 0.0F, skyL * stormIntensity);
             colors.add(ambientBrightness * 0.8F, ambientBrightness * 0.8F, ambientBrightness);
         }
         Minecraft.getInstance().getProfiler().pop();

@@ -53,5 +53,5 @@ void main() {
 //    float isTransparent = step(transparencyThreshold, col.a);
 //    if (isTransparent == Transparent) discard;
 
-    fragColor = vec4(col.rgb, col.a);
+    fragColor = col;
 }

@@ -1,6 +1,8 @@
 package birsy.clinker.client.render.world;
 
 import birsy.clinker.client.ambience.AmbienceHandler;
+import birsy.clinker.common.world.level.weather.ClientOthershoreWeatherSystem;
+import birsy.clinker.common.world.level.weather.OthershoreWeatherSystem;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.worldgen.ClinkerWorld;
 import com.mojang.blaze3d.shaders.FogShape;
@@ -26,10 +28,22 @@ public class OthershoreFogRenderer {
 
         float surfaceFactor = AmbienceHandler.SURFACE_AMBIENCE_HANDLER.getAboveGroundFactor(event.getPartialTick());
         surfaceFactor = Mth.sqrt(surfaceFactor);
+
+        OthershoreWeatherSystem weatherSystem = ClientOthershoreWeatherSystem.get();
+        float stormIntensity = 0;
+        if (weatherSystem != null) stormIntensity = OthershoreStormRenderHelper.getStormIntensity(weatherSystem, (float) event.getPartialTick());
+
+        float farPlaneDist = event.getFarPlaneDistance();
+        farPlaneDist *= Mth.lerp(surfaceFactor, 0.5F, 1.0F);
+        farPlaneDist = Mth.lerp(stormIntensity * surfaceFactor, farPlaneDist, Math.min(farPlaneDist, 48.0F));
+
+        float nearPlaneDist = 0.0F;
+        //nearPlaneDist = Mth.lerp(stormIntensity * surfaceFactor, nearPlaneDist, Math.min(nearPlaneDist, -8.0F));
+
         event.setCanceled(true);
         event.setFogShape(FogShape.SPHERE);
-        event.setNearPlaneDistance(0.0F);
-        event.setFarPlaneDistance(event.getFarPlaneDistance() * Mth.lerp(surfaceFactor, 0.5F, 1.0F));
+        event.setNearPlaneDistance(nearPlaneDist);
+        event.setFarPlaneDistance(farPlaneDist);
     }
 
     @SubscribeEvent
@@ -40,6 +54,12 @@ public class OthershoreFogRenderer {
         if (event.getRenderer().getMainCamera().getFluidInCamera() != FogType.NONE) return;
 
         float brightness = (float) Mth.map(Minecraft.getInstance().options.gamma().get(), 0.0F, 0.5F, 0.7F, 1.0F);
+
+        OthershoreWeatherSystem weatherSystem = ClientOthershoreWeatherSystem.get();
+        float stormIntensity = 0;
+        if (weatherSystem != null) stormIntensity = OthershoreStormRenderHelper.getStormIntensity(weatherSystem, (float) event.getPartialTick());
+        brightness *= 1.0F - (stormIntensity * 0.8F);
+
         event.setRed(event.getRed() * brightness);
         event.setGreen(event.getGreen() * brightness);
         event.setBlue(event.getBlue() * brightness);

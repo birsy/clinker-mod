@@ -2,7 +2,11 @@ package birsy.clinker.client.render.world.cloud;
 
 import birsy.clinker.client.ambience.AmbienceHandler;
 import birsy.clinker.client.render.ClinkerShaders;
+import birsy.clinker.client.render.world.OthershoreStormRenderHelper;
 import birsy.clinker.common.world.level.gen.OthershoreGenerationConstants;
+import birsy.clinker.common.world.level.weather.ClientOthershoreWeatherSystem;
+import birsy.clinker.common.world.level.weather.OthershoreWeatherSystem;
+import birsy.clinker.common.world.level.weather.types.StormApproachingWeather;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.CubicBezierSpline;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -22,9 +26,11 @@ import java.nio.ByteBuffer;
 import java.util.*;
 
 public class StormFrontCloudRenderer extends BillboardCloudRenderer {
+    public static final int CLOUD_CELL_SIZE = 5;
+
+    final List<DistanceAtHeight> distancesAtHeight = new ArrayList<>();
     DynamicShaderBlock<CloudPosition[]> instancePositions;
     int instanceCount = 0;
-    public static final int CLOUD_CELL_SIZE = 5;
 
     @Override
     void rebuild(int renderRadiusInBlocks) {
@@ -54,19 +60,30 @@ public class StormFrontCloudRenderer extends BillboardCloudRenderer {
 
         final float cloudDistance = CLOUD_CELL_SIZE;
 
-        Vector3f tangent = new Vector3f(), normal = new Vector3f(), biNormal = new Vector3f();
+        Vector3f lastPos = new Vector3f(0, -1, 0), normal = new Vector3f(), lastNormal = new Vector3f(0, 0, -1);
+        distancesAtHeight.clear();
         spline.forEachEvenlySpaced(
                 cloudDistance, 256,
                 (startPos, t) -> {
-                    if (!spline.frenet(t, tangent, normal, biNormal)) return;
+                    Vector3f tangent = lastPos.sub(startPos, lastPos).normalize();
+                    tangent.cross(1, 0, 0, normal).normalize();
+                    if (lastNormal.dot(normal) < 0) normal.mul(-1);
+
                     for (float length = -radius; length < radius; length += cloudDistance) {
                         positions.add(new CloudPosition(
                                 startPos.x() + length, startPos.y(), startPos.z(),
                                 normal.x(), normal.y(), normal.z()
                         ));
                     }
+                    lastPos.set(startPos);
+                    lastNormal.set(normal);
+
+                    if (distancesAtHeight.isEmpty() || startPos.y() > distancesAtHeight.getLast().height) {
+                        distancesAtHeight.add(new DistanceAtHeight(startPos.z(), startPos.y()));
+                    }
                 }
         );
+
         positions.sort(Comparator.comparingDouble(pos -> Mth.lengthSquared(pos.x, pos.z - 30)));
         // output to flat array
         return positions.toArray(new CloudPosition[0]);
@@ -80,6 +97,7 @@ public class StormFrontCloudRenderer extends BillboardCloudRenderer {
             buffer.putFloat(0); // padding
         }
     }
+    private record DistanceAtHeight(float distance, float height) {}
 
     @Override
     void free() {
@@ -93,23 +111,31 @@ public class StormFrontCloudRenderer extends BillboardCloudRenderer {
 
     @Override
     void renderSolid(OthershoreCloudRenderer renderer, ClientLevel level, int ticks, float partialTick, PoseStack poseStack, double camX, double camY, double camZ, Matrix4f projectionMatrix, Vector3fc skyColor) {
-        render(renderer, poseStack, camX, camY, camZ, projectionMatrix, skyColor, false);
+        render(renderer, poseStack, camX, camY, camZ, partialTick, projectionMatrix, skyColor, false);
     }
     @Override
     void renderTranslucent(OthershoreCloudRenderer renderer, ClientLevel level, int ticks, float partialTick, PoseStack poseStack, double camX, double camY, double camZ, Matrix4f projectionMatrix, Vector3fc skyColor) {
-        render(renderer, poseStack, camX, camY, camZ, projectionMatrix, skyColor, true);
+        render(renderer, poseStack, camX, camY, camZ, partialTick, projectionMatrix, skyColor, true);
     }
 
-    void render(OthershoreCloudRenderer renderer, PoseStack poseStack, double camX, double camY, double camZ, Matrix4f projectionMatrix, Vector3fc skyColor, boolean transparent) {
+    void render(OthershoreCloudRenderer renderer, PoseStack poseStack, double camX, double camY, double camZ, float partialTicks, Matrix4f projectionMatrix, Vector3fc skyColor, boolean transparent) {
+        OthershoreWeatherSystem weatherSystem = ClientOthershoreWeatherSystem.get();
+        if (weatherSystem == null) return;
+        //if (!(weatherSystem.getWeather() instanceof StormApproachingWeather)) return;
+
         float alphaAboveCloudHeight = (float) Mth.clampedMap(camY, UpperLayerCloudRenderer.LOWER_CLOUD_HEIGHT - 20, UpperLayerCloudRenderer.LOWER_CLOUD_HEIGHT, 1.0, 0.0);
         float alphaFromUndergroundness = AmbienceHandler.SURFACE_AMBIENCE_HANDLER.getAboveGroundFactor(1.0F);
-        float fade = alphaAboveCloudHeight * alphaFromUndergroundness;
+        float alphaFromFade = OthershoreStormRenderHelper.getStormCloudAlpha(weatherSystem, partialTicks);
+        float fade = alphaFromFade * alphaAboveCloudHeight * alphaFromUndergroundness;
         if (fade < 0.05) return;
 
         int playerCloudX = Math.floorDiv(Mth.floor(camX), CLOUD_CELL_SIZE);
         double camXOffset = camX - (playerCloudX * CLOUD_CELL_SIZE);
 
-        float distanceToPlayer = 80;
+        float progress = OthershoreStormRenderHelper.getNormalizedStormApproachDistance(weatherSystem, partialTicks);
+        float distanceToPlayer = progress * renderer.lastRenderRadius;
+        float cloudDistanceOffset = getCloudDistanceOffset((float) camY - OthershoreGenerationConstants.SEA_HEIGHT);
+        distanceToPlayer += cloudDistanceOffset - CLOUD_CELL_SIZE;
 
         poseStack.pushPose();
         poseStack.translate(-camXOffset, -camY + OthershoreGenerationConstants.SEA_HEIGHT, -distanceToPlayer);
@@ -141,5 +167,20 @@ public class StormFrontCloudRenderer extends BillboardCloudRenderer {
 
         ShaderProgram.unbind();
         poseStack.popPose();
+    }
+
+    float getCloudDistanceOffset(float y) {
+        if (y <= distancesAtHeight.getFirst().height) return distancesAtHeight.getFirst().distance;
+        if (y >= distancesAtHeight.getLast().height) return distancesAtHeight.getLast().distance;
+
+        for (int i = 1; i < distancesAtHeight.size(); i++) {
+            DistanceAtHeight distanceAtHeight = distancesAtHeight.get(i);
+            if (y <= distanceAtHeight.height) {
+                DistanceAtHeight lastDistanceAtHeight = distancesAtHeight.get(i - 1);
+                float interpolationFactor = (y - lastDistanceAtHeight.height) / (distanceAtHeight.height - lastDistanceAtHeight.height);
+                return Mth.lerp(interpolationFactor, lastDistanceAtHeight.distance, distanceAtHeight.distance);
+            }
+        }
+        return 0;
     }
 }

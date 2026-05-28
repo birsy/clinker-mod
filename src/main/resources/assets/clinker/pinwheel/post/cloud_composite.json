@@ -1,0 +1,17 @@
+{
+  "stages": [
+    {
+      "type": "veil:blit",
+      "shader": "clinker:cloud/cloud_composite",
+      "out": "temp"
+    },
+    {
+      "type": "veil:copy",
+      "in": "temp",
+      "out": "minecraft:main"
+    }
+  ]
+}
+
+
+

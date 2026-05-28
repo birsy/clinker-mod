@@ -1,6 +1,7 @@
 package birsy.clinker.client.render.world.cloud;
 
 import birsy.clinker.client.render.ClinkerFramebuffers;
+import birsy.clinker.client.render.ClinkerPostPipelines;
 import birsy.clinker.client.render.ClinkerShaders;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -8,6 +9,7 @@ import com.mojang.blaze3d.vertex.*;
 import foundry.veil.api.client.render.VeilRenderBridge;
 import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.api.client.render.framebuffer.AdvancedFbo;
+import foundry.veil.api.client.render.post.PostPipeline;
 import foundry.veil.api.client.render.shader.program.ShaderProgram;
 import foundry.veil.api.client.render.shader.program.TextureUniformAccess;
 import net.minecraft.client.Minecraft;
@@ -88,7 +90,7 @@ public class OthershoreCloudRenderer {
 
         // blit depth into the weird temp depth buffer
         AdvancedFbo tempDepthFbo = VeilRenderSystem.renderer().getFramebufferManager().getFramebuffer(ClinkerFramebuffers.CLOUDS_COMPOSITE_DEPTH);
-        tempDepthFbo.clear(0.0F, 0.0F, 0.0F, 0.0F, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        tempDepthFbo.clear(skyColor.x(), skyColor.y(), skyColor.z(), 0.0F, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         tempDepthFbo.bind(true);
         ShaderProgram depthBlitShader = VeilRenderSystem.setShader(ClinkerShaders.VEIL_BLIT_DEPTH);
@@ -145,19 +147,19 @@ public class OthershoreCloudRenderer {
         AdvancedFbo.unbind();
 
         // composite with main scene
-        ShaderProgram compositeShader = VeilRenderSystem.setShader(ClinkerShaders.CLOUD_COMPOSITE);
-        compositeShader.bind();
-        compositeShader.bindSamplers(0);
-        compositeShader.setDefaultUniforms(VertexFormat.Mode.TRIANGLE_STRIP);
-        RenderSystem.disableDepthTest();
-        RenderSystem.depthMask(false);
-        RenderSystem.disableCull();
-        RenderSystem.blendFunc(
-                GlStateManager.SourceFactor.SRC_ALPHA,
-                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA
-        );
-        VeilRenderSystem.drawScreenQuad();
-        ShaderProgram.unbind();
+//        ShaderProgram compositeShader = VeilRenderSystem.setShader(ClinkerShaders.CLOUD_COMPOSITE);
+//        compositeShader.bind();
+//        compositeShader.bindSamplers(0);
+//        compositeShader.setDefaultUniforms(VertexFormat.Mode.TRIANGLE_STRIP);
+//        RenderSystem.disableDepthTest();
+//        RenderSystem.depthMask(false);
+//        RenderSystem.disableCull();
+//        RenderSystem.blendFunc(
+//                GlStateManager.SourceFactor.SRC_ALPHA,
+//                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA
+//        );
+        PostPipeline composite = VeilRenderSystem.renderer().getPostProcessingManager().getPipeline(ClinkerPostPipelines.CLOUD_COMPOSITE_PIPELINE);
+        VeilRenderSystem.renderer().getPostProcessingManager().runPipeline(composite, true);
 
         RenderSystem.restoreGlState(backup);
     }

@@ -2,6 +2,7 @@
 
 uniform sampler2D CloudsSampler;
 uniform sampler2D CloudsResolutionDepthSampler;
+uniform sampler2D MainSampler;
 uniform sampler2D MainDepthSampler;
 uniform vec2 ScreenSize;
 
@@ -38,5 +39,9 @@ void main() {
     }
     if (minimumDepthDifference > VeilCamera.FarPlane * 0.9 || minimumDepthDifference < 0.5) minimumDepthDifferenceCoordinates = texCoord;
 
-    fragColor = texture(CloudsSampler, minimumDepthDifferenceCoordinates);
+    vec4 mainColor = texture(MainSampler, texCoord);
+    vec4 cloudColor = texture(CloudsSampler, minimumDepthDifferenceCoordinates);
+    vec3 color = mix(sqrt(mainColor.rgb), sqrt(cloudColor.rgb), cloudColor.a);
+    color = color * color;
+    fragColor = vec4(color, 1.0);
 }

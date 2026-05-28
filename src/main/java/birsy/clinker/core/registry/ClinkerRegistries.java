@@ -11,6 +11,7 @@ import birsy.clinker.common.world.level.gen.system.surface.shaper.BiomeSurfaceSh
 import birsy.clinker.common.world.level.gen.system.surface.shaper.SurfaceShapers;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureType;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.WorldFeatureCapability;
+import birsy.clinker.common.world.level.weather.OthershoreWeather;
 import birsy.clinker.common.world.ordnance.OrdnanceModifierType;
 import birsy.clinker.core.Clinker;
 import net.minecraft.core.Registry;
@@ -24,22 +25,6 @@ import net.neoforged.neoforge.registries.callback.BakeCallback;
 
 @EventBusSubscriber(modid = Clinker.MOD_ID)
 public class ClinkerRegistries {
-    public static final ResourceKey<Registry<WorldFeatureType<?>>> WORLD_FEATURE_REGISTRY_KEY =
-            ResourceKey.createRegistryKey(Clinker.resource("world_feature"));
-    public static final Registry<WorldFeatureType<?>> WORLD_FEATURE_REGISTRY = new RegistryBuilder<>(WORLD_FEATURE_REGISTRY_KEY)
-            .sync(false)
-            .create();
-    public static final ResourceKey<Registry<WorldFeatureSpawnSet>> WORLD_FEATURE_SPAWN_SET_REGISTRY_KEY =
-            ResourceKey.createRegistryKey(Clinker.resource("world_feature_spawn_set"));
-    public static final Registry<WorldFeatureSpawnSet> WORLD_FEATURE_SPAWN_SET_REGISTRY = new RegistryBuilder<>(WORLD_FEATURE_SPAWN_SET_REGISTRY_KEY)
-            .sync(false)
-            .create();
-    public static final ResourceKey<Registry<Class<? extends WorldFeatureCapability>>> WORLD_FEATURE_CAPABILITY_REGISTRY_KEY =
-            ResourceKey.createRegistryKey(Clinker.resource("world_feature_capability"));
-    public static final Registry<Class<? extends WorldFeatureCapability>> WORLD_FEATURE_CAPABILITY_REGISTRY = new RegistryBuilder<>(WORLD_FEATURE_CAPABILITY_REGISTRY_KEY)
-            .sync(false)
-            .create();
-
     public static final ResourceKey<Registry<OrdnanceModifierType<?>>> ORDNANCE_MODIFIER_TYPE_REGISTRY_KEY =
             ResourceKey.createRegistryKey(Clinker.resource("ordnance_modifier_type"));
     public static final Registry<OrdnanceModifierType<?>> ORDNANCE_MODIFIER_TYPE_REGISTRY =
@@ -62,6 +47,29 @@ public class ClinkerRegistries {
                     .sync(true)
                     .create();
 
+    public static final ResourceKey<Registry<OthershoreWeather.Type>> OTHERSHORE_WEATHER_TYPE_REGISTRY_KEY =
+            ResourceKey.createRegistryKey(Clinker.resource("othershore_weather_type"));
+    public static final Registry<OthershoreWeather.Type> OTHERSHORE_WEATHER_TYPE_REGISTRY =
+            new RegistryBuilder<>(OTHERSHORE_WEATHER_TYPE_REGISTRY_KEY)
+                    .sync(true)
+                    .create();
+
+    // world gen registries
+    public static final ResourceKey<Registry<WorldFeatureType<?>>> WORLD_FEATURE_REGISTRY_KEY =
+            ResourceKey.createRegistryKey(Clinker.resource("world_feature"));
+    public static final Registry<WorldFeatureType<?>> WORLD_FEATURE_REGISTRY = new RegistryBuilder<>(WORLD_FEATURE_REGISTRY_KEY)
+            .sync(false)
+            .create();
+    public static final ResourceKey<Registry<WorldFeatureSpawnSet>> WORLD_FEATURE_SPAWN_SET_REGISTRY_KEY =
+            ResourceKey.createRegistryKey(Clinker.resource("world_feature_spawn_set"));
+    public static final Registry<WorldFeatureSpawnSet> WORLD_FEATURE_SPAWN_SET_REGISTRY = new RegistryBuilder<>(WORLD_FEATURE_SPAWN_SET_REGISTRY_KEY)
+            .sync(false)
+            .create();
+    public static final ResourceKey<Registry<Class<? extends WorldFeatureCapability>>> WORLD_FEATURE_CAPABILITY_REGISTRY_KEY =
+            ResourceKey.createRegistryKey(Clinker.resource("world_feature_capability"));
+    public static final Registry<Class<? extends WorldFeatureCapability>> WORLD_FEATURE_CAPABILITY_REGISTRY = new RegistryBuilder<>(WORLD_FEATURE_CAPABILITY_REGISTRY_KEY)
+            .sync(false)
+            .create();
     public static final ResourceKey<Registry<NoiseComputer>> NOISE_COMPUTER_REGISTRY_KEY =
             ResourceKey.createRegistryKey(Clinker.resource("noise_computer"));
     public static final Registry<NoiseComputer> NOISE_COMPUTER_REGISTRY =
@@ -76,7 +84,6 @@ public class ClinkerRegistries {
             value.id = id;
         }
     }
-
     public static final ResourceKey<Registry<ProtoBiome>> PROTO_BIOME_REGISTRY_KEY =
             ResourceKey.createRegistryKey(Clinker.resource("proto_biome"));
     public static final Registry<ProtoBiome> PROTO_BIOME_REGISTRY =
@@ -91,7 +98,6 @@ public class ClinkerRegistries {
             value.id = id;
         }
     }
-
     public static final ResourceKey<Registry<BiomeSurfaceDecorator>> SURFACE_DECORATOR_REGISTRY_KEY =
             ResourceKey.createRegistryKey(Clinker.resource("surface_decorator"));
     public static final Registry<BiomeSurfaceDecorator> SURFACE_DECORATOR_REGISTRY =
@@ -118,7 +124,6 @@ public class ClinkerRegistries {
             }
         }
     }
-
     public static final ResourceKey<Registry<BiomeSurfaceShaper>> SURFACE_SHAPER_REGISTRY_KEY =
             ResourceKey.createRegistryKey(Clinker.resource("surface_shaper"));
     public static final Registry<BiomeSurfaceShaper> SURFACE_SHAPER_REGISTRY =
@@ -151,11 +156,11 @@ public class ClinkerRegistries {
         event.register(PAGE_ELEMENT_TYPE_REGISTRY);
         event.register(ALCHEMY_KNOWLEDGE_TYPE_REGISTRY);
         event.register(ORDNANCE_MODIFIER_TYPE_REGISTRY);
+        event.register(OTHERSHORE_WEATHER_TYPE_REGISTRY);
 
         event.register(WORLD_FEATURE_CAPABILITY_REGISTRY);
         event.register(WORLD_FEATURE_REGISTRY);
         event.register(WORLD_FEATURE_SPAWN_SET_REGISTRY);
-
         event.register(NOISE_COMPUTER_REGISTRY);
         event.register(SURFACE_DECORATOR_REGISTRY);
         event.register(SURFACE_SHAPER_REGISTRY);

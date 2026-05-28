@@ -1,9 +1,8 @@
-package birsy.clinker.core.util;
+package birsy.clinker.common.commands;
 
 import birsy.clinker.core.registry.worldgen.ClinkerWorld;
 import com.google.common.base.Stopwatch;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
@@ -14,17 +13,12 @@ import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.ResourceOrTagArgument;
-import net.minecraft.commands.arguments.ResourceOrTagKeyArgument;
 import net.minecraft.commands.arguments.coordinates.Coordinates;
-import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.commands.arguments.coordinates.WorldCoordinates;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.commands.ExecuteCommand;
-import net.minecraft.server.commands.LocateCommand;
-import net.minecraft.server.commands.TeleportCommand;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -41,14 +35,12 @@ import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Locale;
 import java.util.Set;
 
 public class ClinkMeCommand {
-    private static final Logger LOGGER = LogUtils.getLogger();
-    private static final DynamicCommandExceptionType ERROR_BIOME_NOT_FOUND = new DynamicCommandExceptionType((p_304259_) -> Component.translatableEscape("commands.locate.biome.not_found", new Object[]{p_304259_}));
+    private static final DynamicCommandExceptionType ERROR_BIOME_NOT_FOUND = new DynamicCommandExceptionType((biome) -> Component.translatableEscape("commands.locate.biome.not_found", biome));
     private static final SimpleCommandExceptionType INVALID_POSITION = new SimpleCommandExceptionType(Component.translatable("commands.teleport.invalidPosition"));
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext context) {
