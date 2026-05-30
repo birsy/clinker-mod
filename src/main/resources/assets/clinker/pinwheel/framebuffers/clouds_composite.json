@@ -1,6 +1,6 @@
 {
   "depth": true,
-  "autoClear": false,
+  "autoClear": true,
   "format": "RGBA8",
   "type": "texture"
 }

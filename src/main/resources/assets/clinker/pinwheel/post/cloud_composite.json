@@ -3,11 +3,13 @@
     {
       "type": "veil:blit",
       "shader": "clinker:cloud/cloud_composite",
-      "out": "temp"
+      "out": "clinker:cloud/clouds_composite"
     },
     {
       "type": "veil:copy",
-      "in": "temp",
+      "color": true,
+      "depth": true,
+      "in": "clinker:cloud/clouds_composite",
       "out": "minecraft:main"
     }
   ]

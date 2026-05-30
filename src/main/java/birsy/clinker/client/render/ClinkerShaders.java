@@ -22,7 +22,7 @@ public class ClinkerShaders {
     public static final ResourceLocation CLOUD = Clinker.resource("cloud/cloud");
     public static final ResourceLocation CLOUD_DENSITY = Clinker.resource("cloud/cloud_density");
     public static final ResourceLocation CLOUD_SPRITE = Clinker.resource("cloud/cloud_sprite");
-
+    public static final ResourceLocation CLOUD_COMPOSITE = Clinker.resource("cloud/cloud_composite");
     public static final ResourceLocation INSTANCED_CLOUD_BILLBOARD_LAYER = Clinker.resource("cloud/instanced_cloud_billboard_layer");
     public static final ResourceLocation INSTANCED_CLOUD_BILLBOARD_STORMFRONT = Clinker.resource("cloud/instanced_cloud_billboard_stormfront");
 

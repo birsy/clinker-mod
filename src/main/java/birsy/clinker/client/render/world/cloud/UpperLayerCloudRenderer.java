@@ -110,8 +110,8 @@ public class UpperLayerCloudRenderer extends BillboardCloudRenderer {
 
         VertexBuffer vbo = renderer.getBillboardVbo();
 
-        int lowerThreshold = LOWER_CLOUD_HEIGHT - CLOUD_CELL_SIZE * 2,
-            upperThreshold = UPPER_CLOUD_HEIGHT + CLOUD_CELL_SIZE * 2;
+        int lowerThreshold = LOWER_CLOUD_HEIGHT - CLOUD_CELL_SIZE * 4,
+            upperThreshold = UPPER_CLOUD_HEIGHT + CLOUD_CELL_SIZE * 4;
         if (camY <= lowerThreshold) {
             // only render lower
             renderLayer(vbo, cloudShader, true);

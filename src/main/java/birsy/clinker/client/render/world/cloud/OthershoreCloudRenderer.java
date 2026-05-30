@@ -1,24 +1,18 @@
 package birsy.clinker.client.render.world.cloud;
 
 import birsy.clinker.client.render.ClinkerFramebuffers;
-import birsy.clinker.client.render.ClinkerPostPipelines;
 import birsy.clinker.client.render.ClinkerShaders;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import foundry.veil.api.client.render.VeilRenderBridge;
 import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.api.client.render.framebuffer.AdvancedFbo;
-import foundry.veil.api.client.render.post.PostPipeline;
 import foundry.veil.api.client.render.shader.program.ShaderProgram;
-import foundry.veil.api.client.render.shader.program.TextureUniformAccess;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.world.level.material.FogType;
 import net.neoforged.neoforge.client.GlStateBackup;
 import org.joml.Matrix4f;
 import org.joml.Vector3fc;
-import org.lwjgl.opengl.GL30;
 
 import java.util.List;
 
@@ -73,9 +67,6 @@ public class OthershoreCloudRenderer {
     }
 
     public void render(ClientLevel level, int ticks, float partialTick, PoseStack poseStack, double camX, double camY, double camZ, Matrix4f projectionMatrix, Vector3fc skyColor) {
-        // dont render if youre under da sea
-        if (Minecraft.getInstance().gameRenderer.getMainCamera().getFluidInCamera() != FogType.NONE) return;
-
         if (!initialized) {
             initialize();
         }
@@ -88,28 +79,15 @@ public class OthershoreCloudRenderer {
         GlStateBackup backup = new GlStateBackup();
         RenderSystem.backupGlState(backup);
 
-        // blit depth into the weird temp depth buffer
-        AdvancedFbo tempDepthFbo = VeilRenderSystem.renderer().getFramebufferManager().getFramebuffer(ClinkerFramebuffers.CLOUDS_COMPOSITE_DEPTH);
-        tempDepthFbo.clear(skyColor.x(), skyColor.y(), skyColor.z(), 0.0F, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        tempDepthFbo.bind(true);
-        ShaderProgram depthBlitShader = VeilRenderSystem.setShader(ClinkerShaders.VEIL_BLIT_DEPTH);
-        depthBlitShader.bind();
-        TextureUniformAccess.setFramebufferSamplers(VeilRenderBridge.toShaderInstance(depthBlitShader), AdvancedFbo.getMainFramebuffer());
-        RenderSystem.enableDepthTest();
-        RenderSystem.depthMask(true);
-        VeilRenderSystem.drawScreenQuad();
-        ShaderProgram.unbind();
-
-        // blit THAT into the cloud depth buffer, for culling.
+        AdvancedFbo mainFbo = AdvancedFbo.getMainFramebuffer();
         AdvancedFbo cloudFbo = VeilRenderSystem.renderer().getFramebufferManager().getFramebuffer(ClinkerFramebuffers.CLOUDS);
         cloudFbo.bind(true);
-        cloudFbo.clear(0.0F, 0.0F, 0.0F, 0.0F, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        cloudFbo.clear(skyColor.x(), skyColor.y(), skyColor.z(), 0.0F, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        tempDepthFbo.bindRead();
+        mainFbo.bindRead();
         cloudFbo.bindDraw(true);
         GlStateManager._glBlitFrameBuffer(
-                0, 0, tempDepthFbo.getWidth(), tempDepthFbo.getHeight(),
+                0, 0, mainFbo.getWidth(), mainFbo.getHeight(),
                 0, 0, cloudFbo.getWidth(), cloudFbo.getHeight(),
                 GL_DEPTH_BUFFER_BIT,
                 GL_NEAREST
@@ -128,40 +106,45 @@ public class OthershoreCloudRenderer {
         RenderSystem.depthMask(true);
         RenderSystem.enableDepthTest();
         RenderSystem.disableBlend();
-        RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-//        for (BillboardCloudRenderer cloudRenderer : cloudRenderers)
-//            cloudRenderer.renderSolid(this, level, ticks, partialTick, poseStack, camX, camY, camZ, projectionMatrix, skyColor);
-
-        RenderSystem.depthMask(false);
-        RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(
                 GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
                 GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE
         );
         for (BillboardCloudRenderer cloudRenderer : cloudRenderers)
-            cloudRenderer.renderTranslucent(this, level, ticks, partialTick, poseStack, camX, camY, camZ, projectionMatrix, skyColor);
+            cloudRenderer.renderSolid(this, level, ticks, partialTick, poseStack, camX, camY, camZ, projectionMatrix, skyColor);
 
         for (BillboardCloudRenderer cloudRenderer : cloudRenderers)
             cloudRenderer.postRender(this, level, ticks, partialTick, poseStack, camX, camY, camZ, projectionMatrix, skyColor);
 
         AdvancedFbo.unbind();
 
-        // composite with main scene
-//        ShaderProgram compositeShader = VeilRenderSystem.setShader(ClinkerShaders.CLOUD_COMPOSITE);
-//        compositeShader.bind();
-//        compositeShader.bindSamplers(0);
-//        compositeShader.setDefaultUniforms(VertexFormat.Mode.TRIANGLE_STRIP);
-//        RenderSystem.disableDepthTest();
-//        RenderSystem.depthMask(false);
-//        RenderSystem.disableCull();
-//        RenderSystem.blendFunc(
-//                GlStateManager.SourceFactor.SRC_ALPHA,
-//                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA
-//        );
-        PostPipeline composite = VeilRenderSystem.renderer().getPostProcessingManager().getPipeline(ClinkerPostPipelines.CLOUD_COMPOSITE_PIPELINE);
-        VeilRenderSystem.renderer().getPostProcessingManager().runPipeline(composite, true);
+        composite();
 
         RenderSystem.restoreGlState(backup);
+    }
+
+    void composite() {
+        AdvancedFbo cloudCompositeFbo = VeilRenderSystem.renderer().getFramebufferManager().getFramebuffer(ClinkerFramebuffers.CLOUDS_COMPOSITE);
+        cloudCompositeFbo.bind(true);
+
+        ShaderProgram shader = VeilRenderSystem.setShader(ClinkerShaders.CLOUD_COMPOSITE);
+        shader.bind();
+        shader.bindSamplers(0);
+        shader.setDefaultUniforms(VertexFormat.Mode.TRIANGLE_STRIP);
+        VeilRenderSystem.drawScreenQuad();
+
+        AdvancedFbo.unbind();
+        ShaderProgram.unbind();
+        // copy it into the main framebuffer
+        AdvancedFbo mainFbo = AdvancedFbo.getMainFramebuffer();
+        cloudCompositeFbo.bindRead();
+        mainFbo.bindDraw(true);
+        GlStateManager._glBlitFrameBuffer(
+                0, 0, cloudCompositeFbo.getWidth(), cloudCompositeFbo.getHeight(),
+                0, 0, mainFbo.getWidth(), mainFbo.getHeight(),
+                GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT,
+                GL_NEAREST
+        );
     }
 
 

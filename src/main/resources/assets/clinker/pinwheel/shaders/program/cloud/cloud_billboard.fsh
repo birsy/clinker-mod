@@ -1,6 +1,7 @@
 #version 150
 #include veil:fog
 #include veil:space_helper
+#include clinker:dither
 
 uniform sampler2D CloudDensitySampler;
 uniform sampler2D CloudSpriteSampler;
@@ -28,10 +29,6 @@ void main() {
     vec4 scenePos = screenToViewSpace(screenUv, sceneDepth);
     float sceneDist = length(scenePos.xyz);
 
-    vec4 cloudPos = screenToViewSpace(screenUv, gl_FragCoord.z);
-    float cloudDist = length(cloudPos.xyz);
-    float cloudFade = smoothstep(0.0, 30.0, sceneDist - cloudDist);
-
     vec2 pixellatedTexCoord = texCoord * billboardRadius;
     // rotate it!
     float angle = billboardRandom.y * 3.141592 * 2 * 1582.4832 + GameTime * 300 * mix(0.1, 1.0, billboardRandom.w);
@@ -43,15 +40,12 @@ void main() {
     pixellatedTexCoord /= billboardRadius;
 
     float rad = length(pixellatedTexCoord * billboardRadius);
-    if (rad > billboardRadius) discard;
     vec4 col = vertexColor;
     float spriteAlpha = texture(CloudSpriteSampler, pixellatedTexCoord * 0.5 + 0.5).a;
-    col *= vec4(1.0, 1.0, 1.0, spriteAlpha * cloudFade);
+    col *= vec4(1.0, 1.0, 1.0, spriteAlpha);
+    col.a = dither(int(gl_FragCoord.x + billboardRandom.x), int(gl_FragCoord.y), col.a);
 
     if (col.a < 0.01) discard;
-//    const float transparencyThreshold = 0.99;
-//    float isTransparent = step(transparencyThreshold, col.a);
-//    if (isTransparent == Transparent) discard;
 
     fragColor = col;
 }

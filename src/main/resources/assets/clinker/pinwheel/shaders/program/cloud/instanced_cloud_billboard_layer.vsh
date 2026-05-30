@@ -60,6 +60,10 @@ void main() {
     vec3 displacement = DisplacementDirection * maxDisplacement * (cloudDensity * 2.0 - 1.0);
     center += vec3(0.0, CloudHeight, 0.0) + displacement;
 
+    float horizontalDistance = length(center.xz - PlayerCloudCellOffset);
+
+    center += clamp(horizontalDistance / FogEnd, 0.0, 1.0) * 10.0 * DisplacementDirection;
+
     float radius = mix(7.0, 13.0, randoms.w);
 
     vec3 worldPos = center +
@@ -70,7 +74,6 @@ void main() {
     gl_Position  = ProjMat * viewPos;
 
     float dist = length(viewPos.xyz);
-    float horizontalDistance = length(center.xz - PlayerCloudCellOffset);
 
     float yBrightness = smoothstep(CloudHeight - (radius + maxDisplacement) * DisplacementDirection.y, CloudHeight + (radius + maxDisplacement) * DisplacementDirection.y, worldPos.y);
     float cloudBrightness = mix(cloudDensity, yBrightness, 0.5);

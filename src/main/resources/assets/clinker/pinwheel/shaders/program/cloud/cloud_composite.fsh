@@ -1,47 +1,28 @@
-#include veil:deferred_utils
+#include veil:space_helper
+#include clinker:dither
 
 uniform sampler2D CloudsSampler;
-uniform sampler2D CloudsResolutionDepthSampler;
-uniform sampler2D MainSampler;
-uniform sampler2D MainDepthSampler;
+uniform sampler2D CloudsDepthSampler;
+uniform sampler2D SceneSampler;
+uniform sampler2D SceneDepthSampler;
 uniform vec2 ScreenSize;
 
 in vec2 texCoord;
 
 out vec4 fragColor;
 
-const float ScalingFactor = 0.5;
-const int KernelRadius = 1;
-
-float depthSampleToWorldDepth(float depthSample) {
-    float f = depthSample * 2.0 - 1.0;
-    return 2.0 * VeilCamera.NearPlane * VeilCamera.FarPlane / (VeilCamera.FarPlane + VeilCamera.NearPlane - f * (VeilCamera.FarPlane - VeilCamera.NearPlane));
-}
-
 void main() {
-    float sceneDepth = depthSampleToWorldDepth(texture(MainDepthSampler, texCoord).r);
+    float cloudsDepth = texture(CloudsDepthSampler, texCoord).r;
+    float linearizedCloudDepth = length(screenToLocalSpace(texCoord, cloudsDepth));
+    float sceneDepth = texture(SceneDepthSampler, texCoord).r;
+    float linearizedSceneDepth = length(screenToLocalSpace(texCoord, sceneDepth));
 
-    vec2 volumeTexelSize = (1.0 / ScreenSize) / ScalingFactor;
-    float minimumDepthDifference = 1e9;
-    vec2 minimumDepthDifferenceCoordinates = vec2(0.0);
-    for (int x = -KernelRadius; x <= KernelRadius; ++x) {
-        for (int y = -KernelRadius; y <= KernelRadius; ++y) {
-            vec2 coordinates = vec2(x, y) * volumeTexelSize + texCoord;
+    float depthFade = smoothstep(0.0, 15.0, linearizedSceneDepth - linearizedCloudDepth);
+    depthFade = dither(int(gl_FragCoord.x), int(gl_FragCoord.y), depthFade);
 
-            float depth = depthSampleToWorldDepth(texture(CloudsResolutionDepthSampler, coordinates).r);
-            float depthDifference = abs(depth - sceneDepth);
+    vec4 cloudColor = texture(CloudsSampler, texCoord) * vec4(1.0, 1.0, 1.0, depthFade);
+    vec4 sceneColor = texture(SceneSampler, texCoord);
 
-            if (depthDifference < minimumDepthDifference) {
-                minimumDepthDifference = depthDifference;
-                minimumDepthDifferenceCoordinates = coordinates;
-            }
-        }
-    }
-    if (minimumDepthDifference > VeilCamera.FarPlane * 0.9 || minimumDepthDifference < 0.5) minimumDepthDifferenceCoordinates = texCoord;
-
-    vec4 mainColor = texture(MainSampler, texCoord);
-    vec4 cloudColor = texture(CloudsSampler, minimumDepthDifferenceCoordinates);
-    vec3 color = mix(sqrt(mainColor.rgb), sqrt(cloudColor.rgb), cloudColor.a);
-    color = color * color;
-    fragColor = vec4(color, 1.0);
+    fragColor = vec4(mix(sceneColor.rgb, cloudColor.rgb, cloudColor.a), cloudColor.a + sceneColor.a - (cloudColor.a * sceneColor.a));
+    gl_FragDepth = mix(sceneDepth, min(sceneDepth, cloudsDepth), depthFade);
 }

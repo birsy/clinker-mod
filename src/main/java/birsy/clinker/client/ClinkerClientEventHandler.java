@@ -45,7 +45,7 @@ public class ClinkerClientEventHandler {
             if (PageAtlas.INSTANCE != null) PageAtlas.INSTANCE.update();
             Minecraft.getInstance().getProfiler().pop();
         }
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_TRIPWIRE_BLOCKS) {
+        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS) {
             if (level.effects() instanceof OthershoreDimensionEffects effects) {
                 Vec3 camPos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
                 effects.drawCloudsCustom(level,
