@@ -792,49 +792,12 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
                         );
                     }
                 }
-
                 this.flatBlockItem(SPOTREED.get(), this.modLoc(ModelProvider.ITEM_FOLDER + "/" + spotreedName));
-            }
-            // tangled spotreed
-//            {
-//                String spotreedName = name(SPOTREED.get());
-//                ResourceLocation spotreedParticle = this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + spotreedName + "_particle");
-//                String tangledSpotreedName = name(TANGLED_SPOTREED.get());
-//
-//                ResourceLocation tangledSpotreedTemplate = this.modLoc(ModelProvider.BLOCK_FOLDER + "/template_" + tangledSpotreedName);
-//                ResourceLocation tangledSpotreedGlow = this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + tangledSpotreedName + "_glow");
-//
-//                VariantBlockStateBuilder variantBuilder = this.getVariantBuilder(TANGLED_SPOTREED.get());
-//                for (Direction.Axis axis : Direction.Axis.VALUES) {
-//                    int yRot = 0, xRot = 0;
-//                    if (axis == Direction.Axis.X) {
-//                        xRot = 90; yRot = 90;
-//                    } else if (axis == Direction.Axis.Z) {
-//                        xRot = 90;
-//                    }
-//
-//                    VariantBlockStateBuilder.PartialBlockstate state = variantBuilder.partialState().with(RotatedPillarBlock.AXIS, axis);
-//                    for (int i = 0; i < 6; i++) {
-//                        String suffix = i == 0 ? "" : ("_" + i);
-//                        state.addModels(
-//                                ConfiguredModel.builder().modelFile(
-//                                        this.models().getBuilder(ModelProvider.BLOCK_FOLDER + "/" + tangledSpotreedName + suffix)
-//                                                .texture("particle", spotreedParticle)
-//                                                .customLoader(CompositeModelBuilder::begin)
-//                                                .child("stalk",
-//                                                        this.models().withExistingParent(tangledSpotreedName + "_stalk" + suffix, tangledSpotreedTemplate)
-//                                                                .texture("side", this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + tangledSpotreedName + suffix))
-//                                                )
-//                                                .child("glow",
-//                                                        this.models().withExistingParent(tangledSpotreedName + "_glow_stupid_generated_duplicate", tangledSpotreedGlow)
-//                                                ).end()
-//                                ).rotationX(xRot).rotationY(yRot).buildLast()
-//                        );
-//                    }
-//                }
-//                this.simpleBlockItem(TANGLED_SPOTREED.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + tangledSpotreedName)));
-//            }
 
+                // tangled spotreed
+                this.axisBlock(TANGLED_SPOTREED.get());
+                this.simpleBlockItem(TANGLED_SPOTREED.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(TANGLED_SPOTREED.get()))));
+            }
 
             // tormentil
             {

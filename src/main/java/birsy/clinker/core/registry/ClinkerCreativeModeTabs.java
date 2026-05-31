@@ -155,7 +155,7 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(INDIGO_TORMENTIL.get());
         pOutput.accept(YELLOW_TORMENTIL.get());
         pOutput.accept(SPOTREED.get());
-        //pOutput.accept(TANGLED_SPOTREED.get());
+        pOutput.accept(TANGLED_SPOTREED.get());
         pOutput.accept(BLUE_ROSE.get());
 
         pOutput.accept(LEAD_ORE.get());

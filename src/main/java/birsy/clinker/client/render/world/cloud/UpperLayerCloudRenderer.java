@@ -1,7 +1,6 @@
 package birsy.clinker.client.render.world.cloud;
 
 import birsy.clinker.client.render.ClinkerShaders;
-import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexBuffer;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -10,7 +9,6 @@ import foundry.veil.api.client.render.shader.block.DynamicShaderBlock;
 import foundry.veil.api.client.render.shader.block.ShaderBlock;
 import foundry.veil.api.client.render.shader.program.ShaderProgram;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.util.Mth;
 import org.joml.Matrix4f;
 import org.joml.Vector3fc;
@@ -21,26 +19,27 @@ import java.util.Comparator;
 import java.util.List;
 
 public class UpperLayerCloudRenderer extends BillboardCloudRenderer {
-    DynamicShaderBlock<CloudPosition[]> instancePositions;
-    int instanceCount = 0;
     public static final int CLOUD_CELL_SIZE = 5,
-                     LOWER_CLOUD_HEIGHT = 270,
-                     UPPER_CLOUD_HEIGHT = 300,
-                     CLOUD_HEIGHT = (LOWER_CLOUD_HEIGHT + UPPER_CLOUD_HEIGHT) / 2;
+            LOWER_CLOUD_HEIGHT = 270,
+            UPPER_CLOUD_HEIGHT = 300,
+            CLOUD_HEIGHT = (LOWER_CLOUD_HEIGHT + UPPER_CLOUD_HEIGHT) / 2;
+
+    DynamicShaderBlock<CloudPosition[]> instancePositionsBlock;
+    int instanceCount = 0;
 
     @Override
     void rebuild(int renderRadiusInBlocks) {
         CloudPosition[] data = createInstanceData(renderRadiusInBlocks / CLOUD_CELL_SIZE + 5);
         int size = data.length * CloudPosition.SIZE;
 
-        if (instancePositions == null)
-            instancePositions = ShaderBlock.dynamic(
+        if (instancePositionsBlock == null)
+            instancePositionsBlock = ShaderBlock.dynamic(
                     ShaderBlock.BufferBinding.SHADER_STORAGE, size,
                     (array, buf) -> { for (CloudPosition pos : array) pos.upload(buf); }
             );
-        if (instancePositions.getSize() != size)
-            instancePositions.setSize(size);
-        instancePositions.set(data);
+        if (instancePositionsBlock.getSize() != size)
+            instancePositionsBlock.setSize(size);
+        instancePositionsBlock.set(data);
         instanceCount = data.length;
     }
     private CloudPosition[] createInstanceData(int radius) {
@@ -68,22 +67,21 @@ public class UpperLayerCloudRenderer extends BillboardCloudRenderer {
             buffer.putInt(x); buffer.putInt(z);
         }
     }
+
     @Override
     void free() {
-        instancePositions.free();
+        instancePositionsBlock.free();
     }
 
     @Override
-    void renderSolid(OthershoreCloudRenderer renderer, ClientLevel level, int ticks, float partialTick, PoseStack poseStack, double camX, double camY, double camZ, Matrix4f projectionMatrix, Vector3fc skyColor) {
-        render(renderer, poseStack, camX, camY, camZ, projectionMatrix, skyColor, false);
+    void preRender(OthershoreCloudRenderer renderer, ClientLevel level, int ticks, float partialTick, PoseStack poseStack, double camX, double camY, double camZ, Matrix4f projectionMatrix, Vector3fc skyColor) {
+        CloudHoleTracker tracker = CloudHoleTracker.getInstance();
+        if (tracker == null) return;
+        tracker.updateFrame(partialTick);
     }
 
     @Override
-    void renderTranslucent(OthershoreCloudRenderer renderer, ClientLevel level, int ticks, float partialTick, PoseStack poseStack, double camX, double camY, double camZ, Matrix4f projectionMatrix, Vector3fc skyColor) {
-        render(renderer, poseStack, camX, camY, camZ, projectionMatrix, skyColor, true);
-    }
-
-    void render(OthershoreCloudRenderer renderer, PoseStack poseStack, double camX, double camY, double camZ, Matrix4f projectionMatrix, Vector3fc skyColor, boolean transparent) {
+    void render(OthershoreCloudRenderer renderer, ClientLevel level, int ticks, float partialTick, PoseStack poseStack, double camX, double camY, double camZ, Matrix4f projectionMatrix, Vector3fc skyColor) {
         int playerCloudX = Math.floorDiv(Mth.floor(camX), CLOUD_CELL_SIZE),
             playerCloudZ = Math.floorDiv(Mth.floor(camZ), CLOUD_CELL_SIZE);
 
@@ -104,9 +102,11 @@ public class UpperLayerCloudRenderer extends BillboardCloudRenderer {
         cloudShader.getUniformSafe("CloudCellSize").setInt(CLOUD_CELL_SIZE);
         cloudShader.getUniformSafe("InstanceCount").setInt(instanceCount);
         cloudShader.getUniformSafe("SkyColor").setVector(skyColor.x() * 0.8F, skyColor.y() * 0.8F, skyColor.z() * 0.8F, 1.0F);
-        cloudShader.getUniformSafe("Transparent").setInt(transparent ? 1 : 0);
 
-        VeilRenderSystem.bind("LayerInstancePositions", instancePositions);
+        VeilRenderSystem.bind("LayerInstancePositions", instancePositionsBlock);
+
+        CloudHoleTracker tracker = CloudHoleTracker.getInstance();
+        if (tracker != null) tracker.bind();
 
         VertexBuffer vbo = renderer.getBillboardVbo();
 
@@ -117,12 +117,10 @@ public class UpperLayerCloudRenderer extends BillboardCloudRenderer {
             renderLayer(vbo, cloudShader, true);
         } else if (camY > lowerThreshold && camY < upperThreshold) {
             // kind of opaque boolean logic here, but
-            // renders the closer one first if solid
-            // and the closer one last if translucent
+            // renders the closer one first
             boolean lowerIsCloser = camY < CLOUD_HEIGHT;
-            boolean lowerFirst = lowerIsCloser != transparent;
-            renderLayer(vbo, cloudShader, lowerFirst);
-            renderLayer(vbo, cloudShader, !lowerFirst);
+            renderLayer(vbo, cloudShader, lowerIsCloser);
+            renderLayer(vbo, cloudShader, !lowerIsCloser);
         } else {
             // only render upper
             renderLayer(vbo, cloudShader, false);
@@ -130,6 +128,7 @@ public class UpperLayerCloudRenderer extends BillboardCloudRenderer {
         ShaderProgram.unbind();
         poseStack.popPose();
     }
+
 
     void renderLayer(VertexBuffer vbo, ShaderProgram cloudShader, boolean lowerLayer) {
         cloudShader.getUniformSafe("DisplacementDirection").setVector(0, lowerLayer ? -1 : 1, 0);

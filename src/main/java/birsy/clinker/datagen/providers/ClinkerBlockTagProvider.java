@@ -87,11 +87,13 @@ public class ClinkerBlockTagProvider extends BlockTagsProvider {
 
         usesHoe.add(
                 ClinkerBlocks.PEAT_MOSS.get(),
-                ClinkerBlocks.SPOTREED.get()
+                ClinkerBlocks.SPOTREED.get(),
+                ClinkerBlocks.TANGLED_SPOTREED.get()
         );
 
         usesAxe.add(
-                ClinkerBlocks.SPOTREED.get()
+                ClinkerBlocks.SPOTREED.get(),
+                ClinkerBlocks.TANGLED_SPOTREED.get()
         );
 
         for (DeferredHolder<Block, ? extends Block> block : ClinkerBlocks.BLOCKS.getEntries()) {

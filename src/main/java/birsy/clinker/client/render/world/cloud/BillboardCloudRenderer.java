@@ -17,11 +17,8 @@ public abstract class BillboardCloudRenderer {
                    double camX, double camY, double camZ, Matrix4f projectionMatrix, Vector3fc skyColor) {}
 
     // called first with depth testing and depth writing etc enabled. should be rendered front-to-back
-    abstract void renderSolid(OthershoreCloudRenderer renderer, ClientLevel level, int ticks, float partialTick, PoseStack poseStack,
-                              double camX, double camY, double camZ, Matrix4f projectionMatrix, Vector3fc skyColor);
-    // called last without depth writing. should be rendered back-to-front.
-    abstract void renderTranslucent(OthershoreCloudRenderer renderer, ClientLevel level, int ticks, float partialTick, PoseStack poseStack,
-                                    double camX, double camY, double camZ, Matrix4f projectionMatrix, Vector3fc skyColor);
+    abstract void render(OthershoreCloudRenderer renderer, ClientLevel level, int ticks, float partialTick, PoseStack poseStack,
+                         double camX, double camY, double camZ, Matrix4f projectionMatrix, Vector3fc skyColor);
 
     void postRender(OthershoreCloudRenderer renderer, ClientLevel level, int ticks, float partialTick, PoseStack poseStack,
                    double camX, double camY, double camZ, Matrix4f projectionMatrix, Vector3fc skyColor) {}

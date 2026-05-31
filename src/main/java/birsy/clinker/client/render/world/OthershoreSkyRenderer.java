@@ -101,14 +101,14 @@ public class OthershoreSkyRenderer {
                 1F, 0.7F);
 
         RenderSystem.setShaderFogColor(fogColor[0] * aboveCloudsDarken, fogColor[1] * aboveCloudsDarken, fogColor[2] * aboveCloudsDarken);
-        if (cameraPos.y > UpperLayerCloudRenderer.LOWER_CLOUD_HEIGHT) {
+        //if (cameraPos.y > UpperLayerCloudRenderer.LOWER_CLOUD_HEIGHT) {
             drawOuterSky(level, ticks, partialTick, projMatrix, poseStack,
                     (float) cameraPos.x / scale, (float) cameraPos.z / scale,
                     //fogColor[0], fogColor[1], fogColor[2],
                     32/255.0F, 28/255.0F, 35/255.0F,
                     //skyColor.x(), skyColor.y(), skyColor.z()
                     19/255.0F, 13/255.0F, 17/255.0F);
-        }
+        //}
 
         poseStack.popPose();
         poseStack.translate(0, -160, 0);

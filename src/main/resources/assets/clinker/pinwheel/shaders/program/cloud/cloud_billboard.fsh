@@ -6,7 +6,6 @@
 uniform sampler2D CloudDensitySampler;
 uniform sampler2D CloudSpriteSampler;
 uniform sampler2D MainDepthSampler;
-uniform int Transparent;
 
 uniform vec4 FogColor;
 uniform float FogStart;

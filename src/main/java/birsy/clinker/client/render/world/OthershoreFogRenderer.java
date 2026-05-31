@@ -40,7 +40,6 @@ public class OthershoreFogRenderer {
         farPlaneDist = Mth.lerp(stormIntensity * surfaceFactor, farPlaneDist, Math.min(farPlaneDist, 32.0F));
 
         float nearPlaneDist = 0.0F;
-        //nearPlaneDist = Mth.lerp(stormIntensity * surfaceFactor, nearPlaneDist, Math.min(nearPlaneDist, -8.0F));
 
         event.setCanceled(true);
         event.setFogShape(FogShape.SPHERE);

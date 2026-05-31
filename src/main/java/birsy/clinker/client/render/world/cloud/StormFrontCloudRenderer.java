@@ -110,29 +110,21 @@ public class StormFrontCloudRenderer extends BillboardCloudRenderer {
     }
 
     @Override
-    void renderSolid(OthershoreCloudRenderer renderer, ClientLevel level, int ticks, float partialTick, PoseStack poseStack, double camX, double camY, double camZ, Matrix4f projectionMatrix, Vector3fc skyColor) {
-        render(renderer, poseStack, camX, camY, camZ, partialTick, projectionMatrix, skyColor, false);
-    }
-    @Override
-    void renderTranslucent(OthershoreCloudRenderer renderer, ClientLevel level, int ticks, float partialTick, PoseStack poseStack, double camX, double camY, double camZ, Matrix4f projectionMatrix, Vector3fc skyColor) {
-        render(renderer, poseStack, camX, camY, camZ, partialTick, projectionMatrix, skyColor, true);
-    }
-
-    void render(OthershoreCloudRenderer renderer, PoseStack poseStack, double camX, double camY, double camZ, float partialTicks, Matrix4f projectionMatrix, Vector3fc skyColor, boolean transparent) {
+    void render(OthershoreCloudRenderer renderer, ClientLevel level, int ticks, float partialTick, PoseStack poseStack, double camX, double camY, double camZ, Matrix4f projectionMatrix, Vector3fc skyColor) {
         OthershoreWeatherSystem weatherSystem = ClientOthershoreWeatherSystem.get();
         if (weatherSystem == null) return;
-        //if (!(weatherSystem.getWeather() instanceof StormApproachingWeather)) return;
+        if (!(weatherSystem.getWeather() instanceof StormApproachingWeather)) return;
 
         float alphaAboveCloudHeight = (float) Mth.clampedMap(camY, UpperLayerCloudRenderer.LOWER_CLOUD_HEIGHT - 20, UpperLayerCloudRenderer.LOWER_CLOUD_HEIGHT, 1.0, 0.0);
         float alphaFromUndergroundness = AmbienceHandler.SURFACE_AMBIENCE_HANDLER.getAboveGroundFactor(1.0F);
-        float alphaFromFade = OthershoreStormRenderHelper.getStormCloudAlpha(weatherSystem, partialTicks);
+        float alphaFromFade = OthershoreStormRenderHelper.getStormCloudAlpha(weatherSystem, partialTick);
         float fade = alphaFromFade * alphaAboveCloudHeight * alphaFromUndergroundness;
         if (fade < 0.05) return;
 
         int playerCloudX = Math.floorDiv(Mth.floor(camX), CLOUD_CELL_SIZE);
         double camXOffset = camX - (playerCloudX * CLOUD_CELL_SIZE);
 
-        float progress = OthershoreStormRenderHelper.getNormalizedStormApproachDistance(weatherSystem, partialTicks);
+        float progress = OthershoreStormRenderHelper.getNormalizedStormApproachDistance(weatherSystem, partialTick);
         float distanceToPlayer = progress * renderer.lastRenderRadius;
         float cloudDistanceOffset = getCloudDistanceOffset((float) camY - OthershoreGenerationConstants.SEA_HEIGHT);
         distanceToPlayer += cloudDistanceOffset - CLOUD_CELL_SIZE;
@@ -155,7 +147,6 @@ public class StormFrontCloudRenderer extends BillboardCloudRenderer {
         cloudShader.getUniformSafe("CloudCellSize").setInt(CLOUD_CELL_SIZE);
         cloudShader.getUniformSafe("InstanceCount").setInt(instanceCount);
         cloudShader.getUniformSafe("SkyColor").setVector(skyColor.x(), skyColor.y(), skyColor.z(), 1.0F);
-        cloudShader.getUniformSafe("Transparent").setInt(transparent ? 1 : 0);
 
         VeilRenderSystem.bind("StormFrontInstancePositions", instancePositions);
 
@@ -168,6 +159,7 @@ public class StormFrontCloudRenderer extends BillboardCloudRenderer {
         ShaderProgram.unbind();
         poseStack.popPose();
     }
+
 
     float getCloudDistanceOffset(float y) {
         if (y <= distancesAtHeight.getFirst().height) return distancesAtHeight.getFirst().distance;

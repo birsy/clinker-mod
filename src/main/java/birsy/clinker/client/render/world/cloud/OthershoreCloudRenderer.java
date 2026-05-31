@@ -111,7 +111,7 @@ public class OthershoreCloudRenderer {
                 GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE
         );
         for (BillboardCloudRenderer cloudRenderer : cloudRenderers)
-            cloudRenderer.renderSolid(this, level, ticks, partialTick, poseStack, camX, camY, camZ, projectionMatrix, skyColor);
+            cloudRenderer.render(this, level, ticks, partialTick, poseStack, camX, camY, camZ, projectionMatrix, skyColor);
 
         for (BillboardCloudRenderer cloudRenderer : cloudRenderers)
             cloudRenderer.postRender(this, level, ticks, partialTick, poseStack, camX, camY, camZ, projectionMatrix, skyColor);
@@ -147,7 +147,6 @@ public class OthershoreCloudRenderer {
         );
     }
 
-
     void renderCloudDensityTexture(int ticks, double partialTicks) {
         AdvancedFbo fbo = VeilRenderSystem.renderer().getFramebufferManager().getFramebuffer(ClinkerFramebuffers.CLOUD_DENSITY);
         fbo.bind(true);
@@ -160,7 +159,6 @@ public class OthershoreCloudRenderer {
         ShaderProgram.unbind();
         AdvancedFbo.unbind();
     }
-
     void renderCloudSpriteTexture(int ticks, double partialTicks) {
         AdvancedFbo fbo = VeilRenderSystem.renderer().getFramebufferManager().getFramebuffer(ClinkerFramebuffers.CLOUD_SPRITE);
         fbo.bind(true);

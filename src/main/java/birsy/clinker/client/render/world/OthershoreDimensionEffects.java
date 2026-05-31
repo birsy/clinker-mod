@@ -68,6 +68,8 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects implemen
             g = g * (1.0F - lightningFlicker) + 0.2F * lightningFlicker;
             b = b * (1.0F - lightningFlicker);
         }
+        float brightness = (float) Mth.map(Minecraft.getInstance().options.gamma().get(), 0.0F, 0.5F, 0.7F, 1.0F);
+        skyColor.mul(brightness);
 
         return skyColor.set(r, g, b);
     }
@@ -170,14 +172,9 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects implemen
     }
 
     @Override
-    public boolean renderSnowAndRain(ClientLevel level, int ticks, float partialTick, LightTexture lightTexture, double camX, double camY, double camZ) {
-        return true;
-    }
-
+    public boolean renderSnowAndRain(ClientLevel level, int ticks, float partialTick, LightTexture lightTexture, double camX, double camY, double camZ) { return true; }
     @Override
-    public boolean tickRain(ClientLevel level, int ticks, Camera camera) {
-        return false;
-    }
+    public boolean tickRain(ClientLevel level, int ticks, Camera camera) { return true; }
 
     @Override
     public void close() throws Exception {

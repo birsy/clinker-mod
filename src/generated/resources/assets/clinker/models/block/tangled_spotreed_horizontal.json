@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column_horizontal",
+  "textures": {
+    "end": "clinker:block/tangled_spotreed_end",
+    "side": "clinker:block/tangled_spotreed_side"
+  }
+}
