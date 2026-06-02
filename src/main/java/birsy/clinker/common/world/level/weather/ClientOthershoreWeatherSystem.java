@@ -71,9 +71,8 @@ public class ClientOthershoreWeatherSystem {
         OthershoreWeatherSystem system = get();
         if (system == null && OthershoreWeatherSystem.hasOthershoreWeather(event.getLevel())) {
             PacketDistributor.sendToServer(new ServerboundOthershoreWeatherInitPacket());
-        } else if (system == null) {
-            return;
         }
+        if (system == null) return;
         system.tick();
     }
 }
