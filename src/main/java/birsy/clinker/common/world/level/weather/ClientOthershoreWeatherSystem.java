@@ -38,7 +38,11 @@ public class ClientOthershoreWeatherSystem {
     }
     public static void updateFromSyncPacket(ClientboundOthershoreWeatherSyncPacket packet) {
         if (SYSTEM == null) return;
-        if (SYSTEM.currentWeather.type() != packet.weatherType()) return;
+        if (SYSTEM.currentWeather.type() != packet.weatherType()) {
+            // out of sync! we need to reinitialize.
+            PacketDistributor.sendToServer(new ServerboundOthershoreWeatherInitPacket());
+            return;
+        }
 
         ByteBuf buffer = Unpooled.wrappedBuffer(packet.data());
         RegistryFriendlyByteBuf friendlyBuffer = new RegistryFriendlyByteBuf(
@@ -67,11 +71,7 @@ public class ClientOthershoreWeatherSystem {
     @SubscribeEvent
     public static void tickOthershoreWeather(LevelTickEvent.Pre event) {
         if (!event.getLevel().isClientSide()) return;
-
         OthershoreWeatherSystem system = get();
-        if (system == null && OthershoreWeatherSystem.hasOthershoreWeather(event.getLevel())) {
-            PacketDistributor.sendToServer(new ServerboundOthershoreWeatherInitPacket());
-        }
         if (system == null) return;
         system.tick();
     }
