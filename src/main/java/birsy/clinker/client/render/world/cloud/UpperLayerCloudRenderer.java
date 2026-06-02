@@ -1,9 +1,9 @@
 package birsy.clinker.client.render.world.cloud;
 
 import birsy.clinker.client.render.ClinkerShaders;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexBuffer;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.*;
+import foundry.veil.api.client.render.VeilRenderBridge;
 import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.api.client.render.shader.block.DynamicShaderBlock;
 import foundry.veil.api.client.render.shader.block.ShaderBlock;
@@ -27,9 +27,12 @@ public class UpperLayerCloudRenderer extends BillboardCloudRenderer {
     DynamicShaderBlock<CloudPosition[]> instancePositionsBlock;
     int instanceCount = 0;
 
+    VertexBuffer backingGridVbo;
+
     @Override
     void rebuild(int renderRadiusInBlocks) {
-        CloudPosition[] data = createInstanceData(renderRadiusInBlocks / CLOUD_CELL_SIZE + 5);
+        int radius = renderRadiusInBlocks / CLOUD_CELL_SIZE + 5;
+        CloudPosition[] data = createInstanceData(radius);
         int size = data.length * CloudPosition.SIZE;
 
         if (instancePositionsBlock == null)
@@ -41,6 +44,8 @@ public class UpperLayerCloudRenderer extends BillboardCloudRenderer {
             instancePositionsBlock.setSize(size);
         instancePositionsBlock.set(data);
         instanceCount = data.length;
+
+        createBackingGrid(radius);
     }
     private CloudPosition[] createInstanceData(int radius) {
         int diameter = radius * 2;
@@ -66,6 +71,28 @@ public class UpperLayerCloudRenderer extends BillboardCloudRenderer {
         private void upload(ByteBuffer buffer) {
             buffer.putInt(x); buffer.putInt(z);
         }
+    }
+    private void createBackingGrid(int radius) {
+        if (backingGridVbo != null) backingGridVbo.close();
+        backingGridVbo = new VertexBuffer(VertexBuffer.Usage.STATIC);
+        backingGridVbo.bind();
+        int diameter = radius * 2;
+        int r2 = radius * radius;
+        BufferBuilder vertexConsumer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        for (int x = 0; x < diameter; x++) {
+            int pX = x - radius;
+            for (int z = 0; z < diameter; z++) {
+                int pZ = z - radius;
+                if (Mth.lengthSquared(pX, pZ) < r2) {
+                    vertexConsumer.addVertex(pX + 0, 0, pZ + 0).setUv((x + 0.0F) / diameter, (z + 0.0F) / diameter);
+                    vertexConsumer.addVertex(pX + 1, 0, pZ + 0).setUv((x + 1.0F) / diameter, (z + 0.0F) / diameter);
+                    vertexConsumer.addVertex(pX + 1, 0, pZ + 1).setUv((x + 1.0F) / diameter, (z + 1.0F) / diameter);
+                    vertexConsumer.addVertex(pX + 0, 0, pZ + 1).setUv((x + 0.0F) / diameter, (z + 1.0F) / diameter);
+                }
+            }
+        }
+        backingGridVbo.upload(vertexConsumer.buildOrThrow());
+        VertexBuffer.unbind();
     }
 
     @Override
@@ -101,7 +128,7 @@ public class UpperLayerCloudRenderer extends BillboardCloudRenderer {
         cloudShader.getUniformSafe("PlayerCloudCellOffset").setVector((float) camXOffset, (float) camZOffset);
         cloudShader.getUniformSafe("CloudCellSize").setInt(CLOUD_CELL_SIZE);
         cloudShader.getUniformSafe("InstanceCount").setInt(instanceCount);
-        cloudShader.getUniformSafe("SkyColor").setVector(skyColor.x() * 0.8F, skyColor.y() * 0.8F, skyColor.z() * 0.8F, 1.0F);
+        cloudShader.getUniformSafe("SkyColor").setVector(skyColor.x(), skyColor.y(), skyColor.z(), 1.0F);
 
         VeilRenderSystem.bind("LayerInstancePositions", instancePositionsBlock);
 
@@ -126,13 +153,34 @@ public class UpperLayerCloudRenderer extends BillboardCloudRenderer {
             renderLayer(vbo, cloudShader, false);
         }
         ShaderProgram.unbind();
+
+        // draw the backing
+        RenderSystem.disableCull();
+        ShaderProgram backingGridShader = VeilRenderSystem.setShader(ClinkerShaders.CLOUD_LAYER_BACKING);
+        backingGridShader.bindSamplers(0);
+        backingGridShader.setDefaultUniforms(VertexFormat.Mode.QUADS, pose, projectionMatrix);
+        backingGridShader.getUniformSafe("PlayerCloudCell").setVectorI(playerCloudX, playerCloudZ);
+        backingGridShader.getUniformSafe("PlayerCloudCellOffset").setVector((float) camXOffset, (float) camZOffset);
+        backingGridShader.getUniformSafe("CloudCellSize").setInt(CLOUD_CELL_SIZE);
+        backingGridShader.getUniformSafe("InstanceCount").setInt(instanceCount);
+        backingGridShader.getUniformSafe("SkyColor").setVector(skyColor.x(), skyColor.y(), skyColor.z(), 1.0F);
+        backingGridShader.getUniformSafe("DisplacementDirection").setVector(0,camY < CLOUD_HEIGHT ? -1 : 1, 0);
+        backingGridShader.getUniformSafe("CloudHeight").setFloat(CLOUD_HEIGHT);
+        float fade = (float) (camY < CLOUD_HEIGHT ?
+                Mth.map(camY, LOWER_CLOUD_HEIGHT - 20, LOWER_CLOUD_HEIGHT, 1, 0) :
+                Mth.map(camY, UPPER_CLOUD_HEIGHT + 20, UPPER_CLOUD_HEIGHT, 1, 0));
+        backingGridShader.getUniformSafe("AlphaMultiplier").setFloat(fade);
+
+        backingGridVbo.bind();
+        backingGridVbo.drawWithShader(pose, projectionMatrix, VeilRenderBridge.toShaderInstance(backingGridShader));
+        VertexBuffer.unbind();
         poseStack.popPose();
     }
 
 
     void renderLayer(VertexBuffer vbo, ShaderProgram cloudShader, boolean lowerLayer) {
         cloudShader.getUniformSafe("DisplacementDirection").setVector(0, lowerLayer ? -1 : 1, 0);
-        cloudShader.getUniformSafe("CloudHeight").setFloat(lowerLayer ? LOWER_CLOUD_HEIGHT : UPPER_CLOUD_HEIGHT);
+        cloudShader.getUniformSafe("CloudHeight").setFloat(CLOUD_HEIGHT);
 
         vbo.bind();
         VeilRenderSystem.drawInstanced(vbo, instanceCount);
