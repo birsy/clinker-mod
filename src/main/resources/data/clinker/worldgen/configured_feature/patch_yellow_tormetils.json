@@ -1,0 +1,45 @@
+{
+  "type": "minecraft:random_patch",
+  "config": {
+    "feature": {
+      "feature": {
+        "type": "minecraft:simple_block",
+        "config": {
+          "to_place": {
+            "type": "minecraft:weighted_state_provider",
+            "entries": [
+              {
+                "weight": 10,
+                "data": { "Name": "clinker:yellow_tormetil", "Properties": { "facing": "north" } }
+              },
+              {
+                "weight": 4,
+                "data": { "Name": "clinker:yellow_tormetil", "Properties": { "facing": "east" } }
+              },
+              {
+                "weight": 4,
+                "data": { "Name": "clinker:yellow_tormetil", "Properties": { "facing": "west" } }
+              },
+              {
+                "weight": 1,
+                "data": { "Name": "clinker:yellow_tormetil", "Properties": { "facing": "south" } }
+              }
+            ]
+          }
+        }
+      },
+      "placement": [
+        {
+          "type": "minecraft:block_predicate_filter",
+          "predicate": {
+            "type": "minecraft:matching_blocks",
+            "blocks": "minecraft:air"
+          }
+        }
+      ]
+    },
+    "tries": 24,
+    "xz_spread": 4,
+    "y_spread": 3
+  }
+}

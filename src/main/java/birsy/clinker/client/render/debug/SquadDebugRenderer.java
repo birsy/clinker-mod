@@ -51,6 +51,7 @@ public class SquadDebugRenderer implements DebugRenderer.SimpleDebugRenderer {
     @Override
     public void render(PoseStack poseStack, MultiBufferSource bufferSource, double camX, double camY, double camZ) {
         if (squads.isEmpty()) return;
+        if (!minecraft.getEntityRenderDispatcher().shouldRenderHitBoxes()) return;
 
         Level level = minecraft.level;
         if (level == null) return;

@@ -34,11 +34,11 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "clinker:yellow_tormentil"
+          "name": "clinker:indigo_tormetil"
         }
       ],
       "rolls": 1.0
     }
   ],
-  "random_sequence": "clinker:blocks/yellow_tormentil"
+  "random_sequence": "clinker:blocks/indigo_tormetil"
 }

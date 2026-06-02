@@ -150,6 +150,7 @@ public class GroundLocomotionEntity extends PathfinderMob {
         float headYaw = this.getLookControl().lookTargetController.getDesiredYaw();
         float currentBodyYaw = this.getBodyRotationControl().lookTargetController.getDesiredYaw();
         float degreesDiff = Mth.degreesDifference(currentBodyYaw, headYaw);
+        if (Math.abs(degreesDiff) > 90.0F) degreesDiff = -degreesDiff;
         return Mth.approachDegrees(currentBodyYaw, headYaw + Mth.clamp(degreesDiff, -60, 60), 5);
     }
     protected float getDefaultBodyTurnSpeed() {

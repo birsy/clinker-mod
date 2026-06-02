@@ -3,8 +3,8 @@
     "render_type": "cutout",
 	"ambientocclusion": false,
 	"textures": {
-		"1": "clinker:block/yellow_tormentil",
-		"particle": "clinker:block/yellow_tormentil_item"
+		"1": "clinker:block/indigo_tormetil",
+		"particle": "clinker:item/indigo_tormetil"
 	},
 	"elements": [
 		{

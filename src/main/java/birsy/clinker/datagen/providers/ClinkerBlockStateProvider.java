@@ -801,25 +801,23 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
 
             // tormentil
             {
-                String tormentilIndigoName = name(INDIGO_TORMENTIL.get());
-                ModelFile.ExistingModelFile tormentilIndigoModel = this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + tormentilIndigoName));
-                this.getVariantBuilder(INDIGO_TORMENTIL.get()).partialState().addModels(
-                        ConfiguredModel.builder().modelFile(tormentilIndigoModel).rotationY(0).buildLast(),
-                        ConfiguredModel.builder().modelFile(tormentilIndigoModel).rotationY(90).buildLast(),
-                        ConfiguredModel.builder().modelFile(tormentilIndigoModel).rotationY(180).buildLast(),
-                        ConfiguredModel.builder().modelFile(tormentilIndigoModel).rotationY(270).buildLast()
-                );
-                this.flatBlockItem(INDIGO_TORMENTIL.get(), this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + tormentilIndigoName + "_item"));
+                String tormetilIndigoName = name(INDIGO_TORMETIL.get());
+                ModelFile.ExistingModelFile tormetilIndigoModel = this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + tormetilIndigoName));
+                this.getVariantBuilder(INDIGO_TORMETIL.get())
+                        .partialState().with(TormetilFlowerBlock.FACING, Direction.NORTH).addModels(ConfiguredModel.builder().modelFile(tormetilIndigoModel).rotationY(0).buildLast())
+                        .partialState().with(TormetilFlowerBlock.FACING, Direction.EAST).addModels(ConfiguredModel.builder().modelFile(tormetilIndigoModel).rotationY(90).buildLast())
+                        .partialState().with(TormetilFlowerBlock.FACING, Direction.SOUTH).addModels(ConfiguredModel.builder().modelFile(tormetilIndigoModel).rotationY(180).buildLast())
+                        .partialState().with(TormetilFlowerBlock.FACING, Direction.WEST).addModels(ConfiguredModel.builder().modelFile(tormetilIndigoModel).rotationY(270).buildLast());
+                this.flatBlockItem(INDIGO_TORMETIL.get(), this.modLoc(ModelProvider.ITEM_FOLDER + "/" + tormetilIndigoName));
 
-                String tormentilYellowName = name(YELLOW_TORMENTIL.get());
-                ModelFile.ExistingModelFile tormentilYellowModel = this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + tormentilYellowName));
-                this.getVariantBuilder(YELLOW_TORMENTIL.get()).partialState().addModels(
-                        ConfiguredModel.builder().modelFile(tormentilYellowModel).rotationY(0).buildLast(),
-                        ConfiguredModel.builder().modelFile(tormentilYellowModel).rotationY(90).buildLast(),
-                        ConfiguredModel.builder().modelFile(tormentilYellowModel).rotationY(180).buildLast(),
-                        ConfiguredModel.builder().modelFile(tormentilYellowModel).rotationY(270).buildLast()
-                );
-                this.flatBlockItem(YELLOW_TORMENTIL.get(), this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + tormentilYellowName + "_item"));
+                String tormetilYellowName = name(YELLOW_TORMETIL.get());
+                ModelFile.ExistingModelFile tormetilYellowModel = this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + tormetilYellowName));
+                this.getVariantBuilder(YELLOW_TORMETIL.get())
+                        .partialState().with(TormetilFlowerBlock.FACING, Direction.NORTH).addModels(ConfiguredModel.builder().modelFile(tormetilYellowModel).rotationY(0).buildLast())
+                        .partialState().with(TormetilFlowerBlock.FACING, Direction.EAST).addModels(ConfiguredModel.builder().modelFile(tormetilYellowModel).rotationY(90).buildLast())
+                        .partialState().with(TormetilFlowerBlock.FACING, Direction.SOUTH).addModels(ConfiguredModel.builder().modelFile(tormetilYellowModel).rotationY(180).buildLast())
+                        .partialState().with(TormetilFlowerBlock.FACING, Direction.WEST).addModels(ConfiguredModel.builder().modelFile(tormetilYellowModel).rotationY(270).buildLast());
+                this.flatBlockItem(YELLOW_TORMETIL.get(), this.modLoc(ModelProvider.ITEM_FOLDER + "/" + tormetilYellowName));
             }
 
             // blue rose

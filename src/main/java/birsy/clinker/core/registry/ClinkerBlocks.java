@@ -454,8 +454,16 @@ public class ClinkerBlocks
     public static final DeferredBlock<DoubleSheetMossBlock> LONG_SHEET_MOSS = createBlock("long_sheet_moss", () -> new DoubleSheetMossBlock(SHEET_MOSS_PROPERTIES.get()));
 
     public static final DeferredBlock<OthershorePlantBlock> PEAT_MOSS_BUDS = createBlock("peat_moss_buds", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_ORANGE).sound(SoundType.HANGING_ROOTS)));
-    public static final DeferredBlock<OthershorePlantBlock> INDIGO_TORMENTIL = createBlock("indigo_tormentil", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.DANDELION).mapColor(MapColor.COLOR_PURPLE).sound(SoundType.PINK_PETALS)));
-    public static final DeferredBlock<OthershorePlantBlock> YELLOW_TORMENTIL = createBlock("yellow_tormentil", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.DANDELION).mapColor(MapColor.COLOR_YELLOW).sound(SoundType.PINK_PETALS)));
+    public static final DeferredBlock<OthershorePlantBlock> INDIGO_TORMETIL = createBlock("indigo_tormetil", () -> new TormetilFlowerBlock(
+            BlockBehaviour.Properties.ofFullCopy(Blocks.DANDELION)
+                    .mapColor(MapColor.COLOR_PURPLE)
+                    .sound(SoundType.PINK_PETALS)
+    ));
+    public static final DeferredBlock<OthershorePlantBlock> YELLOW_TORMETIL = createBlock("yellow_tormetil", () -> new TormetilFlowerBlock(
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.DANDELION)
+                            .mapColor(MapColor.COLOR_YELLOW)
+                            .sound(SoundType.PINK_PETALS)
+    ));
 
     private static Supplier<BlockBehaviour.Properties> SPOTREED_PROPERTIES = () -> {
         BlockBehaviour.Properties props = BlockBehaviour.Properties.ofFullCopy(Blocks.BAMBOO)

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "clinker:block/indigo_tormetil",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "clinker:block/indigo_tormetil"
+    },
+    "facing=south": {
+      "model": "clinker:block/indigo_tormetil",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "clinker:block/indigo_tormetil",
+      "y": 270
+    }
+  }
+}
