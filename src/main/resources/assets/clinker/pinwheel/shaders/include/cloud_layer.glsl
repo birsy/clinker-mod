@@ -38,18 +38,25 @@ void sampleCloud(ivec2 cloudCenterCellPos, vec2 cloudCenterCellOffset, ivec2 cam
         ivec2 holeCellBlockPos = holePos / 64;
         vec2 holeCellFracPos = vec2(holePos % 64) / 64.0;
         vec2 localHolePos = (holeCellBlockPos - cameraBlockPos) + (holeCellFracPos - cameraFractPos);
-        float holeDist = length(localCenter - localHolePos.xy);
+        vec2 relativeHolePos = localCenter - localHolePos.xy;
+        float holeDist = length(relativeHolePos);
         float holeInfluence = holeDist / holeRadius;
 
-        float thisHoleOffset = 1.0 - clamp((holeInfluence - 1.0) / 0.5, 0.0, 1.0);
-        thisHoleOffset *= thisHoleOffset * thisHoleOffset;
+        float thisHoleOffset = smoothstep(1.5, 1.0, holeInfluence);
         float thisHoleAlpha = smoothstep(holeRadius - float(cloudCellSize), holeRadius + float(cloudCellSize), holeDist * holeSizeOffset);
 
         // beacon
         if (hole.type == 2) {
-            float beaconSine = sin(holeDist / 15.0 - GameTime * 1000.0) * 0.5 + 0.5;
+            float beaconSine = sin(holeDist / 10.0 - GameTime * 1000.0) * 0.5 + 0.5;
             beaconSine *= smoothstep(8.0, 1.0, holeInfluence);
             thisHoleOffset = 1.0 - ((1.0 - thisHoleOffset) * (1.0 - (beaconSine * 0.4)));
+        }
+        // spiral
+        if (hole.type == 3) {
+            float angle = atan(relativeHolePos.y, relativeHolePos.x);
+            float spiral = sin(angle * 5.0 + holeDist / 10.0 - GameTime * 1000.0 + cloudDensity) * 0.5 + 0.5;
+            spiral *= smoothstep(8.0, 1.0, holeInfluence);
+            thisHoleOffset = 1.0 - ((1.0 - thisHoleOffset) * (1.0 - spiral));
         }
 
         holeAlpha = min(holeAlpha, thisHoleAlpha);
@@ -59,13 +66,13 @@ void sampleCloud(ivec2 cloudCenterCellPos, vec2 cloudCenterCellOffset, ivec2 cam
     baseOffset = layerOffset + (horizontalDistance / renderDist) * 15.0;
     displacement = (baseOffset + 5) * -holeOffset +
                    (cloudDensity * 2.0 - 1.0) * maximumDisplacement;
-    brightness = cloudDensity * (1.0 - (holeOffset * 0.5));
+    brightness = mix(cloudDensity, -0.5, holeOffset);
     alpha = smoothstep(renderDist, renderDist * 0.3, horizontalDistance) * holeAlpha;
 }
 
 vec3 cloudColor(vec3 skyColor, vec3 fogColor, float cloudBrightness) {
     vec3 cloudColor = mix(skyColor, fogColor * 1.1, smoothstep(0.0, 1.0, smoothstep(0.0, 1.0, cloudBrightness)));
     cloudColor = mix(cloudColor, fogColor.rgb * 1.5, smoothstep(0.6, 1.0, cloudBrightness));
-    cloudColor = mix(cloudColor, skyColor.rgb * 0.7, smoothstep(1.0, 0.0, cloudBrightness));
+    cloudColor = mix(cloudColor, skyColor.rgb * 0.5, smoothstep(1.0, -0.3, cloudBrightness));
     return cloudColor;
 }

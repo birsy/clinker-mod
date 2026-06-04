@@ -10,9 +10,12 @@ import foundry.veil.api.client.render.framebuffer.AdvancedFbo;
 import foundry.veil.api.client.render.shader.program.ShaderProgram;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.culling.Frustum;
 import net.neoforged.neoforge.client.GlStateBackup;
 import org.joml.Matrix4f;
 import org.joml.Vector3fc;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL11C;
 
 import java.util.List;
 
@@ -21,15 +24,16 @@ import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11C.GL_COLOR_BUFFER_BIT;
 
 public class OthershoreCloudRenderer {
-    final List<BillboardCloudRenderer> cloudRenderers;
+    final List<CloudRendererHolder> cloudRenderers;
+
     VertexBuffer billboardVbo;
     boolean initialized = false;
     int lastRenderRadius = 0;
 
     public OthershoreCloudRenderer() {
         this.cloudRenderers = List.of(
-                new UpperLayerCloudRenderer(),
-                new StormFrontCloudRenderer()
+                new CloudRendererHolder(new UpperLayerCloudRenderer()),
+                new CloudRendererHolder(new StormFrontCloudRenderer())
         );
     }
 
@@ -50,19 +54,19 @@ public class OthershoreCloudRenderer {
 
         // initialize the renderers
         this.lastRenderRadius = getRenderRadius();
-        for (BillboardCloudRenderer cloudRenderer : cloudRenderers)
-            cloudRenderer.initialize(this.lastRenderRadius);
+        for (CloudRendererHolder holder : cloudRenderers)
+            holder.renderer.initialize(this.lastRenderRadius);
         this.initialized = true;
     }
 
     void rebuild(int renderRadius) {
-        for (BillboardCloudRenderer cloudRenderer : cloudRenderers)
-            cloudRenderer.rebuild(renderRadius);
+        for (CloudRendererHolder holder : cloudRenderers)
+            holder.renderer.rebuild(renderRadius);
     }
 
     public void free() {
-        for (BillboardCloudRenderer cloudRenderer : cloudRenderers)
-            cloudRenderer.free();
+        for (CloudRendererHolder holder : cloudRenderers)
+            holder.renderer.free();
         if (this.billboardVbo != null) this.billboardVbo.close();
     }
 
@@ -83,15 +87,17 @@ public class OthershoreCloudRenderer {
         AdvancedFbo cloudFbo = VeilRenderSystem.renderer().getFramebufferManager().getFramebuffer(ClinkerFramebuffers.CLOUDS);
         cloudFbo.bind(true);
         cloudFbo.clear(skyColor.x(), skyColor.y(), skyColor.z(), 0.0F, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        RenderSystem.clearStencil(0x00);
+        GL11.glClear(GL11C.GL_STENCIL_BUFFER_BIT);
 
-        mainFbo.bindRead();
-        cloudFbo.bindDraw(true);
-        GlStateManager._glBlitFrameBuffer(
-                0, 0, mainFbo.getWidth(), mainFbo.getHeight(),
-                0, 0, cloudFbo.getWidth(), cloudFbo.getHeight(),
-                GL_DEPTH_BUFFER_BIT,
-                GL_NEAREST
-        );
+        cloudFbo.bind(true);
+        // copy depth from main framebuffer
+        ShaderProgram depthBlitShader = VeilRenderSystem.setShader(ClinkerShaders.VEIL_BLIT_DEPTH);
+        depthBlitShader.bind();
+        depthBlitShader.setDefaultUniforms(VertexFormat.Mode.TRIANGLE_STRIP);
+        depthBlitShader.setFramebufferSamplers(mainFbo);
+        VeilRenderSystem.drawScreenQuad();
+        ShaderProgram.unbind();
 
         // render other useful cloud textures
         renderCloudDensityTexture(ticks, partialTick);
@@ -100,8 +106,12 @@ public class OthershoreCloudRenderer {
         // cloud drawing process
         cloudFbo.bind(true);
 
-        for (BillboardCloudRenderer cloudRenderer : cloudRenderers)
-            cloudRenderer.preRender(this, level, ticks, partialTick, poseStack, camX, camY, camZ, projectionMatrix, skyColor);
+        Frustum cameraFrustum = Minecraft.getInstance().levelRenderer.getFrustum();
+        for (CloudRendererHolder holder : cloudRenderers)
+            holder.shouldRender = cameraFrustum.isVisible(holder.renderer.getRenderBounds(this, camX, camY, camZ, partialTick));
+
+        for (CloudRendererHolder holder : cloudRenderers)
+            if (holder.shouldRender) holder.renderer.preRender(this, level, ticks, partialTick, poseStack, camX, camY, camZ, projectionMatrix, skyColor);
 
         RenderSystem.depthMask(true);
         RenderSystem.enableDepthTest();
@@ -110,11 +120,17 @@ public class OthershoreCloudRenderer {
                 GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
                 GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE
         );
-        for (BillboardCloudRenderer cloudRenderer : cloudRenderers)
-            cloudRenderer.render(this, level, ticks, partialTick, poseStack, camX, camY, camZ, projectionMatrix, skyColor);
 
-        for (BillboardCloudRenderer cloudRenderer : cloudRenderers)
-            cloudRenderer.postRender(this, level, ticks, partialTick, poseStack, camX, camY, camZ, projectionMatrix, skyColor);
+        GL11.glEnable(GL11C.GL_STENCIL_TEST);
+        RenderSystem.stencilMask(1);
+        RenderSystem.stencilFunc(GL11C.GL_ALWAYS, 1, 0xFF); // always pass stencil test
+        RenderSystem.stencilOp(GL11C.GL_KEEP, GL11C.GL_KEEP, GL11C.GL_REPLACE);
+        for (CloudRendererHolder holder : cloudRenderers)
+            if (holder.shouldRender) holder.renderer.render(this, level, ticks, partialTick, poseStack, camX, camY, camZ, projectionMatrix, skyColor);
+
+        RenderSystem.stencilOp(GL11C.GL_KEEP, GL11C.GL_KEEP, GL11C.GL_KEEP);
+        for (CloudRendererHolder holder : cloudRenderers)
+            if (holder.shouldRender) holder.renderer.postRender(this, level, ticks, partialTick, poseStack, camX, camY, camZ, projectionMatrix, skyColor);
 
         AdvancedFbo.unbind();
 
@@ -176,5 +192,11 @@ public class OthershoreCloudRenderer {
 
     private static int getRenderRadius() {
         return Minecraft.getInstance().options.renderDistance().get() * 16 + 8;
+    }
+
+    private static class CloudRendererHolder {
+        final BillboardCloudRenderer renderer;
+        boolean shouldRender = false;
+        private CloudRendererHolder(BillboardCloudRenderer renderer) { this.renderer = renderer; }
     }
 }

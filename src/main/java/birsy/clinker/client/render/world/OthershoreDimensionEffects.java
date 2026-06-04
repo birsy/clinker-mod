@@ -57,6 +57,8 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects implemen
         float r = (float)interpolatedSkyColor.x;
         float g = (float)interpolatedSkyColor.y;
         float b = (float)interpolatedSkyColor.z;
+        float brightness = (float) Mth.map(Minecraft.getInstance().options.gamma().get(), 0.0F, 0.5F, 0.7F, 1.0F);
+        r *= brightness; g *= brightness; b *= brightness;
 
         int i = level.getSkyFlashTime();
         if (i > 0) {
@@ -68,8 +70,6 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects implemen
             g = g * (1.0F - lightningFlicker) + 0.2F * lightningFlicker;
             b = b * (1.0F - lightningFlicker);
         }
-        float brightness = (float) Mth.map(Minecraft.getInstance().options.gamma().get(), 0.0F, 0.5F, 0.7F, 1.0F);
-        skyColor.mul(brightness);
 
         return skyColor.set(r, g, b);
     }

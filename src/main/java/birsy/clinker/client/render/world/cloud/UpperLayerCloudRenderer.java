@@ -10,8 +10,10 @@ import foundry.veil.api.client.render.shader.block.ShaderBlock;
 import foundry.veil.api.client.render.shader.program.ShaderProgram;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.AABB;
 import org.joml.Matrix4f;
 import org.joml.Vector3fc;
+import org.lwjgl.opengl.GL11C;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -23,11 +25,10 @@ public class UpperLayerCloudRenderer extends BillboardCloudRenderer {
             LOWER_CLOUD_HEIGHT = 270,
             UPPER_CLOUD_HEIGHT = 300,
             CLOUD_HEIGHT = (LOWER_CLOUD_HEIGHT + UPPER_CLOUD_HEIGHT) / 2;
-
     DynamicShaderBlock<CloudPosition[]> instancePositionsBlock;
     int instanceCount = 0;
-
     VertexBuffer backingGridVbo;
+    AABB bounds;
 
     @Override
     void rebuild(int renderRadiusInBlocks) {
@@ -46,6 +47,11 @@ public class UpperLayerCloudRenderer extends BillboardCloudRenderer {
         instanceCount = data.length;
 
         createBackingGrid(radius);
+
+        this.bounds = new AABB(
+                -renderRadiusInBlocks, LOWER_CLOUD_HEIGHT, -renderRadiusInBlocks,
+                renderRadiusInBlocks, UPPER_CLOUD_HEIGHT, renderRadiusInBlocks
+        ).inflate(10);
     }
     private CloudPosition[] createInstanceData(int radius) {
         int diameter = radius * 2;
@@ -93,11 +99,18 @@ public class UpperLayerCloudRenderer extends BillboardCloudRenderer {
         }
         backingGridVbo.upload(vertexConsumer.buildOrThrow());
         VertexBuffer.unbind();
+
     }
 
     @Override
     void free() {
         instancePositionsBlock.free();
+        if (backingGridVbo != null) backingGridVbo.close();
+    }
+
+    @Override
+    AABB getRenderBounds(OthershoreCloudRenderer renderer, double camX, double camY, double camZ, float partialTick) {
+        return bounds.move(camX, 0, camZ);
     }
 
     @Override
@@ -129,6 +142,7 @@ public class UpperLayerCloudRenderer extends BillboardCloudRenderer {
         cloudShader.getUniformSafe("CloudCellSize").setInt(CLOUD_CELL_SIZE);
         cloudShader.getUniformSafe("InstanceCount").setInt(instanceCount);
         cloudShader.getUniformSafe("SkyColor").setVector(skyColor.x(), skyColor.y(), skyColor.z(), 1.0F);
+        cloudShader.getUniformSafe("CloudHeight").setFloat(CLOUD_HEIGHT);
 
         VeilRenderSystem.bind("LayerInstancePositions", instancePositionsBlock);
 
@@ -154,8 +168,30 @@ public class UpperLayerCloudRenderer extends BillboardCloudRenderer {
         }
         ShaderProgram.unbind();
 
+        poseStack.popPose();
+    }
+
+    @Override
+    void postRender(OthershoreCloudRenderer renderer, ClientLevel level, int ticks, float partialTick, PoseStack poseStack, double camX, double camY, double camZ, Matrix4f projectionMatrix, Vector3fc skyColor) {
+        float fade = (float) (camY < CLOUD_HEIGHT ?
+                Mth.map(camY, LOWER_CLOUD_HEIGHT - 20, LOWER_CLOUD_HEIGHT, 1, 0) :
+                Mth.map(camY, UPPER_CLOUD_HEIGHT + 20, UPPER_CLOUD_HEIGHT, 1, 0)
+        );
+        if (fade < 0.01) return;
+
+        int playerCloudX = Math.floorDiv(Mth.floor(camX), CLOUD_CELL_SIZE),
+            playerCloudZ = Math.floorDiv(Mth.floor(camZ), CLOUD_CELL_SIZE);
+        double camXOffset = camX - (playerCloudX * CLOUD_CELL_SIZE),
+               camZOffset = camZ - (playerCloudZ * CLOUD_CELL_SIZE);
+
+        poseStack.pushPose();
+        poseStack.translate(-camXOffset, -camY, -camZOffset);
+        Matrix4f pose = poseStack.last().pose();
+
         // draw the backing
         RenderSystem.disableCull();
+        RenderSystem.stencilFunc(GL11C.GL_NOTEQUAL, 1, 0xFF);
+
         ShaderProgram backingGridShader = VeilRenderSystem.setShader(ClinkerShaders.CLOUD_LAYER_BACKING);
         backingGridShader.bindSamplers(0);
         backingGridShader.setDefaultUniforms(VertexFormat.Mode.QUADS, pose, projectionMatrix);
@@ -166,22 +202,17 @@ public class UpperLayerCloudRenderer extends BillboardCloudRenderer {
         backingGridShader.getUniformSafe("SkyColor").setVector(skyColor.x(), skyColor.y(), skyColor.z(), 1.0F);
         backingGridShader.getUniformSafe("DisplacementDirection").setVector(0,camY < CLOUD_HEIGHT ? -1 : 1, 0);
         backingGridShader.getUniformSafe("CloudHeight").setFloat(CLOUD_HEIGHT);
-        float fade = (float) (camY < CLOUD_HEIGHT ?
-                Mth.map(camY, LOWER_CLOUD_HEIGHT - 20, LOWER_CLOUD_HEIGHT, 1, 0) :
-                Mth.map(camY, UPPER_CLOUD_HEIGHT + 20, UPPER_CLOUD_HEIGHT, 1, 0));
         backingGridShader.getUniformSafe("AlphaMultiplier").setFloat(fade);
 
         backingGridVbo.bind();
         backingGridVbo.drawWithShader(pose, projectionMatrix, VeilRenderBridge.toShaderInstance(backingGridShader));
         VertexBuffer.unbind();
-        poseStack.popPose();
-    }
 
+        RenderSystem.stencilFunc(GL11C.GL_ALWAYS, 0, 0xFF);
+    }
 
     void renderLayer(VertexBuffer vbo, ShaderProgram cloudShader, boolean lowerLayer) {
         cloudShader.getUniformSafe("DisplacementDirection").setVector(0, lowerLayer ? -1 : 1, 0);
-        cloudShader.getUniformSafe("CloudHeight").setFloat(CLOUD_HEIGHT);
-
         vbo.bind();
         VeilRenderSystem.drawInstanced(vbo, instanceCount);
         VertexBuffer.unbind();

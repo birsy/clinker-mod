@@ -1,6 +1,8 @@
 {
-  "depth": true,
   "autoClear": false,
   "format": "RGBA8",
-  "type": "texture"
+  "type": "texture",
+  "depth": {
+    "format": "DEPTH24_STENCIL8"
+  }
 }

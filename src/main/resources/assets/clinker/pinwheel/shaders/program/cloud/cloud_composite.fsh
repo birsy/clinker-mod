@@ -24,5 +24,5 @@ void main() {
     vec4 sceneColor = texture(SceneSampler, texCoord);
 
     fragColor = vec4(mix(sceneColor.rgb, cloudColor.rgb, cloudColor.a), cloudColor.a + sceneColor.a - (cloudColor.a * sceneColor.a));
-    gl_FragDepth = mix(sceneDepth, min(sceneDepth, cloudsDepth), depthFade);
+    gl_FragDepth = mix(sceneDepth, min(sceneDepth, cloudsDepth), cloudColor.a);
 }

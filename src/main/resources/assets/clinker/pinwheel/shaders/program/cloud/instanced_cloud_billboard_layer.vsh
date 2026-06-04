@@ -60,21 +60,21 @@ void main() {
                 brightness, alpha, baseOffset, displacement);
 
     vec3 undisplacedCenter = center + baseOffset * DisplacementDirection;
-    center += (baseOffset + displacement) * DisplacementDirection;
+    center = undisplacedCenter + displacement * DisplacementDirection;
 
     float radius = mix(7.0, 13.0, randoms.w);
 
-    vec3 worldPos = center +
-        TexCoord.x * radius * Camera.IViewMat[0].xyz +
-        TexCoord.y * radius * Camera.IViewMat[1].xyz;
+    vec3 billboardOffset = TexCoord.x * radius * Camera.IViewMat[0].xyz + TexCoord.y * radius * Camera.IViewMat[1].xyz;
+    vec3 worldPos = center + billboardOffset;
 
     vec4 viewPos = ModelViewMat * vec4(worldPos, 1.0);
     gl_Position  = ProjMat * viewPos;
     
     float offset = planeDist(undisplacedCenter, -DisplacementDirection, worldPos);
-    float brightnessFromOffset = smoothstep(0.0, 1.0, offset / (maximumDisplacement + length((TexCoord.y * radius * Camera.IViewMat[1].xyz).y)));
+    float brightnessFromOffset = smoothstep(0.0, 1.0, offset / (maximumDisplacement + length((1.0 * radius * Camera.IViewMat[1].xyz).y)));
 
-    float cloudBrightness = mix(brightness, brightnessFromOffset, 0.5);
+    float cloudBrightness = mix(brightness, brightnessFromOffset, 0.3);
+
     vec3 cloudColor = cloudColor(SkyColor.rgb, FogColor.rgb, cloudBrightness);
     float cloudAlpha = alpha * smoothstep(0.0, radius, -viewPos.z);
 

@@ -7,7 +7,6 @@ import birsy.clinker.common.world.level.gen.OthershoreGenerationConstants;
 import birsy.clinker.common.world.level.weather.ClientOthershoreWeatherSystem;
 import birsy.clinker.common.world.level.weather.OthershoreWeatherSystem;
 import birsy.clinker.common.world.level.weather.types.StormApproachingWeather;
-import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.CubicBezierSpline;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexBuffer;
@@ -16,8 +15,10 @@ import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.api.client.render.shader.block.DynamicShaderBlock;
 import foundry.veil.api.client.render.shader.block.ShaderBlock;
 import foundry.veil.api.client.render.shader.program.ShaderProgram;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.AABB;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
@@ -31,6 +32,7 @@ public class StormFrontCloudRenderer extends BillboardCloudRenderer {
     final List<DistanceAtHeight> distancesAtHeight = new ArrayList<>();
     DynamicShaderBlock<CloudPosition[]> instancePositions;
     int instanceCount = 0;
+    AABB bounds;
 
     @Override
     void rebuild(int renderRadiusInBlocks) {
@@ -46,6 +48,11 @@ public class StormFrontCloudRenderer extends BillboardCloudRenderer {
             instancePositions.setSize(size);
         instancePositions.set(data);
         instanceCount = data.length;
+
+        bounds = new AABB(
+                -renderRadiusInBlocks, distancesAtHeight.getFirst().height, distancesAtHeight.getLast().distance,
+                renderRadiusInBlocks, distancesAtHeight.getLast().height, distancesAtHeight.getFirst().distance
+        ).inflate(20.0);
     }
     private CloudPosition[] createInstanceData(int radius) {
         final float height = (UpperLayerCloudRenderer.LOWER_CLOUD_HEIGHT - 20) - OthershoreGenerationConstants.SEA_HEIGHT;
@@ -105,8 +112,15 @@ public class StormFrontCloudRenderer extends BillboardCloudRenderer {
     }
 
     @Override
-    void preRender(OthershoreCloudRenderer renderer, ClientLevel level, int ticks, float partialTick, PoseStack poseStack, double camX, double camY, double camZ, Matrix4f projectionMatrix, Vector3fc skyColor) {
-        super.preRender(renderer, level, ticks, partialTick, poseStack, camX, camY, camZ, projectionMatrix, skyColor);
+    AABB getRenderBounds(OthershoreCloudRenderer renderer, double camX, double camY, double camZ, float partialTick) {
+        OthershoreWeatherSystem weatherSystem = ClientOthershoreWeatherSystem.get();
+        if (weatherSystem == null) return super.getRenderBounds(renderer, camX, camY, camZ, partialTick);
+
+        float progress = OthershoreStormRenderHelper.getNormalizedStormApproachDistance(weatherSystem, partialTick);
+        float distanceToPlayer = progress * renderer.lastRenderRadius;
+        float cloudDistanceOffset = getCloudDistanceOffset((float) camY - OthershoreGenerationConstants.SEA_HEIGHT);
+        distanceToPlayer += cloudDistanceOffset - CLOUD_CELL_SIZE;
+        return bounds.move(camX, 0, camZ - distanceToPlayer);
     }
 
     @Override

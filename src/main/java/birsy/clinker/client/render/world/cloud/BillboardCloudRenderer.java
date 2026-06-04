@@ -2,6 +2,7 @@ package birsy.clinker.client.render.world.cloud;
 
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.world.phys.AABB;
 import org.joml.Matrix4f;
 import org.joml.Vector3fc;
 
@@ -22,4 +23,6 @@ public abstract class BillboardCloudRenderer {
 
     void postRender(OthershoreCloudRenderer renderer, ClientLevel level, int ticks, float partialTick, PoseStack poseStack,
                    double camX, double camY, double camZ, Matrix4f projectionMatrix, Vector3fc skyColor) {}
+
+    AABB getRenderBounds(OthershoreCloudRenderer renderer, double camX, double camY, double camZ, float partialTick) { return AABB.INFINITE; }
 }
