@@ -174,7 +174,6 @@ public class StormFrontCloudRenderer extends BillboardCloudRenderer {
         poseStack.popPose();
     }
 
-
     float getCloudDistanceOffset(float y) {
         if (y <= distancesAtHeight.getFirst().height) return distancesAtHeight.getFirst().distance;
         if (y >= distancesAtHeight.getLast().height) return distancesAtHeight.getLast().distance;

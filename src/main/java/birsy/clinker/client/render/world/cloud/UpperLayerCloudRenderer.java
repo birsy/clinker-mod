@@ -151,23 +151,27 @@ public class UpperLayerCloudRenderer extends BillboardCloudRenderer {
 
         VertexBuffer vbo = renderer.getBillboardVbo();
 
-        int lowerThreshold = LOWER_CLOUD_HEIGHT - CLOUD_CELL_SIZE * 4,
-            upperThreshold = UPPER_CLOUD_HEIGHT + CLOUD_CELL_SIZE * 4;
-        if (camY <= lowerThreshold) {
-            // only render lower
-            renderLayer(vbo, cloudShader, true);
-        } else if (camY > lowerThreshold && camY < upperThreshold) {
-            // kind of opaque boolean logic here, but
-            // renders the closer one first
-            boolean lowerIsCloser = camY < CLOUD_HEIGHT;
-            renderLayer(vbo, cloudShader, lowerIsCloser);
-            renderLayer(vbo, cloudShader, !lowerIsCloser);
-        } else {
-            // only render upper
-            renderLayer(vbo, cloudShader, false);
-        }
-        ShaderProgram.unbind();
+        float lowerLayerAlpha = (float) Mth.clampedMap(camY,
+                UPPER_CLOUD_HEIGHT + CLOUD_CELL_SIZE * 2,
+                UPPER_CLOUD_HEIGHT + CLOUD_CELL_SIZE * 4,
+                1, 0
+        );
+        float upperLayerAlpha = (float) Mth.clampedMap(camY,
+                LOWER_CLOUD_HEIGHT - CLOUD_CELL_SIZE * 2,
+                LOWER_CLOUD_HEIGHT - CLOUD_CELL_SIZE * 4,
+                1, 0
+        );
+        boolean lowerIsCloser = camY < CLOUD_HEIGHT;
 
+        if (lowerIsCloser) {
+            if (lowerLayerAlpha > 0.001) renderLayer(vbo, cloudShader, lowerLayerAlpha, true);
+            if (upperLayerAlpha > 0.001) renderLayer(vbo, cloudShader, upperLayerAlpha, false);
+        } else {
+            if (upperLayerAlpha > 0.001) renderLayer(vbo, cloudShader, upperLayerAlpha, false);
+            if (lowerLayerAlpha > 0.001) renderLayer(vbo, cloudShader, lowerLayerAlpha, true);
+        }
+
+        ShaderProgram.unbind();
         poseStack.popPose();
     }
 
@@ -211,7 +215,8 @@ public class UpperLayerCloudRenderer extends BillboardCloudRenderer {
         RenderSystem.stencilFunc(GL11C.GL_ALWAYS, 0, 0xFF);
     }
 
-    void renderLayer(VertexBuffer vbo, ShaderProgram cloudShader, boolean lowerLayer) {
+    void renderLayer(VertexBuffer vbo, ShaderProgram cloudShader, float alpha, boolean lowerLayer) {
+        cloudShader.getUniformSafe("AlphaMultiplier").setFloat(alpha);
         cloudShader.getUniformSafe("DisplacementDirection").setVector(0, lowerLayer ? -1 : 1, 0);
         vbo.bind();
         VeilRenderSystem.drawInstanced(vbo, instanceCount);

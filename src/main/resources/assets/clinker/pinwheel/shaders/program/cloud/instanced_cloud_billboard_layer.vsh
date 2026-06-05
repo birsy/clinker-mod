@@ -21,6 +21,7 @@ uniform vec2 PlayerCloudCellOffset;
 uniform int CloudCellSize;
 uniform float CloudHeight;
 uniform int InstanceCount;
+uniform float AlphaMultiplier;
 
 out vec2 texCoord;
 out vec4 vertexColor;
@@ -76,7 +77,7 @@ void main() {
     float cloudBrightness = mix(brightness, brightnessFromOffset, 0.3);
 
     vec3 cloudColor = cloudColor(SkyColor.rgb, FogColor.rgb, cloudBrightness);
-    float cloudAlpha = alpha * smoothstep(0.0, radius, -viewPos.z);
+    float cloudAlpha = alpha * smoothstep(0.0, radius, -viewPos.z) * AlphaMultiplier;
 
     texCoord = TexCoord;
     vertexColor = vec4(cloudColor, cloudAlpha);
