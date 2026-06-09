@@ -73,21 +73,6 @@ public class ClinkerRenderTypes {
     });
     public static RenderType entityUnlitCutoutNoCull(ResourceLocation pLocation) { return ENTITY_UNLIT_CUTOUT_NOCULL.apply(pLocation, true); }
 
-    private static final RenderStateShard.ShaderStateShard CHAIN_LIGHTNING_SHADER =
-            new RenderStateShard.ShaderStateShard(ClinkerShaders::getChainLightningShader);
-    public static final RenderType CHAIN_LIGHTNING = Util.make(() -> {
-        RenderType.CompositeState compositeState = RenderType.CompositeState.builder()
-                .setShaderState(CHAIN_LIGHTNING_SHADER)
-                .setTextureState(new RenderStateShard.TextureStateShard(TextureAtlas.LOCATION_PARTICLES, false, false))
-                .setTransparencyState(ADDITIVE_TRANSPARENCY)
-                .setCullState(NO_CULL)
-                .setLightmapState(LIGHTMAP)
-                .setOverlayState(OVERLAY)
-                .createCompositeState(false);
-        return RenderType.create("chain_lightning",
-                DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, false, compositeState);
-    });
-
     private static final RenderStateShard.ShaderStateShard FIRE_SPEW_SHADER =
             new RenderStateShard.ShaderStateShard(ClinkerShaders::getFireSpewShader);
     public static final RenderType FIRE_SPEW = Util.make(() -> {

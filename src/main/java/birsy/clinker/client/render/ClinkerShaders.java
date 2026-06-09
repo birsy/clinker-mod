@@ -52,16 +52,6 @@ public class ClinkerShaders {
         return Objects.requireNonNull(positionColorTextureUnclampedShader, "Attempted to call getPositionColorTextureUnclampedShader before shaders have finished loading.");
     }
 
-    private static ShaderInstance positionColorUnclampedShader;
-    public static ShaderInstance getPositionColorUnclampedShader() {
-        return Objects.requireNonNull(positionColorUnclampedShader, "Attempted to call getPositionColorUnclampedShader before shaders have finished loading.");
-    }
-
-    private static ShaderInstance chainLightningShader;
-    public static ShaderInstance getChainLightningShader() {
-        return Objects.requireNonNull(chainLightningShader, "Attempted to call getChainLightningShader before shaders have finished loading.");
-    }
-
     private static ShaderInstance fireSpewShader;
     public static ShaderInstance getFireSpewShader() {
         return Objects.requireNonNull(fireSpewShader, "Attempted to call getFireSpewShader before shaders have finished loading.");
@@ -92,11 +82,6 @@ public class ClinkerShaders {
         return Objects.requireNonNull(skyStarShader, "Attempted to call getSkyStarShader before shaders have finished loading.");
     }
 
-    private static ShaderInstance cloudShader;
-    public static ShaderInstance getCloudShader() {
-        return Objects.requireNonNull(cloudShader, "Attempted to call getCloudShader before shaders have finished loading.");
-    }
-
     private static ShaderInstance vitriolShader;
     public static ShaderInstance getVitriolShader() {
         return Objects.requireNonNull(vitriolShader, "Attempted to call getVitriolShader before shaders have finished loading.");
@@ -107,23 +92,13 @@ public class ClinkerShaders {
         Clinker.LOGGER.info("registering shaders!");
         event.registerShader(new ShaderInstance(event.getResourceProvider(), Clinker.resource("rendertype_entity_unlit_cutout"), DefaultVertexFormat.NEW_ENTITY), (shader) -> rendertypeEntityCutoutUnlitShader = shader);
         event.registerShader(new ShaderInstance(event.getResourceProvider(), Clinker.resource("rendertype_entity_unlit_cutout_nocull"), DefaultVertexFormat.NEW_ENTITY), (shader) -> rendertypeEntityCutoutNoCullUnlitShader = shader);
-
         event.registerShader(new ShaderInstance(event.getResourceProvider(), Clinker.resource("position_color_tex_unclamped"), DefaultVertexFormat.POSITION_TEX_COLOR), (shader) -> positionColorTextureUnclampedShader = shader);
-        event.registerShader(new ShaderInstance(event.getResourceProvider(), Clinker.resource("position_color_unclamped"), DefaultVertexFormat.POSITION_COLOR), (shader) -> positionColorUnclampedShader = shader);
-
-        event.registerShader(new ShaderInstance(event.getResourceProvider(), Clinker.resource("chain_lightning"), DefaultVertexFormat.NEW_ENTITY), (shader) -> chainLightningShader = shader);
         event.registerShader(new ShaderInstance(event.getResourceProvider(), Clinker.resource("fire_spew"), DefaultVertexFormat.NEW_ENTITY), (shader) -> fireSpewShader = shader);
-
         event.registerShader(new ShaderInstance(event.getResourceProvider(), Clinker.resource("sky_cloud"), DefaultVertexFormat.POSITION_TEX_COLOR), (shader) -> skyCloudShader = shader);
         event.registerShader(new ShaderInstance(event.getResourceProvider(), Clinker.resource("sky_star"), DefaultVertexFormat.POSITION_TEX_COLOR), (shader) -> skyStarShader = shader);
         event.registerShader(new ShaderInstance(event.getResourceProvider(), Clinker.resource("sky_outer"), DefaultVertexFormat.POSITION_TEX_COLOR), (shader) -> skyOuterShader = shader);
         event.registerShader(new ShaderInstance(event.getResourceProvider(), Clinker.resource("sky_outer_cloud"), DefaultVertexFormat.POSITION_TEX_COLOR), (shader) -> skyOuterCloudShader = shader);
         event.registerShader(new ShaderInstance(event.getResourceProvider(), Clinker.resource("sky_outer_star"), DefaultVertexFormat.POSITION_TEX_COLOR), (shader) -> skyOuterStarShader = shader);
-
-        event.registerShader(new ShaderInstance(event.getResourceProvider(), Clinker.resource("cloud"), DefaultVertexFormat.POSITION_TEX_COLOR), (shader) -> cloudShader = shader);
-
         event.registerShader(new ShaderInstance(event.getResourceProvider(), Clinker.resource("vitriol"), DefaultVertexFormat.BLOCK), (shader) -> vitriolShader = shader);
     }
-
-
 }

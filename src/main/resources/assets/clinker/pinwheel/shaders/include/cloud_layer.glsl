@@ -38,7 +38,7 @@ void sampleCloud(ivec2 cloudCenterCellPos, vec2 cloudCenterCellOffset, ivec2 cam
         ivec2 holeCellBlockPos = holePos / 64;
         vec2 holeCellFracPos = vec2(holePos % 64) / 64.0;
         vec2 localHolePos = (holeCellBlockPos - cameraBlockPos) + (holeCellFracPos - cameraFractPos);
-        vec2 relativeHolePos = localCenter - localHolePos.xy;
+        vec2 relativeHolePos = (localCenter - cloudCenterCellOffset) - localHolePos.xy;
         float holeDist = length(relativeHolePos);
         float holeInfluence = holeDist / holeRadius;
 
@@ -71,8 +71,7 @@ void sampleCloud(ivec2 cloudCenterCellPos, vec2 cloudCenterCellOffset, ivec2 cam
 }
 
 vec3 cloudColor(vec3 skyColor, vec3 fogColor, float cloudBrightness) {
-    vec3 cloudColor = mix(skyColor, fogColor * 1.1, smoothstep(0.0, 1.0, smoothstep(0.0, 1.0, cloudBrightness)));
-    cloudColor = mix(cloudColor, fogColor.rgb * 1.5, smoothstep(0.6, 1.0, cloudBrightness));
-    cloudColor = mix(cloudColor, skyColor.rgb * 0.5, smoothstep(1.0, -0.3, cloudBrightness));
-    return cloudColor;
+    vec3 col = fogColor * mix(0.8, 1.3, smoothstep(0.0, 1.0, cloudBrightness));
+    col = mix(col, skyColor.rgb * 0.7, smoothstep(0.5, -0.4, cloudBrightness));
+    return col;
 }

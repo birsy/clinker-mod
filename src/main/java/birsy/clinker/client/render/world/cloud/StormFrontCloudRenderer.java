@@ -130,7 +130,7 @@ public class StormFrontCloudRenderer extends BillboardCloudRenderer {
         if (!(weatherSystem.getWeather() instanceof StormApproachingWeather)) return;
 
         float alphaAboveCloudHeight = (float) Mth.clampedMap(camY, UpperLayerCloudRenderer.LOWER_CLOUD_HEIGHT - 20, UpperLayerCloudRenderer.LOWER_CLOUD_HEIGHT, 1.0, 0.0);
-        float alphaFromUndergroundness = AmbienceHandler.SURFACE_AMBIENCE_HANDLER.getAboveGroundFactor(1.0F);
+        float alphaFromUndergroundness = AmbienceHandler.SURFACE_TRACKER.getAboveGroundFactor(1.0F);
         float alphaFromFade = OthershoreStormRenderHelper.getStormCloudAlpha(weatherSystem, partialTick);
         float fade = alphaFromFade * alphaAboveCloudHeight * alphaFromUndergroundness;
         if (fade < 0.05) return;

@@ -36,7 +36,6 @@ vec4 hash42(vec2 p) {
     p4 += dot(p4, p4.wzxy+33.33);
     return fract((p4.xxyz+p4.yzzw)*p4.zywx);
 }
-
 float planeDist(vec3 P, vec3 N, vec3 O) {
     return dot(N, P) - dot(N, O);
 }
@@ -74,7 +73,7 @@ void main() {
     float offset = planeDist(undisplacedCenter, -DisplacementDirection, worldPos);
     float brightnessFromOffset = smoothstep(0.0, 1.0, offset / (maximumDisplacement + length((1.0 * radius * Camera.IViewMat[1].xyz).y)));
 
-    float cloudBrightness = mix(brightness, brightnessFromOffset, 0.3);
+    float cloudBrightness = mix(brightness, brightnessFromOffset, 0.5);
 
     vec3 cloudColor = cloudColor(SkyColor.rgb, FogColor.rgb, cloudBrightness);
     float cloudAlpha = alpha * smoothstep(0.0, radius, -viewPos.z) * AlphaMultiplier;

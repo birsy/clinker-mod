@@ -33,8 +33,9 @@ void main() {
     gridPos = gridPos * float(CloudCellSize) + vec3(0.0, CloudHeight, 0.0);
     gridPos += DisplacementDirection * (baseOffset + displacement);
     gridPos -= DisplacementDirection * float(CloudCellSize);
+
     gl_Position = ProjMat * ModelViewMat * vec4(gridPos, 1.0);
 
     texCoord = TexCoord;
-    vertexColor = vec4(cloudColor(SkyColor.rgb, FogColor.rgb, brightness) * 0.8, alpha * AlphaMultiplier);
+    vertexColor = vec4(cloudColor(SkyColor.rgb, FogColor.rgb, brightness), alpha * AlphaMultiplier);
 }

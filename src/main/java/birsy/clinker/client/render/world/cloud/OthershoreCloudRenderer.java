@@ -62,6 +62,7 @@ public class OthershoreCloudRenderer {
     void rebuild(int renderRadius) {
         for (CloudRendererHolder holder : cloudRenderers)
             holder.renderer.rebuild(renderRadius);
+
     }
 
     public void free() {

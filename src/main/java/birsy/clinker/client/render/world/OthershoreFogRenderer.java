@@ -28,7 +28,7 @@ public class OthershoreFogRenderer {
         if (level.dimension() != ClinkerWorld.OTHERSHORE) return;
         if (event.getType() != FogType.NONE) return;
 
-        float surfaceFactor = AmbienceHandler.SURFACE_AMBIENCE_HANDLER.getAboveGroundFactor(event.getPartialTick());
+        float surfaceFactor = AmbienceHandler.SURFACE_TRACKER.getAboveGroundFactor(event.getPartialTick());
         surfaceFactor = Mth.sqrt(surfaceFactor);
 
         OthershoreWeatherSystem weatherSystem = ClientOthershoreWeatherSystem.get();

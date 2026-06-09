@@ -12,15 +12,17 @@ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 
 @EventBusSubscriber(value = Dist.CLIENT, modid = Clinker.MOD_ID)
 public class AmbienceHandler {
-    public static final SurfaceAmbience SURFACE_AMBIENCE_HANDLER = new SurfaceAmbience(Minecraft.getInstance());
+    public static final SurfaceTracker SURFACE_TRACKER = new SurfaceTracker(Minecraft.getInstance());
+    public static final ExposureTracker EXPOSURE_TRACKER = new ExposureTracker(Minecraft.getInstance());
 
     @SubscribeEvent
     public static void onTick(ClientTickEvent.Pre event) {
         Minecraft.getInstance().getProfiler().push("clinker.ambienceTick");
 
         boolean shouldUpdate = shouldUpdate();
-        SURFACE_AMBIENCE_HANDLER.tick(shouldUpdate);
-
+        SURFACE_TRACKER.tick(shouldUpdate);
+        EXPOSURE_TRACKER.tick(shouldUpdate);
+        //Clinker.LOGGER.info(EXPOSURE_TRACKER.getExposureFactor(1.0F));
         Minecraft.getInstance().getProfiler().pop();
     }
 
@@ -29,6 +31,7 @@ public class AmbienceHandler {
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_LEVEL) {
             Minecraft.getInstance().getProfiler().push("clinker.ambienceFrame");
             boolean shouldUpdate = shouldUpdate();
+            EXPOSURE_TRACKER.frame(shouldUpdate);
             Minecraft.getInstance().getProfiler().pop();
         }
     }
