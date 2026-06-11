@@ -5,7 +5,6 @@ import birsy.clinker.common.networking.packet.debug.ClientboundRiverDebugPacket;
 import birsy.clinker.common.world.level.gen.system.fluid.FluidLevel;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeature;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureContext;
-import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureType;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesCaveDensity;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesFluids;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
@@ -16,7 +15,6 @@ import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldTypes;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers;
-import birsy.clinker.core.registry.worldgen.ClinkerWorldFeatures;
 import birsy.clinker.core.util.MathUtils;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
@@ -27,27 +25,26 @@ import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
-public class RiverWorldFeature extends WorldFeature implements ModifiesCaveDensity, ModifiesFluids {
+@Deprecated
+public class OldAndBustedRiverWorldFeature extends WorldFeature implements ModifiesCaveDensity, ModifiesFluids {
     final int centerX, centerZ;
     final CompiledRiver river;
 
-    private RiverWorldFeature(int centerX, int centerZ, CompiledRiver river) {
+    private OldAndBustedRiverWorldFeature(int centerX, int centerZ, CompiledRiver river) {
         this.centerX = centerX;
         this.centerZ = centerZ;
         this.river = river;
     }
 
-    public static Optional<RiverWorldFeature> realize(@Nullable BlockPos center,
-                                                      LevelAccessor level,
-                                                      int minX, int minZ, int maxX, int maxZ, int metaChunkDepth,
-                                                      RandomSource randomSource,
-                                                      UncachedNoiseContext context,
-                                                      WorldFeatureContext worldContext) {
+    public static Optional<OldAndBustedRiverWorldFeature> realize(@Nullable BlockPos center,
+                                                                  LevelAccessor level,
+                                                                  int minX, int minZ, int maxX, int maxZ, int metaChunkDepth,
+                                                                  RandomSource randomSource,
+                                                                  UncachedNoiseContext context,
+                                                                  WorldFeatureContext worldContext) {
         BlockPos.MutableBlockPos source = BlockPos.ZERO.mutable(), drain = BlockPos.ZERO.mutable();
         for (int i = 0; i < 32; i++) {
             source.set(randomSource.nextIntBetweenInclusive(minX, maxX), 35, randomSource.nextIntBetweenInclusive(minZ, maxZ));
@@ -58,11 +55,11 @@ public class RiverWorldFeature extends WorldFeature implements ModifiesCaveDensi
         return Optional.empty();
     }
 
-    public static RiverWorldFeature realize(BlockPos source, BlockPos drain, LevelAccessor level,
-                                            int minX, int minZ, int maxX, int maxZ, int metaChunkDepth,
-                                            RandomSource randomSource,
-                                            UncachedNoiseContext context,
-                                            WorldFeatureContext worldContext) {
+    public static OldAndBustedRiverWorldFeature realize(BlockPos source, BlockPos drain, LevelAccessor level,
+                                                        int minX, int minZ, int maxX, int maxZ, int metaChunkDepth,
+                                                        RandomSource randomSource,
+                                                        UncachedNoiseContext context,
+                                                        WorldFeatureContext worldContext) {
         Clinker.LOGGER.info("creating river from {} {} {} to {} {} {}", source.getX(), source.getY(), source.getZ(), drain.getX(), drain.getY(), drain.getZ());
 
         ObjectArrayList<BlockPos> riverCurve = generateRiverCurve(source, drain, 128, randomSource, context);
@@ -73,7 +70,7 @@ public class RiverWorldFeature extends WorldFeature implements ModifiesCaveDensi
         PacketDistributor.sendToAllPlayers(
                 new ClientboundRiverDebugPacket(nodes.stream().map(node -> new RiverDebugRenderer.RiverDebugPoint(node.x, node.y, node.z, node.radius, 0.0)).toList())
         );
-        return new RiverWorldFeature(centerX, centerZ, new CompiledRiver(nodes.toArray(new RiverNode[0])));
+        return new OldAndBustedRiverWorldFeature(centerX, centerZ, new CompiledRiver(nodes.toArray(new RiverNode[0])));
     }
 
     private static ObjectArrayList<BlockPos> generateRiverCurve(BlockPos startPos, BlockPos endPos, int count, RandomSource randomSource, UncachedNoiseContext context) {
