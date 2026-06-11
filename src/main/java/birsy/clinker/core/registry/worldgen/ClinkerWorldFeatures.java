@@ -2,6 +2,7 @@ package birsy.clinker.core.registry.worldgen;
 
 import birsy.clinker.common.world.level.gen.content.worldfeatures.OreVeinWorldFeature;
 import birsy.clinker.common.world.level.gen.content.worldfeatures.RiverWorldFeature;
+import birsy.clinker.common.world.level.gen.content.worldfeatures.RiverWorldFeature2;
 import birsy.clinker.common.world.level.gen.content.worldfeatures.UndergroundLakeWorldFeature;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureSpawnSet;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureType;
@@ -20,9 +21,8 @@ public final class ClinkerWorldFeatures {
 
         public static final Supplier<WorldFeatureType<UndergroundLakeWorldFeature>> UNDERGROUND_LAKE =
                 WORLD_FEATURE_TYPES.register("underground_lake", () -> new WorldFeatureType<>(0, 0, UndergroundLakeWorldFeature::realize));
-        public static final Supplier<WorldFeatureType<RiverWorldFeature>> RIVER =
-                WORLD_FEATURE_TYPES.register("river", () -> new WorldFeatureType<>(100, 0, RiverWorldFeature::realize));
-
+        public static final Supplier<WorldFeatureType<RiverWorldFeature2>> RIVER =
+                WORLD_FEATURE_TYPES.register("river", () -> new WorldFeatureType<>(100, 0, RiverWorldFeature2::realize));
         public static final Supplier<WorldFeatureType<OreVeinWorldFeature>> LEAD_ORE_VEIN =
                 WORLD_FEATURE_TYPES.register("lead_ore_vein", () -> new WorldFeatureType<>(100, 0,
                         OreVeinWorldFeature.fromConfig(
@@ -50,7 +50,7 @@ public final class ClinkerWorldFeatures {
         public static final Supplier<WorldFeatureSpawnSet> RIVER =
                 WORLD_FEATURE_SPAWNS.register("river",
                         () -> WorldFeatureSpawnSet.builder(5)
-                                .add(Types.RIVER.get(), 0, 3)
+                                .add(Types.RIVER.get(), 1, 1)
                                 .build()
                 );
 

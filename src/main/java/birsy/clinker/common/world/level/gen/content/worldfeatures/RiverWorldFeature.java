@@ -1,5 +1,7 @@
 package birsy.clinker.common.world.level.gen.content.worldfeatures;
 
+import birsy.clinker.client.render.debug.RiverDebugRenderer;
+import birsy.clinker.common.networking.packet.debug.ClientboundRiverDebugPacket;
 import birsy.clinker.common.world.level.gen.system.fluid.FluidLevel;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeature;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureContext;
@@ -22,6 +24,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Blocks;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -67,6 +70,9 @@ public class RiverWorldFeature extends WorldFeature implements ModifiesCaveDensi
 
         int centerX = (source.getX() + drain.getX()) / 2, centerZ = (source.getZ() + drain.getZ()) / 2;
 
+        PacketDistributor.sendToAllPlayers(
+                new ClientboundRiverDebugPacket(nodes.stream().map(node -> new RiverDebugRenderer.RiverDebugPoint(node.x, node.y, node.z, node.radius, 0.0)).toList())
+        );
         return new RiverWorldFeature(centerX, centerZ, new CompiledRiver(nodes.toArray(new RiverNode[0])));
     }
 

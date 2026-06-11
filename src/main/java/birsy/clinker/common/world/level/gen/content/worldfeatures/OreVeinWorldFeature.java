@@ -7,7 +7,6 @@ import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabi
 import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
 import birsy.clinker.common.world.level.gen.system.noise.UncachedNoiseContext;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
-import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers;
 import net.minecraft.core.BlockPos;
@@ -17,7 +16,6 @@ import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.WorldGenLevel;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -54,7 +52,7 @@ public class OreVeinWorldFeature extends WorldFeature implements ModifiesSurface
     }
 
     public record Configuration(BlockState ore, BlockState core, IntProvider height, IntProvider horizontalRadius, IntProvider verticalRadius) {}
-    public static WorldFeatureType.WorldFeatureMaker<OreVeinWorldFeature> fromConfig(Configuration configuration) {
+    public static WorldFeatureType.WorldFeatureFactory<OreVeinWorldFeature> fromConfig(Configuration configuration) {
         return (center, level, minX, minZ, maxX, maxZ, metaChunkDepth, randomSource, context, worldContext) ->
                 realize(configuration, center, level, minX, minZ, maxX, maxZ, metaChunkDepth, randomSource, context, worldContext);
     }

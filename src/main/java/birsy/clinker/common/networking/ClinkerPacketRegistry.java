@@ -3,6 +3,7 @@ package birsy.clinker.common.networking;
 import birsy.clinker.common.networking.packet.*;
 import birsy.clinker.common.networking.packet.debug.ClientboundBrainDebugPacket;
 import birsy.clinker.common.networking.packet.debug.ClientboundPathfindingDebugPacket;
+import birsy.clinker.common.networking.packet.debug.ClientboundRiverDebugPacket;
 import birsy.clinker.common.networking.packet.debug.ClientboundSquadDebugPacket;
 import birsy.clinker.common.networking.packet.ropeentity.ClientboundRopeEntityInitPacket;
 import birsy.clinker.common.networking.packet.ropeentity.ClientboundRopeEntitySegmentAddPacket;
@@ -98,6 +99,9 @@ public class ClinkerPacketRegistry {
         registrar.playToClient(ClientboundSquadDebugPacket.TYPE,
                 ClientboundSquadDebugPacket.STREAM_CODEC,
                 ClientboundSquadDebugPacket::handle);
+        registrar.playToClient(ClientboundRiverDebugPacket.TYPE,
+                ClientboundRiverDebugPacket.STREAM_CODEC,
+                ClientboundRiverDebugPacket::handle);
 
         Clinker.LOGGER.info("REGISTERED CLINKER PACKETS!");
     }
