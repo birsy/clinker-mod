@@ -87,8 +87,6 @@ public class BaseGnomadEntity<E extends BaseGnomadEntity<E>> extends GroundLocom
                 new NearbyLivingEntitySensor<>(),
                 new HurtBySensor<>(),
                 new SquadSensor<>(),
-                new PostedSquadTasksSensor<>(),
-                new ActiveSquadTasksSensor<>(),
                 new NearestSupplyDepotSensor<>(),
                 new LastKnownEnemyPositionSensor<>()
         );

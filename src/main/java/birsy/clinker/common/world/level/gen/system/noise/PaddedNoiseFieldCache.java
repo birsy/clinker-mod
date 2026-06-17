@@ -7,7 +7,7 @@ import birsy.clinker.common.world.level.gen.system.noise.voronoi.VoronoiEvaluato
 import net.minecraft.world.level.levelgen.PositionalRandomFactory;
 
 public final class PaddedNoiseFieldCache extends NoiseFieldCache {
-    final int paddingSize;
+    public final int paddingSize;
     public PaddedNoiseFieldCache(int minX, int minY, int minZ, int chunkHeight, SeededNoiseHolder noiseHolder, int paddingSize) {
         super(minX, minY, minZ, chunkHeight, noiseHolder);
         this.paddingSize = paddingSize;

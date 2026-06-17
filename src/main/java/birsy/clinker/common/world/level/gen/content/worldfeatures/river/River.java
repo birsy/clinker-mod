@@ -100,26 +100,30 @@ public class River {
         Node node = nodes.get(index), nextNode = nodes.get(index + 1);
 
         double projectedLength = (nextNode.x() - node.x()) * node.miterX() + (nextNode.z() - node.z()) * node.miterZ();
-        double alpha;
+        float alpha;
         if (Math.abs(projectedLength) > 0.0001) {
-            alpha = node.miterDot(x, z) / projectedLength;
+            alpha = (float) (node.miterDot(x, z) / projectedLength);
         } else {
             // 180 degree fallback!
             double dX = nextNode.x() - node.x(), dZ = nextNode.z() - node.z();
             double segLen = Math.sqrt(dX * dX + dZ * dZ);
-            alpha = segLen < 0.0001 ? 0 : ((x - node.x()) * node.directionX() + (z - node.z()) * node.directionZ()) / segLen;
+            alpha = (float) (segLen < 0.0001 ? 0 : ((x - node.x()) * node.directionX() + (z - node.z()) * node.directionZ()) / segLen);
         }
-        alpha = Mth.clamp(alpha, 0.0, 1.0);
+        alpha = Mth.clamp(alpha, 0.0F, 1.0F);
 
         sample.index = index;
         sample.trueDistance = Math.sqrt(sample.trueDistance);
-        sample.interpolationFactor = (float) alpha;
+        sample.interpolationFactor = alpha;
         sample.miteredDistanceFromRiver = (float) node.perpendicularDistance(x, z);
-        sample.distanceAlongRiver = (float) Mth.lerp(alpha, node.distanceAlongRiver(), nextNode.distanceAlongRiver());
-        sample.radius = (float) Mth.lerp(alpha, node.radius(), nextNode.radius());
-        sample.depth = (float) Mth.lerp(alpha, node.depth(),  nextNode.depth());
+        sample.distanceAlongRiver = Mth.lerp(alpha, node.distanceAlongRiver(), nextNode.distanceAlongRiver());
+        sample.radius = Mth.lerp(alpha, node.radius(), nextNode.radius());
+        sample.depth = Mth.lerp(alpha, node.depth(), nextNode.depth());
         sample.riverHeight = nextNode.y();
         sample.ceilingHeight = Mth.lerp(alpha, node.ceilingY(), nextNode.ceilingY());
+        float dirX = Mth.lerp(alpha, node.directionX(), nextNode.directionX()), dirZ = Mth.lerp(alpha, node.directionZ(), nextNode.directionZ());
+        float length = (float) Mth.length(dirX, dirZ);
+        if (length < 0.0001) { length = 1; dirX = 1; dirZ = 0; }
+        sample.dirX = dirX / length; sample.dirZ = dirZ / length;
     }
 
     private void findClosestSegment(BoundingBox box, Sample sample, double x, double z) {
@@ -211,5 +215,6 @@ public class River {
         public double ceilingHeight;
         public float miteredDistanceFromRiver, distanceAlongRiver;
         public float radius, depth;
+        public float dirX, dirZ;
     }
 }

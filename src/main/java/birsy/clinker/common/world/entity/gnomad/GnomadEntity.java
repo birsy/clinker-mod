@@ -3,10 +3,10 @@ package birsy.clinker.common.world.entity.gnomad;
 import birsy.clinker.client.entity.gnomad.basic.GnomadAnimator;
 import birsy.clinker.client.entity.gnomad.basic.GnomadSkeleton;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.PostSquadTask;
-import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.SharedGnomadBehaviorSets;
+import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.sets.RelaxWithSquadBehaviorSet;
+import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.sets.SharedGnomadBehaviorSets;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.StayNearSquadCenter;
 import birsy.clinker.common.world.entity.gnomad.gnomind.squadtasks.ResupplyTask;
-import birsy.clinker.common.world.entity.gnomad.mogul.GnomadMogulEntity;
 import birsy.clinker.core.registry.ClinkerItems;
 import foundry.veil.api.client.necromancer.SkeletonParent;
 import foundry.veil.api.client.necromancer.animation.Animator;
@@ -77,8 +77,9 @@ public class GnomadEntity extends BaseGnomadEntity<GnomadEntity>
                         (0)
                         .startCondition(mob -> !outOfSupplies()),
                 SharedGnomadBehaviorSets.<GnomadEntity>setIdleLookTargets(),
+                RelaxWithSquadBehaviorSet.<GnomadEntity>tryInitiate(),
                 new FirstApplicableBehaviour<>(
-                        SharedGnomadBehaviorSets.<GnomadEntity>sitAndRelax(),
+                        RelaxWithSquadBehaviorSet.<GnomadEntity>goRelax(),
                         new StayNearSquadCenter<GnomadEntity>()
                                 .maximumDistance(10.0F)
                                 .speedModifier(0.5F),
@@ -93,7 +94,7 @@ public class GnomadEntity extends BaseGnomadEntity<GnomadEntity>
     // just throw snowballs at them :P
     @Override
     public void performRangedAttack(LivingEntity target, float velocity) {
-        if (true) return;
+        if (target.isSpectator() || !target.isAlive()) return;
         if (!this.tryConsumeSupplies()) return;
         Snowball snowball = new Snowball(this.level(), this);
         double d0 = target.getEyeY() - 1.1F;

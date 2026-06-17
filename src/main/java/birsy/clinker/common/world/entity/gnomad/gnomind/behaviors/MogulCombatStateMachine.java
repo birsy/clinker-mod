@@ -19,7 +19,7 @@ import java.util.Optional;
 
 public class MogulCombatStateMachine extends StateMachineBehavior<GnomadMogulEntity> {
     private static final List<Pair<MemoryModuleType<?>, MemoryStatus>> MEMORY_REQUIREMENTS = ObjectArrayList.of(
-            Pair.of(ClinkerMemoryModules.CURRENTLY_ASSIGNED_SQUAD_TASK.get(), MemoryStatus.VALUE_PRESENT)
+            Pair.of(ClinkerMemoryModules.ASSIGNED_SQUAD_TASK.get(), MemoryStatus.VALUE_PRESENT)
     );
 
     public MogulCombatStateMachine() {

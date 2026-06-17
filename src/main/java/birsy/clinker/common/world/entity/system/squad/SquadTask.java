@@ -1,6 +1,8 @@
 package birsy.clinker.common.world.entity.system.squad;
 
+import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import net.minecraft.world.entity.LivingEntity;
+import net.tslat.smartbrainlib.util.BrainUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,11 +33,20 @@ public abstract class SquadTask {
         if (!canBeAssigned(assignee)) return false;
         if (assignees.contains(assignee)) return false;
         assignees.add(assignee);
+        // do memory stuff
+        if (assignee instanceof LivingEntity livingEntity)
+            BrainUtils.setMemory(livingEntity, ClinkerMemoryModules.ASSIGNED_SQUAD_TASK.get(), this);
         return true;
     }
 
     public boolean unassign(SquadMember<?> assignee) {
-        return assignees.remove(assignee);
+        boolean actuallyRemoved = assignees.remove(assignee);
+        // do memory stuff
+        if (assignee instanceof LivingEntity livingEntity) {
+            if (BrainUtils.getMemory(livingEntity, ClinkerMemoryModules.ASSIGNED_SQUAD_TASK.get()) == this)
+                BrainUtils.clearMemory(livingEntity, ClinkerMemoryModules.ASSIGNED_SQUAD_TASK.get());
+        }
+        return actuallyRemoved;
     }
     public boolean canBeAssigned(SquadMember<?> assignee) {
         return assignees.size() < maxAssignees;
@@ -53,11 +64,30 @@ public abstract class SquadTask {
     public boolean isFinished() { return status == Status.SUCCEEDED || status == Status.FAILED; }
 
     // life cycle stuffs
+    protected void post() {
+        onPosted();
+        if (taskMaster instanceof LivingEntity livingEntity) {
+            List<SquadTask> postedTasks = BrainUtils.getMemory(livingEntity, ClinkerMemoryModules.POSTED_SQUAD_TASKS.get());
+            if (postedTasks == null) postedTasks = new ArrayList<>();
+            postedTasks.add(this);
+            BrainUtils.setMemory(livingEntity, ClinkerMemoryModules.POSTED_SQUAD_TASKS.get(), postedTasks);
+        }
+    }
+    protected void onPosted() {}
+
     protected void tick() {
         ticksExisted++;
         stageTime++;
         // cull invalid assignees
-        assignees.removeIf(this::isAssigneeInvalid);
+        List<SquadMember<?>> toRemove = null;
+        for (SquadMember<?> assignee : assignees) {
+            if (isAssigneeInvalid(assignee)) {
+                if (toRemove == null) toRemove = new ArrayList<>();
+                toRemove.add(assignee);
+            }
+        }
+        if (toRemove != null) toRemove.forEach(this::unassign);
+
         switch (this.status) {
             case SUCCEEDED, FAILED:
                 return;
@@ -107,6 +137,7 @@ public abstract class SquadTask {
         this.failureReason = failureReason;
         this.stageTime = 0;
         onFailure();
+        cleanup();
     }
     protected void onFailure() {}
 
@@ -115,8 +146,21 @@ public abstract class SquadTask {
         this.status = Status.SUCCEEDED;
         this.stageTime = 0;
         onSuccess();
+        cleanup();
     }
     protected void onSuccess() {}
+
+    protected void cleanup() {
+        if (taskMaster instanceof LivingEntity livingEntity) {
+            List<SquadTask> postedTasks = BrainUtils.getMemory(livingEntity, ClinkerMemoryModules.POSTED_SQUAD_TASKS.get());
+            if (postedTasks != null) {
+                postedTasks.remove(this);
+                BrainUtils.setMemory(livingEntity, ClinkerMemoryModules.POSTED_SQUAD_TASKS.get(), postedTasks);
+            }
+        }
+        List<SquadMember<?>> toUnassign = new ArrayList<>(assignees);
+        toUnassign.forEach(this::unassign);
+    }
 
     protected enum Status { UNASSIGNED, IN_PROGRESS, SUCCEEDED, FAILED }
     public enum FailureReason { NONE, TIMED_OUT, NOT_ENOUGH_ASSIGNEES, TASKMASTER_DIED, SQUAD_DISBANDED }

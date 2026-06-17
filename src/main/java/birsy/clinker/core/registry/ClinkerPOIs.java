@@ -31,4 +31,13 @@ public class ClinkerPOIs {
                         set.addAll(Blocks.BARREL.getStateDefinition().getPossibleStates());
                     }), 1, 1)
             );
+
+    public static final DeferredHolder<PoiType, PoiType> RELAXATION_POINT =
+            POINT_OF_INTEREST_TYPES.register("relaxation_point", () -> new PoiType(
+                    Set.of(
+                            Blocks.CAMPFIRE.defaultBlockState(),
+                            Blocks.SOUL_CAMPFIRE.defaultBlockState(),
+                            Blocks.BELL.defaultBlockState()
+                    ), 5, 6)
+            );
 }

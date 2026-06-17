@@ -47,8 +47,8 @@ public final class ClinkerWorldFeatures {
 
         public static final Supplier<WorldFeatureSpawnSet> RIVER =
                 WORLD_FEATURE_SPAWNS.register("river",
-                        () -> WorldFeatureSpawnSet.builder(5)
-                                .add(Types.RIVER.get(), 1, 1)
+                        () -> WorldFeatureSpawnSet.builder(6)
+                                .add(Types.RIVER.get(), 2, 6)
                                 .build()
                 );
 

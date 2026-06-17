@@ -39,8 +39,8 @@ public class SquadSystem extends SavedData {
     }
 
     public void tick() {
-        Collection<Squad> squads = this.squads.values();
-        for (Squad squad : squads) {
+        Collection<Squad> allSquads = this.squads.values();
+        for (Squad squad : allSquads) {
             squad.tick();
             if (squad.shouldBeRemoved()) {
                 squad.ticksUntilRemoval--;
@@ -49,7 +49,7 @@ public class SquadSystem extends SavedData {
                 squad.ticksUntilRemoval = Squad.TIME_UNTIL_REMOVAL;
             }
         }
-        squads.removeIf(squad -> squad.ticksUntilRemoval <= 0);
+        allSquads.removeIf(squad -> squad.ticksUntilRemoval <= 0);
     }
 
     @Override

@@ -8,7 +8,6 @@ import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.network.protocol.game.DebugEntityNameGenerator;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.Unit;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
@@ -21,19 +20,18 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 public class ClaimSquadTask<E extends LivingEntity & SquadMember<E>> extends ExtendedBehaviour<E> {
-    private static final MemoryTest MEMORY_REQUIREMENTS = MemoryTest.builder(3)
+    private static final MemoryTest MEMORY_REQUIREMENTS = MemoryTest.builder(2)
             .hasMemory(ClinkerMemoryModules.SQUAD.get())
-            .usesMemory(ClinkerMemoryModules.CURRENTLY_ASSIGNED_SQUAD_TASK.get())
-            .noMemory(ClinkerMemoryModules.IS_CURRENTLY_ASSIGNED_SQUAD_TASK_ACTIVE.get());
-    Predicate<SquadTask> filter;
-    SquadTask currentTask;
+            .usesMemory(ClinkerMemoryModules.ASSIGNED_SQUAD_TASK.get());
+    final Predicate<SquadTask> filter;
+    SquadTask task;
+
+    public ClaimSquadTask(Predicate<SquadTask> filter) {
+        this.filter = filter;
+    }
 
     @Override
     protected List<Pair<MemoryModuleType<?>, MemoryStatus>> getMemoryRequirements() { return MEMORY_REQUIREMENTS; }
-    public ClaimSquadTask<E> of(Predicate<SquadTask> task) {
-        this.filter = task;
-        return this;
-    }
 
     @Override
     protected boolean checkExtraStartConditions(ServerLevel level, E mob) {
@@ -42,27 +40,21 @@ public class ClaimSquadTask<E extends LivingEntity & SquadMember<E>> extends Ext
         if (task.isEmpty()) return false;
 
         // if we're already waiting on a task and that task has a higher priority, then don't claim this one
-        SquadTask taskInBrain = BrainUtils.getMemory(mob, ClinkerMemoryModules.CURRENTLY_ASSIGNED_SQUAD_TASK.get());
+        SquadTask taskInBrain = BrainUtils.getMemory(mob, ClinkerMemoryModules.ASSIGNED_SQUAD_TASK.get());
         if (taskInBrain != null && taskInBrain.priority >= task.get().priority) return false;
 
-        currentTask = task.get();
+        this.task = task.get();
         return true;
     }
 
     @Override
     protected void start(E mob) {
         // leave whatever task we had before
-        SquadTask taskInBrain = BrainUtils.getMemory(mob, ClinkerMemoryModules.CURRENTLY_ASSIGNED_SQUAD_TASK.get());
+        SquadTask taskInBrain = BrainUtils.getMemory(mob, ClinkerMemoryModules.ASSIGNED_SQUAD_TASK.get());
         if (taskInBrain != null) taskInBrain.unassign(mob);
 
         // assign us to the new task
-        currentTask.assign(mob);
-        BrainUtils.setMemory(mob, ClinkerMemoryModules.CURRENTLY_ASSIGNED_SQUAD_TASK.get(), currentTask);
-        if (currentTask.isActive()) {
-            BrainUtils.setMemory(mob, ClinkerMemoryModules.IS_CURRENTLY_ASSIGNED_SQUAD_TASK_ACTIVE.get(), Unit.INSTANCE);
-        } else {
-            BrainUtils.clearMemory(mob, ClinkerMemoryModules.IS_CURRENTLY_ASSIGNED_SQUAD_TASK_ACTIVE.get());
-        }
-        Clinker.LOGGER.info("{} claimed task {}!", DebugEntityNameGenerator.getEntityName(mob.getUUID()), currentTask);
+        task.assign(mob);
+        Clinker.LOGGER.info("{} claimed task {}!", DebugEntityNameGenerator.getEntityName(mob.getUUID()), task);
     }
 }

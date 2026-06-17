@@ -3,7 +3,7 @@ package birsy.clinker.common.world.entity.gnomad.mogul;
 import birsy.clinker.client.entity.gnomad.mogul.GnomadMogulAnimator;
 import birsy.clinker.client.entity.gnomad.mogul.GnomadMogulSkeleton;
 import birsy.clinker.common.world.entity.gnomad.BaseGnomadEntity;
-import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.*;
+import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.sets.SharedGnomadBehaviorSets;
 import birsy.clinker.common.world.entity.system.squad.Squad;
 import birsy.clinker.common.world.entity.system.squad.SquadSystem;
 import birsy.clinker.common.world.entity.system.squad.SquadMember;

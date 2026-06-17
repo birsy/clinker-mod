@@ -3,8 +3,9 @@ package birsy.clinker.common.world.entity.gnomad;
 import birsy.clinker.client.entity.gnomad.runt.GnomadRuntAnimator;
 import birsy.clinker.client.entity.gnomad.runt.GnomadRuntSkeleton;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.ClaimSquadTask;
-import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.SharedGnomadBehaviorSets;
+import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.sets.SharedGnomadBehaviorSets;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.StayNearSquadCenter;
+import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.sets.FetchAndDeliverSuppliesBehaviorSet;
 import birsy.clinker.common.world.entity.gnomad.gnomind.squadtasks.ResupplyTask;
 import foundry.veil.api.client.necromancer.SkeletonParent;
 import foundry.veil.api.client.necromancer.animation.Animator;
@@ -78,9 +79,9 @@ public class GnomadRuntEntity extends BaseGnomadEntity<GnomadRuntEntity> impleme
     @Override
     public BrainActivityGroup<GnomadRuntEntity> getIdleTasks() {
         return BrainActivityGroup.idleTasks(
-                new ClaimSquadTask<>().of(task -> task instanceof ResupplyTask && task.isPending()),
+                new ClaimSquadTask<>(task -> task instanceof ResupplyTask && task.isPending()),
                 new FirstApplicableBehaviour<>(
-                        SharedGnomadBehaviorSets.<GnomadRuntEntity>fetchAndDeliverSupplies(),
+                        FetchAndDeliverSuppliesBehaviorSet.<GnomadRuntEntity>create(),
                         new StayNearSquadCenter<GnomadRuntEntity>()
                                 .maximumDistance(10.0F)
                                 .speedModifier(2.0F),

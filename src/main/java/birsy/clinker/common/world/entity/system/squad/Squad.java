@@ -2,10 +2,12 @@ package birsy.clinker.common.world.entity.system.squad;
 
 import birsy.clinker.common.world.entity.gnomad.gnomind.LastKnownEntityPositionsTracker;
 import birsy.clinker.core.Clinker;
+import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import net.minecraft.network.protocol.game.DebugEntityNameGenerator;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
+import net.tslat.smartbrainlib.util.BrainUtils;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -41,6 +43,8 @@ public class Squad {
         Clinker.LOGGER.info("removing squad {}", this.uuid);
         for (SquadTask task : tasks) task.fail(SquadTask.FailureReason.SQUAD_DISBANDED);
         tasks.clear();
+        List<SquadMember<?>> toRemove = new ArrayList<>(members);
+        toRemove.forEach(this::removeMember);
     }
 
     // leader
@@ -63,9 +67,13 @@ public class Squad {
     public boolean addMember(SquadMember<?> member) {
         if (isMemberInvalid(member)) return false;
         Clinker.LOGGER.info("squad {} added member {}", this.uuid, DebugEntityNameGenerator.getEntityName(member.asEntity().getUUID()));
+        if (member instanceof LivingEntity livingEntity)
+            BrainUtils.setMemory(livingEntity, ClinkerMemoryModules.SQUAD.get(), this);
         return members.add(member);
     }
     public boolean removeMember(SquadMember<?> member) {
+        if (member instanceof LivingEntity livingEntity && BrainUtils.getMemory(livingEntity, ClinkerMemoryModules.SQUAD.get()) == this)
+            BrainUtils.clearMemory(livingEntity, ClinkerMemoryModules.SQUAD.get());
         return members.remove(member);
     }
     public List<SquadMember<?>> getMembers() {
@@ -93,6 +101,7 @@ public class Squad {
             }
         }
         this.tasks.add(task);
+        task.post();
     }
     public Optional<SquadTask> findTask(SquadMember<?> member, Predicate<SquadTask> predicate) {
         return tasks.stream().filter(predicate).filter(task -> task.canBeAssigned(member)).findFirst();
