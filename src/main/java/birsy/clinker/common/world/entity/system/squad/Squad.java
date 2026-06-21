@@ -18,7 +18,7 @@ public class Squad {
     public final UUID uuid;
     public final LastKnownEntityPositionsTracker lastKnownEnemyPositions;
     final ServerLevel level;
-    final List<SquadMember<?>> members = new ArrayList<>();
+    final Set<SquadMember<?>> members = new HashSet<>();
     final List<SquadTask> tasks = new ArrayList<>();
 
     SquadMember<?> leader;
@@ -97,6 +97,7 @@ public class Squad {
             int lastPriority = tasks.get(i).priority;
             if (task.priority >= lastPriority) {
                 tasks.add(i, task);
+                task.post();
                 return;
             }
         }

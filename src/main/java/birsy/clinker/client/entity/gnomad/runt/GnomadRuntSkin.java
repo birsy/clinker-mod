@@ -40,7 +40,9 @@ public class GnomadRuntSkin {
         builder.addCube(3F, 2F, 3F, -1.5F, 0F, -1.5F, 0F, 0F, 0F, 24F, 11F, false);
         
         builder.startBone("root");
-        
+
+        builder.startBone("deliveryGrasp");
+
         INSTANCE = builder.build();
     }
 }

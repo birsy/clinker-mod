@@ -40,7 +40,7 @@ public class GnomadRuntRenderer extends NecromancerEntityRenderer<GnomadRuntEnti
                 super.renderSkin(parent, skeleton, skin, renderType, renderer, matrixStack, packedLight, partialTicks);
             }
         });
-        this.addLayer(new HeldSuppliesLayer<>(this));
+        this.addLayer(new HeldSuppliesLayer<>(this, (skeleton) -> skeleton.deliveryGrasp, (matrixStack) -> { matrixStack.translate(0, 0.0, -6); }));
         this.addLayer(new DebugSurveyorWheelRenderer<>(this, (entity) -> entity.getAnimator().stepCounter));
     }
 

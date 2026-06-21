@@ -107,6 +107,7 @@ public class ClinkerEntities {
     public static final Supplier<EntityType<GnomadMogulEntity>> GNOMAD_MOGUL = ENTITY_TYPES.register("gnomad_mogul", () ->
             EntityType.Builder.of(GnomadMogulEntity::new, MobCategory.MONSTER)
                     .sized(2.25f, 3.5f)
+                    .passengerAttachments(2.96875F)
                     .build(Clinker.resource("gnomad_mogul").toString()));
     public static final Supplier<EntityType<GnomadEntity>> GNOMAD = ENTITY_TYPES.register("gnomad", () ->
             EntityType.Builder.of(GnomadEntity::new, MobCategory.MONSTER)

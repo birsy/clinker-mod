@@ -10,20 +10,24 @@ import birsy.clinker.common.world.entity.gnomad.gnomind.squadtasks.ResupplyTask;
 import birsy.clinker.core.registry.ClinkerItems;
 import foundry.veil.api.client.necromancer.SkeletonParent;
 import foundry.veil.api.client.necromancer.animation.Animator;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.monster.RangedAttackMob;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Snowball;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.block.state.BlockState;
 import net.tslat.smartbrainlib.api.core.BrainActivityGroup;
 import net.tslat.smartbrainlib.api.core.behaviour.FirstApplicableBehaviour;
 import net.tslat.smartbrainlib.api.core.behaviour.OneRandomBehaviour;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.attack.AnimatableRangedAttack;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.misc.Idle;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.misc.Panic;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.path.SetRandomWalkTarget;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,23 +36,6 @@ public class GnomadEntity extends BaseGnomadEntity<GnomadEntity>
     int supplies;
     public GnomadEntity(EntityType<? extends PathfinderMob> entityType, Level level) {
         super(entityType, level);
-    }
-
-    @Override
-    public @Nullable SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
-        this.supplies = this.supplyDeliveryAmount();
-        this.setLeftHanded(this.getRandom().nextBoolean());
-        this.setItemInHand(InteractionHand.MAIN_HAND,
-                this.getRandom().nextBoolean() ?
-                        ClinkerItems.LEAD_AXE.toStack() :
-                        ClinkerItems.LEAD_SWORD.toStack()
-                );
-        return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
-    }
-
-    @Override
-    protected void customServerAiStep() {
-        super.customServerAiStep();
     }
 
     @Override
@@ -64,22 +51,37 @@ public class GnomadEntity extends BaseGnomadEntity<GnomadEntity>
     }
 
     @Override
-    public int getSupplyCount() { return supplies; }
+    public @Nullable SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
+        this.supplies = this.supplyDeliveryAmount();
+        this.setLeftHanded(this.getRandom().nextBoolean());
+        this.setItemInHand(InteractionHand.MAIN_HAND,
+                this.getRandom().nextBoolean() ?
+                        ClinkerItems.LEAD_AXE.toStack() :
+                        ClinkerItems.LEAD_SWORD.toStack()
+        );
+        return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
+    }
+
     @Override
-    public void setSupplyCount(int count) { this.supplies = count; }
+    protected void customServerAiStep() {
+        super.customServerAiStep();
+    }
+
     @Override
     public BrainActivityGroup<GnomadEntity> getIdleTasks() {
         return BrainActivityGroup.idleTasks(
-                new PostSquadTask<GnomadEntity, ResupplyTask>
-                        (ResupplyTask.class, ResupplyTask::new)
-                        .startCondition(SuppliesHolder::outOfSupplies),
+                new PostSquadTask<GnomadEntity, ResupplyTask>(ResupplyTask.class, ResupplyTask::new)
+                        .startCondition(SuppliesHolder::outOfSupplies)
+                        .cooldownFor(e -> 100),
                 new AnimatableRangedAttack<GnomadEntity>
                         (0)
                         .startCondition(mob -> !outOfSupplies()),
                 SharedGnomadBehaviorSets.<GnomadEntity>setIdleLookTargets(),
-                RelaxWithSquadBehaviorSet.<GnomadEntity>tryInitiate(),
+                RelaxWithSquadBehaviorSet.<GnomadEntity>tryInitiate(600, 300),
                 new FirstApplicableBehaviour<>(
-                        RelaxWithSquadBehaviorSet.<GnomadEntity>goRelax(),
+                        new Panic<GnomadEntity>()
+                                .panicIf((entity, source) -> entity.getLastDamageSource() != null),
+                        RelaxWithSquadBehaviorSet.<GnomadEntity>goRelax(200, 600),
                         new StayNearSquadCenter<GnomadEntity>()
                                 .maximumDistance(10.0F)
                                 .speedModifier(0.5F),
@@ -95,6 +97,7 @@ public class GnomadEntity extends BaseGnomadEntity<GnomadEntity>
     @Override
     public void performRangedAttack(LivingEntity target, float velocity) {
         if (target.isSpectator() || !target.isAlive()) return;
+        if (target instanceof Player player && player.getAbilities().invulnerable) return;
         if (!this.tryConsumeSupplies()) return;
         Snowball snowball = new Snowball(this.level(), this);
         double d0 = target.getEyeY() - 1.1F;
@@ -106,6 +109,18 @@ public class GnomadEntity extends BaseGnomadEntity<GnomadEntity>
         this.playSound(SoundEvents.SNOW_GOLEM_SHOOT, 0.2F, 0.4F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
         this.level().addFreshEntity(snowball);
     }
+
+    @Override
+    protected void playStepSound(BlockPos pos, BlockState state) {
+        super.playStepSound(pos, state);
+    }
+    @Override
+    protected float nextStep() {
+        return this.moveDist + 0.6F;
+    }
+
+    @Override public int getSupplyCount() { return supplies; }
+    @Override public void setSupplyCount(int count) { this.supplies = count; }
 
     private GnomadSkeleton skeleton;
     private GnomadAnimator animator;

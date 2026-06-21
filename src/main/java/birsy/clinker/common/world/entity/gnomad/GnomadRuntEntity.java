@@ -7,8 +7,12 @@ import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.sets.SharedGno
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.StayNearSquadCenter;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.sets.FetchAndDeliverSuppliesBehaviorSet;
 import birsy.clinker.common.world.entity.gnomad.gnomind.squadtasks.ResupplyTask;
+import birsy.clinker.core.Clinker;
+import birsy.clinker.core.registry.entity.ClinkerActivities;
+import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import foundry.veil.api.client.necromancer.SkeletonParent;
 import foundry.veil.api.client.necromancer.animation.Animator;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -17,13 +21,23 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.tslat.smartbrainlib.api.core.BrainActivityGroup;
 import net.tslat.smartbrainlib.api.core.behaviour.FirstApplicableBehaviour;
 import net.tslat.smartbrainlib.api.core.behaviour.OneRandomBehaviour;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.misc.Idle;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.misc.Panic;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.path.SetRandomWalkTarget;
+import net.tslat.smartbrainlib.util.BrainUtils;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static net.minecraft.world.entity.monster.Monster.createMonsterAttributes;
 
@@ -81,7 +95,8 @@ public class GnomadRuntEntity extends BaseGnomadEntity<GnomadRuntEntity> impleme
         return BrainActivityGroup.idleTasks(
                 new ClaimSquadTask<>(task -> task instanceof ResupplyTask && task.isPending()),
                 new FirstApplicableBehaviour<>(
-                        FetchAndDeliverSuppliesBehaviorSet.<GnomadRuntEntity>create(),
+                        new Panic<GnomadRuntEntity>()
+                                .panicIf((entity, source) -> entity.getLastDamageSource() != null),
                         new StayNearSquadCenter<GnomadRuntEntity>()
                                 .maximumDistance(10.0F)
                                 .speedModifier(2.0F),
@@ -92,6 +107,38 @@ public class GnomadRuntEntity extends BaseGnomadEntity<GnomadRuntEntity> impleme
                         )
                 )
         );
+    }
+
+    @Override
+    public Map<Activity, BrainActivityGroup<? extends GnomadRuntEntity>> getAdditionalTasks() {
+        Set<BrainActivityGroup<GnomadRuntEntity>> tasks = Set.of(
+                FetchAndDeliverSuppliesBehaviorSet.createActivity()
+        );
+        return tasks.stream().collect(Collectors.toUnmodifiableMap(BrainActivityGroup::getActivity, task -> task));
+    }
+
+    @Override
+    public Set<Activity> getScheduleIgnoringActivities() {
+        return Set.of(Activity.FIGHT, ClinkerActivities.DELIVER_SUPPLIES.get());
+    }
+
+    @Override
+    public List<Activity> getActivityPriorities() {
+        return List.of(
+                ClinkerActivities.DELIVER_SUPPLIES.get(),
+                Activity.FIGHT,
+                Activity.IDLE
+        );
+    }
+
+    @Override
+    protected void playStepSound(BlockPos pos, BlockState state) {
+        SoundType soundtype = state.getSoundType(this.level(), pos, this);
+        this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch() * 2.0F);
+    }
+    @Override
+    protected float nextStep() {
+        return this.moveDist + 0.3F;
     }
 
     private GnomadRuntSkeleton skeleton;

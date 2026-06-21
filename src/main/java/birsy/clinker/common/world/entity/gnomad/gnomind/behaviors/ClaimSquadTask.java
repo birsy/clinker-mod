@@ -55,6 +55,10 @@ public class ClaimSquadTask<E extends LivingEntity & SquadMember<E>> extends Ext
 
         // assign us to the new task
         task.assign(mob);
-        Clinker.LOGGER.info("{} claimed task {}!", DebugEntityNameGenerator.getEntityName(mob.getUUID()), task);
+        Clinker.LOGGER.info("{} claimed {}'s {}!",
+                DebugEntityNameGenerator.getEntityName(mob),
+                DebugEntityNameGenerator.getEntityName(task.taskMaster.asEntity()),
+                task.getClass().getSimpleName()
+        );
     }
 }

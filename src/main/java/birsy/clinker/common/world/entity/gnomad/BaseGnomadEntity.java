@@ -14,6 +14,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.Brain;
@@ -103,6 +104,11 @@ public class BaseGnomadEntity<E extends BaseGnomadEntity<E>> extends GroundLocom
                 new LocomotorLookAtTarget<>(),
                 new MoveToWalkTarget<>()
         );
+    }
+
+    @Override
+    public boolean isPushable() {
+        return super.isPushable() && !this.isSitting();
     }
 
     @Override

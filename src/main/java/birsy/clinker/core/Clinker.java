@@ -59,6 +59,7 @@ public class Clinker {
         ClinkerFeatures.FEATURES.register(modEventBus);
 
         ClinkerMemoryModules.MEMORY_MODULE_TYPES.register(modEventBus);
+        ClinkerActivities.ACTIVITIES.register(modEventBus);
         ClinkerSensors.SENSOR_TYPES.register(modEventBus);
         ClinkerEntities.ENTITY_TYPES.register(modEventBus);
 

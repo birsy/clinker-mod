@@ -3,17 +3,21 @@ package birsy.clinker.common.world.entity.gnomad.mogul;
 import birsy.clinker.client.entity.gnomad.mogul.GnomadMogulAnimator;
 import birsy.clinker.client.entity.gnomad.mogul.GnomadMogulSkeleton;
 import birsy.clinker.common.world.entity.gnomad.BaseGnomadEntity;
+import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.StayNearSquadCenter;
+import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.sets.RelaxWithSquadBehaviorSet;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.sets.SharedGnomadBehaviorSets;
 import birsy.clinker.common.world.entity.system.squad.Squad;
 import birsy.clinker.common.world.entity.system.squad.SquadSystem;
 import birsy.clinker.common.world.entity.system.squad.SquadMember;
 import foundry.veil.api.client.necromancer.SkeletonParent;
 import foundry.veil.api.client.necromancer.animation.Animator;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
@@ -24,10 +28,17 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 import net.tslat.smartbrainlib.api.core.BrainActivityGroup;
+import net.tslat.smartbrainlib.api.core.behaviour.FirstApplicableBehaviour;
+import net.tslat.smartbrainlib.api.core.behaviour.OneRandomBehaviour;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.misc.Idle;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.misc.Panic;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.path.SetRandomWalkTarget;
 import net.tslat.smartbrainlib.util.EntityRetrievalUtil;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
@@ -205,7 +216,23 @@ public class GnomadMogulEntity extends BaseGnomadEntity<GnomadMogulEntity> imple
     @Override
     public BrainActivityGroup<GnomadMogulEntity> getIdleTasks() {
         return BrainActivityGroup.idleTasks(
-                SharedGnomadBehaviorSets.<GnomadMogulEntity>setIdleLookTargets()
+                SharedGnomadBehaviorSets.<GnomadMogulEntity>setIdleLookTargets(),
+                RelaxWithSquadBehaviorSet.<GnomadMogulEntity>tryInitiate(0, 2400),
+                new FirstApplicableBehaviour<>(
+                        // moguls dont panic as much!
+                        new Panic<GnomadMogulEntity>()
+                                .panicIf((entity, source) -> entity.getLastDamageSource() != null)
+                                .panicFor((entity, source) -> 60)
+                                .speedMod((entity) -> 1.0F),
+                        RelaxWithSquadBehaviorSet.<GnomadMogulEntity>goRelax(800, 1600),
+                        new StayNearSquadCenter<GnomadMogulEntity>()
+                                .maximumDistance(10.0F)
+                                .speedModifier(0.5F),
+                        new OneRandomBehaviour<GnomadMogulEntity>(
+                                new SetRandomWalkTarget<>().speedModifier(0.5F),
+                                new Idle<>().runFor(mob -> mob.getRandom().nextInt(30, 120))
+                        )
+                )
         );
     }
 
@@ -215,6 +242,10 @@ public class GnomadMogulEntity extends BaseGnomadEntity<GnomadMogulEntity> imple
         this.setRobeColor(ROBE_COLORS[this.random.nextInt(ROBE_COLORS.length)]);
         return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
     }
+
+    // moguls are big and strong and can't be pushed around
+    @Override
+    public boolean isPushable() { return false; }
 
     public int getRobeColor() {
         return this.entityData.get(DATA_ROBE_COLOR);
@@ -233,6 +264,17 @@ public class GnomadMogulEntity extends BaseGnomadEntity<GnomadMogulEntity> imple
     @Override
     public float squadPositionWeight() {
         return 2.5F;
+    }
+
+    @Override
+    protected void playStepSound(BlockPos pos, BlockState state) {
+        SoundType soundtype = state.getSoundType(this.level(), pos, this);
+        this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.2F, soundtype.getPitch() * 0.2F);
+        this.playSound(SoundEvents.RAVAGER_STEP, 0.2F, 1.0F);
+    }
+    @Override
+    protected float nextStep() {
+        return this.moveDist + 1.2F;
     }
 
     GnomadMogulSkeleton skeleton;

@@ -45,7 +45,7 @@ public class StayNearSquadCenter<E extends PathfinderMob & SquadMember<E>> exten
     @Override
     protected boolean checkExtraStartConditions(ServerLevel level, E entity) {
         Squad squad = BrainUtils.getMemory(entity, ClinkerMemoryModules.SQUAD.get());
-
+        if (squad == null) return false;
         if (squad.size() <= 1) return false;
 
         Vec3 squadCenter = squad.getCenter(entity);

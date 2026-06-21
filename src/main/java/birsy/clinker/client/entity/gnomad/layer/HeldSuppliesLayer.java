@@ -1,9 +1,8 @@
 package birsy.clinker.client.entity.gnomad.layer;
 
-import birsy.clinker.client.entity.gnomad.SuppliesDelivererSkeleton;
 import birsy.clinker.common.world.entity.gnomad.SuppliesDeliverer;
-import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerItems;
+import foundry.veil.api.client.necromancer.Bone;
 import foundry.veil.api.client.necromancer.Skeleton;
 import foundry.veil.api.client.necromancer.SkeletonParent;
 import foundry.veil.api.client.necromancer.render.NecromancerEntityRenderLayer;
@@ -20,7 +19,10 @@ import net.minecraft.world.item.Items;
 import org.joml.Matrix4x3f;
 import org.joml.Quaternionf;
 
-public class HeldSuppliesLayer<E extends LivingEntity & SuppliesDeliverer & SkeletonParent<E, S>, S extends Skeleton & SuppliesDelivererSkeleton> extends NecromancerEntityRenderLayer<E, S> {
+import java.util.function.Consumer;
+import java.util.function.Function;
+
+public class HeldSuppliesLayer<E extends LivingEntity & SuppliesDeliverer & SkeletonParent<E, S>, S extends Skeleton> extends NecromancerEntityRenderLayer<E, S> {
     private static final ItemStack[] SUPPLIES_ITEMS = {
             Items.ARROW.getDefaultInstance(),
             ClinkerItems.ORDNANCE.toStack(),
@@ -29,13 +31,17 @@ public class HeldSuppliesLayer<E extends LivingEntity & SuppliesDeliverer & Skel
             ClinkerItems.LEAD_INGOT.toStack(),
             Items.ARROW.getDefaultInstance(),
     };
-    private final ItemRenderer itemRenderer;
+    protected final ItemRenderer itemRenderer;
+    protected final Function<S, Bone> graspBone;
+    protected final Consumer<MatrixStack> offset;
     private final Matrix4x3f scratchTransform = new Matrix4x3f();
     private final Quaternionf scratchRotation = new Quaternionf();
 
-    public HeldSuppliesLayer(NecromancerEntityRenderer<E, S> renderer) {
+    public HeldSuppliesLayer(NecromancerEntityRenderer<E, S> renderer, Function<S, Bone> graspBone, Consumer<MatrixStack> offset) {
         super(renderer);
-        itemRenderer = Minecraft.getInstance().getItemRenderer();
+        this.itemRenderer = Minecraft.getInstance().getItemRenderer();
+        this.graspBone = graspBone;
+        this.offset = offset;
     }
 
     @Override
@@ -44,10 +50,11 @@ public class HeldSuppliesLayer<E extends LivingEntity & SuppliesDeliverer & Skel
 
         matrixStack.matrixPush();
         matrixStack.position().mul(
-                skeleton.suppliesParentBone().getModelTransform(scratchTransform.identity(), scratchRotation.identity(), partialTicks)
+                graspBone.apply(skeleton).getModelTransform(scratchTransform.identity(), scratchRotation.identity(), partialTicks)
         );
+        //
+        offset.accept(matrixStack);
         matrixStack.applyScale(10.0F);
-        skeleton.suppliesOffset(matrixStack);
 
         for (int i = 0; i < SUPPLIES_ITEMS.length; i++) {
             ItemStack item = SUPPLIES_ITEMS[i];

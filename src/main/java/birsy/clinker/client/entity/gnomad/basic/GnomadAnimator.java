@@ -12,7 +12,6 @@ import org.joml.Vector3fc;
 import static net.minecraft.core.Direction.Axis.*;
 import static birsy.clinker.client.AnimationUtilities.*;
 
-
 public class GnomadAnimator extends Animator<GnomadEntity, GnomadSkeleton> {
     public final AnimationEntry<?, ?> idleAnim, walkAnim, strafeAnim, hurtAnim, maskAnim, sitAnim;
     private int maskShakeTime = 0, maskShakeDuration = 1;

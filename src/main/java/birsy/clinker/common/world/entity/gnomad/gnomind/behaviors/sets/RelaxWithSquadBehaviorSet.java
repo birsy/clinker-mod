@@ -29,7 +29,7 @@ import java.util.Optional;
 
 public class RelaxWithSquadBehaviorSet {
     private static final int DISTANCE_THRESHOLD = 4;
-    public static <E extends LivingEntity & Sittable & SquadMember<E>> ExtendedBehaviour<E> goRelax() {
+    public static <E extends LivingEntity & Sittable & SquadMember<E>> ExtendedBehaviour<E> goRelax(int minTime, int maxTime) {
         return DecisionBehaviour.condition(
                 (entity) -> BrainUtils.getMemory(entity, ClinkerMemoryModules.ASSIGNED_SQUAD_TASK.get()) instanceof RelaxWithSquadTask relaxTask &&
                         relaxTask.isActive(),
@@ -59,14 +59,23 @@ public class RelaxWithSquadBehaviorSet {
                         new CustomHeldBehaviour<E>(RelaxWithSquadBehaviorSet::tickRelaxation)
                                 .whenStarting(RelaxWithSquadBehaviorSet::startRelaxing)
                                 .whenStopping(RelaxWithSquadBehaviorSet::stopRelaxing)
-                                .runForBetween(200, 600)
-                ).shouldInterrupt(true)
-        ).shouldInterrupt(true);
+                                .runForBetween(minTime, maxTime)
+                )
+                        .shouldInterrupt(true)
+                        .stopIf((entity) -> entity.getLastDamageSource() != null)// STOP SITTING IF WE TOOK DAMAGE!
+        )
+                .shouldInterrupt(true);
     }
-    public static <E extends LivingEntity & Sittable & SquadMember<E>> ExtendedBehaviour<E> tryInitiate() {
+    public static <E extends LivingEntity & Sittable & SquadMember<E>> ExtendedBehaviour<E> tryInitiate(int initiationChance, int joinChance) {
+        if (initiationChance <= 0)
+            return new ClaimSquadTask<E>(task -> task instanceof RelaxWithSquadTask)
+                .startCondition(entity -> RandomUtil.oneInNChance(joinChance) && !BrainUtils.hasMemory(entity, ClinkerMemoryModules.ASSIGNED_SQUAD_TASK.get()))
+                .cooldownFor(entity -> 600);
+
         return new FirstApplicableBehaviour<>(
                 new ClaimSquadTask<E>(task -> task instanceof RelaxWithSquadTask)
-                        .startCondition(e -> RandomUtil.oneInNChance(300)),
+                        .startCondition(entity -> RandomUtil.oneInNChance(joinChance))
+                        .cooldownFor(entity -> 1200),
                 new PostSquadTask<E, RelaxWithSquadTask>(
                         RelaxWithSquadTask.class,
                         (entity) -> {
@@ -77,20 +86,14 @@ public class RelaxWithSquadBehaviorSet {
                                         typeHolder -> typeHolder.is(PoiTypes.LODESTONE),
                                         pos -> true, entityBlockPos, 32, PoiManager.Occupancy.ANY
                                 );
-                                if (attempt.isPresent()) {
-                                    RelaxWithSquadTask task = new RelaxWithSquadTask(entity, new GlobalPos(serverLevel.dimension(), attempt.get()));
-                                    task.assign(entity); // assign myself!
-                                    return task;
-                                }
+                                if (attempt.isPresent()) return new RelaxWithSquadTask(entity, new GlobalPos(serverLevel.dimension(), attempt.get()));
                             }
                             return null;
                         }
-                )
-                        .startCondition(e -> RandomUtil.oneInNChance(600))
-                        .cooldownFor(e -> 2400)
-        ).startCondition(
-                (entity) -> !BrainUtils.hasMemory(entity, ClinkerMemoryModules.ASSIGNED_SQUAD_TASK.get())
-        );
+                ).onStart((entity, task) -> task.assign(entity)) // assign myself!
+                 .startCondition(entity -> RandomUtil.oneInNChance(initiationChance))
+                 .cooldownFor(entity -> 3000)
+        ).startCondition(entity -> !BrainUtils.hasMemory(entity, ClinkerMemoryModules.ASSIGNED_SQUAD_TASK.get()));
     }
 
     private static <E extends LivingEntity> @Nullable GlobalPos getRelaxationPoint(E entity) {

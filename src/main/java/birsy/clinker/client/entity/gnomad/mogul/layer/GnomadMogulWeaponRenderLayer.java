@@ -32,7 +32,11 @@ public class GnomadMogulWeaponRenderLayer extends NecromancerEntityRenderLayer<G
         RenderType renderType = VeilRenderType.get(GnomadMogulRenderer.RENDERTYPE, GnomadMogulWeaponSkins.WARHOOK_TEXTURE_LOCATION);
         matrixStack.matrixPush();
 
-        skeleton.MogulRightArmGrasp.getModelTransform(graspTransform.identity(), graspOrientation.identity(), partialTicks);
+        if (parent.isLeftHanded()) {
+            skeleton.MogulLeftArmGrasp.getModelTransform(graspTransform.identity(), graspOrientation.identity(), partialTicks);
+        } else {
+            skeleton.MogulRightArmGrasp.getModelTransform(graspTransform.identity(), graspOrientation.identity(), partialTicks);
+        }
 
         graspPosition.set(0, 0, 0);
         graspTransform.getTranslation(graspPosition);

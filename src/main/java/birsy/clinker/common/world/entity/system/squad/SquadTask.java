@@ -4,9 +4,7 @@ import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import net.minecraft.world.entity.LivingEntity;
 import net.tslat.smartbrainlib.util.BrainUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public abstract class SquadTask {
     public final SquadMember<?> taskMaster;
@@ -65,13 +63,12 @@ public abstract class SquadTask {
 
     // life cycle stuffs
     protected void post() {
-        onPosted();
         if (taskMaster instanceof LivingEntity livingEntity) {
-            List<SquadTask> postedTasks = BrainUtils.getMemory(livingEntity, ClinkerMemoryModules.POSTED_SQUAD_TASKS.get());
-            if (postedTasks == null) postedTasks = new ArrayList<>();
+            Set<SquadTask> postedTasks = BrainUtils.memoryOrDefault(livingEntity, ClinkerMemoryModules.POSTED_SQUAD_TASKS.get(), HashSet::new);
             postedTasks.add(this);
             BrainUtils.setMemory(livingEntity, ClinkerMemoryModules.POSTED_SQUAD_TASKS.get(), postedTasks);
         }
+        onPosted();
     }
     protected void onPosted() {}
 
@@ -108,7 +105,7 @@ public abstract class SquadTask {
     protected void begin() {
         this.status = Status.IN_PROGRESS;
         this.stageTime = 0;
-        this.onBegin();
+        onBegin();
     }
     protected void onBegin() {}
 
@@ -137,6 +134,7 @@ public abstract class SquadTask {
         this.failureReason = failureReason;
         this.stageTime = 0;
         onFailure();
+        onStop();
         cleanup();
     }
     protected void onFailure() {}
@@ -146,13 +144,16 @@ public abstract class SquadTask {
         this.status = Status.SUCCEEDED;
         this.stageTime = 0;
         onSuccess();
+        onStop();
         cleanup();
     }
     protected void onSuccess() {}
 
+    protected void onStop() {}
+
     protected void cleanup() {
         if (taskMaster instanceof LivingEntity livingEntity) {
-            List<SquadTask> postedTasks = BrainUtils.getMemory(livingEntity, ClinkerMemoryModules.POSTED_SQUAD_TASKS.get());
+            Set<SquadTask> postedTasks = BrainUtils.getMemory(livingEntity, ClinkerMemoryModules.POSTED_SQUAD_TASKS.get());
             if (postedTasks != null) {
                 postedTasks.remove(this);
                 BrainUtils.setMemory(livingEntity, ClinkerMemoryModules.POSTED_SQUAD_TASKS.get(), postedTasks);

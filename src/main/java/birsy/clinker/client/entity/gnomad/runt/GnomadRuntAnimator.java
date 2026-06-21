@@ -6,14 +6,16 @@ import foundry.veil.api.client.necromancer.animation.Animation;
 import foundry.veil.api.client.necromancer.animation.Animator;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
+import org.joml.Quaternionf;
 import org.joml.Vector3fc;
 
 import static birsy.clinker.client.AnimationUtilities.nSin;
 import static net.minecraft.core.Direction.Axis.*;
 
 public class GnomadRuntAnimator extends Animator<GnomadRuntEntity, GnomadRuntSkeleton> {
-    public final AnimationEntry<?, ?> idleAnim, walkAnim, strafeAnim, hurtAnim;
+    public final AnimationEntry<?, ?> idleAnim, walkAnim, strafeAnim, hurtAnim, holdingDeliveryAnim;
     public final AnimationUtilities.SurveyorWheel stepCounter = new AnimationUtilities.SurveyorWheel(0.22F);
+    float holdingDeliverTransition = 0.0F;
 
     protected GnomadRuntAnimator(GnomadRuntEntity parent, GnomadRuntSkeleton skeleton) {
         super(parent, skeleton);
@@ -21,6 +23,7 @@ public class GnomadRuntAnimator extends Animator<GnomadRuntEntity, GnomadRuntSke
         this.walkAnim = this.addAnimation(WalkAnimation.INSTANCE, 1);
         this.strafeAnim = this.addAnimation(StrafeAnimation.INSTANCE, 2);
         this.hurtAnim = this.addAnimation(HurtAnimation.INSTANCE, 3);
+        this.holdingDeliveryAnim = this.addAnimation(HoldingDeliveryAnimation.INSTANCE, 5);
     }
 
     @Override
@@ -47,12 +50,9 @@ public class GnomadRuntAnimator extends Animator<GnomadRuntEntity, GnomadRuntSke
         this.strafeAnim.setMixFactor(strafeFac);
         this.strafeAnim.setTime(stepsTaken);
 
-        if (entity.isHoldingDelivery()) {
-            skeleton.rightArm.rotateDeg(80, Direction.Axis.Y);
-            skeleton.leftArm.rotateDeg(-80, Direction.Axis.Y);
-            skeleton.rightArm.rotateDeg(70, Direction.Axis.Z);
-            skeleton.leftArm.rotateDeg(-70, Direction.Axis.Z);
-        }
+        this.holdingDeliverTransition = Mth.approach(this.holdingDeliverTransition, entity.isHoldingDelivery() ? 1.0F : 0.0F, 0.2F);
+        this.holdingDeliveryAnim.setMixFactor(this.holdingDeliverTransition);
+        this.holdingDeliveryAnim.setTime(entity.tickCount);
 
         if (entity.hurtDuration > 0) {
             float hurtMixFactor = (float) entity.hurtTime / entity.hurtDuration;
@@ -62,11 +62,27 @@ public class GnomadRuntAnimator extends Animator<GnomadRuntEntity, GnomadRuntSke
             Vector3fc hurtDirection = entity.getLastHitDirection();
             if (hurtDirection.x() != 0 || hurtDirection.z() != 0) {
                 float hurtRotationAxisX = -hurtDirection.z(),
-                        hurtRotationAxisZ = hurtDirection.x();
+                      hurtRotationAxisZ = hurtDirection.x();
                 skeleton.root.rotation.rotateAxis(-80 * Mth.DEG_TO_RAD * hurtMixFactor, hurtRotationAxisX, 0, hurtRotationAxisZ);
             }
         } else {
             this.hurtAnim.setMixFactor(0.0F);
+        }
+    }
+
+    private static class HoldingDeliveryAnimation extends Animation<GnomadRuntEntity, GnomadRuntSkeleton> {
+        protected static HoldingDeliveryAnimation INSTANCE = new HoldingDeliveryAnimation();
+        public void apply(GnomadRuntEntity entity, GnomadRuntSkeleton skeleton, float mixFactor, float time) {
+            skeleton.rightArm.rotation.slerp(skeleton.rightArm.baseRotation, mixFactor);
+            skeleton.leftArm.rotation.slerp(skeleton.leftArm.baseRotation, mixFactor);
+
+            skeleton.rightArm.rotateDeg(80 * mixFactor, Direction.Axis.Y);
+            skeleton.rightArm.rotateDeg(70 * mixFactor, Direction.Axis.Z);
+
+            skeleton.leftArm.rotateDeg(-80 * mixFactor, Direction.Axis.Y);
+            skeleton.leftArm.rotateDeg(-70 * mixFactor, Direction.Axis.Z);
+
+            skeleton.deliveryGrasp.rotateDeg(80 * mixFactor, Direction.Axis.X);
         }
     }
 
