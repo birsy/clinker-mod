@@ -9,12 +9,11 @@ import foundry.veil.api.client.render.framebuffer.FramebufferAttachmentDefinitio
 import foundry.veil.api.client.render.texture.TextureFilter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
-import org.lwjgl.system.NativeResource;
 
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class PageAtlas implements NativeResource {
+public class PageAtlas {
     @Nullable
     public static PageAtlas INSTANCE;
 
@@ -138,7 +137,6 @@ public class PageAtlas implements NativeResource {
         }
     }
 
-    @Override
     public void free() {
         if (this.frameBuffer != null)
             frameBuffer.free();

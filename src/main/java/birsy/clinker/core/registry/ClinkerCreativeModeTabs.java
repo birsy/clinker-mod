@@ -52,7 +52,6 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(SALTPETRE_LEACHED_DIRT.get());
 
         pOutput.accept(FERMENTATION_BARREL.get());
-        pOutput.accept(COUNTER.get());
         pOutput.accept(BLANK_SARCOPHAGUS.get());
         pOutput.accept(STOVE.get());
         pOutput.accept(LEAD_BLOCK.get());

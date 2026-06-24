@@ -1,6 +1,6 @@
 package birsy.clinker.common.world.entity.ai;
 
-public interface Sittable {
+public interface Sitter {
     boolean isSitting();
-    void setSitting(boolean value);
+    void setSitting(boolean sitting);
 }

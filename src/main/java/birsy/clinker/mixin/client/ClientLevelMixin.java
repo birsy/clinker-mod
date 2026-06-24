@@ -1,6 +1,5 @@
 package birsy.clinker.mixin.client;
 
-import birsy.clinker.common.alchemy.workstation.WorkstationManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -36,7 +35,6 @@ public final class ClientLevelMixin {
 
     @Inject(method = "tick(Ljava/util/function/BooleanSupplier;)V", at = @At("TAIL"))
     public void clinker$tick(BooleanSupplier pHasTimeLeft, CallbackInfo ci) {
-        WorkstationManager wManager = WorkstationManager.clientWorkstationManager;
-        wManager.tick();
+
     }
 }

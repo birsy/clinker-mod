@@ -12,6 +12,7 @@ public class ClinkerActivities {
     public static final DeferredRegister<Activity> ACTIVITIES = DeferredRegister.create(BuiltInRegistries.ACTIVITY, Clinker.MOD_ID);
 
     public static final Supplier<Activity> DELIVER_SUPPLIES = register("deliver_supplies");
+    public static final Supplier<Activity> RELAX = register("relax");
 
     private static DeferredHolder<Activity, Activity> register(String name) {
         return ACTIVITIES.register(name, () -> new Activity(name));

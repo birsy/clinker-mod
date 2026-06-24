@@ -1,6 +1,5 @@
 package birsy.clinker.common.world.block.plant;
 
-import birsy.clinker.common.world.block.CounterBlock;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;

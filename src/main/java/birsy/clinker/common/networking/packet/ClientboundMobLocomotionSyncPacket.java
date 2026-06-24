@@ -1,5 +1,6 @@
 package birsy.clinker.common.networking.packet;
 
+import birsy.clinker.common.world.SaltpetreFiltrationHandler;
 import birsy.clinker.common.world.entity.GroundLocomotionEntity;
 import birsy.clinker.core.Clinker;
 import io.netty.buffer.ByteBuf;
@@ -9,6 +10,8 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.Entity;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.joml.Vector3f;
 
@@ -26,14 +29,22 @@ public record ClientboundMobLocomotionSyncPacket(int entityId, Vector3f walkVect
         return TYPE;
     }
 
+
     public void handle(final IPayloadContext context) {
-        ClientLevel level = Minecraft.getInstance().level;
-        if (level == null) return;
+        context.enqueueWork(() -> ClientHandler.handle(this, context));
+    }
 
-        Entity entity = level.getEntity(this.entityId);
-        if (!(entity instanceof GroundLocomotionEntity validEntity)) return;
+    @OnlyIn(Dist.CLIENT)
+    public static class ClientHandler {
+        public static void handle(ClientboundMobLocomotionSyncPacket packet, final IPayloadContext context) {
+            ClientLevel level = Minecraft.getInstance().level;
+            if (level == null) return;
 
-        validEntity.smoothedLocomotionGoalVector.set(this.walkVector);
-        validEntity.setCumulativeLocomotionAmount(this.cumulativeDistance);
+            Entity entity = level.getEntity(packet.entityId);
+            if (!(entity instanceof GroundLocomotionEntity validEntity)) return;
+
+            validEntity.smoothedLocomotionGoalVector.set(packet.walkVector);
+            validEntity.setCumulativeLocomotionAmount(packet.cumulativeDistance);
+        }
     }
 }

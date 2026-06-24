@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.entity.gnomad.gnomind.behaviors;
+package birsy.clinker.common.world.entity.ai.behaviors;
 
 import birsy.clinker.common.world.entity.system.squad.Squad;
 import birsy.clinker.common.world.entity.system.squad.SquadMember;

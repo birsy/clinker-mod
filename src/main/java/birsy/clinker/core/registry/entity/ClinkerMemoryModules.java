@@ -9,11 +9,9 @@ import com.mojang.serialization.Codec;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.util.Unit;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -28,6 +26,8 @@ public class ClinkerMemoryModules {
 
     public static final Supplier<MemoryModuleType<SuppliesHolder>> DELIVERY_TARGET =
             MEMORY_MODULE_TYPES.register("delivery_target", () -> new MemoryModuleType<>(Optional.empty()));
+    public static final Supplier<MemoryModuleType<GlobalPos>> RELAXATION_POSITION =
+            MEMORY_MODULE_TYPES.register("relaxation_position", () -> new MemoryModuleType<>(Optional.empty()));
 
     public static final Supplier<MemoryModuleType<Squad>> SQUAD =
             MEMORY_MODULE_TYPES.register("squad", () -> new MemoryModuleType<>(Optional.empty()));

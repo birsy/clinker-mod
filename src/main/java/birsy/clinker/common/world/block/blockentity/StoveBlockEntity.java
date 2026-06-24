@@ -11,6 +11,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.ChestType;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 
 public class StoveBlockEntity extends BlockEntity {
@@ -19,7 +20,6 @@ public class StoveBlockEntity extends BlockEntity {
     private float pHeat;
     private float heat;
 
-    
     private boolean hasSound = false;
 
     public StoveBlockEntity(BlockPos pWorldPosition, BlockState pBlockState) {
@@ -38,8 +38,8 @@ public class StoveBlockEntity extends BlockEntity {
             entity.clientTick();
         }
     }
-
     
+    @OnlyIn(Dist.CLIENT)
     public void clientTick() {
         if (!this.hasSound) {
             StoveSoundInstance sound = new StoveSoundInstance(this);

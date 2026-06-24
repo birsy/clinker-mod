@@ -10,6 +10,7 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.level.LevelEvent;
@@ -18,7 +19,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.connection.ConnectionType;
 import org.jetbrains.annotations.Nullable;
 
-@EventBusSubscriber(modid = Clinker.MOD_ID)
+@EventBusSubscriber(modid = Clinker.MOD_ID, value = Dist.CLIENT)
 public class ClientOthershoreWeatherSystem {
     private static OthershoreWeatherSystem SYSTEM;
 

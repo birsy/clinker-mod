@@ -3,6 +3,7 @@ package birsy.clinker.common.world.entity.gnomad.mogul;
 import birsy.clinker.client.entity.gnomad.mogul.GnomadMogulAnimator;
 import birsy.clinker.client.entity.gnomad.mogul.GnomadMogulSkeleton;
 import birsy.clinker.common.world.entity.gnomad.BaseGnomadEntity;
+import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.StayNearSquadCenter;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.sets.RelaxWithSquadBehaviorSet;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.sets.SharedGnomadBehaviorSets;
@@ -44,6 +45,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static net.minecraft.world.entity.monster.Monster.createMonsterAttributes;
@@ -224,7 +226,6 @@ public class GnomadMogulEntity extends BaseGnomadEntity<GnomadMogulEntity> imple
                                 .panicIf((entity, source) -> entity.getLastDamageSource() != null)
                                 .panicFor((entity, source) -> 60)
                                 .speedMod((entity) -> 1.0F),
-                        RelaxWithSquadBehaviorSet.<GnomadMogulEntity>goRelax(800, 1600),
                         new StayNearSquadCenter<GnomadMogulEntity>()
                                 .maximumDistance(10.0F)
                                 .speedModifier(0.5F),
@@ -233,6 +234,13 @@ public class GnomadMogulEntity extends BaseGnomadEntity<GnomadMogulEntity> imple
                                 new Idle<>().runFor(mob -> mob.getRandom().nextInt(30, 120))
                         )
                 )
+        );
+    }
+
+    @Override
+    protected Set<BrainActivityGroup<? extends GnomadMogulEntity>> createAdditionalActivities() {
+        return Set.of(
+                RelaxWithSquadBehaviorSet.createActivity(800, 1600)
         );
     }
 

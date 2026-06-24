@@ -1,13 +1,11 @@
 package birsy.clinker.common.world;
 
-import birsy.clinker.common.networking.packet.ClientboundInverseKinematicsStepPacket;
 import birsy.clinker.common.networking.packet.ClientboundSaltpetreLeachPacket;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.ClinkerParticles;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -17,9 +15,10 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.FarmBlock;
-import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.HashSet;
@@ -29,6 +28,7 @@ import java.util.Set;
 public class SaltpetreFiltrationHandler {
     public static final BooleanProperty SALTPETRE_LEACHED_PROPERTY = BooleanProperty.create("saltpetre_leached");
 
+    @OnlyIn(Dist.CLIENT)
     public static void doClientEffects(ClientLevel level, BlockPos origin, List<BlockPos> positions) {
         level.playLocalSound(origin.getX() + 0.5, origin.getY() + 0.5, origin.getZ() + 0.5,
                 SoundEvents.DEEPSLATE_BREAK, SoundSource.BLOCKS,

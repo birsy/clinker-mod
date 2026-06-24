@@ -197,9 +197,6 @@ public class GnomadMogulAnimator extends Animator<GnomadMogulEntity, GnomadMogul
             skeleton.MogulBody.offsetY(-5 * sitFactor);
             skeleton.MogulBody.offsetZ(5 * sitFactor);
 
-//            skeleton.MogulNeck.offsetY(3 * sitFactor);
-//            skeleton.MogulBackHelmetFlap.rotateDeg(20 * sitFactor, X);
-
             skeleton.MogulLeftLeg.offsetY(5 * sitFactor);
             skeleton.MogulRightLeg.offsetY(5 * sitFactor);
             skeleton.MogulLeftLeg.offsetZ(-7 * sitFactor);
@@ -227,7 +224,7 @@ public class GnomadMogulAnimator extends Animator<GnomadMogulEntity, GnomadMogul
 
             dominantHand.rotation.slerp(dominantHand.baseRotation, sitFactor);
             dominantHand.rotateDeg(45 * handSitFactor, X);
-            dominantHand.rotateDeg(12 * sitFactor, Z);
+            dominantHand.rotateDeg(12 * sitFactor * (entity.isLeftHanded() ? -1 : 1), Z);
 
             dominantHandGrip.offsetZ(1.5F * sitFactor);
             dominantHandGrip.rotateDeg(-20 * sitFactor, Y);

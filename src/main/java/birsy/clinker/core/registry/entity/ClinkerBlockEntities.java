@@ -26,9 +26,6 @@ public class ClinkerBlockEntities {
     public static final Supplier<BlockEntityType<FermentationBarrelBlockEntity>> FERMENTATION_BARREL = BLOCK_ENTITY_TYPES.register("fermentation_barrel",
             () -> BlockEntityType.Builder.of(FermentationBarrelBlockEntity::new, ClinkerBlocks.FERMENTATION_BARREL.get()).build(null));
 
-    public static final Supplier<BlockEntityType<CounterBlockEntity>> COUNTER = BLOCK_ENTITY_TYPES.register("counter",
-            () -> BlockEntityType.Builder.of(CounterBlockEntity::new, ClinkerBlocks.COUNTER.get()).build(null));
-
     public static final Supplier<BlockEntityType<StoveBlockEntity>> STOVE = BLOCK_ENTITY_TYPES.register("stove",
             () -> BlockEntityType.Builder.of(StoveBlockEntity::new, ClinkerBlocks.STOVE.get()).build(null));
 
@@ -44,7 +41,6 @@ public class ClinkerBlockEntities {
     public static void registerTileEntityRenderers() {
         BlockEntityRenderers.register(ClinkerBlockEntities.FERMENTATION_BARREL.get(), FermentationBarrelRenderer::new);
         BlockEntityRenderers.register(ClinkerBlockEntities.SARCOPHAGUS_INNARDS.get(), SarcophagusInnardsRenderer::new);
-        BlockEntityRenderers.register(ClinkerBlockEntities.COUNTER.get(), CounterRenderer::new);
         BlockEntityRenderers.register(ClinkerBlockEntities.STOVE.get(), StoveRenderer::new);
         BlockEntityRenderers.register(ClinkerBlockEntities.FAIRY_FRUIT.get(), FairyFruitRenderer::new);
         BlockEntityRenderers.register(ClinkerBlockEntities.MORTAR.get(), MortarRenderer::new);

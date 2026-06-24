@@ -2,7 +2,7 @@ package birsy.clinker.common.world.entity.gnomad;
 
 import birsy.clinker.client.entity.gnomad.basic.GnomadAnimator;
 import birsy.clinker.client.entity.gnomad.basic.GnomadSkeleton;
-import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.PostSquadTask;
+import birsy.clinker.common.world.entity.ai.behaviors.PostSquadTask;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.sets.RelaxWithSquadBehaviorSet;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.sets.SharedGnomadBehaviorSets;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.StayNearSquadCenter;
@@ -12,6 +12,7 @@ import foundry.veil.api.client.necromancer.SkeletonParent;
 import foundry.veil.api.client.necromancer.animation.Animator;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
@@ -31,11 +32,18 @@ import net.tslat.smartbrainlib.api.core.behaviour.custom.misc.Panic;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.path.SetRandomWalkTarget;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Set;
+
 public class GnomadEntity extends BaseGnomadEntity<GnomadEntity>
         implements SuppliesHolder, RangedAttackMob, SkeletonParent<GnomadEntity, GnomadSkeleton> {
     int supplies;
     public GnomadEntity(EntityType<? extends PathfinderMob> entityType, Level level) {
         super(entityType, level);
+    }
+
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
     }
 
     @Override
@@ -81,7 +89,6 @@ public class GnomadEntity extends BaseGnomadEntity<GnomadEntity>
                 new FirstApplicableBehaviour<>(
                         new Panic<GnomadEntity>()
                                 .panicIf((entity, source) -> entity.getLastDamageSource() != null),
-                        RelaxWithSquadBehaviorSet.<GnomadEntity>goRelax(200, 600),
                         new StayNearSquadCenter<GnomadEntity>()
                                 .maximumDistance(10.0F)
                                 .speedModifier(0.5F),
@@ -90,6 +97,13 @@ public class GnomadEntity extends BaseGnomadEntity<GnomadEntity>
                                 new Idle<>().runFor(mob -> mob.getRandom().nextInt(30, 120))
                         )
                 )
+        );
+    }
+
+    @Override
+    protected Set<BrainActivityGroup<? extends GnomadEntity>> createAdditionalActivities() {
+        return Set.of(
+                RelaxWithSquadBehaviorSet.createActivity(200, 600)
         );
     }
 

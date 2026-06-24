@@ -67,7 +67,7 @@ public class Clinker {
         ClinkerDataAttachments.ATTACHMENT_TYPES.register(modEventBus);
         ClinkerCreativeModeTabs.TABS.register(modEventBus);
 
-        ClinkerLightTypes.LIGHT_TYPES.register(modEventBus);
+        //if (FMLLoader.getDist() == Dist.CLIENT) ClinkerLightTypes.LIGHT_TYPES.register(modEventBus);
 
         ClinkerPageElementTypes.PAGE_ELEMENT_TYPES.register(modEventBus);
         ClinkerAlchemyKnowledgeTypes.ALCHEMY_DATA_TYPES.register(modEventBus);

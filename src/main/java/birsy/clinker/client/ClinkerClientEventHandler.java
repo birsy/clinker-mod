@@ -27,6 +27,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RegisterDimensionSpecialEffectsEvent;
 import net.neoforged.neoforge.client.event.RenderHandEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 
@@ -35,6 +36,11 @@ import java.util.Arrays;
 @EventBusSubscriber(value = Dist.CLIENT, modid = Clinker.MOD_ID)
 public class ClinkerClientEventHandler {
     private static final ResourceLocation TEST_PAGE_LOCATION = Clinker.resource("test_page");
+
+    @SubscribeEvent
+    public static void registerDimensionEffects(RegisterDimensionSpecialEffectsEvent event) {
+        event.register(Clinker.resource("othershore"), new OthershoreDimensionEffects());
+    }
 
     @SubscribeEvent
     public static void onRender(RenderLevelStageEvent event) {

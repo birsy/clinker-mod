@@ -41,7 +41,6 @@ public class GroundLocomotionEntity extends PathfinderMob {
                           smoothedLocomotionVector = new Vector3f(),
                           smoothedLocomotionGoalVector = new Vector3f();
     protected float cumulativeLocomotionAmount = 0, cumulativeLocomotionAmountGoal = 0;
-    protected final Scheduler scheduler = new Scheduler();
 
     public float speedModifier = 1.0F;
 
@@ -97,7 +96,6 @@ public class GroundLocomotionEntity extends PathfinderMob {
     @Override
     public void tick() {
         this.previousLocomotionVector.set(locomotionVector);
-        this.scheduler.tick();
         super.tick();
         if (this.level().isClientSide()) {
             this.locomotionVector.zero();
@@ -235,7 +233,6 @@ public class GroundLocomotionEntity extends PathfinderMob {
         } else {
             this.moveTowardsPosition(this.getX(), this.getY(), this.getZ(), maxSpeed, 1.0);
         }
-
     }
     private void moveTowardsPosition(double x, double y, double z, double maxSpeed, double completionRadius) {
         this.lookAt(EntityAnchorArgument.Anchor.EYES, new Vec3(x, y, z));

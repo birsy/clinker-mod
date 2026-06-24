@@ -1,26 +1,30 @@
 package birsy.clinker.common.world.entity.gnomad;
 
 import birsy.clinker.common.world.entity.GroundLocomotionEntity;
-import birsy.clinker.common.world.entity.ai.Sittable;
+import birsy.clinker.common.world.entity.ai.Sitter;
 import birsy.clinker.common.world.entity.ai.behaviors.InvalidateLookAtTarget;
 import birsy.clinker.common.world.entity.ai.behaviors.LocomotorLookAtTarget;
 import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.ReportKnownEnemyLocations;
+import birsy.clinker.common.world.entity.gnomad.gnomind.behaviors.sets.FetchAndDeliverSuppliesBehaviorSet;
 import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.*;
-import birsy.clinker.common.world.entity.gnomad.mogul.GnomadMogulEntity;
 import birsy.clinker.common.world.entity.system.squad.Squad;
 import birsy.clinker.common.world.entity.system.squad.SquadMember;
+import birsy.clinker.core.Clinker;
+import birsy.clinker.core.registry.entity.ClinkerActivities;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.Brain;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.level.Level;
 import net.tslat.smartbrainlib.api.SmartBrainOwner;
 import net.tslat.smartbrainlib.api.core.BrainActivityGroup;
@@ -35,11 +39,15 @@ import net.tslat.smartbrainlib.util.EntityRetrievalUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static net.minecraft.world.entity.monster.Monster.createMonsterAttributes;
 
-public class BaseGnomadEntity<E extends BaseGnomadEntity<E>> extends GroundLocomotionEntity implements SquadMember<E>, SmartBrainOwner<E>, Enemy, Sittable {
+public abstract class BaseGnomadEntity<E extends BaseGnomadEntity<E>> extends GroundLocomotionEntity implements SquadMember<E>, SmartBrainOwner<E>, Enemy, Sitter {
     private static final EntityDataAccessor<Boolean> DATA_SITTING = SynchedEntityData.defineId(BaseGnomadEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Integer> DATA_SIT_POSE = SynchedEntityData.defineId(BaseGnomadEntity.class, EntityDataSerializers.INT);
 
     private Squad squad;
 
@@ -58,6 +66,7 @@ public class BaseGnomadEntity<E extends BaseGnomadEntity<E>> extends GroundLocom
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(DATA_SITTING, false);
+        builder.define(DATA_SIT_POSE, 0);
     }
 
     @Override
@@ -99,11 +108,36 @@ public class BaseGnomadEntity<E extends BaseGnomadEntity<E>> extends GroundLocom
                 new SetAttackTarget<>(false)
                         .targetFinder(mob -> EntityRetrievalUtil.getNearestPlayer(mob, 32.0F)),
                 new ReportKnownEnemyLocations<>()
-                        .cooldownFor((entity) -> 10), // run every ten ticks
+                        .cooldownFor((entity) -> 20), // run every second
                 new InvalidateLookAtTarget<>(),
                 new LocomotorLookAtTarget<>(),
                 new MoveToWalkTarget<>()
         );
+    }
+
+    @Override
+    public Set<Activity> getScheduleIgnoringActivities() {
+        return Set.of(Activity.FIGHT, ClinkerActivities.RELAX.get(), ClinkerActivities.DELIVER_SUPPLIES.get());
+    }
+
+    @Override
+    public List<Activity> getActivityPriorities() {
+        return List.of(
+                Activity.FIGHT,
+                ClinkerActivities.DELIVER_SUPPLIES.get(),
+                ClinkerActivities.RELAX.get(),
+                Activity.IDLE
+        );
+    }
+
+    protected Set<BrainActivityGroup<? extends E>> createAdditionalActivities() {
+        return Set.of();
+    }
+
+    @Override
+    public Map<Activity, BrainActivityGroup<? extends E>> getAdditionalTasks() {
+        Set<BrainActivityGroup<? extends E>> tasks = createAdditionalActivities();
+        return tasks.stream().collect(Collectors.toUnmodifiableMap(BrainActivityGroup::getActivity, task -> task));
     }
 
     @Override
@@ -124,8 +158,22 @@ public class BaseGnomadEntity<E extends BaseGnomadEntity<E>> extends GroundLocom
     public boolean isSitting() {
         return getEntityData().get(DATA_SITTING);
     }
+    private static final AttributeModifier SPEED_MODIFIER_SITTING = new AttributeModifier(
+            Clinker.resource("sitting"), -1.0, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
+    );
     @Override
-    public void setSitting(boolean value) {
-        getEntityData().set(DATA_SITTING, value);
+    public void setSitting(boolean sitting) {
+        getEntityData().set(DATA_SITTING, sitting);
+        if (sitting) getEntityData().set(DATA_SIT_POSE, this.random.nextInt());
+        // can't move when sitting!
+        AttributeInstance speedAttribute = this.getAttribute(Attributes.MOVEMENT_SPEED);
+        if (speedAttribute != null) {
+            if (sitting) speedAttribute.addTransientModifier(SPEED_MODIFIER_SITTING);
+            else speedAttribute.removeModifier(SPEED_MODIFIER_SITTING);
+        }
+    }
+    // sometimes we can sit in a different pose. just leave this for the animation driver to handle...
+    public int getSitPose() {
+        return getEntityData().get(DATA_SIT_POSE);
     }
 }

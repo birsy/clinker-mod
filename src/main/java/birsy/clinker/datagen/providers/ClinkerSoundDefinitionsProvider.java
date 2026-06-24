@@ -24,10 +24,7 @@ public class ClinkerSoundDefinitionsProvider extends SoundDefinitionsProvider {
 
             definition.with(soundHolder.variants().stream()
                     .map(variant -> {
-                        SoundDefinition.Sound sound = sound(
-                                variant.filePath(),
-                                variant.type() == Sound.Type.SOUND_EVENT ? SoundDefinition.SoundType.EVENT : SoundDefinition.SoundType.SOUND
-                        );
+                        SoundDefinition.Sound sound = sound(variant.filePath());
                         if (!variant.isVolumeDefault()) sound.volume(variant.volume());
                         if (!variant.isPitchDefault()) sound.pitch(variant.pitch());
                         if (!variant.isWeightDefault()) sound.weight(variant.weight());

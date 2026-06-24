@@ -27,14 +27,10 @@ public class HeldItemsLayer<E extends Mob & SkeletonParent<E, S>, S extends Skel
 
     @Override
     public void render(E parent, S skeleton, NecromancerRenderer renderer, MatrixStack matrixStack, int packedLight, float partialTicks) {
-        boolean mainHandIsLeft = parent.isLeftHanded();
-        ItemStack mainHandItem = parent.getMainHandItem();
-
-        boolean offHandIsLeft = !mainHandIsLeft;
-        ItemStack offHandItem = parent.getOffhandItem();
-
         matrixStack.matrixPush();
 
+        boolean mainHandIsLeft = parent.isLeftHanded();
+        ItemStack mainHandItem = parent.getMainHandItem();
         if (!mainHandItem.isEmpty()) {
             matrixStack.matrixPush();
             matrixStack.position().mul(
@@ -54,6 +50,8 @@ public class HeldItemsLayer<E extends Mob & SkeletonParent<E, S>, S extends Skel
             matrixStack.matrixPop();
         }
 
+        boolean offHandIsLeft = !mainHandIsLeft;
+        ItemStack offHandItem = parent.getOffhandItem();
         if (!offHandItem.isEmpty()) {
             matrixStack.matrixPush();
             matrixStack.position().mul(

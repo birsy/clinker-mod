@@ -9,6 +9,7 @@ import foundry.veil.api.client.render.shader.block.DynamicShaderBlock;
 import foundry.veil.api.client.render.shader.block.ShaderBlock;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.util.Mth;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.level.LevelEvent;
@@ -19,7 +20,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-@EventBusSubscriber(modid = Clinker.MOD_ID)
+@EventBusSubscriber(modid = Clinker.MOD_ID, value = Dist.CLIENT)
 public class CloudHoleTracker {
     // static stuff
     private static CloudHoleTracker HOLE_TRACKER;

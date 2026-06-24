@@ -18,6 +18,8 @@ import net.minecraft.world.entity.ai.behavior.BehaviorControl;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.npc.InventoryCarrier;
 import net.minecraft.world.entity.schedule.Activity;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.tslat.smartbrainlib.util.BrainUtils;
 
@@ -54,9 +56,6 @@ public record ClientboundBrainDebugPacket(BrainDebugPayload.BrainDump dump) impl
             for (MemoryModuleType<?> memoryModuleType : entity.getBrain().getMemories().keySet()) memories.add(memoryModuleType.toString());
 
             Set<BlockPos> POIs = new HashSet<>();
-//            if (BrainUtils.hasMemory(entity, ClinkerMemoryModules.RELAXATION_SPOT.get())) {
-//                POIs.add(BrainUtils.getMemory(entity, ClinkerMemoryModules.RELAXATION_SPOT.get()).pos());
-//            }
 
             return new BrainDebugPayload.BrainDump(
                     entity.getUUID(),
@@ -82,13 +81,21 @@ public record ClientboundBrainDebugPacket(BrainDebugPayload.BrainDump dump) impl
         return TYPE;
     }
 
+
     public void handle(final IPayloadContext context) {
-        if (!SharedConstants.IS_RUNNING_IN_IDE) return;
-        Minecraft mc = Minecraft.getInstance();
-        if (!mc.getEntityRenderDispatcher().shouldRenderHitBoxes()) {
-            mc.debugRenderer.brainDebugRenderer.clear();
-            return;
+        context.enqueueWork(() -> ClientHandler.handle(this, context));
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static class ClientHandler {
+        public static void handle(ClientboundBrainDebugPacket packet, final IPayloadContext context) {
+            if (!SharedConstants.IS_RUNNING_IN_IDE) return;
+            Minecraft mc = Minecraft.getInstance();
+            if (!mc.getEntityRenderDispatcher().shouldRenderHitBoxes()) {
+                mc.debugRenderer.brainDebugRenderer.clear();
+                return;
+            }
+            mc.debugRenderer.brainDebugRenderer.addOrUpdateBrainDump(packet.dump);
         }
-        mc.debugRenderer.brainDebugRenderer.addOrUpdateBrainDump(this.dump);
     }
 }

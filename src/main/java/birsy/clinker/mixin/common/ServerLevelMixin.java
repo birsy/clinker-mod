@@ -1,7 +1,6 @@
 
 package birsy.clinker.mixin.common;
 
-import birsy.clinker.common.alchemy.workstation.WorkstationManager;
 import birsy.clinker.common.world.level.gen.OthershoreBiomeSource;
 import birsy.clinker.common.world.level.gen.system.metachunk.MetaChunkMap;
 import birsy.clinker.common.world.level.gen.system.metachunk.MetaChunkMapHolder;
@@ -58,26 +57,10 @@ public abstract class ServerLevelMixin extends Level {
             boolean pTickTime,
             RandomSequences pRandomSequences,
             CallbackInfo ci) {
-        ServerLevel me = (ServerLevel)(Object)this;
-        //InteractableAttachment.attachManagerToLevel(me, new ServerInteractableManager(me));
-        WorkstationManager manager = new WorkstationManager(me);
-        WorkstationManager.managerByLevel.put(me, manager);
-        WorkstationManager.managerByDimension.put(me.dimension(), manager);
-
-        RandomState randomState = this.chunkSource.chunkMap.randomState();
-        MetaChunkMap metaChunkMap = ((MetaChunkMapHolder) (Object) randomState).clinker$metaChunkMap();
         // init biome source!
         if (this.chunkSource.getGenerator().getBiomeSource() instanceof OthershoreBiomeSource othershoreBiomeSource) {
             othershoreBiomeSource.initRandomState(this.chunkSource.chunkMap.randomState());
         }
-    }
-
-    @Inject(method = "tick", at = @At("TAIL"))
-    void clinker$tickServerLevel(BooleanSupplier pHasTimeLeft, CallbackInfo ci) {
-        //InteractableManager iManager = InteractableManager.serverInteractableManagers.get(((ServerLevel)(Object)this));
-        //iManager.tick();
-        WorkstationManager wManager = WorkstationManager.managerByLevel.get(((ServerLevel)(Object)this));
-        wManager.tick();
     }
 
     @Inject(method = "advanceWeatherCycle", at = @At("HEAD"), cancellable = true)

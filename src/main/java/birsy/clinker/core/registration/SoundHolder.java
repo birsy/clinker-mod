@@ -1,6 +1,5 @@
 package birsy.clinker.core.registration;
 
-import net.minecraft.client.resources.sounds.Sound;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -58,7 +57,6 @@ public record SoundHolder(
         public Builder stream() { defaultProperties.stream = true; return this; }
         public Builder preload() { defaultProperties.preload = true; return this; }
         public Builder attenuationDistance(int distance) { defaultProperties.attenuationDistance = distance; return this; }
-        public Builder type(Sound.Type type) { defaultProperties.type = type; return this; }
 
         public Builder variants(int count) { return this.variants(count, (properties) -> {}); }
         public Builder variants(int count, Consumer<SoundVariantProperties> properties) {
@@ -122,7 +120,6 @@ public record SoundHolder(
         int weight;
         boolean stream, preload;
         int attenuationDistance;
-        Sound.Type type;
 
         SoundVariantProperties(SoundVariantProperties from) {
             this.volume = from.volume;
@@ -131,7 +128,6 @@ public record SoundHolder(
             this.stream = from.stream;
             this.preload = from.preload;
             this.attenuationDistance = from.attenuationDistance;
-            this.type = from.type;
         }
 
         SoundVariantProperties() {
@@ -141,7 +137,6 @@ public record SoundHolder(
             this.stream = SoundVariant.DEFAULT.stream;
             this.preload = SoundVariant.DEFAULT.preload;
             this.attenuationDistance = SoundVariant.DEFAULT.attenuationDistance;
-            this.type = SoundVariant.DEFAULT.type;
         }
 
         public SoundVariantProperties volume(float volume) { this.volume = volume; return this; }
@@ -150,10 +145,9 @@ public record SoundHolder(
         public SoundVariantProperties stream() { this.stream = true; return this; }
         public SoundVariantProperties preload() { this.preload = true; return this; }
         public SoundVariantProperties attenuationDistance(int distance) { this.attenuationDistance = distance; return this; }
-        public SoundVariantProperties type(Sound.Type type) { this.type = type; return this; }
 
         SoundVariant create(ResourceLocation filePath) {
-            return new SoundVariant(filePath, volume, pitch, weight, stream, attenuationDistance, preload, type);
+            return new SoundVariant(filePath, volume, pitch, weight, stream, attenuationDistance, preload);
         }
     }
 
@@ -164,17 +158,14 @@ public record SoundHolder(
             int weight,
             boolean stream,
             int attenuationDistance,
-            boolean preload,
-            Sound.Type type
+            boolean preload
     ) {
-        public static final SoundVariant DEFAULT =
-                new SoundVariant(null, 1.0f, 1.0f, 1, false, 16, false, Sound.Type.FILE);
+        public static final SoundVariant DEFAULT = new SoundVariant(null, 1.0f, 1.0f, 1, false, 16, false);
         public boolean isVolumeDefault() { return volume == DEFAULT.volume; }
         public boolean isPitchDefault() { return pitch == DEFAULT.pitch; }
         public boolean isWeightDefault() { return weight == DEFAULT.weight; }
         public boolean isStreamDefault() { return stream == DEFAULT.stream; }
         public boolean isAttenuationDistanceDefault() { return attenuationDistance == DEFAULT.attenuationDistance; }
         public boolean isPreloadDefault() { return preload == DEFAULT.preload; }
-        public boolean isTypeDefault() { return type == DEFAULT.type; }
     }
 }

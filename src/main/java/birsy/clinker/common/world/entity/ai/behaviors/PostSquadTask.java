@@ -1,9 +1,8 @@
-package birsy.clinker.common.world.entity.gnomad.gnomind.behaviors;
+package birsy.clinker.common.world.entity.ai.behaviors;
 
 import birsy.clinker.common.world.entity.system.squad.Squad;
 import birsy.clinker.common.world.entity.system.squad.SquadMember;
 import birsy.clinker.common.world.entity.system.squad.SquadTask;
-import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.server.level.ServerLevel;
@@ -15,7 +14,6 @@ import net.tslat.smartbrainlib.object.MemoryTest;
 import net.tslat.smartbrainlib.util.BrainUtils;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;

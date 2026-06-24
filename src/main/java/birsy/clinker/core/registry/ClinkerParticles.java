@@ -14,6 +14,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
@@ -22,7 +24,6 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-@EventBusSubscriber(modid = Clinker.MOD_ID)
 public class ClinkerParticles
 {
     public static final DeferredRegister<ParticleType<?>> PARTICLES = DeferredRegister.create(BuiltInRegistries.PARTICLE_TYPE, Clinker.MOD_ID);
@@ -83,34 +84,38 @@ public class ClinkerParticles
         });
     }
 
-    @SubscribeEvent
-    public static void registerParticleProviders(RegisterParticleProvidersEvent event) {
-        event.registerSpriteSet(LIGHTNING.get(), LightningParticle.Provider::new);
-        event.registerSpriteSet(RED_LIGHTNING.get(), LightningParticle.Provider::new);
-        event.registerSpriteSet(SNOOZE.get(), SnoozeParticle.Provider::new);
-        event.registerSpriteSet(MOTH.get(), MothParticle.Provider::new);
-        event.registerSpriteSet(FIREFLY.get(), FireflyParticle.Provider::new);
-        event.registerSpriteSet(FLY.get(), FlyParticle.Provider::new);
-        event.registerSpriteSet(ORDNANCE_TRAIL.get(), OrdnanceTrailParticle.Provider::new);
-        event.registerSpriteSet(ORDNANCE_EXPLOSION.get(), OrdnanceExplosionParticle.Provider::new);
-        event.registerSpriteSet(EXPLOSION_LIGHT.get(), ExplosionLightParticle.Provider::new);
-        event.registerSpriteSet(FIRE_SPEW.get(), FireSpewParticle.Provider::new);
-        event.registerSpriteSet(BLOSSOM_BUG.get(), BlossomBugParticle.Provider::new);
-        event.registerSpriteSet(WRITHING_MAGGOT.get(), WrithingMaggotParticle.Provider::new);
-        event.registerSpriteSet(SALTPETRE_LEACH.get(), SaltpetreLeachParticle.Provider::new);
+    @OnlyIn(Dist.CLIENT)
+    @EventBusSubscriber(modid = Clinker.MOD_ID, value = Dist.CLIENT)
+    public static class ClientClinkerParticles {
+        @SubscribeEvent
+        public static void registerParticleProviders(RegisterParticleProvidersEvent event) {
+            event.registerSpriteSet(LIGHTNING.get(), LightningParticle.Provider::new);
+            event.registerSpriteSet(RED_LIGHTNING.get(), LightningParticle.Provider::new);
+            event.registerSpriteSet(SNOOZE.get(), SnoozeParticle.Provider::new);
+            event.registerSpriteSet(MOTH.get(), MothParticle.Provider::new);
+            event.registerSpriteSet(FIREFLY.get(), FireflyParticle.Provider::new);
+            event.registerSpriteSet(FLY.get(), FlyParticle.Provider::new);
+            event.registerSpriteSet(ORDNANCE_TRAIL.get(), OrdnanceTrailParticle.Provider::new);
+            event.registerSpriteSet(ORDNANCE_EXPLOSION.get(), OrdnanceExplosionParticle.Provider::new);
+            event.registerSpriteSet(EXPLOSION_LIGHT.get(), ExplosionLightParticle.Provider::new);
+            event.registerSpriteSet(FIRE_SPEW.get(), FireSpewParticle.Provider::new);
+            event.registerSpriteSet(BLOSSOM_BUG.get(), BlossomBugParticle.Provider::new);
+            event.registerSpriteSet(WRITHING_MAGGOT.get(), WrithingMaggotParticle.Provider::new);
+            event.registerSpriteSet(SALTPETRE_LEACH.get(), SaltpetreLeachParticle.Provider::new);
 
-        event.registerSpecial(CHAIN_LIGHTNING_BOLT.get(), new ChainLightningBoltParticle.Provider());
+            event.registerSpecial(CHAIN_LIGHTNING_BOLT.get(), new ChainLightningBoltParticle.Provider());
 
-        registerDripParticle(event, DRIPPING_SALTPETRE.get(), ClinkerDripParticles::createSaltPetreDripHangParticle);
-        registerDripParticle(event, FALLING_SALTPETRE.get(), ClinkerDripParticles::createSaltPetreDripFallParticle);
-        registerDripParticle(event, LANDING_SALTPETRE.get(), ClinkerDripParticles::createSaltPetreDripLandParticle);
-    }
+            registerDripParticle(event, DRIPPING_SALTPETRE.get(), ClinkerDripParticles::createSaltPetreDripHangParticle);
+            registerDripParticle(event, FALLING_SALTPETRE.get(), ClinkerDripParticles::createSaltPetreDripFallParticle);
+            registerDripParticle(event, LANDING_SALTPETRE.get(), ClinkerDripParticles::createSaltPetreDripLandParticle);
+        }
 
-    private static <T extends ParticleOptions> void registerDripParticle(RegisterParticleProvidersEvent event, ParticleType<T> particleType, ParticleProvider.Sprite<T> sprite) {
-        event.registerSpriteSet(particleType, (sprites) -> (options, level, x, y, z, xSpeed, ySpeed, zSpeed) -> {
-            TextureSheetParticle texturesheetparticle = sprite.createParticle(options, level, x, y, z, xSpeed, ySpeed, zSpeed);
-            if (texturesheetparticle != null) texturesheetparticle.pickSprite(sprites);
-            return texturesheetparticle;
-        });
+        private static <T extends ParticleOptions> void registerDripParticle(RegisterParticleProvidersEvent event, ParticleType<T> particleType, ParticleProvider.Sprite<T> sprite) {
+            event.registerSpriteSet(particleType, (sprites) -> (options, level, x, y, z, xSpeed, ySpeed, zSpeed) -> {
+                TextureSheetParticle texturesheetparticle = sprite.createParticle(options, level, x, y, z, xSpeed, ySpeed, zSpeed);
+                if (texturesheetparticle != null) texturesheetparticle.pickSprite(sprites);
+                return texturesheetparticle;
+            });
+        }
     }
 }

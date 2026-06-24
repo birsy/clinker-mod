@@ -1,7 +1,5 @@
 package birsy.clinker.common.world.ordnance;
 
-import birsy.clinker.common.world.ordnance.modifiers.FuseTimeModifier;
-import birsy.clinker.core.registry.ClinkerOrdnanceModifierTypes;
 import birsy.clinker.core.registry.ClinkerRegistries;
 import birsy.clinker.core.registry.ClinkerTags;
 import com.google.common.collect.ImmutableMap;

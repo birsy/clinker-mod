@@ -2,6 +2,7 @@ package birsy.clinker.client.entity.gnomad.basic;
 
 import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
 import birsy.clinker.core.util.MathUtils;
+import foundry.veil.api.client.necromancer.Bone;
 import foundry.veil.api.client.necromancer.animation.Animation;
 import foundry.veil.api.client.necromancer.animation.Animator;
 import net.minecraft.core.Direction;
@@ -33,6 +34,8 @@ public class GnomadAnimator extends Animator<GnomadEntity, GnomadSkeleton> {
     public void animate() {
         super.animate();
         GnomadEntity entity = this.parent;
+        int randomizedTickCount = entity.tickCount + ((entity.getId() * 71) % 2000);
+
 
         boolean sitting = entity.isSitting();
         this.sitFactor = Mth.approach(sitFactor, sitting ? 1 : 0, sitting ? 0.05F : 0.025F);
@@ -40,7 +43,7 @@ public class GnomadAnimator extends Animator<GnomadEntity, GnomadSkeleton> {
         this.sitAnim.setTime(sitting ? 0 : 1);
 
         this.idleAnim.setMixFactor(1.0F);
-        this.idleAnim.setTime(entity.tickCount);
+        this.idleAnim.setTime(randomizedTickCount);
 
         float walkAmount = entity.getForwardLocomotionAmount(1.0F),
               strafeAmount = entity.getStrafeLocomotionAmount(1.0F);
@@ -88,7 +91,7 @@ public class GnomadAnimator extends Animator<GnomadEntity, GnomadSkeleton> {
         float shakeAmount = Mth.clamp(-4.0F*normalizedTime*normalizedTime + 4.0F*normalizedTime, 0, 1);
         shakeAmount = shakeAmount * shakeAmount * shakeAmount * shakeAmount * 0.5F;
         this.maskAnim.setMixFactor(shakeAmount);
-        this.maskAnim.setTime(entity.tickCount);
+        this.maskAnim.setTime(randomizedTickCount);
 
         this.skeleton.leftHandPivot.offsetZ(-1);
         this.skeleton.rightHandPivot.offsetZ(-1);
@@ -284,44 +287,95 @@ public class GnomadAnimator extends Animator<GnomadEntity, GnomadSkeleton> {
             boolean standing = time > 0.5F;
 
             float sitFactor = MathUtils.ease(mixFactor, standing ? MathUtils.EasingType.easeInBack : MathUtils.EasingType.easeInOutCubic);
+            float linearSitFactor = MathUtils.ease(mixFactor, standing ? MathUtils.EasingType.easeInCubic : MathUtils.EasingType.easeInOutCubic);
 
-            skeleton.root.offsetY(3 * sitFactor);
-            skeleton.torso.offsetY(-5 * sitFactor);
-            skeleton.rightLeg.offsetY(-5 * sitFactor);
-            skeleton.leftLeg.offsetY(-5 * sitFactor);
+            int sitPose = entity.getSitPose() % 2;
 
-            skeleton.root.rotateDeg(70 * sitFactor, X);
-            skeleton.torso.rotateDeg(-80 * sitFactor, X);
-            skeleton.skirt.rotateDeg(15 * sitFactor, X);
+            if (sitPose == 0) {
+                skeleton.root.offsetY(3 * sitFactor);
+                skeleton.torso.offsetY(-5 * sitFactor);
+                skeleton.rightLeg.offsetY(-5 * sitFactor);
+                skeleton.leftLeg.offsetY(-5 * sitFactor);
 
-            skeleton.neck.rotateDeg(30 * sitFactor, X);
-            skeleton.headJoint.rotateDeg(-20 * sitFactor, X);
+                skeleton.root.rotateDeg(70 * sitFactor, X);
+                skeleton.torso.rotateDeg(-80 * sitFactor, X);
+                skeleton.skirt.rotateDeg(15 * sitFactor, X);
 
-            skeleton.leftArm.rotateDeg(25 * sitFactor, X);
-            skeleton.rightArm.rotateDeg(25 * sitFactor, X);
+                skeleton.neck.rotateDeg(30 * sitFactor, X);
+                skeleton.headJoint.rotateDeg(-20 * sitFactor, X);
 
-            skeleton.rightLeg.rotateDeg(10 * sitFactor, Z);
-            skeleton.leftLeg.rotateDeg(-10 * sitFactor, Z);
+                skeleton.leftArm.rotateDeg(25 * sitFactor, X);
+                skeleton.rightArm.rotateDeg(25 * sitFactor, X);
 
-            int timeExisted = entity.tickCount;
-            skeleton.rightLeg.rotateDeg(nSin(timeExisted * 0.02F) * 2 * sitFactor, Z);
-            skeleton.leftLeg.rotateDeg(nSin(timeExisted * 0.025F) * 2 * sitFactor, Z);
+                skeleton.rightLeg.rotateDeg(10 * sitFactor, Z);
+                skeleton.leftLeg.rotateDeg(-10 * sitFactor, Z);
 
-            if (standing) {
-                float biasedMiddleFactor = nSin(mixFactor * mixFactor);
+                int timeExisted = entity.tickCount;
+                skeleton.rightLeg.rotateDeg(nSin(timeExisted * 0.02F) * 2 * sitFactor, Z);
+                skeleton.leftLeg.rotateDeg(nSin(timeExisted * 0.025F) * 2 * sitFactor, Z);
 
-                skeleton.leftArm.rotateDeg(-20 * biasedMiddleFactor, X);
-                skeleton.rightArm.rotateDeg(-20 * biasedMiddleFactor, X);
+                if (standing) {
+                    float biasedMiddleFactor = nSin(mixFactor * mixFactor);
 
-                skeleton.leftArm.offsetY(-2 * biasedMiddleFactor);
-                skeleton.rightArm.offsetY(-2 * biasedMiddleFactor);
-                skeleton.leftArm.offsetZ(3 * biasedMiddleFactor);
-                skeleton.rightArm.offsetZ(3 * biasedMiddleFactor);
+                    skeleton.leftArm.rotateDeg(-20 * biasedMiddleFactor, X);
+                    skeleton.rightArm.rotateDeg(-20 * biasedMiddleFactor, X);
 
-                skeleton.torso.rotateDeg(-10 * biasedMiddleFactor, X);
-                skeleton.neck.rotateDeg(-10 * biasedMiddleFactor, X);
+                    skeleton.leftArm.offsetY(-2 * biasedMiddleFactor);
+                    skeleton.rightArm.offsetY(-2 * biasedMiddleFactor);
+                    skeleton.leftArm.offsetZ(3 * biasedMiddleFactor);
+                    skeleton.rightArm.offsetZ(3 * biasedMiddleFactor);
+
+                    skeleton.torso.rotateDeg(-10 * biasedMiddleFactor, X);
+                    skeleton.neck.rotateDeg(-10 * biasedMiddleFactor, X);
+                }
+            } else {
+                skeleton.root.offsetY(-8 * linearSitFactor);
+                skeleton.root.offsetZ(-3 * linearSitFactor);
+
+                skeleton.torso.rotateDeg(20 * sitFactor, X);
+                skeleton.skirt.rotateDeg(15 * sitFactor, X);
+                int leftiness = (entity.isLeftHanded() ? -1 : 1);
+                skeleton.torso.rotateDeg(6 * sitFactor * -leftiness, Z);
+
+                skeleton.neck.rotateDeg(-6 * sitFactor * -leftiness, Z);
+                skeleton.neck.rotateDeg(-20 * sitFactor, X);
+
+                Bone dominantHand = entity.isLeftHanded() ? skeleton.leftArm : skeleton.rightArm;
+                Bone nonDominantHand = entity.isLeftHanded() ? skeleton.rightArm : skeleton.leftArm;
+
+                dominantHand.rotation.slerp(dominantHand.baseRotation, sitFactor);
+
+                nonDominantHand.rotateDeg(-30 * sitFactor, X);
+                dominantHand.rotateDeg(-30 * sitFactor, X);
+
+                nonDominantHand.rotateDeg(5 * sitFactor * -leftiness, Z);
+                dominantHand.rotateDeg(20 * sitFactor * leftiness, Z);
+
+                dominantHand.offsetY(-1 * sitFactor);
+                dominantHand.offsetZ(1.5F * sitFactor);
+                nonDominantHand.offsetY(-1 * sitFactor);
+
+                skeleton.leftLeg.rotateDeg(90 * linearSitFactor, X);
+                skeleton.rightLeg.rotateDeg(90 * linearSitFactor, X);
+
+                skeleton.leftLeg.rotateDeg(-10 * sitFactor, Z);
+                skeleton.rightLeg.rotateDeg(10 * sitFactor, Z);
+
+                if (standing) {
+                    float biasedMiddleFactor = nSin(mixFactor * mixFactor);
+
+                    skeleton.leftArm.rotateDeg(-20 * biasedMiddleFactor, X);
+                    skeleton.rightArm.rotateDeg(-20 * biasedMiddleFactor, X);
+
+                    skeleton.leftArm.offsetY(-2 * biasedMiddleFactor);
+                    skeleton.rightArm.offsetY(-2 * biasedMiddleFactor);
+                    skeleton.leftArm.offsetZ(3 * biasedMiddleFactor);
+                    skeleton.rightArm.offsetZ(3 * biasedMiddleFactor);
+
+                    skeleton.torso.rotateDeg(-10 * biasedMiddleFactor, X);
+                    skeleton.neck.rotateDeg(-10 * biasedMiddleFactor, X);
+                }
             }
-
         }
     }
 

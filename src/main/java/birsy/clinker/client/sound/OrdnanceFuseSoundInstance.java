@@ -7,11 +7,13 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 
 import java.util.function.Supplier;
 
-
+@OnlyIn(Dist.CLIENT)
 public class OrdnanceFuseSoundInstance extends AbstractTickableSoundInstance {
     private final Entity entity;
     private final float maxFuseTime;

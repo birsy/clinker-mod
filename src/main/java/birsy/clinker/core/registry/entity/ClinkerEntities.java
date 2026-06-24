@@ -12,7 +12,6 @@ import birsy.clinker.common.world.entity.gnomad.mogul.GnomadMogulEntity;
 import birsy.clinker.common.world.entity.gnomad.GnomadRuntEntity;
 import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
 import birsy.clinker.common.world.entity.homunculoids.SpitterHomunculoid;
-import birsy.clinker.common.world.entity.mold.MoldEntity;
 import birsy.clinker.common.world.entity.projectile.*;
 import birsy.clinker.core.Clinker;
 import net.minecraft.client.renderer.entity.FallingBlockRenderer;
@@ -64,11 +63,6 @@ public class ClinkerEntities {
                     .noSave()
                     .build(Clinker.resource("red_lightning_bolt").toString()));
 
-    public static final Supplier<EntityType<MoldEntity>> MOLD = ENTITY_TYPES.register("mold", () ->
-            EntityType.Builder.of(MoldEntity::new, MobCategory.MONSTER)
-                    .sized(1.0F, 1.0F)
-                    .build(Clinker.resource("mold").toString()));
-
     public static final Supplier<EntityType<ColliderEntity<?>>> COLLIDER = ENTITY_TYPES.register("collider", () ->
             EntityType.Builder.<ColliderEntity<?>>of(ColliderEntity::new, MobCategory.MISC)
                     .sized(1.0F, 1.0F).noSave().noSummon()
@@ -78,11 +72,6 @@ public class ClinkerEntities {
             EntityType.Builder.of(FallingLayerEntity::new, MobCategory.MISC)
                     .sized(1.0f, 1.0f)
                     .build(Clinker.resource("falling_layer").toString()));
-
-    public static final Supplier<EntityType<TestRopeEntity>> TEST_ROPE = ENTITY_TYPES.register("test_rope", () ->
-            EntityType.Builder.of(TestRopeEntity::new, MobCategory.CREATURE)
-                    .sized(0.5F, 0.5F)
-                    .build(Clinker.resource("test_rope").toString()));
 
     public static final Supplier<EntityType<SpitterHomunculoid>> SPITTER_HOMUNCULOID = ENTITY_TYPES.register("spitter_homunculoid", () ->
             EntityType.Builder.of(SpitterHomunculoid::new, MobCategory.MISC)
@@ -120,10 +109,6 @@ public class ClinkerEntities {
 
     @SubscribeEvent
     public static void registerEntityAttribute(EntityAttributeCreationEvent event) {
-        event.put(TEST_ROPE.get(), Zombie.createAttributes().build());
-
-        event.put(MOLD.get(), MoldEntity.createAttributes().build());
-
         event.put(SPITTER_HOMUNCULOID.get(), SpitterHomunculoid.createAttributes().build());
 
         event.put(AI_TEST.get(), Zombie.createAttributes().build());
@@ -145,12 +130,9 @@ public class ClinkerEntities {
         event.registerEntityRenderer(REROLL_FLASK.get(), ThrownItemRenderer::new);
 
         event.registerEntityRenderer(RED_LIGHTNING_BOLT.get(), RedLightningBoltRenderer::new);
-        
-        event.registerEntityRenderer(MOLD.get(), MoldRenderer::new);
 
         event.registerEntityRenderer(FALLING_LAYER.get(), FallingBlockRenderer::new);
         event.registerEntityRenderer(COLLIDER.get(), NoopRenderer::new);
-        event.registerEntityRenderer(TEST_ROPE.get(), DebugRopeEntityRenderer::new);
 
         event.registerEntityRenderer(SPITTER_HOMUNCULOID.get(), DebugEntityRenderer::new);
 

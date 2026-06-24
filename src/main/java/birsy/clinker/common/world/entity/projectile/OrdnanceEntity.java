@@ -45,6 +45,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.*;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
@@ -70,6 +72,7 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
 
     protected final Set<Entity> lastEntityCollisions = new HashSet<>(4);
 
+    @OnlyIn(Dist.CLIENT)
     private OrdnanceFuseSoundInstance fuseSound;
 
     boolean xCollision, zCollision;
@@ -615,21 +618,7 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
         if (modifier == null) return;
 
         if (this.level().isClientSide()) {
-            this.createFuseParticles();
-            // todo: 'fuse pulse'
-            if (this.getFuseTime() < modifier.getFuseTicks()) {
-                // create a fuse sound if it should be playing
-                if (this.fuseSound == null) {
-                    this.fuseSound = new OrdnanceFuseSoundInstance(this, this.getMaxFuseTime(), () -> (float)this.getFuseTime());
-                    Minecraft.getInstance().getSoundManager().play(this.fuseSound);
-                }
-            } else {
-                // and remove it if it shouldn't...
-                if (this.fuseSound != null) {
-                    this.fuseSound.stopPlaying();
-                    this.fuseSound = null;
-                }
-            }
+            updateFuseClient(modifier);
             return;
         }
 
@@ -646,6 +635,24 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
                         SoundEvents.SQUID_SQUIRT, this.getSoundSource(),
                         0.5F, 1.8F
                 );
+            }
+        }
+    }
+    @OnlyIn(Dist.CLIENT)
+    public void updateFuseClient(FuseTimeModifier modifier) {
+        this.createFuseParticles();
+        // todo: 'fuse pulse'
+        if (this.getFuseTime() < modifier.getFuseTicks()) {
+            // create a fuse sound if it should be playing
+            if (this.fuseSound == null) {
+                this.fuseSound = new OrdnanceFuseSoundInstance(this, this.getMaxFuseTime(), () -> (float)this.getFuseTime());
+                Minecraft.getInstance().getSoundManager().play(this.fuseSound);
+            }
+        } else {
+            // and remove it if it shouldn't...
+            if (this.fuseSound != null) {
+                this.fuseSound.stopPlaying();
+                this.fuseSound = null;
             }
         }
     }

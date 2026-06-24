@@ -31,8 +31,6 @@ public class ClinkerBlocks
     // Blocks
     //Alchemy
     public static final DeferredBlock<Block> FERMENTATION_BARREL = createBlock("fermentation_barrel", FermentationBarrelBlock::new);
-    public static final DeferredBlock<Block> COUNTER = createBlock("counter", () -> new CounterBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GRAY).strength(1.0f, 2.0f).sound(SoundType.WOOD)));
-    
     public static final DeferredBlock<Block> STOVE = createBlock("stove", () -> new StoveControllerBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BRICKS).sound(SoundType.NETHER_BRICKS)));
     public static final DeferredBlock<Block> STOVE_DUMMY = createBlockNoItem("stove_dummy", () -> new StoveBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BRICKS).sound(SoundType.NETHER_BRICKS)));
     public static final DeferredBlock<Block> STOVE_CHIMNEY = createBlockNoItem("stove_chimney", () -> new StoveChimneyBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BRICKS).sound(SoundType.NETHER_BRICKS).noOcclusion()));

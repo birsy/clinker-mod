@@ -3,6 +3,7 @@ package birsy.clinker.client.render.world;
 import birsy.clinker.client.render.world.cloud.OthershoreCloudRenderer;
 import birsy.clinker.common.world.level.weather.ClientOthershoreWeatherSystem;
 import birsy.clinker.common.world.level.weather.OthershoreWeatherSystem;
+import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -19,6 +20,8 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.RegisterDimensionSpecialEffectsEvent;
 import org.jetbrains.annotations.Nullable;
 import org.joml.*;
 
