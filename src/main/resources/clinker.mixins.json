@@ -12,8 +12,6 @@
     "client.EntityRenderDispatcherMixin",
     "client.FogRendererMixin",
     "client.FontMixin",
-    "client.GameRendererMixin",
-    "client.GuiMixin",
     "client.ItemBlockRenderTypesMixin",
     "client.LevelRendererMixin",
     "client.LightTextureMixin",
