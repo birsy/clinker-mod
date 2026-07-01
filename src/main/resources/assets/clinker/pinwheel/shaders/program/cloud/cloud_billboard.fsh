@@ -23,11 +23,6 @@ in vec4 billboardRandom;
 out vec4 fragColor;
 
 void main() {
-    vec2 screenUv = gl_FragCoord.xy / (ScreenSize * 0.5);
-    float sceneDepth = texture(MainDepthSampler, screenUv).r;
-    vec4 scenePos = screenToViewSpace(screenUv, sceneDepth);
-    float sceneDist = length(scenePos.xyz);
-
     vec2 pixellatedTexCoord = texCoord * billboardRadius;
     // rotate it!
     float angle = billboardRandom.y * 3.141592 * 2 * 1582.4832 + GameTime * 300 * mix(0.1, 1.0, billboardRandom.w);

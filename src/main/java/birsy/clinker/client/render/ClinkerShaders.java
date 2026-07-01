@@ -15,17 +15,23 @@ import java.util.Objects;
 
 @EventBusSubscriber(value = Dist.CLIENT, modid = Clinker.MOD_ID)
 public class ClinkerShaders {
-    // veil shaders
     public static final ResourceLocation PAGE_TEXTURE = Clinker.resource("page/texture");
     public static final ResourceLocation VOLUME = Clinker.resource("volume/volume");
 
-    public static final ResourceLocation CLOUD = Clinker.resource("cloud/cloud");
+    // sky stuffs
+    public static final ResourceLocation SKY_OUTER_ATMOSPHERE = Clinker.resource("sky/outer_atmosphere");
+    public static final ResourceLocation SKY_OUTER_STARS = Clinker.resource("sky/outer_stars");
+    public static final ResourceLocation SKY_OUTER_CLOUDS = Clinker.resource("sky/outer_clouds");
+
+
+    // cloud stuffs
     public static final ResourceLocation CLOUD_DENSITY = Clinker.resource("cloud/cloud_density");
     public static final ResourceLocation CLOUD_SPRITE = Clinker.resource("cloud/cloud_sprite");
     public static final ResourceLocation CLOUD_COMPOSITE = Clinker.resource("cloud/cloud_composite");
     public static final ResourceLocation CLOUD_LAYER_BACKING = Clinker.resource("cloud/cloud_layer_backing");
     public static final ResourceLocation INSTANCED_CLOUD_BILLBOARD_LAYER = Clinker.resource("cloud/instanced_cloud_billboard_layer");
     public static final ResourceLocation INSTANCED_CLOUD_BILLBOARD_STORMFRONT = Clinker.resource("cloud/instanced_cloud_billboard_stormfront");
+    public static final ResourceLocation CLOUD_BILLBOARD_LAYER = Clinker.resource("cloud/cloud_billboard_layer");
 
     public static final ResourceLocation LIGHT_GREASE = Clinker.resource("light/grease");
     public static final ResourceLocation LIGHT_RIM = Clinker.resource("light/rim");

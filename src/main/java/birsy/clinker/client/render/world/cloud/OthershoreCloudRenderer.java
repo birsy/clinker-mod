@@ -22,6 +22,7 @@ import java.util.List;
 import static com.mojang.blaze3d.platform.GlConst.GL_NEAREST;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11C.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11C.GL_TEXTURE_2D;
 
 public class OthershoreCloudRenderer {
     final List<CloudRendererHolder> cloudRenderers;
@@ -32,7 +33,7 @@ public class OthershoreCloudRenderer {
 
     public OthershoreCloudRenderer() {
         this.cloudRenderers = List.of(
-                new CloudRendererHolder(new UpperLayerCloudRenderer()),
+                new CloudRendererHolder(new ChunkedUpperLayerCloudRenderer()),
                 new CloudRendererHolder(new StormFrontCloudRenderer())
         );
     }
@@ -62,7 +63,6 @@ public class OthershoreCloudRenderer {
     void rebuild(int renderRadius) {
         for (CloudRendererHolder holder : cloudRenderers)
             holder.renderer.rebuild(renderRadius);
-
     }
 
     public void free() {
@@ -72,6 +72,7 @@ public class OthershoreCloudRenderer {
     }
 
     public void render(ClientLevel level, int ticks, float partialTick, PoseStack poseStack, double camX, double camY, double camZ, Matrix4f projectionMatrix, Vector3fc skyColor) {
+        Minecraft.getInstance().getProfiler().push("clinker.draw_clouds");
         if (!initialized) {
             initialize();
         }
@@ -96,7 +97,10 @@ public class OthershoreCloudRenderer {
         ShaderProgram depthBlitShader = VeilRenderSystem.setShader(ClinkerShaders.VEIL_BLIT_DEPTH);
         depthBlitShader.bind();
         depthBlitShader.setDefaultUniforms(VertexFormat.Mode.TRIANGLE_STRIP);
-        depthBlitShader.setFramebufferSamplers(mainFbo);
+        depthBlitShader.setTexture("DiffuseDepthSampler", GL_TEXTURE_2D, mainFbo.getDepthTextureAttachment().getId());
+        depthBlitShader.bindSamplers(0);
+        RenderSystem.depthMask(true);
+        RenderSystem.enableDepthTest();
         VeilRenderSystem.drawScreenQuad();
         ShaderProgram.unbind();
 
@@ -138,6 +142,7 @@ public class OthershoreCloudRenderer {
         composite();
 
         RenderSystem.restoreGlState(backup);
+        Minecraft.getInstance().getProfiler().pop();
     }
 
     void composite() {

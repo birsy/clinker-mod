@@ -1,4 +1,3 @@
-
 uniform sampler2D NoiseSampler;
 uniform float GameTime;
 

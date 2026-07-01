@@ -99,7 +99,6 @@ public class UpperLayerCloudRenderer extends BillboardCloudRenderer {
         }
         backingGridVbo.upload(vertexConsumer.buildOrThrow());
         VertexBuffer.unbind();
-
     }
 
     @Override
@@ -124,7 +123,6 @@ public class UpperLayerCloudRenderer extends BillboardCloudRenderer {
     void render(OthershoreCloudRenderer renderer, ClientLevel level, int ticks, float partialTick, PoseStack poseStack, double camX, double camY, double camZ, Matrix4f projectionMatrix, Vector3fc skyColor) {
         int playerCloudX = Math.floorDiv(Mth.floor(camX), CLOUD_CELL_SIZE),
             playerCloudZ = Math.floorDiv(Mth.floor(camZ), CLOUD_CELL_SIZE);
-
         double camXOffset = camX - (playerCloudX * CLOUD_CELL_SIZE), camZOffset = camZ - (playerCloudZ * CLOUD_CELL_SIZE);
 
         poseStack.pushPose();
