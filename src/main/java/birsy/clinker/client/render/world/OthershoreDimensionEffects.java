@@ -167,16 +167,16 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects implemen
         }
         skyLightColor.mul(1.0F - stormIntensity);
 
-        int i = level.getSkyFlashTime();
-        if (true) {
-            float lightningFlicker = Mth.sin((float) level.getGameTime() + partialTicks);
-            lightningFlicker *= 0.3F * (pixelY / 15.0F);
-            skyLightColor.add(
-                    1.0F * lightningFlicker,
-                    0.2F * lightningFlicker,
-                    0.0F
-            );
-        }
+//        int i = level.getSkyFlashTime();
+//        if (true) {
+//            float lightningFlicker = Mth.sin((float) level.getGameTime() + partialTicks);
+//            lightningFlicker *= 0.3F * (pixelY / 15.0F);
+//            skyLightColor.add(
+//                    1.0F * lightningFlicker,
+//                    0.2F * lightningFlicker,
+//                    0.0F
+//            );
+//        }
 
         colors.set(blockLightColor.x() + skyLightColor.x(), blockLightColor.y() + skyLightColor.y(), blockLightColor.z() + skyLightColor.z());
         float ambientBrightness = 0.02F;
