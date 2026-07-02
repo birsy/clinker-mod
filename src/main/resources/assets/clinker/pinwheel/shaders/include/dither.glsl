@@ -12,3 +12,8 @@ const float dither8x8[64] = float[64](
 float dither(int x, int y, float value) {
     return step(dither8x8[x%8 + (y%8) * 8], value);
 }
+
+float quantizeAndDither(int x, int y, int steps, float value) {
+    float ditherOffset = dither8x8[x%8 + (y%8) * 8];
+    return floor(value * steps + ditherOffset) / float(steps);
+}

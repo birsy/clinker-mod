@@ -27,6 +27,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterDimensionSpecialEffectsEvent;
 import net.neoforged.neoforge.client.event.RenderHandEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
@@ -40,6 +41,16 @@ public class ClinkerClientEventHandler {
     @SubscribeEvent
     public static void registerDimensionEffects(RegisterDimensionSpecialEffectsEvent event) {
         event.register(Clinker.resource("othershore"), new OthershoreDimensionEffects());
+    }
+
+    @SubscribeEvent
+    public static void onLevelTick(ClientTickEvent.Pre event) {
+        if (Minecraft.getInstance().isPaused()) return;
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return;
+        if (level.effects() instanceof OthershoreDimensionEffects othershoreDimensionEffects) {
+            othershoreDimensionEffects.tick();
+        }
     }
 
     @SubscribeEvent

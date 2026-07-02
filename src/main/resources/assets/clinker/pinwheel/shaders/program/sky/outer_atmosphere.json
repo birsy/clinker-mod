@@ -1,0 +1,8 @@
+{
+  "vertex": "clinker:sky/outer_atmosphere",
+  "fragment": "clinker:sky/outer_atmosphere",
+  "textures": {
+    "NoiseSampler": "clinker:textures/environment/noise.png",
+    "AtmosphereSampler": "clinker:textures/environment/sky.png"
+  }
+}

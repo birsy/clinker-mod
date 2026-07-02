@@ -1,0 +1,16 @@
+{
+  "vertex": "clinker:sky/outer_stars",
+  "fragment": "clinker:sky/outer_stars",
+  "textures": {
+    "StarColorSampler": "clinker:textures/environment/star_color_mature.png",
+    "StarTextureSampler": {
+      "type": "location",
+      "location": "clinker:textures/environment/star.png",
+      "filter": {
+        "wrapX": "clamp_to_edge",
+        "wrapY": "clamp_to_edge",
+        "wrapZ": "clamp_to_edge"
+      }
+    }
+  }
+}

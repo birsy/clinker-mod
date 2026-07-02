@@ -2,6 +2,9 @@ package birsy.clinker.client.render.world.cloud;
 
 import birsy.clinker.client.render.ClinkerFramebuffers;
 import birsy.clinker.client.render.ClinkerShaders;
+import birsy.clinker.client.render.world.OthershoreStormRenderHelper;
+import birsy.clinker.common.world.level.weather.ClientOthershoreWeatherSystem;
+import birsy.clinker.common.world.level.weather.OthershoreWeatherSystem;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
@@ -11,6 +14,7 @@ import foundry.veil.api.client.render.shader.program.ShaderProgram;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.util.Mth;
 import net.neoforged.neoforge.client.GlStateBackup;
 import org.joml.Matrix4f;
 import org.joml.Vector3fc;
@@ -30,6 +34,8 @@ public class OthershoreCloudRenderer {
     VertexBuffer billboardVbo;
     boolean initialized = false;
     int lastRenderRadius = 0;
+
+    double windOffset, prevWindOffset;
 
     public OthershoreCloudRenderer() {
         this.cloudRenderers = List.of(
@@ -73,9 +79,7 @@ public class OthershoreCloudRenderer {
 
     public void render(ClientLevel level, int ticks, float partialTick, PoseStack poseStack, double camX, double camY, double camZ, Matrix4f projectionMatrix, Vector3fc skyColor) {
         Minecraft.getInstance().getProfiler().push("clinker.draw_clouds");
-        if (!initialized) {
-            initialize();
-        }
+        if (!initialized) initialize();
         int renderRadius = getRenderRadius();
         if (renderRadius != lastRenderRadius) {
             lastRenderRadius = renderRadius;
@@ -198,6 +202,23 @@ public class OthershoreCloudRenderer {
 
     private static int getRenderRadius() {
         return Minecraft.getInstance().options.renderDistance().get() * 16 + 8;
+    }
+
+    public void tick() {
+        prevWindOffset = windOffset;
+
+        OthershoreWeatherSystem weatherSystem = ClientOthershoreWeatherSystem.get();
+        if (weatherSystem == null) return;
+        float stormIntensity = OthershoreStormRenderHelper.getStormIntensity(
+                Minecraft.getInstance().gameRenderer.getMainCamera().getPosition().y(),
+                weatherSystem,
+                1.0F
+        );
+        windOffset += stormIntensity;
+    }
+
+    public double getWindOffset(float partialTicks) {
+        return Mth.lerp(partialTicks, prevWindOffset, windOffset);
     }
 
     private static class CloudRendererHolder {

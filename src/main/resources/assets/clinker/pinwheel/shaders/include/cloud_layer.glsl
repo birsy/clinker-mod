@@ -11,14 +11,16 @@ layout(std430) buffer CloudHoles {
 uniform sampler2D CloudDensitySampler;
 uniform float GameTime;
 uniform float RenderRadius;
+uniform float WindOffset;
+uniform int TextureSize;
 
 const float layerOffset = 10.0;
 const float maximumDisplacement = 10.0;
 
 void sampleCloud(ivec2 cloudCenterCellPos, vec2 cloudCenterCellOffset, ivec2 cameraCloudCellPos, vec2 cameraCloudCellOffset, int cloudCellSize, float renderDist, float holeSizeOffset,
                  out float brightness, out float alpha, out float baseOffset, out float displacement) {
-    int textureSize = 8000;
-    vec4 cloudTexture = texture(CloudDensitySampler, (mod(cloudCenterCellPos * cloudCellSize, textureSize) + cloudCenterCellOffset) / float(textureSize));
+    int textureSize = TextureSize;
+    vec4 cloudTexture = texture(CloudDensitySampler, (mod(cloudCenterCellPos * cloudCellSize, textureSize) + cloudCenterCellOffset + vec2(0, -WindOffset)) / float(textureSize));
     float cloudDensity = cloudTexture.a;
 
     vec2 localCenter = (cloudCenterCellPos - cameraCloudCellPos) * cloudCellSize + cloudCenterCellOffset - cameraCloudCellOffset;

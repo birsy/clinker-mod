@@ -22,7 +22,7 @@ public class ClinkerShaders {
     public static final ResourceLocation SKY_OUTER_ATMOSPHERE = Clinker.resource("sky/outer_atmosphere");
     public static final ResourceLocation SKY_OUTER_STARS = Clinker.resource("sky/outer_stars");
     public static final ResourceLocation SKY_OUTER_CLOUDS = Clinker.resource("sky/outer_clouds");
-
+    public static final ResourceLocation SKY_OUTER_MASK = Clinker.resource("sky/outer_mask");
 
     // cloud stuffs
     public static final ResourceLocation CLOUD_DENSITY = Clinker.resource("cloud/cloud_density");

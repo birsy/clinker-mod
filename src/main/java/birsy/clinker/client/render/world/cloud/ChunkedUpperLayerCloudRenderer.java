@@ -27,14 +27,13 @@ import java.util.List;
 public class ChunkedUpperLayerCloudRenderer extends BillboardCloudRenderer {
     public static final int CLOUD_CELL_SIZE = 5, CLOUD_CHUNK_COUNT = 12, CLOUD_CHUNK_SIZE = CLOUD_CELL_SIZE * CLOUD_CHUNK_COUNT;
     public static final int LOWER_CLOUD_HEIGHT = 270, UPPER_CLOUD_HEIGHT = 300, CLOUD_HEIGHT = (LOWER_CLOUD_HEIGHT + UPPER_CLOUD_HEIGHT) / 2;
-
+    public static final int TEXTURE_SIZE = 8000;
     static final float[] LOD_THRESHOLDS = new float[]{ 0.0F, 100.0F, 230.0F };
     final List<CloudChunk>[] cloudChunksByLOD = new List[LOD_THRESHOLDS.length];
     final VertexBuffer[] cloudChunkVboByLOD = new VertexBuffer[LOD_THRESHOLDS.length];
     List<CloudChunk> cloudChunks, chunksToRender;
     DynamicShaderBlock<List<CloudChunk>> cloudChunksBuffer;
     VertexBuffer backingGridVbo;
-    AABB bounds;
     float renderRadius;
 
     @Override
@@ -104,11 +103,6 @@ public class ChunkedUpperLayerCloudRenderer extends BillboardCloudRenderer {
 
         createBackingGrid(renderRadiusInBlocks);
 
-        this.bounds = new AABB(
-                -renderRadiusInBlocks, LOWER_CLOUD_HEIGHT, -renderRadiusInBlocks,
-                renderRadiusInBlocks, UPPER_CLOUD_HEIGHT, renderRadiusInBlocks
-        ).inflate(10);
-
         this.renderRadius = renderRadiusInBlocks;
     }
 
@@ -137,7 +131,12 @@ public class ChunkedUpperLayerCloudRenderer extends BillboardCloudRenderer {
 
     @Override
     AABB getRenderBounds(OthershoreCloudRenderer renderer, double camX, double camY, double camZ, float partialTick) {
-        return bounds.move(camX, 0, camZ);
+        return new AABB(
+                camX - renderRadius - CLOUD_CELL_SIZE, Math.min(camY, LOWER_CLOUD_HEIGHT) - CLOUD_CELL_SIZE,
+                camZ - renderRadius - CLOUD_CELL_SIZE,
+                camX + renderRadius + CLOUD_CELL_SIZE, UPPER_CLOUD_HEIGHT + CLOUD_CELL_SIZE,
+                camZ + renderRadius + CLOUD_CELL_SIZE
+        );
     }
 
     @Override
@@ -178,6 +177,8 @@ public class ChunkedUpperLayerCloudRenderer extends BillboardCloudRenderer {
         cloudShader.getUniformSafe("CloudHeight").setFloat(CLOUD_HEIGHT);
         cloudShader.getUniformSafe("SkyColor").setVector(skyColor.x(), skyColor.y(), skyColor.z(), 1.0F);
         cloudShader.getUniformSafe("RenderRadius").setFloat(renderRadius);
+        cloudShader.getUniformSafe("TextureSize").setInt(TEXTURE_SIZE);
+        cloudShader.getUniformSafe("WindOffset").setFloat((float) (renderer.getWindOffset(partialTick) % TEXTURE_SIZE));
 
         CloudHoleTracker tracker = CloudHoleTracker.getInstance();
         if (tracker != null) tracker.bind();
@@ -261,6 +262,8 @@ public class ChunkedUpperLayerCloudRenderer extends BillboardCloudRenderer {
         backingGridShader.getUniformSafe("CloudHeight").setFloat(CLOUD_HEIGHT);
         backingGridShader.getUniformSafe("AlphaMultiplier").setFloat(fade);
         backingGridShader.getUniformSafe("RenderRadius").setFloat(renderRadius);
+        backingGridShader.getUniformSafe("TextureSize").setInt(TEXTURE_SIZE);
+        backingGridShader.getUniformSafe("WindOffset").setFloat((float) (renderer.getWindOffset(partialTick) % TEXTURE_SIZE));
 
         backingGridVbo.bind();
         backingGridVbo.drawWithShader(pose, projectionMatrix, VeilRenderBridge.toShaderInstance(backingGridShader));
@@ -287,7 +290,7 @@ public class ChunkedUpperLayerCloudRenderer extends BillboardCloudRenderer {
         for (CloudChunk chunk : chunks) {
             AABB aabb = chunk.aabb;
             boolean visible = frustum.cubeInFrustum(
-                    aabb.minX + offsetX, aabb.minY, aabb.minZ + offsetZ,
+                    aabb.minX + offsetX, Math.max(camY, aabb.minY) - CLOUD_CELL_SIZE, aabb.minZ + offsetZ,
                     aabb.maxX + offsetX, aabb.maxY, aabb.maxZ + offsetZ
             );
             chunk.visible = visible;

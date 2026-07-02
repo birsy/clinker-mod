@@ -12,6 +12,7 @@ uniform float FogStart;
 uniform float FogEnd;
 uniform float GameTime;
 uniform vec2 ScreenSize;
+uniform float WindOffset;
 
 in vec2 texCoord;
 in vec4 vertexColor;
@@ -26,6 +27,7 @@ void main() {
     vec2 pixellatedTexCoord = texCoord * billboardRadius;
     // rotate it!
     float angle = billboardRandom.y * 3.141592 * 2 * 1582.4832 + GameTime * 300 * mix(0.1, 1.0, billboardRandom.w);
+    angle += WindOffset * 0.01 * mix(0.0, 1.0, billboardRandom.w) * 3.141592;
     pixellatedTexCoord = vec2(pixellatedTexCoord.x * cos(angle) - pixellatedTexCoord.y * sin(angle), pixellatedTexCoord.x * sin(angle) + pixellatedTexCoord.y * cos(angle));
 
     float pixelsPerBlock = (1 / centerDistance) * 100.0;

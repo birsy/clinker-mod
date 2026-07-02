@@ -1,6 +1,7 @@
 package birsy.clinker.client.render.world;
 
 import birsy.clinker.client.render.world.cloud.OthershoreCloudRenderer;
+import birsy.clinker.client.render.world.sky.OthershoreSkyRenderer2;
 import birsy.clinker.common.world.level.weather.ClientOthershoreWeatherSystem;
 import birsy.clinker.common.world.level.weather.OthershoreWeatherSystem;
 import birsy.clinker.core.Clinker;
@@ -32,11 +33,13 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects implemen
     private final Minecraft mc = Minecraft.getInstance();
 
     OthershoreSkyRenderer skyRenderer;
+    OthershoreSkyRenderer2 skyRenderer2;
     OthershoreCloudRenderer cloudRenderer;
 
     public OthershoreDimensionEffects() {
         super(256.0F, true, SkyType.NORMAL, false, false);
         this.skyRenderer = new OthershoreSkyRenderer(RandomSource.create(1337));
+        this.skyRenderer2 = new OthershoreSkyRenderer2();
         this.cloudRenderer = new OthershoreCloudRenderer();
     }
 
@@ -106,14 +109,16 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects implemen
             float f = player.walkDist - player.walkDistO;
             float f1 = -(player.walkDist + f * partialTick);
             float f2 = Mth.lerp(partialTick, player.oBob, player.bob);
-            stack.translate(Mth.sin(f1 * Mth.PI) * f2 * 0.5F, -Math.abs(Mth.cos(f1 * Mth.PI) * f2), 0.0F);
-            stack.mulPose(Axis.ZP.rotationDegrees(Mth.sin(f1 * Mth.PI) * f2 * 3.0F));
-            stack.mulPose(Axis.XP.rotationDegrees(Math.abs(Mth.cos(f1 * Mth.PI - 0.2F) * f2) * 5.0F));
+            // we actually need to inverse the translation
+            // because the skybox is "infinitely far away, it shouldn't be affected by view bobbing rotation...
+            stack.translate(Mth.sin(f1 * Mth.PI) * f2 * 0.5F * -1, -Math.abs(Mth.cos(f1 * Mth.PI) * f2) * -1, 0.0F);
+            //stack.mulPose(Axis.ZP.rotationDegrees(-0.5f * Mth.sin(f1 * Mth.PI) * f2 * 3.0F));
+            //stack.mulPose(Axis.XP.rotationDegrees(-0.5f * Math.abs(Mth.cos(f1 * Mth.PI - 0.2F) * f2) * 5.0F));
         }
 
         stack.mulPose(modelViewMatrix);
 
-        this.skyRenderer.render(level, ticks, partialTick, stack, camera, projectionMatrix, this.getSkyColor(level, camera.getPosition(), partialTick));
+        this.skyRenderer2.render(level, ticks, partialTick, stack, camera, projectionMatrix, this.getSkyColor(level, camera.getPosition(), partialTick));
         Minecraft.getInstance().getProfiler().pop();
         return true;
     }
@@ -162,6 +167,17 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects implemen
         }
         skyLightColor.mul(1.0F - stormIntensity);
 
+        int i = level.getSkyFlashTime();
+        if (true) {
+            float lightningFlicker = Mth.sin((float) level.getGameTime() + partialTicks);
+            lightningFlicker *= 0.3F * (pixelY / 15.0F);
+            skyLightColor.add(
+                    1.0F * lightningFlicker,
+                    0.2F * lightningFlicker,
+                    0.0F
+            );
+        }
+
         colors.set(blockLightColor.x() + skyLightColor.x(), blockLightColor.y() + skyLightColor.y(), blockLightColor.z() + skyLightColor.z());
         float ambientBrightness = 0.02F;
         if (mc.player.hasEffect(MobEffects.NIGHT_VISION)) {
@@ -178,6 +194,10 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects implemen
     public boolean renderSnowAndRain(ClientLevel level, int ticks, float partialTick, LightTexture lightTexture, double camX, double camY, double camZ) { return true; }
     @Override
     public boolean tickRain(ClientLevel level, int ticks, Camera camera) { return true; }
+
+    public void tick() {
+        this.cloudRenderer.tick();
+    }
 
     @Override
     public void close() throws Exception {
