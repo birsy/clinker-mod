@@ -1,5 +1,7 @@
 package birsy.clinker.client.entity.slabcrab;
 
+import birsy.clinker.client.entity.gnomad.runt.GnomadRuntSkin;
+import birsy.clinker.client.entity.layer.BasicSkinnedEntityLayer;
 import birsy.clinker.common.world.entity.SlabCrabEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -22,21 +24,7 @@ public class SlabCrabRenderer extends NecromancerEntityRenderer<SlabCrabEntity, 
 
     public SlabCrabRenderer(EntityRendererProvider.Context context) {
         super(context, 0.5F);
-        this.addLayer(new NecromancerSkinEntityRenderLayer<>(this) {
-            @Override
-            public RenderType getRenderType(SlabCrabEntity entity) {
-                return VeilRenderType.get(RENDERTYPE, TEXTURE_LOCATION);
-            }
-            @Override
-            public Skin getSkin(SlabCrabEntity parent) {
-                return SlabCrabSkin.INSTANCE;
-            }
-            @Override
-            protected void renderSkin(SlabCrabEntity parent, SlabCrabSkeleton skeleton, Skin skin, RenderType renderType, NecromancerRenderer renderer, MatrixStack matrixStack, int packedLight, float partialTicks) {
-                if (parent.hurtTime > 0 || !parent.isAlive()) renderer.setOverlay(OverlayTexture.RED_OVERLAY_V);
-                super.renderSkin(parent, skeleton, skin, renderType, renderer, matrixStack, packedLight, partialTicks);
-            }
-        });
+        this.addLayer(new BasicSkinnedEntityLayer<>(this, e -> VeilRenderType.get(RENDERTYPE, TEXTURE_LOCATION), e -> SlabCrabSkin.INSTANCE));
     }
 
     @Override

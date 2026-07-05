@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=east,mirrored=false": {
+      "model": "clinker:block/pressure_cooker_head",
+      "y": 90
+    },
+    "facing=east,mirrored=true": {
+      "model": "clinker:block/pressure_cooker_head_mirrored",
+      "y": 90
+    },
+    "facing=north,mirrored=false": {
+      "model": "clinker:block/pressure_cooker_head"
+    },
+    "facing=north,mirrored=true": {
+      "model": "clinker:block/pressure_cooker_head_mirrored"
+    },
+    "facing=south,mirrored=false": {
+      "model": "clinker:block/pressure_cooker_head",
+      "y": 180
+    },
+    "facing=south,mirrored=true": {
+      "model": "clinker:block/pressure_cooker_head_mirrored",
+      "y": 180
+    },
+    "facing=west,mirrored=false": {
+      "model": "clinker:block/pressure_cooker_head",
+      "y": 270
+    },
+    "facing=west,mirrored=true": {
+      "model": "clinker:block/pressure_cooker_head_mirrored",
+      "y": 270
+    }
+  }
+}

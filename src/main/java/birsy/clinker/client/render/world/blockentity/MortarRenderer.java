@@ -28,6 +28,8 @@ public class MortarRenderer<T extends MortarBlockEntity> implements BlockEntityR
         NonNullList<ItemStack> ingredients = pBlockEntity.ingredients;
         for (int i = 0; i < ingredients.size(); i++) {
             ItemStack ingredient = ingredients.get(i);
+            if (ingredient.isEmpty()) continue;
+
             pPoseStack.mulPose(Axis.YP.rotationDegrees(90));
             pPoseStack.pushPose();
             int awfulSeed = ingredient.getItem().toString().length();

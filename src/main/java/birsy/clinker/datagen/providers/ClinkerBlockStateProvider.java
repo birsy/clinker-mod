@@ -1,12 +1,16 @@
 package birsy.clinker.datagen.providers;
 
 import birsy.clinker.common.world.block.MothBallBlock;
+import birsy.clinker.common.world.block.PressureCookerBlock;
 import birsy.clinker.common.world.block.SulfurDuctBlock;
 import birsy.clinker.common.world.block.plant.*;
 import birsy.clinker.core.Clinker;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
+import net.minecraft.data.models.blockstates.PropertyDispatch;
+import net.minecraft.data.models.blockstates.Variant;
+import net.minecraft.data.models.blockstates.VariantProperties;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.properties.*;
@@ -35,6 +39,52 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
         {
             this.simpleBlock(MORTAR.get(), this.models().getExistingFile(modLoc("block/mortar")));
             this.flatBlockItem(MORTAR.get(), modLoc("item/mortar"));
+        }
+
+        // pressure cooker
+        {
+            this.getVariantBuilder(PRESSURE_COOKER.get())
+                    .partialState().with(PressureCookerBlock.FACING, Direction.NORTH).with(PressureCookerBlock.MIRRORED, false).addModels(
+                            ConfiguredModel.builder().modelFile(this.models().getExistingFile(modLoc("block/pressure_cooker_head"))).rotationY(0).buildLast()
+                    ).partialState().with(PressureCookerBlock.FACING, Direction.NORTH).with(PressureCookerBlock.MIRRORED, true).addModels(
+                            ConfiguredModel.builder().modelFile(this.models().getExistingFile(modLoc("block/pressure_cooker_head_mirrored"))).rotationY(0).buildLast()
+                    )
+                    .partialState().with(PressureCookerBlock.FACING, Direction.EAST).with(PressureCookerBlock.MIRRORED, false).addModels(
+                            ConfiguredModel.builder().modelFile(this.models().getExistingFile(modLoc("block/pressure_cooker_head"))).rotationY(90).buildLast()
+                    ).partialState().with(PressureCookerBlock.FACING, Direction.EAST).with(PressureCookerBlock.MIRRORED, true).addModels(
+                            ConfiguredModel.builder().modelFile(this.models().getExistingFile(modLoc("block/pressure_cooker_head_mirrored"))).rotationY(90).buildLast()
+                    )
+                    .partialState().with(PressureCookerBlock.FACING, Direction.SOUTH).with(PressureCookerBlock.MIRRORED, false).addModels(
+                            ConfiguredModel.builder().modelFile(this.models().getExistingFile(modLoc("block/pressure_cooker_head"))).rotationY(180).buildLast()
+                    ).partialState().with(PressureCookerBlock.FACING, Direction.SOUTH).with(PressureCookerBlock.MIRRORED, true).addModels(
+                            ConfiguredModel.builder().modelFile(this.models().getExistingFile(modLoc("block/pressure_cooker_head_mirrored"))).rotationY(180).buildLast()
+                    )
+                    .partialState().with(PressureCookerBlock.FACING, Direction.WEST).with(PressureCookerBlock.MIRRORED, false).addModels(
+                            ConfiguredModel.builder().modelFile(this.models().getExistingFile(modLoc("block/pressure_cooker_head"))).rotationY(270).buildLast()
+                    ).partialState().with(PressureCookerBlock.FACING, Direction.WEST).with(PressureCookerBlock.MIRRORED, true).addModels(
+                            ConfiguredModel.builder().modelFile(this.models().getExistingFile(modLoc("block/pressure_cooker_head_mirrored"))).rotationY(270).buildLast()
+                    );
+            this.getVariantBuilder(PRESSURE_COOKER_BODY.get())
+                    .partialState().with(PressureCookerBlock.FACING, Direction.NORTH).with(PressureCookerBlock.MIRRORED, false).addModels(
+                            ConfiguredModel.builder().modelFile(this.models().getExistingFile(modLoc("block/pressure_cooker_body"))).rotationY(0).buildLast()
+                    ).partialState().with(PressureCookerBlock.FACING, Direction.NORTH).with(PressureCookerBlock.MIRRORED, true).addModels(
+                            ConfiguredModel.builder().modelFile(this.models().getExistingFile(modLoc("block/pressure_cooker_body_mirrored"))).rotationY(0).buildLast()
+                    )
+                    .partialState().with(PressureCookerBlock.FACING, Direction.EAST).with(PressureCookerBlock.MIRRORED, false).addModels(
+                            ConfiguredModel.builder().modelFile(this.models().getExistingFile(modLoc("block/pressure_cooker_body"))).rotationY(90).buildLast()
+                    ).partialState().with(PressureCookerBlock.FACING, Direction.EAST).with(PressureCookerBlock.MIRRORED, true).addModels(
+                            ConfiguredModel.builder().modelFile(this.models().getExistingFile(modLoc("block/pressure_cooker_body_mirrored"))).rotationY(90).buildLast()
+                    )
+                    .partialState().with(PressureCookerBlock.FACING, Direction.SOUTH).with(PressureCookerBlock.MIRRORED, false).addModels(
+                            ConfiguredModel.builder().modelFile(this.models().getExistingFile(modLoc("block/pressure_cooker_body"))).rotationY(180).buildLast()
+                    ).partialState().with(PressureCookerBlock.FACING, Direction.SOUTH).with(PressureCookerBlock.MIRRORED, true).addModels(
+                            ConfiguredModel.builder().modelFile(this.models().getExistingFile(modLoc("block/pressure_cooker_body_mirrored"))).rotationY(180).buildLast()
+                    )
+                    .partialState().with(PressureCookerBlock.FACING, Direction.WEST).with(PressureCookerBlock.MIRRORED, false).addModels(
+                            ConfiguredModel.builder().modelFile(this.models().getExistingFile(modLoc("block/pressure_cooker_body"))).rotationY(270).buildLast()
+                    ).partialState().with(PressureCookerBlock.FACING, Direction.WEST).with(PressureCookerBlock.MIRRORED, true).addModels(
+                            ConfiguredModel.builder().modelFile(this.models().getExistingFile(modLoc("block/pressure_cooker_body_mirrored"))).rotationY(270).buildLast()
+                    );
         }
 
         // barrierrock

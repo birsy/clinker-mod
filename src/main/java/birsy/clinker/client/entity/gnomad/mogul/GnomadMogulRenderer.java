@@ -1,6 +1,8 @@
 package birsy.clinker.client.entity.gnomad.mogul;
 
+import birsy.clinker.client.entity.gnomad.basic.GnomadSkin;
 import birsy.clinker.client.entity.gnomad.mogul.layer.GnomadMogulWeaponRenderLayer;
+import birsy.clinker.client.entity.layer.BasicSkinnedEntityLayer;
 import birsy.clinker.client.entity.layer.DebugSurveyorWheelRenderer;
 import birsy.clinker.common.world.entity.gnomad.mogul.GnomadMogulEntity;
 import birsy.clinker.core.Clinker;
@@ -29,42 +31,16 @@ public class GnomadMogulRenderer extends NecromancerEntityRenderer<GnomadMogulEn
     public GnomadMogulRenderer(EntityRendererProvider.Context context) {
         super(context, 2.0F);
 
-        this.addLayer(new NecromancerSkinEntityRenderLayer<>(this) {
-            @Override
-            public RenderType getRenderType(GnomadMogulEntity entity) {
-                return VeilRenderType.get(RENDERTYPE, TEXTURE_LOCATION);
-            }
-            @Override
-            public Skin getSkin(GnomadMogulEntity parent) {
-                return GnomadMogulSkin.INSTANCE;
-            }
-            @Override
-            protected void renderSkin(GnomadMogulEntity parent, GnomadMogulSkeleton skeleton, Skin skin, RenderType renderType, NecromancerRenderer renderer, MatrixStack matrixStack, int packedLight, float partialTicks) {
-                if (parent.hurtTime > 0 || !parent.isAlive()) renderer.setOverlay(OverlayTexture.RED_OVERLAY_V);
-                super.renderSkin(parent, skeleton, skin, renderType, renderer, matrixStack, packedLight, partialTicks);
-            }
-        });
-
-        this.addLayer(new NecromancerSkinEntityRenderLayer<>(this) {
-            @Override
-            public RenderType getRenderType(GnomadMogulEntity entity) {
-                return VeilRenderType.get(CLOAK_RENDERTYPE, ROBE_TEXTURE_LOCATION);
-            }
-            @Override
-            public Skin getSkin(GnomadMogulEntity parent) {
-                return GnomadMogulSkin.INSTANCE;
-            }
-            @Override
-            protected void renderSkin(GnomadMogulEntity parent, GnomadMogulSkeleton skeleton, Skin skin, RenderType renderType, NecromancerRenderer renderer, MatrixStack matrixStack, int packedLight, float partialTicks) {
-                if (parent.hurtTime > 0 || !parent.isAlive()) renderer.setOverlay(OverlayTexture.RED_OVERLAY_V);
-                int packedRobeColor = parent.getRobeColor();
-                if (packedRobeColor == 0) packedRobeColor = 0x4d423c;
-                Vec3 robeColor = Vec3.fromRGB24(packedRobeColor);
-                renderer.setColor((float) robeColor.x, (float) robeColor.y, (float) robeColor.z, 1.0F);
-                super.renderSkin(parent, skeleton, skin, renderType, renderer, matrixStack, packedLight, partialTicks);
-            }
-        });
-
+        this.addLayer(new BasicSkinnedEntityLayer<>(this, e -> VeilRenderType.get(RENDERTYPE, TEXTURE_LOCATION), e -> GnomadMogulSkin.INSTANCE));
+        this.addLayer(new BasicSkinnedEntityLayer<>(this,
+                e -> VeilRenderType.get(CLOAK_RENDERTYPE, ROBE_TEXTURE_LOCATION), e -> GnomadMogulSkin.INSTANCE)
+                .preRender((entity, skin, renderer) -> {
+                    int packedRobeColor = entity.getRobeColor();
+                    if (packedRobeColor == 0) packedRobeColor = 0x4d423c;
+                    Vec3 robeColor = Vec3.fromRGB24(packedRobeColor);
+                    renderer.setColor((float) robeColor.x, (float) robeColor.y, (float) robeColor.z, 1.0F);
+                })
+        );
         this.addLayer(new GnomadMogulWeaponRenderLayer(this));
         this.addLayer(new DebugSurveyorWheelRenderer<>(this, (entity) -> entity.getAnimator().stepCounter));
     }

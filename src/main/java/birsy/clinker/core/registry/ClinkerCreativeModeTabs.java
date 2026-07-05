@@ -206,6 +206,7 @@ public class ClinkerCreativeModeTabs {
 
         pOutput.accept(MORTAR.get());
         pOutput.accept(PESTLE.get());
+        pOutput.accept(PRESSURE_COOKER.get());
 
         pOutput.accept(RAW_LEAD.get());
         pOutput.accept(LEAD_INGOT.get());

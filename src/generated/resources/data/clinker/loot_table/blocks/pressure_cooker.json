@@ -11,11 +11,11 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "clinker:counter"
+          "name": "clinker:pressure_cooker"
         }
       ],
       "rolls": 1.0
     }
   ],
-  "random_sequence": "clinker:blocks/counter"
+  "random_sequence": "clinker:blocks/pressure_cooker"
 }

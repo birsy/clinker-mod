@@ -1,5 +1,6 @@
 package birsy.clinker.client.entity.gnomad.basic;
 
+import birsy.clinker.client.entity.layer.BasicSkinnedEntityLayer;
 import birsy.clinker.client.entity.layer.DebugSurveyorWheelRenderer;
 import birsy.clinker.client.entity.layer.HeldItemsLayer;
 import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
@@ -23,23 +24,7 @@ public class GnomadRenderer extends NecromancerEntityRenderer<GnomadEntity, Gnom
     public GnomadRenderer(EntityRendererProvider.Context context) {
         super(context, 0.5F);
 
-        this.addLayer(new NecromancerSkinEntityRenderLayer<>(this) {
-            @Override
-            public RenderType getRenderType(GnomadEntity entity) {
-                return VeilRenderType.get(RENDERTYPE, TEXTURE_LOCATION);
-            }
-
-            @Override
-            public Skin getSkin(GnomadEntity parent) {
-                return GnomadSkin.INSTANCE;
-            }
-
-            @Override
-            protected void renderSkin(GnomadEntity parent, GnomadSkeleton skeleton, Skin skin, RenderType renderType, NecromancerRenderer renderer, MatrixStack matrixStack, int packedLight, float partialTicks) {
-                if (parent.hurtTime > 0 || !parent.isAlive()) renderer.setOverlay(OverlayTexture.RED_OVERLAY_V);
-                super.renderSkin(parent, skeleton, skin, renderType, renderer, matrixStack, packedLight, partialTicks);
-            }
-        });
+        this.addLayer(new BasicSkinnedEntityLayer<>(this, e -> VeilRenderType.get(RENDERTYPE, TEXTURE_LOCATION), e -> GnomadSkin.INSTANCE));
         this.addLayer(new HeldItemsLayer<>(this));
         this.addLayer(new DebugSurveyorWheelRenderer<>(this, (entity) -> entity.getAnimator().stepCounter));
     }

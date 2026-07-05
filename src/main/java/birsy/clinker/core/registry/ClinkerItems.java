@@ -101,7 +101,7 @@ public class ClinkerItems
             )
     );
 
-    public static final DeferredItem<Item> PESTLE = ITEMS.registerSimpleItem("pestle", new Item.Properties().stacksTo(1));
+    public static final DeferredItem<PestleItem> PESTLE = ITEMS.register("pestle", () -> new PestleItem(new Item.Properties().stacksTo(1)));
 
     public static final Tier TOOL_TIER_LEAD = new ToolTier(
             Tiers.IRON.getIncorrectBlocksForDrops(), 6144, Tiers.IRON.getSpeed(), Tiers.IRON.getAttackDamageBonus(), 0,

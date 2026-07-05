@@ -2,10 +2,12 @@ package birsy.clinker.common.world.block;
 
 import birsy.clinker.common.world.block.blockentity.MortarBlockEntity;
 import birsy.clinker.common.world.item.PestleItem;
+import birsy.clinker.core.Clinker;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -53,12 +55,12 @@ public class MortarBlock extends Block implements EntityBlock {
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         if (stack.getItem() instanceof PestleItem)
             return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof MortarBlockEntity mortarBlockEntity) {
-            if (!stack.isEmpty() && mortarBlockEntity.addItem(stack)) {
+            if (!stack.isEmpty() && mortarBlockEntity.addItem(player, stack)) {
                 level.playSound(player, player.getX(), player.getY(), player.getZ(), SoundEvents.ITEM_FRAME_ADD_ITEM, SoundSource.PLAYERS, 0.2F, Mth.lerp(player.getRandom().nextFloat(), 1.3F, 1.6F));
                 level.playSound(player, player.getX(), player.getY(), player.getZ(), SoundEvents.BASALT_HIT, SoundSource.PLAYERS, 0.2F, Mth.lerp(player.getRandom().nextFloat(), 1.5F, 1.6F));
-
                 return ItemInteractionResult.SUCCESS;
             }
         }
@@ -69,12 +71,14 @@ public class MortarBlock extends Block implements EntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         BlockEntity blockEntity = level.getBlockEntity(pos);
+
         if (blockEntity instanceof MortarBlockEntity mortarBlockEntity) {
             ItemStack stack = mortarBlockEntity.removeItemStack();
             if (stack.isEmpty())
                 return InteractionResult.PASS;
-            if (!player.addItem(stack))
+            if (!player.addItem(stack) && !level.isClientSide())
                 spawnItem(stack, pos, level);
+
             level.playSound(player, player.getX(), player.getY(), player.getZ(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F, Mth.lerp(player.getRandom().nextFloat(), 1.3F, 1.6F));
             level.playSound(player, player.getX(), player.getY(), player.getZ(), SoundEvents.BASALT_HIT, SoundSource.PLAYERS, 0.2F, Mth.lerp(player.getRandom().nextFloat(), 2.0F, 2.2F));
             return InteractionResult.SUCCESS;
@@ -102,6 +106,7 @@ public class MortarBlock extends Block implements EntityBlock {
                 level.random.triangle(0.0F, 0.1F)
         );
         itemEntity.setDefaultPickUpDelay();
+        level.addFreshEntity(itemEntity);
     }
 
     @Override

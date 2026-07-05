@@ -1,6 +1,7 @@
 package birsy.clinker.core.registry.entity;
 
 import birsy.clinker.client.render.world.blockentity.*;
+import birsy.clinker.common.world.block.PressureCookerBlock;
 import birsy.clinker.common.world.block.blockentity.*;
 import birsy.clinker.common.world.block.blockentity.fairyfruit.FairyFruitBlockEntity;
 import birsy.clinker.core.Clinker;
@@ -38,12 +39,16 @@ public class ClinkerBlockEntities {
     public static final Supplier<BlockEntityType<MortarBlockEntity>> MORTAR = BLOCK_ENTITY_TYPES.register("mortar",
             () -> BlockEntityType.Builder.of(MortarBlockEntity::new, ClinkerBlocks.MORTAR.get()).build(null));
 
+    public static final Supplier<BlockEntityType<PressureCookerBlockEntity>> PRESSURE_COOKER = BLOCK_ENTITY_TYPES.register("pressure_cooker",
+            () -> BlockEntityType.Builder.of(PressureCookerBlockEntity::new, ClinkerBlocks.PRESSURE_COOKER.get()).build(null));
+
     public static void registerTileEntityRenderers() {
         BlockEntityRenderers.register(ClinkerBlockEntities.FERMENTATION_BARREL.get(), FermentationBarrelRenderer::new);
         BlockEntityRenderers.register(ClinkerBlockEntities.SARCOPHAGUS_INNARDS.get(), SarcophagusInnardsRenderer::new);
         BlockEntityRenderers.register(ClinkerBlockEntities.STOVE.get(), StoveRenderer::new);
         BlockEntityRenderers.register(ClinkerBlockEntities.FAIRY_FRUIT.get(), FairyFruitRenderer::new);
         BlockEntityRenderers.register(ClinkerBlockEntities.MORTAR.get(), MortarRenderer::new);
+        BlockEntityRenderers.register(ClinkerBlockEntities.PRESSURE_COOKER.get(), PressureCookerRenderer::new);
     }
 
     @SubscribeEvent
