@@ -6,7 +6,7 @@
       "count": {
         "type": "minecraft:biased_to_bottom",
         "min_inclusive": 0,
-        "max_inclusive": 2
+        "max_inclusive": 3
       }
     },
     {
@@ -19,11 +19,15 @@
     {
       "type": "clinker:height_filter",
       "min_inclusive": {
-        "absolute": 104
+        "absolute": 102
       },
       "max_inclusive": {
         "below_top": 0
       }
+    },
+    {
+      "type": "minecraft:surface_water_depth_filter",
+      "max_water_depth": 0
     },
     {
       "type": "clinker:heightmap_steepness_filter",

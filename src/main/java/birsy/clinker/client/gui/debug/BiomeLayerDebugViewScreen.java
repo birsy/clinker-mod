@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.core.QuartPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
@@ -71,7 +72,7 @@ public class BiomeLayerDebugViewScreen extends Screen {
         if (dirty) rebuildMap();
         if (pendingImage != null) applyBuiltMap();
 
-        PANORAMA.render(gfx, this.width, this.height, 1, partialTick);
+        renderBackground(gfx, mouseX, mouseY, partialTick);
         gfx.fillGradient(0, 0, width, height, 0x80FFFFFF, 0x80000000);
 
         int offsetX = this.width / 2 - HALF_MAP_SIZE, offsetY = this.height / 2 - HALF_MAP_SIZE;
@@ -99,7 +100,7 @@ public class BiomeLayerDebugViewScreen extends Screen {
                 mouseX + 10, mouseY + 10,
                 0xFFFFFF
         );
-        ProtoBiome protoBiome = resolver.getProtoBiome(blockX, blockZ, viewingLayer);
+        ProtoBiome protoBiome = resolver.getProtoBiome(QuartPos.fromBlock(blockX), QuartPos.fromBlock(blockZ), viewingLayer);
         gfx.drawString(
                 font,
                 ClinkerRegistries.PROTO_BIOME_REGISTRY.getKey(protoBiome).getPath(),
@@ -117,15 +118,29 @@ public class BiomeLayerDebugViewScreen extends Screen {
             newCenterX = centerX - (dragDeltaX * blocksPerPixel);
             newCenterZ = centerZ - (dragDeltaY * blocksPerPixel);
             currentTask = EXECUTOR.submit(() -> {
+                int minBlockX = newCenterX - HALF_MAP_SIZE * blocksPerPixel;
+                int maxBlockX = newCenterX + (HALF_MAP_SIZE - 1) * blocksPerPixel;
+                int minBlockZ = newCenterZ - HALF_MAP_SIZE * blocksPerPixel;
+                int maxBlockZ = newCenterZ + (HALF_MAP_SIZE - 1) * blocksPerPixel;
+
+                int minQX = QuartPos.fromBlock(minBlockX), maxQX = QuartPos.fromBlock(maxBlockX) + 1;
+                int minQZ = QuartPos.fromBlock(minBlockZ), maxQZ = QuartPos.fromBlock(maxBlockZ) + 1;
+                int areaSizeX = maxQX - minQX;
+
+                if (Thread.currentThread().isInterrupted()) return null;
+                ProtoBiome[] area = resolver.getProtoBiomeArea(minQX, minQZ, maxQX, maxQZ, viewingLayer);
+
                 NativeImage image = new NativeImage(MAP_SIZE, MAP_SIZE, false);
                 for (int z = 0; z < MAP_SIZE; z++) {
                     if (Thread.currentThread().isInterrupted()) return null;
 
                     int blockZ = newCenterZ + (z - HALF_MAP_SIZE) * blocksPerPixel;
+                    int qZ = QuartPos.fromBlock(blockZ) - minQZ;
                     for (int x = 0; x < MAP_SIZE; x++) {
                         int blockX = newCenterX + (x - HALF_MAP_SIZE) * blocksPerPixel;
+                        int qX = QuartPos.fromBlock(blockX) - minQX;
 
-                        ProtoBiome proto = resolver.getProtoBiome(blockX, blockZ, viewingLayer);
+                        ProtoBiome proto = area[qX + qZ * areaSizeX];
                         int color = protoBiomeColor(proto);
                         image.setPixelRGBA(x, z, color);
                     }
@@ -223,8 +238,8 @@ public class BiomeLayerDebugViewScreen extends Screen {
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
-    private static int protoBiomeColor(ProtoBiome proto) {
-        int hash = proto.id * 0x9E3779B9;
+    private static int protoBiomeColor(ProtoBiome protoBiome) {
+        int hash = protoBiome.id * 0x9E3779B9;
         int r = (hash >> 16) & 0xFF;
         int g = (hash >> 8) & 0xFF;
         int b = hash & 0xFF;

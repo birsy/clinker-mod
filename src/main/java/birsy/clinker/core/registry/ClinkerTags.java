@@ -24,6 +24,8 @@ public class ClinkerTags {
         public static final TagKey<Item> NOT_BUOYANT = ItemTags.create(Clinker.resource("not_buoyant"));
         public static final TagKey<Item> ALCHEMISTS_CROSSBOW_REPAIRABLE = ItemTags.create(Clinker.resource("alchemists_crossbow_repairable"));
         public static final TagKey<Item> BASALT = ItemTags.create(Clinker.resource("basalt"));
+        public static final TagKey<Item> SALTMOSS_PLANTS = ItemTags.create(Clinker.resource("saltmoss_plants"));
+
     }
 
     public static class Entities {
@@ -35,10 +37,6 @@ public class ClinkerTags {
 
     public static final class DamageTypes {
         public static final TagKey<DamageType> THORNY = TagKey.create(Registries.DAMAGE_TYPE, Clinker.resource("thorny"));
-    }
-
-    public static final class GameEvents {
-        public static final TagKey<GameEvent> GNOMAD_CALLOUTS = TagKey.create(Registries.GAME_EVENT, Clinker.resource("gnomad_callouts"));
     }
 
     public static class OrdnanceModifiers {

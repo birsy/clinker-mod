@@ -6,7 +6,7 @@
       "item": "clinker:calc"
     },
     "S": {
-      "item": "clinker:saltmoss_sprouts"
+      "tag": "clinker:saltmoss_plants"
     }
   },
   "pattern": [

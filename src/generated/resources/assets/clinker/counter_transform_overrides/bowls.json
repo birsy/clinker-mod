@@ -1,0 +1,19 @@
+{
+  "apply_to": [
+    "minecraft:bowl",
+    "minecraft:mushroom_stew",
+    "minecraft:suspicious_stew",
+    "minecraft:rabbit_stew",
+    "minecraft:beetroot_soup"
+  ],
+  "stack_offset": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "stack_offset_randomization": [
+    0.05,
+    0.03,
+    0.05
+  ]
+}

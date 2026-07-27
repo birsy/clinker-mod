@@ -35,10 +35,19 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
             this.simpleBlockWithItem(SALTPETRE_LEACHED_DIRT.get(), cubeAllOverlay(name, modLoc("block/" + name), modLoc("block/" + name + "_crystals")));
         }
 
-        // mortar
+        // misc alchemy stuffs
         {
             this.simpleBlock(MORTAR.get(), this.models().getExistingFile(modLoc("block/mortar")));
             this.flatBlockItem(MORTAR.get(), modLoc("item/mortar"));
+
+            this.simpleBlockWithItem(COUNTER.get(),
+                    this.models().cubeBottomTop(
+                            "counter",
+                            modLoc("block/counter_side"),
+                            modLoc("block/counter_bottom"),
+                            modLoc("block/counter_top")
+                    )
+            );
         }
 
         // pressure cooker
@@ -677,6 +686,18 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
                     1, false, false
             );
             this.flatBlockItem(SALTMOSS_SPROUTS.get());
+
+            String tallSaltmossSproutsName = name(TALL_SALTMOSS_SPROUTS.get());
+            this.simpleBlockWithVariationAndTransformation(
+                    TALL_SALTMOSS_SPROUTS.get(),
+                    (i) -> this.cross(TALL_SALTMOSS_SPROUTS.get())
+                            .renderType("cutout"),
+                    (i) -> this.crossMirrored(tallSaltmossSproutsName + "_mirrored",
+                                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + tallSaltmossSproutsName))
+                            .renderType("cutout"),
+                    1, false, false
+            );
+            this.flatBlockItem(TALL_SALTMOSS_SPROUTS.get());
 
             String driedSaltmossName = name(DRIED_SALTMOSS_SPROUTS.get());
             this.simpleBlockWithVariationAndTransformation(

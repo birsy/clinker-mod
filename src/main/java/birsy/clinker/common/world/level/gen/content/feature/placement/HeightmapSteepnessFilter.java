@@ -48,25 +48,14 @@ public class HeightmapSteepnessFilter extends PlacementFilter {
         int y = context.getHeight(this.heightmap, pos.getX(), pos.getZ());
         int maxSteepness = this.maxGradient.sample(random);
 
-        if (!inverted) {
-            for (int i = radius - 1; i >= 0; i--) {
-                for (int j = 0; j < OFFSETS.length; j += 2) {
-                    int offsetY = context.getHeight(this.heightmap, pos.getX() + OFFSETS[j] * i, pos.getZ() + OFFSETS[j + 1] * i);
-                    if (Math.abs(offsetY - y) > maxSteepness) return false;
-                }
+        for (int i = 1; i <= radius; i++) {
+            for (int j = 0; j < OFFSETS.length; j += 2) {
+                int offsetY = context.getHeight(this.heightmap, pos.getX() + OFFSETS[j] * i, pos.getZ() + OFFSETS[j + 1] * i);
+                if (Math.abs(offsetY - y) >= maxSteepness)
+                    return inverted;
             }
-            return true;
-        } else {
-            int maximumFoundSteepness = 0;
-            for (int i = radius - 1; i >= 0; i--) {
-                for (int j = 0; j < OFFSETS.length; j += 2) {
-                    int offsetY = context.getHeight(this.heightmap, pos.getX() + OFFSETS[j] * i, pos.getZ() + OFFSETS[j + 1] * i);
-                    offsetY = Math.abs(offsetY - y);
-                    if (maximumFoundSteepness <= offsetY) maximumFoundSteepness = offsetY;
-                }
-            }
-            return maximumFoundSteepness >= maxSteepness;
         }
+        return !inverted;
     }
 
     @Override

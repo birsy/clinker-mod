@@ -1,5 +1,6 @@
 package birsy.clinker.core.registry;
 
+import birsy.clinker.client.render.world.blockentity.CounterRenderer;
 import birsy.clinker.core.Clinker;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.registries.Registries;

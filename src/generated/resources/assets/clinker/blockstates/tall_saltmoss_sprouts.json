@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "clinker:block/tall_saltmoss_sprouts"
+      },
+      {
+        "model": "clinker:block/tall_saltmoss_sprouts_mirrored"
+      }
+    ]
+  }
+}

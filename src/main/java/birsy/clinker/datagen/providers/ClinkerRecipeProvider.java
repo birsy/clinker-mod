@@ -1,7 +1,6 @@
 package birsy.clinker.datagen.providers;
 
 import birsy.clinker.core.Clinker;
-import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.ClinkerTags;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
@@ -44,9 +43,9 @@ public class ClinkerRecipeProvider extends RecipeProvider {
                 .bricks(CALC_BRICKS, CALC_BRICK_SLAB, CALC_BRICK_STAIRS, CALC_BRICK_WALL)
                 .build();
 
-        // silly saltmoss recipe
+        // silly saltmoss recipes
         ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, SALTMOSS)
-                .define('C', CALC).define('S', SALTMOSS_SPROUTS)
+                .define('C', CALC).define('S', ClinkerTags.Items.SALTMOSS_PLANTS)
                 .pattern("S")
                 .pattern("C")
                 .unlockedBy(getHasName(SALTMOSS_SPROUTS), has(SALTMOSS_SPROUTS)).save(output);

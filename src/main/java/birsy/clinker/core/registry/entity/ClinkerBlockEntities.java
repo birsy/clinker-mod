@@ -13,6 +13,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
@@ -21,25 +22,28 @@ import java.util.function.Supplier;
 public class ClinkerBlockEntities {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, Clinker.MOD_ID);
 
-    public static final Supplier<BlockEntityType<SarcophagusBlockEntity>> SARCOPHAGUS_INNARDS = BLOCK_ENTITY_TYPES.register("sarcophagus_innards",
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SarcophagusBlockEntity>> SARCOPHAGUS_INNARDS = BLOCK_ENTITY_TYPES.register("sarcophagus_innards",
             () -> BlockEntityType.Builder.of(SarcophagusBlockEntity::new, ClinkerBlocks.BLANK_SARCOPHAGUS.get()).build(null));
 
-    public static final Supplier<BlockEntityType<FermentationBarrelBlockEntity>> FERMENTATION_BARREL = BLOCK_ENTITY_TYPES.register("fermentation_barrel",
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FermentationBarrelBlockEntity>> FERMENTATION_BARREL = BLOCK_ENTITY_TYPES.register("fermentation_barrel",
             () -> BlockEntityType.Builder.of(FermentationBarrelBlockEntity::new, ClinkerBlocks.FERMENTATION_BARREL.get()).build(null));
 
-    public static final Supplier<BlockEntityType<StoveBlockEntity>> STOVE = BLOCK_ENTITY_TYPES.register("stove",
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<StoveBlockEntity>> STOVE = BLOCK_ENTITY_TYPES.register("stove",
             () -> BlockEntityType.Builder.of(StoveBlockEntity::new, ClinkerBlocks.STOVE.get()).build(null));
 
-    public static final Supplier<BlockEntityType<FairyFruitBlockEntity>> FAIRY_FRUIT = BLOCK_ENTITY_TYPES.register("fairy_fruit",
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FairyFruitBlockEntity>> FAIRY_FRUIT = BLOCK_ENTITY_TYPES.register("fairy_fruit",
             () -> BlockEntityType.Builder.of(FairyFruitBlockEntity::new, ClinkerBlocks.FAIRY_FRUIT_BLOCK.get()).build(null));
 
-    public static final Supplier<BlockEntityType<FulminaFlowerBlockEntity>> FULMINA_FLOWER = BLOCK_ENTITY_TYPES.register("fulmina_flower",
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FulminaFlowerBlockEntity>> FULMINA_FLOWER = BLOCK_ENTITY_TYPES.register("fulmina_flower",
             () -> BlockEntityType.Builder.of(FulminaFlowerBlockEntity::new, ClinkerBlocks.FULMINA_FLOWER.get()).build(null));
 
-    public static final Supplier<BlockEntityType<MortarBlockEntity>> MORTAR = BLOCK_ENTITY_TYPES.register("mortar",
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MortarBlockEntity>> MORTAR = BLOCK_ENTITY_TYPES.register("mortar",
             () -> BlockEntityType.Builder.of(MortarBlockEntity::new, ClinkerBlocks.MORTAR.get()).build(null));
 
-    public static final Supplier<BlockEntityType<PressureCookerBlockEntity>> PRESSURE_COOKER = BLOCK_ENTITY_TYPES.register("pressure_cooker",
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CounterBlockEntity>> COUNTER = BLOCK_ENTITY_TYPES.register("counter",
+            () -> BlockEntityType.Builder.of(CounterBlockEntity::new, ClinkerBlocks.COUNTER.get()).build(null));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PressureCookerBlockEntity>> PRESSURE_COOKER = BLOCK_ENTITY_TYPES.register("pressure_cooker",
             () -> BlockEntityType.Builder.of(PressureCookerBlockEntity::new, ClinkerBlocks.PRESSURE_COOKER.get()).build(null));
 
     public static void registerTileEntityRenderers() {
@@ -48,6 +52,7 @@ public class ClinkerBlockEntities {
         BlockEntityRenderers.register(ClinkerBlockEntities.STOVE.get(), StoveRenderer::new);
         BlockEntityRenderers.register(ClinkerBlockEntities.FAIRY_FRUIT.get(), FairyFruitRenderer::new);
         BlockEntityRenderers.register(ClinkerBlockEntities.MORTAR.get(), MortarRenderer::new);
+        BlockEntityRenderers.register(ClinkerBlockEntities.COUNTER.get(), CounterRenderer::new);
         BlockEntityRenderers.register(ClinkerBlockEntities.PRESSURE_COOKER.get(), PressureCookerRenderer::new);
     }
 

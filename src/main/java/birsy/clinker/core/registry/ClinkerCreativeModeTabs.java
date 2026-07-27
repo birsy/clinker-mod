@@ -141,6 +141,7 @@ public class ClinkerCreativeModeTabs {
 
         pOutput.accept(SALTMOSS.get());
         pOutput.accept(SALTMOSS_SPROUTS.get());
+        pOutput.accept(TALL_SALTMOSS_SPROUTS.get());
         pOutput.accept(DRIED_SALTMOSS_SPROUTS.get());
         pOutput.accept(SALTMOSS_BLOSSOM.get());
         pOutput.accept(YARROW.get());
@@ -206,6 +207,7 @@ public class ClinkerCreativeModeTabs {
 
         pOutput.accept(MORTAR.get());
         pOutput.accept(PESTLE.get());
+        pOutput.accept(COUNTER.get());
         pOutput.accept(PRESSURE_COOKER.get());
 
         pOutput.accept(RAW_LEAD.get());

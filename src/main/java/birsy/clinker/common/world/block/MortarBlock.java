@@ -32,6 +32,9 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MortarBlock extends Block implements EntityBlock {
     private static final VoxelShape OUTSIDE = box(3.0, 0.0, 3.0, 13.0, 5.0, 13.0),
                                     INSIDE = box(4.0, 1.0, 4.0, 12.0, 5.0, 12.0);

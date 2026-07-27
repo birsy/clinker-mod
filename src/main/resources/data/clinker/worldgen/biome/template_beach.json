@@ -37,7 +37,7 @@
   "features": [
     [],
     [
-      "clinker:boulder_calc"
+      "clinker:boulder_calc_coast",
     ],
     [],
     [],
@@ -50,8 +50,9 @@
     [],
     [
       "clinker:sheet_moss_surface",
-      "clinker:patch_saltmoss_sprouts",
       "clinker:saltmoss_bloom",
+      "clinker:patch_tall_saltmoss_sprouts",
+      "clinker:patch_saltmoss_sprouts",
       "clinker:sea_shells"
     ],
     []

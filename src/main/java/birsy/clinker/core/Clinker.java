@@ -1,6 +1,6 @@
 package birsy.clinker.core;
 
-import birsy.clinker.client.localization.LongStringLocalizationReloader;
+import birsy.clinker.client.resource.localization.LongStringLocalizationReloader;
 import birsy.clinker.client.render.GUIRenderer;
 import birsy.clinker.client.gui.AlchemyBundleGUIRenderer;
 import birsy.clinker.client.render.debug.ClinkerDebugRenderers;
@@ -96,11 +96,6 @@ public class Clinker {
         DispenserBlock.registerProjectileBehavior(ClinkerItems.ORDNANCE.get());
         ClinkerBlocks.defineFlammability((FireBlock) Blocks.FIRE);
         ClinkerOrdnanceModifierTypes.defineMutualExclusivities();
-    }
-
-    @SubscribeEvent
-    public static void registerListeners(RegisterClientReloadListenersEvent event) {
-        event.registerReloadListener(new LongStringLocalizationReloader());
     }
 
     @SubscribeEvent

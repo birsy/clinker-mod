@@ -12,8 +12,8 @@ import net.minecraft.world.level.levelgen.placement.PlacementModifierType;
 
 public class HeightFilter extends PlacementFilter {
     public static final MapCodec<HeightFilter> CODEC = RecordCodecBuilder.mapCodec(
-            obj -> obj.group(VerticalAnchor.CODEC.fieldOf("min_inclusive").forGetter(filter -> filter.min),
-                             VerticalAnchor.CODEC.fieldOf("max_inclusive").forGetter(filter -> filter.max))
+            obj -> obj.group(VerticalAnchor.CODEC.optionalFieldOf("min_inclusive", VerticalAnchor.bottom()).forGetter(filter -> filter.min),
+                             VerticalAnchor.CODEC.optionalFieldOf("max_inclusive", VerticalAnchor.top()).forGetter(filter -> filter.max))
                       .apply(obj, HeightFilter::new)
     );
     final VerticalAnchor min, max;

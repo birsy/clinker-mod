@@ -1,0 +1,4 @@
+{
+  "parent": "clinker:bottles",
+  "apply_to": "#c:potions/bottle"
+}

@@ -1,7 +1,7 @@
 package birsy.clinker.common.page.elements;
 
-import birsy.clinker.client.localization.LabeledString;
-import birsy.clinker.client.localization.LongStringLocalizationAuthority;
+import birsy.clinker.client.resource.localization.LabeledString;
+import birsy.clinker.client.resource.localization.LongStringLocalizationAuthority;
 import birsy.clinker.common.page.PageElement;
 import birsy.clinker.common.page.PageElementTransform;
 import birsy.clinker.common.page.PageElementType;
@@ -21,7 +21,6 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ColorRGBA;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;

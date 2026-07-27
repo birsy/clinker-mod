@@ -1,4 +1,4 @@
-package birsy.clinker.client.localization;
+package birsy.clinker.client.resource.localization;
 
 import birsy.clinker.core.Clinker;
 import com.google.gson.Gson;
@@ -16,7 +16,6 @@ import java.util.Map;
 
 public class LongStringLocalizationReloader extends SimpleJsonResourceReloadListener {
     private static final Gson GSON = new GsonBuilder().create();
-
     public LongStringLocalizationReloader() {
         super(GSON, "lang");
     }

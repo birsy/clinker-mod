@@ -1,4 +1,4 @@
-package birsy.clinker.client.localization;
+package birsy.clinker.client.resource.localization;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

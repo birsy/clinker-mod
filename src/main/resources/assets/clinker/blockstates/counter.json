@@ -1,9 +1,0 @@
-{
-    "variants": {
-        "": [
-            { "model": "clinker:block/counter" },
-            { "model": "clinker:block/counter", "y": 90 },
-            { "model": "clinker:block/counter", "y": 180 },
-            { "model": "clinker:block/counter", "y": 270 }]
-    }
-}

@@ -46,8 +46,8 @@ public class ClinkerDatagenHandler {
         generator.addProvider(event.includeClient(), new ClinkerBlockStateProvider(output, existingFileHelper));
         generator.addProvider(event.includeClient(), new ClinkerItemModelProvider(output, existingFileHelper));
         generator.addProvider(event.includeClient(), new ClinkerEnglishLanguageProvider(output));
-
         generator.addProvider(event.includeClient(), new ClinkerSoundDefinitionsProvider(output, existingFileHelper, Clinker.MOD_ID, ClinkerSounds.SOUND_HOLDERS));
+        generator.addProvider(event.includeClient(), new ClinkerCounterTransformOverrideProvider(output, lookupProvider));
 
         generator.addProvider(true, new ClinkerDataMapProvider(output, lookupProvider));
 

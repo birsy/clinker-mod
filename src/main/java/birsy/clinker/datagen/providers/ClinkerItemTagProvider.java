@@ -50,6 +50,13 @@ public class ClinkerItemTagProvider extends ItemTagsProvider {
                 .add(ClinkerBlocks.DISMAL_ASPEN_LOG.asItem())
                 .add(ClinkerBlocks.BUNDLED_DISMAL_ASPEN_LOGS.asItem());
 
+        this.tag(ClinkerTags.Items.SALTMOSS_PLANTS)
+                .add(ClinkerBlocks.SALTMOSS_SPROUTS.asItem(),
+                        ClinkerBlocks.TALL_SALTMOSS_SPROUTS.asItem(),
+                        ClinkerBlocks.DRIED_SALTMOSS_SPROUTS.asItem(),
+                        ClinkerBlocks.SALTMOSS_BLOSSOM.asItem(),
+                        ClinkerBlocks.YARROW.asItem());
+
         this.tag(ItemTags.STONE_CRAFTING_MATERIALS)
                 .add(ClinkerBlocks.COBBLED_BRIMSTONE.asItem())
                 .add(ClinkerBlocks.BRIMSTONE.asItem());

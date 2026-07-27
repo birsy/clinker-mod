@@ -1,4 +1,4 @@
-package birsy.clinker.client.localization;
+package birsy.clinker.client.resource.localization;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;

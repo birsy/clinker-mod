@@ -1,11 +1,42 @@
 package birsy.clinker.client.render.utilities;
 
+import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import org.joml.Matrix4f;
 
 // assumes triangle buffer mode + pos / uv / rgb vertex format
 public final class MeshHelper {
+    public static void consumeCircle(VertexConsumer vertexConsumer, Matrix4f matrix,
+                                     int resolutionScale, float radius, float r, float g, float b, float a) {
+        if (resolutionScale < 0) return;
+        // initial center triangle
+        float initialAngleIncrement = Mth.TWO_PI / 3.0F;
+        for (int k = 0; k < 3; k++) {
+            float angle = k * initialAngleIncrement;
+            float x = Mth.sin(angle), z = Mth.cos(angle);
+            vertexConsumer.addVertex(matrix, x * radius, 0, z * radius)
+                    .setUv(x * 0.5F + 0.5F, z * 0.5F + 0.5F)
+                    .setColor(r, g, b, a);
+        }
+        // rim triangles
+        for (int i = 0; i < resolutionScale; i++) {
+            int triCount = 3 * (1 << i);
+            float angleIncrement = Mth.PI / triCount;
+            for (int j = 0; j < triCount; j++) {
+                int startingIndex = j * 2;
+                for (int k = 0; k < 3; k++) {
+                    float angle = (startingIndex + k) * angleIncrement;
+                    float x = Mth.sin(angle), z = Mth.cos(angle);
+                    vertexConsumer.addVertex(matrix, x * radius, 0, z * radius)
+                            .setUv(x * 0.5F + 0.5F, z * 0.5F + 0.5F)
+                            .setColor(r, g, b, a);
+                }
+            }
+        }
+    }
+
     public static void consumeCone(VertexConsumer vertexConsumer, Matrix4f matrix,
                              int resolution, float radius, boolean flipped,
                              float centerY, float centerR, float centerG, float centerB, float centerA,

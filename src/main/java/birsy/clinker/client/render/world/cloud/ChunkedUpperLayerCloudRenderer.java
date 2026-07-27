@@ -290,7 +290,7 @@ public class ChunkedUpperLayerCloudRenderer extends BillboardCloudRenderer {
         for (CloudChunk chunk : chunks) {
             AABB aabb = chunk.aabb;
             boolean visible = frustum.cubeInFrustum(
-                    aabb.minX + offsetX, Math.max(camY, aabb.minY) - CLOUD_CELL_SIZE, aabb.minZ + offsetZ,
+                    aabb.minX + offsetX, Math.min(camY, aabb.minY) - CLOUD_CELL_SIZE, aabb.minZ + offsetZ,
                     aabb.maxX + offsetX, aabb.maxY, aabb.maxZ + offsetZ
             );
             chunk.visible = visible;

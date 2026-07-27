@@ -1,6 +1,6 @@
 package birsy.clinker.common.world.item;
 
-import birsy.clinker.client.localization.LongStringContents;
+import birsy.clinker.client.resource.localization.LongStringContents;
 import birsy.clinker.core.Clinker;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;

@@ -38,6 +38,9 @@ public class ClinkerBlocks
     public static final DeferredBlock<Block> MORTAR = createBlock("mortar",
             () -> new MortarBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.POLISHED_BASALT).noOcclusion().pushReaction(PushReaction.DESTROY)));
 
+    public static final DeferredBlock<Block> COUNTER = createBlock("counter",
+            () -> new CounterBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SMITHING_TABLE)));
+
     public static final DeferredBlock<Block> PRESSURE_COOKER = createBlock("pressure_cooker",
             () -> new PressureCookerBlock.Head(BlockBehaviour.Properties.ofFullCopy(Blocks.BRICKS).noOcclusion()));
     public static final DeferredBlock<Block> PRESSURE_COOKER_BODY = createBlockNoItem("pressure_cooker_body",
@@ -413,10 +416,22 @@ public class ClinkerBlocks
                     .dynamicShape())
     );
 
-    public static final DeferredBlock<OthershorePlantBlock> SALTMOSS_SPROUTS = createBlock("saltmoss_sprouts", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_RED).sound(SoundType.HANGING_ROOTS)));
-    public static final DeferredBlock<OthershorePlantBlock> DRIED_SALTMOSS_SPROUTS = createBlock("dried_saltmoss_sprouts", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_RED).sound(SoundType.HANGING_ROOTS)));
-    public static final DeferredBlock<SaltmossBlossomBlock> SALTMOSS_BLOSSOM = createBlock("saltmoss_blossom", () -> new SaltmossBlossomBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_RED).sound(SoundType.HANGING_ROOTS)));
-    public static final DeferredBlock<SaltmossBlossomBlock> YARROW = createBlock("yarrow", () -> new SaltmossBlossomBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_YELLOW).sound(SoundType.HANGING_ROOTS)));
+    public static final DeferredBlock<OthershorePlantBlock> SALTMOSS_SPROUTS = createBlock("saltmoss_sprouts", () ->
+            new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_RED).sound(SoundType.HANGING_ROOTS)));
+    public static final DeferredBlock<OthershorePlantBlock> TALL_SALTMOSS_SPROUTS = createBlock("tall_saltmoss_sprouts", () ->
+            new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_RED).sound(SoundType.HANGING_ROOTS)));
+    public static final DeferredBlock<OthershorePlantBlock> DRIED_SALTMOSS_SPROUTS = createBlock("dried_saltmoss_sprouts", () ->
+            new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_RED).sound(SoundType.HANGING_ROOTS)
+                    .lightLevel(state -> 3)
+            ));
+    public static final DeferredBlock<SaltmossBlossomBlock> SALTMOSS_BLOSSOM = createBlock("saltmoss_blossom", () ->
+            new SaltmossBlossomBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_RED).sound(SoundType.HANGING_ROOTS)
+                    .lightLevel(state -> 5)
+            ));
+    public static final DeferredBlock<SaltmossBlossomBlock> YARROW = createBlock("yarrow", () ->
+            new SaltmossBlossomBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_YELLOW).sound(SoundType.HANGING_ROOTS)
+                    .lightLevel(state -> 5)
+            ));
 
     public static final DeferredBlock<OthershorePlantBlock> CAVE_SPROUTS = createBlock("cave_sprouts", () -> new OthershorePlantBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_SPROUTS).mapColor(MapColor.COLOR_BROWN).sound(SoundType.AZALEA_LEAVES)));
     public static final DeferredBlock<CaveIvyBlock> CAVE_IVY = createBlock("cave_ivy", () ->

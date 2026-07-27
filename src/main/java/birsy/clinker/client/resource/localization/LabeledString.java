@@ -1,4 +1,4 @@
-package birsy.clinker.client.localization;
+package birsy.clinker.client.resource.localization;
 
 import com.google.common.collect.ImmutableList;
 

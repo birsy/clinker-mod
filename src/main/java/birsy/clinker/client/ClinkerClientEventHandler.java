@@ -1,42 +1,38 @@
 package birsy.clinker.client;
 
 import birsy.clinker.client.render.page.PageAtlas;
-import birsy.clinker.client.render.page.PageRenderer;
 import birsy.clinker.client.render.world.OthershoreDimensionEffects;
+import birsy.clinker.client.resource.CounterTransformOverrideResource;
+import birsy.clinker.client.resource.localization.LongStringLocalizationReloader;
 import birsy.clinker.common.page.Page;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerDataComponents;
-import birsy.clinker.core.registry.ClinkerDynamicRegistries;
 import birsy.clinker.core.registry.ClinkerItems;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.DimensionSpecialEffects;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.RegisterDimensionSpecialEffectsEvent;
-import net.neoforged.neoforge.client.event.RenderHandEvent;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-
-import java.util.Arrays;
+import net.neoforged.neoforge.client.event.*;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
 
 @EventBusSubscriber(value = Dist.CLIENT, modid = Clinker.MOD_ID)
 public class ClinkerClientEventHandler {
-    private static final ResourceLocation TEST_PAGE_LOCATION = Clinker.resource("test_page");
+    @SubscribeEvent
+    public static void registerReloadListeners(RegisterClientReloadListenersEvent event) {
+        event.registerReloadListener(new LongStringLocalizationReloader());
+        event.registerReloadListener(new CounterTransformOverrideResource.Reloader());
+    }
 
     @SubscribeEvent
     public static void registerDimensionEffects(RegisterDimensionSpecialEffectsEvent event) {

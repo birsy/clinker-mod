@@ -1,0 +1,36 @@
+{
+  "apply_to": [
+    "minecraft:glass_bottle",
+    "minecraft:experience_bottle",
+    "minecraft:honey_bottle",
+    "minecraft:ominous_bottle"
+  ],
+  "stack_offset": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "stack_offset_randomization": [
+    0.05,
+    0.03,
+    0.05
+  ],
+  "transform": [
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.1,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+  ]
+}
