@@ -88,7 +88,8 @@ public class ClinkerBlockTagProvider extends BlockTagsProvider {
         usesHoe.add(
                 ClinkerBlocks.PEAT_MOSS.get(),
                 ClinkerBlocks.SPOTREED.get(),
-                ClinkerBlocks.TANGLED_SPOTREED.get()
+                ClinkerBlocks.TANGLED_SPOTREED.get(),
+                ClinkerBlocks.HERBAL_AMALGAM_BLOCK.get()
         );
 
         usesAxe.add(

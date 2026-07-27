@@ -22,6 +22,8 @@ public class ClinkerItemModelProvider extends ItemModelProvider {
 
         this.basicItem(ClinkerItems.SULFUR);
         this.basicItem(ClinkerItems.SALTPETRE);
+        this.basicItem(ClinkerItems.HERBAL_AMALGAM);
+        this.basicItem(ClinkerItems.HERBAL_SPIRIT);
 
         this.handheldItem(ClinkerItems.PECULIAR_MIRROR.get());
         this.handheldItem(ClinkerItems.PESTLE.get());

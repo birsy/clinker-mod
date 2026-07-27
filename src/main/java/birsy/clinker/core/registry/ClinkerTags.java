@@ -25,6 +25,7 @@ public class ClinkerTags {
         public static final TagKey<Item> ALCHEMISTS_CROSSBOW_REPAIRABLE = ItemTags.create(Clinker.resource("alchemists_crossbow_repairable"));
         public static final TagKey<Item> BASALT = ItemTags.create(Clinker.resource("basalt"));
         public static final TagKey<Item> SALTMOSS_PLANTS = ItemTags.create(Clinker.resource("saltmoss_plants"));
+        public static final TagKey<Item> HERBS = ItemTags.create(Clinker.resource("herbs"));
 
     }
 

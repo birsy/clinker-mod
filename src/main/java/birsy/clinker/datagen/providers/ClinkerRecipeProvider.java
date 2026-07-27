@@ -1,6 +1,8 @@
 package birsy.clinker.datagen.providers;
 
 import birsy.clinker.core.Clinker;
+import birsy.clinker.core.registry.ClinkerBlocks;
+import birsy.clinker.core.registry.ClinkerItems;
 import birsy.clinker.core.registry.ClinkerTags;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
@@ -9,10 +11,13 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.Tags;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -49,6 +54,19 @@ public class ClinkerRecipeProvider extends RecipeProvider {
                 .pattern("S")
                 .pattern("C")
                 .unlockedBy(getHasName(SALTMOSS_SPROUTS), has(SALTMOSS_SPROUTS)).save(output);
+
+        // herbal amalgam storage recipes
+        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, HERBAL_AMALGAM_BLOCK)
+                .define('H', HERBAL_AMALGAM)
+                .pattern("HH")
+                .pattern("HH")
+                .unlockedBy(getHasName(HERBAL_AMALGAM), has(HERBAL_AMALGAM)).save(output);
+
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.BREWING, HERBAL_AMALGAM).requires(ClinkerTags.Items.HERBS)
+                .requires(ClinkerTags.Items.HERBS)
+                .requires(ClinkerTags.Items.HERBS)
+                .requires(ClinkerTags.Items.HERBS)
+        .unlockedBy("has_herb", has(ClinkerTags.Items.HERBS)).save(output);
 
         // dismal aspen
         String hasDismalAspenName = "has_dismal_aspen";

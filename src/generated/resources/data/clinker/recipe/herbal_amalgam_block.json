@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "H": {
+      "item": "clinker:herbal_amalgam"
+    }
+  },
+  "pattern": [
+    "HH",
+    "HH"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clinker:herbal_amalgam_block"
+  }
+}

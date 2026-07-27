@@ -179,6 +179,8 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(DISMAL_ASPEN_PRESSURE_PLATE.get());
         pOutput.accept(DISMAL_ASPEN_BUTTON.get());
 
+        pOutput.accept(HERBAL_AMALGAM_BLOCK.get());
+
         pOutput.accept(TALL_MUD_REEDS.get());
         pOutput.accept(SHORT_MUD_REEDS.get());
         pOutput.accept(MUD_REEDS.get());
@@ -216,6 +218,8 @@ public class ClinkerCreativeModeTabs {
 
         pOutput.accept(SULFUR.get());
         pOutput.accept(SALTPETRE.get());
+        pOutput.accept(HERBAL_AMALGAM.get());
+        pOutput.accept(HERBAL_SPIRIT.get());
 
         pOutput.accept(FAIRY_FRUIT.get());
         pOutput.accept(LEAD_HELMET.get());

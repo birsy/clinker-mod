@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_herb": {
+      "conditions": {
+        "items": [
+          {
+            "items": "#clinker:herbs"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "clinker:herbal_amalgam"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_herb"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "clinker:herbal_amalgam"
+    ]
+  }
+}

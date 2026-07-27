@@ -63,5 +63,11 @@ public class ClinkerItemTagProvider extends ItemTagsProvider {
         this.tag(ItemTags.STONE_TOOL_MATERIALS)
                 .add(ClinkerBlocks.COBBLED_BRIMSTONE.asItem())
                 .add(ClinkerBlocks.BRIMSTONE.asItem());
+
+        this.tag(ClinkerTags.Items.HERBS)
+                .addTag(ItemTags.FLOWERS)
+                .addTag(ItemTags.TALL_FLOWERS)
+                .add(Items.SHORT_GRASS, Items.TALL_GRASS, Items.FERN, Items.LARGE_FERN);
+
     }
 }

@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "clinker:block/herbal_amalgam_block_end",
+    "side": "clinker:block/herbal_amalgam_block_side"
+  }
+}

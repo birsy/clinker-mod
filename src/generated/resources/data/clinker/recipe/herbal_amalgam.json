@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "tag": "clinker:herbs"
+    },
+    {
+      "tag": "clinker:herbs"
+    },
+    {
+      "tag": "clinker:herbs"
+    },
+    {
+      "tag": "clinker:herbs"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clinker:herbal_amalgam"
+  }
+}

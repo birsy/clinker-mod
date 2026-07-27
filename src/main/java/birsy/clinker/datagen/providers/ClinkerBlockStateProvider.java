@@ -301,6 +301,12 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
             );
         }
 
+        // herbal amalgam block
+        {
+            this.axisBlock((RotatedPillarBlock) HERBAL_AMALGAM_BLOCK.get(), this.modLoc(ModelProvider.BLOCK_FOLDER + "/herbal_amalgam_block"));
+            this.simpleBlockItem(HERBAL_AMALGAM_BLOCK.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/herbal_amalgam_block")));
+        }
+
         // calc
         {
             ResourceLocation calc = this.modLoc(ModelProvider.BLOCK_FOLDER + "/calc");

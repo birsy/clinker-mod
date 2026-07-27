@@ -45,6 +45,8 @@ public class ClinkerItems
 
     public static final DeferredItem<Item> SULFUR = ITEMS.registerSimpleItem("sulfur", new Item.Properties());
     public static final DeferredItem<Item> SALTPETRE = ITEMS.registerSimpleItem("saltpetre", new Item.Properties());
+    public static final DeferredItem<Item> HERBAL_AMALGAM = ITEMS.registerSimpleItem("herbal_amalgam", new Item.Properties());
+    public static final DeferredItem<Item> HERBAL_SPIRIT = ITEMS.registerSimpleItem("herbal_spirit", new Item.Properties().stacksTo(16));
 
     public static final DeferredItem<Item> FISTFUL_OF_MAGGOTS = ITEMS.register("fistful_of_maggots",
             () -> new FistfulOfMaggotsItem(new Item.Properties().stacksTo(16))

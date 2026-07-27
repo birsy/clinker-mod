@@ -512,6 +512,9 @@ public class ClinkerBlocks
             BlockBehaviour.Properties.ofFullCopy(Blocks.DANDELION).mapColor(MapColor.LAPIS).sound(SoundType.PINK_PETALS))
     );
 
+    public static final DeferredBlock<Block> HERBAL_AMALGAM_BLOCK = createBlock("herbal_amalgam_block", () -> new HayBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.HAY_BLOCK))
+    );
+
     // fluids
     public static DeferredBlock<LiquidBlock> VITRIOL_BLOCK = BLOCKS.register("vitriol", () -> new LiquidBlock(
             ClinkerFluids.VITRIOL.get(), BlockBehaviour.Properties.ofFullCopy(Blocks.WATER).mapColor(MapColor.DIRT))
