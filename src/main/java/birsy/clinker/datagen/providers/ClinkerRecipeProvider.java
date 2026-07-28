@@ -56,11 +56,7 @@ public class ClinkerRecipeProvider extends RecipeProvider {
                 .unlockedBy(getHasName(SALTMOSS_SPROUTS), has(SALTMOSS_SPROUTS)).save(output);
 
         // herbal amalgam storage recipes
-        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, HERBAL_AMALGAM_BLOCK)
-                .define('H', HERBAL_AMALGAM)
-                .pattern("HH")
-                .pattern("HH")
-                .unlockedBy(getHasName(HERBAL_AMALGAM), has(HERBAL_AMALGAM)).save(output);
+        storage(output, HERBAL_AMALGAM, HERBAL_AMALGAM_BLOCK);
 
         ShapelessRecipeBuilder.shapeless(RecipeCategory.BREWING, HERBAL_AMALGAM).requires(ClinkerTags.Items.HERBS)
                 .requires(ClinkerTags.Items.HERBS)
