@@ -58,10 +58,8 @@ public class ClinkerRecipeProvider extends RecipeProvider {
         // herbal amalgam storage recipes
         storage(output, HERBAL_AMALGAM, HERBAL_AMALGAM_BLOCK);
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.BREWING, HERBAL_AMALGAM).requires(ClinkerTags.Items.HERBS)
-                .requires(ClinkerTags.Items.HERBS)
-                .requires(ClinkerTags.Items.HERBS)
-                .requires(ClinkerTags.Items.HERBS)
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.BREWING, HERBAL_AMALGAM)
+                .requires(Ingredient.of(ClinkerTags.Items.HERBS), 4)
         .unlockedBy("has_herb", has(ClinkerTags.Items.HERBS)).save(output);
 
         // dismal aspen
