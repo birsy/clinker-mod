@@ -1,5 +1,8 @@
 {
   "values": [
+    "clinker:packed_ash",
+    "clinker:peat_moss",
+    "clinker:herbal_amalgam_block",
     "clinker:saltpetre_leached_dirt"
   ]
 }

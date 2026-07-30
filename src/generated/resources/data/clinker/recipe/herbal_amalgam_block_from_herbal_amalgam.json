@@ -1,14 +1,15 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "building",
+  "category": "misc",
   "key": {
-    "H": {
+    "#": {
       "item": "clinker:herbal_amalgam"
     }
   },
   "pattern": [
-    "HH",
-    "HH"
+    "###",
+    "###",
+    "###"
   ],
   "result": {
     "count": 1,

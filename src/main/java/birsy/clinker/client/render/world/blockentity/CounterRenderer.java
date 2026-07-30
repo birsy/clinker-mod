@@ -27,8 +27,13 @@ import org.joml.*;
 import java.lang.Math;
 
 public class CounterRenderer implements BlockEntityRenderer<CounterBlockEntity> {
+    private static final float[] perSlotOffset = Util.make(() -> {
+        RandomSource randomSource = RandomSource.createNewThreadLocalInstance();
+        float[] result = new float[CounterBlockEntity.SLOT_SIDE_LENGTH * CounterBlockEntity.SLOT_SIDE_LENGTH];
+        for (int i = 0; i < result.length; i++) result[i] = randomSource.nextFloat() * 2.0F - 1.0F;
+        return result;
+    });
     private final ItemRenderer itemRenderer;
-
     public CounterRenderer(BlockEntityRendererProvider.Context context) {
         this.itemRenderer = context.getItemRenderer();
     }
@@ -54,7 +59,7 @@ public class CounterRenderer implements BlockEntityRenderer<CounterBlockEntity> 
                 if (item.isEmpty()) continue;
 
                 poseStack.pushPose();
-                poseStack.translate(xFac, 0, zFac);
+                poseStack.translate(xFac, perSlotOffset[itemIndex] * 0.02F, zFac);
                 poseStack.mulPose(Axis.YP.rotation(blockEntity.itemRotations.get(itemIndex)));
 
                 int stackCount = Math.min(item.getCount(), 8);
@@ -71,7 +76,7 @@ public class CounterRenderer implements BlockEntityRenderer<CounterBlockEntity> 
     }
 
     private static final Matrix4f GENERIC_3D_TRANSFORM = new Matrix4f().translate(0, -0.055F, 0),
-            GENERIC_FLAT_TRANSFORM = new Matrix4f().translate(0, 0.02F, 0).rotateX(Mth.HALF_PI);
+            GENERIC_FLAT_TRANSFORM = new Matrix4f().translate(0, 0.02F, 0).rotateY(Mth.PI).rotateX(-Mth.HALF_PI).translate(0, -0.13F, 0).scale(0.8F);
     private static final Vector4fc[] RANDOM_STACK_OFFSETS = Util.make(() -> {
         Vector4fc[] result = new Vector4fc[8];
         result[0] = new Vector4f();

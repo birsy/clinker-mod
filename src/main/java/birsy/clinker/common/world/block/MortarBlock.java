@@ -3,6 +3,7 @@ package birsy.clinker.common.world.block;
 import birsy.clinker.common.world.block.blockentity.MortarBlockEntity;
 import birsy.clinker.common.world.item.PestleItem;
 import birsy.clinker.core.Clinker;
+import birsy.clinker.core.registry.entity.ClinkerBlockEntities;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -20,9 +21,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -35,7 +40,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MortarBlock extends Block implements EntityBlock {
+public class MortarBlock extends BaseEntityBlock {
     private static final VoxelShape OUTSIDE = box(3.0, 0.0, 3.0, 13.0, 5.0, 13.0),
                                     INSIDE = box(4.0, 1.0, 4.0, 12.0, 5.0, 12.0);
     public static final VoxelShape SHAPE = Shapes.join(OUTSIDE, INSIDE, BooleanOp.ONLY_FIRST);
@@ -56,11 +61,13 @@ public class MortarBlock extends Block implements EntityBlock {
     // block entity stuff
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-        if (stack.getItem() instanceof PestleItem)
-            return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
-
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof MortarBlockEntity mortarBlockEntity) {
+            if (stack.getItem() instanceof PestleItem) {
+                mortarBlockEntity.grind();
+                return ItemInteractionResult.CONSUME_PARTIAL;
+            }
+
             if (!stack.isEmpty() && mortarBlockEntity.addItem(player, stack)) {
                 level.playSound(player, player.getX(), player.getY(), player.getZ(), SoundEvents.ITEM_FRAME_ADD_ITEM, SoundSource.PLAYERS, 0.2F, Mth.lerp(player.getRandom().nextFloat(), 1.3F, 1.6F));
                 level.playSound(player, player.getX(), player.getY(), player.getZ(), SoundEvents.BASALT_HIT, SoundSource.PLAYERS, 0.2F, Mth.lerp(player.getRandom().nextFloat(), 1.5F, 1.6F));
@@ -120,7 +127,19 @@ public class MortarBlock extends Block implements EntityBlock {
     }
 
     @Override
+    protected RenderShape getRenderShape(BlockState state) {
+        return RenderShape.MODEL;
+    }
+
+    @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new MortarBlockEntity(pos, state);
+    }
+
+    @Override
+    public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
+        return level.isClientSide() ?
+                createTickerHelper(blockEntityType, ClinkerBlockEntities.MORTAR.get(), MortarBlockEntity::tickClient) :
+                createTickerHelper(blockEntityType, ClinkerBlockEntities.MORTAR.get(), MortarBlockEntity::tickServer);
     }
 }

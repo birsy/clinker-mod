@@ -134,6 +134,14 @@ public class CounterBlockEntity extends BlockEntity {
         if (index == -1) return false;
 
         ItemStack currentItem = items.get(index);
+        int remainingStackSize = currentItem.getMaxStackSize() - currentItem.getCount();
+        if (currentItem.isStackable() && currentItem.is(item.getItem()) && remainingStackSize > 0) {
+            if (this.isClient()) return true;
+            int amountToAdd = Math.min(item.getCount(), remainingStackSize);
+            item.shrink(amountToAdd);
+            currentItem.grow(amountToAdd);
+            return true;
+        }
         if (!currentItem.isEmpty()) return false;
 
         if (isSlotObstructed(slotX, slotZ)) return false;

@@ -7,10 +7,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.packs.VanillaRecipeProvider;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.FenceBlock;
-import net.minecraft.world.level.block.FenceGateBlock;
-import net.minecraft.world.level.block.WallBlock;
+import net.minecraft.world.level.block.*;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -35,6 +32,13 @@ public class ClinkerBlockTagProvider extends BlockTagsProvider {
             if (entry.get() instanceof WallBlock wall) wallTag.add(wall);
         }
 
+        IntrinsicTagAppender<Block> dirt = this.tag(BlockTags.DIRT).replace(false);
+        dirt.add(
+                ClinkerBlocks.PACKED_ASH.get(),
+                ClinkerBlocks.PEAT_MOSS.get(),
+                ClinkerBlocks.HERBAL_AMALGAM_BLOCK.get()
+        );
+
         IntrinsicTagAppender<Block> othershoreSoil = this.tag(ClinkerTags.Blocks.OTHERSHORE_SOIL).replace(false);
         othershoreSoil.add(
                 ClinkerBlocks.ASH.get(),
@@ -46,7 +50,8 @@ public class ClinkerBlockTagProvider extends BlockTagsProvider {
                 ClinkerBlocks.CALC.get(),
                 ClinkerBlocks.MUD.get(),
                 ClinkerBlocks.SALT_GRAVEL.get(),
-                ClinkerBlocks.PEAT_MOSS.get()
+                ClinkerBlocks.PEAT_MOSS.get(),
+                ClinkerBlocks.HERBAL_AMALGAM_BLOCK.get()
         );
 
         IntrinsicTagAppender<Block> climbables = this.tag(BlockTags.CLIMBABLE).replace(false);
