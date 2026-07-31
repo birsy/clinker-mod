@@ -40,8 +40,8 @@ public class MortarRenderer<T extends MortarBlockEntity> implements BlockEntityR
             ItemStack ingredient = ingredients.get(i);
             if (ingredient.isEmpty()) continue;
 
-            poseStack.mulPose(Axis.YP.rotationDegrees(90));
             poseStack.pushPose();
+            poseStack.mulPose(Axis.YP.rotationDegrees(90 * i));
             int awfulSeed = ingredient.getItem().toString().length();
             float randomX = Mth.sin(i * 100 + awfulSeed) * 0.02F, randomY = Mth.abs(Mth.sin(i * 200 + awfulSeed)) * 0.03F;
             poseStack.translate(randomX, randomY, 2.3 / 16.0);

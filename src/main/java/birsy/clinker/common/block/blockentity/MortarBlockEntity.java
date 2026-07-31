@@ -180,7 +180,6 @@ public class MortarBlockEntity extends BlockEntity {
 
     public void grind() {
         findRecipe();
-        this.recipeProgress++;
         this.grindTicks = 3;
     }
 
@@ -226,6 +225,8 @@ public class MortarBlockEntity extends BlockEntity {
     public static void tickCommon(Level level, BlockPos pos, BlockState state, MortarBlockEntity entity) {
         entity.rotation += entity.angularVelocity;
         entity.angularVelocity = Mth.approach(entity.angularVelocity, entity.grindTicks > 0 ? 12 : 0, 1);
+        if (entity.grindTicks > 0)
+            entity.recipeProgress++;
         entity.grindTicks--;
     }
 
