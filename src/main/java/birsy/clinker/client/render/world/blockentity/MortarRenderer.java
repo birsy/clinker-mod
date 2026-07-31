@@ -23,6 +23,17 @@ public class MortarRenderer<T extends MortarBlockEntity> implements BlockEntityR
         poseStack.pushPose();
         poseStack.translate(0.5, 2.0 / 16.0, 0.5);
 
+        float recipeProgress = blockEntity.getRecipeProgress(partialTick);
+        float inverseRecipeProgress = 1.0F - recipeProgress;
+
+        ItemStack result = blockEntity.result;
+        if (!result.isEmpty()) {
+            poseStack.pushPose();
+            poseStack.scale(recipeProgress, recipeProgress, recipeProgress);
+            itemRenderer.renderStatic(result, ItemDisplayContext.GROUND, packedLight, packedOverlay, poseStack, bufferSource, blockEntity.getLevel(), 0);
+            poseStack.popPose();
+        }
+
         poseStack.mulPose(Axis.YP.rotationDegrees(45 + blockEntity.getRotation(partialTick)));
         NonNullList<ItemStack> ingredients = blockEntity.ingredients;
         for (int i = 0; i < ingredients.size(); i++) {
@@ -35,6 +46,7 @@ public class MortarRenderer<T extends MortarBlockEntity> implements BlockEntityR
             float randomX = Mth.sin(i * 100 + awfulSeed) * 0.02F, randomY = Mth.abs(Mth.sin(i * 200 + awfulSeed)) * 0.03F;
             poseStack.translate(randomX, randomY, 2.3 / 16.0);
             poseStack.mulPose(Axis.XP.rotationDegrees(20));
+            poseStack.scale(inverseRecipeProgress, inverseRecipeProgress, inverseRecipeProgress);
             itemRenderer.renderStatic(ingredient, ItemDisplayContext.GROUND, packedLight, packedOverlay, poseStack, bufferSource, blockEntity.getLevel(), 0);
             poseStack.popPose();
         }

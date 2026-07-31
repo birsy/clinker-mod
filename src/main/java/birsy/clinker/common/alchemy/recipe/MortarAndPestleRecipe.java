@@ -19,7 +19,7 @@ import java.util.*;
 public class MortarAndPestleRecipe implements Recipe<MortarAndPestleRecipe.Input> {
     private final ItemStack result;
     private final NonNullList<Ingredient> ingredients;
-    private final int grindTime;
+    public final int grindTime;
     private final List<Ingredient>[] expansions;
 
     public MortarAndPestleRecipe(ItemStack result, List<Ingredient> ingredients, int grindTime) {
@@ -84,7 +84,7 @@ public class MortarAndPestleRecipe implements Recipe<MortarAndPestleRecipe.Input
         List<Ingredient> expanded = expansions[input.size()];
         if (expanded == null) return false;
 
-        return backtrack(input.stacks, 0, expanded, new boolean[ingredients.size()]);
+        return backtrack(input.stacks, 0, expanded, new boolean[expanded.size()]);
     }
 
     @Override
@@ -103,7 +103,7 @@ public class MortarAndPestleRecipe implements Recipe<MortarAndPestleRecipe.Input
     @Override public RecipeType<?> getType() { return ClinkerRecipes.Types.MORTAR_AND_PESTLE.get(); }
     @Override public RecipeSerializer<?> getSerializer() { return ClinkerRecipes.Serializers.MORTAR_AND_PESTLE.get(); }
 
-    public record Input(NonNullList<ItemStack> stacks) implements RecipeInput {
+    public record Input(List<ItemStack> stacks) implements RecipeInput {
         @Override public ItemStack getItem(int index) { return stacks.get(index); }
         @Override public int size() { return stacks.size(); }
     }
