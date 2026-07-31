@@ -1,6 +1,6 @@
 package birsy.clinker.mixin.common;
 
-import birsy.clinker.common.world.entity.ColliderEntity;
+import birsy.clinker.common.entity.ColliderEntity;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;

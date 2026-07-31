@@ -1,7 +1,7 @@
 package birsy.clinker.core.registry;
 
-import birsy.clinker.common.world.block.*;
-import birsy.clinker.common.world.block.plant.*;
+import birsy.clinker.common.block.*;
+import birsy.clinker.common.block.plant.*;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.mixin.common.BlockBehavior$PropertiesAccessor;
 import net.minecraft.core.Direction;

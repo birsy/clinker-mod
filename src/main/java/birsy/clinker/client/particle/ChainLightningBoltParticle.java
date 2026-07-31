@@ -1,7 +1,5 @@
 package birsy.clinker.client.particle;
 
-import birsy.clinker.common.world.ordnance.OrdnanceGradient;
-import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerParticles;
 import birsy.clinker.core.util.codecs.ExtraByteBufCodecs;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -12,10 +10,8 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
 import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
-import net.minecraft.core.particles.ScalableParticleOptionsBase;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;

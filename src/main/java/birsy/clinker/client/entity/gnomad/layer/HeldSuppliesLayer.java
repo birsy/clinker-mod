@@ -1,6 +1,6 @@
 package birsy.clinker.client.entity.gnomad.layer;
 
-import birsy.clinker.common.world.entity.gnomad.SuppliesDeliverer;
+import birsy.clinker.common.entity.gnomad.SuppliesDeliverer;
 import birsy.clinker.core.registry.ClinkerItems;
 import foundry.veil.api.client.necromancer.Bone;
 import foundry.veil.api.client.necromancer.Skeleton;

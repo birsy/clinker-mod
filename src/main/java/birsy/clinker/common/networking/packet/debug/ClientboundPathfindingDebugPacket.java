@@ -1,16 +1,12 @@
 package birsy.clinker.common.networking.packet.debug;
 
-import birsy.clinker.common.networking.packet.ClientboundMobLocomotionSyncPacket;
-import birsy.clinker.common.world.entity.GroundLocomotionEntity;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.codecs.ExtraByteBufCodecs;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.pathfinder.Path;
 import net.neoforged.api.distmarker.Dist;

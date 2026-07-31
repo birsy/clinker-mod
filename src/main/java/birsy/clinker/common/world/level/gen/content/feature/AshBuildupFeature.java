@@ -1,6 +1,6 @@
 package birsy.clinker.common.world.level.gen.content.feature;
 
-import birsy.clinker.common.world.block.FallingLayerBlock;
+import birsy.clinker.common.block.FallingLayerBlock;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;

@@ -1,6 +1,6 @@
 package birsy.clinker.datagen.providers.loottable;
 
-import birsy.clinker.common.world.block.MothBallBlock;
+import birsy.clinker.common.block.MothBallBlock;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import net.minecraft.advancements.critereon.StatePropertiesPredicate;
 import net.minecraft.core.HolderLookup;

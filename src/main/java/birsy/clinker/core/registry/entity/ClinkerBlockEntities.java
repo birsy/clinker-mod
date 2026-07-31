@@ -1,9 +1,8 @@
 package birsy.clinker.core.registry.entity;
 
 import birsy.clinker.client.render.world.blockentity.*;
-import birsy.clinker.common.world.block.PressureCookerBlock;
-import birsy.clinker.common.world.block.blockentity.*;
-import birsy.clinker.common.world.block.blockentity.fairyfruit.FairyFruitBlockEntity;
+import birsy.clinker.common.block.blockentity.*;
+import birsy.clinker.common.block.blockentity.fairyfruit.FairyFruitBlockEntity;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
@@ -15,8 +14,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-
-import java.util.function.Supplier;
 
 @EventBusSubscriber(modid = Clinker.MOD_ID, value = Dist.CLIENT)
 public class ClinkerBlockEntities {

@@ -1,8 +1,8 @@
 package birsy.clinker.client.entity.leggy;
 
 import birsy.clinker.client.render.utilities.DebugRenderUtil;
-import birsy.clinker.common.world.entity.GiantLeggyCritterEntity;
-import birsy.clinker.common.world.entity.LegManager;
+import birsy.clinker.common.entity.GiantLeggyCritterEntity;
+import birsy.clinker.common.entity.LegManager;
 import birsy.clinker.core.Clinker;
 import foundry.veil.api.client.necromancer.animation.Animator;
 import foundry.veil.api.client.necromancer.render.NecromancerEntityRenderer;

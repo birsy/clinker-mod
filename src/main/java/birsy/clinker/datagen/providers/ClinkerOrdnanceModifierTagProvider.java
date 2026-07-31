@@ -1,6 +1,6 @@
 package birsy.clinker.datagen.providers;
 
-import birsy.clinker.common.world.ordnance.OrdnanceModifierType;
+import birsy.clinker.common.ordnance.OrdnanceModifierType;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerOrdnanceModifierTypes;
 import birsy.clinker.core.registry.ClinkerRegistries;

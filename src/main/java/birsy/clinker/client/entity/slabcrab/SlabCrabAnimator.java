@@ -1,7 +1,6 @@
 package birsy.clinker.client.entity.slabcrab;
 
-import birsy.clinker.common.world.entity.SlabCrabEntity;
-import birsy.clinker.core.Clinker;
+import birsy.clinker.common.entity.SlabCrabEntity;
 import foundry.veil.api.client.necromancer.Bone;
 import foundry.veil.api.client.necromancer.animation.Animation;
 import foundry.veil.api.client.necromancer.animation.Animator;

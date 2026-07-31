@@ -1,6 +1,6 @@
 package birsy.clinker.core.registry;
 
-import birsy.clinker.common.world.block.fluid.VitriolFluid;
+import birsy.clinker.common.block.fluid.VitriolFluid;
 import birsy.clinker.core.Clinker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;

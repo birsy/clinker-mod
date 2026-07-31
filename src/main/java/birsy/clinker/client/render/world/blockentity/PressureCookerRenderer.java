@@ -1,8 +1,8 @@
 package birsy.clinker.client.render.world.blockentity;
 
 import birsy.clinker.client.entity.SingleBoneSkeleton;
-import birsy.clinker.common.world.block.PressureCookerBlock;
-import birsy.clinker.common.world.block.blockentity.PressureCookerBlockEntity;
+import birsy.clinker.common.block.PressureCookerBlock;
+import birsy.clinker.common.block.blockentity.PressureCookerBlockEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -12,17 +12,13 @@ import foundry.veil.api.client.necromancer.render.Skin;
 import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.api.client.render.rendertype.VeilRenderType;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
-import org.joml.Vector3f;
 
 public class PressureCookerRenderer implements BlockEntityRenderer<PressureCookerBlockEntity> {
     public static final ResourceLocation RENDERTYPE = Clinker.resource("entity/clinker_entity");

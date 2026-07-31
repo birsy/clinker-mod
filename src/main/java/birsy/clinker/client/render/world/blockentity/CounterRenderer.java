@@ -1,13 +1,9 @@
 package birsy.clinker.client.render.world.blockentity;
 
 import birsy.clinker.client.resource.CounterTransformOverrideResource;
-import birsy.clinker.common.world.block.blockentity.CounterBlockEntity;
-import birsy.clinker.core.Clinker;
-import birsy.clinker.core.util.codecs.ExtraExtraCodecs;
+import birsy.clinker.common.block.blockentity.CounterBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.Util;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -15,7 +11,6 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemDisplayContext;

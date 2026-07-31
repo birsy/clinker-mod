@@ -1,8 +1,8 @@
 package birsy.clinker.common.networking.packet;
 
-import birsy.clinker.common.world.entity.projectile.OrdnanceEntity;
-import birsy.clinker.common.world.ordnance.OrdnanceHelper;
-import birsy.clinker.common.world.ordnance.OrdnanceModifierSet;
+import birsy.clinker.common.entity.projectile.OrdnanceEntity;
+import birsy.clinker.common.ordnance.OrdnanceHelper;
+import birsy.clinker.common.ordnance.OrdnanceModifierSet;
 import birsy.clinker.core.Clinker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.RegistryFriendlyByteBuf;

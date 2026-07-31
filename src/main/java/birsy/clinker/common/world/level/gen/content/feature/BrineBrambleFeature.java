@@ -1,6 +1,6 @@
 package birsy.clinker.common.world.level.gen.content.feature;
 
-import birsy.clinker.common.world.block.plant.ThornyStemBlock;
+import birsy.clinker.common.block.plant.ThornyStemBlock;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;

@@ -1,6 +1,6 @@
 package birsy.clinker.client.render.world.item;
 
-import birsy.clinker.common.world.item.MogulWarhookItem;
+import birsy.clinker.common.item.MogulWarhookItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;

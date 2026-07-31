@@ -1,12 +1,11 @@
 package birsy.clinker.client.entity.gnomad.runt;
 
 import birsy.clinker.client.AnimationUtilities;
-import birsy.clinker.common.world.entity.gnomad.GnomadRuntEntity;
+import birsy.clinker.common.entity.gnomad.GnomadRuntEntity;
 import foundry.veil.api.client.necromancer.animation.Animation;
 import foundry.veil.api.client.necromancer.animation.Animator;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
-import org.joml.Quaternionf;
 import org.joml.Vector3fc;
 
 import static birsy.clinker.client.AnimationUtilities.nSin;

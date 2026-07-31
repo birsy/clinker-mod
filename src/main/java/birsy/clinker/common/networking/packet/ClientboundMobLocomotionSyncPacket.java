@@ -1,7 +1,6 @@
 package birsy.clinker.common.networking.packet;
 
-import birsy.clinker.common.world.SaltpetreFiltrationHandler;
-import birsy.clinker.common.world.entity.GroundLocomotionEntity;
+import birsy.clinker.common.entity.GroundLocomotionEntity;
 import birsy.clinker.core.Clinker;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;

@@ -1,18 +1,14 @@
 package birsy.clinker.client.entity.gnomad.mogul;
 
-import birsy.clinker.client.entity.gnomad.basic.GnomadAnimator;
-import birsy.clinker.common.world.entity.gnomad.mogul.MogulAttackHandler;
-import birsy.clinker.core.Clinker;
+import birsy.clinker.common.entity.gnomad.mogul.MogulAttackHandler;
 import birsy.clinker.core.util.MathUtils;
-import birsy.clinker.common.world.entity.gnomad.mogul.GnomadMogulEntity;
+import birsy.clinker.common.entity.gnomad.mogul.GnomadMogulEntity;
 import foundry.veil.api.client.necromancer.Bone;
 import foundry.veil.api.client.necromancer.animation.Animation;
 import foundry.veil.api.client.necromancer.animation.Animator;
-import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.tslat.smartbrainlib.util.RandomUtil;
-import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 

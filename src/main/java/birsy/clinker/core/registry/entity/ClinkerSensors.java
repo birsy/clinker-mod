@@ -1,6 +1,9 @@
 package birsy.clinker.core.registry.entity;
 
-import birsy.clinker.common.world.entity.gnomad.gnomind.sensors.*;
+import birsy.clinker.common.entity.gnomad.gnomind.sensors.LastKnownEnemyPositionSensor;
+import birsy.clinker.common.entity.gnomad.gnomind.sensors.NearbyCoverSensor;
+import birsy.clinker.common.entity.gnomad.gnomind.sensors.NearestSupplyDepotSensor;
+import birsy.clinker.common.entity.gnomad.gnomind.sensors.SquadSensor;
 import birsy.clinker.core.Clinker;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.ai.sensing.SensorType;

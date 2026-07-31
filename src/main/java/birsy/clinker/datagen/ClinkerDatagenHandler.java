@@ -5,7 +5,7 @@ import birsy.clinker.core.registry.ClinkerSounds;
 import birsy.clinker.datagen.providers.*;
 import birsy.clinker.datagen.providers.loottable.ClinkerBlockLootTableProvider;
 import birsy.clinker.datagen.providers.loottable.ClinkerMiscLootTableProvider;
-import net.minecraft.core.HolderGetter;
+import birsy.clinker.datagen.providers.ClinkerRecipesProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
@@ -13,7 +13,6 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider;
-import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -41,7 +40,7 @@ public class ClinkerDatagenHandler {
         generator.addProvider(true, new ClinkerDamageTypeTagProvider(output, lookupProvider, existingFileHelper));
         generator.addProvider(true, new ClinkerOrdnanceModifierTagProvider(output, lookupProvider, existingFileHelper));
 
-        generator.addProvider(true, new ClinkerRecipeProvider(output, lookupProvider));
+        generator.addProvider(true, new ClinkerRecipesProvider(output, lookupProvider));
 
         generator.addProvider(event.includeClient(), new ClinkerBlockStateProvider(output, existingFileHelper));
         generator.addProvider(event.includeClient(), new ClinkerItemModelProvider(output, existingFileHelper));

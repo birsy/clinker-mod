@@ -1,6 +1,6 @@
 package birsy.clinker.client.particle;
 
-import birsy.clinker.common.world.ordnance.OrdnanceGradient;
+import birsy.clinker.common.ordnance.OrdnanceGradient;
 import birsy.clinker.core.registry.ClinkerParticles;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.serialization.MapCodec;
@@ -8,17 +8,12 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
-import net.minecraft.core.particles.DustColorTransitionOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.ScalableParticleOptionsBase;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Mth;
-import net.neoforged.api.distmarker.Dist;
-
-import org.joml.Vector3f;
 
 public class OrdnanceTrailParticle extends DustParticleBase<OrdnanceTrailParticle.Options> {
     final OrdnanceGradient gradient;

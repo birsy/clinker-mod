@@ -1,6 +1,6 @@
 package birsy.clinker.client.entity;
 
-import birsy.clinker.common.world.entity.RedLightningBoltEntity;
+import birsy.clinker.common.entity.RedLightningBoltEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -16,13 +16,11 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import java.util.List;
-import java.util.Random;
 
 public class RedLightningBoltRenderer extends EntityRenderer<RedLightningBoltEntity> {
     final Quaternionf q0 = new Quaternionf(), q1 = new Quaternionf();

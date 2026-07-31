@@ -1,9 +1,9 @@
 package birsy.clinker.core.registry.entity;
 
-import birsy.clinker.common.world.entity.gnomad.SuppliesHolder;
-import birsy.clinker.common.world.entity.gnomad.gnomind.LastKnownEntityPositionsTracker;
-import birsy.clinker.common.world.entity.system.squad.Squad;
-import birsy.clinker.common.world.entity.system.squad.SquadTask;
+import birsy.clinker.common.entity.gnomad.SuppliesHolder;
+import birsy.clinker.common.entity.gnomad.gnomind.LastKnownEntityPositionsTracker;
+import birsy.clinker.common.entity.system.squad.Squad;
+import birsy.clinker.common.entity.system.squad.SquadTask;
 import birsy.clinker.core.Clinker;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.GlobalPos;

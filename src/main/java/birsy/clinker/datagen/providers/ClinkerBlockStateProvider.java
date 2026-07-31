@@ -1,16 +1,13 @@
 package birsy.clinker.datagen.providers;
 
-import birsy.clinker.common.world.block.MothBallBlock;
-import birsy.clinker.common.world.block.PressureCookerBlock;
-import birsy.clinker.common.world.block.SulfurDuctBlock;
-import birsy.clinker.common.world.block.plant.*;
+import birsy.clinker.common.block.MothBallBlock;
+import birsy.clinker.common.block.PressureCookerBlock;
+import birsy.clinker.common.block.SulfurDuctBlock;
+import birsy.clinker.common.block.plant.*;
 import birsy.clinker.core.Clinker;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.models.blockstates.PropertyDispatch;
-import net.minecraft.data.models.blockstates.Variant;
-import net.minecraft.data.models.blockstates.VariantProperties;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.properties.*;

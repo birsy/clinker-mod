@@ -1,28 +1,5 @@
 package birsy.clinker.common.world.level.gen.content.feature;
 
-import birsy.clinker.common.world.block.plant.WaterFernBlock;
-import birsy.clinker.core.registry.ClinkerBlocks;
-import com.mojang.serialization.Codec;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.Holder;
-import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.WorldGenLevel;
-import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.block.LiquidBlock;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
-import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.material.Fluids;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-
 public class WaterlineFernFeature { //extends Feature<NoneFeatureConfiguration> {
 //    public WaterlineFernFeature(Codec<NoneFeatureConfiguration> codec) {
 //        super(codec);

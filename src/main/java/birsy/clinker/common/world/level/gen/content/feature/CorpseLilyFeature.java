@@ -1,7 +1,6 @@
 package birsy.clinker.common.world.level.gen.content.feature;
 
-import birsy.clinker.common.world.block.plant.CorpseLilyBulbBlock;
-import birsy.clinker.common.world.level.gen.system.noise.CachedNoiseContext;
+import birsy.clinker.common.block.plant.CorpseLilyBulbBlock;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
@@ -9,7 +8,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.feature.OreFeature;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 
 public class CorpseLilyFeature extends Feature<NoneFeatureConfiguration> {

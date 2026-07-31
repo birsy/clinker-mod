@@ -1,8 +1,8 @@
 package birsy.clinker.client.entity.item;
 
-import birsy.clinker.common.world.item.AlchemistsCrossbowItem;
-import birsy.clinker.common.world.item.components.CrossbowState;
-import birsy.clinker.common.world.item.components.LoadedItemStack;
+import birsy.clinker.common.item.AlchemistsCrossbowItem;
+import birsy.clinker.common.item.components.CrossbowState;
+import birsy.clinker.common.item.components.LoadedItemStack;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -31,7 +31,7 @@ import org.joml.Quaternionf;
 
 import javax.annotation.Nullable;
 
-import static birsy.clinker.common.world.item.AlchemistsCrossbowItem.getCrossbowState;
+import static birsy.clinker.common.item.AlchemistsCrossbowItem.getCrossbowState;
 
 @EventBusSubscriber(modid = Clinker.MOD_ID, value = Dist.CLIENT)
 public class AlchemistsCrossbowRenderer implements IClientItemExtensions {

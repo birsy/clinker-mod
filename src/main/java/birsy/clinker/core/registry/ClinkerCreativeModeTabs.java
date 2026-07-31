@@ -1,9 +1,9 @@
 package birsy.clinker.core.registry;
 
+import birsy.clinker.common.ordnance.modifiers.*;
 import birsy.clinker.common.page.Page;
-import birsy.clinker.common.world.item.components.PageContents;
-import birsy.clinker.common.world.ordnance.OrdnanceModifierSet;
-import birsy.clinker.common.world.ordnance.modifiers.*;
+import birsy.clinker.common.item.components.PageContents;
+import birsy.clinker.common.ordnance.OrdnanceModifierSet;
 import birsy.clinker.core.Clinker;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;

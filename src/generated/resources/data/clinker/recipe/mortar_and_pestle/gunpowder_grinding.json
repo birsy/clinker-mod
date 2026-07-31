@@ -1,0 +1,16 @@
+{
+  "type": "clinker:mortar_and_pestle",
+  "grind_time": 60,
+  "ingredients": [
+    {
+      "item": "clinker:sulfur"
+    },
+    {
+      "item": "clinker:saltpetre"
+    }
+  ],
+  "result": {
+    "count": 2,
+    "id": "minecraft:gunpowder"
+  }
+}

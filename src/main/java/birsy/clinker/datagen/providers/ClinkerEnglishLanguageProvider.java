@@ -1,6 +1,6 @@
 package birsy.clinker.datagen.providers;
 
-import birsy.clinker.common.world.ordnance.OrdnanceModifierType;
+import birsy.clinker.common.ordnance.OrdnanceModifierType;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registration.ClinkerBiome;
 import birsy.clinker.core.registration.SoundHolder;
@@ -12,11 +12,9 @@ import birsy.clinker.core.registry.entity.ClinkerAttributes;
 import birsy.clinker.core.registry.entity.ClinkerEntities;
 import birsy.clinker.core.registry.worldgen.ClinkerBiomes;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.registries.DeferredHolder;

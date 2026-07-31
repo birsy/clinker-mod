@@ -1,8 +1,8 @@
 package birsy.clinker.core.registry;
 
-import birsy.clinker.common.world.ordnance.OrdnanceModifier;
-import birsy.clinker.common.world.ordnance.OrdnanceModifierType;
-import birsy.clinker.common.world.ordnance.modifiers.*;
+import birsy.clinker.common.ordnance.OrdnanceModifier;
+import birsy.clinker.common.ordnance.OrdnanceModifierType;
+import birsy.clinker.common.ordnance.modifiers.*;
 import birsy.clinker.core.Clinker;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.network.RegistryFriendlyByteBuf;

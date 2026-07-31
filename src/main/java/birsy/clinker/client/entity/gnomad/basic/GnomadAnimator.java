@@ -1,6 +1,6 @@
 package birsy.clinker.client.entity.gnomad.basic;
 
-import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
+import birsy.clinker.common.entity.gnomad.GnomadEntity;
 import birsy.clinker.core.util.MathUtils;
 import foundry.veil.api.client.necromancer.Bone;
 import foundry.veil.api.client.necromancer.animation.Animation;

@@ -1,21 +1,14 @@
 package birsy.clinker.client.entity.slabcrab;
 
-import birsy.clinker.client.entity.gnomad.runt.GnomadRuntSkin;
 import birsy.clinker.client.entity.layer.BasicSkinnedEntityLayer;
-import birsy.clinker.common.world.entity.SlabCrabEntity;
+import birsy.clinker.common.entity.SlabCrabEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import foundry.veil.api.client.necromancer.animation.Animator;
 import foundry.veil.api.client.necromancer.render.NecromancerEntityRenderer;
-import foundry.veil.api.client.necromancer.render.NecromancerRenderer;
-import foundry.veil.api.client.necromancer.render.NecromancerSkinEntityRenderLayer;
-import foundry.veil.api.client.necromancer.render.Skin;
-import foundry.veil.api.client.render.MatrixStack;
 import foundry.veil.api.client.render.rendertype.VeilRenderType;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 
 public class SlabCrabRenderer extends NecromancerEntityRenderer<SlabCrabEntity, SlabCrabSkeleton> {

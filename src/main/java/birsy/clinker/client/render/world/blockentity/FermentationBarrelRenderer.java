@@ -1,7 +1,7 @@
 package birsy.clinker.client.render.world.blockentity;
 
-import birsy.clinker.common.world.block.FermentationBarrelBlock;
-import birsy.clinker.common.world.block.blockentity.FermentationBarrelBlockEntity;
+import birsy.clinker.common.block.FermentationBarrelBlock;
+import birsy.clinker.common.block.blockentity.FermentationBarrelBlockEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;

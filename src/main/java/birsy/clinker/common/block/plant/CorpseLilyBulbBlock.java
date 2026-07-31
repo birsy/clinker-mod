@@ -1,0 +1,128 @@
+package birsy.clinker.common.block.plant;
+
+import birsy.clinker.core.registry.ClinkerBlocks;
+import birsy.clinker.core.registry.ClinkerParticles;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
+
+public class CorpseLilyBulbBlock extends CorpseLilyCenterBlock {
+    protected static final VoxelShape SHAPE = Shapes.join(
+            Shapes.joinUnoptimized(
+                    Block.box(2.0, 0.0, 2.0, 14.0, 6.0, 14.0),
+                    Block.box(4.0, 0.1, 4.0, 12.0, 5.9, 12.0),
+                    BooleanOp.ONLY_FIRST
+            ),
+            Block.box(5.0, 0.1, 5.0, 11.0, 16.0, 11.0),
+            BooleanOp.ONLY_FIRST
+    );
+
+    public CorpseLilyBulbBlock(Properties properties) {
+        super(properties);
+    }
+
+    @Override
+    public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
+        return SHAPE;
+    }
+
+    @Override
+    public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state) {
+        BlockPos.MutableBlockPos mPos = pos.mutable();
+        for (Direction direction : Direction.Plane.HORIZONTAL) {
+            mPos.set(pos).move(direction);
+            BlockState offsetState = level.getBlockState(mPos);
+            if (offsetState.is(ClinkerBlocks.CORPSE_LILY_PETAL)) continue;
+            if (!offsetState.canBeReplaced()) continue;
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void performBonemeal(ServerLevel pLevel, RandomSource pRandomSource, BlockPos pPos, BlockState pState) {
+        this.grow(pLevel, pPos, pState, pRandomSource);
+    }
+
+    @Override
+    protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        if (random.nextInt(0, 5) == 0) this.grow(level, pos, state, random);
+    }
+
+    @Override
+    public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
+        super.animateTick(state, level, pos, random);
+        BlockPos.MutableBlockPos mPos = pos.mutable();
+        mPos.set(
+                pos.getX() + (int)random.triangle(0, 2),
+                pos.getY() + (int)random.triangle(1, 2),
+                pos.getZ() + (int)random.triangle(0, 2)
+        );
+        BlockState particleState = level.getBlockState(mPos);
+        if (!particleState.isCollisionShapeFullBlock(level, mPos)) {
+            level.addParticle(
+                    ClinkerParticles.FLY.get(),
+                    mPos.getX() + random.nextDouble(),
+                    mPos.getY() + random.nextDouble(),
+                    mPos.getZ() + random.nextDouble(),
+                    0.0, 0.0, 0.0
+            );
+        }
+    }
+
+    void grow(Level level, BlockPos pos, BlockState state, RandomSource random) {
+        BlockPos.MutableBlockPos mPos = pos.mutable();
+        for (Direction direction : Direction.Plane.HORIZONTAL.shuffledCopy(random)) {
+            mPos.set(pos).move(direction);
+            BlockState offsetState = level.getBlockState(mPos);
+
+            if (offsetState.is(ClinkerBlocks.CORPSE_LILY_PETAL)) continue;
+            if (!offsetState.canBeReplaced()) continue;
+
+            float pitch = Mth.randomBetween(level.random, 0.8F, 1.2F);
+            level.playSound(null, mPos, SoundEvents.NETHER_WART_PLANTED, SoundSource.BLOCKS, 1.0F, pitch);
+            BlockState petal = ClinkerBlocks.CORPSE_LILY_PETAL.get().defaultBlockState()
+                    .setValue(CorpseLilyPetalBlock.FACING, direction.getOpposite())
+                    .setValue(CorpseLilyPetalBlock.WATERLOGGED, level.getFluidState(mPos).is(Fluids.WATER));
+            level.setBlock(mPos, petal, 3);
+            return;
+        }
+    }
+
+    public static void place(LevelAccessor level, BlockPos pos, boolean bloomed) {
+        BlockState bulb = ClinkerBlocks.CORPSE_LILY_BULB.get().defaultBlockState()
+                .setValue(CorpseLilyPetalBlock.WATERLOGGED, level.getFluidState(pos).is(Fluids.WATER));
+        level.setBlock(pos, bulb, 3);
+
+        BlockPos.MutableBlockPos mPos = pos.mutable();
+        for (Direction direction : Direction.Plane.HORIZONTAL) {
+            mPos.set(pos).move(direction);
+            BlockState offsetState = level.getBlockState(mPos);
+            if (offsetState.is(ClinkerBlocks.CORPSE_LILY_PETAL)) continue;
+            if (!offsetState.canBeReplaced()) continue;
+
+            BlockState petal = ClinkerBlocks.CORPSE_LILY_PETAL.get().defaultBlockState()
+                    .setValue(CorpseLilyPetalBlock.FACING, direction.getOpposite())
+                    .setValue(CorpseLilyPetalBlock.WATERLOGGED, level.getFluidState(mPos).is(Fluids.WATER));
+            if (bloomed) {
+                petal = petal.setValue(CorpseLilyPetalBlock.BLOOM, true);
+            }
+            level.setBlock(mPos, petal, 3);
+        }
+    }
+}

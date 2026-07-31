@@ -12,7 +12,7 @@ import birsy.clinker.common.world.level.gen.system.surface.shaper.SurfaceShapers
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureType;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.WorldFeatureCapability;
 import birsy.clinker.common.world.level.weather.OthershoreWeather;
-import birsy.clinker.common.world.ordnance.OrdnanceModifierType;
+import birsy.clinker.common.ordnance.OrdnanceModifierType;
 import birsy.clinker.core.Clinker;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;

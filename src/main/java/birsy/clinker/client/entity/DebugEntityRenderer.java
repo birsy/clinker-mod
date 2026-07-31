@@ -1,10 +1,9 @@
 package birsy.clinker.client.entity;
 
 import birsy.clinker.client.render.utilities.DebugRenderUtil;
-import birsy.clinker.common.world.entity.GiantLeggyCritterEntity;
-import birsy.clinker.common.world.entity.LegManager;
+import birsy.clinker.common.entity.GiantLeggyCritterEntity;
+import birsy.clinker.common.entity.LegManager;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -17,7 +16,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3d;
-import org.joml.Vector3dc;
 
 public class DebugEntityRenderer extends EntityRenderer<Entity> {
     private final BlockRenderDispatcher dispatcher;

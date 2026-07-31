@@ -1,6 +1,6 @@
 package birsy.clinker.common.world.level.gen.content.surface.decorator;
 
-import birsy.clinker.common.world.block.FallingLayerBlock;
+import birsy.clinker.common.block.FallingLayerBlock;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
 import birsy.clinker.common.world.level.gen.system.surface.decorator.SurfaceDecorationContext;
 import birsy.clinker.common.world.level.gen.system.surface.decorator.SurfaceDecorator;

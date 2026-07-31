@@ -2,8 +2,7 @@ package birsy.clinker.client.entity.layer;
 
 import birsy.clinker.client.AnimationUtilities;
 import birsy.clinker.client.render.utilities.DebugRenderUtil;
-import birsy.clinker.common.world.entity.GroundLocomotionEntity;
-import birsy.clinker.core.Clinker;
+import birsy.clinker.common.entity.GroundLocomotionEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import foundry.veil.api.client.necromancer.Skeleton;

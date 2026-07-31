@@ -83,6 +83,8 @@ public class Clinker {
         ClinkerOrdnanceModifierTypes.ORDNANCE_MODIFIER_TYPES.register(modEventBus);
 
         ClinkerOthershoreWeatherTypes.OTHERSHORE_WEATHER_TYPES.register(modEventBus);
+        ClinkerRecipes.Types.RECIPE_TYPES.register(modEventBus);
+        ClinkerRecipes.Serializers.RECIPE_SERIALIZERS.register(modEventBus);
 
         modEventBus.addListener(this::setup);
         modEventBus.addListener(this::doClientStuff);

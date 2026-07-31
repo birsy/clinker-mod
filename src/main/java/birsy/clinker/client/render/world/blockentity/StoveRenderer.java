@@ -1,6 +1,6 @@
 package birsy.clinker.client.render.world.blockentity;
 
-import birsy.clinker.common.world.block.blockentity.StoveBlockEntity;
+import birsy.clinker.common.block.blockentity.StoveBlockEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;

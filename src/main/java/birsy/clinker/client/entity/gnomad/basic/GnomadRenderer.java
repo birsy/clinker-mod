@@ -3,18 +3,12 @@ package birsy.clinker.client.entity.gnomad.basic;
 import birsy.clinker.client.entity.layer.BasicSkinnedEntityLayer;
 import birsy.clinker.client.entity.layer.DebugSurveyorWheelRenderer;
 import birsy.clinker.client.entity.layer.HeldItemsLayer;
-import birsy.clinker.common.world.entity.gnomad.GnomadEntity;
+import birsy.clinker.common.entity.gnomad.GnomadEntity;
 import birsy.clinker.core.Clinker;
 import foundry.veil.api.client.necromancer.animation.Animator;
 import foundry.veil.api.client.necromancer.render.NecromancerEntityRenderer;
-import foundry.veil.api.client.necromancer.render.NecromancerRenderer;
-import foundry.veil.api.client.necromancer.render.NecromancerSkinEntityRenderLayer;
-import foundry.veil.api.client.necromancer.render.Skin;
-import foundry.veil.api.client.render.MatrixStack;
 import foundry.veil.api.client.render.rendertype.VeilRenderType;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 
 public class GnomadRenderer extends NecromancerEntityRenderer<GnomadEntity, GnomadSkeleton> {

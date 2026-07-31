@@ -1,6 +1,6 @@
 package birsy.clinker.core.registry;
 
-import birsy.clinker.common.world.ordnance.OrdnanceModifierType;
+import birsy.clinker.common.ordnance.OrdnanceModifierType;
 import birsy.clinker.core.Clinker;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.BlockTags;
@@ -10,7 +10,6 @@ import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.gameevent.GameEvent;
 
 public class ClinkerTags {
     public static final class Blocks {

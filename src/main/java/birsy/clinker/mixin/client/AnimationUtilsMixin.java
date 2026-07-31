@@ -1,9 +1,8 @@
 package birsy.clinker.mixin.client;
 
-import birsy.clinker.common.world.item.AlchemistsCrossbowItem;
+import birsy.clinker.common.item.AlchemistsCrossbowItem;
 import net.minecraft.client.model.AnimationUtils;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

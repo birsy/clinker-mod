@@ -1,15 +1,12 @@
 package birsy.clinker.client.sound;
 
-import birsy.clinker.common.world.block.blockentity.StoveBlockEntity;
-import birsy.clinker.core.Clinker;
+import birsy.clinker.common.block.blockentity.StoveBlockEntity;
 import birsy.clinker.core.registry.ClinkerSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-
 
 
 public class StoveSoundInstance extends AbstractTickableSoundInstance {

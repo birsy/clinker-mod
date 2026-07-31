@@ -1,8 +1,8 @@
 package birsy.clinker.common.networking.packet.debug;
 
 import birsy.clinker.client.render.debug.ClinkerDebugRenderers;
-import birsy.clinker.common.world.entity.system.squad.Squad;
-import birsy.clinker.common.world.entity.system.squad.SquadDebugDataDump;
+import birsy.clinker.common.entity.system.squad.Squad;
+import birsy.clinker.common.entity.system.squad.SquadDebugDataDump;
 import birsy.clinker.core.Clinker;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.FriendlyByteBuf;

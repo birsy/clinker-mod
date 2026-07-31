@@ -4,7 +4,7 @@ import birsy.clinker.client.entity.SingleBoneSkeleton;
 import birsy.clinker.client.entity.gnomad.mogul.GnomadMogulRenderer;
 import birsy.clinker.client.entity.gnomad.mogul.GnomadMogulSkeleton;
 import birsy.clinker.client.entity.gnomad.mogul.GnomadMogulWeaponSkins;
-import birsy.clinker.common.world.entity.gnomad.mogul.GnomadMogulEntity;
+import birsy.clinker.common.entity.gnomad.mogul.GnomadMogulEntity;
 import foundry.veil.api.client.necromancer.Skeleton;
 import foundry.veil.api.client.necromancer.render.*;
 import foundry.veil.api.client.render.MatrixStack;

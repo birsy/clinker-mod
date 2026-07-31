@@ -1,23 +1,16 @@
 package birsy.clinker.client.entity.gnomad.mogul;
 
-import birsy.clinker.client.entity.gnomad.basic.GnomadSkin;
 import birsy.clinker.client.entity.gnomad.mogul.layer.GnomadMogulWeaponRenderLayer;
 import birsy.clinker.client.entity.layer.BasicSkinnedEntityLayer;
 import birsy.clinker.client.entity.layer.DebugSurveyorWheelRenderer;
-import birsy.clinker.common.world.entity.gnomad.mogul.GnomadMogulEntity;
+import birsy.clinker.common.entity.gnomad.mogul.GnomadMogulEntity;
 import birsy.clinker.core.Clinker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import foundry.veil.api.client.necromancer.animation.Animator;
 import foundry.veil.api.client.necromancer.render.NecromancerEntityRenderer;
-import foundry.veil.api.client.necromancer.render.NecromancerRenderer;
-import foundry.veil.api.client.necromancer.render.NecromancerSkinEntityRenderLayer;
-import foundry.veil.api.client.necromancer.render.Skin;
-import foundry.veil.api.client.render.MatrixStack;
 import foundry.veil.api.client.render.rendertype.VeilRenderType;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 
