@@ -1,0 +1,158 @@
+{
+  "variants": {
+    "input=down,output=down": {
+      "model": "clinker:block/taproots"
+    },
+    "input=down,output=east": {
+      "model": "clinker:block/taproots_turn",
+      "x": 90,
+      "y": 180
+    },
+    "input=down,output=north": {
+      "model": "clinker:block/taproots_turn",
+      "x": 90,
+      "y": 90
+    },
+    "input=down,output=south": {
+      "model": "clinker:block/taproots_turn",
+      "x": 90,
+      "y": 270
+    },
+    "input=down,output=up": {
+      "model": "clinker:block/taproots"
+    },
+    "input=down,output=west": {
+      "model": "clinker:block/taproots_turn",
+      "x": 90
+    },
+    "input=east,output=down": {
+      "model": "clinker:block/taproots_turn",
+      "x": 90,
+      "y": 180
+    },
+    "input=east,output=east": {
+      "model": "clinker:block/taproots",
+      "x": 90,
+      "y": 90
+    },
+    "input=east,output=north": {
+      "model": "clinker:block/taproots_turn",
+      "y": 90
+    },
+    "input=east,output=south": {
+      "model": "clinker:block/taproots_turn",
+      "y": 180
+    },
+    "input=east,output=up": {
+      "model": "clinker:block/taproots_turn",
+      "x": 270,
+      "y": 180
+    },
+    "input=east,output=west": {
+      "model": "clinker:block/taproots",
+      "x": 90,
+      "y": 90
+    },
+    "input=north,output=down": {
+      "model": "clinker:block/taproots_turn",
+      "x": 90,
+      "y": 90
+    },
+    "input=north,output=east": {
+      "model": "clinker:block/taproots_turn",
+      "y": 90
+    },
+    "input=north,output=north": {
+      "model": "clinker:block/taproots",
+      "x": 90
+    },
+    "input=north,output=south": {
+      "model": "clinker:block/taproots",
+      "x": 90
+    },
+    "input=north,output=up": {
+      "model": "clinker:block/taproots_turn",
+      "x": 270,
+      "y": 90
+    },
+    "input=north,output=west": {
+      "model": "clinker:block/taproots_turn"
+    },
+    "input=south,output=down": {
+      "model": "clinker:block/taproots_turn",
+      "x": 90,
+      "y": 270
+    },
+    "input=south,output=east": {
+      "model": "clinker:block/taproots_turn",
+      "y": 180
+    },
+    "input=south,output=north": {
+      "model": "clinker:block/taproots",
+      "x": 90
+    },
+    "input=south,output=south": {
+      "model": "clinker:block/taproots",
+      "x": 90
+    },
+    "input=south,output=up": {
+      "model": "clinker:block/taproots_turn",
+      "x": 270,
+      "y": 270
+    },
+    "input=south,output=west": {
+      "model": "clinker:block/taproots_turn",
+      "y": 270
+    },
+    "input=up,output=down": {
+      "model": "clinker:block/taproots"
+    },
+    "input=up,output=east": {
+      "model": "clinker:block/taproots_turn",
+      "x": 270,
+      "y": 180
+    },
+    "input=up,output=north": {
+      "model": "clinker:block/taproots_turn",
+      "x": 270,
+      "y": 90
+    },
+    "input=up,output=south": {
+      "model": "clinker:block/taproots_turn",
+      "x": 270,
+      "y": 270
+    },
+    "input=up,output=up": {
+      "model": "clinker:block/taproots"
+    },
+    "input=up,output=west": {
+      "model": "clinker:block/taproots_turn",
+      "x": 270
+    },
+    "input=west,output=down": {
+      "model": "clinker:block/taproots_turn",
+      "x": 90
+    },
+    "input=west,output=east": {
+      "model": "clinker:block/taproots",
+      "x": 90,
+      "y": 90
+    },
+    "input=west,output=north": {
+      "model": "clinker:block/taproots_turn"
+    },
+    "input=west,output=south": {
+      "model": "clinker:block/taproots_turn",
+      "y": 270
+    },
+    "input=west,output=up": {
+      "model": "clinker:block/taproots_turn",
+      "x": 270
+    },
+    "input=west,output=west": {
+      "model": "clinker:block/taproots",
+      "x": 90,
+      "y": 90
+    }
+  }
+}

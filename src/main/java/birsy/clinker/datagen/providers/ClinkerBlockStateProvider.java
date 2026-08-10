@@ -15,6 +15,7 @@ import net.neoforged.neoforge.client.model.generators.*;
 import net.neoforged.neoforge.client.model.generators.loaders.CompositeModelBuilder;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
+import java.util.Arrays;
 import java.util.function.Function;
 
 import static birsy.clinker.core.registry.ClinkerBlocks.*;
@@ -523,7 +524,7 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
                         .condition(SulfurDuctBlock.OUTPUT_FACE, dir)
                         .end();
 
-                Direction[] otherDirs = java.util.Arrays.stream(Direction.values())
+                Direction[] otherDirs = Arrays.stream(Direction.values())
                         .filter(d -> d != dir)
                         .toArray(Direction[]::new);
 
@@ -911,6 +912,75 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
             }
         }
 
+        // roots
+        {
+            ResourceLocation mattedRootLocation = this.modLoc(ModelProvider.BLOCK_FOLDER + "/taproot_burl");
+            this.axisBlock(TAPROOT_BURL.get(), mattedRootLocation);
+            this.simpleBlockItem(TAPROOT_BURL.get(), this.models().getExistingFile(mattedRootLocation));
+
+            ModelFile.ExistingModelFile[] straightTaprootModels = {
+                    this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/taproots"))//,
+//                    this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/taproots_1")),
+//                    this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/taproots_2")),
+//                    this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/taproots_3")),
+//                    this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/taproots_4")),
+//                    this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/taproots_5"))
+            };
+            ModelFile.ExistingModelFile turnTaprootModel = this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/taproots_turn"));
+            Direction[] directions = Direction.values();
+            VariantBlockStateBuilder taprootModelBuilder = getVariantBuilder(TAPROOTS.get());
+            for (Direction inputDir : directions) {
+                for (Direction outputDir : directions) {
+                    if (inputDir == outputDir || inputDir == outputDir.getOpposite()) {
+                        int rotX = 0, rotY = 0;
+                        switch (inputDir.getAxis()) {
+                            case Z -> { rotX = 90; }
+                            case X -> { rotX = 90; rotY = 90; }
+                        }
+                        ConfiguredModel[] models = new ConfiguredModel[straightTaprootModels.length];
+                        for (int i = 0; i < straightTaprootModels.length; i++) {
+                            ModelFile.ExistingModelFile model = straightTaprootModels[i];
+                            models[i] = ConfiguredModel.builder().modelFile(model)
+                                    .rotationX(rotX).rotationY(rotY)
+                                    .buildLast();
+                        }
+                        taprootModelBuilder.partialState()
+                                .with(TaprootsBlock.INPUT_FACE, inputDir)
+                                .with(TaprootsBlock.OUTPUT_FACE, outputDir)
+                                .addModels(models);
+                    } else {
+                        // order independent directions
+                        Direction dir1, dir2;
+                        if (inputDir.get3DDataValue() < outputDir.get3DDataValue()) { dir1 = inputDir; dir2 = outputDir; }
+                        else { dir1 = outputDir; dir2 = inputDir; }
+
+                        int yRot = 0, xRot = 0;
+                        if (dir1.getAxis() == Direction.Axis.Y) {
+                            // one leg vertical, one horizontal
+                            int a = (dir1 == Direction.UP) ? 3 : 1;
+                            int b = Math.floorMod(dir2.get2DDataValue() - 1, 4);
+                            xRot = a * 90;
+                            yRot = b * 90;
+                        } else {
+                            // both legs horizontal
+                            int b;
+                            if (dir1 == Direction.NORTH && dir2 == Direction.WEST) b = 0;
+                            else if (dir1 == Direction.NORTH && dir2 == Direction.EAST) b = 1;
+                            else if (dir1 == Direction.SOUTH && dir2 == Direction.EAST) b = 2;
+                            else b = 3;
+                            yRot = b * 90;
+                        }
+
+                        taprootModelBuilder.partialState()
+                                .with(TaprootsBlock.INPUT_FACE, inputDir)
+                                .with(TaprootsBlock.OUTPUT_FACE, outputDir)
+                                .addModels(ConfiguredModel.builder().modelFile(turnTaprootModel).rotationX(xRot).rotationY(yRot).buildLast());
+                    }
+                }
+            }
+
+            this.simpleBlockItem(TAPROOTS.get(), turnTaprootModel);
+        }
 
         // stromatolites
         {

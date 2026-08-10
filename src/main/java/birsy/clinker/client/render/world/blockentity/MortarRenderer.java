@@ -3,17 +3,32 @@ package birsy.clinker.client.render.world.blockentity;
 import birsy.clinker.common.block.blockentity.MortarBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import net.minecraft.Util;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.core.NonNullList;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 public class MortarRenderer<T extends MortarBlockEntity> implements BlockEntityRenderer<T> {
     private final ItemRenderer itemRenderer;
+    private static final Vector3fc[] randomOffsets = Util.make(() -> {
+        Vector3fc[] result = new Vector3fc[64];
+        RandomSource randomSource = RandomSource.create(80085);
+        for (int i = 0; i < result.length; i++)
+            result[i] = new Vector3f(
+                    (float) randomSource.triangle(0, 1),
+                    (float) randomSource.triangle(0, 1),
+                    (float) randomSource.triangle(0, 1)
+            );
+        return result;
+    });
     public MortarRenderer(BlockEntityRendererProvider.Context context) {
         this.itemRenderer = context.getItemRenderer();
     }
@@ -28,10 +43,15 @@ public class MortarRenderer<T extends MortarBlockEntity> implements BlockEntityR
 
         ItemStack result = blockEntity.result;
         if (!result.isEmpty()) {
-            poseStack.pushPose();
-            poseStack.scale(recipeProgress, recipeProgress, recipeProgress);
-            itemRenderer.renderStatic(result, ItemDisplayContext.GROUND, packedLight, packedOverlay, poseStack, bufferSource, blockEntity.getLevel(), 0);
-            poseStack.popPose();
+            int count = Math.min(result.getCount(), 8);
+            for (int i = 0; i < count; i++) {
+                poseStack.pushPose();
+                Vector3fc offset = randomOffsets[i];
+                poseStack.translate(offset.x() * 0.12, offset.y() * 0.02, offset.z() * 0.12);
+                poseStack.scale(recipeProgress, recipeProgress, recipeProgress);
+                itemRenderer.renderStatic(result, ItemDisplayContext.GROUND, packedLight, packedOverlay, poseStack, bufferSource, blockEntity.getLevel(), 0);
+                poseStack.popPose();
+            }
         }
 
         poseStack.mulPose(Axis.YP.rotationDegrees(45 + blockEntity.getRotation(partialTick)));

@@ -184,6 +184,10 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(TALL_MUD_REEDS.get());
         pOutput.accept(SHORT_MUD_REEDS.get());
         pOutput.accept(MUD_REEDS.get());
+
+        pOutput.accept(TAPROOT_BURL.get());
+        pOutput.accept(TAPROOTS.get());
+
         pOutput.accept(CAVE_FIG_STEM.get());
         pOutput.accept(CAVE_FIG_ROOTS.get());
         pOutput.accept(DRIED_CLOVERS.get());

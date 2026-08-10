@@ -46,7 +46,8 @@ public class ClinkerFeatures {
             FEATURES.register("corpse_lily", () -> new CorpseLilyFeature(NoneFeatureConfiguration.CODEC));
     public static final Supplier<Feature<SpotreedFeature.SpotreedFeatureConfiguration>> SPOTREED =
             FEATURES.register("spotreed", () -> new SpotreedFeature(SpotreedFeature.SpotreedFeatureConfiguration.CODEC));
-
+    public static final Supplier<Feature<NoneFeatureConfiguration>> TAPROOT =
+            FEATURES.register("taproot", () -> new TaprootFeature(NoneFeatureConfiguration.CODEC));
 //    static class Configured {
 //        public static final ClinkerConfiguredFeature<?, ?> BRIMSTONE_BOULDER = ClinkerConfiguredFeature.create(
 //                "brimstone_boulder",

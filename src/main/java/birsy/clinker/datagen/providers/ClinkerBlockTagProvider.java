@@ -5,7 +5,6 @@ import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.ClinkerTags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.recipes.packs.VanillaRecipeProvider;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.*;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
@@ -99,7 +98,9 @@ public class ClinkerBlockTagProvider extends BlockTagsProvider {
 
         usesAxe.add(
                 ClinkerBlocks.SPOTREED.get(),
-                ClinkerBlocks.TANGLED_SPOTREED.get()
+                ClinkerBlocks.TANGLED_SPOTREED.get(),
+                ClinkerBlocks.TAPROOT_BURL.get(),
+                ClinkerBlocks.TAPROOTS.get()
         );
 
         for (DeferredHolder<Block, ? extends Block> block : ClinkerBlocks.BLOCKS.getEntries()) {

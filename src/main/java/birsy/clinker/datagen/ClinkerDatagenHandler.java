@@ -10,7 +10,6 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
@@ -34,37 +33,30 @@ public class ClinkerDatagenHandler {
         CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 
         ClinkerBlockTagProvider blockTags = new ClinkerBlockTagProvider(output, lookupProvider, existingFileHelper);
-        generator.addProvider(true, blockTags);
-        generator.addProvider(true, new ClinkerItemTagProvider(output, lookupProvider, blockTags.contentsGetter(), existingFileHelper));
-        generator.addProvider(true, new ClinkerEntityTagProvider(output, lookupProvider, existingFileHelper));
-        generator.addProvider(true, new ClinkerDamageTypeTagProvider(output, lookupProvider, existingFileHelper));
-        generator.addProvider(true, new ClinkerOrdnanceModifierTagProvider(output, lookupProvider, existingFileHelper));
-
-        generator.addProvider(true, new ClinkerRecipesProvider(output, lookupProvider));
-
-        generator.addProvider(event.includeClient(), new ClinkerBlockStateProvider(output, existingFileHelper));
-        generator.addProvider(event.includeClient(), new ClinkerItemModelProvider(output, existingFileHelper));
-        generator.addProvider(event.includeClient(), new ClinkerEnglishLanguageProvider(output));
-        generator.addProvider(event.includeClient(), new ClinkerSoundDefinitionsProvider(output, existingFileHelper, Clinker.MOD_ID, ClinkerSounds.SOUND_HOLDERS));
-        generator.addProvider(event.includeClient(), new ClinkerCounterTransformOverrideProvider(output, lookupProvider));
-
-        generator.addProvider(true, new ClinkerDataMapProvider(output, lookupProvider));
-
-        event.createProvider((providerOutput, providerLookupProvider) -> new LootTableProvider(providerOutput, Set.of(),
-                List.of(
-                        new LootTableProvider.SubProviderEntry(ClinkerBlockLootTableProvider::new, LootContextParamSets.BLOCK),
-                        new LootTableProvider.SubProviderEntry(ClinkerMiscLootTableProvider::new, LootContextParamSets.EMPTY)
-                ), providerLookupProvider)
-        );
-
-        event.getGenerator().addProvider(
-                event.includeServer(),
-                (DataProvider.Factory<DatapackBuiltinEntriesProvider>) (packOutput) -> new DatapackBuiltinEntriesProvider(
-                        packOutput,
-                        event.getLookupProvider(),
+        event.addProvider(blockTags);
+        event.addProvider(new ClinkerItemTagProvider(output, lookupProvider, blockTags.contentsGetter(), existingFileHelper));
+        event.addProvider(new ClinkerEntityTagProvider(output, lookupProvider, existingFileHelper));
+        event.addProvider(new ClinkerDamageTypeTagProvider(output, lookupProvider, existingFileHelper));
+        event.addProvider(new ClinkerOrdnanceModifierTagProvider(output, lookupProvider, existingFileHelper));
+        event.addProvider(new ClinkerRecipesProvider(output, lookupProvider));
+        event.addProvider(new ClinkerDataMapProvider(output, lookupProvider));
+        generator.addProvider(true,
+                new DatapackBuiltinEntriesProvider(output, lookupProvider,
                         new RegistrySetBuilder().add(Registries.BIOME, ClinkerBiomeProvider::addBiomes),
                         Set.of(Clinker.MOD_ID)
                 )
         );
+        event.addProvider(new LootTableProvider(output, Set.of(), List.of(
+                        new LootTableProvider.SubProviderEntry(ClinkerBlockLootTableProvider::new, LootContextParamSets.BLOCK),
+                        new LootTableProvider.SubProviderEntry(ClinkerMiscLootTableProvider::new, LootContextParamSets.EMPTY)
+                ), lookupProvider)
+        );
+
+        boolean includeClient = event.includeClient();
+        generator.addProvider(includeClient, new ClinkerBlockStateProvider(output, existingFileHelper));
+        generator.addProvider(includeClient, new ClinkerItemModelProvider(output, existingFileHelper));
+        generator.addProvider(includeClient, new ClinkerEnglishLanguageProvider(output));
+        generator.addProvider(includeClient, new ClinkerSoundDefinitionsProvider(output, existingFileHelper, Clinker.MOD_ID, ClinkerSounds.SOUND_HOLDERS));
+        generator.addProvider(includeClient, new ClinkerCounterTransformOverrideProvider(output, lookupProvider));
     }
 }

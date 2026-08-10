@@ -291,10 +291,10 @@ public class ClinkerBlocks
             new WoodType(
                 "dismal_aspen",
                 DISMAL_ASPEN_BLOCK_SET_TYPE,
-                SoundType.NETHER_WOOD,
-                SoundType.NETHER_WOOD_HANGING_SIGN,
-                SoundEvents.NETHER_WOOD_FENCE_GATE_CLOSE,
-                SoundEvents.NETHER_WOOD_FENCE_GATE_OPEN
+                SoundType.CHERRY_WOOD,
+                SoundType.CHERRY_WOOD_HANGING_SIGN,
+                SoundEvents.CHERRY_WOOD_FENCE_GATE_CLOSE,
+                SoundEvents.CHERRY_WOOD_FENCE_GATE_OPEN
             )
     );
     public static final DeferredBlock<Block> DISMAL_ASPEN_HEART = createBlock("dismal_aspen_heart", () -> new DismalAspenHeartBlock(
@@ -346,6 +346,9 @@ public class ClinkerBlocks
     public static final DeferredBlock<DoubleMudReedsBlock> TALL_MUD_REEDS = createBlock("tall_mud_reeds", () -> new DoubleMudReedsBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.TALL_GRASS).mapColor(MapColor.COLOR_BROWN).sound(SoundType.HANGING_ROOTS)));
     public static final DeferredBlock<MudReedsBlock> SHORT_MUD_REEDS = createBlock("short_mud_reeds", () -> new MudReedsBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SHORT_GRASS).mapColor(MapColor.COLOR_BROWN).sound(SoundType.HANGING_ROOTS)));
     public static final DeferredBlock<MudReedsBlock> MUD_REEDS = createBlock("mud_reeds", () -> new MudReedsBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SHORT_GRASS).mapColor(MapColor.COLOR_BROWN).sound(SoundType.HANGING_ROOTS)));
+
+    public static final DeferredBlock<TaprootsBlock> TAPROOTS = createBlock("taproots", () -> new TaprootsBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_WOOD).sound(SoundType.BAMBOO_WOOD).noOcclusion()));
+    public static final DeferredBlock<RotatedPillarBlock> TAPROOT_BURL = createBlock("taproot_burl", () -> new RotatedPillarBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_WOOD).sound(SoundType.BAMBOO_WOOD)));
 
     public static final DeferredBlock<Block> CAVE_FIG_STEM = createBlock("cave_fig_stem", () -> new HugeMushroomBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY).sound(SoundType.CALCITE)));
     public static final DeferredBlock<Block> CAVE_FIG_ROOTS = createBlock("cave_fig_roots", () -> new CaveFigRootsBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY).noOcclusion().sound(SoundType.CALCITE)));

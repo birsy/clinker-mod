@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "clinker:block/taproot_burl_end",
+    "side": "clinker:block/taproot_burl_side"
+  }
+}
