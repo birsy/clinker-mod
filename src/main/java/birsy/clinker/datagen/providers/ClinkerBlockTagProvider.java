@@ -70,25 +70,27 @@ public class ClinkerBlockTagProvider extends BlockTagsProvider {
                 ClinkerBlocks.SALTY_STEM.get()
         );
 
-        IntrinsicTagAppender<Block> usesPickaxe = this.tag(BlockTags.MINEABLE_WITH_PICKAXE).replace(false);
-        IntrinsicTagAppender<Block> usesAxe = this.tag(BlockTags.MINEABLE_WITH_AXE).replace(false);
-        IntrinsicTagAppender<Block> usesShovel = this.tag(BlockTags.MINEABLE_WITH_SHOVEL).replace(false);
-        IntrinsicTagAppender<Block> usesHoe = this.tag(BlockTags.MINEABLE_WITH_HOE).replace(false);
         IntrinsicTagAppender<Block> usesSword = this.tag(BlockTags.SWORD_EFFICIENT).replace(false);
-
         usesSword.add(
                 ClinkerBlocks.THORNY_STEM.get(),
                 ClinkerBlocks.BRAMBLE_BLOSSOM.get(),
                 ClinkerBlocks.WITHERING_BRAMBLE_BLOSSOM.get()
         );
 
-        usesPickaxe.add(ClinkerBlocks.SALTMOSS.get());
+        IntrinsicTagAppender<Block> usesPickaxe = this.tag(BlockTags.MINEABLE_WITH_PICKAXE).replace(false);
+        usesPickaxe.add(
+                ClinkerBlocks.SALTMOSS.get(),
+                ClinkerBlocks.AMBER_BLOCK.get()
+        );
+
+        IntrinsicTagAppender<Block> usesShovel = this.tag(BlockTags.MINEABLE_WITH_SHOVEL).replace(false);
         usesShovel.add(
                 ClinkerBlocks.SALT_GRAVEL.get(),
                 ClinkerBlocks.SALTPETRE_LEACHED_DIRT.get(),
                 ClinkerBlocks.PEAT_MOSS.get()
         );
 
+        IntrinsicTagAppender<Block> usesHoe = this.tag(BlockTags.MINEABLE_WITH_HOE).replace(false);
         usesHoe.add(
                 ClinkerBlocks.PEAT_MOSS.get(),
                 ClinkerBlocks.SPOTREED.get(),
@@ -96,6 +98,7 @@ public class ClinkerBlockTagProvider extends BlockTagsProvider {
                 ClinkerBlocks.HERBAL_AMALGAM_BLOCK.get()
         );
 
+        IntrinsicTagAppender<Block> usesAxe = this.tag(BlockTags.MINEABLE_WITH_AXE).replace(false);
         usesAxe.add(
                 ClinkerBlocks.SPOTREED.get(),
                 ClinkerBlocks.TANGLED_SPOTREED.get(),

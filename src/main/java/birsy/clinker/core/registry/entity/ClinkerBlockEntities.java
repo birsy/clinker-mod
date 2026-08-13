@@ -43,6 +43,9 @@ public class ClinkerBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PressureCookerBlockEntity>> PRESSURE_COOKER = BLOCK_ENTITY_TYPES.register("pressure_cooker",
             () -> BlockEntityType.Builder.of(PressureCookerBlockEntity::new, ClinkerBlocks.PRESSURE_COOKER.get()).build(null));
 
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<EmbeddedAmberBlockEntity>> EMBEDDED_AMBER = BLOCK_ENTITY_TYPES.register("embedded_amber",
+            () -> BlockEntityType.Builder.of(EmbeddedAmberBlockEntity::new, ClinkerBlocks.EMBEDDED_AMBER_BLOCK.get()).build(null));
+
     public static void registerTileEntityRenderers() {
         BlockEntityRenderers.register(ClinkerBlockEntities.FERMENTATION_BARREL.get(), FermentationBarrelRenderer::new);
         BlockEntityRenderers.register(ClinkerBlockEntities.SARCOPHAGUS_INNARDS.get(), SarcophagusInnardsRenderer::new);

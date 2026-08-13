@@ -1,6 +1,6 @@
 package birsy.clinker.common.world.level.gen.content.feature;
 
-import birsy.clinker.common.block.plant.TaprootsBlock;
+import birsy.clinker.common.block.BidirectionalPipeBlock;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
@@ -223,8 +223,8 @@ public class TaprootFeature extends Feature<NoneFeatureConfiguration> {
 
                 level.setBlock(cursor,
                         ClinkerBlocks.TAPROOTS.get().defaultBlockState()
-                                .setValue(TaprootsBlock.INPUT_FACE, inputDir)
-                                .setValue(TaprootsBlock.OUTPUT_FACE, travelDir),
+                                .setValue(BidirectionalPipeBlock.INPUT_FACE, inputDir)
+                                .setValue(BidirectionalPipeBlock.OUTPUT_FACE, travelDir),
                         2
                 );
                 inputDir = travelDir.getOpposite();

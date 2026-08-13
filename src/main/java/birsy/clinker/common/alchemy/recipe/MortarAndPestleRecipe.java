@@ -98,7 +98,6 @@ public class MortarAndPestleRecipe implements Recipe<MortarAndPestleRecipe.Input
 
     @Override public NonNullList<Ingredient> getIngredients() { return ingredients; }
     @Override public ItemStack getResultItem(HolderLookup.Provider registries) { return result; }
-
     @Override public boolean canCraftInDimensions(int w, int h) { return true; }
     @Override public RecipeType<?> getType() { return ClinkerRecipes.Types.MORTAR_AND_PESTLE.get(); }
     @Override public RecipeSerializer<?> getSerializer() { return ClinkerRecipes.Serializers.MORTAR_AND_PESTLE.get(); }

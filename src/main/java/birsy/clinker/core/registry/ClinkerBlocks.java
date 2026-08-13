@@ -216,6 +216,18 @@ public class ClinkerBlocks
             .pushReaction(PushReaction.DESTROY)
     ));
 
+    private static final BlockBehaviour.Properties AMBER_PROPERTIES = BlockBehaviour.Properties.of()
+            .strength(3.0F, 1.5F)
+            .mapColor(MapColor.COLOR_ORANGE)
+            .sound(SoundType.COPPER_BULB)
+            .noOcclusion()
+            .isValidSpawn((state, level, pos, entityType) -> false)
+            .isRedstoneConductor((state, level, pos) -> false)
+            .isSuffocating((state, level, pos) -> false)
+            .isViewBlocking((state, level, pos) -> false);
+    public static final DeferredBlock<AmberBlock> AMBER_BLOCK = createBlock("amber_block", () -> new AmberBlock(AMBER_PROPERTIES));
+    public static final DeferredBlock<EmbeddedAmberBlock> EMBEDDED_AMBER_BLOCK = createBlock("embedded_amber_block", () -> new EmbeddedAmberBlock(AMBER_PROPERTIES));
+
     //Shale
     public static BlockBehaviour.Properties getShaleProperties() {
         return BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_GRAY)
@@ -341,13 +353,12 @@ public class ClinkerBlocks
             BlockBehaviour.Properties.ofFullCopy(Blocks.WARPED_BUTTON))
     );
 
-
     // plants
     public static final DeferredBlock<DoubleMudReedsBlock> TALL_MUD_REEDS = createBlock("tall_mud_reeds", () -> new DoubleMudReedsBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.TALL_GRASS).mapColor(MapColor.COLOR_BROWN).sound(SoundType.HANGING_ROOTS)));
     public static final DeferredBlock<MudReedsBlock> SHORT_MUD_REEDS = createBlock("short_mud_reeds", () -> new MudReedsBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SHORT_GRASS).mapColor(MapColor.COLOR_BROWN).sound(SoundType.HANGING_ROOTS)));
     public static final DeferredBlock<MudReedsBlock> MUD_REEDS = createBlock("mud_reeds", () -> new MudReedsBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SHORT_GRASS).mapColor(MapColor.COLOR_BROWN).sound(SoundType.HANGING_ROOTS)));
 
-    public static final DeferredBlock<TaprootsBlock> TAPROOTS = createBlock("taproots", () -> new TaprootsBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_WOOD).sound(SoundType.BAMBOO_WOOD).noOcclusion()));
+    public static final DeferredBlock<BidirectionalPipeBlock> TAPROOTS = createBlock("taproots", () -> new TaprootsBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_WOOD).sound(SoundType.BAMBOO_WOOD).noOcclusion()));
     public static final DeferredBlock<RotatedPillarBlock> TAPROOT_BURL = createBlock("taproot_burl", () -> new RotatedPillarBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_WOOD).sound(SoundType.BAMBOO_WOOD)));
 
     public static final DeferredBlock<Block> CAVE_FIG_STEM = createBlock("cave_fig_stem", () -> new HugeMushroomBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY).sound(SoundType.CALCITE)));
@@ -519,8 +530,11 @@ public class ClinkerBlocks
     );
 
     // fluids
-    public static DeferredBlock<LiquidBlock> VITRIOL_BLOCK = BLOCKS.register("vitriol", () -> new LiquidBlock(
-            ClinkerFluids.VITRIOL.get(), BlockBehaviour.Properties.ofFullCopy(Blocks.WATER).mapColor(MapColor.DIRT))
+    public static DeferredBlock<LiquidBlock> VITRIOL_BLOCK = BLOCKS.register("vitriol",
+            () -> new LiquidBlock(
+                    ClinkerFluids.VITRIOL.get(),
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.WATER).mapColor(MapColor.DIRT)
+            )
     );
 
     //Special

@@ -554,19 +554,30 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
             this.simpleBlockItem(SALTMOSS.get(), this.models().getExistingFile(saltmoss));
         }
 
-        this.simpleBlockWithVariationAndTransformation(
-                SALT_GRAVEL.get(), (i) -> this.models().cubeAll(
-                        name(SALT_GRAVEL.get()),
-                        this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(SALT_GRAVEL.get()))
-                ), (i) -> this.models().singleTexture(
-                        name(SALT_GRAVEL.get()) + "_mirrored",
-                        this.mcLoc(ModelProvider.BLOCK_FOLDER + "/cube_mirrored_all"),
-                        "all",
-                        this.modLoc( ModelProvider.BLOCK_FOLDER + "/" + name(SALT_GRAVEL.get()))
-                ),
-                1, true, true
-        );
-        this.simpleBlockItem(SALT_GRAVEL.get(), this.models().getExistingFile(this.modLoc( ModelProvider.BLOCK_FOLDER + "/" + name(SALT_GRAVEL.get()))));
+        // salt gravel
+        {
+            this.simpleBlockWithVariationAndTransformation(
+                    SALT_GRAVEL.get(), (i) -> this.models().cubeAll(
+                            name(SALT_GRAVEL.get()),
+                            this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(SALT_GRAVEL.get()))
+                    ), (i) -> this.models().singleTexture(
+                            name(SALT_GRAVEL.get()) + "_mirrored",
+                            this.mcLoc(ModelProvider.BLOCK_FOLDER + "/cube_mirrored_all"),
+                            "all",
+                            this.modLoc( ModelProvider.BLOCK_FOLDER + "/" + name(SALT_GRAVEL.get()))
+                    ),
+                    1, true, true
+            );
+            this.simpleBlockItem(SALT_GRAVEL.get(), this.models().getExistingFile(this.modLoc( ModelProvider.BLOCK_FOLDER + "/" + name(SALT_GRAVEL.get()))));
+        }
+
+        // amber
+        {
+            this.simpleBlockWithItem(AMBER_BLOCK.get(),
+                    this.models().cubeAll(name(AMBER_BLOCK.get()), this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(AMBER_BLOCK.get())))
+                            .renderType("translucent")
+            );
+        }
 
         // sea shell
         {
@@ -919,12 +930,7 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
             this.simpleBlockItem(TAPROOT_BURL.get(), this.models().getExistingFile(mattedRootLocation));
 
             ModelFile.ExistingModelFile[] straightTaprootModels = {
-                    this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/taproots"))//,
-//                    this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/taproots_1")),
-//                    this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/taproots_2")),
-//                    this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/taproots_3")),
-//                    this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/taproots_4")),
-//                    this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/taproots_5"))
+                    this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/taproots"))
             };
             ModelFile.ExistingModelFile turnTaprootModel = this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/taproots_turn"));
             Direction[] directions = Direction.values();
@@ -1000,7 +1006,6 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
                     this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + stromatoliteName + "_" + StromatoliteBlock.MAX_SIZE_INCLUSIVE)
             ));
         }
-
 
         // corpse lily
         {

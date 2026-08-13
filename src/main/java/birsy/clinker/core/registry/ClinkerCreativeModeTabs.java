@@ -187,6 +187,7 @@ public class ClinkerCreativeModeTabs {
 
         pOutput.accept(TAPROOT_BURL.get());
         pOutput.accept(TAPROOTS.get());
+        pOutput.accept(AMBER_BLOCK.get());
 
         pOutput.accept(CAVE_FIG_STEM.get());
         pOutput.accept(CAVE_FIG_ROOTS.get());
