@@ -31,6 +31,11 @@ public class ClinkerItemModelProvider extends ItemModelProvider {
         this.basicItem(ClinkerItems.MUSIC_DISC_CODA);
 
         this.basicItem(ClinkerItems.CORPSE_LILY_SEEDS);
+
+        this.spawnEggItem(ClinkerItems.GNOMAD_SPAWN_EGG.get());
+        this.spawnEggItem(ClinkerItems.GNOMAD_RUNT_SPAWN_EGG.get());
+        this.spawnEggItem(ClinkerItems.GNOMAD_MOGUL_SPAWN_EGG.get());
+        this.spawnEggItem(ClinkerItems.SLAB_CRAB_SPAWN_EGG.get());
     }
 
     public ItemModelBuilder basicItem(DeferredItem<? extends Item> item) {

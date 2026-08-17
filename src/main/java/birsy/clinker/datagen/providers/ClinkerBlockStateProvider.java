@@ -573,10 +573,14 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
 
         // amber
         {
-            this.simpleBlockWithItem(AMBER_BLOCK.get(),
-                    this.models().cubeAll(name(AMBER_BLOCK.get()), this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(AMBER_BLOCK.get())))
-                            .renderType("translucent")
-            );
+            ModelFile amberModel = this.models().singleTexture(
+                    name(AMBER_BLOCK.get()),
+                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/cube_all_culled_double_sided"),
+                    "all",
+                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(AMBER_BLOCK.get()))
+            ).renderType("translucent");
+            this.simpleBlockWithItem(AMBER_BLOCK.get(), amberModel);
+            this.simpleBlockWithItem(EMBEDDED_AMBER_BLOCK.get(), amberModel);
         }
 
         // sea shell

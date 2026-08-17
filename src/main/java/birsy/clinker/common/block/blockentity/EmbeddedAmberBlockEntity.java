@@ -9,6 +9,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -62,10 +63,10 @@ public class EmbeddedAmberBlockEntity extends BlockEntity {
     }
 
     public void setEmbeddedEntity(@Nullable Entity entity) {
-        this.markUpdated();
         if (entity == null) {
             this.embeddedEntity = null;
             this.embeddedEntityTag = null;
+            this.markUpdated();
             return;
         }
 
@@ -73,7 +74,9 @@ public class EmbeddedAmberBlockEntity extends BlockEntity {
         entity.setPos(pos.getX() + 0.5, pos.getY() + 0.5 + entity.getBbHeight() * 0.5, pos.getZ() + 0.5);
         entity.setYBodyRot(entity.getRandom().nextFloat() * 180);
         this.embeddedEntity = entity;
-        this.embeddedEntityTag = embeddedEntity.save(embeddedEntityTag) ? embeddedEntityTag : null;
+        CompoundTag entityTag = new CompoundTag();
+        this.embeddedEntityTag = embeddedEntity.save(entityTag) ? entityTag : null;
+        this.markUpdated();
     }
     @Nullable
     public Entity getEmbeddedEntity() {
@@ -82,16 +85,16 @@ public class EmbeddedAmberBlockEntity extends BlockEntity {
 
     public void setEmbeddedItem(ItemStack itemStack) {
         this.embeddedItem = itemStack.copy();
+        this.markUpdated();
     }
     public ItemStack getEmbeddedItem() {
         return this.embeddedItem;
     }
 
-    public void dropEmbeddedObjects() {
-        if (level == null) return;
+    public void dropEmbeddedObjects(ServerLevel level) {
         BlockPos pos = getBlockPos();
         while (!embeddedItem.isEmpty()) {
-            ItemStack stack = embeddedItem.split(level.random.nextIntBetweenInclusive(10, 32) + 5);
+            ItemStack stack = embeddedItem.split(level.random.nextIntBetweenInclusive(3, 6));
             double x = pos.getX() + level.random.triangle(0.5, 0.5),
                    y = pos.getY() + level.random.triangle(0.5, 0.5),
                    z = pos.getZ() + level.random.triangle(0.5, 0.5);
@@ -101,12 +104,18 @@ public class EmbeddedAmberBlockEntity extends BlockEntity {
             level.addFreshEntity(itemEntity);
         }
         if (embeddedEntity != null) {
-            embeddedEntity.setPos(pos.getX() + 0.5, pos.getY() + 0.5 + embeddedEntity.getBbHeight() * 0.5, pos.getZ() + 0.5);
+            float width = embeddedEntity.getBbWidth() * 0.5F, height = embeddedEntity.getBbHeight() * 0.5F;
+            embeddedEntity.setPos(pos.getX() + 0.5, pos.getY() + 0.5 - height, pos.getZ() + 0.5);
             level.addFreshEntity(embeddedEntity);
             // clear out an area for the entity to spawn!
-            BlockPos.betweenClosedStream(embeddedEntity.getBoundingBox()).forEach(containedPos -> {
+            int radiusOffset = (int) Math.max(0, Math.ceil(width - 0.5)),
+                heightOffset = (int) Math.max(0, Math.ceil(height - 0.5));
+            BlockPos.betweenClosedStream(
+                    pos.offset(-radiusOffset, -heightOffset, -radiusOffset), pos.offset(radiusOffset, heightOffset + 1, radiusOffset)
+            ).forEach(containedPos -> {
                 BlockState state = level.getBlockState(containedPos);
-                if (state.getBlock() instanceof AmberBlock) level.destroyBlock(pos, true, embeddedEntity);
+                if (state.getBlock() instanceof AmberBlock)
+                    level.destroyBlock(containedPos, true, null);
             });
         }
     }

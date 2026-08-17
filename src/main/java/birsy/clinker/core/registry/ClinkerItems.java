@@ -8,6 +8,7 @@ import birsy.clinker.common.item.components.LoadedItemStack;
 import birsy.clinker.common.item.components.PageContents;
 import birsy.clinker.common.ordnance.OrdnanceModifierSet;
 import birsy.clinker.core.Clinker;
+import birsy.clinker.core.registry.entity.ClinkerEntities;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -24,6 +25,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
+import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -155,10 +157,19 @@ public class ClinkerItems
                     .stacksTo(1))
     );
 
-
 //    public static final DeferredItem<Item> WATER_FERN_ITEM = ITEMS.register("water_fern", () -> new PlaceOnWaterBlockItem(ClinkerBlocks.WATER_FERN.get(), new Item.Properties()));
 
     public static final DeferredItem<Item> CORPSE_LILY_SEEDS = ITEMS.register("corpse_lily_seeds", () -> new ItemNameBlockItem(ClinkerBlocks.CORPSE_LILY_BUD.get(), new Item.Properties()));
+
+    // spawn eggs
+    public static final DeferredItem<DeferredSpawnEggItem> GNOMAD_SPAWN_EGG = ITEMS.register("gnomad_spawn_egg",
+            () -> new DeferredSpawnEggItem(ClinkerEntities.GNOMAD, 0x61534b, 0xc5b1a9, new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> GNOMAD_MOGUL_SPAWN_EGG = ITEMS.register("gnomad_mogul_spawn_egg",
+            () -> new DeferredSpawnEggItem(ClinkerEntities.GNOMAD_MOGUL, 0x61534b, 0x83a5a3, new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> GNOMAD_RUNT_SPAWN_EGG = ITEMS.register("gnomad_runt_spawn_egg",
+            () -> new DeferredSpawnEggItem(ClinkerEntities.GNOMAD_RUNT, 0x79685e, 0x9d8d87, new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> SLAB_CRAB_SPAWN_EGG = ITEMS.register("slab_crab_spawn_egg",
+            () -> new DeferredSpawnEggItem(ClinkerEntities.SLAB_CRAB, 0xb3b2ac, 0xc89183, new Item.Properties()));
 
 
     @SubscribeEvent

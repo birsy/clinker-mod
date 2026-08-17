@@ -221,12 +221,14 @@ public class ClinkerBlocks
             .mapColor(MapColor.COLOR_ORANGE)
             .sound(SoundType.COPPER_BULB)
             .noOcclusion()
+            .lightLevel((state) -> state.getValue(AmberBlock.LIT) ? 8 : 0)
             .isValidSpawn((state, level, pos, entityType) -> false)
             .isRedstoneConductor((state, level, pos) -> false)
             .isSuffocating((state, level, pos) -> false)
-            .isViewBlocking((state, level, pos) -> false);
+            .isViewBlocking((state, level, pos) -> false)
+            .emissiveRendering((state, level, pos) -> state.getValue(AmberBlock.LIT));
     public static final DeferredBlock<AmberBlock> AMBER_BLOCK = createBlock("amber_block", () -> new AmberBlock(AMBER_PROPERTIES));
-    public static final DeferredBlock<EmbeddedAmberBlock> EMBEDDED_AMBER_BLOCK = createBlock("embedded_amber_block", () -> new EmbeddedAmberBlock(AMBER_PROPERTIES));
+    public static final DeferredBlock<EmbeddedAmberBlock> EMBEDDED_AMBER_BLOCK = createBlockNoItem("embedded_amber_block", () -> new EmbeddedAmberBlock(AMBER_PROPERTIES));
 
     //Shale
     public static BlockBehaviour.Properties getShaleProperties() {

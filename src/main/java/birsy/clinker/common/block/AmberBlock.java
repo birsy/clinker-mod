@@ -13,16 +13,25 @@ import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SupportType;
 import net.minecraft.world.level.block.TransparentBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Function;
 
 public class AmberBlock extends TransparentBlock {
+    public static final BooleanProperty LIT = BlockStateProperties.LIT;
+
     public AmberBlock(Properties properties) {
         super(properties);
     }
@@ -33,9 +42,10 @@ public class AmberBlock extends TransparentBlock {
             // clicking an amber block in creative mode will convert it to an Embedded Amber Block...
             // and put the item inside!
             if (level instanceof ServerLevel serverLevel) {
-                serverLevel.setBlock(pos, ClinkerBlocks.EMBEDDED_AMBER_BLOCK.get().defaultBlockState(), 2);
+                serverLevel.setBlock(pos, ClinkerBlocks.EMBEDDED_AMBER_BLOCK.get().defaultBlockState().setValue(LIT, state.getValue(LIT)), 2);
                 if (level.getBlockEntity(pos) instanceof EmbeddedAmberBlockEntity blockEntity) {
                     if (stack.getItem() instanceof SpawnEggItem egg) {
+                        stack.shrink(1);
                         blockEntity.setEmbeddedEntity(egg.getType(stack).create(serverLevel));
                     } else {
                         blockEntity.setEmbeddedItem(stack.copyAndClear());
@@ -102,8 +112,7 @@ public class AmberBlock extends TransparentBlock {
             AmberBreakageSystem breakageSystem = AmberBreakageSystem.get(serverLevel);
 
             Direction[] directions = Direction.values();
-            Set<BlockPos> explored = new HashSet<>(),
-                          frontier = new HashSet<>();
+            Set<BlockPos> explored = new HashSet<>(), frontier = new HashSet<>();
 
             frontier.add(pos);
             while (!frontier.isEmpty()) {
@@ -126,6 +135,7 @@ public class AmberBlock extends TransparentBlock {
 
             for (BlockPos exploredPos : explored) {
                 serverLevel.destroyBlock(exploredPos, true);
+                breakageSystem.clearBreakage(exploredPos);
             }
         }
         return super.playerWillDestroy(level, pos, state, player);
@@ -133,23 +143,52 @@ public class AmberBlock extends TransparentBlock {
 
     @Override
     protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
-        super.onRemove(state, level, pos, newState, movedByPiston);
         // clear out the breakage progress whenever this block is broken
         if (level instanceof ServerLevel serverLevel)
             AmberBreakageSystem.get(serverLevel).clearBreakage(pos);
+        super.onRemove(state, level, pos, newState, movedByPiston);
     }
 
-    // "cracks" a bunch of neighbors with random walkers
-    private void crack(ServerLevel level, BlockPos pos, Function<BlockPos, Boolean> updateAndShouldStop) {
-        BlockPos.MutableBlockPos mPos = pos.mutable();
-        for (int i = 0; i < 12; i++) {
-            // crack arms!
-            mPos.set(pos);
-            for (int j = 0; j < 3; j++) {
-                mPos.move(Direction.getRandom(level.random));
-                if (!(level.getBlockState(mPos).getBlock() instanceof AmberBlock)) break;
-                if (updateAndShouldStop.apply(mPos)) break;
-            }
+    @Override
+    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+        BlockState newState = super.updateShape(state, direction, neighborState, level, pos, neighborPos);
+        boolean shouldBeLitFromFace = shouldBeLitFromFace(level, neighborState, direction, neighborPos);
+        if (state.getValue(LIT)) {
+            if (!shouldBeLitFromFace) return newState.setValue(LIT, false);
+        } else {
+            if (shouldBeLitFromFace && shouldBeLit(level, pos)) return newState.setValue(LIT, true);
         }
+        return newState;
+    }
+
+    @Override
+    public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
+        BlockState state = super.getStateForPlacement(context);
+        if (state == null) return null;
+        return state.setValue(LIT, shouldBeLit(context.getLevel(), context.getClickedPos()));
+    }
+
+    @Override
+    protected boolean skipRendering(BlockState state, BlockState adjacentBlockState, Direction side) {
+        return adjacentBlockState.getBlock() instanceof AmberBlock || super.skipRendering(state, adjacentBlockState, side);
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(LIT);
+    }
+
+    private static final Direction[] directions = Direction.values();
+    protected static boolean shouldBeLit(LevelAccessor level, BlockPos pos) {
+        BlockPos.MutableBlockPos mPos = pos.mutable();
+        for (Direction direction : directions) {
+            mPos.set(pos).move(direction);
+            BlockState state = level.getBlockState(mPos);
+            if (!shouldBeLitFromFace(level, state, direction, mPos)) return false;
+        }
+        return true;
+    }
+    protected static boolean shouldBeLitFromFace(LevelAccessor level, BlockState adjacentState, Direction adjacentDirection, BlockPos adjacentPos) {
+        return adjacentState.isFaceSturdy(level, adjacentPos, adjacentDirection.getOpposite(), SupportType.FULL);
     }
 }

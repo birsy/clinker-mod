@@ -54,6 +54,7 @@ public class ClinkerBlockEntities {
         BlockEntityRenderers.register(ClinkerBlockEntities.MORTAR.get(), MortarRenderer::new);
         BlockEntityRenderers.register(ClinkerBlockEntities.COUNTER.get(), CounterRenderer::new);
         BlockEntityRenderers.register(ClinkerBlockEntities.PRESSURE_COOKER.get(), PressureCookerRenderer::new);
+        BlockEntityRenderers.register(ClinkerBlockEntities.EMBEDDED_AMBER.get(), EmbeddedAmberRenderer::new);
     }
 
     @SubscribeEvent

@@ -27,8 +27,8 @@ public class ClinkerCreativeModeTabs {
             .withTabsBefore(CreativeModeTabs.COMBAT)
             .icon(() -> new ItemStack(ORDNANCE.get().asItem()))
             .displayItems((parameters, output) -> {
-                ClinkerCreativeModeTabs.addItems(parameters, output);
                 ClinkerCreativeModeTabs.addBlocks(parameters, output);
+                ClinkerCreativeModeTabs.addItems(parameters, output);
             }).build());
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CLINKER_PAGES = TABS.register("pages", () -> CreativeModeTab.builder()
@@ -244,8 +244,12 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(FISTFUL_OF_MAGGOTS.get());
         pOutput.accept(MUSIC_DISC_CODA.get());
 
-        // testing ordnance stuff
+        pOutput.accept(GNOMAD_SPAWN_EGG);
+        pOutput.accept(GNOMAD_RUNT_SPAWN_EGG);
+        pOutput.accept(GNOMAD_MOGUL_SPAWN_EGG);
+        pOutput.accept(SLAB_CRAB_SPAWN_EGG);
 
+        // testing ordnance stuff
         pOutput.accept(withComponent(ORDNANCE.toStack(), ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.of(new ExplosiveModifier(0), new FuseTimeModifier( 0))));
         pOutput.accept(withComponent(ORDNANCE.toStack(), ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.of(new ExplosiveModifier(1), new FuseTimeModifier( 0))));
         pOutput.accept(withComponent(ORDNANCE.toStack(), ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.of(new ExplosiveModifier(2), new FuseTimeModifier( 0))));
