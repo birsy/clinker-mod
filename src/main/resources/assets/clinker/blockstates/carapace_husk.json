@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "clinker:block/carapace_husk",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "clinker:block/carapace_husk"
+    },
+    "facing=south": {
+      "model": "clinker:block/carapace_husk",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "clinker:block/carapace_husk",
+      "y": 270
+    }
+  }
+}
