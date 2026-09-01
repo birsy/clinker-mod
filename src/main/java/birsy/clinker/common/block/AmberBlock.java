@@ -1,7 +1,7 @@
 package birsy.clinker.common.block;
 
 import birsy.clinker.common.block.blockentity.EmbeddedAmberBlockEntity;
-import birsy.clinker.common.world.level.AmberBreakageSystem;
+import birsy.clinker.common.world.level.BlockBreakageSystem;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -87,7 +87,7 @@ public class AmberBlock extends TransparentBlock {
         // if nothing's breaking us, cancel!
         if (currentBreakageProgress == -1) return;
 
-        AmberBreakageSystem breakageSystem = AmberBreakageSystem.get(level);
+        BlockBreakageSystem breakageSystem = BlockBreakageSystem.get(level);
         int lastBreakageProgress = breakageSystem.getBreakageProgress(pos);
         if (lastBreakageProgress != currentBreakageProgress) {
             breakageSystem.updateBreakage(pos, currentBreakageProgress);
@@ -98,7 +98,7 @@ public class AmberBlock extends TransparentBlock {
                 for (int j = 0; j < 3; j++) {
                     crackPos.move(Direction.getRandom(level.random));
                     if (!(level.getBlockState(crackPos).getBlock() instanceof AmberBlock)) break;
-                    breakageSystem.addBreakageUpTo(crackPos, currentBreakageProgress);
+                    breakageSystem.addBreakageUpTo(crackPos, 1, currentBreakageProgress);
                 }
             }
         }
@@ -109,7 +109,7 @@ public class AmberBlock extends TransparentBlock {
     @Override
     public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
         if (level instanceof ServerLevel serverLevel && !player.getAbilities().instabuild) {
-            AmberBreakageSystem breakageSystem = AmberBreakageSystem.get(serverLevel);
+            BlockBreakageSystem breakageSystem = BlockBreakageSystem.get(serverLevel);
 
             Direction[] directions = Direction.values();
             Set<BlockPos> explored = new HashSet<>(), frontier = new HashSet<>();
@@ -145,7 +145,7 @@ public class AmberBlock extends TransparentBlock {
     protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
         // clear out the breakage progress whenever this block is broken
         if (level instanceof ServerLevel serverLevel)
-            AmberBreakageSystem.get(serverLevel).clearBreakage(pos);
+            BlockBreakageSystem.get(serverLevel).clearBreakage(pos);
         super.onRemove(state, level, pos, newState, movedByPiston);
     }
 

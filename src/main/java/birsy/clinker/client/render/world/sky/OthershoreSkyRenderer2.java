@@ -238,7 +238,6 @@ public class OthershoreSkyRenderer2 {
         RenderSystem.enableDepthTest();
         RenderSystem.depthMask(true);
 
-
         RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, false);
     }
 }

@@ -545,7 +545,7 @@ public class ClinkerBlocks
             .pushReaction(PushReaction.DESTROY)
             .strength(0.4F)
             .mapColor(MapColor.TERRACOTTA_GRAY)
-            .sound(SoundType.FROGLIGHT)
+            .sound(SoundType.MUDDY_MANGROVE_ROOTS)
     ));
     public static final DeferredBlock<Block> BLANK_SARCOPHAGUS = createBlock("blank_sarcophagus", () -> new SarcophagusBlock(BlockBehaviour.Properties.ofFullCopy(BRIMSTONE.get()).noOcclusion()));
 

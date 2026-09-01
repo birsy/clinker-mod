@@ -1,6 +1,5 @@
 package birsy.clinker.common.world.level;
 
-import birsy.clinker.common.world.level.heat.HeatSystem;
 import birsy.clinker.core.Clinker;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
@@ -18,26 +17,24 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @EventBusSubscriber(modid = Clinker.MOD_ID)
-public class AmberBreakageSystem extends SavedData {
+public class BlockBreakageSystem extends SavedData {
     // arbitrary random breakage id
     private static final int BREAK_ID_HASH = 17834146;
     final ServerLevel level;
     final Long2ObjectMap<BreakState> breakStateTracker = new Long2ObjectOpenHashMap<>();
 
-    public AmberBreakageSystem(ServerLevel level) {
+    public BlockBreakageSystem(ServerLevel level) {
         this.level = level;
     }
 
-    public static AmberBreakageSystem get(ServerLevel level) {
+    public static BlockBreakageSystem get(ServerLevel level) {
         return level.getDataStorage().computeIfAbsent(
                 new Factory<>(
-                        () -> new AmberBreakageSystem(level),
-                        (data, registry) -> AmberBreakageSystem.load(level, data, registry),
+                        () -> new BlockBreakageSystem(level),
+                        (data, registry) -> BlockBreakageSystem.load(level, data, registry),
                         null
                 ), "amber_breakage_system"
         );
@@ -50,11 +47,11 @@ public class AmberBreakageSystem extends SavedData {
         return -1;
     }
 
-    public void addBreakage(BlockPos pos) { addBreakageUpTo(pos, 9); }
-    public void addBreakageUpTo(BlockPos pos, int maximum) {
+    public void addBreakage(BlockPos pos, int amount) { addBreakageUpTo(pos, 1, 9); }
+    public void addBreakageUpTo(BlockPos pos, int amount, int maximum) {
         long key = pos.asLong();
         BreakState breakState = breakStateTracker.computeIfAbsent(key, newKey -> new BreakState(BlockPos.of(newKey)));
-        breakState.update(level, Math.min(Math.min(breakState.progress + 1, maximum), 9));
+        breakState.update(level, Math.min(Math.min(breakState.progress + amount, maximum), 9));
     }
 
     public void clearBreakage(BlockPos pos) {
@@ -91,8 +88,8 @@ public class AmberBreakageSystem extends SavedData {
         return tag;
     }
 
-    public static AmberBreakageSystem load(ServerLevel level, CompoundTag tag, HolderLookup.Provider registries) {
-        AmberBreakageSystem system = new AmberBreakageSystem(level);
+    public static BlockBreakageSystem load(ServerLevel level, CompoundTag tag, HolderLookup.Provider registries) {
+        BlockBreakageSystem system = new BlockBreakageSystem(level);
         ListTag listTag = tag.getList("breakStateEntries", Tag.TAG_COMPOUND);
         for (int i = 0; i < listTag.size(); i++) {
             BreakState breakState = BreakState.load(listTag.getCompound(i));
@@ -109,8 +106,8 @@ public class AmberBreakageSystem extends SavedData {
             ProfilerFiller profiler = level.getServer().getProfiler();
             profiler.push("clinker.tickAmberBreakage");
 
-            AmberBreakageSystem amberBreakageSystem = get(level);
-            amberBreakageSystem.tick();
+            BlockBreakageSystem blockBreakageSystem = get(level);
+            blockBreakageSystem.tick();
 
             profiler.pop();
         }
@@ -125,7 +122,7 @@ public class AmberBreakageSystem extends SavedData {
             this.pos = pos;
             // weird hash thing
             // unlikely this conflicts with any entity ids...
-            this.id = pos.hashCode() ^ AmberBreakageSystem.BREAK_ID_HASH;
+            this.id = pos.hashCode() ^ BlockBreakageSystem.BREAK_ID_HASH;
         }
 
         public void update(ServerLevel level, int progress) {

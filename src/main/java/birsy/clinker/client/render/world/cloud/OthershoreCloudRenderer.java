@@ -108,9 +108,6 @@ public class OthershoreCloudRenderer {
         VeilRenderSystem.drawScreenQuad();
         ShaderProgram.unbind();
 
-        // render other useful cloud textures
-        renderCloudDensityTexture(ticks, partialTick);
-        renderCloudSpriteTexture(ticks, partialTick);
 
         // cloud drawing process
         cloudFbo.bind(true);
@@ -171,31 +168,6 @@ public class OthershoreCloudRenderer {
                 GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT,
                 GL_NEAREST
         );
-    }
-
-    void renderCloudDensityTexture(int ticks, double partialTicks) {
-        AdvancedFbo fbo = VeilRenderSystem.renderer().getFramebufferManager().getFramebuffer(ClinkerFramebuffers.CLOUD_DENSITY);
-        fbo.bind(true);
-        ShaderProgram shader = VeilRenderSystem.setShader(ClinkerShaders.CLOUD_DENSITY);
-        shader.bind();
-        shader.bindSamplers(0);
-        shader.setDefaultUniforms(VertexFormat.Mode.TRIANGLE_STRIP);
-        shader.getUniform("GameTime").setFloat((float) ((ticks / 20.0 + partialTicks / 20.0) * 0.3));
-        VeilRenderSystem.drawScreenQuad();
-        ShaderProgram.unbind();
-        AdvancedFbo.unbind();
-    }
-    void renderCloudSpriteTexture(int ticks, double partialTicks) {
-        AdvancedFbo fbo = VeilRenderSystem.renderer().getFramebufferManager().getFramebuffer(ClinkerFramebuffers.CLOUD_SPRITE);
-        fbo.bind(true);
-        ShaderProgram shader = VeilRenderSystem.setShader(ClinkerShaders.CLOUD_SPRITE);
-        shader.bind();
-        shader.bindSamplers(0);
-        shader.setDefaultUniforms(VertexFormat.Mode.TRIANGLE_STRIP);
-        shader.getUniform("GameTime").setFloat((float) ((ticks / 20.0 + partialTicks / 20.0) * 0.3));
-        VeilRenderSystem.drawScreenQuad();
-        ShaderProgram.unbind();
-        AdvancedFbo.unbind();
     }
 
     public VertexBuffer getBillboardVbo() { return billboardVbo; }
