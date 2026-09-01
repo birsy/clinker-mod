@@ -4,7 +4,7 @@ import birsy.clinker.common.world.level.gen.system.noise.field.InterpolatedNoise
 import net.minecraft.util.Mth;
 
 // trying to speed up sequential interpolation by fetching cell data in advance...
-public class InterpolationCache {
+public class FieldInterpolator {
     final InterpolatedNoiseField srcField;
     final double[] srcArray;
     final int srcSizeXZ, srcSizeY;
@@ -29,7 +29,7 @@ public class InterpolationCache {
     // interpolation factors when trilerping
     protected double facX, facY, facZ;
 
-    protected InterpolationCache(InterpolatedNoiseField sourceField, InterpolatedNoiseField destinationField) {
+    protected FieldInterpolator(InterpolatedNoiseField sourceField, InterpolatedNoiseField destinationField) {
         // the math here only really works out when the scales are correct. So, make sure that's always true.
         assert sourceField.xzCellSize >= destinationField.xzCellSize && sourceField.yCellSize >= destinationField.yCellSize;
 
@@ -97,7 +97,7 @@ public class InterpolationCache {
     }
 
     // advance X only, reusing most data...
-    public void advanceCellX() {
+    protected void advanceCellX() {
         srcCellX++;
         srcCellBlockX += srcSizeXZ;
 
@@ -110,7 +110,7 @@ public class InterpolationCache {
     }
     // these two basically do the same thing
     // new column, can't reuse any data because of iteration order. see advanceZ's comment
-    public void advanceCellZ() {
+    protected void advanceCellZ() {
         srcCellX = 0;
 
         srcCellZ++;
@@ -118,7 +118,7 @@ public class InterpolationCache {
         fetchCellData();
     }
     // new layer, can't reuse any data because of iteration order. see advanceZ's comment
-    public void advanceCellY() {
+    protected void advanceCellY() {
         srcCellZ = 0;
 
         srcCellY++;
