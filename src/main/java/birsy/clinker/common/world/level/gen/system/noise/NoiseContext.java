@@ -11,8 +11,8 @@ public interface NoiseContext extends NoiseProvider {
     default int yRangeEnd() {
         return Integer.MAX_VALUE;
     }
-    double retrieve(NoiseComputer computer, int x, int y, int z);
-    default double retrieve(Supplier<NoiseComputer> computer, int x, int y, int z) {
+    double retrieve(Synthesizer computer, int x, int y, int z);
+    default double retrieve(Supplier<Synthesizer> computer, int x, int y, int z) {
         return retrieve(computer.get(), x, y, z);
     }
     VoronoiEvaluator getVoronoi(String name);

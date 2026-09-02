@@ -20,7 +20,7 @@ public final class PaddedNoiseFieldCache extends NoiseFieldCache {
     }
 
     @Override
-    protected NoiseField createStandardNoiseField(NoiseComputer computer, FieldFactory.Standard factory) {
+    protected NoiseField createStandardNoiseField(Synthesizer computer, FieldFactory.Standard factory) {
         return factory.fieldType().create(this.chunkHeight, this.paddingSize + 1);
     }
 }

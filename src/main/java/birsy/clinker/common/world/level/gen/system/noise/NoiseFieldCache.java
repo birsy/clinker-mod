@@ -3,16 +3,12 @@ package birsy.clinker.common.world.level.gen.system.noise;
 import birsy.clinker.common.world.level.gen.system.noise.field.*;
 import birsy.clinker.common.world.level.gen.system.noise.voronoi.VoronoiDefinition;
 import birsy.clinker.common.world.level.gen.system.noise.voronoi.VoronoiEvaluator;
-import birsy.clinker.common.world.level.gen.system.noise.voronoi.VoronoiEvaluator2D;
-import birsy.clinker.common.world.level.gen.system.noise.voronoi.VoronoiEvaluator3D;
 import birsy.clinker.core.registry.ClinkerRegistries;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.world.level.levelgen.PositionalRandomFactory;
 
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.function.Supplier;
 
 public class NoiseFieldCache {
@@ -31,16 +27,16 @@ public class NoiseFieldCache {
         this.context = new CachedNoiseContext(this);
     }
 
-    public NoiseField fillNoiseField(NoiseComputer computer) {
+    public NoiseField fillNoiseField(Synthesizer computer) {
         return fillNoiseField(minY, chunkHeight-1, computer);
     }
-    public NoiseField fillNoiseField(Supplier<NoiseComputer> computer) {
+    public NoiseField fillNoiseField(Supplier<Synthesizer> computer) {
         return this.fillNoiseField(computer.get());
     }
-    public NoiseField fillNoiseField(int startY, int endY, Supplier<NoiseComputer> computer) {
+    public NoiseField fillNoiseField(int startY, int endY, Supplier<Synthesizer> computer) {
         return this.fillNoiseField(startY, endY, computer.get());
     }
-    public NoiseField fillNoiseField(int startY, int endY, NoiseComputer computer) {
+    public NoiseField fillNoiseField(int startY, int endY, Synthesizer computer) {
         // collect all dependencies
         NoiseDependencyCollector collector = new NoiseDependencyCollector(noiseHolder);
         for (String name : collector.dependentVoronoiDefinitions) {
@@ -52,12 +48,12 @@ public class NoiseFieldCache {
         context.setRange(startY, endY);
 
         // fill out the values for all noise fields, depth-first
-        for (NoiseComputer dependency : collector.dependencies)
+        for (Synthesizer dependency : collector.dependencies)
             getOrCreateNoiseFieldAtResolution(dependency, computer.fieldType.xzScale(), localStartY, localEndY);
         return getOrCreateNoiseFieldAtResolution(computer, computer.fieldType.xzScale(), localStartY, localEndY);
     }
 
-    protected NoiseField getOrCreateNoiseFieldAtResolution(NoiseComputer computer, int minXZScale, int localStartY, int localEndY) {
+    protected NoiseField getOrCreateNoiseFieldAtResolution(Synthesizer computer, int minXZScale, int localStartY, int localEndY) {
         SortedSet<NoiseField> computedFields = fieldCache[computer.id];
         if (computedFields == null) {
             computedFields = new TreeSet<>();
@@ -68,7 +64,7 @@ public class NoiseFieldCache {
             if (computedField.xzCellScale >= minXZScale) return computedField;
         }
 
-        // currently this wastes some work. i shouldn't do that....
+        // currently, this wastes some work. i shouldn't do that....
         NoiseField field;
         if (computer.fieldType.xzScale() >= minXZScale) {
             field = computer.fieldType.create(chunkHeight, 1);

@@ -1,7 +1,7 @@
 package birsy.clinker.common.world.level.gen.content.surface.decorator;
 
 import birsy.clinker.common.block.FallingLayerBlock;
-import birsy.clinker.common.world.level.gen.system.noise.NoiseComputer;
+import birsy.clinker.common.world.level.gen.system.noise.Synthesizer;
 import birsy.clinker.common.world.level.gen.system.surface.decorator.SurfaceDecorationContext;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import net.minecraft.core.BlockPos;
@@ -34,7 +34,7 @@ public class SurfaceDecorationHelpers {
     public static boolean steepnessThreshold(
             BlockPos pos,
             SurfaceDecorationContext ctx,
-            NoiseComputer computer,
+            Synthesizer computer,
             double minRange,
             double maxRange,
             int minThreshold,
@@ -51,7 +51,7 @@ public class SurfaceDecorationHelpers {
     public static boolean noiseInThreshold(
             BlockPos pos,
             SurfaceDecorationContext ctx,
-            NoiseComputer computer,
+            Synthesizer computer,
             double minThreshold,
             double maxThreshold,
             double ditherAmount
@@ -63,7 +63,7 @@ public class SurfaceDecorationHelpers {
     public static boolean noiseAbove(
             BlockPos pos,
             SurfaceDecorationContext ctx,
-            NoiseComputer computer,
+            Synthesizer computer,
             double threshold,
             double ditherAmount
     ) {
@@ -88,7 +88,7 @@ public class SurfaceDecorationHelpers {
     public static double noiseWithDither(
             BlockPos pos,
             SurfaceDecorationContext ctx,
-            NoiseComputer computer,
+            Synthesizer computer,
             double ditherAmount
     ) {
         double noise = ctx.retrieve(computer, pos.getX(), pos.getY(), pos.getZ());

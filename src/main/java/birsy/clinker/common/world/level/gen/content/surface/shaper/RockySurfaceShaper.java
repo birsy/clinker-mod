@@ -1,6 +1,6 @@
 package birsy.clinker.common.world.level.gen.content.surface.shaper;
 
-import birsy.clinker.common.world.level.gen.system.noise.NoiseComputer;
+import birsy.clinker.common.world.level.gen.system.noise.Synthesizer;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
 import birsy.clinker.core.util.MathUtils;
@@ -8,10 +8,10 @@ import birsy.clinker.core.util.MathUtils;
 import static birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers.*;
 
 public class RockySurfaceShaper extends SimpleSurfaceShaper {
-    final NoiseComputer heightmapComputer;
+    final Synthesizer heightmapComputer;
     final double cliffMultiplier, heightmapOffset;
 
-    public RockySurfaceShaper(NoiseComputer heightmapComputer, double cliffMultiplier, double heightmapOffset) {
+    public RockySurfaceShaper(Synthesizer heightmapComputer, double cliffMultiplier, double heightmapOffset) {
         this.heightmapComputer = heightmapComputer;
         this.cliffMultiplier = cliffMultiplier;
         this.heightmapOffset = heightmapOffset;

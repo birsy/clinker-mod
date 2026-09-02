@@ -18,7 +18,7 @@ public final class CachedNoiseContext implements NoiseContext {
     }
 
     @Override
-    public double retrieve(NoiseComputer computer, int x, int y, int z) {
+    public double retrieve(Synthesizer computer, int x, int y, int z) {
         return cache.fieldCache[computer.id].retrieve(x - cache.minX, y - cache.minY, z - cache.minZ);
     }
 

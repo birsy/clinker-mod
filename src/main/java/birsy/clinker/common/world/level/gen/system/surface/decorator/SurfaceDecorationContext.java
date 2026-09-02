@@ -1,7 +1,7 @@
 package birsy.clinker.common.world.level.gen.system.surface.decorator;
 
 import birsy.clinker.common.world.level.gen.system.noise.CachedNoiseContext;
-import birsy.clinker.common.world.level.gen.system.noise.NoiseComputer;
+import birsy.clinker.common.world.level.gen.system.noise.Synthesizer;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
 import birsy.clinker.common.world.level.gen.system.noise.voronoi.VoronoiEvaluator;
 import net.minecraft.core.BlockPos;
@@ -44,10 +44,10 @@ public final class SurfaceDecorationContext implements NoiseContext {
     }
 
     public BlockState place(BlockPos pos, BlockState state) { return this.chunk.setBlockState(pos, state, false); }
-    public double retrieve(BlockPos pos, NoiseComputer computer) { return this.retrieve(computer, pos.getX(), pos.getY(), pos.getZ()); }
-    public double retrieve(BlockPos pos, Supplier<NoiseComputer> computer) { return this.retrieve(computer, pos.getX(), pos.getY(), pos.getZ()); }
+    public double retrieve(BlockPos pos, Synthesizer computer) { return this.retrieve(computer, pos.getX(), pos.getY(), pos.getZ()); }
+    public double retrieve(BlockPos pos, Supplier<Synthesizer> computer) { return this.retrieve(computer, pos.getX(), pos.getY(), pos.getZ()); }
 
-    @Override public double retrieve(NoiseComputer computer, int x, int y, int z) { return this.context.retrieve(computer, x, y, z); }
+    @Override public double retrieve(Synthesizer computer, int x, int y, int z) { return this.context.retrieve(computer, x, y, z); }
     @Override public VoronoiEvaluator getVoronoi(String name) { return this.context.getVoronoi(name); }
     @Override public double sample(String name, double x, double y, double z) { return this.context.sample(name, x, y, z); }
     @Override public double sample(String name, double x, double y) { return this.context.sample(name, x, y); }

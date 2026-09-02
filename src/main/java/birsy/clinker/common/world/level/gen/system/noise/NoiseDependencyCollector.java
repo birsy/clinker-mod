@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 
 public final class NoiseDependencyCollector {
     final NoiseRegistry noiseRegistry;
-    final LinkedHashSet<NoiseComputer> dependencies = new LinkedHashSet<>();
+    final LinkedHashSet<Synthesizer> dependencies = new LinkedHashSet<>();
     final ObjectArraySet<String> dependentVoronoiDefinitions;
 
     NoiseDependencyCollector(NoiseRegistry noiseRegistry) {
@@ -17,13 +17,13 @@ public final class NoiseDependencyCollector {
         this.dependentVoronoiDefinitions = new ObjectArraySet<>(4);
     }
 
-    public void addDependency(NoiseComputer computer) {
+    public void addDependency(Synthesizer computer) {
         computer.dependencies.accept(this, noiseRegistry);
         if (!dependencies.contains(computer))
             dependencies.addLast(computer);
     }
 
-    public void addDependency(Supplier<NoiseComputer> computer) {
+    public void addDependency(Supplier<Synthesizer> computer) {
         addDependency(computer.get());
     }
 

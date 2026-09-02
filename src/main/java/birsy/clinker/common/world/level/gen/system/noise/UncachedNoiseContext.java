@@ -11,13 +11,13 @@ public final class UncachedNoiseContext implements NoiseContext {
         // register all noises
         // i should just make noises static, shouldn't i...
         NoiseDependencyCollector collector = new NoiseDependencyCollector(provider);
-        for (NoiseComputer noiseComputer : ClinkerRegistries.NOISE_COMPUTER_REGISTRY) {
-            noiseComputer.dependencies.accept(collector, noiseProvider);
+        for (Synthesizer synthesizer : ClinkerRegistries.NOISE_COMPUTER_REGISTRY) {
+            synthesizer.dependencies.accept(collector, noiseProvider);
         }
     }
 
     @Override
-    public double retrieve(NoiseComputer computer, int x, int y, int z) {
+    public double retrieve(Synthesizer computer, int x, int y, int z) {
         return computer.filler.compute(x, y, z, this);
     }
 
