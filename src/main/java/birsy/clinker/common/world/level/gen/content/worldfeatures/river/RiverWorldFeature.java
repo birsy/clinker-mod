@@ -13,7 +13,7 @@ import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
 import birsy.clinker.common.world.level.gen.system.noise.PaddedNoiseFieldCache;
 import birsy.clinker.common.world.level.gen.system.noise.UncachedNoiseContext;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
-import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldTypes;
+import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldType;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers;
 import birsy.clinker.core.util.MathUtils;
@@ -97,30 +97,30 @@ public class RiverWorldFeature extends WorldFeature implements ModifiesCaveDensi
     public void modifyCaveDensity(int minX, int minY, int minZ, int maxCaveHeight, NoiseFieldCache cache, NoiseField field, NoiseField maskField, WorldFeatureContext worldContext) {
         River.Sample sample = new River.Sample();
 
-        NoiseField trueRiverDistanceField = NoiseFieldTypes.COARSE_2D.create(cache.chunkHeight, 0);
+        NoiseField trueRiverDistanceField = NoiseFieldType.COARSE_2D.create(cache.chunkHeight, 0);
         double[] trueRiverDistanceArray = trueRiverDistanceField.array();
-        NoiseField miteredDistanceToRiverField = NoiseFieldTypes.COARSE_2D.create(cache.chunkHeight, 0);
+        NoiseField miteredDistanceToRiverField = NoiseFieldType.COARSE_2D.create(cache.chunkHeight, 0);
         double[] mitredDistanceToRiverArray = miteredDistanceToRiverField.array();
-        NoiseField distanceAlongRiverField = NoiseFieldTypes.COARSE_2D.create(cache.chunkHeight, 0);
+        NoiseField distanceAlongRiverField = NoiseFieldType.COARSE_2D.create(cache.chunkHeight, 0);
         double[] distanceAlongRiverArray = distanceAlongRiverField.array();
-        NoiseField riverRadiusField = NoiseFieldTypes.COARSE_2D.create(cache.chunkHeight, 0);
+        NoiseField riverRadiusField = NoiseFieldType.COARSE_2D.create(cache.chunkHeight, 0);
         double[] riverRadiusArray = riverRadiusField.array();
-        NoiseField riverDepthField = NoiseFieldTypes.COARSE_2D.create(cache.chunkHeight, 0);
+        NoiseField riverDepthField = NoiseFieldType.COARSE_2D.create(cache.chunkHeight, 0);
         double[] riverDepthArray = riverDepthField.array();
 
-        NoiseField riverNoiseField = NoiseFieldTypes.COARSE_2D.create(cache.chunkHeight, 0);
+        NoiseField riverNoiseField = NoiseFieldType.COARSE_2D.create(cache.chunkHeight, 0);
         double[] riverNoiseArray = riverNoiseField.array();
 
-        NoiseField riverCeilingHeightField = NoiseFieldTypes.COARSE_2D.create(cache.chunkHeight, 0);
+        NoiseField riverCeilingHeightField = NoiseFieldType.COARSE_2D.create(cache.chunkHeight, 0);
         double[] riverCeilingHeightArray = riverCeilingHeightField.array();
-        NoiseField riverWaterHeightField = NoiseFieldTypes.COARSE_2D.create(cache.chunkHeight, 0);
+        NoiseField riverWaterHeightField = NoiseFieldType.COARSE_2D.create(cache.chunkHeight, 0);
         double[] riverWaterHeightArray = riverWaterHeightField.array();
 
         NoiseField sampleOffsetField = cache.fillNoiseField(ClinkerNoiseComputers.BASE_NOISE_2D[5]);
         NoiseField shorelineRadiusField = cache.fillNoiseField(ClinkerNoiseComputers.BASE_NOISE_2D_ALT[5]);
 
         cache.noiseHolder.registerNoise("riverbed");
-        miteredDistanceToRiverField.byBlock((index, x, y, z) -> {
+        miteredDistanceToRiverField.visit((index, x, y, z) -> {
             double offset = sampleOffsetField.retrieve(x, y, z) * 8;
             river.sample(sample, x + cache.minX + offset, z + cache.minZ + offset);
 
@@ -203,18 +203,18 @@ public class RiverWorldFeature extends WorldFeature implements ModifiesCaveDensi
     public void modifyWaterfallPresence(int minX, int minY, int minZ, PaddedNoiseFieldCache cache, NoiseField field, WorldFeatureContext worldContext) {
         River.Sample sample = new River.Sample();
 
-        NoiseField riverDistanceField = NoiseFieldTypes.COARSE_2D.create(cache.chunkHeight, cache.paddingSize + 1);
+        NoiseField riverDistanceField = NoiseFieldType.COARSE_2D.create(cache.chunkHeight, cache.paddingSize + 1);
         double[] riverDistanceArray = riverDistanceField.array();
-        NoiseField riverRadiusField = NoiseFieldTypes.COARSE_2D.create(cache.chunkHeight, cache.paddingSize + 1);
+        NoiseField riverRadiusField = NoiseFieldType.COARSE_2D.create(cache.chunkHeight, cache.paddingSize + 1);
         double[] riverRadiusArray = riverRadiusField.array();
-        riverDistanceField.byBlock((index, x, y, z) -> {
+        riverDistanceField.visit((index, x, y, z) -> {
             river.sample(sample, x + cache.minX, z + cache.minZ);
             riverDistanceArray[index] = sample.trueDistance;
             riverRadiusArray[index] = sample.radius;
         });
 
         double[] array = field.array();
-        field.byBlock((index, x, y, z) -> {
+        field.visit((index, x, y, z) -> {
             double riverDistance = riverDistanceField.retrieve(x, y, z);
             double riverRadius = riverRadiusField.retrieve(x, y, z);
             double riverWaterfallPresence = Mth.clampedMap(riverDistance, riverRadius * 0.5, riverRadius, 2, 0);

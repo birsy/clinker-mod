@@ -20,7 +20,6 @@ import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabi
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesFinalDensity;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlocks;
-import birsy.clinker.core.registry.worldgen.ClinkerBiomes;
 import birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers;
 import birsy.clinker.core.registry.worldgen.ClinkerWorldFeatureCapabilities;
 import birsy.clinker.core.util.MathUtils;
@@ -49,8 +48,6 @@ import net.minecraft.world.level.levelgen.blending.Blender;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-
-import static birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers.UPPER_SHELF_HEIGHT;
 
 public class OthershoreChunkGenerator extends ChunkGenerator {
     public static final MapCodec<OthershoreChunkGenerator> CODEC = RecordCodecBuilder.mapCodec(
@@ -348,7 +345,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
         // combine cave density and surface density
         // special 2x2x2 cell size for extra vertical detail...
-        NoiseField finalDensityField = new InterpolatedNoiseField(chunkHeight, 1, 1, 0);
+        NoiseField finalDensityField = new NoiseField(chunkHeight, 1, 1, 0);
         double[] finalDensityFieldArray = finalDensityField.array();
         finalDensityField.byBlock(0, maxCaveHeight - minY, (index, x, y, z) -> {
             double surfaceDensity = surfaceDensityField.retrieve(x, y, z);

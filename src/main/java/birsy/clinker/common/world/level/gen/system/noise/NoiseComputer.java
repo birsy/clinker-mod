@@ -9,14 +9,14 @@ import java.util.function.Supplier;
 
 public final class NoiseComputer {
     public int id = -1; // DO NOT TOUCH EVER. assigned on deferred registration
-    public final Supplier<FieldFactory> fieldFactory;
+    public final NoiseFieldType fieldType;
     public final BiConsumer<NoiseDependencyCollector, NoiseRegistry> dependencies;
     public final NoiseFieldFiller filler;
 
-    public NoiseComputer(Supplier<FieldFactory> fieldFactory,
+    public NoiseComputer(NoiseFieldType fieldType,
                          BiConsumer<NoiseDependencyCollector, NoiseRegistry> dependencies,
                          NoiseFieldFiller filler) {
-        this.fieldFactory = fieldFactory;
+        this.fieldType = fieldType;
         this.dependencies = dependencies;
         this.filler = filler;
     }

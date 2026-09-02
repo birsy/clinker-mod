@@ -2,7 +2,7 @@ package birsy.clinker.common.world.level.gen.system.biome;
 
 import birsy.clinker.common.world.level.gen.OthershoreBiomeSource;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
-import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldTypes;
+import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldType;
 import net.minecraft.core.Holder;
 import net.minecraft.core.QuartPos;
 import net.minecraft.util.Mth;
@@ -73,12 +73,12 @@ public class BiomeBlender {
         NoiseField[] biomeDistanceFields = new NoiseField[biomeList.maxId() + 1];
 
         for (Holder<Biome> biome : surfaceBiomeCache.containedBiomes()) {
-            NoiseField biomeWeightField = NoiseFieldTypes.COARSE_2D.create(1, padding);
+            NoiseField biomeWeightField = NoiseFieldType.COARSE_2D.create(1, padding);
             double[] biomeWeightFieldArray = biomeWeightField.array();
-            NoiseField biomeDistanceField = NoiseFieldTypes.COARSE_2D.create(1, padding);
+            NoiseField biomeDistanceField = NoiseFieldType.COARSE_2D.create(1, padding);
             double[] biomeDistanceFieldArray = biomeDistanceField.array();
 
-            biomeWeightField.byBlock((index, x, y, z) -> fillBiomeBlendingFields(
+            biomeWeightField.visit((index, x, y, z) -> fillBiomeBlendingFields(
                     biome, surfaceBiomeCache,
                     biomeWeightFieldArray, biomeDistanceFieldArray,
                     minX, minZ,

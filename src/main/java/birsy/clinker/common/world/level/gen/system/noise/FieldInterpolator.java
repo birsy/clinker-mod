@@ -1,16 +1,16 @@
 package birsy.clinker.common.world.level.gen.system.noise;
 
-import birsy.clinker.common.world.level.gen.system.noise.field.InterpolatedNoiseField;
+import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
 import net.minecraft.util.Mth;
 
 // trying to speed up sequential interpolation by fetching cell data in advance
 public class FieldInterpolator {
-    final InterpolatedNoiseField srcField;
+    final NoiseField srcField;
     final boolean source2d;
     final double[] srcArray;
     final int srcCellSizeXZ, srcCellSizeY;
 
-    final InterpolatedNoiseField dstField;
+    final NoiseField dstField;
     final int dstCellSizeXZ, dstCellSizeY;
     final double facAddendXZ, facAddendY;
     // yzx bit order - as in, y is the most significant bit, and x the least. damn you arabic numerals.
@@ -32,7 +32,7 @@ public class FieldInterpolator {
     // interpolation factors when tri-lerping
     protected double facX, facY, facZ;
 
-    protected FieldInterpolator(InterpolatedNoiseField sourceField, InterpolatedNoiseField destinationField) {
+    protected FieldInterpolator(NoiseField sourceField, NoiseField destinationField) {
         // the math here only really works out when the scales are correct. So, make sure that's always true.
         assert sourceField.xzCellSize >= destinationField.xzCellSize && sourceField.yCellSize >= destinationField.yCellSize;
 

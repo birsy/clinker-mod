@@ -12,7 +12,7 @@ import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
 import birsy.clinker.common.world.level.gen.system.noise.PaddedNoiseFieldCache;
 import birsy.clinker.common.world.level.gen.system.noise.UncachedNoiseContext;
 import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
-import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldTypes;
+import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldType;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers;
 import birsy.clinker.core.util.MathUtils;
@@ -181,8 +181,8 @@ public class OldAndBustedRiverWorldFeature extends WorldFeature implements Modif
         cache.noiseHolder.registerNoise("riverbed");
 
         RiverSample sample = new RiverSample();
-        NoiseField lateralRiverDistanceField = NoiseFieldTypes.FINE_2D.create(0,0),
-                   riverBedNoiseField = NoiseFieldTypes.FINE_2D.create(0,0);
+        NoiseField lateralRiverDistanceField = NoiseFieldType.FINE_2D.create(0,0),
+                   riverBedNoiseField = NoiseFieldType.FINE_2D.create(0,0);
         double[] lateralRiverDistanceArray = lateralRiverDistanceField.array(),
                  riverBedNoiseArray = riverBedNoiseField.array();
         lateralRiverDistanceField.byBlock(0, cache.chunkHeight,
