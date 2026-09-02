@@ -30,12 +30,4 @@ public abstract class NoiseField {
     public void byBlock(NoiseFieldVisitors.PositionVisitor visitor) {
         this.byBlock(0, maxY, visitor);
     }
-    public abstract void byCell(int minLocalY, int maxLocalY, NoiseFieldVisitors.PositionVisitor visitor);
-    public void byCell(NoiseFieldVisitors.PositionVisitor visitor) {
-        this.byCell(0, maxY, visitor);
-    }
-    public abstract void visit(int minLocalY, int maxLocalY, NoiseFieldVisitors.BigVisitor visitor);
-    public void visit(NoiseFieldVisitors.BigVisitor visitor) {
-        this.visit(0, maxY, visitor);
-    }
 }
