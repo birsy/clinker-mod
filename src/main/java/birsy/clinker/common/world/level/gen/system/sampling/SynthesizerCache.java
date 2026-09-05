@@ -3,6 +3,7 @@ package birsy.clinker.common.world.level.gen.system.sampling;
 import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingField;
 import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingFieldResolution;
 import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingFieldSampler;
+import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.noise.FastNoiseLite;
 import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -55,7 +56,7 @@ public class SynthesizerCache {
     InterpolatingField getOrCreateField(Synthesizer synthesizer, int desiredXZPadding, int desiredXZScale, int fromY, int toY) {
         InterpolatingField[] computedFields = fieldsBySynthesizerId.get(synthesizer.id);
         if (computedFields == null) {
-            computedFields = new InterpolatingField[4]; // max possible scale == 4. see InterpolatingFieldType
+            computedFields = new InterpolatingField[5]; // max possible scale == 4. see InterpolatingFieldType
             fieldsBySynthesizerId.put(synthesizer.id, computedFields);
         }
 
@@ -74,7 +75,8 @@ public class SynthesizerCache {
                 );
             }
         }
-        fillNoiseField(synthesizer, field, fromY, toY, desiredXZPadding, desiredXZScale);
+
+        fillNoiseField(synthesizer, field, desiredXZPadding, desiredXZScale, fromY, toY);
         return field;
     }
 
@@ -95,7 +97,7 @@ public class SynthesizerCache {
         FastNoiseLite[] noises = new FastNoiseLite[synthesizer.noises.size()];
         RandomSource randomSource = worldRandom.at(synthesizer.id, 0, 0);
         for (int i = 0; i < synthesizer.noises.size(); i++) {
-            noises[i] = synthesizer.noises.get(i).create(randomSource.nextLong());
+            noises[i] = synthesizer.noises.get(i).create(0);
         }
         CachedContext context = new CachedContext(interpolators, noises);
 

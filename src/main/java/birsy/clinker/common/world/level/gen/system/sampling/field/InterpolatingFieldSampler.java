@@ -1,5 +1,6 @@
 package birsy.clinker.common.world.level.gen.system.sampling.field;
 
+import birsy.clinker.core.Clinker;
 import net.minecraft.util.Mth;
 
 // trying to speed up sequential interpolation by fetching cell data in advance
@@ -127,11 +128,11 @@ public interface InterpolatingFieldSampler {
         // tri-lerp
         public double sample() {
             double x0 = Mth.lerp(facX, data[0b000], data[0b001]),
-                    x1 = Mth.lerp(facX, data[0b010], data[0b011]),
-                    x2 = Mth.lerp(facX, data[0b100], data[0b101]),
-                    x3 = Mth.lerp(facX, data[0b110], data[0b111]);
+                   x1 = Mth.lerp(facX, data[0b010], data[0b011]),
+                   x2 = Mth.lerp(facX, data[0b100], data[0b101]),
+                   x3 = Mth.lerp(facX, data[0b110], data[0b111]);
             double z0 = Mth.lerp(facZ, x0, x1),
-                    z1 = Mth.lerp(facZ, x2, x3);
+                   z1 = Mth.lerp(facZ, x2, x3);
             return Mth.lerp(facY, z0, z1);
         }
 
@@ -164,7 +165,7 @@ public interface InterpolatingFieldSampler {
             dstCellBlockX += dstCellSizeXZ;
             facX += facAddendXZ;
             // new source cell
-            if (facX >= 1) {
+            if (facX >= 1 && srcCellX < srcField.xzCellCount - 1) {
                 facX -= 1;
                 srcCellX++;
                 srcCellBlockX += srcCellSizeXZ;

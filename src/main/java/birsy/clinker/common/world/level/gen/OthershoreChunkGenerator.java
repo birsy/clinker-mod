@@ -87,12 +87,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         );
     }
 
-    private ChunkAccess doBiomeFillTask(
-            OthershoreBiomeSource othershoreBiomeSource,
-            Blender blender,
-            RandomState randomState,
-            StructureManager structureManager,
-            ChunkAccess chunk) {
+    private ChunkAccess doBiomeFillTask(OthershoreBiomeSource othershoreBiomeSource, Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunk) {
         ChunkPos chunkPos = chunk.getPos();
         int minX = chunkPos.getMinBlockX(),
             minY = chunk.getMinBuildHeight(),
@@ -150,11 +145,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         );
     }
 
-    private ChunkAccess doNoiseFillTask(
-            Blender blender,
-            RandomState randomState,
-            StructureManager structureManager,
-            ChunkAccess chunk) {
+    private ChunkAccess doNoiseFillTask(Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunk) {
         ChunkPos chunkPos = chunk.getPos();
         int minX = chunkPos.getMinBlockX(),
             minY = chunk.getMinBuildHeight(),
@@ -164,9 +155,11 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         SynthesizerCache synthesizerCache = new SynthesizerCache(minX, minY, minZ, chunkHeight, randomState.getOrCreateRandomFactory(Clinker.resource("clinkergen")));
         Synthesizer testSynthesizer = Synthesizer.builder()
                 .addNoises(seed -> new FastNoiseLite((int) seed))
-                .build(InterpolatingFieldResolution.FINE, (x, y, z, dependencyValues, noises) -> noises[0].GetNoise(x, y, z));
+                .build(InterpolatingFieldResolution.VERY_COARSE,
+                       (x, y, z, dependencyValues, noises) -> noises[0].GetNoise(x, y, z)
+                );
 
-        InterpolatingField finalDensityField = synthesizerCache.forThisChunk(testSynthesizer, 0, minY, chunkHeight);
+        InterpolatingField finalDensityField = synthesizerCache.forThisChunk(testSynthesizer, 0, minY, chunk.getMaxBuildHeight());
         this.fillFromFields(finalDensityField, chunk);
         return chunk;
     }
@@ -187,9 +180,8 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         Heightmap worldSurfaceHeightmap = chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.WORLD_SURFACE_WG),
                   oceanFloorHeightmap = chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.OCEAN_FLOOR_WG);
 
-        InterpolatingFieldSampler sampler = InterpolatingFieldSampler.create(field, new InterpolatingField(1, 1, chunkHeight, 0));
-
-        for (int y = this.getGenDepth(); y > -1; y--) {
+        //InterpolatingFieldSampler sampler = InterpolatingFieldSampler.create(field, new InterpolatingField(0, 0, chunkHeight, 0));
+        for (int y = chunk.getHeight() - 1; y >= 0; y--) {
             int globalY = y + minY;
             pos.setY(globalY);
             int sectionY = SectionPos.sectionRelative(globalY);
@@ -203,8 +195,9 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                     int globalX = x + minX;
                     pos.setX(globalX);
 
-                    if (sampler.sample() <= 0) {
-                        section.setBlockState(x, sectionY, z, BRIMSTONE, false);
+                    if (field.retrieve(x, y, z) <= 0) {
+                        chunk.setBlockState(pos, BRIMSTONE, false);
+                        //section.setBlockState(x, sectionY, z, BRIMSTONE, false);
                         // fill heightmaps
                         int heightmapIndex = x + z * 16;
                         if (!filledWorldSurfaceHeight[heightmapIndex]) {
@@ -216,12 +209,12 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                             filledOceanFloorHeight[heightmapIndex] = true;
                         }
                     }
-                    sampler.advanceX();
+                    //sampler.advanceX();
                 }
-                sampler.advanceZ();
+                //sampler.advanceZ();
             }
             // we actually iterate in reverse y order, so we set the slice directly
-            sampler.setSlice(y);
+            //sampler.setSlice(y);
         }
 //        int minX = chunk.getPos().getMinBlockX(), minY = chunk.getMinBuildHeight(), minZ = chunk.getPos().getMinBlockZ();
 //        for (int yi = chunk.getHeight() - 1; yi >= 0; yi--) {

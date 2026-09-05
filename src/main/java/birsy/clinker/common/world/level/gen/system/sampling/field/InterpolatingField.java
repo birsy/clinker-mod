@@ -1,6 +1,7 @@
 package birsy.clinker.common.world.level.gen.system.sampling.field;
 
 import birsy.clinker.common.world.level.gen.system.sampling.Synthesizer;
+import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.noise.FastNoiseLite;
 import net.minecraft.util.Mth;
 
@@ -70,7 +71,8 @@ public class InterpolatingField {
     }
 
     public void fill(int fromY, int toY, int minX, int minY, int minZ, Synthesizer.Function filler, Synthesizer.Context context) {
-        int fromLocalY = fromY - minY, toLocalY = toY - minY;
+        int fromLocalY = fromY - minY,
+              toLocalY = toY - minY;
         FastNoiseLite[] noises = context.noises();
         // find unfilled layers
         fillMask.clear();
