@@ -1,7 +1,7 @@
 package birsy.clinker.common.world.level.gen.system.fluid;
 
 import birsy.clinker.common.world.level.gen.system.noise.PaddedNoiseFieldCache;
-import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
+import birsy.clinker.common.world.level.gen.system.noise.field.InterpolatingField;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureContext;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesFluids;
 import net.minecraft.core.SectionPos;
@@ -53,7 +53,7 @@ public class CellularFluidField implements FluidField {
 
     final List<ModifiesFluids> worldFeatures;
     final WorldFeatureContext worldFeatureContext;
-    final NoiseField heightmap;
+    final InterpolatingField heightmap;
 
     public CellularFluidField(
             RandomState randomState,
@@ -62,7 +62,7 @@ public class CellularFluidField implements FluidField {
             FluidFieldFiller baseFluidFieldFiller,
             List<ModifiesFluids> worldFeatures,
             WorldFeatureContext worldFeatureContext,
-            NoiseField heightmap,
+            InterpolatingField heightmap,
             int cellWidth, int cellHeight,
             int paddingCells) {
         this.aquiferRandom = randomState.aquiferRandom();
@@ -109,7 +109,7 @@ public class CellularFluidField implements FluidField {
     }
 
     @Override
-    public void precomputeValues(NoiseField finalDensityField) {
+    public void precomputeValues(InterpolatingField finalDensityField) {
         for (ModifiesFluids worldFeature : worldFeatures)
             worldFeature.prefillFluidNoiseFields(
                     SectionPos.blockToSectionCoord(minX),

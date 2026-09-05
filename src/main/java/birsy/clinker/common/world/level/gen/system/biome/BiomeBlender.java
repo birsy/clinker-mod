@@ -1,8 +1,8 @@
 package birsy.clinker.common.world.level.gen.system.biome;
 
 import birsy.clinker.common.world.level.gen.OthershoreBiomeSource;
-import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
-import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldType;
+import birsy.clinker.common.world.level.gen.system.noise.field.InterpolatingField;
+import birsy.clinker.common.world.level.gen.system.noise.field.InterpolatingFieldResolution;
 import net.minecraft.core.Holder;
 import net.minecraft.core.QuartPos;
 import net.minecraft.util.Mth;
@@ -69,13 +69,13 @@ public class BiomeBlender {
     }
 
     public ChunkBiomeBlendingInfo generateChunkBiomeBlendingInfo(BiomeCache2d surfaceBiomeCache, int minX, int minZ, int padding) {
-        NoiseField[] biomeWeightFields = new NoiseField[biomeList.maxId() + 1];
-        NoiseField[] biomeDistanceFields = new NoiseField[biomeList.maxId() + 1];
+        InterpolatingField[] biomeWeightFields = new InterpolatingField[biomeList.maxId() + 1];
+        InterpolatingField[] biomeDistanceFields = new InterpolatingField[biomeList.maxId() + 1];
 
         for (Holder<Biome> biome : surfaceBiomeCache.containedBiomes()) {
-            NoiseField biomeWeightField = NoiseFieldType.COARSE_2D.create(1, padding);
+            InterpolatingField biomeWeightField = InterpolatingFieldResolution.COARSE_2D.create(1, padding);
             double[] biomeWeightFieldArray = biomeWeightField.array();
-            NoiseField biomeDistanceField = NoiseFieldType.COARSE_2D.create(1, padding);
+            InterpolatingField biomeDistanceField = InterpolatingFieldResolution.COARSE_2D.create(1, padding);
             double[] biomeDistanceFieldArray = biomeDistanceField.array();
 
             biomeWeightField.visit((index, x, y, z) -> fillBiomeBlendingFields(
@@ -140,13 +140,13 @@ public class BiomeBlender {
         distanceToBorderField[index] = minimumDistance * QuartPos.SIZE * (isInsideBiome ? -1 : 1);
     }
 
-    public record ChunkBiomeBlendingInfo(NoiseField[] weightByBiomeId, NoiseField[] borderDistanceByBiomeId) {
+    public record ChunkBiomeBlendingInfo(InterpolatingField[] weightByBiomeId, InterpolatingField[] borderDistanceByBiomeId) {
         @Nullable
-        public NoiseField weightForBiome(BiomeList biomes, Holder<Biome> biome) {
+        public InterpolatingField weightForBiome(BiomeList biomes, Holder<Biome> biome) {
             return weightByBiomeId[biomes.getId(biome)];
         }
         @Nullable
-        public NoiseField borderDistanceForBiome(BiomeList biomes, Holder<Biome> biome) {
+        public InterpolatingField borderDistanceForBiome(BiomeList biomes, Holder<Biome> biome) {
             return borderDistanceByBiomeId[biomes.getId(biome)];
         }
     }

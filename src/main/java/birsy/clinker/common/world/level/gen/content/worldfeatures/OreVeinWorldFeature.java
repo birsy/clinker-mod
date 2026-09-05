@@ -6,7 +6,7 @@ import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldF
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesSurfaceDecoration;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
 import birsy.clinker.common.world.level.gen.system.noise.UncachedNoiseContext;
-import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
+import birsy.clinker.common.world.level.gen.system.noise.field.InterpolatingField;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers;
 import net.minecraft.core.BlockPos;
@@ -96,7 +96,7 @@ public class OreVeinWorldFeature extends WorldFeature implements ModifiesSurface
         int maxHeight = Math.min(maxWorldHeight, maxY + 16),
             minHeight = Math.max(level.getMinBuildHeight(), minY - 16);
 
-        NoiseField oreVeinANoise = cache.fillNoiseField(minHeight, maxHeight, ClinkerNoiseComputers.ORE_VEIN_A),
+        InterpolatingField oreVeinANoise = cache.fillNoiseField(minHeight, maxHeight, ClinkerNoiseComputers.ORE_VEIN_A),
                    oreVeinBNoise = cache.fillNoiseField(minHeight, maxHeight, ClinkerNoiseComputers.ORE_VEIN_B);
 
         RandomSource ditherRandom = randomState.random.at(centerX, centerY, centerZ);

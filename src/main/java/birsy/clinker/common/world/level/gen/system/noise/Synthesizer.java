@@ -1,29 +1,42 @@
 package birsy.clinker.common.world.level.gen.system.noise;
 
-import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldType;
+import birsy.clinker.common.world.level.gen.system.noise.field.InterpolatingFieldResolution;
 import birsy.clinker.core.util.noise.FastNoiseLite;
 import com.google.common.collect.ImmutableList;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public final class Synthesizer {
+public class Synthesizer {
     public static final AtomicInteger NEXT_ID = new AtomicInteger(0);
 
-    public final int id = NEXT_ID.get();
-    public final ImmutableList<Synthesizer> dependencies;
-    public final ImmutableList<FastNoiseLite> noises;
+    public final int id = NEXT_ID.getAndIncrement();
+    public final ImmutableList<Dependency> directDependencies;
+    public final ImmutableList<Dependency> resolvedDependencies; // all required dependencies, recursively.
+    public final ImmutableList<NoiseBuilder> noises;
 
-    public final NoiseFieldType fieldType;
+    public final InterpolatingFieldResolution resolution;
     public final Synthesizer.Function function;
 
-    public Synthesizer(NoiseFieldType fieldType, Synthesizer.Function function, ImmutableList<Synthesizer> dependencies, ImmutableList<FastNoiseLite> noises) {
-        this.dependencies = dependencies;
+    // required y, everything else is filled with defaultValue
+    public final double defaultValue;
+    public final int minY, maxY;
+
+    private Synthesizer(InterpolatingFieldResolution resolution,
+                        Synthesizer.Function function,
+                        ImmutableList<Dependency> directDependencies,
+                        ImmutableList<Dependency> resolvedDependencies,
+                        ImmutableList<NoiseBuilder> noises,
+                        double defaultValue, int minY, int maxY) {
+        this.directDependencies = directDependencies;
+        this.resolvedDependencies = resolvedDependencies;
         this.noises = noises;
-        this.fieldType = fieldType;
+        this.resolution = resolution;
         this.function = function;
+        this.defaultValue = defaultValue;
+
+        this.minY = minY;
+        this.maxY = maxY;
     }
 
     @Override
@@ -40,29 +53,86 @@ public final class Synthesizer {
 
     public static class Builder {
         List<Synthesizer> dependencies = new ArrayList<>();
-        List<FastNoiseLite> requiredNoises = new ArrayList<>();
+        List<NoiseBuilder> requiredNoises = new ArrayList<>();
+        double defaultValue = 0;
+        int minY = Integer.MIN_VALUE, maxY = Integer.MAX_VALUE;
 
         public Builder() {}
+
+        public Builder setRange(int minY, int maxY, double defaultValue) {
+            this.minY = minY; this.maxY = maxY;
+            this.defaultValue = defaultValue;
+            return this;
+        }
 
         public Builder addDependencies(Synthesizer... synthesizers) {
             Collections.addAll(dependencies, synthesizers);
             return this;
         }
-        public Builder addNoises(FastNoiseLite... noises) {
+        public Builder addNoises(NoiseBuilder... noises) {
             Collections.addAll(requiredNoises, noises);
             return this;
         }
-        public Synthesizer build(NoiseFieldType fieldType, Synthesizer.Function function) {
-            return new Synthesizer(fieldType, function, ImmutableList.copyOf(dependencies), ImmutableList.copyOf(requiredNoises));
+
+        // handles dependency resolution and such
+        public Synthesizer build(InterpolatingFieldResolution resolution, Synthesizer.Function function) {
+            ImmutableList.Builder<Dependency> directDependencies = ImmutableList.builder();
+            ImmutableList.Builder<Dependency> resolvedDependencies = ImmutableList.builder();
+            Map<Synthesizer, Set<Dependency>> synthToDependency = new HashMap<>();
+            for (Synthesizer dependency : dependencies) {
+                directDependencies.add(collectDependencies(dependency, synthToDependency, resolvedDependencies, minY, maxY, resolution.xzScale()));
+            }
+
+            return new Synthesizer(resolution, function,
+                    directDependencies.build(),
+                    resolvedDependencies.build(),
+                    ImmutableList.copyOf(requiredNoises),
+                    defaultValue, minY, maxY);
+        }
+
+        private static Dependency collectDependencies(Synthesizer synthesizer,
+                                                      Map<Synthesizer, Set<Dependency>> synthToDependency,
+                                                      ImmutableList.Builder<Dependency> resolvedDependencies,
+                                                      int minY, int maxY, int xzScale) {
+            // compute the next "window"
+            int nextMinY = Math.max(minY, synthesizer.minY), nextMaxY = Math.min(maxY, synthesizer.maxY);
+            int nextXZScale = Math.max(xzScale, synthesizer.resolution.xzScale());
+            // add dependencies
+            for (Dependency directDependency : synthesizer.directDependencies) {
+                collectDependencies(directDependency.synthesizer(), synthToDependency, resolvedDependencies, nextMinY, nextMaxY, xzScale);
+            }
+
+            // make sure a similar dependency hasn't already been added
+            if (synthToDependency.containsKey(synthesizer)) {
+                Set<Dependency> existingDependencies = synthToDependency.get(synthesizer);
+                for (Dependency existingDependency : existingDependencies) {
+                    // if it's the same scale and completely encapsulated, we don't need to add a new dependency.
+                    if (existingDependency.xzScale == nextXZScale &&
+                        existingDependency.minY <= nextMinY && existingDependency.maxY >= nextMaxY) {
+                        return existingDependency;
+                    }
+                }
+            }
+            Dependency newDependency = new Dependency(synthesizer, nextMinY, nextMaxY, nextXZScale);
+            synthToDependency.computeIfAbsent(synthesizer, key -> new HashSet<>()).add(newDependency);
+            resolvedDependencies.add(newDependency);
+            return newDependency;
         }
     }
 
+    public record Dependency(Synthesizer synthesizer, int minY, int maxY, int xzScale) {}
+
     public interface Context {
-        double retrieveSynth(int synthesizerIndex, int x, int y, int z);
-        double retrieveNoise(int noiseIndex, double x, double y, double z);
+        double[] synthesizerValues();
+        FastNoiseLite[] noises();
+        void advanceX(); void advanceY(); void advanceZ(); void setSlice(int cellY);
     }
 
     public interface Function {
-        double compute(int x, int y, int z, Context context);
+        double compute(int x, int y, int z, double[] depValues, FastNoiseLite[] noises);
+    }
+
+    public interface NoiseBuilder {
+        FastNoiseLite create(long seed);
     }
 }

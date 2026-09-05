@@ -11,8 +11,8 @@ import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
 import birsy.clinker.common.world.level.gen.system.noise.PaddedNoiseFieldCache;
 import birsy.clinker.common.world.level.gen.system.noise.UncachedNoiseContext;
-import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
-import birsy.clinker.common.world.level.gen.system.noise.field.NoiseFieldType;
+import birsy.clinker.common.world.level.gen.system.noise.field.InterpolatingField;
+import birsy.clinker.common.world.level.gen.system.noise.field.InterpolatingFieldResolution;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers;
 import birsy.clinker.core.util.MathUtils;
@@ -175,16 +175,16 @@ public class OldAndBustedRiverWorldFeature extends WorldFeature implements Modif
     }
 
     @Override
-    public void modifyCaveDensity(int minX, int minY, int minZ, int maxCaveHeight, NoiseFieldCache cache, NoiseField field, NoiseField maskField, WorldFeatureContext worldContext) {
+    public void modifyCaveDensity(int minX, int minY, int minZ, int maxCaveHeight, NoiseFieldCache cache, InterpolatingField field, InterpolatingField maskField, WorldFeatureContext worldContext) {
         int riverRadius = 15;
         int riverHeight = 35;
         cache.noiseHolder.registerNoise("riverbed");
 
         RiverSample sample = new RiverSample();
-        NoiseField lateralRiverDistanceField = NoiseFieldType.FINE_2D.create(0,0),
-                   riverBedNoiseField = NoiseFieldType.FINE_2D.create(0,0);
+        InterpolatingField lateralRiverDistanceField = InterpolatingFieldResolution.FINE_2D.create(0,0),
+                   riverBedValueField = InterpolatingFieldResolution.FINE_2D.create(0,0);
         double[] lateralRiverDistanceArray = lateralRiverDistanceField.array(),
-                 riverBedNoiseArray = riverBedNoiseField.array();
+                 riverBedNoiseArray = riverBedValueField.array();
         lateralRiverDistanceField.byBlock(0, cache.chunkHeight,
                 (index, x, y, z) -> {
                     sample.reset(x + minX, z + minZ, river);
@@ -199,7 +199,7 @@ public class OldAndBustedRiverWorldFeature extends WorldFeature implements Modif
                 (index, x, y, z) -> {
                     double lateralDistance = lateralRiverDistanceField.retrieve(x, y, z);
                     double riverShape = riverRadius - Mth.length(lateralDistance, (y + minY) - riverHeight);
-                    riverShape = Math.min((y + minY) - (2 * riverBedNoiseField.retrieve(x, y, z) + riverHeight - 1), riverShape);
+                    riverShape = Math.min((y + minY) - (2 * riverBedValueField.retrieve(x, y, z) + riverHeight - 1), riverShape);
 
                     double caveNoise = caveNoiseArray[index];
 
@@ -212,7 +212,7 @@ public class OldAndBustedRiverWorldFeature extends WorldFeature implements Modif
     public void prefillFluidNoiseFields(int chunkX, int chunkZ, PaddedNoiseFieldCache cache, WorldFeatureContext worldContext) {}
     private final ThreadLocal<RiverSample> sharedFluidLevelSample = ThreadLocal.withInitial(RiverSample::new);
     @Override
-    public FluidLevel modifyFluidLevel(int x, int y, int z, int minX, int minY, int minZ, FluidLevel currentFluidLevel, NoiseContext context, NoiseField heightmap) {
+    public FluidLevel modifyFluidLevel(int x, int y, int z, int minX, int minY, int minZ, FluidLevel currentFluidLevel, NoiseContext context, InterpolatingField heightmap) {
         int riverRadius = 15;
         int riverHeight = 35;
 

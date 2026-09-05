@@ -1,7 +1,7 @@
 package birsy.clinker.common.world.level.gen.system.surface.decorator;
 
 import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
-import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
+import birsy.clinker.common.world.level.gen.system.noise.field.InterpolatingField;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -44,12 +44,12 @@ public class SurfaceDecorationSystem {
     }
 
     public void decorate(NoiseFieldCache noiseFieldCache,
-                         NoiseField heightmapField, NoiseField heightmapGradientField,
+                         InterpolatingField heightmapField, InterpolatingField heightmapGradientField,
                          WorldGenLevel level, ChunkAccess chunk, RandomState randomState) {
 
         List<BlockSpan>[][] spans = this.buildSpansForChunk(level, chunk);
 
-        NoiseField[] offsetFields = {
+        InterpolatingField[] offsetFields = {
                 noiseFieldCache.fillNoiseField(ClinkerNoiseComputers.SURFACE_DECORATOR_OFFSET_X),
                 noiseFieldCache.fillNoiseField(ClinkerNoiseComputers.SURFACE_DECORATOR_OFFSET_Z)
         };
@@ -129,7 +129,7 @@ public class SurfaceDecorationSystem {
     }
 
     void decorateColumn(BlockPos.MutableBlockPos pos, int x, int z, int localX, int localZ,
-                        List<BlockSpan> column, List<BlockSpan>[] adjacentColumns, NoiseField[] offsetFields, Set<SurfaceDecorator> prefilledSurfaceDecorators,
+                        List<BlockSpan> column, List<BlockSpan>[] adjacentColumns, InterpolatingField[] offsetFields, Set<SurfaceDecorator> prefilledSurfaceDecorators,
                         WorldGenLevel level, NoiseFieldCache cache, SurfaceDecorationContext context) {
         // skip the first span, as it is always air
         // the last span, too, is the void

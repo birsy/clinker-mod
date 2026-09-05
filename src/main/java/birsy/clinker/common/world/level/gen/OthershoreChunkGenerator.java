@@ -213,7 +213,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                 fluidCellWidth
         );
 
-        NoiseField finalDensityField = createFinalDensityField(
+        InterpolatingField finalDensityField = createFinalDensityField(
                 chunk, noiseHolder, noiseFieldCache, biomeAndFluidCache, worldFeatures,
                 surfaceBiomes, chunkBiomeBlendingInfo, heightmapInfo,
                 minX, minY, minZ
@@ -244,7 +244,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         return chunk;
     }
 
-    private void fillFromFields(NoiseField densityField, FluidField fluidField, NoiseField waterfallPresence, ChunkAccess chunk) {
+    private void fillFromFields(InterpolatingField densityField, FluidField fluidField, InterpolatingField waterfallPresence, ChunkAccess chunk) {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
 
         boolean[] filledWorldSurfaceHeight = new boolean[16 * 16],
@@ -300,19 +300,19 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
     }
 
-    private NoiseField createFinalDensityField(ChunkAccess chunk, SeededNoiseHolder noiseHolder,
-                                               NoiseFieldCache cache, PaddedNoiseFieldCache biomeCache,
-                                               WorldFeatureSet worldFeaturesInChunk,
-                                               BiomeCache2d surfaceBiomes,
-                                               BiomeBlender.ChunkBiomeBlendingInfo chunkBiomeBlendingInfo,
-                                               SurfaceShaperSystem.ChunkSurfaceHeightmap heightmapInfo,
-                                               int minX, int minY, int minZ) {
+    private InterpolatingField createFinalDensityField(ChunkAccess chunk, SeededNoiseHolder noiseHolder,
+                                                       NoiseFieldCache cache, PaddedNoiseFieldCache biomeCache,
+                                                       WorldFeatureSet worldFeaturesInChunk,
+                                                       BiomeCache2d surfaceBiomes,
+                                                       BiomeBlender.ChunkBiomeBlendingInfo chunkBiomeBlendingInfo,
+                                                       SurfaceShaperSystem.ChunkSurfaceHeightmap heightmapInfo,
+                                                       int minX, int minY, int minZ) {
         int chunkHeight = chunk.getHeight();
 
-        NoiseField heightmap = heightmapInfo.combinedHeightmapField();
-        NoiseField heightmapGradient = surfaceShaperSystem.generateHeightmapGradientSquaredField(heightmap);
-        NoiseField distanceToHeightmap = surfaceShaperSystem.generateApproximateDistanceToHeightmap(chunkHeight, minY, heightmap, heightmapGradient);
-        NoiseField surfaceDensityField = surfaceShaperSystem.generateSurfaceDensity(
+        InterpolatingField heightmap = heightmapInfo.combinedHeightmapField();
+        InterpolatingField heightmapGradient = surfaceShaperSystem.generateHeightmapGradientSquaredField(heightmap);
+        InterpolatingField distanceToHeightmap = surfaceShaperSystem.generateApproximateDistanceToHeightmap(chunkHeight, minY, heightmap, heightmapGradient);
+        InterpolatingField surfaceDensityField = surfaceShaperSystem.generateSurfaceDensity(
                 cache,
                 worldFeaturesInChunk.byCapability(ClinkerWorldFeatureCapabilities.MODIFIES_SURFACE_DENSITY.get()),
                 surfaceBiomes, chunkBiomeBlendingInfo,
@@ -323,12 +323,12 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         // compute cave density
         int maxCaveHeight = heightmapInfo.maximum() + 32;
         int localMaxCaveHeight = maxCaveHeight - minY + 1;
-        NoiseField caveDensityField = cache.fillNoiseField(minY, maxCaveHeight, ClinkerNoiseComputers.CAVES.get());
+        InterpolatingField caveDensityField = cache.fillNoiseField(minY, maxCaveHeight, ClinkerNoiseComputers.CAVES.get());
         double[] caveDensityFieldArray = caveDensityField.array();
         caveDensityField.byBlock(localMaxCaveHeight, chunkHeight - 1,
                 (index, x, y, z) -> { if (y > localMaxCaveHeight) caveDensityFieldArray[index] = -100; }
         );
-        NoiseField caveEntranceMaskField =
+        InterpolatingField caveEntranceMaskField =
                 cache.fillNoiseField(minY, maxCaveHeight, ClinkerNoiseComputers.CAVE_ENTRANCE_MASK.get());
         for (ModifiesCaveDensity worldFeature : worldFeaturesInChunk.byCapability(ClinkerWorldFeatureCapabilities.MODIFIES_CAVE_DENSITY.get()))
             worldFeature.modifyCaveDensity(minX, minY, minZ, maxCaveHeight, cache, caveDensityField, caveEntranceMaskField, worldContext);
@@ -345,7 +345,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
         // combine cave density and surface density
         // special 2x2x2 cell size for extra vertical detail...
-        NoiseField finalDensityField = new NoiseField(chunkHeight, 1, 1, 0);
+        InterpolatingField finalDensityField = new InterpolatingField(chunkHeight, 1, 1, 0);
         double[] finalDensityFieldArray = finalDensityField.array();
         finalDensityField.byBlock(0, maxCaveHeight - minY, (index, x, y, z) -> {
             double surfaceDensity = surfaceDensityField.retrieve(x, y, z);
@@ -397,7 +397,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                 worldContext,
                 minX, minZ
         );
-        NoiseField heightmapGradient = surfaceShaperSystem.generateHeightmapGradientSquaredField(heightmapInfo.combinedHeightmapField());
+        InterpolatingField heightmapGradient = surfaceShaperSystem.generateHeightmapGradientSquaredField(heightmapInfo.combinedHeightmapField());
         surfaceDecorationSystem.decorate(
                 cache, heightmapInfo.combinedHeightmapField(), heightmapGradient,
                 level, chunk, randomState
@@ -448,7 +448,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
     private void createBarrierrockLayer(
             ChunkAccess chunk, PositionalRandomFactory random, NoiseFieldCache cache,
             BlockPos.MutableBlockPos pos, int minX, int minY, int minZ) {
-        NoiseField field = cache.fillNoiseField(ClinkerNoiseComputers.BASE_NOISE_2D[3]);
+        InterpolatingField field = cache.fillNoiseField(ClinkerNoiseComputers.BASE_NOISE_2D[3]);
         for (int x = 0; x < 16; x++) {
             pos.setX(minX + x);
             for (int z = 0; z < 16; z++) {

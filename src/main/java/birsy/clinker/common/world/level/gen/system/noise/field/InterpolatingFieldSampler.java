@@ -1,16 +1,15 @@
-package birsy.clinker.common.world.level.gen.system.noise;
+package birsy.clinker.common.world.level.gen.system.noise.field;
 
-import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
 import net.minecraft.util.Mth;
 
 // trying to speed up sequential interpolation by fetching cell data in advance
-public class FieldInterpolator {
-    final NoiseField srcField;
+public class InterpolatingFieldSampler {
+    final InterpolatingField srcField;
     final boolean source2d;
     final double[] srcArray;
     final int srcCellSizeXZ, srcCellSizeY;
 
-    final NoiseField dstField;
+    final InterpolatingField dstField;
     final int dstCellSizeXZ, dstCellSizeY;
     final double facAddendXZ, facAddendY;
     // yzx bit order - as in, y is the most significant bit, and x the least. damn you arabic numerals.
@@ -32,7 +31,7 @@ public class FieldInterpolator {
     // interpolation factors when tri-lerping
     protected double facX, facY, facZ;
 
-    protected FieldInterpolator(NoiseField sourceField, NoiseField destinationField) {
+    public InterpolatingFieldSampler(InterpolatingField sourceField, InterpolatingField destinationField) {
         // the math here only really works out when the scales are correct. So, make sure that's always true.
         assert sourceField.xzCellSize >= destinationField.xzCellSize && sourceField.yCellSize >= destinationField.yCellSize;
 
@@ -48,8 +47,12 @@ public class FieldInterpolator {
         this.facAddendXZ = (double) dstCellSizeXZ / srcCellSizeXZ;
         this.facAddendY = (double) dstCellSizeY / srcCellSizeY;
 
-        this.source2d = sourceField.yCellCount <= 1;
-        int xStride = 1, yStride = srcField.xzCellStride, zStride = srcField.xzCellCount;
+        this.source2d = sourceField instanceof InterpolatingField2d;
+        boolean destination2d = destinationField instanceof InterpolatingField2d;
+        // we can only go from 2d -> 3d, never from 3d -> 2d
+        assert ((source2d == destination2d) || source2d);
+
+        int xStride = 1, yStride = srcField.sliceCellCount, zStride = srcField.xzCellCount;
         for (int i = 0; i < indexOffset.length; i++) {
             int xOffset = (i & 0b001) > 0 ? xStride : 0,
                 zOffset = (i & 0b010) > 0 ? zStride : 0;
@@ -104,7 +107,7 @@ public class FieldInterpolator {
             srcCellX++;
             srcCellBlockX += srcCellSizeXZ;
             // scoot everything over
-            int startIndex = srcCellX + srcCellZ * srcField.xzCellCount + srcCellY * srcField.xzCellStride;
+            int startIndex = srcCellX + srcCellZ * srcField.xzCellCount + srcCellY * srcField.sliceCellCount;
             for (int i = 0; i < 8; i += 2) {
                 data[i] = data[i + 1];
                 data[i + 1] = srcArray[startIndex + indexOffset[i + 1]];
@@ -156,7 +159,7 @@ public class FieldInterpolator {
 
     // fetches the data at each corner of a single cell for interpolation.
     protected void fetchCellData() {
-        int startIndex = srcCellX + srcCellZ * srcField.xzCellCount + srcCellY * srcField.xzCellStride;
+        int startIndex = srcCellX + srcCellZ * srcField.xzCellCount + srcCellY * srcField.sliceCellCount;
         for (int i = 0; i < indexOffset.length; i++) data[i] = srcArray[startIndex + indexOffset[i]];
     }
 }

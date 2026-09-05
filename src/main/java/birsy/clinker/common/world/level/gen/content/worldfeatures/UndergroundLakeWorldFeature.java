@@ -1,17 +1,14 @@
 package birsy.clinker.common.world.level.gen.content.worldfeatures;
 
 import birsy.clinker.common.world.level.gen.system.fluid.FluidLevel;
-import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureType;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
 import birsy.clinker.common.world.level.gen.system.noise.PaddedNoiseFieldCache;
 import birsy.clinker.common.world.level.gen.system.noise.UncachedNoiseContext;
-import birsy.clinker.common.world.level.gen.system.noise.field.NoiseField;
-import birsy.clinker.common.world.level.gen.system.metachunk.MetaChunk;
+import birsy.clinker.common.world.level.gen.system.noise.field.InterpolatingField;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeature;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureContext;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesFluids;
 import birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers;
-import birsy.clinker.core.registry.worldgen.ClinkerWorldFeatures;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -89,7 +86,7 @@ public class UndergroundLakeWorldFeature extends WorldFeature implements Modifie
     }
 
     @Override
-    public FluidLevel modifyFluidLevel(int x, int y, int z, int minX, int minY, int minZ, FluidLevel currentFluidLevel, NoiseContext context, NoiseField heightmap) {
+    public FluidLevel modifyFluidLevel(int x, int y, int z, int minX, int minY, int minZ, FluidLevel currentFluidLevel, NoiseContext context, InterpolatingField heightmap) {
         if (currentFluidLevel.height() > this.waterLevel)
             return currentFluidLevel;
         if (y > this.waterLevel + 15 || y < this.waterLevel - 25)
