@@ -11,7 +11,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.common.EventBusSubscriber;
 
 // draws some stuff that's shared between many renderers, at the start of the render pass
-@EventBusSubscriber(value = Dist.CLIENT, modid = Clinker.MOD_ID)
 public class OthershoreSharedRenderElements {
     public static void draw(int ticks, double partialTicks) {
         renderCloudDensityTexture(ticks, partialTicks);
