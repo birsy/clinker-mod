@@ -4,11 +4,8 @@ import birsy.clinker.common.alchemy.knowledge.type.AlchemyKnowledgeType;
 import birsy.clinker.common.page.PageElementType;
 import birsy.clinker.common.world.level.gen.system.biome.resolver.ProtoBiome;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureSpawnSet;
-import birsy.clinker.common.world.level.gen.system.noise.Synthesizer;
 import birsy.clinker.common.world.level.gen.system.surface.decorator.BiomeSurfaceDecorator;
 import birsy.clinker.common.world.level.gen.system.surface.decorator.SurfaceDecorators;
-import birsy.clinker.common.world.level.gen.system.surface.shaper.BiomeSurfaceShaper;
-import birsy.clinker.common.world.level.gen.system.surface.shaper.SurfaceShapers;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureType;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.WorldFeatureCapability;
 import birsy.clinker.common.world.level.weather.OthershoreWeather;
@@ -70,20 +67,20 @@ public class ClinkerRegistries {
     public static final Registry<Class<? extends WorldFeatureCapability>> WORLD_FEATURE_CAPABILITY_REGISTRY = new RegistryBuilder<>(WORLD_FEATURE_CAPABILITY_REGISTRY_KEY)
             .sync(false)
             .create();
-    public static final ResourceKey<Registry<Synthesizer>> NOISE_COMPUTER_REGISTRY_KEY =
-            ResourceKey.createRegistryKey(Clinker.resource("noise_computer"));
-    public static final Registry<Synthesizer> NOISE_COMPUTER_REGISTRY =
-            new RegistryBuilder<>(NOISE_COMPUTER_REGISTRY_KEY)
-                    .sync(false)
-                    .callback(NoiseComputerCallbacks.INSTANCE)
-                    .create();
-    static class NoiseComputerCallbacks implements AddCallback<Synthesizer> {
-        static final NoiseComputerCallbacks INSTANCE = new NoiseComputerCallbacks();
-        @Override
-        public void onAdd(Registry<Synthesizer> registry, int id, ResourceKey<Synthesizer> key, Synthesizer value) {
-            value.id = id;
-        }
-    }
+//    public static final ResourceKey<Registry<Synthesizer>> NOISE_COMPUTER_REGISTRY_KEY =
+//            ResourceKey.createRegistryKey(Clinker.resource("noise_computer"));
+//    public static final Registry<Synthesizer> NOISE_COMPUTER_REGISTRY =
+//            new RegistryBuilder<>(NOISE_COMPUTER_REGISTRY_KEY)
+//                    .sync(false)
+//                    .callback(NoiseComputerCallbacks.INSTANCE)
+//                    .create();
+//    static class NoiseComputerCallbacks implements AddCallback<Synthesizer> {
+//        static final NoiseComputerCallbacks INSTANCE = new NoiseComputerCallbacks();
+//        @Override
+//        public void onAdd(Registry<Synthesizer> registry, int id, ResourceKey<Synthesizer> key, Synthesizer value) {
+//            value.id = id;
+//        }
+//    }
     public static final ResourceKey<Registry<ProtoBiome>> PROTO_BIOME_REGISTRY_KEY =
             ResourceKey.createRegistryKey(Clinker.resource("proto_biome"));
     public static final Registry<ProtoBiome> PROTO_BIOME_REGISTRY =
@@ -124,32 +121,32 @@ public class ClinkerRegistries {
             }
         }
     }
-    public static final ResourceKey<Registry<BiomeSurfaceShaper>> SURFACE_SHAPER_REGISTRY_KEY =
-            ResourceKey.createRegistryKey(Clinker.resource("surface_shaper"));
-    public static final Registry<BiomeSurfaceShaper> SURFACE_SHAPER_REGISTRY =
-            new RegistryBuilder<>(SURFACE_SHAPER_REGISTRY_KEY)
-                    .sync(false)
-                    .callback(SurfaceShaperCallbacks.INSTANCE)
-                    .create();
-    static class SurfaceShaperCallbacks implements BakeCallback<BiomeSurfaceShaper> {
-        static final SurfaceShaperCallbacks INSTANCE = new SurfaceShaperCallbacks();
-        @Override
-        public void onBake(Registry<BiomeSurfaceShaper> registry) {
-            for (BiomeSurfaceShaper biomeSurfaceShaper : registry) {
-                if (biomeSurfaceShaper.biome().left().isPresent()) {
-                    SurfaceShapers.shaperByBiome.put(
-                            biomeSurfaceShaper.biome().left().get(),
-                            biomeSurfaceShaper.shaper()
-                    );
-                } else if (biomeSurfaceShaper.biome().right().isPresent()) {
-                    SurfaceShapers.shaperByBiomeTag.put(
-                            biomeSurfaceShaper.biome().right().get(),
-                            biomeSurfaceShaper.shaper()
-                    );
-                }
-            }
-        }
-    }
+//    public static final ResourceKey<Registry<BiomeSurfaceShaper>> SURFACE_SHAPER_REGISTRY_KEY =
+//            ResourceKey.createRegistryKey(Clinker.resource("surface_shaper"));
+//    public static final Registry<BiomeSurfaceShaper> SURFACE_SHAPER_REGISTRY =
+//            new RegistryBuilder<>(SURFACE_SHAPER_REGISTRY_KEY)
+//                    .sync(false)
+//                    .callback(SurfaceShaperCallbacks.INSTANCE)
+//                    .create();
+//    static class SurfaceShaperCallbacks implements BakeCallback<BiomeSurfaceShaper> {
+//        static final SurfaceShaperCallbacks INSTANCE = new SurfaceShaperCallbacks();
+//        @Override
+//        public void onBake(Registry<BiomeSurfaceShaper> registry) {
+//            for (BiomeSurfaceShaper biomeSurfaceShaper : registry) {
+//                if (biomeSurfaceShaper.biome().left().isPresent()) {
+//                    SurfaceShapers.shaperByBiome.put(
+//                            biomeSurfaceShaper.biome().left().get(),
+//                            biomeSurfaceShaper.shaper()
+//                    );
+//                } else if (biomeSurfaceShaper.biome().right().isPresent()) {
+//                    SurfaceShapers.shaperByBiomeTag.put(
+//                            biomeSurfaceShaper.biome().right().get(),
+//                            biomeSurfaceShaper.shaper()
+//                    );
+//                }
+//            }
+//        }
+//    }
 
     @SubscribeEvent
     public static void registerRegistries(NewRegistryEvent event) {
@@ -161,9 +158,8 @@ public class ClinkerRegistries {
         event.register(WORLD_FEATURE_CAPABILITY_REGISTRY);
         event.register(WORLD_FEATURE_REGISTRY);
         event.register(WORLD_FEATURE_SPAWN_SET_REGISTRY);
-        event.register(NOISE_COMPUTER_REGISTRY);
         event.register(SURFACE_DECORATOR_REGISTRY);
-        event.register(SURFACE_SHAPER_REGISTRY);
+//        event.register(SURFACE_SHAPER_REGISTRY);
         event.register(PROTO_BIOME_REGISTRY);
     }
 }

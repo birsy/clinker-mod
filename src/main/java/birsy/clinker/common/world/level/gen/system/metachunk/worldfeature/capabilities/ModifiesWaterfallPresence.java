@@ -1,9 +1,8 @@
 package birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities;
 
-import birsy.clinker.common.world.level.gen.system.noise.PaddedNoiseFieldCache;
-import birsy.clinker.common.world.level.gen.system.noise.field.InterpolatingField;
+import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingField;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureContext;
 
 public interface ModifiesWaterfallPresence extends WorldFeatureCapability {
-    void modifyWaterfallPresence(int minX, int minY, int minZ, PaddedNoiseFieldCache cache, InterpolatingField field, WorldFeatureContext worldContext);
+    void modifyWaterfallPresence(int minX, int minY, int minZ, InterpolatingField field, WorldFeatureContext worldContext);
 }

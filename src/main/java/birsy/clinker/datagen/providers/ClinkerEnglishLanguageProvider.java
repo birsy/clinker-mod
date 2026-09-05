@@ -2,7 +2,6 @@ package birsy.clinker.datagen.providers;
 
 import birsy.clinker.common.ordnance.OrdnanceModifierType;
 import birsy.clinker.core.Clinker;
-import birsy.clinker.core.registration.ClinkerBiome;
 import birsy.clinker.core.registration.SoundHolder;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.ClinkerItems;
@@ -45,9 +44,6 @@ public class ClinkerEnglishLanguageProvider extends LanguageProvider {
             String name = entry.getId().getPath();
             int lastDot = name.lastIndexOf('.');
             this.add(entry.get().getDescriptionId(), localizedNameFromRegistryName(lastDot == -1 ? name : name.substring(lastDot + 1)));
-        }
-        for (ClinkerBiome biome : ClinkerBiomes.BIOMES) {
-            this.add("biome.clinker." + biome.key().location().getPath(), localizedNameFromRegistryName(biome.key().location().getPath()));
         }
         for (SoundHolder soundHolder : ClinkerSounds.SOUND_HOLDERS) {
             if (soundHolder.subtitleKey().isPresent())

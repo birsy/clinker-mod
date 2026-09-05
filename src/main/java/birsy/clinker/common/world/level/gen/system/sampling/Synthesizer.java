@@ -1,6 +1,6 @@
-package birsy.clinker.common.world.level.gen.system.noise;
+package birsy.clinker.common.world.level.gen.system.sampling;
 
-import birsy.clinker.common.world.level.gen.system.noise.field.InterpolatingFieldResolution;
+import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingFieldResolution;
 import birsy.clinker.core.util.noise.FastNoiseLite;
 import com.google.common.collect.ImmutableList;
 
@@ -54,13 +54,17 @@ public class Synthesizer {
         return id;
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public static class Builder {
         List<Synthesizer> dependencies = new ArrayList<>();
         List<NoiseBuilder> requiredNoises = new ArrayList<>();
         double defaultValue = 0;
         int minY = Integer.MIN_VALUE, maxY = Integer.MAX_VALUE;
 
-        public Builder() {}
+        private Builder() {}
 
         public Builder setRange(int minY, int maxY, double defaultValue) {
             this.minY = minY; this.maxY = maxY;
@@ -132,7 +136,7 @@ public class Synthesizer {
     }
 
     public interface Function {
-        double compute(int x, int y, int z, double[] depValues, FastNoiseLite[] noises);
+        double compute(int x, int y, int z, double[] dependencyValues, FastNoiseLite[] noises);
     }
 
     // probably scoot this into its own noise manager class at some point???

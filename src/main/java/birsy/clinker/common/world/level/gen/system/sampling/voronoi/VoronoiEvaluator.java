@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.level.gen.system.noise.voronoi;
+package birsy.clinker.common.world.level.gen.system.sampling.voronoi;
 
 import net.minecraft.util.Mth;
 

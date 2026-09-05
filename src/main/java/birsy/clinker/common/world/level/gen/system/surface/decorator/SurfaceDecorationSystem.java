@@ -1,9 +1,6 @@
 package birsy.clinker.common.world.level.gen.system.surface.decorator;
 
-import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
-import birsy.clinker.common.world.level.gen.system.noise.field.InterpolatingField;
 import birsy.clinker.core.Clinker;
-import birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.core.*;
 import net.minecraft.resources.ResourceKey;
@@ -43,16 +40,8 @@ public class SurfaceDecorationSystem {
         }
     }
 
-    public void decorate(NoiseFieldCache noiseFieldCache,
-                         InterpolatingField heightmapField, InterpolatingField heightmapGradientField,
-                         WorldGenLevel level, ChunkAccess chunk, RandomState randomState) {
-
+    public void decorate(WorldGenLevel level, ChunkAccess chunk, RandomState randomState) {
         List<BlockSpan>[][] spans = this.buildSpansForChunk(level, chunk);
-
-        InterpolatingField[] offsetFields = {
-                noiseFieldCache.fillNoiseField(ClinkerNoiseComputers.SURFACE_DECORATOR_OFFSET_X),
-                noiseFieldCache.fillNoiseField(ClinkerNoiseComputers.SURFACE_DECORATOR_OFFSET_Z)
-        };
         Set<SurfaceDecorator> prefilled = new HashSet<>(4);
 
         ChunkPos chunkPos = chunk.getPos();
@@ -61,19 +50,17 @@ public class SurfaceDecorationSystem {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         RandomSource random = randomState.getOrCreateRandomFactory(SURFACE_BUILDER_RANDOM)
                 .at(chunk.getPos().x, 0, chunk.getPos().z);
-        SurfaceDecorationContext surfaceDecorationContext = new SurfaceDecorationContext(level, chunk, noiseFieldCache.context, random);
+        SurfaceDecorationContext surfaceDecorationContext = new SurfaceDecorationContext(level, chunk, random);
         for (int x = 0; x < 16; x++) {
             int cX = x + 1, wX = x + minX;
-
             for (int z = 0; z < 16; z++) {
                 int cZ = z + 1, wZ = z + minZ;
-
                 List<BlockSpan> column = spans[cX][cZ];
                 int i = 0;
                 for (Direction direction : Direction.Plane.HORIZONTAL)
                     adjacencies[i++] = spans[cX + direction.getStepX()][cZ + direction.getStepZ()];
 
-                decorateColumn(pos, wX, wZ, x, z, column, adjacencies, offsetFields, prefilled, level, noiseFieldCache, surfaceDecorationContext);
+                decorateColumn(pos, wX, wZ, x, z, column, adjacencies, prefilled, level, surfaceDecorationContext);
             }
         }
     }
@@ -129,8 +116,8 @@ public class SurfaceDecorationSystem {
     }
 
     void decorateColumn(BlockPos.MutableBlockPos pos, int x, int z, int localX, int localZ,
-                        List<BlockSpan> column, List<BlockSpan>[] adjacentColumns, InterpolatingField[] offsetFields, Set<SurfaceDecorator> prefilledSurfaceDecorators,
-                        WorldGenLevel level, NoiseFieldCache cache, SurfaceDecorationContext context) {
+                        List<BlockSpan> column, List<BlockSpan>[] adjacentColumns, Set<SurfaceDecorator> prefilledSurfaceDecorators,
+                        WorldGenLevel level, SurfaceDecorationContext context) {
         // skip the first span, as it is always air
         // the last span, too, is the void
         for (int i = 1; i < column.size() - 1; i++) {
@@ -142,8 +129,8 @@ public class SurfaceDecorationSystem {
             boolean floor = span.solid();
             if (!floor) surfaceY++;
             // determine biome
-            double biomeOffsetX = offsetFields[0].retrieve(localX, 0, localZ),
-                   biomeOffsetZ = offsetFields[1].retrieve(localX, 0, localZ);
+            double biomeOffsetX = 0, //offsetFields[0].retrieve(localX, 0, localZ),
+                   biomeOffsetZ = 0; //offsetFields[1].retrieve(localX, 0, localZ);
             int bX = (int) Math.round(x + biomeOffsetX), bY = surfaceY,
                 bZ = (int) Math.round(z + biomeOffsetZ);
             Holder<Biome> biome = level.getNoiseBiome(QuartPos.fromBlock(bX), QuartPos.fromBlock(bY), QuartPos.fromBlock(bZ));
@@ -170,10 +157,6 @@ public class SurfaceDecorationSystem {
             Direction surfaceNormal = floor ? Direction.DOWN : Direction.UP;
             BlockState surfaceState = floor ? previousSpan.bottomState() : nextSpan.topState();
 
-            if (!prefilledSurfaceDecorators.contains(decorator)) {
-                decorator.prefillNoiseFields(cache);
-                prefilledSurfaceDecorators.add(decorator);
-            }
             context.updateForSurface(
                     surfaceY, surfaceNormal, surfaceState,
                     maxUpwardsOffset, maxDownwardsOffset, maximumDepth, visibleToSky

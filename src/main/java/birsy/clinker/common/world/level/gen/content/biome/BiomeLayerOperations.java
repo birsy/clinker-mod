@@ -3,7 +3,6 @@ package birsy.clinker.common.world.level.gen.content.biome;
 import birsy.clinker.common.world.level.gen.system.biome.resolver.BiomeLayerOperation;
 import birsy.clinker.common.world.level.gen.system.biome.resolver.ProtoBiome;
 import birsy.clinker.common.world.level.gen.system.biome.resolver.ProtoBiomeNeighborhood;
-import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
 import birsy.clinker.core.registry.ClinkerRegistries;
 import net.minecraft.Util;
 import net.minecraft.util.RandomSource;
@@ -27,7 +26,7 @@ public class BiomeLayerOperations {
             }), replacement.id);
         }
         @Override
-        public int apply(int blockX, int blockZ, int currentId, int[] neighborhood, RandomSource random, NoiseContext noiseContext) {
+        public int apply(int blockX, int blockZ, int currentId, int[] neighborhood, RandomSource random) {
             if (shouldReplace.test(currentId)) return replacement;
             return currentId;
         }
@@ -39,7 +38,7 @@ public class BiomeLayerOperations {
         private static final ThreadLocal<int[]> threadedDirtyIds =
                 ThreadLocal.withInitial(() -> new int[9]);
         @Override
-        public int apply(int blockX, int blockZ, int currentId, int[] neighborhood, RandomSource random, NoiseContext noiseContext) {
+        public int apply(int blockX, int blockZ, int currentId, int[] neighborhood, RandomSource random) {
             int[] counts = threadedCounts.get();
             int[] dirty = threadedDirtyIds.get();
             int dirtyCount = 0, highestCount = 0, winner = currentId;
@@ -74,7 +73,7 @@ public class BiomeLayerOperations {
         private static final ThreadLocal<int[]> threadedDirtyIds =
                 ThreadLocal.withInitial(() -> new int[9]);
         @Override
-        public int apply(int blockX, int blockZ, int currentId, int[] neighborhood, RandomSource random, NoiseContext noiseContext) {
+        public int apply(int blockX, int blockZ, int currentId, int[] neighborhood, RandomSource random) {
             int[] counts = threadedCounts.get();
             int[] dirty = threadedDirtyIds.get();
             int dirtyCount = 0, highestCount = 0, winner = currentId;
@@ -95,7 +94,7 @@ public class BiomeLayerOperations {
 
     public record RandomizeIntoNeighbor(double probability) implements BiomeLayerOperation {
         @Override
-        public int apply(int blockX, int blockZ, int currentId, int[] neighborhood, RandomSource random, NoiseContext noiseContext) {
+        public int apply(int blockX, int blockZ, int currentId, int[] neighborhood, RandomSource random) {
             if (random.nextDouble() > probability) return currentId;
             int x = random.nextIntBetweenInclusive(-1, 1), z = random.nextIntBetweenInclusive(-1, 1);
             return neighborhood[(z + 1) * 3 + (x + 1)];
@@ -104,13 +103,13 @@ public class BiomeLayerOperations {
 
     private record WeightedRandomListMutate(IntPredicate target, SimpleWeightedRandomList<Integer> results) implements BiomeLayerOperation {
         @Override
-        public int apply(int blockX, int blockZ, int currentId, int[] neighborhood, RandomSource random, NoiseContext noiseContext) {
+        public int apply(int blockX, int blockZ, int currentId, int[] neighborhood, RandomSource random) {
             return target.test(currentId) ? results.getRandomValue(random).orElse(currentId) : currentId;
         }
     }
     private record FlatMutate(IntPredicate target, int[] results) implements BiomeLayerOperation {
         @Override
-        public int apply(int blockX, int blockZ, int currentId, int[] neighborhood, RandomSource random, NoiseContext noiseContext) {
+        public int apply(int blockX, int blockZ, int currentId, int[] neighborhood, RandomSource random) {
             if (!target.test(currentId)) return currentId;
             return results[random.nextInt(results.length)];
         }
@@ -164,7 +163,7 @@ public class BiomeLayerOperations {
             this(id -> id == target.id, surrounding.id);
         }
         @Override
-        public int apply(int blockX, int blockZ, int currentId, int[] neighborhood, RandomSource random, NoiseContext noiseContext) {
+        public int apply(int blockX, int blockZ, int currentId, int[] neighborhood, RandomSource random) {
             if (target.test(currentId)) return currentId;
             for (int i : ProtoBiomeNeighborhood.NEIGHBOR_INDICES)
                 if (target.test(neighborhood[i])) return surroundingId;
@@ -194,7 +193,7 @@ public class BiomeLayerOperations {
                  border.id);
         }
         @Override
-        public int apply(int blockX, int blockZ, int currentId, int[] neighborhood, RandomSource random, NoiseContext noiseContext) {
+        public int apply(int blockX, int blockZ, int currentId, int[] neighborhood, RandomSource random) {
             if (!biomeA.test(currentId)) return currentId;
             for (int i : ProtoBiomeNeighborhood.NEIGHBOR_INDICES)
                 if (biomeB.test(neighborhood[i])) return borderBiomeId;
@@ -211,7 +210,7 @@ public class BiomeLayerOperations {
             }));
         }
         @Override
-        public int apply(int blockX, int blockZ, int currentId, int[] neighborhood, RandomSource random, NoiseContext noiseContext) {
+        public int apply(int blockX, int blockZ, int currentId, int[] neighborhood, RandomSource random) {
             if (isExpanding[currentId]) return currentId;
             for (int i : ProtoBiomeNeighborhood.NEIGHBOR_INDICES)
                 if (isExpanding[neighborhood[i]]) return neighborhood[i];
@@ -222,7 +221,7 @@ public class BiomeLayerOperations {
     public record Biome(int biomeId) implements BiomeLayerOperation {
         public Biome(ProtoBiome biome) { this(biome.id); }
         @Override
-        public int apply(int blockX, int blockZ, int currentId, int[] neighborhood, RandomSource random, NoiseContext noiseContext) {
+        public int apply(int blockX, int blockZ, int currentId, int[] neighborhood, RandomSource random) {
             return biomeId;
         }
     }

@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.level.gen.system.noise.field;
+package birsy.clinker.common.world.level.gen.system.sampling.field;
 
 public record InterpolatingFieldResolution(int xzScale, int yScale, boolean twoDimensional) {
     public static final InterpolatingFieldResolution DIRECT_2D = new InterpolatingFieldResolution(0);

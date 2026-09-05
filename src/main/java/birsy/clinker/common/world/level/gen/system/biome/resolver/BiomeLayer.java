@@ -1,6 +1,5 @@
 package birsy.clinker.common.world.level.gen.system.biome.resolver;
 
-import birsy.clinker.common.world.level.gen.system.noise.UncachedNoiseContext;
 import birsy.clinker.core.registry.ClinkerRegistries;
 import birsy.clinker.core.registry.worldgen.ClinkerProtoBiomes;
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
@@ -14,7 +13,6 @@ public final class BiomeLayer {
     @Nullable
     private final BiomeLayer previousLayer;
     private final PositionalRandomFactory randomFactory;
-    private final UncachedNoiseContext context;
     private final BiomeLayerOperation[] operations;
     final int cellScale;
     private final int cellSizeBlocks;
@@ -27,12 +25,10 @@ public final class BiomeLayer {
     public BiomeLayer(
             @Nullable BiomeLayer previousLayer,
             PositionalRandomFactory randomFactory,
-            UncachedNoiseContext context,
             int cellScale,
             BiomeLayerOperation... operations) {
         this.previousLayer = previousLayer;
         this.randomFactory = randomFactory;
-        this.context = context;
         this.operations = operations;
         this.cellScale = cellScale;
         this.cellSizeBlocks = 1 << cellScale;
@@ -146,7 +142,7 @@ public final class BiomeLayer {
         int currentId = neighborhood[4];
         for (BiomeLayerOperation op : operations)
             currentId = op.apply(fromCellPos(cellX, cellScale), fromCellPos(cellZ, cellScale),
-                    currentId, neighborhood, cellRandom, context);
+                    currentId, neighborhood, cellRandom);
         return currentId;
     }
 

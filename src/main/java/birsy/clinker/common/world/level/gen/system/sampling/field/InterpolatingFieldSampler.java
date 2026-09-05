@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.level.gen.system.noise.field;
+package birsy.clinker.common.world.level.gen.system.sampling.field;
 
 import net.minecraft.util.Mth;
 

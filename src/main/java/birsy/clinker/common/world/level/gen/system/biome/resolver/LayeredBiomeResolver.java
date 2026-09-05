@@ -1,6 +1,5 @@
 package birsy.clinker.common.world.level.gen.system.biome.resolver;
 
-import birsy.clinker.common.world.level.gen.system.noise.UncachedNoiseContext;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerRegistries;
 import net.minecraft.core.QuartPos;
@@ -79,7 +78,7 @@ public final class LayeredBiomeResolver {
             return this;
         }
 
-        public LayeredBiomeResolver build(Function<ResourceLocation, PositionalRandomFactory> randomState, UncachedNoiseContext context) {
+        public LayeredBiomeResolver build(Function<ResourceLocation, PositionalRandomFactory> randomState) {
             BiomeLayer lastLayer = null;
             List<BiomeLayer> builtLayers = new ArrayList<>();
             int index = 0;
@@ -90,7 +89,6 @@ public final class LayeredBiomeResolver {
                     BiomeLayer nextLayer = new BiomeLayer(
                             lastLayer,
                             randomState.apply(Clinker.resource("layer_" + index++)),
-                            context,
                             cellScale,
                             unbuiltLayer
                     );

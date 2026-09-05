@@ -1,7 +1,6 @@
 package birsy.clinker.common.world.level.gen.system.metachunk;
 
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.*;
-import birsy.clinker.common.world.level.gen.system.noise.*;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerRegistries;
 import com.github.benmanes.caffeine.cache.Cache;
@@ -14,7 +13,6 @@ import net.minecraft.world.level.levelgen.PositionalRandomFactory;
 import net.minecraft.world.level.levelgen.RandomState;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import static birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureType.*;
@@ -25,7 +23,6 @@ public class MetaChunkMap {
     private final RandomState randomState;
     private final PositionalRandomFactory metaChunkRandom;
     private final Cache<Long, MetaChunk>[] metaChunkCache;
-    private final UncachedNoiseContext uncachedNoiseContext;
 
     public MetaChunkMap(RandomState randomState) {
         this.randomState = randomState;
@@ -47,8 +44,6 @@ public class MetaChunkMap {
             if (featureSet.metaChunkDepth() < MAX_DEPTH_EXCLUSIVE - 1)
                 this.worldFeatureSetsByDepth[featureSet.metaChunkDepth()].add(featureSet);
         });
-
-        this.uncachedNoiseContext = new UncachedNoiseContext(((SeededNoiseHolderHolder)(Object) randomState).clinker$noiseHolder());
     }
 
     int getMetaChunkSizeForDepth(int depth) {
@@ -107,7 +102,7 @@ public class MetaChunkMap {
                 NEXT_FEATURE:
                 for (int i = 0; i < count; i++) {
                     Optional<? extends WorldFeatureType.WorldFeatureInstance<?>> maybeRealizedFeature =
-                            featureSpawn.featureType().realize(level, minX, minZ, maxX, maxZ, depth, random, uncachedNoiseContext, worldContext);
+                            featureSpawn.featureType().realize(level, minX, minZ, maxX, maxZ, depth, random, worldContext);
                     if (maybeRealizedFeature.isEmpty()) continue;
 
                     WorldFeatureInstance<?> featureInstance = maybeRealizedFeature.get();

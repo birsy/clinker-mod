@@ -1,8 +1,8 @@
-package birsy.clinker.common.world.level.gen.system.noise;
+package birsy.clinker.common.world.level.gen.system.sampling;
 
-import birsy.clinker.common.world.level.gen.system.noise.field.InterpolatingField;
-import birsy.clinker.common.world.level.gen.system.noise.field.InterpolatingFieldResolution;
-import birsy.clinker.common.world.level.gen.system.noise.field.InterpolatingFieldSampler;
+import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingField;
+import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingFieldResolution;
+import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingFieldSampler;
 import birsy.clinker.core.util.noise.FastNoiseLite;
 import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;

@@ -2,7 +2,6 @@ package birsy.clinker.common.world.level.gen.content.biome;
 
 import birsy.clinker.common.world.level.gen.system.biome.resolver.BiomeLayerOperation;
 import birsy.clinker.common.world.level.gen.system.biome.resolver.ProtoBiome;
-import birsy.clinker.common.world.level.gen.system.noise.NoiseContext;
 import birsy.clinker.core.registry.ClinkerRegistries;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.random.SimpleWeightedRandomList;
@@ -23,7 +22,7 @@ public class MutateOperation {
             @Nullable PositionalRandomFactory scaleFactory
     ) implements BiomeLayerOperation {
         @Override
-        public int apply(int blockX, int blockZ, int currentId, int[] neighborhood, RandomSource random, NoiseContext noiseContext) {
+        public int apply(int blockX, int blockZ, int currentId, int[] neighborhood, RandomSource random) {
             MutationEntry[] set;
             if (scale > 0 && scaleFactory != null) {
                 int noise = (int) (noise().getValue(blockX, 0, blockZ) * (1 << scale-1));
@@ -33,7 +32,7 @@ public class MutateOperation {
                 set = mutationSets[random.nextInt(mutationSets.length)];
             }
             for (MutationEntry entry : set)
-                if (entry.shouldMutate(currentId)) return entry.result(blockX, blockZ, random, noiseContext);
+                if (entry.shouldMutate(currentId)) return entry.result(blockX, blockZ, random);
             return currentId;
         }
     }
@@ -43,7 +42,7 @@ public class MutateOperation {
             @Nullable PositionalRandomFactory scaleFactory
     ) implements BiomeLayerOperation {
         @Override
-        public int apply(int blockX, int blockZ, int currentId, int[] neighborhood, RandomSource random, NoiseContext noiseContext) {
+        public int apply(int blockX, int blockZ, int currentId, int[] neighborhood, RandomSource random) {
             MutationEntry[] set;
             if (scale > 0 && scaleFactory != null) {
                 int noise = (int) (noise().getValue(blockX, 0, blockZ) * (1 << scale-1));
@@ -53,26 +52,26 @@ public class MutateOperation {
                 set = mutationSets.getRandomValue(random).orElseThrow();
             }
             for (MutationEntry entry : set)
-                if (entry.shouldMutate(currentId)) return entry.result(blockX, blockZ, random, noiseContext);
+                if (entry.shouldMutate(currentId)) return entry.result(blockX, blockZ, random);
             return currentId;
         }
     }
 
     private sealed interface MutationEntry {
         boolean shouldMutate(int protoBiomeId);
-        int result(int blockX, int blockZ, RandomSource random, NoiseContext noiseContext);
+        int result(int blockX, int blockZ, RandomSource random);
     }
     private record WeightedRandomListMutationEntry(IntPredicate target, SimpleWeightedRandomList<Integer> results) implements MutationEntry {
         @Override
         public boolean shouldMutate(int protoBiomeId) { return target.test(protoBiomeId); }
         @Override
-        public int result(int blockX, int blockZ, RandomSource random, NoiseContext noiseContext) { return results.getRandomValue(random).orElseThrow(); }
+        public int result(int blockX, int blockZ, RandomSource random) { return results.getRandomValue(random).orElseThrow(); }
     }
     private record FlatMutationEntry(IntPredicate target, int[] results) implements MutationEntry {
         @Override
         public boolean shouldMutate(int protoBiomeId) { return target.test(protoBiomeId); }
         @Override
-        public int result(int blockX, int blockZ, RandomSource random, NoiseContext noiseContext) { return results[random.nextInt(results.length)]; }
+        public int result(int blockX, int blockZ, RandomSource random) { return results[random.nextInt(results.length)]; }
     }
 
     public static Builder builder(long seed) { return new Builder(seed); }

@@ -71,9 +71,7 @@ public class Clinker {
 
         ClinkerPageElementTypes.PAGE_ELEMENT_TYPES.register(modEventBus);
         ClinkerAlchemyKnowledgeTypes.ALCHEMY_DATA_TYPES.register(modEventBus);
-        ClinkerNoiseComputers.NOISE_COMPUTERS.register(modEventBus);
         ClinkerSurfaceDecorators.SURFACE_DECORATORS.register(modEventBus);
-        ClinkerSurfaceShapers.SURFACE_SHAPERS.register(modEventBus);
         ClinkerProtoBiomes.PROTO_BIOMES.register(modEventBus);
 
         ClinkerWorldFeatureCapabilities.WORLD_FEATURE_CAPABILITIES.register(modEventBus);

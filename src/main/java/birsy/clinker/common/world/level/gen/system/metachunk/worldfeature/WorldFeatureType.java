@@ -1,6 +1,5 @@
 package birsy.clinker.common.world.level.gen.system.metachunk.worldfeature;
 
-import birsy.clinker.common.world.level.gen.system.noise.UncachedNoiseContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelAccessor;
@@ -9,12 +8,12 @@ import javax.annotation.Nullable;
 import java.util.Optional;
 
 public record WorldFeatureType<T extends WorldFeature>(int priority, int separationRadius, WorldFeatureFactory<T> factory) {
-    public Optional<WorldFeatureInstance<T>> realize(@Nullable BlockPos center, LevelAccessor level, int minX, int minZ, int maxX, int maxZ, int metaChunkDepth, RandomSource randomSource, UncachedNoiseContext context, WorldFeatureContext worldContext) {
-        Optional<T> feature = factory.realize(center, level, minX, minZ, maxX, maxZ, metaChunkDepth, randomSource, context, worldContext);
+    public Optional<WorldFeatureInstance<T>> realize(@Nullable BlockPos center, LevelAccessor level, int minX, int minZ, int maxX, int maxZ, int metaChunkDepth, RandomSource randomSource, WorldFeatureContext worldContext) {
+        Optional<T> feature = factory.realize(center, level, minX, minZ, maxX, maxZ, metaChunkDepth, randomSource, worldContext);
         return feature.map(f -> new WorldFeatureInstance<>(this, f));
     }
-    public Optional<WorldFeatureInstance<T>> realize(LevelAccessor level, int minX, int minZ, int maxX, int maxZ, int metaChunkDepth, RandomSource randomSource, UncachedNoiseContext context, WorldFeatureContext worldContext) {
-        Optional<T> feature = factory.realize(null, level, minX, minZ, maxX, maxZ, metaChunkDepth, randomSource, context, worldContext);
+    public Optional<WorldFeatureInstance<T>> realize(LevelAccessor level, int minX, int minZ, int maxX, int maxZ, int metaChunkDepth, RandomSource randomSource, WorldFeatureContext worldContext) {
+        Optional<T> feature = factory.realize(null, level, minX, minZ, maxX, maxZ, metaChunkDepth, randomSource, worldContext);
         return feature.map(f -> new WorldFeatureInstance<>(this, f));
     }
 
@@ -24,6 +23,6 @@ public record WorldFeatureType<T extends WorldFeature>(int priority, int separat
         public boolean within(int minX, int minZ, int maxX, int maxZ) { return feature.within(minX, minZ, maxX, maxZ); }
     }
     public interface WorldFeatureFactory<T extends WorldFeature> {
-        Optional<T> realize(@Nullable BlockPos center, LevelAccessor level, int minX, int minZ, int maxX, int maxZ, int metaChunkDepth, RandomSource randomSource, UncachedNoiseContext context, WorldFeatureContext worldContext);
+        Optional<T> realize(@Nullable BlockPos center, LevelAccessor level, int minX, int minZ, int maxX, int maxZ, int metaChunkDepth, RandomSource randomSource, WorldFeatureContext worldContext);
     }
 }

@@ -3,8 +3,6 @@ package birsy.clinker.client.gui.debug;
 import birsy.clinker.common.world.level.gen.OthershoreBiomeSource;
 import birsy.clinker.common.world.level.gen.system.biome.resolver.LayeredBiomeResolver;
 import birsy.clinker.common.world.level.gen.system.biome.resolver.ProtoBiome;
-import birsy.clinker.common.world.level.gen.system.noise.SeededNoiseHolder;
-import birsy.clinker.common.world.level.gen.system.noise.UncachedNoiseContext;
 import birsy.clinker.core.registry.ClinkerRegistries;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
@@ -60,9 +58,7 @@ public class BiomeLayerDebugViewScreen extends Screen {
     public void createBiomeResolver() {
         long seed = 0L;
         PositionalRandomFactory randomFactory = RandomSource.create(seed).forkPositional();
-        SeededNoiseHolder holder = new SeededNoiseHolder(randomFactory);
-        UncachedNoiseContext noiseContext = new UncachedNoiseContext(holder);
-        this.resolver = OthershoreBiomeSource.createSurfaceBiomeResolver((name) -> randomFactory.fromHashOf(name).forkPositional(), noiseContext);
+        this.resolver = OthershoreBiomeSource.createSurfaceBiomeResolver((name) -> randomFactory.fromHashOf(name).forkPositional());
         if (this.viewingLayer >= this.resolver.layerCount) this.viewingLayer = this.resolver.layerCount - 1;
     }
 

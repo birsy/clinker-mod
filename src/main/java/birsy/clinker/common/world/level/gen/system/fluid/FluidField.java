@@ -1,6 +1,6 @@
 package birsy.clinker.common.world.level.gen.system.fluid;
 
-import birsy.clinker.common.world.level.gen.system.noise.field.InterpolatingField;
+import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingField;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 

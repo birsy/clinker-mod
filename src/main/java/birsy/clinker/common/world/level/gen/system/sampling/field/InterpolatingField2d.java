@@ -1,6 +1,6 @@
-package birsy.clinker.common.world.level.gen.system.noise.field;
+package birsy.clinker.common.world.level.gen.system.sampling.field;
 
-import birsy.clinker.common.world.level.gen.system.noise.Synthesizer;
+import birsy.clinker.common.world.level.gen.system.sampling.Synthesizer;
 import birsy.clinker.core.util.noise.FastNoiseLite;
 import net.minecraft.util.Mth;
 
