@@ -17,7 +17,7 @@ public record InterpolatingFieldResolution(int xzScale, int yScale, boolean twoD
 
     public InterpolatingFieldResolution {
         // 4 = log2 of 16, the xz chunk size.
-        assert (xzScale <= 4 && yScale <= Integer.SIZE);
+        assert (xzScale <= 4 && yScale < Integer.SIZE);
     }
     public InterpolatingFieldResolution(int xzScale, int yScale) {
         this(xzScale, yScale, false);

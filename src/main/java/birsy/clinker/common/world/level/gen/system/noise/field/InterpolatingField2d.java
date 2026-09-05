@@ -7,7 +7,7 @@ import net.minecraft.util.Mth;
 public class InterpolatingField2d extends InterpolatingField {
     boolean filled = false;
     public InterpolatingField2d(int xzCellScale, int paddingBlocks) {
-        super(1, xzCellScale, 32, paddingBlocks);
+        super(xzCellScale, 0, 1, paddingBlocks);
         this.field = new double[this.sliceCellCount];
     }
 
@@ -28,16 +28,16 @@ public class InterpolatingField2d extends InterpolatingField {
         );
     }
 
-    public void fill(int minLocalY, int maxLocalY, int minX, int minY, int minZ, Synthesizer.Function filler, Synthesizer.Context context) {
+    public void fill(int fromY, int toY, int minX, int minY, int minZ, Synthesizer.Function filler, Synthesizer.Context context) {
         if (filled) return;
-
+        context.setSlice(0);
         FastNoiseLite[] noises = context.noises();
         int index = 0;
         for (int cellZ = 0; cellZ < xzCellCount; cellZ++) {
             int globalZ = (cellZ << xzCellScale) + minZ - paddingBlocks;
             for (int cellX = 0; cellX < xzCellCount; cellX++) {
                 int globalX = (cellX << xzCellScale) + minX - paddingBlocks;
-                field[index++] = filler.compute(globalX, 0, globalZ, context.synthesizerValues(), noises);
+                field[index++] = filler.compute(globalX, 0, globalZ, context.sampleDependencyValues(), noises);
                 context.advanceX();
             }
             context.advanceZ();

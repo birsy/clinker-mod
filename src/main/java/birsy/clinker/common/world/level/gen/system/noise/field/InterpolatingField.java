@@ -69,11 +69,12 @@ public class InterpolatingField {
         );
     }
 
-    public void fill(int minLocalY, int maxLocalY, int minX, int minY, int minZ, Synthesizer.Function filler, Synthesizer.Context context) {
+    public void fill(int fromY, int toY, int minX, int minY, int minZ, Synthesizer.Function filler, Synthesizer.Context context) {
+        int fromLocalY = fromY - minY, toLocalY = toY - minY;
         FastNoiseLite[] noises = context.noises();
         // find unfilled layers
         fillMask.clear();
-        fillMask.set(Math.max(0, minLocalY >> yCellScale), Math.min(yCellCount - 1, maxLocalY >> yCellScale) + 1);
+        fillMask.set(Math.max(0, fromLocalY >> yCellScale), Math.min(yCellCount - 1, toLocalY >> yCellScale) + 1);
         fillMask.andNot(filledLayers);
         // fill them
         for (int startCellY = fillMask.nextSetBit(0); startCellY >= 0; startCellY = fillMask.nextSetBit(startCellY + 1)) {
@@ -94,7 +95,7 @@ public class InterpolatingField {
                 int globalZ = (cellZ << xzCellScale) + minZ - paddingBlocks;
                 for (int cellX = 0; cellX < xzCellCount; cellX++) {
                     int globalX = (cellX << xzCellScale) + minX - paddingBlocks;
-                    field[index++] = filler.compute(globalX, globalY, globalZ, context.synthesizerValues(), noises);
+                    field[index++] = filler.compute(globalX, globalY, globalZ, context.sampleDependencyValues(), noises);
                     context.advanceX();
                 }
                 context.advanceZ();

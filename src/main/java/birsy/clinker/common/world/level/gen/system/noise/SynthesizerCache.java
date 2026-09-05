@@ -10,6 +10,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.levelgen.PositionalRandomFactory;
 
+// todo: find a better name for this
 public class SynthesizerCache {
     // holds fields, sorted by xz scale
     final Int2ObjectMap<InterpolatingField[]> fieldsBySynthesizerId = new Int2ObjectOpenHashMap<>();
@@ -17,17 +18,28 @@ public class SynthesizerCache {
     final int chunkMinX, chunkMinY, chunkMinZ; // bottom south-west corner of the current chunk, in blocks
     final PositionalRandomFactory worldRandom;
 
-    public SynthesizerCache(int chunkHeight, int chunkMinX, int chunkMinY, int chunkMinZ, PositionalRandomFactory worldRandom) {
-        this.chunkHeight = chunkHeight;
+    public SynthesizerCache(int chunkMinX, int chunkMinY, int chunkMinZ, int chunkHeight, PositionalRandomFactory worldRandom) {
         this.chunkMinX = chunkMinX;
         this.chunkMinY = chunkMinY;
         this.chunkMinZ = chunkMinZ;
+        this.chunkHeight = chunkHeight;
         this.worldRandom = worldRandom;
     }
 
+    // computes the value of a synthesizer at a single point.
+    // todo: maybe move this somewhere else.
+    public double atPoint(Synthesizer synthesizer, int x, int y, int z) {
+        if (y < synthesizer.minY || y > synthesizer.maxY) return synthesizer.defaultValue;
+        // todo: this
+        return synthesizer.defaultValue;
+    }
+
+    // computes the values of a synthesizer within this chunk
+    // simply request the amount of padding you want, and optionally some vertical bounds
+    // and it'll return a nice, filled field for you.
     // todo: padding seems... weird. Investigate if it actually works
     //       theres gotta be some way to simplify all this using the resolvedDependencies.
-    public InterpolatingField compute(Synthesizer synthesizer, int desiredXZPadding, int minY, int maxY) {
+    public InterpolatingField forThisChunk(Synthesizer synthesizer, int desiredXZPadding, int minY, int maxY) {
         int desiredXZScale = synthesizer.resolution.xzScale();
         for (Synthesizer.Dependency dependency : synthesizer.resolvedDependencies) {
             getOrCreateField(dependency.synthesizer(),
@@ -48,11 +60,11 @@ public class SynthesizerCache {
         }
 
         InterpolatingField field = computedFields[desiredXZScale];
-        if (field == null || field.paddingBlocks <= desiredXZPadding) {
+        if (field == null || field.paddingBlocks < desiredXZPadding) {
             // currently, this wastes some work if the field exists but at a different scale. i shouldn't do that....
             // todo: wrap synthesizers such that they try to reuse work from earlier scales?
             if (synthesizer.resolution.xzScale() >= desiredXZScale) {
-                field = synthesizer.resolution.create(chunkHeight, 1);
+                field = synthesizer.resolution.create(chunkHeight, desiredXZPadding);
             } else {
                 field = InterpolatingFieldResolution.fromResolution(
                         desiredXZScale,
@@ -73,9 +85,10 @@ public class SynthesizerCache {
         InterpolatingFieldSampler[] interpolators = new InterpolatingFieldSampler[synthesizer.directDependencies.size()];
         ImmutableList<Synthesizer.Dependency> dependencies = synthesizer.directDependencies;
         for (int i = 0; i < dependencies.size(); i++) {
+            // there has to be a better way of doing this.
             Synthesizer dependency = dependencies.get(i).synthesizer();
-            InterpolatingField dependencyField = getOrCreateField(dependency, fromY, toY, desiredXZPadding, minXZScale);
-            InterpolatingFieldSampler interpolator = new InterpolatingFieldSampler(dependencyField, field);
+            InterpolatingField dependencyField = getOrCreateField(dependency, desiredXZPadding, minXZScale, fromY, toY);
+            InterpolatingFieldSampler interpolator = InterpolatingFieldSampler.create(dependencyField, field);
             interpolators[i] = interpolator;
         }
 
@@ -102,7 +115,7 @@ public class SynthesizerCache {
         }
 
         @Override
-        public double[] synthesizerValues() {
+        public double[] sampleDependencyValues() {
             for (int i = 0; i < synthesizerFields.length; i++) {
                 InterpolatingFieldSampler field = synthesizerFields[i];
                 synthesizerValues[i] = field.sample();

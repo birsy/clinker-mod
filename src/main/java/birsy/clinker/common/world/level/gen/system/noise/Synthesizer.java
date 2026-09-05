@@ -7,6 +7,9 @@ import com.google.common.collect.ImmutableList;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+// todo: figure out some way of making hot reloading easier...
+//       maybe in development mode i can recalculate the dependencies
+//       on the fly, and then just turn that off in release builds.
 public class Synthesizer {
     public static final AtomicInteger NEXT_ID = new AtomicInteger(0);
 
@@ -99,7 +102,7 @@ public class Synthesizer {
             int nextXZScale = Math.max(xzScale, synthesizer.resolution.xzScale());
             // add dependencies
             for (Dependency directDependency : synthesizer.directDependencies) {
-                collectDependencies(directDependency.synthesizer(), synthToDependency, resolvedDependencies, nextMinY, nextMaxY, xzScale);
+                collectDependencies(directDependency.synthesizer(), synthToDependency, resolvedDependencies, nextMinY, nextMaxY, nextXZScale);
             }
 
             // make sure a similar dependency hasn't already been added
@@ -123,7 +126,7 @@ public class Synthesizer {
     public record Dependency(Synthesizer synthesizer, int minY, int maxY, int xzScale) {}
 
     public interface Context {
-        double[] synthesizerValues();
+        double[] sampleDependencyValues();
         FastNoiseLite[] noises();
         void advanceX(); void advanceY(); void advanceZ(); void setSlice(int cellY);
     }
@@ -132,6 +135,7 @@ public class Synthesizer {
         double compute(int x, int y, int z, double[] depValues, FastNoiseLite[] noises);
     }
 
+    // probably scoot this into its own noise manager class at some point???
     public interface NoiseBuilder {
         FastNoiseLite create(long seed);
     }
