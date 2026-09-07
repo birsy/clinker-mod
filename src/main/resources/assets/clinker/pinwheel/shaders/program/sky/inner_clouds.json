@@ -1,0 +1,10 @@
+{
+  "vertex": "clinker:sky/inner_clouds",
+  "fragment": "clinker:sky/inner_clouds",
+  "textures": {
+    "CloudDensitySampler": {
+      "type": "framebuffer",
+      "name": "clinker:cloud_density"
+    }
+  }
+}

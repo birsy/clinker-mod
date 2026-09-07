@@ -1,0 +1,16 @@
+{
+  "vertex": "clinker:sky/inner_stars",
+  "fragment": "clinker:sky/inner_stars",
+  "textures": {
+    "StarColorSampler": "clinker:textures/environment/star_color.png",
+    "StarTextureSampler": {
+      "type": "location",
+      "location": "clinker:textures/environment/star.png",
+      "filter": {
+        "wrapX": "clamp_to_edge",
+        "wrapY": "clamp_to_edge",
+        "wrapZ": "clamp_to_edge"
+      }
+    }
+  }
+}
