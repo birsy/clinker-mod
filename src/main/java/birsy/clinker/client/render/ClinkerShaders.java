@@ -41,6 +41,8 @@ public class ClinkerShaders {
     public static final ResourceLocation PARTICLE_BLOSSOM_BUG = Clinker.resource("particle/blossom_bug");
     public static final ResourceLocation PARTICLE_CHAIN_LIGHTNING = Clinker.resource("particle/chain_lightning");
 
+    public static final ResourceLocation HALATION = Clinker.resource("halation");
+
     public static final ResourceLocation FOG_LAYER = Clinker.resource("fog_layer");
     public static final ResourceLocation VEIL_BLIT_DEPTH = Veil.veilPath("blit_depth");
 
@@ -53,11 +55,6 @@ public class ClinkerShaders {
     private static ShaderInstance rendertypeEntityCutoutNoCullUnlitShader;
     public static ShaderInstance getEntityCutoutNoCullUnlitShader() {
         return Objects.requireNonNull(rendertypeEntityCutoutNoCullUnlitShader, "Attempted to call getEntityCutoutNoCullUnlitShader before shaders have finished loading.");
-    }
-
-    private static ShaderInstance positionColorTextureUnclampedShader;
-    public static ShaderInstance getPositionColorTextureUnclampedShader() {
-        return Objects.requireNonNull(positionColorTextureUnclampedShader, "Attempted to call getPositionColorTextureUnclampedShader before shaders have finished loading.");
     }
 
     private static ShaderInstance fireSpewShader;
@@ -100,7 +97,6 @@ public class ClinkerShaders {
         Clinker.LOGGER.info("registering shaders!");
         event.registerShader(new ShaderInstance(event.getResourceProvider(), Clinker.resource("rendertype_entity_unlit_cutout"), DefaultVertexFormat.NEW_ENTITY), (shader) -> rendertypeEntityCutoutUnlitShader = shader);
         event.registerShader(new ShaderInstance(event.getResourceProvider(), Clinker.resource("rendertype_entity_unlit_cutout_nocull"), DefaultVertexFormat.NEW_ENTITY), (shader) -> rendertypeEntityCutoutNoCullUnlitShader = shader);
-        event.registerShader(new ShaderInstance(event.getResourceProvider(), Clinker.resource("position_color_tex_unclamped"), DefaultVertexFormat.POSITION_TEX_COLOR), (shader) -> positionColorTextureUnclampedShader = shader);
         event.registerShader(new ShaderInstance(event.getResourceProvider(), Clinker.resource("fire_spew"), DefaultVertexFormat.NEW_ENTITY), (shader) -> fireSpewShader = shader);
         event.registerShader(new ShaderInstance(event.getResourceProvider(), Clinker.resource("sky_cloud"), DefaultVertexFormat.POSITION_TEX_COLOR), (shader) -> skyCloudShader = shader);
         event.registerShader(new ShaderInstance(event.getResourceProvider(), Clinker.resource("sky_star"), DefaultVertexFormat.POSITION_TEX_COLOR), (shader) -> skyStarShader = shader);
