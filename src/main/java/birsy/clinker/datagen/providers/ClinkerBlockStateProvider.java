@@ -46,6 +46,14 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
                             modLoc("block/counter_top")
                     )
             );
+
+            this.getVariantBuilder(SODIUM_LANTERN.get())
+                    .partialState().with(LanternBlock.HANGING, false).addModels(
+                            ConfiguredModel.builder().modelFile(this.models().getExistingFile(modLoc("block/sodium_lantern"))).buildLast()
+                    ).partialState().with(LanternBlock.HANGING, true).addModels(
+                            ConfiguredModel.builder().modelFile(this.models().getExistingFile(modLoc("block/hanging_sodium_lantern"))).buildLast()
+                    );
+            this.flatBlockItem(SODIUM_LANTERN.get(), modLoc("item/sodium_lantern"));
         }
 
         // pressure cooker

@@ -56,6 +56,8 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(STOVE.get());
         pOutput.accept(LEAD_BLOCK.get());
         pOutput.accept(RAW_LEAD_BLOCK.get());
+        pOutput.accept(SODIUM_LANTERN.get());
+
         pOutput.accept(ASH.get());
         pOutput.accept(ASH_LAYER.get());
         pOutput.accept(PACKED_ASH.get());
@@ -237,6 +239,7 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(LEAD_PICKAXE.get());
         pOutput.accept(LEAD_SHOVEL.get());
         pOutput.accept(LEAD_HOE.get());
+
         pOutput.accept(LADLE.get());
         pOutput.accept(ORDNANCE.get());
         pOutput.accept(ALCHEMISTS_CROSSBOW.get());

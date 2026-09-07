@@ -46,6 +46,9 @@ public class ClinkerBlocks
     public static final DeferredBlock<Block> PRESSURE_COOKER_BODY = createBlockNoItem("pressure_cooker_body",
             () -> new PressureCookerBlock.Body(BlockBehaviour.Properties.ofFullCopy(PRESSURE_COOKER.get())));
 
+    public static final DeferredBlock<Block> SODIUM_LANTERN = createBlock("sodium_lantern",
+            () -> new SodiumLanternBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.LANTERN)));
+
     public static final DeferredBlock<Block> SALTPETRE_LEACHED_DIRT = createBlock("saltpetre_leached_dirt",
             () -> new SaltpetreLeachedDirtBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.DIRT).sound(SoundType.ROOTED_DIRT)));
 

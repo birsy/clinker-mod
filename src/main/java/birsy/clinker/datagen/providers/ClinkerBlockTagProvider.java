@@ -80,7 +80,8 @@ public class ClinkerBlockTagProvider extends BlockTagsProvider {
         IntrinsicTagAppender<Block> usesPickaxe = this.tag(BlockTags.MINEABLE_WITH_PICKAXE).replace(false);
         usesPickaxe.add(
                 ClinkerBlocks.SALTMOSS.get(),
-                ClinkerBlocks.AMBER_BLOCK.get()
+                ClinkerBlocks.AMBER_BLOCK.get(),
+                ClinkerBlocks.SODIUM_LANTERN.get()
         );
 
         IntrinsicTagAppender<Block> usesShovel = this.tag(BlockTags.MINEABLE_WITH_SHOVEL).replace(false);
