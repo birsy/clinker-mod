@@ -39,7 +39,14 @@ void main() {
     vec4 col = vertexColor;
     float spriteAlpha = texture(CloudSpriteSampler, pixellatedTexCoord * 0.5 + 0.5).a;
     col *= vec4(1.0, 1.0, 1.0, spriteAlpha);
-    col.a = dither(int(gl_FragCoord.x + billboardRandom.x), int(gl_FragCoord.y), col.a);
+    
+    int x = int(gl_FragCoord.x + billboardRandom.x), y = int(gl_FragCoord.y);
+    col = vec4(
+        actuallyDither(x, y, col.r),
+        actuallyDither(x, y, col.g),
+        actuallyDither(x, y, col.b),
+        dither(x, y, col.a)
+    );
 
     if (col.a < 0.01) discard;
 
