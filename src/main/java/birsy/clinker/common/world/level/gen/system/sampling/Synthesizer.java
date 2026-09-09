@@ -1,6 +1,8 @@
 package birsy.clinker.common.world.level.gen.system.sampling;
 
 import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingFieldResolution;
+import birsy.clinker.common.world.level.gen.system.sampling.noise.NoiseProvider;
+import birsy.clinker.common.world.level.gen.system.sampling.noise.NoiseSampler;
 import birsy.clinker.core.util.noise.FastNoiseLite;
 import com.google.common.collect.ImmutableList;
 
@@ -16,7 +18,7 @@ public class Synthesizer {
     public final int id = NEXT_ID.getAndIncrement();
     public final ImmutableList<Dependency> directDependencies;
     public final ImmutableList<Dependency> resolvedDependencies; // all required dependencies, recursively.
-    public final ImmutableList<NoiseBuilder> noises;
+    public final ImmutableList<NoiseProvider> noises;
 
     public final InterpolatingFieldResolution resolution;
     public final Synthesizer.Function function;
@@ -29,7 +31,7 @@ public class Synthesizer {
                         Synthesizer.Function function,
                         ImmutableList<Dependency> directDependencies,
                         ImmutableList<Dependency> resolvedDependencies,
-                        ImmutableList<NoiseBuilder> noises,
+                        ImmutableList<NoiseProvider> noises,
                         double defaultValue, int minY, int maxY) {
         this.directDependencies = directDependencies;
         this.resolvedDependencies = resolvedDependencies;
@@ -60,7 +62,7 @@ public class Synthesizer {
 
     public static class Builder {
         List<Synthesizer> dependencies = new ArrayList<>();
-        List<NoiseBuilder> requiredNoises = new ArrayList<>();
+        List<NoiseProvider> requiredNoises = new ArrayList<>();
         double defaultValue = 0;
         int minY = Integer.MIN_VALUE, maxY = Integer.MAX_VALUE;
 
@@ -76,7 +78,7 @@ public class Synthesizer {
             Collections.addAll(dependencies, synthesizers);
             return this;
         }
-        public Builder addNoises(NoiseBuilder... noises) {
+        public Builder addNoises(NoiseProvider... noises) {
             Collections.addAll(requiredNoises, noises);
             return this;
         }
@@ -131,16 +133,11 @@ public class Synthesizer {
 
     public interface Context {
         double[] sampleDependencyValues();
-        FastNoiseLite[] noises();
+        NoiseSampler[] noises();
         void advanceX(); void advanceY(); void advanceZ(); void setSlice(int cellY);
     }
 
     public interface Function {
-        double compute(int x, int y, int z, double[] dependencyValues, FastNoiseLite[] noises);
-    }
-
-    // probably scoot this into its own noise manager class at some point???
-    public interface NoiseBuilder {
-        FastNoiseLite create(long seed);
+        double compute(int x, int y, int z, double[] dependencyValues, NoiseSampler[] noises);
     }
 }

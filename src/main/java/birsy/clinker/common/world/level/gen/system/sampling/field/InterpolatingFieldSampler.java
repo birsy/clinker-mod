@@ -67,12 +67,12 @@ public interface InterpolatingFieldSampler {
 
     // the aforementioned weird fancy interpolation magic
     class MismatchedResolutionSampler implements InterpolatingFieldSampler {
-        final InterpolatingField srcField;
+        public final InterpolatingField srcField;
         final boolean source2d;
         final double[] srcArray;
         final int srcCellSizeXZ, srcCellSizeY;
 
-        final InterpolatingField dstField;
+        public final InterpolatingField dstField;
         final int dstCellSizeXZ, dstCellSizeY;
         final double facAddendXZ, facAddendY;
         // yzx bit order - as in, y is the most significant bit, and x the least. damn you arabic numerals.
@@ -83,14 +83,14 @@ public interface InterpolatingFieldSampler {
 
         // info about the current cell in the source array
         // absolute cell coordinates, padding included.
-        protected int srcCellX, srcCellY, srcCellZ;
+        public int srcCellX, srcCellY, srcCellZ;
         // corner of the current cell in local chunk space, padding not included.
-        protected int srcCellBlockX, srcCellBlockY, srcCellBlockZ;
+        public int srcCellBlockX, srcCellBlockY, srcCellBlockZ;
 
         // info about the current cell in the destination array
         // see above
-        protected int dstCellX, dstCellY, dstCellZ;
-        protected int dstCellBlockX, dstCellBlockY, dstCellBlockZ;
+        public int dstCellX, dstCellY, dstCellZ;
+        public int dstCellBlockX, dstCellBlockY, dstCellBlockZ;
         // interpolation factors when tri-lerping
         protected double facX, facY, facZ;
 
@@ -145,17 +145,17 @@ public interface InterpolatingFieldSampler {
 
                 // which source y cell contains this destination cell?
                 srcCellY = dstCellBlockY >> srcField.yCellScale;
-                srcCellBlockY = srcCellY << srcField.yCellScale;
-                facY = (double) (dstCellBlockY % srcCellSizeY) / srcCellSizeY;
+                if (srcCellY >= srcField.yCellCount - 1) {
+                    srcCellY = srcField.yCellCount - 2;
+                    srcCellBlockY = srcCellY << srcField.yCellScale;
+                    facY = 1.0;
+                } else {
+                    srcCellBlockY = srcCellY << srcField.yCellScale;
+                    facY = (double) (dstCellBlockY % srcCellSizeY) / srcCellSizeY;
+                }
             }
 
-            // reset xz
-            srcCellX = 0; srcCellZ = 0;
-            srcCellBlockX = -srcField.paddingBlocks; srcCellBlockZ = -srcField.paddingBlocks;
-            dstCellX = 0; dstCellZ = 0;
-            dstCellBlockX = -dstField.paddingBlocks; dstCellBlockZ = -dstField.paddingBlocks;
-            facX = 0; facZ = 0;
-
+            resetX(); resetZ();
             fetchCellData();
         }
 
@@ -165,7 +165,7 @@ public interface InterpolatingFieldSampler {
             dstCellBlockX += dstCellSizeXZ;
             facX += facAddendXZ;
             // new source cell
-            if (facX >= 1 && srcCellX < srcField.xzCellCount - 1) {
+            if (facX >= 1 && srcCellX < srcField.xzCellCount - 2) {
                 facX -= 1;
                 srcCellX++;
                 srcCellBlockX += srcCellSizeXZ;
@@ -177,42 +177,48 @@ public interface InterpolatingFieldSampler {
                 }
             }
         }
-        // we index in x -> z -> y order, so these scoot the previous axis back over.
-        // so, advancing z implicitly sets x back to zero, and advancing y sets x and z to zero.
-        // moves the destination cell to a new row
-        public void advanceZ() {
-            // reset x
+        private void resetX() {
             dstCellX = 0;
             dstCellBlockX = -dstField.paddingBlocks;
             facX = 0;
             srcCellX = 0;
             srcCellBlockX = -srcField.paddingBlocks;
+        }
+
+        // we index in x -> z -> y order, so these scoot the previous axis back over.
+        // so, advancing z implicitly sets x back to zero, and advancing y sets x and z to zero.
+        // moves the destination cell to a new row
+        public void advanceZ() {
+            resetX();
 
             dstCellZ++;
             dstCellBlockZ += dstCellSizeXZ;
             facZ += facAddendXZ;
             // new source cell
-            if (facZ >= 1) {
+            if (facZ >= 1 && srcCellZ < srcField.xzCellCount - 2) {
                 facZ -= 1;
                 srcCellZ++;
                 srcCellBlockZ += srcCellSizeXZ;
             }
             fetchCellData();
         }
-        // moves the destination cell to a new xz layer
-        public void advanceY() {
-            // reset z
+        private void resetZ() {
             dstCellZ = 0;
             dstCellBlockZ = -dstField.paddingBlocks;
             facZ = 0;
             srcCellZ = 0;
             srcCellBlockZ = -srcField.paddingBlocks;
+        }
+
+        // moves the destination cell to a new xz layer
+        public void advanceY() {
+            resetX(); resetZ();
 
             dstCellY++;
             dstCellBlockY += dstCellSizeY;
             facY += facAddendY;
             // new source cell
-            if (facY >= 1 && !source2d) {
+            if (facY >= 1 && srcCellY < srcField.yCellCount - 2 && !source2d) {
                 facY -= 1;
                 srcCellY++;
                 srcCellBlockY += srcCellSizeY;

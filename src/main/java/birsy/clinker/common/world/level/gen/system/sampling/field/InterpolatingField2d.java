@@ -1,6 +1,7 @@
 package birsy.clinker.common.world.level.gen.system.sampling.field;
 
 import birsy.clinker.common.world.level.gen.system.sampling.Synthesizer;
+import birsy.clinker.common.world.level.gen.system.sampling.noise.NoiseSampler;
 import birsy.clinker.core.util.noise.FastNoiseLite;
 import net.minecraft.util.Mth;
 
@@ -31,7 +32,7 @@ public class InterpolatingField2d extends InterpolatingField {
     public void fill(int fromY, int toY, int minX, int minY, int minZ, Synthesizer.Function filler, Synthesizer.Context context) {
         if (filled) return;
         context.setSlice(0);
-        FastNoiseLite[] noises = context.noises();
+        NoiseSampler[] noises = context.noises();
         int index = 0;
         for (int cellZ = 0; cellZ < xzCellCount; cellZ++) {
             int globalZ = (cellZ << xzCellScale) + minZ - paddingBlocks;

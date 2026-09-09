@@ -3,6 +3,8 @@ package birsy.clinker.common.world.level.gen.system.sampling;
 import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingField;
 import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingFieldResolution;
 import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingFieldSampler;
+import birsy.clinker.common.world.level.gen.system.sampling.noise.NoiseProvider;
+import birsy.clinker.common.world.level.gen.system.sampling.noise.NoiseSampler;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.noise.FastNoiseLite;
 import com.google.common.collect.ImmutableList;
@@ -10,6 +12,8 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.levelgen.PositionalRandomFactory;
+
+import java.util.Arrays;
 
 // todo: find a better name for this
 public class SynthesizerCache {
@@ -49,7 +53,11 @@ public class SynthesizerCache {
                     Math.min(maxY, dependency.maxY())
             );
         }
-        return getOrCreateField(synthesizer, desiredXZPadding, desiredXZScale, minY, maxY);
+        return getOrCreateField(synthesizer,
+                desiredXZPadding, desiredXZScale,
+                Math.max(minY, synthesizer.minY),
+                Math.min(maxY, synthesizer.maxY)
+        );
     }
 
     // only xz is padded, so we only have to do the weird ass scale propagation on that axis.
@@ -60,8 +68,10 @@ public class SynthesizerCache {
             fieldsBySynthesizerId.put(synthesizer.id, computedFields);
         }
 
+        boolean fieldNeedsInitialization = false;
         InterpolatingField field = computedFields[desiredXZScale];
         if (field == null || field.paddingBlocks < desiredXZPadding) {
+            fieldNeedsInitialization = true;
             // currently, this wastes some work if the field exists but at a different scale. i shouldn't do that....
             // todo: wrap synthesizers such that they try to reuse work from earlier scales?
             if (synthesizer.resolution.xzScale() >= desiredXZScale) {
@@ -76,12 +86,12 @@ public class SynthesizerCache {
             }
         }
 
-        fillNoiseField(synthesizer, field, desiredXZPadding, desiredXZScale, fromY, toY);
+        fillNoiseField(synthesizer, field, desiredXZPadding, desiredXZScale, fromY, toY, fieldNeedsInitialization);
         return field;
     }
 
     // assumes all prior dependencies have been created.
-    void fillNoiseField(Synthesizer synthesizer, InterpolatingField field, int desiredXZPadding, int desiredXZScale, int fromY, int toY) {
+    void fillNoiseField(Synthesizer synthesizer, InterpolatingField field, int desiredXZPadding, int desiredXZScale, int fromY, int toY, boolean fieldNeedsInitialization) {
         int minXZScale = Math.max(desiredXZScale, synthesizer.resolution.xzScale());
         // create context
         InterpolatingFieldSampler[] interpolators = new InterpolatingFieldSampler[synthesizer.directDependencies.size()];
@@ -94,23 +104,26 @@ public class SynthesizerCache {
             interpolators[i] = interpolator;
         }
 
-        FastNoiseLite[] noises = new FastNoiseLite[synthesizer.noises.size()];
-        RandomSource randomSource = worldRandom.at(synthesizer.id, 0, 0);
+        NoiseSampler[] noises = new NoiseSampler[synthesizer.noises.size()];
         for (int i = 0; i < synthesizer.noises.size(); i++) {
-            noises[i] = synthesizer.noises.get(i).create(0);
+            // seedify all the noises
+            NoiseProvider sampler = synthesizer.noises.get(i);
+            RandomSource randomSource = worldRandom.fromHashOf(sampler.name());
+            noises[i] = sampler.fromSeed(randomSource.nextLong());
         }
         CachedContext context = new CachedContext(interpolators, noises);
 
-        // fill field...
+        // init and fill field...
+        if (fieldNeedsInitialization) Arrays.fill(field.array(), synthesizer.defaultValue);
         field.fill(fromY, toY, chunkMinX, chunkMinY, chunkMinZ, synthesizer.function, context);
     }
 
     static final class CachedContext implements Synthesizer.Context {
         private final InterpolatingFieldSampler[] synthesizerFields;
-        private final FastNoiseLite[] noises;
+        private final NoiseSampler[] noises;
         private final double[] synthesizerValues;
 
-        CachedContext(InterpolatingFieldSampler[] synthesizerFields, FastNoiseLite[] noises) {
+        CachedContext(InterpolatingFieldSampler[] synthesizerFields, NoiseSampler[] noises) {
             this.synthesizerFields = synthesizerFields;
             this.noises = noises;
             this.synthesizerValues = new double[synthesizerFields.length];
@@ -125,7 +138,7 @@ public class SynthesizerCache {
             return synthesizerValues;
         }
 
-        @Override public FastNoiseLite[] noises() { return noises; }
+        @Override public NoiseSampler[] noises() { return noises; }
         @Override public void advanceX() { for (InterpolatingFieldSampler synthesizerField : synthesizerFields) synthesizerField.advanceX(); }
         @Override public void advanceY() { for (InterpolatingFieldSampler synthesizerField : synthesizerFields) synthesizerField.advanceY(); }
         @Override public void advanceZ() { for (InterpolatingFieldSampler synthesizerField : synthesizerFields) synthesizerField.advanceZ(); }

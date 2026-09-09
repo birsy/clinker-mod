@@ -5,6 +5,7 @@ import birsy.clinker.common.world.level.gen.system.biome.BiomeList;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesSurfaceDecoration;
 import birsy.clinker.common.world.level.gen.system.sampling.Synthesizer;
 import birsy.clinker.common.world.level.gen.system.sampling.SynthesizerCache;
+import birsy.clinker.common.world.level.gen.system.sampling.noise.FNLNoiseProvider;
 import birsy.clinker.common.world.level.gen.system.surface.decorator.SurfaceDecorationSystem;
 import birsy.clinker.common.world.level.gen.system.sampling.field.*;
 import birsy.clinker.common.world.level.gen.system.metachunk.MetaChunkMapHolder;
@@ -14,7 +15,7 @@ import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabi
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.worldgen.ClinkerWorldFeatureCapabilities;
-import birsy.clinker.core.util.noise.FastNoiseLite;
+import birsy.clinker.core.util.profiling.RunningAverageTracker;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.Util;
@@ -42,6 +43,8 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public class OthershoreChunkGenerator extends ChunkGenerator {
+    public static final RunningAverageTracker TIME_TRACKER = new RunningAverageTracker();
+
     public static final MapCodec<OthershoreChunkGenerator> CODEC = RecordCodecBuilder.mapCodec(
             obj -> obj.group(RegistryOps.retrieveGetter(Registries.BIOME),
                             OthershoreBiomeSource.CODEC.fieldOf("biome_source")
@@ -146,21 +149,40 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
     }
 
     private ChunkAccess doNoiseFillTask(Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunk) {
+        long startTime = System.nanoTime();
+
         ChunkPos chunkPos = chunk.getPos();
         int minX = chunkPos.getMinBlockX(),
             minY = chunk.getMinBuildHeight(),
             minZ = chunkPos.getMinBlockZ();
         int chunkHeight = chunk.getHeight();
 
+        int seaLevel = 100;
+        int amplitude = 30, range = amplitude + 10;
         SynthesizerCache synthesizerCache = new SynthesizerCache(minX, minY, minZ, chunkHeight, randomState.getOrCreateRandomFactory(Clinker.resource("clinkergen")));
-        Synthesizer testSynthesizer = Synthesizer.builder()
-                .addNoises(seed -> new FastNoiseLite((int) seed))
+        Synthesizer ySynthesizer = Synthesizer.builder()
                 .build(InterpolatingFieldResolution.VERY_COARSE,
-                       (x, y, z, dependencyValues, noises) -> noises[0].GetNoise(x, y, z)
+                        (x, y, z, dependencyValues, noises) -> y - seaLevel
+                );
+
+        Synthesizer testSynthesizer = Synthesizer.builder()
+                .addDependencies(ySynthesizer)
+                .addNoises(FNLNoiseProvider.create("base"))
+                .setRange(seaLevel - range, seaLevel + range, 100.0)
+                .build(InterpolatingFieldResolution.COARSE_Y,
+                       (x, y, z, dependencyValues, noises) -> {
+                            double n = noises[0].sample(x, y, z) * amplitude;
+                            return dependencyValues[0] + n;
+                       }
                 );
 
         InterpolatingField finalDensityField = synthesizerCache.forThisChunk(testSynthesizer, 0, minY, chunk.getMaxBuildHeight());
         this.fillFromFields(finalDensityField, chunk);
+
+        // terrible profiling
+        TIME_TRACKER.recordTime(System.nanoTime() - startTime);
+        if (randomState.random.at(minX, minY, minZ).nextInt(100) == 0) Clinker.LOGGER.info("avg. noise gen time: {} ms", TIME_TRACKER.getAverage() / 1_000_000.0);
+
         return chunk;
     }
 
@@ -176,28 +198,44 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                   filledOceanFloorHeight = new boolean[16 * 16];
         Arrays.fill(filledWorldSurfaceHeight, false);
         Arrays.fill(filledOceanFloorHeight, false);
-        // todo: heightmap stuff
         Heightmap worldSurfaceHeightmap = chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.WORLD_SURFACE_WG),
                   oceanFloorHeightmap = chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.OCEAN_FLOOR_WG);
 
-        //InterpolatingFieldSampler sampler = InterpolatingFieldSampler.create(field, new InterpolatingField(0, 0, chunkHeight, 0));
-        for (int y = chunk.getHeight() - 1; y >= 0; y--) {
-            int globalY = y + minY;
+        // create a placeholder noise field just for proper cell size, etc.
+        InterpolatingFieldSampler sampler = InterpolatingFieldSampler.create(field, new InterpolatingField(0, 0, chunkHeight, 0));
+        int y = chunk.getHeight() - 1;
+        int globalY = y + minY;
+        int sectionY = SectionPos.sectionRelative(globalY);
+        int sectionIndex = chunk.getSectionIndex(globalY);
+        LevelChunkSection section = chunk.getSection(sectionIndex);
+
+
+        for (; y >= 0; y--) {
             pos.setY(globalY);
-            int sectionY = SectionPos.sectionRelative(globalY);
-            int sectionIndex = chunk.getSectionIndex(globalY);
-            LevelChunkSection section = chunk.getSection(sectionIndex);
+
+            // we actually iterate in reverse y order (for heightmap computation)
+            // so we set the slice directly instead of advancing
+            sampler.setSlice(y);
+
+            // update section, if necessary
+            int nextSectionIndex = chunk.getSectionIndex(globalY);
+            if (nextSectionIndex != sectionIndex) {
+                sectionIndex = nextSectionIndex;
+                sectionY = SectionPos.sectionRelative(globalY);
+                section = chunk.getSection(sectionIndex);
+            }
 
             for (int z = 0; z < 16; z++) {
                 int globalZ = z + minZ;
                 pos.setZ(globalZ);
+
                 for (int x = 0; x < 16; x++) {
                     int globalX = x + minX;
                     pos.setX(globalX);
 
-                    if (field.retrieve(x, y, z) <= 0) {
-                        chunk.setBlockState(pos, BRIMSTONE, false);
-                        //section.setBlockState(x, sectionY, z, BRIMSTONE, false);
+                    double noise = sampler.sample();
+                    if (noise <= 0) {
+                        section.setBlockState(x, sectionY, z, BRIMSTONE, false);
                         // fill heightmaps
                         int heightmapIndex = x + z * 16;
                         if (!filledWorldSurfaceHeight[heightmapIndex]) {
@@ -209,55 +247,13 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                             filledOceanFloorHeight[heightmapIndex] = true;
                         }
                     }
-                    //sampler.advanceX();
+                    sampler.advanceX();
                 }
-                //sampler.advanceZ();
+                sampler.advanceZ();
             }
-            // we actually iterate in reverse y order, so we set the slice directly
-            //sampler.setSlice(y);
+            globalY--;
+            sectionY--;
         }
-//        int minX = chunk.getPos().getMinBlockX(), minY = chunk.getMinBuildHeight(), minZ = chunk.getPos().getMinBlockZ();
-//        for (int yi = chunk.getHeight() - 1; yi >= 0; yi--) {
-//            int y = yi + minY;
-//            pos.setY(y);
-//            int sectionY = SectionPos.sectionRelative(y);
-//            int sectionIndex = chunk.getSectionIndex(y);
-//            LevelChunkSection section = chunk.getSection(sectionIndex);
-//
-//            for (int zi = 0; zi < 16; zi++) {
-//                int z = zi + minZ;
-//                pos.setZ(z);
-//
-//                for (int xi = 0; xi < 16; xi++) {
-//                    int x = xi + minX;
-//                    pos.setX(x);
-//
-//                    double density = densityField.retrieve(xi, yi, zi);
-//                    density = MathUtils.smoothMinExpo(density, fluidField.getBorderDensity(xi, yi, zi), 3);
-//
-//                    boolean isSolid = density <= 0;
-//                    BlockState state = isSolid ? BRIMSTONE : fluidField.getFluidState(x, y, z);
-//                    if (state != null && !state.isAir()) {
-//                        section.setBlockState(xi, sectionY, zi, state, false);
-//                        // update any placed state blocks in waterfalls, so they flow!
-//                        if (!isSolid && waterfallPresence.retrieve(xi, yi, zi) > 0) {
-//                            chunk.markPosForPostprocessing(pos);
-//                        }
-//
-//                        // fill heightmaps
-//                        int index = xi + zi * 16;
-//                        if (!filledWorldSurfaceHeight[index]) {
-//                            worldSurfaceHeightmap.update(xi, pos.getY(), zi, state);
-//                            filledWorldSurfaceHeight[index] = true;
-//                        }
-//                        if (!filledOceanFloorHeight[index] && isSolid) {
-//                            oceanFloorHeightmap.update(xi, pos.getY(), zi, state);
-//                            filledOceanFloorHeight[index] = true;
-//                        }
-//                    }
-//                }
-//            }
-//        }
     }
 
     @Override

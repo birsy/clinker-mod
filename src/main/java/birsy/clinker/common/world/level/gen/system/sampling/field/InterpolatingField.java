@@ -1,6 +1,7 @@
 package birsy.clinker.common.world.level.gen.system.sampling.field;
 
 import birsy.clinker.common.world.level.gen.system.sampling.Synthesizer;
+import birsy.clinker.common.world.level.gen.system.sampling.noise.NoiseSampler;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.noise.FastNoiseLite;
 import net.minecraft.util.Mth;
@@ -73,7 +74,7 @@ public class InterpolatingField {
     public void fill(int fromY, int toY, int minX, int minY, int minZ, Synthesizer.Function filler, Synthesizer.Context context) {
         int fromLocalY = fromY - minY,
               toLocalY = toY - minY;
-        FastNoiseLite[] noises = context.noises();
+        NoiseSampler[] noises = context.noises();
         // find unfilled layers
         fillMask.clear();
         fillMask.set(Math.max(0, fromLocalY >> yCellScale), Math.min(yCellCount - 1, toLocalY >> yCellScale) + 1);
@@ -82,14 +83,14 @@ public class InterpolatingField {
         for (int startCellY = fillMask.nextSetBit(0); startCellY >= 0; startCellY = fillMask.nextSetBit(startCellY + 1)) {
             int endCellY = fillMask.nextClearBit(startCellY);
             if (endCellY == -1) endCellY = yCellCount;
-            context.setSlice(startCellY);
             fillInternal(startCellY, endCellY - 1, minX, minY, minZ, filler, context, noises);
         }
         // finally, set filled layers
         filledLayers.or(fillMask);
     }
 
-    void fillInternal(int startCellY, int endCellY, int minX, int minY, int minZ, Synthesizer.Function filler, Synthesizer.Context context, FastNoiseLite[] noises) {
+    void fillInternal(int startCellY, int endCellY, int minX, int minY, int minZ, Synthesizer.Function filler, Synthesizer.Context context, NoiseSampler[] noises) {
+        context.setSlice(startCellY);
         int index = startCellY * sliceCellCount;
         for (int cellY = startCellY; cellY <= endCellY; cellY++) {
             int globalY = (cellY << yCellScale) + minY;
