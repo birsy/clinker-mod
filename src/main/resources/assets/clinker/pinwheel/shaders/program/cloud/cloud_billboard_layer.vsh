@@ -86,9 +86,9 @@ void main() {
         mix(mix(prevLodScale, lodScale, lodStartFactor), 0.0, lodEndFactor),
         mix(lodScale, nextLodScale, lodEndFactor), Color.r
     );
-    float radius = mix(8.0, 13.0, randoms.w) * 0.8 * scaleMultiplier;
+    float radius = mix(10.0, 16.0, randoms.w) * scaleMultiplier;
 
-    vec3 billboardOffset = TexCoord.x * radius * Camera.IViewMat[0].xyz + TexCoord.y * radius * Camera.IViewMat[1].xyz;
+    vec3 billboardOffset = normalize(TexCoord.x * Camera.IViewMat[0].xyz + TexCoord.y * Camera.IViewMat[1].xyz) * radius;
     vec3 vertexPos = cameraSpaceCenter + billboardOffset;
     vec4 viewPos = ModelViewMat * vec4(vertexPos, 1.0);
     gl_Position  = ProjMat * viewPos;

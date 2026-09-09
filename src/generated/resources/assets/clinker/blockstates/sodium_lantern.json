@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "hanging=false": {
+      "model": "clinker:block/sodium_lantern"
+    },
+    "hanging=true": {
+      "model": "clinker:block/hanging_sodium_lantern"
+    }
+  }
+}

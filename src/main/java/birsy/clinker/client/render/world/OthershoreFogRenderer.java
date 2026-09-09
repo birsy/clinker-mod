@@ -60,7 +60,11 @@ public class OthershoreFogRenderer {
         OthershoreWeatherSystem weatherSystem = ClientOthershoreWeatherSystem.get();
         float stormIntensity = 0;
         if (weatherSystem != null) stormIntensity = OthershoreStormRenderHelper.getStormIntensity(eyePos.y(), weatherSystem, (float) event.getPartialTick());
-        brightness *= 1.0F - (stormIntensity * 0.7F);
+
+        float surfaceFactor = AmbienceHandler.SURFACE_TRACKER.getAboveGroundFactor((float) event.getPartialTick());
+        surfaceFactor = Mth.sqrt(surfaceFactor);
+
+        brightness *= 1.0F - (stormIntensity * surfaceFactor * 0.7F);
 
         event.setRed(event.getRed() * brightness);
         event.setGreen(event.getGreen() * brightness);

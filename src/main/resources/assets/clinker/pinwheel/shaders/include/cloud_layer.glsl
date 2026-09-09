@@ -17,10 +17,14 @@ uniform int TextureSize;
 const float layerOffset = 10.0;
 const float maximumDisplacement = 10.0;
 
+vec4 sampleCloudTexture(vec2 coordinates) {
+    float textureSize = float(TextureSize);
+    return texture(CloudDensitySampler, (mod(coordinates, textureSize) + mod(vec2(0, -WindOffset), textureSize)) / textureSize);
+}
+
 void sampleCloud(ivec2 cloudCenterCellPos, vec2 cloudCenterCellOffset, ivec2 cameraCloudCellPos, vec2 cameraCloudCellOffset, int cloudCellSize, float renderDist, float holeSizeOffset,
                  out float brightness, out float alpha, out float baseOffset, out float displacement) {
-    int textureSize = TextureSize;
-    vec4 cloudTexture = texture(CloudDensitySampler, (mod(cloudCenterCellPos * cloudCellSize, textureSize) + cloudCenterCellOffset + vec2(0, -WindOffset)) / float(textureSize));
+    vec4 cloudTexture = texture(CloudDensitySampler, (mod(cloudCenterCellPos * cloudCellSize, TextureSize) + cloudCenterCellOffset + vec2(0, -WindOffset)) / float(TextureSize));
     float cloudDensity = cloudTexture.a;
 
     vec2 localCenter = (cloudCenterCellPos - cameraCloudCellPos) * cloudCellSize + cloudCenterCellOffset - cameraCloudCellOffset;

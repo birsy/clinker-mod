@@ -73,7 +73,8 @@ void main() {
     center += displacementOffset * maxAllowedZOffset;
 
     float radius = mix(7.0, 13.0, randoms.w);
-    vec3 worldPos = center + TexCoord.x * radius * Camera.IViewMat[0].xyz + TexCoord.y * radius * Camera.IViewMat[1].xyz;
+    vec3 billboardOffset = normalize(TexCoord.x * Camera.IViewMat[0].xyz + TexCoord.y * Camera.IViewMat[1].xyz) * radius;
+    vec3 worldPos = center + billboardOffset;
     vec4 viewPos = ModelViewMat * vec4(worldPos, 1.0);
     gl_Position  = ProjMat * viewPos;
 

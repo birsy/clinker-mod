@@ -46,6 +46,9 @@ public class ClinkerBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<EmbeddedAmberBlockEntity>> EMBEDDED_AMBER = BLOCK_ENTITY_TYPES.register("embedded_amber",
             () -> BlockEntityType.Builder.of(EmbeddedAmberBlockEntity::new, ClinkerBlocks.EMBEDDED_AMBER_BLOCK.get()).build(null));
 
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SodiumLanternBlockEntity>> SODIUM_LANTERN = BLOCK_ENTITY_TYPES.register("sodium_lantern",
+            () -> BlockEntityType.Builder.of(SodiumLanternBlockEntity::new, ClinkerBlocks.SODIUM_LANTERN.get()).build(null));
+
     public static void registerTileEntityRenderers() {
         BlockEntityRenderers.register(ClinkerBlockEntities.FERMENTATION_BARREL.get(), FermentationBarrelRenderer::new);
         BlockEntityRenderers.register(ClinkerBlockEntities.SARCOPHAGUS_INNARDS.get(), SarcophagusInnardsRenderer::new);
@@ -55,6 +58,7 @@ public class ClinkerBlockEntities {
         BlockEntityRenderers.register(ClinkerBlockEntities.COUNTER.get(), CounterRenderer::new);
         BlockEntityRenderers.register(ClinkerBlockEntities.PRESSURE_COOKER.get(), PressureCookerRenderer::new);
         BlockEntityRenderers.register(ClinkerBlockEntities.EMBEDDED_AMBER.get(), EmbeddedAmberRenderer::new);
+        BlockEntityRenderers.register(ClinkerBlockEntities.SODIUM_LANTERN.get(), SodiumLanternRenderer::new);
     }
 
     @SubscribeEvent

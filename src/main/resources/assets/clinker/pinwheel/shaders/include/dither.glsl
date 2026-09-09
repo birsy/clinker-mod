@@ -17,3 +17,9 @@ float quantizeAndDither(int x, int y, int steps, float value) {
     float ditherOffset = dither8x8[x%8 + (y%8) * 8];
     return floor(value * steps + ditherOffset) / float(steps);
 }
+
+float actuallyDither(int x, int y, float value) {
+    const float invColorValues = 1.0 / 255.0;
+    float ditherOffset = dither8x8[x%8 + (y%8) * 8];
+    return value + ditherOffset * invColorValues;
+}

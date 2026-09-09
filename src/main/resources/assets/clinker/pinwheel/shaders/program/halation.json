@@ -1,0 +1,11 @@
+{
+  "vertex": "clinker:halation",
+  "fragment": "clinker:halation",
+  "textures": {
+    "TextureSampler": "clinker:textures/environment/glow.png",
+    "DepthSampler": {
+      "type": "framebuffer",
+      "name": "minecraft:main:depth"
+    }
+  }
+}

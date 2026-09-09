@@ -1,5 +1,6 @@
 package birsy.clinker.client.render.world;
 
+import birsy.clinker.client.ambience.AmbienceHandler;
 import birsy.clinker.client.render.world.cloud.OthershoreCloudRenderer;
 import birsy.clinker.client.render.world.sky.OthershoreSkyRenderer2;
 import birsy.clinker.common.world.level.weather.ClientOthershoreWeatherSystem;
@@ -32,15 +33,13 @@ import java.lang.Math;
 public class OthershoreDimensionEffects extends DimensionSpecialEffects implements AutoCloseable {
     private final Minecraft mc = Minecraft.getInstance();
 
-    OthershoreSkyRenderer skyRenderer;
     OthershoreSkyRenderer2 skyRenderer2;
     OthershoreCloudRenderer cloudRenderer;
 
     public OthershoreDimensionEffects() {
         super(256.0F, true, SkyType.NORMAL, false, false);
-        this.skyRenderer = new OthershoreSkyRenderer(RandomSource.create(1337));
-        this.skyRenderer2 = new OthershoreSkyRenderer2();
         this.cloudRenderer = new OthershoreCloudRenderer();
+        this.skyRenderer2 = new OthershoreSkyRenderer2(this.cloudRenderer);
     }
 
     @Override
@@ -64,6 +63,14 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects implemen
         float g = (float)interpolatedSkyColor.y;
         float b = (float)interpolatedSkyColor.z;
         float brightness = (float) Mth.map(Minecraft.getInstance().options.gamma().get(), 0.0F, 0.5F, 0.7F, 1.0F);
+
+        OthershoreWeatherSystem weatherSystem = ClientOthershoreWeatherSystem.get();
+        float stormIntensity = 0;
+        if (weatherSystem != null) stormIntensity = OthershoreStormRenderHelper.getStormIntensity(pPos.y(), weatherSystem, pPartialTick);
+        float surfaceFactor = AmbienceHandler.SURFACE_TRACKER.getAboveGroundFactor(pPartialTick);
+        surfaceFactor = Mth.sqrt(surfaceFactor);
+        brightness *= 1.0F - (stormIntensity * surfaceFactor * 0.7F);
+
         r *= brightness; g *= brightness; b *= brightness;
 
         int i = level.getSkyFlashTime();
@@ -76,6 +83,7 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects implemen
             g = g * (1.0F - lightningFlicker) + 0.2F * lightningFlicker;
             b = b * (1.0F - lightningFlicker);
         }
+
 
         return skyColor.set(r, g, b);
     }
@@ -117,6 +125,7 @@ public class OthershoreDimensionEffects extends DimensionSpecialEffects implemen
         }
 
         stack.mulPose(modelViewMatrix);
+        //stack.mulPose(camera.rotation().invert(new Quaternionf()));
 
         this.skyRenderer2.render(level, ticks, partialTick, stack, camera, projectionMatrix, this.getSkyColor(level, camera.getPosition(), partialTick));
         Minecraft.getInstance().getProfiler().pop();

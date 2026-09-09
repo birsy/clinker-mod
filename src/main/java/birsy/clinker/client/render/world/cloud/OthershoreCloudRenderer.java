@@ -177,6 +177,7 @@ public class OthershoreCloudRenderer {
     }
 
     public void tick() {
+        windOffset = 0;
         prevWindOffset = windOffset;
 
         OthershoreWeatherSystem weatherSystem = ClientOthershoreWeatherSystem.get();
