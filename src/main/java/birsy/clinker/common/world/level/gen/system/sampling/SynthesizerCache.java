@@ -92,6 +92,12 @@ public class SynthesizerCache {
 
     // assumes all prior dependencies have been created.
     void fillNoiseField(Synthesizer synthesizer, InterpolatingField field, int desiredXZPadding, int desiredXZScale, int fromY, int toY, boolean fieldNeedsInitialization) {
+        // initialize the field if it needs it
+        if (fieldNeedsInitialization) Arrays.fill(field.array(), synthesizer.defaultValue);
+
+        // return early if we're not in range
+        if (toY - fromY <= 0) return;
+
         int minXZScale = Math.max(desiredXZScale, synthesizer.resolution.xzScale());
         // create context
         InterpolatingFieldSampler[] interpolators = new InterpolatingFieldSampler[synthesizer.directDependencies.size()];
@@ -113,8 +119,7 @@ public class SynthesizerCache {
         }
         CachedContext context = new CachedContext(interpolators, noises);
 
-        // init and fill field...
-        if (fieldNeedsInitialization) Arrays.fill(field.array(), synthesizer.defaultValue);
+        // fill field...
         field.fill(fromY, toY, chunkMinX, chunkMinY, chunkMinZ, synthesizer.function, context);
     }
 

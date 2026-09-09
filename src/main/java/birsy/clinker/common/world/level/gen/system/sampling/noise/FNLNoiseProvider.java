@@ -16,6 +16,7 @@ public class FNLNoiseProvider {
             FastNoiseLite fnl = new FastNoiseLite();
             fnl.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2S);
             fnl.SetFractalType(FastNoiseLite.FractalType.None);
+            fnl.SetFrequency(1.0F);
             return fnl;
         });
     }

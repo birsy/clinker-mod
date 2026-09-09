@@ -3,7 +3,6 @@ package birsy.clinker.common.world.level.gen.system.sampling;
 import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingFieldResolution;
 import birsy.clinker.common.world.level.gen.system.sampling.noise.NoiseProvider;
 import birsy.clinker.common.world.level.gen.system.sampling.noise.NoiseSampler;
-import birsy.clinker.core.util.noise.FastNoiseLite;
 import com.google.common.collect.ImmutableList;
 
 import java.util.*;
@@ -68,17 +67,21 @@ public class Synthesizer {
 
         private Builder() {}
 
-        public Builder setRange(int minY, int maxY, double defaultValue) {
-            this.minY = minY; this.maxY = maxY;
+        public Builder withDefaultValue(double defaultValue) {
             this.defaultValue = defaultValue;
             return this;
         }
 
-        public Builder addDependencies(Synthesizer... synthesizers) {
+        public Builder withRange(int minY, int maxY, double defaultValue) {
+            this.minY = minY; this.maxY = maxY;
+            return withDefaultValue(defaultValue);
+        }
+
+        public Builder withDependencies(Synthesizer... synthesizers) {
             Collections.addAll(dependencies, synthesizers);
             return this;
         }
-        public Builder addNoises(NoiseProvider... noises) {
+        public Builder withNoises(NoiseProvider... noises) {
             Collections.addAll(requiredNoises, noises);
             return this;
         }

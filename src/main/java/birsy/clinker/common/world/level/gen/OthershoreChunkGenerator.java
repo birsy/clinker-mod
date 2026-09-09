@@ -1,5 +1,6 @@
 package birsy.clinker.common.world.level.gen;
 
+import birsy.clinker.common.world.level.gen.content.synthesizers.OthershoreCaveSynthesizers;
 import birsy.clinker.common.world.level.gen.system.biome.BiomeCache2d;
 import birsy.clinker.common.world.level.gen.system.biome.BiomeList;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesSurfaceDecoration;
@@ -15,6 +16,7 @@ import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabi
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.worldgen.ClinkerWorldFeatureCapabilities;
+import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.core.util.profiling.RunningAverageTracker;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -157,26 +159,38 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             minZ = chunkPos.getMinBlockZ();
         int chunkHeight = chunk.getHeight();
 
+
+        SynthesizerCache synthesizerCache = new SynthesizerCache(minX, minY, minZ, chunkHeight, randomState.getOrCreateRandomFactory(Clinker.resource("clinkernoisegen")));
+
         int seaLevel = 100;
-        int amplitude = 30, range = amplitude + 10;
-        SynthesizerCache synthesizerCache = new SynthesizerCache(minX, minY, minZ, chunkHeight, randomState.getOrCreateRandomFactory(Clinker.resource("clinkergen")));
+        int amplitude = 24, range = amplitude + 10;
         Synthesizer ySynthesizer = Synthesizer.builder()
                 .build(InterpolatingFieldResolution.VERY_COARSE,
                         (x, y, z, dependencyValues, noises) -> y - seaLevel
                 );
 
-        Synthesizer testSynthesizer = Synthesizer.builder()
-                .addDependencies(ySynthesizer)
-                .addNoises(FNLNoiseProvider.create("base"))
-                .setRange(seaLevel - range, seaLevel + range, 100.0)
+        // the ultimate goal of biome construction will be to create the master Surface Synthesizer...
+        Synthesizer testSurfaceSynthesizer = Synthesizer.builder()
+                .withDependencies(ySynthesizer)
+                .withNoises(FNLNoiseProvider.create("base"))
+                .withRange(seaLevel - range, seaLevel + range, 100.0)
                 .build(InterpolatingFieldResolution.COARSE_Y,
                        (x, y, z, dependencyValues, noises) -> {
-                            double n = noises[0].sample(x, y, z) * amplitude;
+                            double n = noises[0].sample(x / 64.0, y / 64.0, z / 64.0) * amplitude;
                             return dependencyValues[0] + n;
                        }
                 );
+        // and combine that with the cave synthesizer to create the Final Density Synthesizer:tm:
+        Synthesizer finalDensitySynthesizer = Synthesizer.builder()
+                .withDependencies(testSurfaceSynthesizer, OthershoreCaveSynthesizers.CAVES)
+                .withRange(Integer.MIN_VALUE, seaLevel + range, 100.0)
+                .build(InterpolatingFieldResolution.COARSE_Y,
+                        (x, y, z, dependencyValues, noises) -> {
+                            return -MathUtils.smoothMinExpo(-dependencyValues[0], -dependencyValues[1], 8.0);
+                        }
+                );
 
-        InterpolatingField finalDensityField = synthesizerCache.forThisChunk(testSynthesizer, 0, minY, chunk.getMaxBuildHeight());
+        InterpolatingField finalDensityField = synthesizerCache.forThisChunk(finalDensitySynthesizer, 0, minY, chunkHeight);
         this.fillFromFields(finalDensityField, chunk);
 
         // terrible profiling
@@ -208,7 +222,6 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         int sectionY = SectionPos.sectionRelative(globalY);
         int sectionIndex = chunk.getSectionIndex(globalY);
         LevelChunkSection section = chunk.getSection(sectionIndex);
-
 
         for (; y >= 0; y--) {
             pos.setY(globalY);
