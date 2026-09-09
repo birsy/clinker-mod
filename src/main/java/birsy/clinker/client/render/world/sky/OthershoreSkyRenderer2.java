@@ -230,6 +230,8 @@ public class OthershoreSkyRenderer2 {
             innerFogVbo.upload(vertexConsumer.buildOrThrow());
             VertexBuffer.unbind();
         }
+
+        this.initialized = true;
     }
 
     public void render(ClientLevel level, int ticks, float partialTick, PoseStack poseStack, Camera camera, Matrix4f projectionMatrix, Vector3fc skyColor) {
