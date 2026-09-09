@@ -1,5 +1,6 @@
 package birsy.clinker.common.world.level.gen.content.surface.decorator;
 
+import birsy.clinker.common.world.level.gen.system.noise.CachedNoiseContext;
 import birsy.clinker.common.world.level.gen.system.noise.NoiseFieldCache;
 import birsy.clinker.common.world.level.gen.system.surface.decorator.SurfaceDecorationContext;
 import birsy.clinker.common.world.level.gen.system.surface.decorator.SurfaceDecorator;
@@ -7,13 +8,35 @@ import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.worldgen.ClinkerNoiseComputers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import org.jetbrains.annotations.Nullable;
 
 public class BrineSwampSurfaceDecorator extends SurfaceDecorator {
     private final int seaLevel;
+    private final int calcHeight;
+    private BlockState calc, saltMoss, saltGravel;
 
     public BrineSwampSurfaceDecorator(int seaLevel) {
         this.seaLevel = seaLevel;
+        this.calcHeight = seaLevel + 32;
+    }
+
+    @Override
+    public void initialize() {
+        this.calc = ClinkerBlocks.CALC.get().defaultBlockState();
+        this.saltMoss = ClinkerBlocks.SALTMOSS.get().defaultBlockState();
+        this.saltGravel = ClinkerBlocks.SALT_GRAVEL.get().defaultBlockState();
+    }
+
+    @Override
+    public @Nullable BlockState getFillBlock(BlockPos pos, double offsetNoise, WorldGenLevel level, ChunkAccess chunk, CachedNoiseContext context, RandomSource random) {
+        double y = pos.getY() + offsetNoise * 2.0;
+        if (y >= this.calcHeight) return null;
+        return calc;
     }
 
     @Override
@@ -27,8 +50,6 @@ public class BrineSwampSurfaceDecorator extends SurfaceDecorator {
         if (ctx.surfaceDirection() != Direction.DOWN) return;
 
         double noise3 = ctx.retrieve(pos, ClinkerNoiseComputers.BASE_NOISE_2D[3]);
-        int rockDepth = (int) Math.min(20 + noise3 * 4, ctx.maximumDepth());
-        if (rockDepth <= 0) return;
 
         double noise5 = ctx.retrieve(pos, ClinkerNoiseComputers.BASE_NOISE_2D[5]);
         double waterloggingNoise = noise5 + noise3 * 0.8;
@@ -39,30 +60,28 @@ public class BrineSwampSurfaceDecorator extends SurfaceDecorator {
 
         if (pos.getY() < seaLevel + 5 + noise5 * 3) {
             if (pos.getY() == seaLevel - 1 && waterloggingNoise > 0 && ctx.maxUpwardsOffset() <= 0) {
-                ctx.place(pos, ClinkerBlocks.SALT_GRAVEL.get().defaultBlockState());
+                ctx.place(pos, saltGravel);
                 placedSand = true;
                 offset++;
             } else if (pos.getY() == seaLevel - 2 && waterloggingNoise > 0.5 && ctx.maxUpwardsOffset() <= 0) {
                 ctx.place(pos, Blocks.WATER.defaultBlockState());
                 pos.move(ctx.surfaceDirection());
-                ctx.place(pos, ClinkerBlocks.SALT_GRAVEL.get().defaultBlockState());
+                ctx.place(pos, saltGravel);
                 placedSand = true;
                 offset++;
             } else {
                 boolean isBorder = Math.max(ctx.maxDownwardsOffset(), ctx.maxUpwardsOffset()) >= 1;
                 isBorder = (isBorder && noise3 > 0) || Math.max(ctx.maxDownwardsOffset(), ctx.maxUpwardsOffset()) >= 2;
 
-                if (isBorder) {
-                    ctx.place(pos, ClinkerBlocks.CALC.get().defaultBlockState());
-                } else {
+                if (!isBorder) {
                     double grassNoise = waterloggingNoise + dither * 0.05;
                     boolean placeGrass = grassNoise < 0.9 && pos.getY() >= seaLevel + 1;
                     if (pos.getY() == seaLevel + 1) placeGrass &= ctx.maxDownwardsOffset() == 0;
 
                     if (placeGrass) {
-                        ctx.place(pos, ClinkerBlocks.SALTMOSS.get().defaultBlockState());
+                        ctx.place(pos, saltMoss);
                     } else {
-                        ctx.place(pos, ClinkerBlocks.SALT_GRAVEL.get().defaultBlockState());
+                        ctx.place(pos, saltGravel);
                         placedSand = true;
                     }
                 }
@@ -75,22 +94,15 @@ public class BrineSwampSurfaceDecorator extends SurfaceDecorator {
             shouldPlaceGrass &= ctx.maxDownwardsOffset() < 2;
 
             if (shouldPlaceGrass) {
-                ctx.place(pos, ClinkerBlocks.SALTMOSS.get().defaultBlockState());
-            } else {
-                ctx.place(pos, ClinkerBlocks.CALC.get().defaultBlockState());
+                ctx.place(pos, saltMoss);
             }
             offset++;
             pos.move(ctx.surfaceDirection());
         }
 
         int sandBlocks = !placedSand ? 0 : ctx.random().nextInt(2, 3);
-        for (int i = offset; i < rockDepth; i++) {
-            if (sandBlocks > 0) {
-                ctx.place(pos, ClinkerBlocks.SALT_GRAVEL.get().defaultBlockState());
-                sandBlocks--;
-            } else {
-                ctx.place(pos, ClinkerBlocks.CALC.get().defaultBlockState());
-            }
+        for (int i = offset; i < sandBlocks; i++) {
+            ctx.place(pos, saltGravel);
             pos.move(ctx.surfaceDirection());
         }
     }

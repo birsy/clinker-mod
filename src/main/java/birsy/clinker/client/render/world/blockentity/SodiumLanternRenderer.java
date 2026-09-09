@@ -61,7 +61,7 @@ public class SodiumLanternRenderer<T extends SodiumLanternBlockEntity> implement
     }
     @SubscribeEvent
     static void renderLevel(RenderLevelStageEvent event) {
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
+        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_WEATHER) {
             if (halationVbo == null) {
                 halationVbo = new VertexBuffer(VertexBuffer.Usage.STATIC);
                 halationVbo.bind();
@@ -76,18 +76,20 @@ public class SodiumLanternRenderer<T extends SodiumLanternBlockEntity> implement
                 VertexBuffer.unbind();
             }
 
+            float partialTick = event.getPartialTick().getGameTimeDeltaTicks();
             Vec3 cameraPos = event.getCamera().getPosition();
             Quaternionf cameraRotation = event.getCamera().rotation();
 
             OthershoreWeatherSystem weatherSystem = ClientOthershoreWeatherSystem.get();
             float stormIntensity = 0;
-            if (weatherSystem != null) stormIntensity = OthershoreStormRenderHelper.getStormIntensity(cameraPos.y(), weatherSystem, event.getPartialTick().getGameTimeDeltaTicks());
-            float surfaceFactor = AmbienceHandler.SURFACE_TRACKER.getAboveGroundFactor(event.getPartialTick().getGameTimeDeltaTicks());
+            if (weatherSystem != null) stormIntensity = OthershoreStormRenderHelper.getStormIntensity(cameraPos.y(), weatherSystem, partialTick);
+            float surfaceFactor = AmbienceHandler.SURFACE_TRACKER.getAboveGroundFactor(partialTick);
             surfaceFactor = Mth.sqrt(surfaceFactor);
             stormIntensity *= surfaceFactor;
 
             // sort by distance
-            HALATION_POSITIONS.sort(Comparator.<Vec3>comparingDouble(pos -> pos.distanceTo(cameraPos)).reversed());
+            // actually, because its additive, we don't need to do this
+            // HALATION_POSITIONS.sort(Comparator.<Vec3>comparingDouble(pos -> pos.distanceTo(cameraPos)).reversed());
 
             PoseStack poseStack = event.getPoseStack();
             poseStack.pushPose();
@@ -105,11 +107,15 @@ public class SodiumLanternRenderer<T extends SodiumLanternBlockEntity> implement
             shader.getUniformSafe("Radius").setFloat(8.0F);
             shader.getUniformSafe("ScreenResolution").setVector(AdvancedFbo.getMainFramebuffer().getWidth(), AdvancedFbo.getMainFramebuffer().getHeight());
             halationVbo.bind();
+            
             poseStack.mulPose(cameraRotation.invert(new Quaternionf()));
-            poseStack.translate(-cameraPos.x(), -cameraPos.y(), -cameraPos.z());
+            if (Minecraft.getInstance().options.bobView().get()) {
+                Minecraft.getInstance().gameRenderer.bobView(poseStack, partialTick);
+            }
+
             for (Vec3 lanternPosition : HALATION_POSITIONS) {
                 poseStack.pushPose();
-                poseStack.translate(lanternPosition.x(), lanternPosition.y(), lanternPosition.z());
+                poseStack.translate(lanternPosition.x() - cameraPos.x(), lanternPosition.y() - cameraPos.y(), lanternPosition.z() - cameraPos.z());
                 halationVbo.drawWithShader(poseStack.last().pose(), projectionMatrix, VeilRenderBridge.toShaderInstance(shader));
                 poseStack.popPose();
             }

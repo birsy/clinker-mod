@@ -48,6 +48,8 @@ public class ClinkerFeatures {
             FEATURES.register("spotreed", () -> new SpotreedFeature(SpotreedFeature.SpotreedFeatureConfiguration.CODEC));
     public static final Supplier<Feature<NoneFeatureConfiguration>> TAPROOT =
             FEATURES.register("taproot", () -> new TaprootFeature(NoneFeatureConfiguration.CODEC));
+    public static final Supplier<Feature<NoneFeatureConfiguration>> SCORE =
+            FEATURES.register("score", () -> new ScoreFeature(NoneFeatureConfiguration.CODEC));
 //    static class Configured {
 //        public static final ClinkerConfiguredFeature<?, ?> BRIMSTONE_BOULDER = ClinkerConfiguredFeature.create(
 //                "brimstone_boulder",
