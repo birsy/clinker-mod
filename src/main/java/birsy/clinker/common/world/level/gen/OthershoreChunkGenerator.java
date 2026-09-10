@@ -185,13 +185,15 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                     return ctx.dependentValue(0) + n;
                }
            );
+
+        int seaFloorSampleDistance = 8;
         Synthesizer seaFloorHeight = Synthesizer.builder()
             .withDependencies(surface)
             .build(InterpolatingFieldResolution.COARSE_2D,
                 ctx -> {
                     int x = ctx.x(), z = ctx.z();
-                    int y = seaLevel;
-                    for (; y >= surface.minY; y -= surface.resolution.yScale()) {
+                    int y = seaLevel + seaFloorSampleDistance;
+                    for (; y >= surface.minY; y -= seaFloorSampleDistance) {
                         double value = ctx.retrieveFromDependency(0, x, y, z);
                         if (value <= 0) break;
                     }
