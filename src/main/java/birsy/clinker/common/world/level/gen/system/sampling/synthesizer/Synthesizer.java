@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.level.gen.system.sampling;
+package birsy.clinker.common.world.level.gen.system.sampling.synthesizer;
 
 import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingFieldResolution;
 import birsy.clinker.common.world.level.gen.system.sampling.noise.NoiseProvider;
@@ -134,13 +134,7 @@ public class Synthesizer {
 
     public record Dependency(Synthesizer synthesizer, int minY, int maxY, int xzScale) {}
 
-    public interface Context {
-        double[] sampleDependencyValues();
-        NoiseSampler[] noises();
-        void advanceX(); void advanceY(); void advanceZ(); void setSlice(int cellY);
-    }
-
     public interface Function {
-        double compute(int x, int y, int z, double[] dependencyValues, NoiseSampler[] noises);
+        double compute(SynthesizerContext ctx);
     }
 }

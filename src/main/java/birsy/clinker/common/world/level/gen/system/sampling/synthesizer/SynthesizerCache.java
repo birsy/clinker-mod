@@ -1,12 +1,11 @@
-package birsy.clinker.common.world.level.gen.system.sampling;
+package birsy.clinker.common.world.level.gen.system.sampling.synthesizer;
 
+import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingFieldFiller;
 import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingField;
 import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingFieldResolution;
 import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingFieldSampler;
 import birsy.clinker.common.world.level.gen.system.sampling.noise.NoiseProvider;
 import birsy.clinker.common.world.level.gen.system.sampling.noise.NoiseSampler;
-import birsy.clinker.core.Clinker;
-import birsy.clinker.core.util.noise.FastNoiseLite;
 import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -32,10 +31,9 @@ public class SynthesizerCache {
     }
 
     // computes the value of a synthesizer at a single point.
-    // todo: maybe move this somewhere else.
-    public double atPoint(Synthesizer synthesizer, int x, int y, int z) {
+    // todo: maybe move this somewhere else. also, make the function lol
+    public double samplePoint(Synthesizer synthesizer, int x, int y, int z) {
         if (y < synthesizer.minY || y > synthesizer.maxY) return synthesizer.defaultValue;
-        // todo: this
         return synthesizer.defaultValue;
     }
 
@@ -44,7 +42,7 @@ public class SynthesizerCache {
     // and it'll return a nice, filled field for you.
     // todo: padding seems... weird. Investigate if it actually works
     //       theres gotta be some way to simplify all this using the resolvedDependencies.
-    public InterpolatingField forThisChunk(Synthesizer synthesizer, int desiredXZPadding, int minY, int maxY) {
+    public InterpolatingField sampleThisChunk(Synthesizer synthesizer, int desiredXZPadding, int minY, int maxY) {
         int desiredXZScale = synthesizer.resolution.xzScale();
         for (Synthesizer.Dependency dependency : synthesizer.resolvedDependencies) {
             getOrCreateField(dependency.synthesizer(),
@@ -100,14 +98,15 @@ public class SynthesizerCache {
 
         int minXZScale = Math.max(desiredXZScale, synthesizer.resolution.xzScale());
         // create context
+        DependencyRetriever.Field[] fieldRetrievers = new DependencyRetriever.Field[synthesizer.directDependencies.size()];
         InterpolatingFieldSampler[] interpolators = new InterpolatingFieldSampler[synthesizer.directDependencies.size()];
         ImmutableList<Synthesizer.Dependency> dependencies = synthesizer.directDependencies;
         for (int i = 0; i < dependencies.size(); i++) {
             // there has to be a better way of doing this.
             Synthesizer dependency = dependencies.get(i).synthesizer();
             InterpolatingField dependencyField = getOrCreateField(dependency, desiredXZPadding, minXZScale, fromY, toY);
-            InterpolatingFieldSampler interpolator = InterpolatingFieldSampler.create(dependencyField, field);
-            interpolators[i] = interpolator;
+            fieldRetrievers[i] = new DependencyRetriever.Field(chunkMinX, chunkMinY, chunkMinZ, dependencyField);
+            interpolators[i] = InterpolatingFieldSampler.create(dependencyField, field);
         }
 
         NoiseSampler[] noises = new NoiseSampler[synthesizer.noises.size()];
@@ -117,36 +116,69 @@ public class SynthesizerCache {
             RandomSource randomSource = worldRandom.fromHashOf(sampler.name());
             noises[i] = sampler.fromSeed(randomSource.nextLong());
         }
-        CachedContext context = new CachedContext(interpolators, noises);
 
+        SynthesizerContext context = new SynthesizerContext(fieldRetrievers, noises);
+        SynthesizerFiller filler = new SynthesizerFiller(
+                chunkMinX - field.paddingBlocks, chunkMinY, chunkMinZ - field.paddingBlocks,
+                field.yCellScale, interpolators, context, synthesizer.function
+        );
         // fill field...
-        field.fill(fromY, toY, chunkMinX, chunkMinY, chunkMinZ, synthesizer.function, context);
+        field.fill(fromY - chunkMinY, toY - chunkMinY, filler);
     }
 
-    static final class CachedContext implements Synthesizer.Context {
-        private final InterpolatingFieldSampler[] synthesizerFields;
-        private final NoiseSampler[] noises;
-        private final double[] synthesizerValues;
+    // fills a field with data from a synthesizer.
+    static final class SynthesizerFiller implements InterpolatingFieldFiller {;
+        final int minX, minY, minZ, yCellScale;
+        final InterpolatingFieldSampler[] interpolators;
+        final SynthesizerContext context;
+        final Synthesizer.Function func;
 
-        CachedContext(InterpolatingFieldSampler[] synthesizerFields, NoiseSampler[] noises) {
-            this.synthesizerFields = synthesizerFields;
-            this.noises = noises;
-            this.synthesizerValues = new double[synthesizerFields.length];
+        int globalX, globalY, globalZ;
+
+        SynthesizerFiller(int minX, int minY, int minZ, int yCellScale, InterpolatingFieldSampler[] interpolators, SynthesizerContext context, Synthesizer.Function func) {
+            this.minX = minX; this.minY = minY; this.minZ = minZ;
+            this.yCellScale = yCellScale;
+            this.interpolators = interpolators;
+            this.context = context;
+            this.func = func;
         }
 
         @Override
-        public double[] sampleDependencyValues() {
-            for (int i = 0; i < synthesizerFields.length; i++) {
-                InterpolatingFieldSampler field = synthesizerFields[i];
-                synthesizerValues[i] = field.sample();
+        public double compute(int x, int y, int z) {
+            for (int i = 0; i < interpolators.length; i++) {
+                InterpolatingFieldSampler field = interpolators[i];
+                context.dependencyValues[i] = field.sample();
             }
-            return synthesizerValues;
+            return func.compute(context);
         }
 
-        @Override public NoiseSampler[] noises() { return noises; }
-        @Override public void advanceX() { for (InterpolatingFieldSampler synthesizerField : synthesizerFields) synthesizerField.advanceX(); }
-        @Override public void advanceY() { for (InterpolatingFieldSampler synthesizerField : synthesizerFields) synthesizerField.advanceY(); }
-        @Override public void advanceZ() { for (InterpolatingFieldSampler synthesizerField : synthesizerFields) synthesizerField.advanceZ(); }
-        @Override public void setSlice(int cellY) { for (InterpolatingFieldSampler synthesizerField : synthesizerFields) synthesizerField.setSlice(cellY); }
+        // see InterpolatingFieldSampler for more info on these
+        @Override
+        public void advanceX() {
+            globalX++;
+            context.x = globalX;
+            for (InterpolatingFieldSampler synthesizerField : interpolators) synthesizerField.advanceX();
+        }
+        @Override
+        public void advanceZ() {
+            globalX = minX;
+            globalZ++;
+            context.z = globalZ;
+            for (InterpolatingFieldSampler synthesizerField : interpolators) synthesizerField.advanceZ();
+        }
+        @Override
+        public void advanceY() {
+            globalX = minX; globalZ = minZ;
+            globalY++;
+            context.y = globalY;
+            for (InterpolatingFieldSampler synthesizerField : interpolators) synthesizerField.advanceY();
+        }
+        @Override
+        public void setSlice(int cellY) {
+            globalX = minX; globalZ = minZ;
+            globalY = (cellY << yCellScale) + minY;
+            context.y = globalY;
+            for (InterpolatingFieldSampler synthesizerField : interpolators) synthesizerField.setSlice(cellY);
+        }
     }
 }

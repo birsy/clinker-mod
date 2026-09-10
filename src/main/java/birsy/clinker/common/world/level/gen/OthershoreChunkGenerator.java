@@ -4,8 +4,8 @@ import birsy.clinker.common.world.level.gen.content.synthesizers.OthershoreCaveS
 import birsy.clinker.common.world.level.gen.system.biome.BiomeCache2d;
 import birsy.clinker.common.world.level.gen.system.biome.BiomeList;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesSurfaceDecoration;
-import birsy.clinker.common.world.level.gen.system.sampling.Synthesizer;
-import birsy.clinker.common.world.level.gen.system.sampling.SynthesizerCache;
+import birsy.clinker.common.world.level.gen.system.sampling.synthesizer.Synthesizer;
+import birsy.clinker.common.world.level.gen.system.sampling.synthesizer.SynthesizerCache;
 import birsy.clinker.common.world.level.gen.system.sampling.noise.FNLNoiseProvider;
 import birsy.clinker.common.world.level.gen.system.surface.decorator.SurfaceDecorationSystem;
 import birsy.clinker.common.world.level.gen.system.sampling.field.*;
@@ -159,38 +159,40 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             minZ = chunkPos.getMinBlockZ();
         int chunkHeight = chunk.getHeight();
 
-
         SynthesizerCache synthesizerCache = new SynthesizerCache(minX, minY, minZ, chunkHeight, randomState.getOrCreateRandomFactory(Clinker.resource("clinkernoisegen")));
 
         int seaLevel = 100;
         int amplitude = 24, range = amplitude + 10;
         Synthesizer ySynthesizer = Synthesizer.builder()
-                .build(InterpolatingFieldResolution.VERY_COARSE,
-                        (x, y, z, dependencyValues, noises) -> y - seaLevel
-                );
+            .build(InterpolatingFieldResolution.VERY_COARSE,
+                (ctx) -> {
+                    return ctx.y() - seaLevel;
+                }
+            );
 
         // the ultimate goal of biome construction will be to create the master Surface Synthesizer...
         Synthesizer testSurfaceSynthesizer = Synthesizer.builder()
-                .withDependencies(ySynthesizer)
-                .withNoises(FNLNoiseProvider.create("base"))
-                .withRange(seaLevel - range, seaLevel + range, 100.0)
-                .build(InterpolatingFieldResolution.COARSE_Y,
-                       (x, y, z, dependencyValues, noises) -> {
-                            double n = noises[0].sample(x / 64.0, y / 64.0, z / 64.0) * amplitude;
-                            return dependencyValues[0] + n;
-                       }
-                );
+            .withDependencies(ySynthesizer)
+            .withNoises(FNLNoiseProvider.create("base"))
+            .withRange(seaLevel - range, seaLevel + range, 100.0)
+            .build(InterpolatingFieldResolution.COARSE_Y,
+               (ctx) -> {
+                    double n = ctx.noise(0).sample(ctx.x() / 64.0, ctx.y() / 64.0, ctx.z() / 64.0) * amplitude;
+                    return ctx.dependentValue(0) + n;
+               }
+            );
         // and combine that with the cave synthesizer to create the Final Density Synthesizer:tm:
         Synthesizer finalDensitySynthesizer = Synthesizer.builder()
-                .withDependencies(testSurfaceSynthesizer, OthershoreCaveSynthesizers.CAVES)
-                .withRange(Integer.MIN_VALUE, seaLevel + range, 100.0)
-                .build(InterpolatingFieldResolution.COARSE_Y,
-                        (x, y, z, dependencyValues, noises) -> {
-                            return -MathUtils.smoothMinExpo(-dependencyValues[0], -dependencyValues[1], 8.0);
-                        }
-                );
+            .withDependencies(testSurfaceSynthesizer, OthershoreCaveSynthesizers.CAVES)
+            .withRange(Integer.MIN_VALUE, seaLevel + range, 100.0)
+            .build(InterpolatingFieldResolution.COARSE_Y,
+                (ctx) -> {
+                    return -MathUtils.smoothMinExpo(-ctx.dependentValue(0), -ctx.dependentValue(1), 8.0);
+                }
+            );
 
-        InterpolatingField finalDensityField = synthesizerCache.forThisChunk(finalDensitySynthesizer, 0, minY, chunkHeight);
+        InterpolatingField finalDensityField = synthesizerCache
+                .sampleThisChunk(finalDensitySynthesizer, 0, minY, chunkHeight);
         this.fillFromFields(finalDensityField, chunk);
 
         // terrible profiling

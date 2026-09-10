@@ -1,9 +1,5 @@
 package birsy.clinker.common.world.level.gen.system.sampling.field;
 
-import birsy.clinker.common.world.level.gen.system.sampling.Synthesizer;
-import birsy.clinker.common.world.level.gen.system.sampling.noise.NoiseSampler;
-import birsy.clinker.core.Clinker;
-import birsy.clinker.core.util.noise.FastNoiseLite;
 import net.minecraft.util.Mth;
 
 import java.util.BitSet;
@@ -71,39 +67,36 @@ public class InterpolatingField {
         );
     }
 
-    public void fill(int fromY, int toY, int minX, int minY, int minZ, Synthesizer.Function filler, Synthesizer.Context context) {
-        int fromLocalY = fromY - minY,
-              toLocalY = toY - minY;
-        NoiseSampler[] noises = context.noises();
+    public void fill(int fromY, int toY, InterpolatingFieldFiller filler) {
         // find unfilled layers
         fillMask.clear();
-        fillMask.set(Math.max(0, fromLocalY >> yCellScale), Math.min(yCellCount - 1, toLocalY >> yCellScale) + 1);
+        fillMask.set(Math.max(0, fromY >> yCellScale), Math.min(yCellCount - 1, toY >> yCellScale) + 1);
         fillMask.andNot(filledLayers);
         // fill them
         for (int startCellY = fillMask.nextSetBit(0); startCellY >= 0; startCellY = fillMask.nextSetBit(startCellY + 1)) {
             int endCellY = fillMask.nextClearBit(startCellY);
             if (endCellY == -1) endCellY = yCellCount;
-            fillInternal(startCellY, endCellY - 1, minX, minY, minZ, filler, context, noises);
+            fillInternal(startCellY, endCellY - 1, filler);
         }
         // finally, set filled layers
         filledLayers.or(fillMask);
     }
 
-    void fillInternal(int startCellY, int endCellY, int minX, int minY, int minZ, Synthesizer.Function filler, Synthesizer.Context context, NoiseSampler[] noises) {
-        context.setSlice(startCellY);
+    void fillInternal(int startCellY, int endCellY, InterpolatingFieldFiller filler) {
+        filler.setSlice(startCellY);
         int index = startCellY * sliceCellCount;
         for (int cellY = startCellY; cellY <= endCellY; cellY++) {
-            int globalY = (cellY << yCellScale) + minY;
+            int x = (cellY << yCellScale);
             for (int cellZ = 0; cellZ < xzCellCount; cellZ++) {
-                int globalZ = (cellZ << xzCellScale) + minZ - paddingBlocks;
+                int y = (cellZ << xzCellScale) - paddingBlocks;
                 for (int cellX = 0; cellX < xzCellCount; cellX++) {
-                    int globalX = (cellX << xzCellScale) + minX - paddingBlocks;
-                    field[index++] = filler.compute(globalX, globalY, globalZ, context.sampleDependencyValues(), noises);
-                    context.advanceX();
+                    int z = (cellX << xzCellScale) - paddingBlocks;
+                    field[index++] = filler.compute(x, y, z);
+                    filler.advanceX();
                 }
-                context.advanceZ();
+                filler.advanceZ();
             }
-            context.advanceY();
+            filler.advanceY();
         }
     }
 
