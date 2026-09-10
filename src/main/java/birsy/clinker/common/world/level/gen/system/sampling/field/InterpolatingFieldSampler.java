@@ -1,6 +1,5 @@
 package birsy.clinker.common.world.level.gen.system.sampling.field;
 
-import birsy.clinker.core.Clinker;
 import net.minecraft.util.Mth;
 
 // trying to speed up sequential interpolation by fetching cell data in advance
@@ -68,11 +67,12 @@ public interface InterpolatingFieldSampler {
     // the aforementioned weird fancy interpolation magic
     class MismatchedResolutionSampler implements InterpolatingFieldSampler {
         public final InterpolatingField srcField;
-        final boolean source2d;
+        final boolean src2d;
         final double[] srcArray;
         final int srcCellSizeXZ, srcCellSizeY;
 
         public final InterpolatingField dstField;
+        final boolean dst2d;
         final int dstCellSizeXZ, dstCellSizeY;
         final double facAddendXZ, facAddendY;
         // yzx bit order - as in, y is the most significant bit, and x the least. damn you arabic numerals.
@@ -110,17 +110,15 @@ public interface InterpolatingFieldSampler {
             this.facAddendXZ = (double) dstCellSizeXZ / srcCellSizeXZ;
             this.facAddendY = (double) dstCellSizeY / srcCellSizeY;
 
-            this.source2d = sourceField instanceof InterpolatingField2d;
-            boolean destination2d = destinationField instanceof InterpolatingField2d;
-            // we can only go from 2d -> 3d, never from 3d -> 2d
-            assert ((source2d == destination2d) || source2d);
+            this.src2d = sourceField instanceof InterpolatingField2d;
+            this.dst2d = destinationField instanceof InterpolatingField2d;
 
             int xStride = 1, yStride = srcField.sliceCellCount, zStride = srcField.xzCellCount;
             for (int i = 0; i < indexOffset.length; i++) {
                 int xOffset = (i & 0b001) > 0 ? xStride : 0,
-                        zOffset = (i & 0b010) > 0 ? zStride : 0;
+                    zOffset = (i & 0b010) > 0 ? zStride : 0;
                 // if the source is 2d, there should never be any y offsets.
-                int yOffset = source2d ? 0 : (i & 0b100) > 0 ? yStride : 0;
+                int yOffset = src2d ? 0 : (i & 0b100) > 0 ? yStride : 0;
                 indexOffset[i] = xOffset + zOffset + yOffset;
             }
         }
@@ -138,7 +136,7 @@ public interface InterpolatingFieldSampler {
 
         // sets the xz slice directly
         public void setSlice(int destinationCellY) {
-            if (!source2d) {
+            if (!src2d) {
                 // set y
                 dstCellY = destinationCellY;
                 dstCellBlockY = dstCellY << dstField.yCellScale;
@@ -218,7 +216,7 @@ public interface InterpolatingFieldSampler {
             dstCellBlockY += dstCellSizeY;
             facY += facAddendY;
             // new source cell
-            if (facY >= 1 && srcCellY < srcField.yCellCount - 2 && !source2d) {
+            if (facY >= 1 && srcCellY < srcField.yCellCount - 2 && !src2d) {
                 facY -= 1;
                 srcCellY++;
                 srcCellBlockY += srcCellSizeY;

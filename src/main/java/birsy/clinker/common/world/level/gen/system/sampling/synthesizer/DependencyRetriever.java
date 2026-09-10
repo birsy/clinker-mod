@@ -10,7 +10,8 @@ public interface DependencyRetriever {
 
     // todo: this
     // ideally, synthesizers have the same retrieval capabilities no matter what...
-    // but i'm not sure exactly how to achieve that. some kind of chain constructed via the SynthesizerCache.
+    // but i'm not sure exactly how to achieve that. some kind of cached chain constructed
+    // via the SynthesizerCache, all referencing each other.
     // slow and bad but that's ok
     record Direct(Synthesizer synthesizer) implements DependencyRetriever {
         @Override public double retrieve(double x, double y, double z) {

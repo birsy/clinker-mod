@@ -4,6 +4,7 @@ import birsy.clinker.common.world.level.gen.content.synthesizers.OthershoreCaveS
 import birsy.clinker.common.world.level.gen.system.biome.BiomeCache2d;
 import birsy.clinker.common.world.level.gen.system.biome.BiomeList;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesSurfaceDecoration;
+import birsy.clinker.common.world.level.gen.system.sampling.synthesizer.DependencyRetriever;
 import birsy.clinker.common.world.level.gen.system.sampling.synthesizer.Synthesizer;
 import birsy.clinker.common.world.level.gen.system.sampling.synthesizer.SynthesizerCache;
 import birsy.clinker.common.world.level.gen.system.sampling.noise.FNLNoiseProvider;
@@ -159,31 +160,48 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             minZ = chunkPos.getMinBlockZ();
         int chunkHeight = chunk.getHeight();
 
-        SynthesizerCache synthesizerCache = new SynthesizerCache(minX, minY, minZ, chunkHeight, randomState.getOrCreateRandomFactory(Clinker.resource("clinkernoisegen")));
+        SynthesizerCache synthesizerCache = new SynthesizerCache(
+                minX, minY, minZ, chunkHeight,
+                randomState.getOrCreateRandomFactory(Clinker.resource("clinkernoisegen"))
+        );
 
         int seaLevel = 100;
         int amplitude = 24, range = amplitude + 10;
         Synthesizer ySynthesizer = Synthesizer.builder()
             .build(InterpolatingFieldResolution.VERY_COARSE,
-                (ctx) -> {
+                ctx -> {
                     return ctx.y() - seaLevel;
                 }
             );
 
         // the ultimate goal of biome construction will be to create the master Surface Synthesizer...
-        Synthesizer testSurfaceSynthesizer = Synthesizer.builder()
+        Synthesizer surface = Synthesizer.builder()
             .withDependencies(ySynthesizer)
             .withNoises(FNLNoiseProvider.create("base"))
             .withRange(seaLevel - range, seaLevel + range, 100.0)
             .build(InterpolatingFieldResolution.COARSE_Y,
-               (ctx) -> {
+               ctx -> {
                     double n = ctx.noise(0).sample(ctx.x() / 64.0, ctx.y() / 64.0, ctx.z() / 64.0) * amplitude;
                     return ctx.dependentValue(0) + n;
                }
+           );
+        Synthesizer seaFloorHeight = Synthesizer.builder()
+            .withDependencies(surface)
+            .build(InterpolatingFieldResolution.COARSE_2D,
+                ctx -> {
+                    int x = ctx.x(), z = ctx.z();
+                    int y = seaLevel;
+                    for (; y >= surface.minY; y -= surface.resolution.yScale()) {
+                        double value = ctx.retrieveFromDependency(0, x, y, z);
+                        if (value <= 0) break;
+                    }
+                    return y;
+                }
             );
+
         // and combine that with the cave synthesizer to create the Final Density Synthesizer:tm:
         Synthesizer finalDensitySynthesizer = Synthesizer.builder()
-            .withDependencies(testSurfaceSynthesizer, OthershoreCaveSynthesizers.CAVES)
+            .withDependencies(surface, OthershoreCaveSynthesizers.CAVES)
             .withRange(Integer.MIN_VALUE, seaLevel + range, 100.0)
             .build(InterpolatingFieldResolution.COARSE_Y,
                 (ctx) -> {
@@ -197,7 +215,8 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
         // terrible profiling
         TIME_TRACKER.recordTime(System.nanoTime() - startTime);
-        if (randomState.random.at(minX, minY, minZ).nextInt(100) == 0) Clinker.LOGGER.info("avg. noise gen time: {} ms", TIME_TRACKER.getAverage() / 1_000_000.0);
+        if (randomState.random.at(minX, minY, minZ).nextInt(100) == 0)
+            Clinker.LOGGER.info("avg. noise gen time: {} ms", TIME_TRACKER.getAverage() / 1_000_000.0);
 
         return chunk;
     }
