@@ -117,7 +117,7 @@ public class SynthesizerCache {
             // seedify all the noises
             NoiseProvider sampler = synthesizer.noises.get(i);
             RandomSource randomSource = worldRandom.fromHashOf(sampler.name());
-            noises[i] = sampler.fromSeed(randomSource.nextLong());
+            noises[i] = sampler.fromRandom(randomSource);
         }
 
         SynthesizerContext context = new SynthesizerContext(fieldRetrievers, noises);

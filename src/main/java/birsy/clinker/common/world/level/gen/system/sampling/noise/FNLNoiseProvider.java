@@ -1,13 +1,14 @@
 package birsy.clinker.common.world.level.gen.system.sampling.noise;
 
 import birsy.clinker.core.util.noise.FastNoiseLite;
+import net.minecraft.util.RandomSource;
 
 import java.util.function.Supplier;
 
 public class FNLNoiseProvider {
     public static NoiseProvider.MemoizedNoiseProvider create(String name, Supplier<FastNoiseLite> provider) {
         return new NoiseProvider.MemoizedNoiseProvider(
-                name, (seed) -> FNLNoiseSampler.create(seed, provider)
+                name, noiseRandom -> FNLNoiseSampler.create(noiseRandom, provider)
         );
     }
 
@@ -22,9 +23,9 @@ public class FNLNoiseProvider {
     }
 
     private record FNLNoiseSampler(FastNoiseLite noise) implements NoiseSampler {
-        static FNLNoiseSampler create(long seed, Supplier<FastNoiseLite> provider) {
+        static FNLNoiseSampler create(RandomSource noiseRandom, Supplier<FastNoiseLite> provider) {
             FastNoiseLite noise = provider.get();
-            noise.SetSeed((int) seed);
+            noise.SetSeed(noiseRandom.nextInt());
             return new FNLNoiseSampler(noise);
         }
 
