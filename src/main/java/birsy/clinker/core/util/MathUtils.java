@@ -583,36 +583,14 @@ public class MathUtils {
         sine, square, triangle, sawtooth;
     }
 
-    /**
-     * Returns the minimum of two values while reducing discontinuities in their derivatives.
-     * See https://iquilezles.org/www/articles/smin/smin.htm
-     *
-     * @param value1 The first value you'd like to ta take the minimum of.
-     * @param value2 The second value you'd like to ta take the minimum of.
-     * @param smoothness The radius of the smoothing effect.
-     * @return The smoothed minimum of the two values.
-     */
-    public static float smoothMin(float value1, float value2, float smoothness) {
-        if (smoothness == 0) {
-            return Math.min(value1, value2);
-        } else {
-            float h = value1 - value2;
-            return (float) (0.5 * ((value1 + value2) - Math.sqrt(h * h + smoothness)));
-        }
+    public static double smoothMin(double a, double b, double k) {
+        k *= 4.0;
+        double h = Math.max( k - Math.abs(a-b), 0.0)/k;
+        return Math.min(a,b) - h*h*k*(1.0/4.0);
     }
 
-    /**
-     * Returns the maximum of two values while reducing discontinuities in their derivatives.
-     * See https://iquilezles.org/www/articles/smin/smin.htm
-     *
-     * @param value1 The first value you'd like to ta take the maximum of.
-     * @param value2 The second value you'd like to ta take the maximum of.
-     * @param smoothness The radius of the smoothing effect.
-     * @return The smoothed maximum of the two values.
-     */
-    public static float smoothMax(float value1, float value2, float smoothness) {
-        float h = (float) (Math.max(smoothness - Math.abs(value1 - value2), 0.0 ) / smoothness);
-        return (float) (Math.max(value1, value2) + h * h * h * smoothness * (1.0 / 6.0));
+    public static double smoothMax( double a, double b, double k ) {
+        return -smoothMin(-a, -b, k);
     }
 
     public static double smoothMinExpo(double a, double b, double smoothness) {

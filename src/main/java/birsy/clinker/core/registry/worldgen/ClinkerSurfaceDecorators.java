@@ -1,8 +1,7 @@
 package birsy.clinker.core.registry.worldgen;
 
-import birsy.clinker.common.world.level.gen.OthershoreGenerationConstants;
-import birsy.clinker.common.world.level.gen.system.surface.decorator.BiomeSurfaceDecorator;
-import birsy.clinker.common.world.level.gen.system.surface.decorator.SurfaceDecorator;
+import birsy.clinker.common.world.level.gen.system.surface.decoration.BiomeSurfaceDecorator;
+import birsy.clinker.common.world.level.gen.system.surface.decoration.SurfaceDecorator;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerRegistries;
 import net.minecraft.resources.ResourceKey;

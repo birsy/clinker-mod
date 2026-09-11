@@ -2,8 +2,6 @@ package birsy.clinker.common.world.level.gen.system.fluid;
 
 import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingField;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureContext;
-import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesFluids;
-import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesWaterfallPresence;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.Util;
 import net.minecraft.world.level.block.state.BlockState;
@@ -11,9 +9,9 @@ import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.RandomState;
 
 import java.util.Arrays;
-import java.util.List;
 
 public class BFSBorderFluidField extends CellularFluidField {
+    static final int INITIAL_MAX_DISTANCE = 1000;
     // really approximate euclidean distance
     // trying to keep this as small as possible since the smaller it is the faster dial's algorithm runs
     static final int ADJACENT_COST = 3, DIAGONAL_2_COST = 4, DIAGONAL_3_COST = 5;
@@ -38,27 +36,19 @@ public class BFSBorderFluidField extends CellularFluidField {
     });
 
     final int[] borderDistances;
-    final List<ModifiesWaterfallPresence> worldFeaturesModifyingWaterfallPresence;
-    public InterpolatingField waterfallPresenceField;
 
     public BFSBorderFluidField(
             RandomState randomState,
             ChunkAccess chunk,
             FluidFieldFiller baseFluidFieldFiller,
-            List<ModifiesFluids> worldFeaturesModifyingFluids,
-            List<ModifiesWaterfallPresence> worldFeaturesModifyingWaterfallPresence,
-            WorldFeatureContext worldFeatureContext,
-            InterpolatingField heightmap,
             int cellWidth, int cellHeight, int paddingCells) {
-        super(randomState, chunk, baseFluidFieldFiller, worldFeaturesModifyingFluids, worldFeatureContext, heightmap, cellWidth, cellHeight, paddingCells);
-        this.worldFeaturesModifyingWaterfallPresence = worldFeaturesModifyingWaterfallPresence;
+        super(randomState, chunk, baseFluidFieldFiller, cellWidth, cellHeight, paddingCells);
         this.borderDistances = new int[this.fluidStates.length];
-        // fill with maximum possible distance
-        Arrays.fill(this.borderDistances, 1000);
+        Arrays.fill(this.borderDistances, INITIAL_MAX_DISTANCE);
     }
 
     @Override
-    public double getBorderDensity(int localX, int localY, int localZ) {
+    public double getBorderDistance(int localX, int localY, int localZ) {
         int bX = localX + this.paddingBlocksXZ;
         int bY = localY + this.paddingBlocksY;
         int bZ = localZ + this.paddingBlocksXZ;
@@ -67,52 +57,14 @@ public class BFSBorderFluidField extends CellularFluidField {
     }
 
     @Override
-    public void precomputeValues(InterpolatingField finalDensityField) {
-        super.precomputeValues(finalDensityField);
+    public void fill(InterpolatingField waterfallPresence) {
+        super.fill(waterfallPresence);
         this.initializeFluidBordersByCell();
-        this.computeWaterfalls(waterfallPresenceField);
+        this.addWaterfalls(waterfallPresence);
         this.computeBorderDistances();
     }
 
-    public void initializeFluidBorders(InterpolatingField finalDensityField) {
-        // place initial borders
-        for (int bY = 0; bY < this.blockCountY; bY++) {
-            int prevY = Math.max(0, bY - 1);
-            for (int bZ = 0; bZ < this.blockCountXZ; bZ++) {
-                int prevZ = Math.max(0, bZ - 1);
-                for (int bX = 0; bX < this.blockCountXZ; bX++) {
-                    int blockIndex = index(bX, bY, bZ, this.blockCountXZ, this.blockCountY);
-                    BlockState state = this.fluidStates[blockIndex];
-
-                    int yIndex = index(bX, prevY, bZ, this.blockCountXZ, this.blockCountY);
-                    BlockState belowState = this.fluidStates[yIndex];
-                    // only fluids check the block below them
-                    // because only fluids flow down...
-                    if (!(state == null || state.isAir()) && state != belowState) {
-                        borderDistances[blockIndex] = 0;
-                        continue;
-                    }
-
-                    int zIndex = index(bX, bY, prevZ, this.blockCountXZ, this.blockCountY);
-                    BlockState zState = this.fluidStates[zIndex];
-                    if (state != zState) {
-                        borderDistances[blockIndex] = 0;
-                        continue;
-                    }
-
-                    int prevX = Math.max(0, bX - 1);
-                    int xIndex = index(prevX, bY, bZ, this.blockCountXZ, this.blockCountY);
-                    BlockState xState = this.fluidStates[xIndex];
-                    if (state != xState) {
-                        borderDistances[blockIndex] = 0;
-                        continue;
-                    }
-                }
-            }
-        }
-    }
-
-    // todo: benchmark if this is actually faster
+    // initializes the border blocks between fluids
     protected void initializeFluidBordersByCell() {
         for (int cY = 0; cY < this.cellCountY; cY++) {
             for (int cZ = 0; cZ < this.cellCountXZ; cZ++) {
@@ -163,7 +115,8 @@ public class BFSBorderFluidField extends CellularFluidField {
         }
     }
 
-    public void computeWaterfalls(InterpolatingField waterfallPresence) {
+    // cuts off the top of some of the border blocks, allowing waterfalls to form
+    public void addWaterfalls(InterpolatingField waterfallPresence) {
         for (int bY = 1; bY < this.blockCountY; bY++) {
             int localBlockY = bY - this.paddingBlocksY;
             for (int bZ = 0; bZ < this.blockCountXZ; bZ++) {
@@ -171,33 +124,36 @@ public class BFSBorderFluidField extends CellularFluidField {
                 for (int bX = 0; bX < this.blockCountXZ; bX++) {
                     int localBlockX = bX - this.paddingBlocksXZ;
 
+                    long waterfallBlocks = Math.round(waterfallPresence.retrieve(localBlockX, localBlockY, localBlockZ));
+                    if (waterfallBlocks == 0) continue;
+
                     int blockIndex = index(bX, bY, bZ, this.blockCountXZ, this.blockCountY);
-                    BlockState state = this.fluidStates[blockIndex];
+
+                    // the current block must be not be a border
                     int distance = this.borderDistances[blockIndex];
-                    if (!(state == null || state.isAir()) || distance <= 0) continue;
+                    if (distance == 0) continue;
 
-                    int belowBlockIndex = index(bX, bY - 1, bZ, this.blockCountXZ, this.blockCountY);
-                    int belowDistance = this.borderDistances[belowBlockIndex];
-                    if (belowDistance > 0) continue;
-
-                    double waterfallPresenceValue = waterfallPresence.retrieve(localBlockX, localBlockY, localBlockZ);
-                    if (waterfallPresenceValue <= 0) continue;
-
-                    // "smear" the air downwards.
-                    this.borderDistances[belowBlockIndex] = distance;
-                    for (int i = 2; i < 2 + waterfallPresenceValue; i++) {
+                    // "smear" the air downwards into the below blocks
+                    for (int i = 0; i < waterfallBlocks; i++) {
                         int belowY = bY - i;
                         if (belowY < 0) break;
-                        belowBlockIndex = index(bX, belowY, bZ, this.blockCountXZ, this.blockCountY);
-                        belowDistance = this.borderDistances[belowBlockIndex];
-                        if (belowDistance > 0) break;
-                        this.borderDistances[belowBlockIndex] = distance;
+
+                        int belowBlockIndex = index(bX, belowY, bZ, this.blockCountXZ, this.blockCountY);
+                        int belowDistance = this.borderDistances[belowBlockIndex];
+                        if (belowDistance == 0) {
+                            // smear into the border!
+                            this.borderDistances[belowBlockIndex] = INITIAL_MAX_DISTANCE;
+                        } else {
+                            // otherwise, stop.
+                            break;
+                        }
                     }
                 }
             }
         }
     }
 
+    // expands out the border blocks to form a nice thick container
     public void computeBorderDistances() {
         // dial's algorithms dijkstra bfs
         // scaled by face cost

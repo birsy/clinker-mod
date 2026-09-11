@@ -1,9 +1,6 @@
 package birsy.clinker.common.world.level.gen.system.fluid;
 
 import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingField;
-import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureContext;
-import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesFluids;
-import net.minecraft.core.SectionPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -12,7 +9,6 @@ import net.minecraft.world.level.levelgen.PositionalRandomFactory;
 import net.minecraft.world.level.levelgen.RandomState;
 
 import java.util.Arrays;
-import java.util.List;
 
 // state map with cells, but nothing to compute borders
 // not really needed but i'm trying out a couple different strategies for
@@ -49,17 +45,10 @@ public class CellularFluidField implements FluidField {
     final PositionalRandomFactory aquiferRandom;
     final FluidFieldFiller fluidFieldFiller;
 
-    final List<ModifiesFluids> worldFeatures;
-    final WorldFeatureContext worldFeatureContext;
-    final InterpolatingField heightmap;
-
     public CellularFluidField(
             RandomState randomState,
             ChunkAccess chunk,
             FluidFieldFiller baseFluidFieldFiller,
-            List<ModifiesFluids> worldFeatures,
-            WorldFeatureContext worldFeatureContext,
-            InterpolatingField heightmap,
             int cellWidth, int cellHeight,
             int paddingCells) {
         this.aquiferRandom = randomState.aquiferRandom();
@@ -89,10 +78,11 @@ public class CellularFluidField implements FluidField {
         this.cellCountY = (chunk.getHeight() / this.cellHeight) + this.paddingCells * 2;
         this.cellLayerSize = this.cellCountXZ * this.cellCountXZ;
         this.cells = new FluidCell[this.cellLayerSize * this.cellCountY];
+    }
 
-        this.worldFeatures = worldFeatures;
-        this.worldFeatureContext = worldFeatureContext;
-        this.heightmap = heightmap;
+    @Override
+    public double getBorderDistance(int localX, int localY, int localZ) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -105,20 +95,10 @@ public class CellularFluidField implements FluidField {
     }
 
     @Override
-    public void precomputeValues(InterpolatingField finalDensityField) {
-        for (ModifiesFluids worldFeature : worldFeatures)
-            worldFeature.prefillFluidNoiseFields(
-                    SectionPos.blockToSectionCoord(minX),
-                    SectionPos.blockToSectionCoord(minZ),
-                    this.worldFeatureContext);
+    public void fill(InterpolatingField waterfallPresence) {
         this.initializeCells();
         this.computeNeighborHomogeneity();
-        this.fillFluidStateMapByCell();
-    }
-
-    @Override
-    public double getBorderDensity(int localX, int localY, int localZ) {
-        return -1;
+        this.computeFluidStates();
     }
 
     protected void initializeCells() {
@@ -128,24 +108,20 @@ public class CellularFluidField implements FluidField {
                 int globalCellZ = cZ + this.minCellZ - this.paddingCells;
                 for (int cX = 0; cX < this.cellCountXZ; cX++) {
                     int globalCellX = cX + this.minCellX - this.paddingCells;
-                    FluidCell cell = createCell(globalCellX, globalCellY, globalCellZ);
-                    this.cells[index(cX, cY, cZ, this.cellCountXZ, this.cellCountY)] = cell;
+                    // create a new cell!
+                    RandomSource cellRandom = aquiferRandom.at(globalCellX, globalCellY, globalCellZ);
+                    double centerX = globalCellX * this.cellWidth +  cellRandom.triangle(this.halfCellWidth, this.halfCellWidth),
+                           centerY = globalCellY * this.cellHeight + cellRandom.triangle(this.halfCellWidth, this.halfCellWidth),
+                           centerZ = globalCellZ * this.cellWidth +  cellRandom.triangle(this.halfCellWidth, this.halfCellWidth);
+                    FluidLevel fluidLevel = this.fluidFieldFiller.compute((int)centerX, (int)centerY, (int)centerZ);
+                    this.cells[index(cX, cY, cZ, this.cellCountXZ, this.cellCountY)] =
+                            new FluidCell(centerX, centerY, centerZ, fluidLevel, this.cellHeight);
                 }
             }
         }
     }
 
-    protected FluidCell createCell(int cellX, int cellY, int cellZ) {
-        RandomSource cellRandom = aquiferRandom.at(cellX, cellY, cellZ);
-        double centerX = cellX * this.cellWidth +  this.halfCellWidth +  cellRandom.triangle(0, this.halfCellWidth),
-               centerY = cellY * this.cellHeight + this.halfCellHeight + cellRandom.triangle(0, this.halfCellWidth),
-               centerZ = cellZ * this.cellWidth +  this.halfCellWidth +  cellRandom.triangle(0, this.halfCellWidth);
-        FluidLevel fluidLevel = this.fluidFieldFiller.compute((int)centerX, (int)centerY, (int)centerZ);
-        for (ModifiesFluids worldFeature : this.worldFeatures)
-            fluidLevel = worldFeature.modifyFluidLevel((int)centerX, (int)centerY, (int)centerZ, minX, minY, minZ, fluidLevel, this.heightmap);
-        return new FluidCell(centerX, centerY, centerZ, fluidLevel, this.cellHeight);
-    }
-
+    // accelerates some computations by telling if a cell has all required neighbors, etc.
     protected void computeNeighborHomogeneity() {
         for (int cY = 1; cY < this.cellCountY - 1; cY++) {
             for (int cZ = 1; cZ < this.cellCountXZ - 1; cZ++) {
@@ -184,7 +160,7 @@ public class CellularFluidField implements FluidField {
                             }
                             break;
                         case SURFACE:
-                            continue NEXT_CELL;
+                            continue;
                             // still haven't quite worked out surface homogeneity...
                     }
                     // if it passes all tests, it's homogenous.
@@ -194,8 +170,9 @@ public class CellularFluidField implements FluidField {
         }
     }
 
+    // computes the value for each fluid state in our output array
     private final int[] cellNeighborIndices = new int[26];
-    protected void fillFluidStateMapByCell() {
+    protected void computeFluidStates() {
         for (int cY = 0; cY < this.cellCountY; cY++) {
             for (int cZ = 0; cZ < this.cellCountXZ; cZ++) {
                 for (int cX = 0; cX < this.cellCountXZ; cX++) {

@@ -6,5 +6,5 @@ import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldF
 
 public interface ModifiesFluids extends WorldFeatureCapability {
     void prefillFluidNoiseFields(int chunkX, int chunkZ, WorldFeatureContext worldContext);
-    FluidLevel modifyFluidLevel(int x, int y, int z, int minX, int minY, int minZ, FluidLevel currentFluidLevel, InterpolatingField heightmap);
+    FluidLevel modifyFluidLevel(int x, int y, int z, int minX, int minY, int minZ, FluidLevel currentFluidLevel);
 }

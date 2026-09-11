@@ -35,7 +35,6 @@ public final class VoronoiEvaluator3D implements VoronoiEvaluator {
 
     final BitSet filledLayers, fillMask;
 
-
     public VoronoiEvaluator3D(PositionalRandomFactory randomFactory,
                               int cellSize, double yScale,
                               int minCellX, int minCellY, int minCellZ,

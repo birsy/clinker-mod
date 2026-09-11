@@ -1,7 +1,9 @@
 package birsy.clinker.common.world.level.gen.system.sampling.synthesizer;
 
 import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingField;
+import birsy.clinker.core.Clinker;
 
+// should probably come up with a better name for this.
 // retrieves information from a synthesizer's dependency directly
 // slower than the InterpolatingFieldSampler approach, but more robust
 // to be used sparingly.
@@ -14,15 +16,17 @@ public interface DependencyRetriever {
     // via the SynthesizerCache, all referencing each other.
     // slow and bad but that's ok
     record Direct(Synthesizer synthesizer) implements DependencyRetriever {
-        @Override public double retrieve(double x, double y, double z) {
+        @Override
+        public double retrieve(double x, double y, double z) {
             return 0;
         }
     }
 
     // wrapper for an interpolating field
     record Field(int minX, int minY, int minZ, InterpolatingField field) implements DependencyRetriever {
-        @Override public double retrieve(double x, double y, double z) {
-            return field.retrieve((int) Math.round(x - minX), (int) Math.round(y - minX), (int) Math.round(z - minX));
+        @Override
+        public double retrieve(double x, double y, double z) {
+            return field.retrieve((int) Math.round(x - minX), (int) Math.round(y - minY), (int) Math.round(z - minZ));
         }
     }
 }

@@ -1,6 +1,9 @@
 package birsy.clinker.common.world.level.gen.system.sampling.synthesizer;
 
 import birsy.clinker.common.world.level.gen.system.sampling.noise.NoiseSampler;
+import birsy.clinker.core.Clinker;
+
+import java.util.Arrays;
 
 // provides parameters for a Synthesizer function
 public final class SynthesizerContext {
@@ -26,5 +29,17 @@ public final class SynthesizerContext {
     // slow path, try not to use this
     public double retrieveFromDependency(int i, int x, int y, int z) {
         return dependencyRetrievers[i].retrieve(x, y, z);
+    }
+
+    @Override
+    public String toString() {
+        return "SynthesizerContext{" +
+                "dependencyRetrievers=" + Arrays.toString(dependencyRetrievers) +
+                ", dependencyValues=" + Arrays.toString(dependencyValues) +
+                ", noises=" + Arrays.toString(noises) +
+                ", x=" + x +
+                ", y=" + y +
+                ", z=" + z +
+                '}';
     }
 }
