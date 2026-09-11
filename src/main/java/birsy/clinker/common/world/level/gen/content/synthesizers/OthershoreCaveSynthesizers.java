@@ -10,7 +10,7 @@ public class OthershoreCaveSynthesizers {
     public static final Synthesizer ENTRANCE_MASK = Synthesizer.builder()
             .withNoises(FNLNoiseProvider.create("cave_entrance"))
             .build(InterpolatingFieldResolution.COARSE_2D, (ctx) ->
-                    Mth.clampedMap(ctx.noise(0).sample(ctx.x() / 128.0, ctx.z() / 128.0), 0.55, 0.8, 0.0, 1.0)
+                    Mth.map(ctx.noise(0).sample(ctx.x() / 128.0, ctx.z() / 128.0), 0.55, 0.8, 0.0, 1.0)
             );
 
     public static final Synthesizer SPELEOTHEMS = Synthesizer.builder()

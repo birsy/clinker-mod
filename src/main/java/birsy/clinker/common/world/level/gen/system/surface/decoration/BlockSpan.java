@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.level.gen.system.surface.decorator;
+package birsy.clinker.common.world.level.gen.system.surface.decoration;
 
 import net.minecraft.world.level.block.state.BlockState;
 

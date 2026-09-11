@@ -3,17 +3,22 @@ package birsy.clinker.common.world.level.gen;
 import birsy.clinker.common.world.level.gen.content.synthesizers.OthershoreCaveSynthesizers;
 import birsy.clinker.common.world.level.gen.system.biome.BiomeCache2d;
 import birsy.clinker.common.world.level.gen.system.biome.BiomeList;
+import birsy.clinker.common.world.level.gen.system.fluid.BFSBorderFluidField;
+import birsy.clinker.common.world.level.gen.system.fluid.FluidField;
+import birsy.clinker.common.world.level.gen.system.fluid.FluidFieldFiller;
+import birsy.clinker.common.world.level.gen.system.fluid.FluidLevel;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesSurfaceDecoration;
+import birsy.clinker.common.world.level.gen.system.sampling.noise.FNLNoiseProvider;
 import birsy.clinker.common.world.level.gen.system.sampling.synthesizer.DependencyRetriever;
 import birsy.clinker.common.world.level.gen.system.sampling.synthesizer.Synthesizer;
 import birsy.clinker.common.world.level.gen.system.sampling.synthesizer.SynthesizerCache;
-import birsy.clinker.common.world.level.gen.system.sampling.noise.FNLNoiseProvider;
-import birsy.clinker.common.world.level.gen.system.surface.decorator.SurfaceDecorationSystem;
+import birsy.clinker.common.world.level.gen.system.surface.decoration.SurfaceDecorationSystem;
 import birsy.clinker.common.world.level.gen.system.sampling.field.*;
 import birsy.clinker.common.world.level.gen.system.metachunk.MetaChunkMapHolder;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureContext;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureSet;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesBiome;
+import birsy.clinker.common.world.level.gen.system.surface.shape.SurfaceShapeSystem;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.worldgen.ClinkerWorldFeatureCapabilities;
@@ -27,6 +32,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.WorldGenRegion;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.*;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeManager;
@@ -59,6 +65,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
     final BiomeList biomeList;
     final SurfaceDecorationSystem surfaceDecorationSystem;
+    final SurfaceShapeSystem surfaceShapeSystem;
     final WorldFeatureContext worldContext;
 
     private static final Map<Holder<Biome>, Integer> biomeSeaHeight = new HashMap<>();
@@ -67,6 +74,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         super(biomeSource);
         this.biomeList = biomeSource.biomeList;
         this.surfaceDecorationSystem = new SurfaceDecorationSystem(ClinkerBlocks.BRIMSTONE.get().defaultBlockState(), biomeGetter);
+        this.surfaceShapeSystem = new SurfaceShapeSystem();
         this.worldContext = new WorldFeatureContext(biomeList);
         biomeSource.initFromChunkGenerator(this);
     }
@@ -165,55 +173,72 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                 randomState.getOrCreateRandomFactory(Clinker.resource("clinkernoisegen"))
         );
 
+        int fluidCellWidth = 4, fluidCellHeight = 8;
+
         int seaLevel = 100;
-        int amplitude = 24, range = amplitude + 10;
-        Synthesizer ySynthesizer = Synthesizer.builder()
-            .build(InterpolatingFieldResolution.VERY_COARSE,
-                ctx -> {
-                    return ctx.y() - seaLevel;
-                }
-            );
-
         // the ultimate goal of biome construction will be to create the master Surface Synthesizer...
-        Synthesizer surface = Synthesizer.builder()
-            .withDependencies(ySynthesizer)
-            .withNoises(FNLNoiseProvider.create("base"))
-            .withRange(seaLevel - range, seaLevel + range, 100.0)
-            .build(InterpolatingFieldResolution.COARSE_Y,
-               ctx -> {
-                    double n = ctx.noise(0).sample(ctx.x() / 64.0, ctx.y() / 64.0, ctx.z() / 64.0) * amplitude;
-                    return ctx.dependentValue(0) + n;
-               }
-           );
+        int biomeMapPadding = 3 + SurfaceShapeSystem.SEARCH_RADIUS + QuartPos.fromBlock(fluidCellWidth * 2);
+        BiomeCache2d biomeMap = this.getBiomeSource().createSurfaceBiomeCache(
+                QuartPos.fromBlock(minX) - biomeMapPadding,
+                QuartPos.fromBlock(minZ) - biomeMapPadding,
+                QuartPos.fromBlock(minX + 16) + biomeMapPadding,
+                QuartPos.fromBlock(minZ + 16) + biomeMapPadding
+                );
+        Synthesizer surface = surfaceShapeSystem.createMasterSurfaceSynthesizer(biomeMap);
 
-        int seaFloorSampleDistance = 8;
+        int seaFloorScanSize = Math.max(fluidCellWidth, surface.resolution.yScale());
         Synthesizer seaFloorHeight = Synthesizer.builder()
-            .withDependencies(surface)
-            .build(InterpolatingFieldResolution.COARSE_2D,
-                ctx -> {
-                    int x = ctx.x(), z = ctx.z();
-                    int y = seaLevel + seaFloorSampleDistance;
-                    for (; y >= surface.minY; y -= seaFloorSampleDistance) {
-                        double value = ctx.retrieveFromDependency(0, x, y, z);
-                        if (value <= 0) break;
-                    }
-                    return y;
-                }
-            );
+                .withDependencies(surface)
+                .build(InterpolatingFieldResolution.COARSE_2D,
+                        ctx -> {
+                            int x = ctx.x(), z = ctx.z();
+                            int y = surface.maxY + seaFloorScanSize, pY = y;
+                            double value = ctx.retrieveFromDependency(0, x, y, z), pValue = value;
+                            for (; y >= surface.minY; y -= seaFloorScanSize) {
+                                value = ctx.retrieveFromDependency(0, x, y, z);
+                                if (value <= 0) return Mth.lerp(Mth.clamp(value / (value - pValue), 0, 1), y, pY);
+                                pValue = value;
+                                pY = y;
+                            }
+                            return y;
+                        }
+                );
+        DependencyRetriever seaFloorHeightRetriever = new DependencyRetriever.Field(minX, minY, minZ,
+                synthesizerCache.sampleThisChunk(seaFloorHeight, fluidCellWidth * 2, minY, chunkHeight)
+        );
+        FluidFieldFiller filler = (x, y, z) -> {
+            double floorHeight = seaFloorHeightRetriever.retrieve(x, y, z) - fluidCellHeight * 2;
+            if (seaLevel > floorHeight && y > floorHeight)
+                return new FluidLevel(seaLevel, Blocks.WATER.defaultBlockState());
+            if (y < 0)
+                return new FluidLevel(-40, Blocks.WATER.defaultBlockState());
+            return FluidLevel.EMPTY;
+        };
+        FluidField fluidField = new BFSBorderFluidField(randomState, chunk, filler, fluidCellWidth, fluidCellHeight, 1);
+        fluidField.fill(new InterpolatingField2d(0, fluidCellWidth));
+
+        Synthesizer caveEntranceMask = Synthesizer.builder()
+                .withDependencies(seaFloorHeight, OthershoreCaveSynthesizers.ENTRANCE_MASK)
+                .withRange(surface.minY - 25, surface.maxY + 25, 100.0)
+                .build(InterpolatingFieldResolution.VERY_COARSE,
+                    ctx -> {
+                        double surfaceDistance = Math.abs(ctx.y() - ctx.dependentValue(0)) - 20;
+                        return MathUtils.smoothMax(ctx.dependentValue(1), surfaceDistance, 3);
+                    });
 
         // and combine that with the cave synthesizer to create the Final Density Synthesizer:tm:
         Synthesizer finalDensitySynthesizer = Synthesizer.builder()
-            .withDependencies(surface, OthershoreCaveSynthesizers.CAVES)
-            .withRange(Integer.MIN_VALUE, seaLevel + range, 100.0)
-            .build(InterpolatingFieldResolution.COARSE_Y,
-                (ctx) -> {
-                    return -MathUtils.smoothMinExpo(-ctx.dependentValue(0), -ctx.dependentValue(1), 8.0);
-                }
-            );
+                .withDependencies(surface, caveEntranceMask, OthershoreCaveSynthesizers.CAVES)
+                .withRange(Integer.MIN_VALUE, surface.maxY + 30, 100.0)
+                .build(InterpolatingFieldResolution.COARSE,
+                        (ctx) -> {
+                            double maskedCaves = MathUtils.smoothMin(ctx.dependentValue(1), ctx.dependentValue(2), 4.0);
+                            return MathUtils.smoothMax(ctx.dependentValue(0), maskedCaves, 4.0);
+                        }
+                );
 
-        InterpolatingField finalDensityField = synthesizerCache
-                .sampleThisChunk(finalDensitySynthesizer, 0, minY, chunkHeight);
-        this.fillFromFields(finalDensityField, chunk);
+        InterpolatingField finalDensityField = synthesizerCache.sampleThisChunk(finalDensitySynthesizer, 0, minY, chunkHeight);
+        this.fillFromFields(finalDensityField, fluidField, chunk);
 
         // terrible profiling
         TIME_TRACKER.recordTime(System.nanoTime() - startTime);
@@ -223,7 +248,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         return chunk;
     }
 
-    private void fillFromFields(InterpolatingField field, ChunkAccess chunk) {
+    private void fillFromFields(InterpolatingField field, FluidField fluidField, ChunkAccess chunk) {
         ChunkPos chunkPos = chunk.getPos();
         int minX = chunkPos.getMinBlockX(),
             minY = chunk.getMinBuildHeight(),
@@ -270,16 +295,21 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                     pos.setX(globalX);
 
                     double noise = sampler.sample();
-                    if (noise <= 0) {
-                        section.setBlockState(x, sectionY, z, BRIMSTONE, false);
+                    double borderDistance = fluidField.getBorderDistance(x, y, z);
+                    noise = MathUtils.smoothMin(noise, borderDistance, 2);
+
+                    BlockState state = noise <= 0 ? BRIMSTONE : fluidField.getFluidState(globalX, globalY, globalZ);
+
+                    if (state != null && !state.isAir()) {
+                        section.setBlockState(x, sectionY, z, state, false);
                         // fill heightmaps
                         int heightmapIndex = x + z * 16;
                         if (!filledWorldSurfaceHeight[heightmapIndex]) {
-                            worldSurfaceHeightmap.update(x, pos.getY(), z, BRIMSTONE);
+                            worldSurfaceHeightmap.update(x, pos.getY(), z, state);
                             filledWorldSurfaceHeight[heightmapIndex] = true;
                         }
                         if (!filledOceanFloorHeight[heightmapIndex]) {
-                            oceanFloorHeightmap.update(x, pos.getY(), z, BRIMSTONE);
+                            oceanFloorHeightmap.update(x, pos.getY(), z, state);
                             filledOceanFloorHeight[heightmapIndex] = true;
                         }
                     }

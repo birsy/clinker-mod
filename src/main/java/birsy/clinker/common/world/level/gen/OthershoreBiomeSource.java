@@ -1,9 +1,11 @@
 package birsy.clinker.common.world.level.gen;
 
+import birsy.clinker.common.world.level.gen.content.biome.MutateOperation;
 import birsy.clinker.common.world.level.gen.system.biome.*;
 import birsy.clinker.common.world.level.gen.content.biome.BiomeLayerOperations;
 import birsy.clinker.common.world.level.gen.system.biome.resolver.LayeredBiomeResolver;
 import birsy.clinker.common.world.level.gen.system.biome.resolver.ProtoBiome;
+import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerRegistries;
 import birsy.clinker.core.registry.worldgen.ClinkerBiomes;
 import com.google.common.collect.Sets;
@@ -18,10 +20,13 @@ import net.minecraft.world.level.levelgen.PositionalRandomFactory;
 import net.minecraft.world.level.levelgen.RandomState;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static birsy.clinker.core.registry.worldgen.ClinkerProtoBiomes.*;
@@ -62,9 +67,129 @@ public class OthershoreBiomeSource extends BiomeSource {
     }
 
     public static LayeredBiomeResolver createSurfaceBiomeResolver(Function<ResourceLocation, PositionalRandomFactory> randomState) {
-       return LayeredBiomeResolver.builder(1)
-               .layer(new BiomeLayerOperations.Replace(Set.of(UNINITIALIZED.get()), HEATH.get()))
-               .build(randomState);
+        LayeredBiomeResolver.Builder builder = LayeredBiomeResolver.builder(8);
+        BiomeLayerOperations.MutateBuilder baseMutationBuilder = new BiomeLayerOperations.MutateBuilder(UNINITIALIZED.get());
+        for (int i = 0; i < 4; i++) {
+            Supplier<ProtoBiome> baseSection = BASE_SECTIONS[i];
+            baseMutationBuilder.entry(baseSection.get(), 10);
+        }
+        baseMutationBuilder.entry(SEA.get(), 1);
+
+        return builder
+                .layer(baseMutationBuilder.build())
+                .zoom()
+                .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1))
+                .layer(new BiomeLayerOperations.Expand(SEA.get()))
+                .layer(new BiomeLayerOperations.Smooth())
+                .zoom()
+                .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1))
+                .layer(new BiomeLayerOperations.Smooth())
+                .layer(new BiomeLayerOperations.MutateBuilder(SEA.get())
+                        .entry(SEA.get(), 48)
+                        .entry(ISLAND.get(), 1)
+                        .build())
+                .zoom()
+                .layer(new BiomeLayerOperations.CreateBorders(
+                                Set.of(BASE_SECTIONS[0].get(), BASE_SECTIONS[1].get()),
+                                Set.of(BASE_SECTIONS[2].get(), BASE_SECTIONS[3].get()),
+                                LOWER_SHELF.get()
+                        ),
+                        new BiomeLayerOperations.Replace(
+                                Arrays.stream(BASE_SECTIONS)
+                                        .map(Supplier::get)
+                                        .collect(Collectors.toUnmodifiableSet()),
+                                UPPER_SHELF.get()
+                        )
+                )
+                .layer(new BiomeLayerOperations.Expand(LOWER_SHELF.get(), HEATH_THICKET.get()),
+                        new BiomeLayerOperations.Expand(SEA.get()),
+                        new BiomeLayerOperations.Expand(ISLAND.get()))
+                .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1),
+                        new BiomeLayerOperations.MutateBuilder(ISLAND.get())
+                                .entry(SEA.get(), 1)
+                                .entry(ISLAND.get(), 1)
+                                .build())
+                .layer(new BiomeLayerOperations.Smooth())
+                .layer(new BiomeLayerOperations.CreateBorders(
+                                Set.of(LOWER_SHELF.get()),
+                                Set.of(UPPER_SHELF.get(), ASH_STEPPE.get()),
+                                UNINITIALIZED.get()),
+                        new BiomeLayerOperations.MutateBuilder(UNINITIALIZED.get())
+                                .entry(LOWER_SHELF.get(), 1)
+                                .entry(UPPER_SHELF.get(), 2)
+                                .build())
+                .layer(new BiomeLayerOperations.CreateBorders(
+                                Set.of(UPPER_SHELF.get(), HEATH.get(), ASH_STEPPE.get()),
+                                Set.of(LOWER_SHELF.get()),
+                                SHELF_BORDER.get()),
+                        new BiomeLayerOperations.CreateBorders(
+                                Set.of(UPPER_SHELF.get(), LOWER_SHELF.get(), SHELF_BORDER.get(), HEATH.get(), ASH_STEPPE.get()),
+                                Set.of(SEA.get()),
+                                BEACH.get()
+                        )
+                )
+                .layer(new BiomeLayerOperations.MutateBuilder(SHELF_BORDER.get())
+                                .entry(SHELF_BORDER_CRACKLE.get(), 5)
+                                .entry(SHELF_BORDER.get(), 6)
+                                .entry(LOWER_SHELF.get(), 1)
+                                .entry(UPPER_SHELF.get(), 1)
+                                .build(),
+                        new BiomeLayerOperations.MutateBuilder(LOWER_SHELF.get())
+                                .entry(LOWER_SHELF.get(), 48)
+                                .entry(UPPER_SHELF.get(), 1)
+                                .build(),
+                        new BiomeLayerOperations.MutateBuilder(UPPER_SHELF.get())
+                                .entry(UPPER_SHELF.get(), 48)
+                                .entry(UPPER_SHELF_PLATEAU.get(), 1)
+                                .build()
+                )
+                .layer(new BiomeLayerOperations.CreateBorders(LOWER_SHELF.get(), UPPER_SHELF.get(), UNINITIALIZED.get()),
+                        new BiomeLayerOperations.MutateBuilder(UNINITIALIZED.get())
+                                .entry(LOWER_SHELF.get(), 2)
+                                .entry(UPPER_SHELF.get(), 1)
+                                .build(),
+                        new BiomeLayerOperations.CreateBorders(UPPER_SHELF.get(), UPPER_SHELF_PLATEAU.get(), UNINITIALIZED.get()),
+                        new BiomeLayerOperations.MutateBuilder(UNINITIALIZED.get())
+                                .entry(UPPER_SHELF.get(), 2)
+                                .entry(UPPER_SHELF_PLATEAU.get(), 1)
+                                .build(),
+                        new BiomeLayerOperations.CreateBorders(UPPER_SHELF.get(), BEACH.get(), BEACH.get()),
+                        new BiomeLayerOperations.MutateBuilder(BEACH.get())
+                                .entry(BEACH.get(), 2)
+                                .entry(LOWER_SHELF.get(), 1)
+                                .entry(UPPER_SHELF.get(), 1)
+                                .build()
+                )
+                .layer(new BiomeLayerOperations.CreateBorders(
+                                UPPER_SHELF.get(),
+                                SEA.get(),
+                                BEACH.get()
+                        ),
+                        MutateOperation.builder(0L)
+                                .scale(8, randomState.apply(Clinker.resource("upper_shelf_biomes")))
+                                .set(1)
+                                .entry(UPPER_SHELF.get()).result(HEATH.get()).endEntry()
+                                .entry(LOWER_SHELF.get(), SHELF_BORDER.get(), SHELF_BORDER_CRACKLE.get()).result(HEATH_THICKET.get()).endEntry()
+                                .endSet()
+                                .set(3)
+                                .entry(UPPER_SHELF.get()).result(ASH_STEPPE.get()).endEntry()
+                                .endSet()
+                                .build(),
+                        MutateOperation.builder(1L)
+                                .scale(8, randomState.apply(Clinker.resource("sea_biomes")))
+                                .set(1).endSet()
+                                .set(1)
+                                .entry(SEA.get()).result(BRINE_SWAMP.get()).endEntry()
+                                .endSet()
+                                .build()
+                )
+                .zoom()
+                .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1))
+                .layer(new BiomeLayerOperations.Smooth())
+                .zoom()
+                .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1))
+                .layer(new BiomeLayerOperations.Smooth())
+                .build(randomState);
     }
 
     @Override

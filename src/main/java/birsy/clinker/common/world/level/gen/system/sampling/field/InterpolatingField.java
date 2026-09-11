@@ -68,9 +68,11 @@ public class InterpolatingField {
     }
 
     public void fill(int fromY, int toY, InterpolatingFieldFiller filler) {
+        int start = Math.max(0, fromY >> yCellScale), end =  Math.min(yCellCount - 1, toY >> yCellScale) + 1;
+        if (start > end) return;
         // find unfilled layers
         fillMask.clear();
-        fillMask.set(Math.max(0, fromY >> yCellScale), Math.min(yCellCount - 1, toY >> yCellScale) + 1);
+        fillMask.set(start, end);
         fillMask.andNot(filledLayers);
         // fill them
         for (int startCellY = fillMask.nextSetBit(0); startCellY >= 0; startCellY = fillMask.nextSetBit(startCellY + 1)) {
@@ -86,11 +88,11 @@ public class InterpolatingField {
         filler.setSlice(startCellY);
         int index = startCellY * sliceCellCount;
         for (int cellY = startCellY; cellY <= endCellY; cellY++) {
-            int x = (cellY << yCellScale);
+            int y = (cellY << yCellScale);
             for (int cellZ = 0; cellZ < xzCellCount; cellZ++) {
-                int y = (cellZ << xzCellScale) - paddingBlocks;
+                int z = (cellZ << xzCellScale) - paddingBlocks;
                 for (int cellX = 0; cellX < xzCellCount; cellX++) {
-                    int z = (cellX << xzCellScale) - paddingBlocks;
+                    int x = (cellX << xzCellScale) - paddingBlocks;
                     field[index++] = filler.compute(x, y, z);
                     filler.advanceX();
                 }

@@ -7,7 +7,7 @@ import net.minecraft.world.level.block.state.BlockState;
 public interface FluidField {
     BlockState AIR = Blocks.AIR.defaultBlockState();
 
-    default void precomputeValues(InterpolatingField finalDensityField) {}
-    double getBorderDensity(int localX, int localY, int localZ);
+    void fill(InterpolatingField waterfallPresence);
+    double getBorderDistance(int localX, int localY, int localZ);
     BlockState getFluidState(int x, int y, int z);
 }

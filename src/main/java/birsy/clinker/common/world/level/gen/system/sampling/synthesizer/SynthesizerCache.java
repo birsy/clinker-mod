@@ -6,6 +6,7 @@ import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingF
 import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingFieldSampler;
 import birsy.clinker.common.world.level.gen.system.sampling.noise.NoiseProvider;
 import birsy.clinker.common.world.level.gen.system.sampling.noise.NoiseSampler;
+import birsy.clinker.core.Clinker;
 import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -74,6 +75,7 @@ public class SynthesizerCache {
             // todo: wrap synthesizers such that they try to reuse work from earlier scales?
             if (synthesizer.resolution.xzScale() >= desiredXZScale) {
                 field = synthesizer.resolution.create(chunkHeight, desiredXZPadding);
+                computedFields[desiredXZScale] = field;
             } else {
                 field = InterpolatingFieldResolution.fromResolution(
                         desiredXZScale,
@@ -81,6 +83,7 @@ public class SynthesizerCache {
                         synthesizer.resolution.twoDimensional(),
                         chunkHeight, desiredXZPadding
                 );
+                computedFields[desiredXZScale] = field;
             }
         }
 
@@ -94,7 +97,7 @@ public class SynthesizerCache {
         if (fieldNeedsInitialization) Arrays.fill(field.array(), synthesizer.defaultValue);
 
         // return early if we're not in range
-        if (toY - fromY <= 0) return;
+        if (toY <= fromY) return;
 
         int minXZScale = Math.max(desiredXZScale, synthesizer.resolution.xzScale());
         // create context
@@ -119,28 +122,35 @@ public class SynthesizerCache {
 
         SynthesizerContext context = new SynthesizerContext(fieldRetrievers, noises);
         SynthesizerFiller filler = new SynthesizerFiller(
-                chunkMinX - field.paddingBlocks, chunkMinY, chunkMinZ - field.paddingBlocks,
-                field.yCellScale, interpolators, context, synthesizer.function
+                field, chunkMinX - field.paddingBlocks, chunkMinY, chunkMinZ - field.paddingBlocks,
+                interpolators, context, synthesizer.function
         );
         // fill field...
         field.fill(fromY - chunkMinY, toY - chunkMinY, filler);
     }
 
     // fills a field with data from a synthesizer.
-    static final class SynthesizerFiller implements InterpolatingFieldFiller {;
-        final int minX, minY, minZ, yCellScale;
+    static final class SynthesizerFiller implements InterpolatingFieldFiller {
+        final int yCellScale, xzCellSize, yCellSize;
+        final int minX, minY, minZ;
         final InterpolatingFieldSampler[] interpolators;
         final SynthesizerContext context;
         final Synthesizer.Function func;
 
         int globalX, globalY, globalZ;
 
-        SynthesizerFiller(int minX, int minY, int minZ, int yCellScale, InterpolatingFieldSampler[] interpolators, SynthesizerContext context, Synthesizer.Function func) {
+        SynthesizerFiller(InterpolatingField toFill, int minX, int minY, int minZ, InterpolatingFieldSampler[] interpolators, SynthesizerContext context, Synthesizer.Function func) {
+            this.yCellScale = toFill.yCellScale;
+            this.xzCellSize = toFill.xzCellSize;
+            this.yCellSize = toFill.yCellSize;
+
             this.minX = minX; this.minY = minY; this.minZ = minZ;
-            this.yCellScale = yCellScale;
             this.interpolators = interpolators;
             this.context = context;
             this.func = func;
+
+            this.globalX = minX; this.globalY = minY; this.globalZ = minZ;
+            context.x = minX; context.y = minY; context.z = minZ;
         }
 
         @Override
@@ -155,30 +165,40 @@ public class SynthesizerCache {
         // see InterpolatingFieldSampler for more info on these
         @Override
         public void advanceX() {
-            globalX++;
+            globalX += xzCellSize;
             context.x = globalX;
-            for (InterpolatingFieldSampler synthesizerField : interpolators) synthesizerField.advanceX();
+            for (InterpolatingFieldSampler synthesizerField : interpolators)
+                synthesizerField.advanceX();
         }
         @Override
         public void advanceZ() {
             globalX = minX;
-            globalZ++;
+            context.x = globalX;
+
+            globalZ += xzCellSize;
             context.z = globalZ;
-            for (InterpolatingFieldSampler synthesizerField : interpolators) synthesizerField.advanceZ();
+            for (InterpolatingFieldSampler synthesizerField : interpolators)
+                synthesizerField.advanceZ();
         }
         @Override
         public void advanceY() {
             globalX = minX; globalZ = minZ;
-            globalY++;
+            context.x = globalX; context.z = globalZ;
+
+            globalY += yCellSize;
             context.y = globalY;
-            for (InterpolatingFieldSampler synthesizerField : interpolators) synthesizerField.advanceY();
+            for (InterpolatingFieldSampler synthesizerField : interpolators)
+                synthesizerField.advanceY();
         }
         @Override
         public void setSlice(int cellY) {
             globalX = minX; globalZ = minZ;
+            context.x = globalX; context.z = globalZ;
+
             globalY = (cellY << yCellScale) + minY;
             context.y = globalY;
-            for (InterpolatingFieldSampler synthesizerField : interpolators) synthesizerField.setSlice(cellY);
+            for (InterpolatingFieldSampler synthesizerField : interpolators)
+                synthesizerField.setSlice(cellY);
         }
     }
 }

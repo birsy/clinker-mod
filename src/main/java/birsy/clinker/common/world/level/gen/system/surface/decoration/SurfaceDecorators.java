@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.level.gen.system.surface.decorator;
+package birsy.clinker.common.world.level.gen.system.surface.decoration;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.resources.ResourceKey;
