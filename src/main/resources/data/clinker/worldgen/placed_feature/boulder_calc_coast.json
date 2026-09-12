@@ -14,7 +14,7 @@
     },
     {
       "type": "minecraft:heightmap",
-      "heightmap": "MOTION_BLOCKING_NO_LEAVES"
+      "heightmap": "OCEAN_FLOOR_WG"
     },
     {
       "type": "clinker:height_filter",
@@ -31,7 +31,7 @@
     },
     {
       "type": "clinker:heightmap_steepness_filter",
-      "heightmap": "MOTION_BLOCKING_NO_LEAVES",
+      "heightmap": "OCEAN_FLOOR_WG",
       "max_gradient_inclusive": 1,
       "radius": 2
     },

@@ -177,7 +177,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
         int seaLevel = 100;
         // the ultimate goal of biome construction will be to create the master Surface Synthesizer...
-        int biomeMapPadding = 3 + SurfaceShapeSystem.SEARCH_RADIUS + QuartPos.fromBlock(fluidCellWidth * 2);
+        int biomeMapPadding = surfaceShapeSystem.getBiomeCachePadding(fluidCellWidth * 2);
         BiomeCache2d biomeMap = this.getBiomeSource().createSurfaceBiomeCache(
                 QuartPos.fromBlock(minX) - biomeMapPadding,
                 QuartPos.fromBlock(minZ) - biomeMapPadding,
@@ -219,10 +219,10 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
         Synthesizer caveEntranceMask = Synthesizer.builder()
                 .withDependencies(seaFloorHeight, OthershoreCaveSynthesizers.ENTRANCE_MASK)
-                .withRange(surface.minY - 25, surface.maxY + 25, 100.0)
+                .withRange(surface.minY - 30, surface.maxY, 100.0)
                 .build(InterpolatingFieldResolution.VERY_COARSE,
                     ctx -> {
-                        double surfaceDistance = Math.abs(ctx.y() - ctx.dependentValue(0)) - 20;
+                        double surfaceDistance = (ctx.dependentValue(0) - 30) - ctx.y();
                         return MathUtils.smoothMax(ctx.dependentValue(1), surfaceDistance, 3);
                     });
 

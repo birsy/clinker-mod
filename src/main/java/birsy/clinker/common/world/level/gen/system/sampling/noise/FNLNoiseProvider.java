@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 public class FNLNoiseProvider {
     public static NoiseProvider.MemoizedNoiseProvider create(String name, Supplier<FastNoiseLite> provider) {
         return new NoiseProvider.MemoizedNoiseProvider(
-                name, noiseRandom -> FNLNoiseSampler.create(noiseRandom, provider)
+                name, noiseRandom -> new FNLNoiseSampler(noiseRandom, provider)
         );
     }
 
@@ -23,10 +23,9 @@ public class FNLNoiseProvider {
     }
 
     private record FNLNoiseSampler(FastNoiseLite noise) implements NoiseSampler {
-        static FNLNoiseSampler create(RandomSource noiseRandom, Supplier<FastNoiseLite> provider) {
-            FastNoiseLite noise = provider.get();
+        FNLNoiseSampler(RandomSource noiseRandom, Supplier<FastNoiseLite> provider) {
+            this(provider.get());
             noise.SetSeed(noiseRandom.nextInt());
-            return new FNLNoiseSampler(noise);
         }
 
         @Override public double sample(double x, double y, double z) { return noise.GetNoise(x, y, z); }

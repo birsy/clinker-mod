@@ -584,9 +584,11 @@ public class MathUtils {
     }
 
     public static double smoothMin(double a, double b, double k) {
-        k *= 4.0;
-        double h = Math.max( k - Math.abs(a-b), 0.0)/k;
-        return Math.min(a,b) - h*h*k*(1.0/4.0);
+        k *= 1.0 / (1.0 - Math.sqrt(0.5));
+        double h = Math.max(k - Math.abs(a-b), 0.0) / k;
+        double b2 = 13.0 / 4.0 - 4.0 * Math.sqrt(0.5);
+        double b3 = 3.0 / 4.0 - 1.0 * Math.sqrt(0.5);
+        return min(a, b) - k * h * h * (h * b3 * (h - 4.0) + b2);
     }
 
     public static double smoothMax( double a, double b, double k ) {

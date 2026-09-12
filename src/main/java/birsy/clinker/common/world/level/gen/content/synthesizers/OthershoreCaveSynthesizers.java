@@ -61,19 +61,19 @@ public class OthershoreCaveSynthesizers {
     public static final Synthesizer AQUIFER_ISLANDS = Synthesizer.builder()
             .withNoises(FNLNoiseProvider.create("aquifer_islands"))
             .build(InterpolatingFieldResolution.COARSE_2D, (ctx) ->
-                    ctx.noise(0).sample( ctx.y() / 128.0, ctx.z() / 128.0)
+                    ctx.noise(0).sample( ctx.x() / 128.0, ctx.z() / 128.0)
             );
     public static final Synthesizer AQUIFER_WALLS = Synthesizer.builder()
             .withNoises(FNLNoiseProvider.create("aquifer_wall"), FNLNoiseProvider.create("aquifer_wall_holes"), FNLNoiseProvider.create("aquifer_wall_holes_small"))
             .build(InterpolatingFieldResolution.COARSE, (ctx) -> {
                 double frequency = 1.0 / 190.0;
-                double aquiferWall = Math.abs(ctx.noise(0).sample( ctx.y() * frequency, ctx.z() * frequency)) / frequency - 30;
+                double aquiferWall = Math.abs(ctx.noise(0).sample( ctx.x() * frequency, ctx.z() * frequency)) / frequency - 30;
 
                 frequency = 1.0 / 128.0;
-                double aquiferWallHoles = ctx.noise(1).sample( ctx.y() * frequency, ctx.z() * frequency) / frequency;
+                double aquiferWallHoles = ctx.noise(1).sample( ctx.x() * frequency, ctx.z() * frequency) / frequency;
                 aquiferWallHoles = 30 - Math.abs(aquiferWallHoles);
 
-                double aquiferWallHolesSmall = ctx.noise(2).sample( ctx.y() * frequency * 2, ctx.z() * frequency * 2) / (frequency * 2);
+                double aquiferWallHolesSmall = ctx.noise(2).sample( ctx.x() * frequency * 2, ctx.z() * frequency * 2) / (frequency * 2);
                 aquiferWallHolesSmall = Math.max(0, 20 - Math.abs(aquiferWallHolesSmall));
 
                 aquiferWallHoles = aquiferWallHoles + aquiferWallHolesSmall * 8;

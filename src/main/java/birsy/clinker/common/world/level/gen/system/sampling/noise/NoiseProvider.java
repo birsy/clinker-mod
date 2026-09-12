@@ -10,8 +10,14 @@ public interface NoiseProvider {
     String name();
     NoiseSampler fromRandom(RandomSource random);
 
-    record MemoizedNoiseProvider(String name, Function<RandomSource, NoiseSampler> provider) implements NoiseProvider {
+    record SimpleNoiseProvider(String name, Function<RandomSource, NoiseSampler> provider) implements NoiseProvider {
+        @Override
+        public NoiseSampler fromRandom(RandomSource random) {
+            return provider.apply(random);
+        }
+    }
 
+    record MemoizedNoiseProvider(String name, Function<RandomSource, NoiseSampler> provider) implements NoiseProvider {
         public MemoizedNoiseProvider(String name, Function<RandomSource, NoiseSampler> provider) {
             this.name = name;
             this.provider = Util.memoize(provider);
