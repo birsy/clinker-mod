@@ -1,6 +1,6 @@
 package birsy.clinker.core.registry.worldgen;
 
-import birsy.clinker.common.world.level.gen.system.biome.resolver.ProtoBiome;
+import birsy.clinker.common.world.level.gen.system.biome.placement.resolver.ProtoBiome;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerRegistries;
 import net.minecraft.resources.ResourceKey;

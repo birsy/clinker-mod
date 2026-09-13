@@ -1,5 +1,6 @@
 package birsy.clinker.common.world.level.gen.system.surface.decoration;
 
+import birsy.clinker.common.world.level.gen.system.sampling.noise.NoiseSampler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
@@ -8,16 +9,18 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 
 public final class SurfaceDecorationContext {
-    private final WorldGenLevel level;
-    private final ChunkAccess chunk;
-    private final RandomSource random;
-    private Direction surfaceDirection;
-    private BlockState surfaceState;
-    private int maxUpwardsOffset;
-    private int maxDownwardsOffset;
-    private int maximumDepth;
-    private boolean visibleToSky;
-    private int surfaceY;
+    final WorldGenLevel level;
+    final ChunkAccess chunk;
+    final RandomSource random;
+    Direction surfaceDirection;
+    BlockState surfaceState;
+    int maxUpwardsOffset;
+    int maxDownwardsOffset;
+    int maximumDepth;
+    boolean visibleToSky;
+    int surfaceY;
+    NoiseSampler[] samplers;
+
 
     public SurfaceDecorationContext(WorldGenLevel level, ChunkAccess chunk, RandomSource random) {
         this.level = level;
@@ -25,7 +28,7 @@ public final class SurfaceDecorationContext {
         this.random = random;
     }
 
-    void updateForSurface(int surfaceY, Direction surfaceDirection, BlockState surfaceState, int maxUpwardsOffset, int maxDownwardsOffset, int maximumDepth, boolean visibleToSky) {
+    void updateForSurface(int surfaceY, Direction surfaceDirection, BlockState surfaceState, int maxUpwardsOffset, int maxDownwardsOffset, int maximumDepth, boolean visibleToSky, NoiseSampler[] samplers) {
         this.surfaceY = surfaceY;
         this.surfaceDirection = surfaceDirection;
         this.surfaceState = surfaceState;
@@ -33,6 +36,7 @@ public final class SurfaceDecorationContext {
         this.maxUpwardsOffset = maxUpwardsOffset;
         this.maximumDepth = maximumDepth;
         this.visibleToSky = visibleToSky;
+        this.samplers = samplers;
     }
 
     public BlockState place(BlockPos pos, BlockState state) { return this.chunk.setBlockState(pos, state, false); }
@@ -53,4 +57,5 @@ public final class SurfaceDecorationContext {
     public int maximumDepth() { return maximumDepth; }
     public boolean visibleToSky() { return visibleToSky; }
     public int surfaceY() { return surfaceY; }
+    public NoiseSampler getSampler(int index) { return samplers[index]; }
 }

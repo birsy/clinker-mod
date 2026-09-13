@@ -1,4 +1,4 @@
-package birsy.clinker.common.world.level.gen.system.biome.resolver;
+package birsy.clinker.common.world.level.gen.system.biome.placement.resolver;
 
 import net.minecraft.util.RandomSource;
 

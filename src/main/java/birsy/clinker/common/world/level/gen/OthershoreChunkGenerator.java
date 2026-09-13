@@ -1,14 +1,15 @@
 package birsy.clinker.common.world.level.gen;
 
 import birsy.clinker.common.world.level.gen.content.synthesizers.OthershoreCaveSynthesizers;
-import birsy.clinker.common.world.level.gen.system.biome.BiomeCache2d;
-import birsy.clinker.common.world.level.gen.system.biome.BiomeList;
+import birsy.clinker.common.world.level.gen.system.biome.placement.BiomeCache2d;
+import birsy.clinker.common.world.level.gen.system.biome.placement.BiomeList;
 import birsy.clinker.common.world.level.gen.system.fluid.BFSBorderFluidField;
 import birsy.clinker.common.world.level.gen.system.fluid.FluidField;
 import birsy.clinker.common.world.level.gen.system.fluid.FluidFieldFiller;
 import birsy.clinker.common.world.level.gen.system.fluid.FluidLevel;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesSurfaceDecoration;
 import birsy.clinker.common.world.level.gen.system.sampling.noise.FNLNoiseProvider;
+import birsy.clinker.common.world.level.gen.system.sampling.noise.NoiseSampler;
 import birsy.clinker.common.world.level.gen.system.sampling.synthesizer.DependencyRetriever;
 import birsy.clinker.common.world.level.gen.system.sampling.synthesizer.Synthesizer;
 import birsy.clinker.common.world.level.gen.system.sampling.synthesizer.SynthesizerCache;
@@ -50,6 +51,8 @@ import net.minecraft.world.level.levelgen.blending.Blender;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class OthershoreChunkGenerator extends ChunkGenerator {
     public static final RunningAverageTracker TIME_TRACKER = new RunningAverageTracker();
@@ -63,20 +66,38 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
     private static final ResourceLocation BEDROCK_RANDOM = Clinker.resource("bedrock");
     private static final BlockState BRIMSTONE = ClinkerBlocks.BRIMSTONE.get().defaultBlockState();
 
+    final ConcurrentMap<ChunkPos, SynthesizerCache> cacheForChunk = new ConcurrentHashMap<>();
+
     final BiomeList biomeList;
     final SurfaceDecorationSystem surfaceDecorationSystem;
     final SurfaceShapeSystem surfaceShapeSystem;
     final WorldFeatureContext worldContext;
 
-    private static final Map<Holder<Biome>, Integer> biomeSeaHeight = new HashMap<>();
-
     public OthershoreChunkGenerator(HolderGetter<Biome> biomeGetter, OthershoreBiomeSource biomeSource) {
         super(biomeSource);
         this.biomeList = biomeSource.biomeList;
-        this.surfaceDecorationSystem = new SurfaceDecorationSystem(ClinkerBlocks.BRIMSTONE.get().defaultBlockState(), biomeGetter);
+        this.surfaceDecorationSystem = new SurfaceDecorationSystem(ClinkerBlocks.BRIMSTONE.get().defaultBlockState(), biomeList);
         this.surfaceShapeSystem = new SurfaceShapeSystem();
         this.worldContext = new WorldFeatureContext(biomeList);
         biomeSource.initFromChunkGenerator(this);
+    }
+
+    protected SynthesizerCache synthesizerCacheForChunk(ChunkAccess chunk, RandomState randomState) {
+        ChunkPos chunkPos = chunk.getPos();
+        int minX = chunkPos.getMinBlockX(),
+                minY = chunk.getMinBuildHeight(),
+                minZ = chunkPos.getMinBlockZ();
+        int chunkHeight = chunk.getHeight();
+        return cacheForChunk.computeIfAbsent(chunkPos,
+                key -> new SynthesizerCache(
+                    minX, minY, minZ, chunkHeight,
+                    randomState.getOrCreateRandomFactory(Clinker.resource("clinkernoisegen"))
+                )
+        );
+    }
+
+    protected void removeSynthesizerCacheForChunk(ChunkAccess chunk) {
+        this.cacheForChunk.remove(chunk.getPos());
     }
 
     @Override
@@ -151,7 +172,6 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         return chunk;
     }
 
-
     @Override
     public CompletableFuture<ChunkAccess> fillFromNoise(Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunk) {
         return CompletableFuture.supplyAsync(Util.wrapThreadWithTaskName("clinker_wgen_fill_noise",
@@ -168,14 +188,11 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             minZ = chunkPos.getMinBlockZ();
         int chunkHeight = chunk.getHeight();
 
-        SynthesizerCache synthesizerCache = new SynthesizerCache(
-                minX, minY, minZ, chunkHeight,
-                randomState.getOrCreateRandomFactory(Clinker.resource("clinkernoisegen"))
-        );
+        SynthesizerCache synthesizerCache = synthesizerCacheForChunk(chunk, randomState);
 
         int fluidCellWidth = 4, fluidCellHeight = 8;
 
-        int seaLevel = 100;
+        int seaLevel = OthershoreGenerationConstants.SEA_HEIGHT;
         // the ultimate goal of biome construction will be to create the master Surface Synthesizer...
         int biomeMapPadding = surfaceShapeSystem.getBiomeCachePadding(fluidCellWidth * 2);
         BiomeCache2d biomeMap = this.getBiomeSource().createSurfaceBiomeCache(
@@ -184,7 +201,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                 QuartPos.fromBlock(minX + 16) + biomeMapPadding,
                 QuartPos.fromBlock(minZ + 16) + biomeMapPadding
                 );
-        Synthesizer surface = surfaceShapeSystem.createMasterSurfaceSynthesizer(biomeMap);
+        Synthesizer surface = surfaceShapeSystem.createMasterSurfaceSynthesizer(chunk, biomeMap);
 
         int seaFloorScanSize = Math.max(fluidCellWidth, surface.resolution.yScale());
         Synthesizer seaFloorHeight = Synthesizer.builder()
@@ -230,7 +247,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         Synthesizer finalDensitySynthesizer = Synthesizer.builder()
                 .withDependencies(surface, caveEntranceMask, OthershoreCaveSynthesizers.CAVES)
                 .withRange(Integer.MIN_VALUE, surface.maxY + 30, 100.0)
-                .build(InterpolatingFieldResolution.COARSE,
+                .build(InterpolatingFieldResolution.FINE,
                         (ctx) -> {
                             double maskedCaves = MathUtils.smoothMin(ctx.dependentValue(1), ctx.dependentValue(2), 4.0);
                             return MathUtils.smoothMax(ctx.dependentValue(0), maskedCaves, 4.0);
@@ -327,23 +344,22 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         int minX = chunk.getPos().getMinBlockX(),
             minY = chunk.getMinBuildHeight(),
             minZ = chunk.getPos().getMinBlockZ();
-        int chunkHeight = chunk.getHeight();
 
         WorldFeatureSet worldFeatures = ((MetaChunkMapHolder) (Object) randomState).clinker$metaChunkMap()
                 .getWorldFeatures(chunk.getLevel(), minX, minZ, worldContext);
-        BiomeCache2d surfaceBiomes = getSurfaceBiomeCacheForChunk(minX, minZ);
-
         surfaceDecorationSystem.decorate(level, chunk, randomState);
 
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(minX, minY, minZ);
-        PositionalRandomFactory randomFactory = randomState.getOrCreateRandomFactory(BEDROCK_RANDOM);
 
         for (ModifiesSurfaceDecoration modifiesSurfaceDecoration : worldFeatures.byCapability(ClinkerWorldFeatureCapabilities.MODIFIES_SURFACE_DECORATION.get())) {
             modifiesSurfaceDecoration.modifySurfaceDecoration(level, chunk, randomState, worldContext);
         }
 
+        PositionalRandomFactory randomFactory = randomState.getOrCreateRandomFactory(BEDROCK_RANDOM);
         createBarrierrockLayer(chunk, randomFactory, pos, minX, minY, minZ);
         createBedrockLayer(chunk, randomFactory, pos, minX, minY, minZ);
+
+        removeSynthesizerCacheForChunk(chunk);
     }
 
     private void createBedrockLayer(ChunkAccess chunk, PositionalRandomFactory random,
@@ -375,24 +391,24 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         }
     }
     private void createBarrierrockLayer(ChunkAccess chunk, PositionalRandomFactory random, BlockPos.MutableBlockPos pos, int minX, int minY, int minZ) {
-//        InterpolatingField field = cache.fillNoiseField(ClinkerNoiseComputers.BASE_NOISE_2D[3]);
-//        for (int x = 0; x < 16; x++) {
-//            pos.setX(minX + x);
-//            for (int z = 0; z < 16; z++) {
-//                pos.setZ(minZ + z);
-//                double noiseValue = Math.abs(field.retrieve(x, 0, z));
-//                for (int y = -3; y <= 3; y++) {
-//                    pos.setY(y);
-//                    double mixFactor = 1.0 - (Math.abs(y) / 4.0);
-//                    if (!chunk.getBlockState(pos).isSolid()) {
-//                        mixFactor -= 0.5;
-//                    }
-//                    if (noiseValue < mixFactor) {
-//                        chunk.setBlockState(pos, ClinkerBlocks.BARRIERROCK.get().defaultBlockState(), false);
-//                    }
-//                }
-//            }
-//        }
+        NoiseSampler barrierRockSampler = FNLNoiseProvider.create("barrierRock").fromRandom(random.fromHashOf("barrierRock"));
+        for (int x = 0; x < 16; x++) {
+            pos.setX(minX + x);
+            for (int z = 0; z < 16; z++) {
+                pos.setZ(minZ + z);
+                double noiseValue = Math.abs(barrierRockSampler.sample(x / 16.0, z / 16.0));
+                for (int y = -3; y <= 3; y++) {
+                    pos.setY(y);
+                    double mixFactor = 1.0 - (Math.abs(y) / 4.0);
+                    if (!chunk.getBlockState(pos).isSolid()) {
+                        mixFactor -= 0.5;
+                    }
+                    if (noiseValue < mixFactor) {
+                        chunk.setBlockState(pos, ClinkerBlocks.BARRIERROCK.get().defaultBlockState(), false);
+                    }
+                }
+            }
+        }
     }
 
     @Override

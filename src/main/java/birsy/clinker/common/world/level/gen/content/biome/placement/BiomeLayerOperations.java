@@ -1,8 +1,8 @@
-package birsy.clinker.common.world.level.gen.content.biome;
+package birsy.clinker.common.world.level.gen.content.biome.placement;
 
-import birsy.clinker.common.world.level.gen.system.biome.resolver.BiomeLayerOperation;
-import birsy.clinker.common.world.level.gen.system.biome.resolver.ProtoBiome;
-import birsy.clinker.common.world.level.gen.system.biome.resolver.ProtoBiomeNeighborhood;
+import birsy.clinker.common.world.level.gen.system.biome.placement.resolver.BiomeLayerOperation;
+import birsy.clinker.common.world.level.gen.system.biome.placement.resolver.ProtoBiome;
+import birsy.clinker.common.world.level.gen.system.biome.placement.resolver.ProtoBiomeNeighborhood;
 import birsy.clinker.core.registry.ClinkerRegistries;
 import net.minecraft.Util;
 import net.minecraft.util.RandomSource;

@@ -1,21 +1,21 @@
-package birsy.clinker.common.world.level.gen.system.biome;
+package birsy.clinker.common.world.level.gen.system.biome.placement;
 
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.core.Holder;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeSource;
 
 import java.util.Set;
 
 public final class BiomeList {
+    private final Set<Holder<Biome>> possibleBiomes;
     private final Object2IntMap<Holder<Biome>> biomeToId;
     private final Holder<Biome>[] idToBiome;
     private final int maxId;
 
     public BiomeList(BiomeSource biomeSource) {
-        Set<Holder<Biome>> possibleBiomes = biomeSource.possibleBiomes();
+        this.possibleBiomes = biomeSource.possibleBiomes();
         int biomeId = 0;
 
         this.biomeToId = new Object2IntArrayMap<>(possibleBiomes.size());
@@ -27,6 +27,10 @@ public final class BiomeList {
         }
 
         this.maxId = biomeId;
+    }
+
+    public Set<Holder<Biome>> possibleBiomes() {
+        return possibleBiomes;
     }
 
     public Holder<Biome> byId(int id) {

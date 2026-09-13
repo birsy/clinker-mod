@@ -1,10 +1,12 @@
 package birsy.clinker.common.world.level.gen;
 
-import birsy.clinker.common.world.level.gen.content.biome.MutateOperation;
-import birsy.clinker.common.world.level.gen.system.biome.*;
-import birsy.clinker.common.world.level.gen.content.biome.BiomeLayerOperations;
-import birsy.clinker.common.world.level.gen.system.biome.resolver.LayeredBiomeResolver;
-import birsy.clinker.common.world.level.gen.system.biome.resolver.ProtoBiome;
+import birsy.clinker.common.world.level.gen.content.biome.placement.MutateOperation;
+import birsy.clinker.common.world.level.gen.content.biome.placement.BiomeLayerOperations;
+import birsy.clinker.common.world.level.gen.system.biome.BiomeGenerationInfo;
+import birsy.clinker.common.world.level.gen.system.biome.placement.BiomeCache2d;
+import birsy.clinker.common.world.level.gen.system.biome.placement.BiomeList;
+import birsy.clinker.common.world.level.gen.system.biome.placement.resolver.LayeredBiomeResolver;
+import birsy.clinker.common.world.level.gen.system.biome.placement.resolver.ProtoBiome;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerRegistries;
 import birsy.clinker.core.registry.worldgen.ClinkerBiomes;
@@ -204,7 +206,7 @@ public class OthershoreBiomeSource extends BiomeSource {
     }
     @Override
     public Holder<Biome> getNoiseBiome(int qX, int qY, int qZ, Climate.Sampler sampler) {
-        return getSurfaceBiome(qX, qZ);
+        return getNoiseBiome(qX, qY, qZ, (BiomeCache2d) null);
     }
     @Override
     public Set<Holder<Biome>> getBiomesWithin(int x, int y, int z, int radius, Climate.Sampler sampler) {
@@ -230,7 +232,11 @@ public class OthershoreBiomeSource extends BiomeSource {
         return biomeByProtoBiomeId[surfaceBiomeResolver.getProtoBiome(qX, qZ).id];
     }
     public Holder<Biome> getNoiseBiome(int qX, int qY, int qZ, @Nullable BiomeCache2d surfaceBiomeCache) {
-        return surfaceBiomeCache == null ? getSurfaceBiome(qX, qZ) : surfaceBiomeCache.retrieve(qX, qZ);
+        if (qY < 0) return aquifer;
+        Holder<Biome> surfaceBiome = surfaceBiomeCache == null ? getSurfaceBiome(qX, qZ) : surfaceBiomeCache.retrieve(qX, qZ);
+        int baseHeight = BiomeGenerationInfo.fromBiome(surfaceBiome).shaper().baseHeight;
+        if (qY < QuartPos.fromBlock(baseHeight) - 4) return underground;
+        return surfaceBiome;
     }
     public Set<Holder<Biome>> getBiomesWithin(int bX1, int bY1, int bZ1, int bX2, int bY2, int bZ2) {
         int minQX = QuartPos.fromBlock(Math.min(bX1, bX2)),

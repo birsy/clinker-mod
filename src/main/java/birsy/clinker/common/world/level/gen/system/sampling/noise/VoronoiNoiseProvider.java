@@ -1,15 +1,12 @@
 package birsy.clinker.common.world.level.gen.system.sampling.noise;
 
-import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource;
-
 public class VoronoiNoiseProvider {
-    public static NoiseProvider create(String name, double jitter, boolean twoDimensional) {
-        return new NoiseProvider.SimpleNoiseProvider(name,
-                twoDimensional ?
-                        random -> new TwoDimensional(random.nextLong(), jitter) :
-                        random -> new ThreeDimensional(random.nextLong(), jitter)
-        );
+    public static NoiseProvider create(String name, double jitter, int dimensions) {
+        return switch (dimensions) {
+            case 2 -> new NoiseProvider.SimpleNoiseProvider(name, random -> new TwoDimensional(random.nextLong(), jitter));
+            case 3 -> new NoiseProvider.SimpleNoiseProvider(name, random -> new ThreeDimensional(random.nextLong(), jitter));
+            default -> throw new IllegalArgumentException(dimensions + " dimensional voronoi unsupported!");
+        };
     }
 
     private static long hash(long seed, long x, long y, long z) {
@@ -27,7 +24,7 @@ public class VoronoiNoiseProvider {
 
     private record ThreeDimensional(long seed, double jitter, double[] result) implements NoiseSampler {
         public ThreeDimensional(long seed, double jitter) {
-            this(seed, jitter, new double[4]);
+            this(seed, jitter, new double[6]);
         }
 
         @Override
@@ -37,34 +34,37 @@ public class VoronoiNoiseProvider {
 
         @Override
         public double[] sampleSet(double x, double y, double z) {
-            long iX = (long) Math.floor(x);
-            long iY = (long) Math.floor(y);
-            long iZ = (long) Math.floor(z);
-            double lx = x - iX, ly = y - iY, lz = z - iZ;
+            long ix = (long) Math.floor(x);
+            long iy = (long) Math.floor(y);
+            long iz = (long) Math.floor(z);
+            double lx = x - ix, ly = y - iy, lz = z - iz;
 
-            double bestDist = Double.MAX_VALUE;
+            double f1 = Double.MAX_VALUE, f2 = Double.MAX_VALUE;
             double bestCX = 0, bestCY = 0, bestCZ = 0;
             long bestIX = 0, bestIY = 0, bestIZ = 0;
 
-            for (int dY = -1; dY <= 1; dY++) {
-                for (int dZ = -1; dZ <= 1; dZ++) {
-                    for (int dX = -1; dX <= 1; dX++) {
-                        long h = hash(seed, iX + dX, iY + dY, iZ + dZ);
-                        double oX = offset(h, 0, jitter);
-                        double oY = offset(h, 20, jitter);
-                        double oZ = offset(h, 40, jitter);
+            for (int dy = -1; dy <= 1; dy++) {
+                for (int dz = -1; dz <= 1; dz++) {
+                    for (int dx = -1; dx <= 1; dx++) {
+                        long h = hash(seed, ix + dx, iy + dy, iz + dz);
+                        double ox = offset(h,  0, jitter);
+                        double oy = offset(h, 20, jitter);
+                        double oz = offset(h, 40, jitter);
 
-                        double rX = (dX + 0.5 + oX) - lx;
-                        double rY = (dY + 0.5 + oY) - ly;
-                        double rZ = (dZ + 0.5 + oZ) - lz;
-                        double distSq = Mth.lengthSquared(rX, rY, rZ);
+                        double rx = (dx + 0.5 + ox) - lx;
+                        double ry = (dy + 0.5 + oy) - ly;
+                        double rz = (dz + 0.5 + oz) - lz;
+                        double distSq = rx * rx + ry * ry + rz * rz;
 
-                        if (distSq < bestDist) {
-                            bestDist = distSq;
-                            bestIX = iX + dX; bestIY = iY + dY; bestIZ = iZ + dZ;
-                            bestCX = iX + dX + 0.5 + oX;
-                            bestCY = iY + dY + 0.5 + oY;
-                            bestCZ = iZ + dZ + 0.5 + oZ;
+                        if (distSq < f1) {
+                            f2 = f1;
+                            f1 = distSq;
+                            bestIX = ix + dx; bestIY = iy + dy; bestIZ = iz + dz;
+                            bestCX = ix + dx + 0.5 + ox;
+                            bestCY = iy + dy + 0.5 + oy;
+                            bestCZ = iz + dz + 0.5 + oz;
+                        } else if (distSq < f2) {
+                            f2 = distSq;
                         }
                     }
                 }
@@ -74,13 +74,15 @@ public class VoronoiNoiseProvider {
             result[1] = bestCY;
             result[2] = bestCZ;
             result[3] = (hash(seed + 1, bestIX, bestIY, bestIZ) >>> 32) / (double)(1L << 32);
+            result[4] = Math.sqrt(f1);
+            result[5] = Math.sqrt(f2);
             return result;
         }
     }
 
-    public record TwoDimensional(long seed, double jitter, double[] result) implements NoiseSampler {
+    private record TwoDimensional(long seed, double jitter, double[] result) implements NoiseSampler {
         public TwoDimensional(long seed, double jitter) {
-            this(seed, jitter, new double[4]);
+            this(seed, jitter, new double[5]);
         }
 
         @Override
@@ -95,29 +97,32 @@ public class VoronoiNoiseProvider {
 
         @Override
         public double[] sampleSet(double x, double z) {
-            long iX = (long) Math.floor(x);
-            long iZ = (long) Math.floor(z);
-            double lx = x - iX, lz = z - iZ;
+            long ix = (long) Math.floor(x);
+            long iz = (long) Math.floor(z);
+            double lx = x - ix, lz = z - iz;
 
-            double bestDist = Double.MAX_VALUE;
+            double f1 = Double.MAX_VALUE, f2 = Double.MAX_VALUE;
             double bestCX = 0, bestCZ = 0;
             long bestIX = 0, bestIZ = 0;
 
-            for (int dZ = -1; dZ <= 1; dZ++) {
-                for (int dX = -1; dX <= 1; dX++) {
-                    long h = hash(seed, iX + dX, 0L, iZ + dZ);
-                    double oX = offset(h,  0, jitter);
-                    double oZ = offset(h, 20, jitter);
+            for (int dz = -1; dz <= 1; dz++) {
+                for (int dx = -1; dx <= 1; dx++) {
+                    long h = hash(seed, ix + dx, 0L, iz + dz);
+                    double ox = offset(h,  0, jitter);
+                    double oz = offset(h, 20, jitter);
 
-                    double rX = (dX + 0.5 + oX) - lx;
-                    double rZ = (dZ + 0.5 + oZ) - lz;
-                    double distSq = rX * rX + rZ * rZ;
+                    double rx = (dx + 0.5 + ox) - lx;
+                    double rz = (dz + 0.5 + oz) - lz;
+                    double distSq = rx * rx + rz * rz;
 
-                    if (distSq < bestDist) {
-                        bestDist = distSq;
-                        bestIX = iX + dX; bestIZ = iZ + dZ;
-                        bestCX = iX + dX + 0.5 + oX;
-                        bestCZ = iZ + dZ + 0.5 + oZ;
+                    if (distSq < f1) {
+                        f2 = f1;
+                        f1 = distSq;
+                        bestIX = ix + dx; bestIZ = iz + dz;
+                        bestCX = ix + dx + 0.5 + ox;
+                        bestCZ = iz + dz + 0.5 + oz;
+                    } else if (distSq < f2) {
+                        f2 = distSq;
                     }
                 }
             }
@@ -125,6 +130,8 @@ public class VoronoiNoiseProvider {
             result[0] = bestCX;
             result[1] = bestCZ;
             result[2] = (hash(seed + 1, bestIX, 0L, bestIZ) >>> 32) / (double)(1L << 32);
+            result[3] = Math.sqrt(f1);
+            result[4] = Math.sqrt(f2);
             return result;
         }
     }

@@ -1,6 +1,5 @@
-package birsy.clinker.common.world.level.gen.system.biome;
+package birsy.clinker.common.world.level.gen.system.biome.placement;
 
-import birsy.clinker.core.Clinker;
 import net.minecraft.core.Holder;
 import net.minecraft.world.level.biome.Biome;
 
@@ -28,5 +27,20 @@ public final class BiomeCache2d {
 
     public Set<Holder<Biome>> containedBiomes() {
         return containedBiomes;
+    }
+
+    public BiomeCache2d subsection(int minQX, int minQZ, int maxQX, int maxQZ) {
+        minQX = Math.max(minQX, this.minQuartX); minQZ = Math.max(minQZ, this.minQuartZ);
+        maxQX = Math.min(maxQX, this.maxQuartX); maxQZ = Math.min(maxQZ, this.maxQuartZ);
+
+        BiomeCache2d sub = new BiomeCache2d(minQX, minQZ, maxQX, maxQZ);
+        for (int qz = minQZ; qz < maxQZ; qz++) {
+            for (int qx = minQX; qx < maxQX; qx++) {
+                Holder<Biome> biome = retrieve(qx, qz);
+                sub.biomes[(qx - minQX) + (qz - minQZ) * sub.sizeX] = biome;
+                sub.containedBiomes.add(biome);
+            }
+        }
+        return sub;
     }
 }

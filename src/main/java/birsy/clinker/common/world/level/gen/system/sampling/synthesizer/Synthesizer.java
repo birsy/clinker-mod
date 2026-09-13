@@ -8,9 +8,6 @@ import com.google.common.collect.ImmutableList;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-// todo: figure out some way of making hot reloading easier...
-//       maybe in development mode i can recalculate the dependencies
-//       on the fly, and then just turn that off in release builds.
 public class Synthesizer {
     public static final AtomicInteger NEXT_ID = new AtomicInteger(0);
 
@@ -78,11 +75,17 @@ public class Synthesizer {
         }
 
         public Builder withDependencies(Synthesizer... synthesizers) {
-            Collections.addAll(dependencies, synthesizers);
+            for (Synthesizer synthesizer : synthesizers) {
+                if (synthesizer == null) continue;
+                dependencies.add(synthesizer);
+            }
             return this;
         }
         public Builder withNoises(NoiseProvider... noises) {
-            Collections.addAll(requiredNoises, noises);
+            for (NoiseProvider noise : noises) {
+                if (noise == null) continue;
+                requiredNoises.add(noise);
+            }
             return this;
         }
 

@@ -1,8 +1,8 @@
 package birsy.clinker.client.gui.debug;
 
 import birsy.clinker.common.world.level.gen.OthershoreBiomeSource;
-import birsy.clinker.common.world.level.gen.system.biome.resolver.LayeredBiomeResolver;
-import birsy.clinker.common.world.level.gen.system.biome.resolver.ProtoBiome;
+import birsy.clinker.common.world.level.gen.system.biome.placement.resolver.LayeredBiomeResolver;
+import birsy.clinker.common.world.level.gen.system.biome.placement.resolver.ProtoBiome;
 import birsy.clinker.core.registry.ClinkerRegistries;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;

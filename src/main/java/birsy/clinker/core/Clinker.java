@@ -42,7 +42,7 @@ public class Clinker {
     public static float FONT_WIGGLINESS = 0.0F;
 
     public Clinker(IEventBus modEventBus) throws InterruptedException {
-        ClinkerAttributes.ATTRIBUTES.register(modEventBus);
+        ClinkerParticles.PARTICLES.register(modEventBus);
         ClinkerSounds.SOUNDS.register(modEventBus);
         ClinkerDataComponents.DATA_COMPONENT_TYPES.register(modEventBus);
         ClinkerFluids.FLUID_TYPES.register(modEventBus);
@@ -53,30 +53,29 @@ public class Clinker {
         ClinkerBlocks.BLOCK_ITEMS.register(modEventBus);
         ClinkerBlockEntities.BLOCK_ENTITY_TYPES.register(modEventBus);
 
-        ClinkerWorld.CHUNK_GENERATORS.register(modEventBus);
-        ClinkerWorld.BIOME_SOURCES.register(modEventBus);
-        ClinkerPlacementModifierTypes.PLACEMENT_MODIFIER_TYPES.register(modEventBus);
-        ClinkerFeatures.FEATURES.register(modEventBus);
-
+        // entity
+        ClinkerAttributes.ATTRIBUTES.register(modEventBus);
         ClinkerMemoryModules.MEMORY_MODULE_TYPES.register(modEventBus);
         ClinkerActivities.ACTIVITIES.register(modEventBus);
         ClinkerSensors.SENSOR_TYPES.register(modEventBus);
         ClinkerEntities.ENTITY_TYPES.register(modEventBus);
 
-        ClinkerParticles.PARTICLES.register(modEventBus);
-        ClinkerDataAttachments.ATTACHMENT_TYPES.register(modEventBus);
-        ClinkerCreativeModeTabs.TABS.register(modEventBus);
-
-        //if (FMLLoader.getDist() == Dist.CLIENT) ClinkerLightTypes.LIGHT_TYPES.register(modEventBus);
-
-        ClinkerPageElementTypes.PAGE_ELEMENT_TYPES.register(modEventBus);
-        ClinkerAlchemyKnowledgeTypes.ALCHEMY_DATA_TYPES.register(modEventBus);
-        ClinkerSurfaceDecorators.SURFACE_DECORATORS.register(modEventBus);
+        // worldgen
+        ClinkerWorld.CHUNK_GENERATORS.register(modEventBus);
+        ClinkerWorld.BIOME_SOURCES.register(modEventBus);
+        ClinkerPlacementModifierTypes.PLACEMENT_MODIFIER_TYPES.register(modEventBus);
+        ClinkerBiomeGenerationInfo.BIOME_GENERATION_INFO.register(modEventBus);
+        ClinkerFeatures.FEATURES.register(modEventBus);
         ClinkerProtoBiomes.PROTO_BIOMES.register(modEventBus);
-
         ClinkerWorldFeatureCapabilities.WORLD_FEATURE_CAPABILITIES.register(modEventBus);
         ClinkerWorldFeatures.Types.WORLD_FEATURE_TYPES.register(modEventBus);
         ClinkerWorldFeatures.Spawns.WORLD_FEATURE_SPAWNS.register(modEventBus);
+
+        ClinkerDataAttachments.ATTACHMENT_TYPES.register(modEventBus);
+        ClinkerCreativeModeTabs.TABS.register(modEventBus);
+
+        ClinkerPageElementTypes.PAGE_ELEMENT_TYPES.register(modEventBus);
+        ClinkerAlchemyKnowledgeTypes.ALCHEMY_DATA_TYPES.register(modEventBus);
 
         ClinkerOrdnanceModifierTypes.ORDNANCE_MODIFIER_TYPES.register(modEventBus);
 
