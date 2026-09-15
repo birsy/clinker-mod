@@ -1,6 +1,7 @@
 package birsy.clinker.common.world.level.gen;
 
 import birsy.clinker.common.world.level.gen.content.synthesizers.OthershoreCaveSynthesizers;
+import birsy.clinker.common.world.level.gen.system.biome.BiomeGenerationInfo;
 import birsy.clinker.common.world.level.gen.system.biome.placement.BiomeCache2d;
 import birsy.clinker.common.world.level.gen.system.biome.placement.BiomeList;
 import birsy.clinker.common.world.level.gen.system.fluid.BFSBorderFluidField;
@@ -192,7 +193,6 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
         int fluidCellWidth = 4, fluidCellHeight = 8;
 
-        int seaLevel = OthershoreGenerationConstants.SEA_HEIGHT;
         // the ultimate goal of biome construction will be to create the master Surface Synthesizer...
         int biomeMapPadding = surfaceShapeSystem.getBiomeCachePadding(fluidCellWidth * 2);
         BiomeCache2d biomeMap = this.getBiomeSource().createSurfaceBiomeCache(
@@ -224,9 +224,12 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                 synthesizerCache.sampleThisChunk(seaFloorHeight, fluidCellWidth * 2, minY, chunkHeight)
         );
         FluidFieldFiller filler = (x, y, z) -> {
+            Holder<Biome> surfaceBiome = biomeMap.retrieve(QuartPos.fromBlock(x), QuartPos.fromBlock(z));
+            BiomeGenerationInfo genInfo = BiomeGenerationInfo.fromBiome(surfaceBiome);
+            int seaLevel = genInfo.seaLevel();
             double floorHeight = seaFloorHeightRetriever.retrieve(x, y, z) - fluidCellHeight * 2;
             if (seaLevel > floorHeight && y > floorHeight)
-                return new FluidLevel(seaLevel, Blocks.WATER.defaultBlockState());
+                return new FluidLevel(genInfo.seaLevel(), genInfo.seaBlock().get());
             if (y < 0)
                 return new FluidLevel(-40, Blocks.WATER.defaultBlockState());
             return FluidLevel.EMPTY;

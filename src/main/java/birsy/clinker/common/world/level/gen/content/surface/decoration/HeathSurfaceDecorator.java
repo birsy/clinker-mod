@@ -39,12 +39,10 @@ public class HeathSurfaceDecorator extends SurfaceDecorator {
             ));
             if (placeColumn(pos, ctx, ClinkerBlocks.PEAT_MOSS.get().defaultBlockState(), peatDepth)) return;
 
-            int ashDepth = (int) Math.round( Mth.clampedMap(
+            int ashDepth = (int) Math.round(Mth.clampedMap(
                     noiseWithDither(pos, ctx, sampler, 1 / 16.0, 10.0F, 0.3),
-                    0, 1, 0, 3
-            ) - peatDepth);
+                    0, 1, 0, 3)) - peatDepth;
             if (placeColumn(pos, ctx, ClinkerBlocks.PACKED_ASH.get().defaultBlockState(), ashDepth)) return;
-
         }
     }
 }

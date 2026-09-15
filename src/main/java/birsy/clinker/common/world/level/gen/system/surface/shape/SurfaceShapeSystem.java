@@ -46,14 +46,13 @@ public class SurfaceShapeSystem {
         return SEARCH_RADIUS + QuartPos.fromBlock(maxPadding) + 3;
     }
 
-    private record BoundaryInfo(int closestQX, int closestQZ, boolean insideBiome) {
-    }
+    private record BoundaryInfo(int closestQX, int closestQZ, boolean insideBiome) {}
 
     public Synthesizer createMasterSurfaceSynthesizer(ChunkAccess chunk, BiomeCache2d surfaceBiomes) {
         ChunkPos chunkPos = chunk.getPos();
-        BiomeCache2d biomesInChunk = surfaceBiomes.subsection(
-                QuartPos.fromBlock(chunkPos.getMinBlockX()) - 1, QuartPos.fromBlock(chunkPos.getMinBlockZ()) - 1,
-                QuartPos.fromBlock(chunkPos.getMaxBlockX()) + 1, QuartPos.fromBlock(chunkPos.getMaxBlockZ()) + 1
+        BiomeCache2d biomesSurfacesInChunk = surfaceBiomes.subsection(
+                QuartPos.fromBlock(chunkPos.getMinBlockX()) - 3, QuartPos.fromBlock(chunkPos.getMinBlockZ()) - 3,
+                QuartPos.fromBlock(chunkPos.getMaxBlockX()) + 3, QuartPos.fromBlock(chunkPos.getMaxBlockZ()) + 3
         );
 
         List<Holder<Biome>> allBiomes = List.copyOf(surfaceBiomes.containedBiomes());
@@ -68,7 +67,7 @@ public class SurfaceShapeSystem {
             BiomeGenerationInfo generationInfo = BiomeGenerationInfo.fromBiome(biome);
             SurfaceShape surfaceShape = generationInfo.shaper();
 
-            biomeSynthesizers.add(surfaceShape.create(distanceToBiome, biomesInChunk.containedBiomes.contains(biome)));
+            biomeSynthesizers.add(surfaceShape.create(distanceToBiome, biomesSurfacesInChunk.containedBiomes.contains(biome)));
             minimumRange = Math.min(minimumRange, surfaceShape.minSurfaceY);
             maximumRange = Math.max(maximumRange, surfaceShape.maxSurfaceY);
         }

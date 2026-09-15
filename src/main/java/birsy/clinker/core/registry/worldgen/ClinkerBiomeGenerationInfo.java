@@ -4,6 +4,7 @@ import birsy.clinker.common.world.level.gen.OthershoreGenerationConstants;
 import birsy.clinker.common.world.level.gen.content.surface.decoration.BrineSwampSurfaceDecorator;
 import birsy.clinker.common.world.level.gen.content.surface.decoration.HeathSurfaceDecorator;
 import birsy.clinker.common.world.level.gen.content.surface.shape.CrackleSurfaceShape;
+import birsy.clinker.common.world.level.gen.content.surface.shape.HeathSurfaceShape;
 import birsy.clinker.common.world.level.gen.system.biome.BiomeGenerationInfo;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerRegistries;
@@ -44,10 +45,7 @@ public class ClinkerBiomeGenerationInfo {
     public static final DeferredHolder<BiomeGenerationInfo, BiomeGenerationInfo> HEATH =
             register(ClinkerBiomes.HEATH,
                     BiomeGenerationInfo.builder()
-                            .placeholderSurfaceShape(
-                                    OthershoreGenerationConstants.UPPER_SHELF_HEIGHT - 10,
-                                    OthershoreGenerationConstants.LOWER_SHELF_HEIGHT
-                            )
+                            .surfaceShape(new HeathSurfaceShape(OthershoreGenerationConstants.UPPER_SHELF_HEIGHT - 10, OthershoreGenerationConstants.LOWER_SHELF_HEIGHT))
                             .decorator(new HeathSurfaceDecorator())
             );
 
@@ -73,7 +71,7 @@ public class ClinkerBiomeGenerationInfo {
     public static final DeferredHolder<BiomeGenerationInfo, BiomeGenerationInfo> HEATH_THICKET =
             register(ClinkerBiomes.HEATH_THICKET,
                     BiomeGenerationInfo.builder()
-                            .placeholderSurfaceShape(OthershoreGenerationConstants.LOWER_SHELF_HEIGHT)
+                            .surfaceShape(new HeathSurfaceShape(OthershoreGenerationConstants.LOWER_SHELF_HEIGHT, OthershoreGenerationConstants.SEA_HEIGHT))
                             .decorator(new HeathSurfaceDecorator())
             );
 
