@@ -1,7 +1,8 @@
 package birsy.clinker.common.entity.gnomad.gnomind.behaviors;
 
+import birsy.clinker.common.entity.module.ModuleHolder;
+import birsy.clinker.common.entity.module.modules.SquadMember;
 import birsy.clinker.common.entity.system.squad.Squad;
-import birsy.clinker.common.entity.system.squad.SquadMember;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.server.level.ServerLevel;
@@ -18,7 +19,7 @@ import net.tslat.smartbrainlib.util.BrainUtils;
 
 import java.util.List;
 
-public class StayNearSquadCenter<E extends PathfinderMob & SquadMember<E>> extends ExtendedBehaviour<E> {
+public class StayNearSquadCenter<E extends PathfinderMob & ModuleHolder<E> & SquadMember<E>> extends ExtendedBehaviour<E> {
     private static final MemoryTest MEMORY_REQUIREMENTS = MemoryTest.builder(1)
             .hasMemory(ClinkerMemoryModules.SQUAD.get());
 

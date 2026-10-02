@@ -57,8 +57,8 @@ public class ClinkerBlocks
     public static final DeferredBlock<Block> RAW_LEAD_BLOCK = createBlock("raw_lead_block", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GRAY).strength(2.5f, 3.0f).sound(SoundType.ANCIENT_DEBRIS)));
 
     //Soils
-    public static final DeferredBlock<Block> ASH = createBlock("ash", () -> new ColoredFallingBlock(new ColorRGBA(8616308), Block.Properties.of().mapColor(MapColor.COLOR_GRAY).strength(0.5F).sound(SoundType.SNOW)));
-    public static final DeferredBlock<Block> ASH_LAYER = createBlock("ash_layers", () -> new FallingLayerBlock(new ColorRGBA(8616308), BlockBehaviour.Properties.ofFullCopy(Blocks.SNOW).mapColor(MapColor.COLOR_GRAY)));
+    public static final DeferredBlock<Block> ASH = createBlock("ash", () -> new AshBlock(new ColorRGBA(0x837974), Block.Properties.of().mapColor(MapColor.COLOR_GRAY).strength(0.5F).sound(SoundType.SNOW)));
+    public static final DeferredBlock<Block> ASH_LAYER = createBlock("ash_layers", () -> new FallingLayerBlock(new ColorRGBA(0x837974), BlockBehaviour.Properties.ofFullCopy(Blocks.SNOW).mapColor(MapColor.COLOR_GRAY)));
     public static final DeferredBlock<Block> PACKED_ASH = createBlock("packed_ash",
             () -> new MudBlock(Block.Properties.of().mapColor(MapColor.COLOR_GRAY).strength(0.5F).sound(SoundType.NYLIUM))
     );

@@ -37,7 +37,7 @@ public class GnomadRuntEntity extends BaseGnomadEntity<GnomadRuntEntity> impleme
     private static final EntityDataAccessor<Boolean> DATA_HOLDING_DELIVERY =
             SynchedEntityData.defineId(GnomadRuntEntity.class, EntityDataSerializers.BOOLEAN);
 
-    public GnomadRuntEntity(EntityType<? extends PathfinderMob> entityType, Level level) {
+    public GnomadRuntEntity(EntityType<? extends GnomadRuntEntity> entityType, Level level) {
         super(entityType, level);
     }
 

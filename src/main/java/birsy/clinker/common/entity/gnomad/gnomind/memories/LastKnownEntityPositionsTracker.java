@@ -1,4 +1,4 @@
-package birsy.clinker.common.entity.gnomad.gnomind;
+package birsy.clinker.common.entity.gnomad.gnomind.memories;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.UUID;
 import java.util.function.Predicate;
 
-import static birsy.clinker.common.entity.gnomad.gnomind.LastKnownEntityPosition.State.*;
+import static birsy.clinker.common.entity.gnomad.gnomind.memories.LastKnownEntityPosition.State.*;
 
 public class LastKnownEntityPositionsTracker {
     public static final Codec<LastKnownEntityPositionsTracker> CODEC = RecordCodecBuilder.create(instance -> instance.group(

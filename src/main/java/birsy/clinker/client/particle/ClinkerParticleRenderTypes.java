@@ -13,6 +13,7 @@ import foundry.veil.api.client.render.framebuffer.AdvancedFbo;
 import foundry.veil.api.client.render.shader.program.ShaderProgram;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.ParticleRenderType;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
@@ -59,4 +60,30 @@ public class ClinkerParticleRenderTypes {
         @Override
         public String toString() { return "clinker:BLOSSOM_BUG"; }
     };
+
+    public static final ParticleRenderType FOOTPRINT = new ParticleRenderType() {
+        private static final ResourceLocation TEXTURE = Clinker.resource("textures/particle/footprint.png");
+        @Override
+        public BufferBuilder begin(Tesselator tesselator, TextureManager textureManager) {
+            RenderSystem.depthMask(false); // no writing depth
+            RenderSystem.enableBlend();
+            RenderSystem.defaultBlendFunc();
+
+            RenderSystem.setShaderTexture(0, TEXTURE); // particle texture
+            Minecraft.getInstance().gameRenderer.lightTexture().turnOnLightLayer();
+
+            ShaderProgram shader = VeilRenderSystem.setShader(ClinkerShaders.PARTICLE_FOOTPRINT);
+            shader.bind();
+            shader.bindSamplers(0);
+            shader.setDefaultUniforms(VertexFormat.Mode.QUADS);
+            shader.getUniformSafe("ScreenResolution").setVector(AdvancedFbo.getMainFramebuffer().getWidth(), AdvancedFbo.getMainFramebuffer().getHeight());
+            shader.setTexture("DiffuseDepthSampler", GL_TEXTURE_2D, AdvancedFbo.getMainFramebuffer().getDepthTextureAttachment().getId());
+
+            return tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
+        }
+
+        @Override
+        public String toString() { return "clinker:FOOTPRINT"; }
+    };
+
 }

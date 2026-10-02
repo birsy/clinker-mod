@@ -1,6 +1,6 @@
 package birsy.clinker.common.entity.gnomad.gnomind.squadtasks;
 
-import birsy.clinker.common.entity.system.squad.SquadMember;
+import birsy.clinker.common.entity.module.modules.SquadMember;
 import birsy.clinker.common.entity.system.squad.SquadTask;
 import birsy.clinker.core.registry.entity.ClinkerActivities;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;

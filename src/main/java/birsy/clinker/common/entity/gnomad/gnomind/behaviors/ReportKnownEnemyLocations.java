@@ -1,8 +1,9 @@
 package birsy.clinker.common.entity.gnomad.gnomind.behaviors;
 
-import birsy.clinker.common.entity.gnomad.gnomind.LastKnownEntityPositionsTracker;
+import birsy.clinker.common.entity.gnomad.gnomind.memories.LastKnownEntityPositionsTracker;
+import birsy.clinker.common.entity.module.ModuleHolder;
+import birsy.clinker.common.entity.module.modules.SquadMember;
 import birsy.clinker.common.entity.system.squad.Squad;
-import birsy.clinker.common.entity.system.squad.SquadMember;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.server.level.ServerLevel;
@@ -16,7 +17,7 @@ import net.tslat.smartbrainlib.util.SensoryUtils;
 
 import java.util.List;
 
-public class ReportKnownEnemyLocations<E extends LivingEntity & SquadMember<E>> extends ExtendedBehaviour<E> {
+public class ReportKnownEnemyLocations<E extends LivingEntity & ModuleHolder<E> & SquadMember<E>> extends ExtendedBehaviour<E> {
     private static final MemoryTest MEMORY_REQUIREMENTS = MemoryTest.builder(2)
             .hasMemory(ClinkerMemoryModules.SQUAD.get())
             .hasMemory(ClinkerMemoryModules.LAST_KNOWN_ENEMY_POSITIONS.get());

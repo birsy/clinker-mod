@@ -54,7 +54,7 @@ public class GnomadMogulAnimator extends Animator<GnomadMogulEntity, GnomadMogul
         super.animate();
         GnomadMogulEntity entity = this.parent;
 
-        boolean sitting = entity.isSitting();
+        boolean sitting = entity.sitModule().isSitting();
         this.sitFactor = Mth.approach(sitFactor, sitting ? 1 : 0, sitting ? 0.025F : 0.0125F);
         this.sitAnim.setMixFactor(sitFactor);
         this.sitAnim.setTime(sitting ? 0 : 1);

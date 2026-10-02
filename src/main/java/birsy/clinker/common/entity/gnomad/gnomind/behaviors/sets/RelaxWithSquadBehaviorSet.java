@@ -1,12 +1,13 @@
 package birsy.clinker.common.entity.gnomad.gnomind.behaviors.sets;
 
-import birsy.clinker.common.entity.ai.Sitter;
 import birsy.clinker.common.entity.ai.behaviors.DecisionBehaviour;
 import birsy.clinker.common.entity.ai.behaviors.SetWalkTargetToPos;
 import birsy.clinker.common.entity.ai.behaviors.ClaimSquadTask;
 import birsy.clinker.common.entity.ai.behaviors.PostSquadTask;
 import birsy.clinker.common.entity.gnomad.gnomind.squadtasks.RelaxWithSquadTask;
-import birsy.clinker.common.entity.system.squad.SquadMember;
+import birsy.clinker.common.entity.module.ModuleHolder;
+import birsy.clinker.common.entity.module.modules.Sitter;
+import birsy.clinker.common.entity.module.modules.SquadMember;
 import birsy.clinker.core.registry.entity.ClinkerActivities;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import net.minecraft.core.BlockPos;
@@ -33,14 +34,15 @@ import java.util.Optional;
 
 public class RelaxWithSquadBehaviorSet {
     private static final int DISTANCE_THRESHOLD = 4;
-    public static <E extends Mob & Sitter & SquadMember<E> & SmartBrainOwner<E>> BrainActivityGroup<E> createActivity(int minTime, int maxTime) {
+    public static <E extends Mob & ModuleHolder<E> & Sitter<E> & SquadMember<E> & SmartBrainOwner<E>> BrainActivityGroup<E> createActivity(int minTime, int maxTime) {
         return new BrainActivityGroup<E>(ClinkerActivities.RELAX.get())
                 .behaviours(
                         SharedGnomadBehaviorSets.setIdleLookTargets(),
-                        new DecisionBehaviour<E>(
+                        new DecisionBehaviour<>(
                                 (entity) -> {
                                     GlobalPos relaxPoint = getRelaxationPoint(entity);
-                                    if (relaxPoint == null || relaxPoint.dimension() != entity.level().dimension()) return DecisionBehaviour.CANCEL; // invalid relaxation pos
+                                    if (relaxPoint == null || relaxPoint.dimension() != entity.level().dimension())
+                                        return DecisionBehaviour.CANCEL; // invalid relaxation pos
                                     boolean tooFar = entity.distanceToSqr(relaxPoint.pos().getCenter()) >
                                             DISTANCE_THRESHOLD * DISTANCE_THRESHOLD;
                                     return tooFar ? 0 : 1;
@@ -50,8 +52,8 @@ public class RelaxWithSquadBehaviorSet {
                                             GlobalPos relaxPoint = getRelaxationPoint(entity);
                                             return relaxPoint == null ? null : relaxPoint.pos().getCenter();
                                         }).closeEnoughWhen(DISTANCE_THRESHOLD - 1)
-                                          .speedMod(0.5F)
-                                          .lookAtTarget(false),
+                                                .speedMod(0.5F)
+                                                .lookAtTarget(false),
                                         // cancel the task if we can't reach it after ten seconds
                                         new CustomDelayedBehaviour<E>(200)
                                                 .whenActivating(RelaxWithSquadBehaviorSet::stopRelaxing)
@@ -64,7 +66,7 @@ public class RelaxWithSquadBehaviorSet {
                          .stopIf((entity) -> entity.getLastDamageSource() != null)
                 ).requireAndWipeMemoriesOnUse(ClinkerMemoryModules.RELAXATION_POSITION.get());
     }
-    public static <E extends LivingEntity & Sitter & SquadMember<E>> ExtendedBehaviour<E> tryInitiate(int initiationChance, int joinChance) {
+    public static <E extends Mob & ModuleHolder<E> & Sitter<E> & SquadMember<E> & SmartBrainOwner<E>> ExtendedBehaviour<E> tryInitiate(int initiationChance, int joinChance) {
         if (initiationChance <= 0)
             return new ClaimSquadTask<E>(task -> task instanceof RelaxWithSquadTask)
                 .startCondition(entity -> RandomUtil.oneInNChance(joinChance) && !BrainUtils.hasMemory(entity, ClinkerMemoryModules.ASSIGNED_SQUAD_TASK.get()))
@@ -97,11 +99,11 @@ public class RelaxWithSquadBehaviorSet {
     private static <E extends LivingEntity> @Nullable GlobalPos getRelaxationPoint(E entity) {
         return BrainUtils.getMemory(entity, ClinkerMemoryModules.RELAXATION_POSITION.get());
     }
-    private static <E extends LivingEntity & Sitter> void startRelaxing(E entity) {
-        entity.setSitting(true);
+    private static <E extends LivingEntity & ModuleHolder<E> & Sitter<E>> void startRelaxing(E entity) {
+        entity.sitModule().setSitting(true);
     }
-    private static <E extends LivingEntity & Sitter & SquadMember<E>> void stopRelaxing(E entity) {
-        entity.setSitting(false);
+    private static <E extends LivingEntity & ModuleHolder<E> & Sitter<E> & SquadMember<E>> void stopRelaxing(E entity) {
+        entity.sitModule().setSitting(false);
         if (BrainUtils.getMemory(entity, ClinkerMemoryModules.ASSIGNED_SQUAD_TASK.get()) instanceof RelaxWithSquadTask relaxTask)
             relaxTask.unassign(entity);
     }

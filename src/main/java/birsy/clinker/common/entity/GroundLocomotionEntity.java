@@ -4,6 +4,7 @@ import birsy.clinker.common.entity.ai.GroundBodyAngleControl;
 import birsy.clinker.common.entity.ai.GroundLookAngleControl;
 import birsy.clinker.common.entity.ai.GroundMoveControl;
 import birsy.clinker.common.entity.ai.GroundNavigationControl;
+import birsy.clinker.common.entity.module.ModularPathfindingMob;
 import birsy.clinker.common.networking.packet.ClientboundMobLocomotionSyncPacket;
 import net.minecraft.SharedConstants;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
@@ -33,7 +34,7 @@ import net.tslat.smartbrainlib.util.EntityRetrievalUtil;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
-public class GroundLocomotionEntity extends PathfinderMob {
+public class GroundLocomotionEntity<E extends GroundLocomotionEntity<E>> extends ModularPathfindingMob<E> {
     protected static final EntityDataAccessor<Float> DATA_SYNCED_BODY_ROTATION =
             SynchedEntityData.defineId(GroundLocomotionEntity.class, EntityDataSerializers.FLOAT);
     protected static final EntityDataAccessor<Vector3f> DATA_LAST_HIT_DIRECTION =
@@ -47,7 +48,7 @@ public class GroundLocomotionEntity extends PathfinderMob {
 
     public float speedModifier = 1.0F;
 
-    protected GroundLocomotionEntity(EntityType<? extends PathfinderMob> pEntityType, Level pLevel) {
+    protected GroundLocomotionEntity(EntityType<? extends ModularPathfindingMob<E>> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         this.moveControl = createMoveControl();
         this.lookControl = createLookControl();

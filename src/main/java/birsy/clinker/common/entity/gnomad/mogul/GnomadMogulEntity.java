@@ -6,9 +6,9 @@ import birsy.clinker.common.entity.gnomad.BaseGnomadEntity;
 import birsy.clinker.common.entity.gnomad.gnomind.behaviors.StayNearSquadCenter;
 import birsy.clinker.common.entity.gnomad.gnomind.behaviors.sets.RelaxWithSquadBehaviorSet;
 import birsy.clinker.common.entity.gnomad.gnomind.behaviors.sets.SharedGnomadBehaviorSets;
+import birsy.clinker.common.entity.module.modules.SquadMember;
 import birsy.clinker.common.entity.system.squad.Squad;
 import birsy.clinker.common.entity.system.squad.SquadSystem;
-import birsy.clinker.common.entity.system.squad.SquadMember;
 import foundry.veil.api.client.necromancer.SkeletonParent;
 import foundry.veil.api.client.necromancer.animation.Animator;
 import net.minecraft.core.BlockPos;
@@ -141,9 +141,9 @@ public class GnomadMogulEntity extends BaseGnomadEntity<GnomadMogulEntity> imple
         if (this.level() instanceof ServerLevel serverLevel) {
             // if we aren't currently in a squad,
             // create one and become the leader!
-            if (this.getSquad() == null) {
+            if (this.squadModule.getSquad() == null) {
                 Squad newSquad = SquadSystem.get(serverLevel).getOrCreate(UUID.randomUUID());
-                this.setSquad(newSquad);
+                this.squadModule.setSquad(newSquad);
                 newSquad.setLeader(this);
             }
             // recruit nearby gnomads into our squad
@@ -152,12 +152,12 @@ public class GnomadMogulEntity extends BaseGnomadEntity<GnomadMogulEntity> imple
                     10, 10, 10,
                     entity -> {
                         if (entity instanceof BaseGnomadEntity<?> potentialRecruit)
-                            return potentialRecruit.getSquad() == null;
+                            return potentialRecruit.squadModule().getSquad() == null;
                         return false;
                     }
             );
             for (SquadMember<?> recruit : nearbyRecruits) {
-                recruit.setSquad(this.getSquad());
+                recruit.squadModule().setSquad(this.squadModule.getSquad());
             }
         }
     }

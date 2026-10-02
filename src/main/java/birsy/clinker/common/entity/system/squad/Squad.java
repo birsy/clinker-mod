@@ -1,6 +1,7 @@
 package birsy.clinker.common.entity.system.squad;
 
-import birsy.clinker.common.entity.gnomad.gnomind.LastKnownEntityPositionsTracker;
+import birsy.clinker.common.entity.gnomad.gnomind.memories.LastKnownEntityPositionsTracker;
+import birsy.clinker.common.entity.module.modules.SquadMember;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import net.minecraft.network.protocol.game.DebugEntityNameGenerator;
@@ -66,7 +67,7 @@ public class Squad {
     // members
     public boolean addMember(SquadMember<?> member) {
         if (isMemberInvalid(member)) return false;
-        Clinker.LOGGER.info("squad {} added member {}", this.uuid, DebugEntityNameGenerator.getEntityName(member.asEntity().getUUID()));
+        Clinker.LOGGER.info("squad {} added member {}", this.uuid, DebugEntityNameGenerator.getEntityName(member.squadModule().self.getUUID()));
         if (member instanceof LivingEntity livingEntity)
             BrainUtils.setMemory(livingEntity, ClinkerMemoryModules.SQUAD.get(), this);
         return members.add(member);
@@ -81,7 +82,7 @@ public class Squad {
     }
     boolean isMemberInvalid(SquadMember<?> member) {
         if (member == null) return true;
-        LivingEntity entity = member.asEntity();
+        LivingEntity entity = member.squadModule().self;
         return entity.isDeadOrDying() ||
                entity.isRemoved() ||
                entity.level() != level;
@@ -120,7 +121,7 @@ public class Squad {
         for (SquadMember<?> member : this.members) {
             if (member == memberToExclude) continue;
             if (isMemberInvalid(member)) continue;
-            float weight = member.squadPositionWeight();
+            float weight = member.squadModule().positionWeight;
             totalWeight += weight;
         }
         // add together positions
@@ -128,10 +129,10 @@ public class Squad {
         for (SquadMember<?> member : this.members) {
             if (member == memberToExclude) continue;
             if (isMemberInvalid(member)) continue;
-            float mult = member.squadPositionWeight() / totalWeight;
-            x += member.asEntity().getX() * mult;
-            y += member.asEntity().getY() * mult;
-            z += member.asEntity().getZ() * mult;
+            float mult = member.squadModule().positionWeight / totalWeight;
+            x += member.squadModule().self.getX() * mult;
+            y += member.squadModule().self.getY() * mult;
+            z += member.squadModule().self.getZ() * mult;
         }
         return new Vec3(x, y, z);
     }

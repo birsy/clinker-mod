@@ -1,4 +1,4 @@
-package birsy.clinker.common.entity.ai;
+package birsy.clinker.common.entity.ai.memories;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;

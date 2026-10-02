@@ -7,6 +7,7 @@ import birsy.clinker.common.entity.gnomad.gnomind.behaviors.sets.RelaxWithSquadB
 import birsy.clinker.common.entity.gnomad.gnomind.behaviors.sets.SharedGnomadBehaviorSets;
 import birsy.clinker.common.entity.gnomad.gnomind.behaviors.StayNearSquadCenter;
 import birsy.clinker.common.entity.gnomad.gnomind.squadtasks.ResupplyTask;
+import birsy.clinker.common.entity.module.modules.SuppliesHolder;
 import birsy.clinker.core.registry.ClinkerItems;
 import foundry.veil.api.client.necromancer.SkeletonParent;
 import foundry.veil.api.client.necromancer.animation.Animator;
@@ -35,32 +36,25 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Set;
 
 public class GnomadEntity extends BaseGnomadEntity<GnomadEntity>
-        implements SuppliesHolder, RangedAttackMob, SkeletonParent<GnomadEntity, GnomadSkeleton> {
-    int supplies;
-    public GnomadEntity(EntityType<? extends PathfinderMob> entityType, Level level) {
+        implements SuppliesHolder<GnomadEntity>, RangedAttackMob, SkeletonParent<GnomadEntity, GnomadSkeleton> {
+
+    protected final SuppliesModule<GnomadEntity> suppliesModule;
+
+    public GnomadEntity(EntityType<? extends GnomadEntity> entityType, Level level) {
         super(entityType, level);
+        this.suppliesModule = this.modules().add(
+                new SuppliesModule<>(this, 10)
+        );
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-    }
-
-    @Override
-    public void addAdditionalSaveData(CompoundTag nbt) {
-        super.addAdditionalSaveData(nbt);
-        serializeSupplies(nbt);
-    }
-
-    @Override
-    public void readAdditionalSaveData(CompoundTag nbt) {
-        super.readAdditionalSaveData(nbt);
-        deserializeSupplies(nbt);
+    public SuppliesModule suppliesModule() {
+        return this.suppliesModule;
     }
 
     @Override
     public @Nullable SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
-        this.supplies = this.supplyDeliveryAmount();
+        this.suppliesModule.supplies = this.suppliesModule.maxSupplies;
         this.setLeftHanded(this.getRandom().nextBoolean());
         this.setItemInHand(InteractionHand.MAIN_HAND,
                 this.getRandom().nextBoolean() ?
@@ -78,12 +72,13 @@ public class GnomadEntity extends BaseGnomadEntity<GnomadEntity>
     @Override
     public BrainActivityGroup<GnomadEntity> getIdleTasks() {
         return BrainActivityGroup.idleTasks(
+                SharedGnomadBehaviorSets.reactToLiveOrdnance(),
                 new PostSquadTask<GnomadEntity, ResupplyTask>(ResupplyTask.class, ResupplyTask::new)
-                        .startCondition(SuppliesHolder::outOfSupplies)
+                        .startCondition(mob -> mob.suppliesModule.outOfSupplies())
                         .cooldownFor(e -> 100),
                 new AnimatableRangedAttack<GnomadEntity>
                         (0)
-                        .startCondition(mob -> !outOfSupplies()),
+                        .startCondition(mob -> !mob.suppliesModule.outOfSupplies()),
                 SharedGnomadBehaviorSets.<GnomadEntity>setIdleLookTargets(),
                 RelaxWithSquadBehaviorSet.<GnomadEntity>tryInitiate(600, 300),
                 new FirstApplicableBehaviour<>(
@@ -112,7 +107,7 @@ public class GnomadEntity extends BaseGnomadEntity<GnomadEntity>
     public void performRangedAttack(LivingEntity target, float velocity) {
         if (target.isSpectator() || !target.isAlive()) return;
         if (target instanceof Player player && player.getAbilities().invulnerable) return;
-        if (!this.tryConsumeSupplies()) return;
+        if (!this.suppliesModule().tryConsumeSupplies()) return;
         Snowball snowball = new Snowball(this.level(), this);
         double d0 = target.getEyeY() - 1.1F;
         double d1 = target.getX() - this.getX();
@@ -132,9 +127,6 @@ public class GnomadEntity extends BaseGnomadEntity<GnomadEntity>
     protected float nextStep() {
         return this.moveDist + 0.6F;
     }
-
-    @Override public int getSupplyCount() { return supplies; }
-    @Override public void setSupplyCount(int count) { this.supplies = count; }
 
     private GnomadSkeleton skeleton;
     private GnomadAnimator animator;

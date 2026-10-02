@@ -14,16 +14,18 @@ import static net.minecraft.core.Direction.Axis.*;
 import static birsy.clinker.client.AnimationUtilities.*;
 
 public class GnomadAnimator extends Animator<GnomadEntity, GnomadSkeleton> {
-    public final AnimationEntry<?, ?> idleAnim, walkAnim, strafeAnim, hurtAnim, maskAnim, sitAnim;
+    public final AnimationEntry<?, ?> idleAnim, walkAnim, strafeAnim, hurtAnim, maskAnim, sitAnim, throwAnim;
     private int maskShakeTime = 0, maskShakeDuration = 1;
     private boolean maskShaking = false;
     public final SurveyorWheel stepCounter = new SurveyorWheel(0.4F);
     private float sitFactor = 0.0F;
-
+    private float throwFactor = 0.0F;
+    
     protected GnomadAnimator(GnomadEntity parent, GnomadSkeleton skeleton) {
         super(parent, skeleton);
         this.idleAnim = this.addAnimation(IdleAnimation.INSTANCE, 0);
         this.sitAnim = this.addAnimation(SitAnimation.INSTANCE, 1);
+        this.throwAnim = this.addAnimation(HoldAndThrowAnimation.INSTANCE, 1);
         this.walkAnim = this.addAnimation(WalkAnimation.INSTANCE, 2);
         this.strafeAnim = this.addAnimation(StrafeAnimation.INSTANCE, 3);
         this.hurtAnim = this.addAnimation(HurtAnimation.INSTANCE, 4);
@@ -35,12 +37,16 @@ public class GnomadAnimator extends Animator<GnomadEntity, GnomadSkeleton> {
         super.animate();
         GnomadEntity entity = this.parent;
         int randomizedTickCount = entity.tickCount + ((entity.getId() * 71) % 2000);
-
-
-        boolean sitting = entity.isSitting();
+        
+        boolean sitting = entity.sitModule().isSitting();
         this.sitFactor = Mth.approach(sitFactor, sitting ? 1 : 0, sitting ? 0.05F : 0.025F);
         this.sitAnim.setMixFactor(sitFactor);
         this.sitAnim.setTime(sitting ? 0 : 1);
+        
+        boolean holding = entity.tossModule().isHoldingEntity();
+        this.throwFactor = Mth.approach(throwFactor, holding ? 1 : 0, holding ? 0.1F : 0.08F);
+        this.throwAnim.setMixFactor(holding ? throwFactor : (throwFactor > 0 ? 1 : 0));
+        this.throwAnim.setTime(holding ? 0 : 1.0F - throwFactor);
 
         this.idleAnim.setMixFactor(1.0F);
         this.idleAnim.setTime(randomizedTickCount);
@@ -106,8 +112,9 @@ public class GnomadAnimator extends Animator<GnomadEntity, GnomadSkeleton> {
         }
     }
 
-    private static class MaskAnimation extends Animation<GnomadEntity, GnomadSkeleton> {
-        protected static MaskAnimation INSTANCE = new MaskAnimation();
+    private static final class MaskAnimation extends Animation<GnomadEntity, GnomadSkeleton> {
+        private static final MaskAnimation INSTANCE = new MaskAnimation();
+
         @Override
         public void apply(GnomadEntity entity, GnomadSkeleton skeleton, float mixFactor, float time) {
             float headShake = Mth.sin(time * 0.44F) * mixFactor * 0.05F * Mth.RAD_TO_DEG;
@@ -117,9 +124,10 @@ public class GnomadAnimator extends Animator<GnomadEntity, GnomadSkeleton> {
         }
     }
 
-    private static class HurtAnimation extends Animation<GnomadEntity, GnomadSkeleton> {
-        protected static HurtAnimation INSTANCE = new HurtAnimation();
+    private static final class HurtAnimation extends Animation<GnomadEntity, GnomadSkeleton> {
+        private static final HurtAnimation INSTANCE = new HurtAnimation();
 
+        @Override
         public void apply(GnomadEntity entity, GnomadSkeleton skeleton, float mixFactor, float time) {
             skeleton.root.rotateDeg(nSin(0.0F + time) * 8 * mixFactor, Direction.Axis.X);
             skeleton.root.rotateDeg(nSin(0.5F + time) * 8 * mixFactor, Direction.Axis.Z);
@@ -139,9 +147,10 @@ public class GnomadAnimator extends Animator<GnomadEntity, GnomadSkeleton> {
         }
     }
 
-    private static class IdleAnimation extends Animation<GnomadEntity, GnomadSkeleton> {
-        protected static IdleAnimation INSTANCE = new IdleAnimation();
+    private static final class IdleAnimation extends Animation<GnomadEntity, GnomadSkeleton> {
+        private static final IdleAnimation INSTANCE = new IdleAnimation();
 
+        @Override
         public void apply(GnomadEntity entity, GnomadSkeleton skeleton, float mixFactor, float time) {
             float bodyYaw = Mth.wrapDegrees(180 - entity.yBodyRot);
             float headYaw = Mth.wrapDegrees(180 - entity.yHeadRot);
@@ -187,8 +196,8 @@ public class GnomadAnimator extends Animator<GnomadEntity, GnomadSkeleton> {
         }
     }
 
-    private static class WalkAnimation extends Animation<GnomadEntity, GnomadSkeleton> {
-        protected static WalkAnimation INSTANCE = new WalkAnimation();
+    private static final class WalkAnimation extends Animation<GnomadEntity, GnomadSkeleton> {
+        private static final WalkAnimation INSTANCE = new WalkAnimation();
 
         @Override
         public boolean running(GnomadEntity entity, GnomadSkeleton skeleton, float mixFactor, float time) {
@@ -237,8 +246,8 @@ public class GnomadAnimator extends Animator<GnomadEntity, GnomadSkeleton> {
         }
     }
 
-    private static class StrafeAnimation extends Animation<GnomadEntity, GnomadSkeleton> {
-        protected static StrafeAnimation INSTANCE = new StrafeAnimation();
+    private static final class StrafeAnimation extends Animation<GnomadEntity, GnomadSkeleton> {
+        private static final StrafeAnimation INSTANCE = new StrafeAnimation();
 
         @Override
         public boolean running(GnomadEntity entity, GnomadSkeleton skeleton, float mixFactor, float time) {
@@ -279,8 +288,8 @@ public class GnomadAnimator extends Animator<GnomadEntity, GnomadSkeleton> {
         }
     }
 
-    private static class SitAnimation extends Animation<GnomadEntity, GnomadSkeleton> {
-        protected static SitAnimation INSTANCE = new SitAnimation();
+    private static final class SitAnimation extends Animation<GnomadEntity, GnomadSkeleton> {
+        private static final SitAnimation INSTANCE = new SitAnimation();
 
         @Override
         public void apply(GnomadEntity entity, GnomadSkeleton skeleton, float mixFactor, float time) {
@@ -289,7 +298,7 @@ public class GnomadAnimator extends Animator<GnomadEntity, GnomadSkeleton> {
             float sitFactor = MathUtils.ease(mixFactor, standing ? MathUtils.EasingType.easeInBack : MathUtils.EasingType.easeInOutCubic);
             float linearSitFactor = MathUtils.ease(mixFactor, standing ? MathUtils.EasingType.easeInCubic : MathUtils.EasingType.easeInOutCubic);
 
-            int sitPose = entity.getSitPose() % 2;
+            int sitPose = entity.sitModule().getSitPose() % 2;
 
             if (sitPose == 0) {
                 skeleton.root.offsetY(3 * sitFactor);
@@ -376,6 +385,36 @@ public class GnomadAnimator extends Animator<GnomadEntity, GnomadSkeleton> {
                     skeleton.neck.rotateDeg(-10 * biasedMiddleFactor, X);
                 }
             }
+        }
+    }
+
+    private static final class HoldAndThrowAnimation extends Animation<GnomadEntity, GnomadSkeleton> {
+        private static final HoldAndThrowAnimation INSTANCE = new HoldAndThrowAnimation();
+
+        @Override
+        public void apply(GnomadEntity entity, GnomadSkeleton skeleton, float mixFactor, float time) {
+            boolean throwing = time > 0;
+            float throwFactor = mixFactor * (1 - time);
+            float easedThrowFactor = MathUtils.ease(throwFactor, throwing ? MathUtils.EasingType.easeInCubic : MathUtils.EasingType.easeOutCubic);
+
+            skeleton.leftArm.rotation.slerp(skeleton.leftArm.baseRotation, easedThrowFactor);
+            skeleton.rightArm.rotation.slerp(skeleton.rightArm.baseRotation, easedThrowFactor);
+
+            float armRot = 180F * easedThrowFactor;
+
+            skeleton.leftArm.offsetY(4.0F * easedThrowFactor);
+            skeleton.leftArm.rotateDeg(armRot, X);
+            skeleton.leftArm.rotateDeg(10F * easedThrowFactor, Z);
+
+            skeleton.rightArm.offsetY(4.0F * easedThrowFactor);
+            skeleton.rightArm.rotateDeg(armRot, X);
+            skeleton.rightArm.rotateDeg(-10F * easedThrowFactor, Z);
+
+            easedThrowFactor = MathUtils.ease(throwFactor, throwing ? MathUtils.EasingType.easeInBack : MathUtils.EasingType.easeOutCubic);
+            skeleton.torso.rotateDeg(10F * easedThrowFactor, X);
+            skeleton.neck.rotateDeg(-10F * easedThrowFactor, X);
+
+            skeleton.root.offsetY(nSin(Mth.clamp(time * 1.2F, 0, 1)) * 3.0F);
         }
     }
 
