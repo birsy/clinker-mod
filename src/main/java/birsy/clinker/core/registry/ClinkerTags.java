@@ -17,6 +17,7 @@ public class ClinkerTags {
         public static final TagKey<Block> BRAMBLE_FLOWERS = BlockTags.create(Clinker.resource("bramble_flowers"));
         public static final TagKey<Block> OTHERSHORE_SOIL = BlockTags.create(Clinker.resource("othershore_soil"));
         public static final TagKey<Block> BRAMBLES = BlockTags.create(Clinker.resource("brambles"));
+        public static final TagKey<Block> FOOTPRINTABLE = BlockTags.create(Clinker.resource("footprintable"));
     }
 
     public static final class Items {

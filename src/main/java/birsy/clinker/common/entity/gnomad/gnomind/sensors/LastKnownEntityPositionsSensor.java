@@ -1,7 +1,7 @@
 package birsy.clinker.common.entity.gnomad.gnomind.sensors;
 
-import birsy.clinker.common.entity.gnomad.gnomind.LastKnownEntityPosition;
-import birsy.clinker.common.entity.gnomad.gnomind.LastKnownEntityPositionsTracker;
+import birsy.clinker.common.entity.gnomad.gnomind.memories.LastKnownEntityPosition;
+import birsy.clinker.common.entity.gnomad.gnomind.memories.LastKnownEntityPositionsTracker;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;

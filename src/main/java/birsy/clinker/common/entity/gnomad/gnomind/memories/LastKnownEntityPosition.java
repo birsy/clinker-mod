@@ -1,4 +1,4 @@
-package birsy.clinker.common.entity.gnomad.gnomind;
+package birsy.clinker.common.entity.gnomad.gnomind.memories;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

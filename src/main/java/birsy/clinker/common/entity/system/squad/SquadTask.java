@@ -1,5 +1,6 @@
 package birsy.clinker.common.entity.system.squad;
 
+import birsy.clinker.common.entity.module.modules.SquadMember;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import net.minecraft.world.entity.LivingEntity;
 import net.tslat.smartbrainlib.util.BrainUtils;
@@ -54,7 +55,7 @@ public abstract class SquadTask {
         return entity.isDeadOrDying() ||
                entity.isRemoved() ||
                entity.level() != taskMaster.asEntity().level() ||
-               assignee.getSquad() != taskMaster.getSquad();
+               assignee.squadModule().getSquad() != taskMaster.squadModule().getSquad();
     }
 
     public boolean isPending() { return status == Status.UNASSIGNED; }
@@ -116,11 +117,11 @@ public abstract class SquadTask {
         if (status == Status.IN_PROGRESS && executionTimeout >= 0 && stageTime > executionTimeout)
             return Optional.of(FailureReason.TIMED_OUT);
 
-        if (taskMaster.getSquad() == null)
+        if (taskMaster.squadModule().getSquad() == null)
             return Optional.of(FailureReason.SQUAD_DISBANDED);
 
         LivingEntity taskMasterEntity = taskMaster.asEntity();
-        if (taskMasterEntity.isRemoved() || taskMasterEntity.isDeadOrDying() || taskMasterEntity.level() != taskMaster.getSquad().level)
+        if (taskMasterEntity.isRemoved() || taskMasterEntity.isDeadOrDying() || taskMasterEntity.level() != taskMaster.squadModule().getSquad().level)
             return Optional.of(FailureReason.TASKMASTER_DIED);
 
         if (status == Status.IN_PROGRESS) {

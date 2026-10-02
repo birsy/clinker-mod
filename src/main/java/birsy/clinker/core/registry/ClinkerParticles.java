@@ -59,6 +59,7 @@ public class ClinkerParticles
     public static final Supplier<SimpleParticleType> FALLING_SALTPETRE = register("falling_saltpetre");
     public static final Supplier<SimpleParticleType> LANDING_SALTPETRE = register("landing_saltpetre");
     public static final Supplier<SimpleParticleType> SALTPETRE_LEACH = register("saltpetre_leach");
+    public static final Supplier<SimpleParticleType> FOOTPRINT = register("footprint");
 
 
     public static Supplier<SimpleParticleType> register(String name) {
@@ -102,6 +103,7 @@ public class ClinkerParticles
             event.registerSpriteSet(BLOSSOM_BUG.get(), BlossomBugParticle.Provider::new);
             event.registerSpriteSet(WRITHING_MAGGOT.get(), WrithingMaggotParticle.Provider::new);
             event.registerSpriteSet(SALTPETRE_LEACH.get(), SaltpetreLeachParticle.Provider::new);
+            event.registerSpriteSet(FOOTPRINT.get(), FootprintParticle.Provider::new);
 
             event.registerSpecial(CHAIN_LIGHTNING_BOLT.get(), new ChainLightningBoltParticle.Provider());
 

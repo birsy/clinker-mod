@@ -40,6 +40,7 @@ public class ClinkerShaders {
 
     public static final ResourceLocation PARTICLE_BLOSSOM_BUG = Clinker.resource("particle/blossom_bug");
     public static final ResourceLocation PARTICLE_CHAIN_LIGHTNING = Clinker.resource("particle/chain_lightning");
+    public static final ResourceLocation PARTICLE_FOOTPRINT = Clinker.resource("particle/footprint");
 
     public static final ResourceLocation HALATION = Clinker.resource("halation");
 

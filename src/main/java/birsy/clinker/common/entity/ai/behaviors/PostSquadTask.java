@@ -1,7 +1,8 @@
 package birsy.clinker.common.entity.ai.behaviors;
 
+import birsy.clinker.common.entity.module.ModuleHolder;
+import birsy.clinker.common.entity.module.modules.SquadMember;
 import birsy.clinker.common.entity.system.squad.Squad;
-import birsy.clinker.common.entity.system.squad.SquadMember;
 import birsy.clinker.common.entity.system.squad.SquadTask;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import com.mojang.datafixers.util.Pair;
@@ -19,7 +20,7 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-public class PostSquadTask<E extends LivingEntity & SquadMember<E>, T extends SquadTask> extends ExtendedBehaviour<E> {
+public class PostSquadTask<E extends LivingEntity & ModuleHolder<E> & SquadMember<E>, T extends SquadTask> extends ExtendedBehaviour<E> {
     private static final MemoryTest MEMORY_REQUIREMENTS = MemoryTest.builder(2)
                     .hasMemory(ClinkerMemoryModules.SQUAD.get())
                     .usesMemory(ClinkerMemoryModules.POSTED_SQUAD_TASKS.get());

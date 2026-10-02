@@ -1,6 +1,7 @@
 package birsy.clinker.common.entity.gnomad.gnomind.sensors;
 
-import birsy.clinker.common.entity.system.squad.SquadMember;
+import birsy.clinker.common.entity.module.ModuleHolder;
+import birsy.clinker.common.entity.module.modules.SquadMember;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import birsy.clinker.core.registry.entity.ClinkerSensors;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -20,7 +21,7 @@ import net.tslat.smartbrainlib.util.RandomUtil;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class NearbyCoverSensor<E extends PathfinderMob & SquadMember<E>> extends ExtendedSensor<E> {
+public class NearbyCoverSensor<E extends PathfinderMob & ModuleHolder<E> & SquadMember<E>> extends ExtendedSensor<E> {
     private static final int SCAN_INTERVAL = 2;
     private static final List<MemoryModuleType<?>> MEMORIES =
             ObjectArrayList.of(ClinkerMemoryModules.COVER_POSITION.get());

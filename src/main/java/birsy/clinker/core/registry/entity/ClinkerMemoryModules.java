@@ -1,7 +1,8 @@
 package birsy.clinker.core.registry.entity;
 
-import birsy.clinker.common.entity.gnomad.SuppliesHolder;
-import birsy.clinker.common.entity.gnomad.gnomind.LastKnownEntityPositionsTracker;
+import birsy.clinker.common.entity.gnomad.gnomind.memories.LastKnownEntityPositionsTracker;
+import birsy.clinker.common.entity.module.modules.SuppliesHolder;
+import birsy.clinker.common.entity.projectile.OrdnanceEntity;
 import birsy.clinker.common.entity.system.squad.Squad;
 import birsy.clinker.common.entity.system.squad.SquadTask;
 import birsy.clinker.core.Clinker;
@@ -9,6 +10,8 @@ import com.mojang.serialization.Codec;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.util.Unit;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.ai.behavior.PositionTracker;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -29,6 +32,9 @@ public class ClinkerMemoryModules {
     public static final Supplier<MemoryModuleType<GlobalPos>> RELAXATION_POSITION =
             MEMORY_MODULE_TYPES.register("relaxation_position", () -> new MemoryModuleType<>(Optional.empty()));
 
+    public static final Supplier<MemoryModuleType<OrdnanceEntity>> NEAREST_LIVE_ORDNANCE =
+            MEMORY_MODULE_TYPES.register("nearest_live_ordnance", () -> new MemoryModuleType<>(Optional.empty()));
+
     public static final Supplier<MemoryModuleType<Squad>> SQUAD =
             MEMORY_MODULE_TYPES.register("squad", () -> new MemoryModuleType<>(Optional.empty()));
     public static final Supplier<MemoryModuleType<Set<SquadTask>>> POSTED_SQUAD_TASKS =
@@ -38,6 +44,11 @@ public class ClinkerMemoryModules {
 
     public static final Supplier<MemoryModuleType<LastKnownEntityPositionsTracker>> LAST_KNOWN_ENEMY_POSITIONS =
             MEMORY_MODULE_TYPES.register("last_known_enemy_positions", () -> new MemoryModuleType<>(Optional.empty()));
+
+    public static final Supplier<MemoryModuleType<Entity>> GRAB_TARGET =
+            MEMORY_MODULE_TYPES.register("grab_target", () -> new MemoryModuleType<>(Optional.empty()));
+    public static final Supplier<MemoryModuleType<PositionTracker>> THROW_TARGET =
+            MEMORY_MODULE_TYPES.register("throw_target", () -> new MemoryModuleType<>(Optional.empty()));
 
     public static final Supplier<MemoryModuleType<Unit>> ATTACK_WINDUP = MEMORY_MODULE_TYPES.register("attack_windup", () -> new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE))));
 }

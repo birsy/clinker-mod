@@ -1,7 +1,7 @@
 package birsy.clinker.common.entity.gnomad.gnomind.squadtasks;
 
-import birsy.clinker.common.entity.gnomad.SuppliesHolder;
-import birsy.clinker.common.entity.system.squad.SquadMember;
+import birsy.clinker.common.entity.module.modules.SquadMember;
+import birsy.clinker.common.entity.module.modules.SuppliesHolder;
 import birsy.clinker.common.entity.system.squad.SquadTask;
 import birsy.clinker.core.registry.entity.ClinkerActivities;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
@@ -37,7 +37,7 @@ public class ResupplyTask extends SquadTask {
     @Override
     public boolean shouldSucceed() {
         SuppliesHolder taskMaster = (SuppliesHolder) this.taskMaster;
-        return !taskMaster.outOfSupplies();
+        return !taskMaster.suppliesModule().outOfSupplies();
     }
 
     public SquadMember<? extends SuppliesHolder> taskMaster() {

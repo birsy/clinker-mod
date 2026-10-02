@@ -5,8 +5,8 @@ import birsy.clinker.common.entity.ai.behaviors.SetLookTargetToRememberedPos;
 import birsy.clinker.common.entity.ai.behaviors.SetWalkTargetToEntity;
 import birsy.clinker.common.entity.ai.behaviors.SetWalkTargetToRememberedPos;
 import birsy.clinker.common.entity.gnomad.SuppliesDeliverer;
-import birsy.clinker.common.entity.gnomad.SuppliesHolder;
 import birsy.clinker.common.entity.gnomad.gnomind.squadtasks.ResupplyTask;
+import birsy.clinker.common.entity.module.modules.SuppliesHolder;
 import birsy.clinker.common.entity.system.squad.SquadTask;
 import birsy.clinker.core.registry.entity.ClinkerActivities;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
@@ -86,7 +86,7 @@ public class FetchAndDeliverSuppliesBehaviorSet {
     }
 
     private static <E extends PathfinderMob & SuppliesDeliverer> @Nullable LivingEntity getTarget(E entity) {
-        SuppliesHolder holder = BrainUtils.getMemory(entity, ClinkerMemoryModules.DELIVERY_TARGET.get());
+        SuppliesHolder<?> holder = BrainUtils.getMemory(entity, ClinkerMemoryModules.DELIVERY_TARGET.get());
         return holder instanceof LivingEntity livingEntity ? livingEntity : null;
     }
     private static <E extends PathfinderMob & SuppliesDeliverer> FakePlayer getFakePlayerForEntity(E entity) {
@@ -126,7 +126,9 @@ public class FetchAndDeliverSuppliesBehaviorSet {
         // finish!
         SquadTask currentTask = BrainUtils.getMemory(entity, ClinkerMemoryModules.ASSIGNED_SQUAD_TASK.get());
         if (currentTask instanceof ResupplyTask resupplyTask) {
-            resupplyTask.taskMaster().asEntity().addSupplies(resupplyTask.taskMaster().asEntity().supplyDeliveryAmount());
+            resupplyTask.taskMaster().asEntity().suppliesModule().addSupplies(
+                    resupplyTask.taskMaster().asEntity().suppliesModule().maxSupplies
+            );
             resupplyTask.succeed();
         }
     }

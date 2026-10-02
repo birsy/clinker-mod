@@ -11,6 +11,7 @@ import birsy.clinker.common.ordnance.modifiers.FuseTimeModifier;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.*;
 import birsy.clinker.core.registry.entity.ClinkerEntities;
+import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import com.google.common.base.Predicates;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
@@ -50,6 +51,8 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.tslat.smartbrainlib.api.SmartBrainOwner;
+import net.tslat.smartbrainlib.util.BrainUtils;
 import net.tslat.smartbrainlib.util.EntityRetrievalUtil;
 import org.joml.Vector3d;
 import org.joml.Vector3f;
@@ -78,6 +81,8 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
     boolean xCollision, zCollision;
     float spin, pSpin;
     int onFireTicks = 0;
+
+    int timeSinceInformedNearbyEntities = 0;
 
     public OrdnanceEntity(EntityType<? extends Projectile> entityType, Level level) {
         super(entityType, level);
@@ -156,12 +161,35 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
 
         if (this.level().isClientSide())
             this.updateSpin();
+        else
+            informNearbyEntities();
 
         if (this.isOnFire()) onFireTicks++;
         else onFireTicks = 0;
         if (onFireTicks > 20 && this.canDetonate()) this.detonate();
         
         this.updateFuse();
+    }
+
+    // tell nearby entities that we're about to detonate.
+    void informNearbyEntities() {
+        if (!this.hasFuse() || !this.canDetonate()) return;
+        if (timeSinceInformedNearbyEntities++ < 10) return;
+
+        timeSinceInformedNearbyEntities = 0;
+        for (LivingEntity entity : EntityRetrievalUtil.getEntities(this, 10.0, LivingEntity.class)) {
+            if (entity instanceof SmartBrainOwner<?>) {
+                BrainUtils.addMemories(entity.getBrain(), ClinkerMemoryModules.NEAREST_LIVE_ORDNANCE.get());
+                OrdnanceEntity otherOrdnance = BrainUtils.getMemory(entity, ClinkerMemoryModules.NEAREST_LIVE_ORDNANCE.get());
+                if (otherOrdnance != null && otherOrdnance != this && !otherOrdnance.isRemoved()) {
+                    double thisDist = entity.distanceToSqr(this);
+                    double otherDist = entity.distanceToSqr(otherOrdnance);
+                    if (thisDist > otherDist) continue;
+                }
+                BrainUtils.setForgettableMemory(entity, ClinkerMemoryModules.NEAREST_LIVE_ORDNANCE.get(), this, 20);
+            }
+
+        }
     }
 
     public float getSpin(float partialTicks) { return Mth.lerp(partialTicks, this.pSpin, this.spin); }

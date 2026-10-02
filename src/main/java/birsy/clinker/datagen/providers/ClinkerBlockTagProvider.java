@@ -53,6 +53,9 @@ public class ClinkerBlockTagProvider extends BlockTagsProvider {
                 ClinkerBlocks.HERBAL_AMALGAM_BLOCK.get()
         );
 
+        IntrinsicTagAppender<Block> footprintables = this.tag(ClinkerTags.Blocks.FOOTPRINTABLE).replace(false)
+                .add(ClinkerBlocks.ASH.get(), ClinkerBlocks.ASH_LAYER.get());
+
         IntrinsicTagAppender<Block> climbables = this.tag(BlockTags.CLIMBABLE).replace(false);
         climbables.add(ClinkerBlocks.THORNY_STEM.get(), ClinkerBlocks.CAVE_IVY.get());
 

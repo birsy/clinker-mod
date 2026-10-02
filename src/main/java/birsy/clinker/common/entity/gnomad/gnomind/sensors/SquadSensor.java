@@ -1,6 +1,6 @@
 package birsy.clinker.common.entity.gnomad.gnomind.sensors;
 
-import birsy.clinker.common.entity.system.squad.SquadMember;
+import birsy.clinker.common.entity.module.modules.SquadMember;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import birsy.clinker.core.registry.entity.ClinkerSensors;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -32,10 +32,10 @@ public class SquadSensor<E extends LivingEntity & SquadMember> extends ExtendedS
 
     @Override
     protected void doTick(ServerLevel level, E entity) {
-        if (entity.getSquad() == null) {
+        if (entity.squadModule().getSquad() == null) {
             BrainUtils.clearMemory(entity, ClinkerMemoryModules.SQUAD.get());
         } else {
-            BrainUtils.setMemory(entity, ClinkerMemoryModules.SQUAD.get(), entity.getSquad());
+            BrainUtils.setMemory(entity, ClinkerMemoryModules.SQUAD.get(), entity.squadModule().getSquad());
         }
     }
 }
