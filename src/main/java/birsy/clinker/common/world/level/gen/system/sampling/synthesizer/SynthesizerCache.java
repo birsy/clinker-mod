@@ -6,12 +6,12 @@ import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingF
 import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingFieldSampler;
 import birsy.clinker.common.world.level.gen.system.sampling.noise.NoiseProvider;
 import birsy.clinker.common.world.level.gen.system.sampling.noise.NoiseSampler;
-import birsy.clinker.core.Clinker;
 import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.levelgen.PositionalRandomFactory;
+import net.minecraft.world.level.levelgen.RandomState;
 
 import java.util.Arrays;
 
@@ -21,14 +21,14 @@ public class SynthesizerCache {
     final Int2ObjectMap<InterpolatingField[]> fieldsBySynthesizerId = new Int2ObjectOpenHashMap<>();
     final int chunkHeight; // height of the current chunk, in blocks
     final int chunkMinX, chunkMinY, chunkMinZ; // bottom south-west corner of the current chunk, in blocks
-    final PositionalRandomFactory worldRandom;
+    final PositionalRandomFactory noiseRandom;
 
-    public SynthesizerCache(int chunkMinX, int chunkMinY, int chunkMinZ, int chunkHeight, PositionalRandomFactory worldRandom) {
+    public SynthesizerCache(int chunkMinX, int chunkMinY, int chunkMinZ, int chunkHeight, RandomState randomState) {
         this.chunkMinX = chunkMinX;
         this.chunkMinY = chunkMinY;
         this.chunkMinZ = chunkMinZ;
         this.chunkHeight = chunkHeight;
-        this.worldRandom = worldRandom;
+        this.noiseRandom = randomState.getOrCreateRandomFactory(NoiseProvider.NOISE_GEN_SEED);
     }
 
     // computes the value of a synthesizer at a single point.
@@ -116,7 +116,7 @@ public class SynthesizerCache {
         for (int i = 0; i < synthesizer.noises.size(); i++) {
             // seedify all the noises
             NoiseProvider sampler = synthesizer.noises.get(i);
-            RandomSource randomSource = worldRandom.fromHashOf(sampler.name());
+            RandomSource randomSource = noiseRandom.fromHashOf(sampler.name());
             noises[i] = sampler.fromRandom(randomSource);
         }
 
@@ -154,7 +154,7 @@ public class SynthesizerCache {
         }
 
         @Override
-        public double compute(int x, int y, int z) {
+        public float compute(int x, int y, int z) {
             for (int i = 0; i < interpolators.length; i++) {
                 InterpolatingFieldSampler field = interpolators[i];
                 context.dependencyValues[i] = field.sample();

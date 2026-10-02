@@ -78,7 +78,7 @@ public class SurfaceShapeSystem {
                 .withDependencies(dependencies)
                 .build(InterpolatingFieldResolution.FINE,
                         ctx -> {
-                            double dist = 100;
+                            float dist = 100;
                             for (int i = 0; i < dependencies.length; i++) {
                                 dist = MathUtils.smoothMin(dist, ctx.dependentValue(i), 3);
                             }
@@ -106,13 +106,12 @@ public class SurfaceShapeSystem {
                             BoundaryInfo info = boundaries[biomeIndex];
 
                             if (info.closestQX() == Integer.MAX_VALUE)
-                                return SQR_SEARCH_RADIUS * (info.insideBiome() ? -1.0 : 1.0);
+                                return SQR_SEARCH_RADIUS * (info.insideBiome() ? -1.0F : 1.0F);
 
-                            double biomeOffset = ctx.noise(0).sample(x * 0.05, z * 0.05);
-                            return Mth.length(
-                                    (x + biomeOffset * 4) - (QuartPos.toBlock(info.closestQX()) + 2),
-                                    (z + biomeOffset * 4) - (QuartPos.toBlock(info.closestQZ()) + 2)
-                            ) * (info.insideBiome() ? -1.0 : 1.0);
+                            float biomeOffset = ctx.noise(0).sample(x * 0.05, z * 0.05);
+                            float xDist = (x + biomeOffset * 4) - (QuartPos.toBlock(info.closestQX()) + 2),
+                                  zDist = (z + biomeOffset * 4) - (QuartPos.toBlock(info.closestQZ()) + 2);
+                            return Mth.sqrt(xDist * xDist + zDist * zDist) * (info.insideBiome() ? -1.0F : 1.0F);
                         }
                 );
     }

@@ -15,14 +15,14 @@ import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 import net.minecraft.world.level.material.Fluids;
 
-public class SpotreedFeature extends Feature<SpotreedFeature.SpotreedFeatureConfiguration> {
+public class SpotreedFeature extends Feature<SpotreedFeature.Configuration> {
 
-    public SpotreedFeature(Codec<SpotreedFeatureConfiguration> codec) {
+    public SpotreedFeature(Codec<Configuration> codec) {
         super(codec);
     }
 
     @Override
-    public boolean place(FeaturePlaceContext<SpotreedFeatureConfiguration> context) {
+    public boolean place(FeaturePlaceContext<Configuration> context) {
         WorldGenLevel level = context.level();
         RandomSource random = context.random();
         BlockPos origin = context.origin();
@@ -77,12 +77,12 @@ public class SpotreedFeature extends Feature<SpotreedFeature.SpotreedFeatureConf
         return true;
     }
 
-    public record SpotreedFeatureConfiguration(IntProvider length, boolean upsideDown) implements FeatureConfiguration {
-        public static final Codec<SpotreedFeature.SpotreedFeatureConfiguration> CODEC = RecordCodecBuilder.create(
+    public record Configuration(IntProvider length, boolean upsideDown) implements FeatureConfiguration {
+        public static final Codec<Configuration> CODEC = RecordCodecBuilder.create(
                 codec -> codec.group(
                         IntProvider.CODEC.fieldOf("length").forGetter(config -> config.length),
                         Codec.BOOL.fieldOf("upside_down").orElse(false).forGetter(config -> config.upsideDown)
-                ).apply(codec, SpotreedFeature.SpotreedFeatureConfiguration::new)
+                ).apply(codec, Configuration::new)
         );
     }
 }

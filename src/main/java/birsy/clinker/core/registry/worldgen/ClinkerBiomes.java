@@ -7,6 +7,7 @@ import net.minecraft.world.level.biome.Biome;
 
 public class ClinkerBiomes {
     public static final ResourceKey<Biome> ASH_STEPPE = register("ash_steppe");
+    public static final ResourceKey<Biome> ASH_DUNES = register("ash_dunes");
     public static final ResourceKey<Biome> HEATH = register("heath");
     public static final ResourceKey<Biome> HEATH_THICKET = register("heath_thicket");
 

@@ -3,10 +3,14 @@ package birsy.clinker.common.world.level.gen.content.biome.placement;
 import birsy.clinker.common.world.level.gen.system.biome.placement.resolver.BiomeLayerOperation;
 import birsy.clinker.common.world.level.gen.system.biome.placement.resolver.ProtoBiome;
 import birsy.clinker.common.world.level.gen.system.biome.placement.resolver.ProtoBiomeNeighborhood;
+import birsy.clinker.common.world.level.gen.system.sampling.noise.NoiseProvider;
+import birsy.clinker.common.world.level.gen.system.sampling.noise.NoiseSampler;
 import birsy.clinker.core.registry.ClinkerRegistries;
 import net.minecraft.Util;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.random.SimpleWeightedRandomList;
+import net.minecraft.world.level.levelgen.PositionalRandomFactory;
+import net.minecraft.world.level.levelgen.RandomState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,23 +19,6 @@ import java.util.function.IntPredicate;
 import java.util.stream.Collectors;
 
 public class BiomeLayerOperations {
-    public record Replace(IntPredicate shouldReplace, int replacement) implements BiomeLayerOperation {
-        public Replace(Set<ProtoBiome> targets, ProtoBiome replacement) {
-            this(Util.make(() -> {
-                Set<Integer> ids = targets
-                        .stream()
-                        .map(protoBiome -> protoBiome.id)
-                        .collect(Collectors.toUnmodifiableSet());
-                return ids::contains;
-            }), replacement.id);
-        }
-        @Override
-        public int apply(int blockX, int blockZ, int currentId, int[] neighborhood, RandomSource random) {
-            if (shouldReplace.test(currentId)) return replacement;
-            return currentId;
-        }
-    }
-
     public record Smooth() implements BiomeLayerOperation {
         private static final ThreadLocal<int[]> threadedCounts =
                 ThreadLocal.withInitial(() -> new int[ClinkerRegistries.PROTO_BIOME_REGISTRY.size()]);
@@ -194,9 +181,13 @@ public class BiomeLayerOperations {
         }
         @Override
         public int apply(int blockX, int blockZ, int currentId, int[] neighborhood, RandomSource random) {
-            if (!biomeA.test(currentId)) return currentId;
-            for (int i : ProtoBiomeNeighborhood.NEIGHBOR_INDICES)
-                if (biomeB.test(neighborhood[i])) return borderBiomeId;
+            if (biomeA.test(currentId)) {
+                for (int i : ProtoBiomeNeighborhood.POSITIVE_DIRECT_NEIGHBORS)
+                    if (biomeB.test(neighborhood[i])) return borderBiomeId;
+            } else if (biomeB.test(currentId)) {
+                for (int i : ProtoBiomeNeighborhood.POSITIVE_DIRECT_NEIGHBORS)
+                    if (biomeA.test(neighborhood[i])) return borderBiomeId;
+            }
             return currentId;
         }
     }

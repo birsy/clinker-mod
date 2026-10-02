@@ -29,8 +29,8 @@ import java.util.Objects;
 
 public class FallingLayerBlock extends ColoredFallingBlock implements SimpleWaterloggedBlock
 {
+    public static final int MAX_HEIGHT = SnowLayerBlock.MAX_HEIGHT;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
-
     public static final IntegerProperty LAYERS = BlockStateProperties.LAYERS;
     protected static final VoxelShape[] SHAPE_BY_LAYER = new VoxelShape[]{Shapes.empty(),
             box(0.0D, 0.0D, 0.0D, 16.0D, 2.0D, 16.0D),

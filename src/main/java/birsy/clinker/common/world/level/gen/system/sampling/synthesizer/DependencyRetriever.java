@@ -8,7 +8,7 @@ import birsy.clinker.core.Clinker;
 // slower than the InterpolatingFieldSampler approach, but more robust
 // to be used sparingly.
 public interface DependencyRetriever {
-    double retrieve(double x, double y, double z);
+    float retrieve(double x, double y, double z);
 
     // todo: this
     // ideally, synthesizers have the same retrieval capabilities no matter what...
@@ -17,7 +17,7 @@ public interface DependencyRetriever {
     // slow and bad but that's ok
     record Direct(Synthesizer synthesizer) implements DependencyRetriever {
         @Override
-        public double retrieve(double x, double y, double z) {
+        public float retrieve(double x, double y, double z) {
             return 0;
         }
     }
@@ -25,7 +25,7 @@ public interface DependencyRetriever {
     // wrapper for an interpolating field
     record Field(int minX, int minY, int minZ, InterpolatingField field) implements DependencyRetriever {
         @Override
-        public double retrieve(double x, double y, double z) {
+        public float retrieve(double x, double y, double z) {
             return field.retrieve((int) Math.round(x - minX), (int) Math.round(y - minY), (int) Math.round(z - minZ));
         }
     }

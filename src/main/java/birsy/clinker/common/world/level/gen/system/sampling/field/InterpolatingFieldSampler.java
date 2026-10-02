@@ -4,7 +4,7 @@ import net.minecraft.util.Mth;
 
 // trying to speed up sequential interpolation by fetching cell data in advance
 public interface InterpolatingFieldSampler {
-    double sample();
+    float sample();
     void setSlice(int sliceY);
     void advanceX();
     void advanceY();
@@ -22,7 +22,7 @@ public interface InterpolatingFieldSampler {
     // if the two fields are the same resolution, we can skip all the
     // weird fancy interpolation magic and just sample directly.
     class SameResolutionSampler implements InterpolatingFieldSampler {
-        private final double[] srcArray;
+        private final float[] srcArray;
         private final int sliceCellCount, xzCellCount;
         private int index, sliceStart;
         private int cellZ, cellY;
@@ -34,7 +34,7 @@ public interface InterpolatingFieldSampler {
         }
 
         @Override
-        public double sample() {
+        public float sample() {
             return srcArray[index];
         }
 
@@ -68,18 +68,18 @@ public interface InterpolatingFieldSampler {
     class MismatchedResolutionSampler implements InterpolatingFieldSampler {
         public final InterpolatingField srcField;
         final boolean src2d;
-        final double[] srcArray;
+        final float[] srcArray;
         final int srcCellSizeXZ, srcCellSizeY;
 
         public final InterpolatingField dstField;
         final boolean dst2d;
         final int dstCellSizeXZ, dstCellSizeY;
-        final double facAddendXZ, facAddendY;
+        final float facAddendXZ, facAddendY;
         // yzx bit order - as in, y is the most significant bit, and x the least. damn you arabic numerals.
         // sample indexing offsets. this is static for every cell scale but w/e...
         protected final int[] indexOffset = new int[8];
         // noise values in the current cell
-        protected final double[] data = new double[8];
+        protected final float[] data = new float[8];
 
         // info about the current cell in the source array
         // absolute cell coordinates, padding included.
@@ -92,7 +92,7 @@ public interface InterpolatingFieldSampler {
         public int dstCellX, dstCellY, dstCellZ;
         public int dstCellBlockX, dstCellBlockY, dstCellBlockZ;
         // interpolation factors when tri-lerping
-        protected double facX, facY, facZ;
+        protected float facX, facY, facZ;
 
         public MismatchedResolutionSampler(InterpolatingField sourceField, InterpolatingField destinationField) {
             // the math here only really works out when the scales are correct. So, make sure that's always true.
@@ -107,8 +107,8 @@ public interface InterpolatingFieldSampler {
             this.dstCellSizeXZ = destinationField.xzCellSize;
             this.dstCellSizeY = destinationField.yCellSize;
 
-            this.facAddendXZ = (double) dstCellSizeXZ / srcCellSizeXZ;
-            this.facAddendY = (double) dstCellSizeY / srcCellSizeY;
+            this.facAddendXZ = (float) dstCellSizeXZ / srcCellSizeXZ;
+            this.facAddendY = (float) dstCellSizeY / srcCellSizeY;
 
             this.src2d = sourceField instanceof InterpolatingField2d;
             this.dst2d = destinationField instanceof InterpolatingField2d;
@@ -124,13 +124,13 @@ public interface InterpolatingFieldSampler {
         }
 
         // tri-lerp
-        public double sample() {
-            double x0 = Mth.lerp(facX, data[0b000], data[0b001]),
-                   x1 = Mth.lerp(facX, data[0b010], data[0b011]),
-                   x2 = Mth.lerp(facX, data[0b100], data[0b101]),
-                   x3 = Mth.lerp(facX, data[0b110], data[0b111]);
-            double z0 = Mth.lerp(facZ, x0, x1),
-                   z1 = Mth.lerp(facZ, x2, x3);
+        public float sample() {
+            float x0 = Mth.lerp(facX, data[0b000], data[0b001]),
+                  x1 = Mth.lerp(facX, data[0b010], data[0b011]),
+                  x2 = Mth.lerp(facX, data[0b100], data[0b101]),
+                  x3 = Mth.lerp(facX, data[0b110], data[0b111]);
+            float z0 = Mth.lerp(facZ, x0, x1),
+                  z1 = Mth.lerp(facZ, x2, x3);
             return Mth.lerp(facY, z0, z1);
         }
 
@@ -146,10 +146,10 @@ public interface InterpolatingFieldSampler {
                 if (srcCellY >= srcField.yCellCount - 1) {
                     srcCellY = srcField.yCellCount - 2;
                     srcCellBlockY = srcCellY << srcField.yCellScale;
-                    facY = 1.0;
+                    facY = 1.0F;
                 } else {
                     srcCellBlockY = srcCellY << srcField.yCellScale;
-                    facY = (double) (dstCellBlockY % srcCellSizeY) / srcCellSizeY;
+                    facY = (float) (dstCellBlockY % srcCellSizeY) / srcCellSizeY;
                 }
             }
 

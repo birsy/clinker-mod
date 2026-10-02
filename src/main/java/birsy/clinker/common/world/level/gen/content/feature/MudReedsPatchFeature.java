@@ -1,7 +1,6 @@
 package birsy.clinker.common.world.level.gen.content.feature;
 
 import birsy.clinker.core.registry.ClinkerBlocks;
-import birsy.clinker.core.util.noise.CachedFastNoise;
 import birsy.clinker.core.util.noise.FastNoiseLite;
 import com.mojang.serialization.Codec;
 import net.minecraft.Util;
@@ -20,13 +19,13 @@ import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 
 public class MudReedsPatchFeature extends Feature<NoneFeatureConfiguration> {
-    private static CachedFastNoise noise = Util.make(() -> {
+    private static FastNoiseLite noise = Util.make(() -> {
         FastNoiseLite n = new FastNoiseLite();
         n.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2S);
         n.SetFrequency(1.0F);
         n.SetFractalType(FastNoiseLite.FractalType.FBm);
         n.SetFractalOctaves(2);
-        return new CachedFastNoise(n);
+        return n;
     });
 
     private static final BlockState[] STATE_BY_FACTOR = new BlockState[] {
@@ -64,8 +63,8 @@ public class MudReedsPatchFeature extends Feature<NoneFeatureConfiguration> {
 
                 float freq = 1 / 8.0F;
                 float offsetIntensity = 8.0F;
-                float offsetX = (float) noise.get(x * freq, 0, z * freq) * offsetIntensity;
-                float offsetZ = (float) noise.get(x * freq, 5, z * freq) * offsetIntensity;
+                float offsetX = noise.GetNoise(x * freq, 0, z * freq) * offsetIntensity;
+                float offsetZ = noise.GetNoise(x * freq, 5, z * freq) * offsetIntensity;
                 float distance = (float) Math.sqrt(origin.distToCenterSqr(x + offsetX, y, z + offsetZ));
                 float factor = 1 - (distance / radius);
 

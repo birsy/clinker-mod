@@ -121,8 +121,8 @@ dependencies {
         exclude group: "maven.modrinth"
     }
     implementation("net.tslat.smartbrainlib:SmartBrainLib-neoforge-${project.minecraft_version}:${project.sbl_version}")
-    localRuntime "maven.modrinth:spark:1.10.124-neoforge-1.21.1"
-    localRuntime "maven.modrinth:sodium:mc1.21.1-0.6.13-neoforge"
+    localRuntime "maven.modrinth:spark:1.10.124-neoforge-${project.minecraft_version}"
+    // localRuntime "maven.modrinth:sodium:mc${project.minecraft_version}-0.8.13-neoforge"
 
     implementation "foundry.imguimc:imguimc-neoforge-${project.minecraft_version}:${project.imguimc_version}"
 }

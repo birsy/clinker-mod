@@ -20,7 +20,7 @@ public class Synthesizer {
     public final Synthesizer.Function function;
 
     // required y, everything else is filled with defaultValue
-    public final double defaultValue;
+    public final float defaultValue;
     public final int minY, maxY;
 
     private Synthesizer(InterpolatingFieldResolution resolution,
@@ -28,7 +28,7 @@ public class Synthesizer {
                         ImmutableList<Dependency> directDependencies,
                         ImmutableList<Dependency> resolvedDependencies,
                         ImmutableList<NoiseProvider> noises,
-                        double defaultValue, int minY, int maxY) {
+                        float defaultValue, int minY, int maxY) {
         this.directDependencies = directDependencies;
         this.resolvedDependencies = resolvedDependencies;
         this.noises = noises;
@@ -59,17 +59,17 @@ public class Synthesizer {
     public static class Builder {
         List<Synthesizer> dependencies = new ArrayList<>();
         List<NoiseProvider> requiredNoises = new ArrayList<>();
-        double defaultValue = 0;
+        float defaultValue = 0;
         int minY = Integer.MIN_VALUE, maxY = Integer.MAX_VALUE;
 
         private Builder() {}
 
-        public Builder withDefaultValue(double defaultValue) {
+        public Builder withDefaultValue(float defaultValue) {
             this.defaultValue = defaultValue;
             return this;
         }
 
-        public Builder withRange(int minY, int maxY, double defaultValue) {
+        public Builder withRange(int minY, int maxY, float defaultValue) {
             this.minY = minY; this.maxY = maxY;
             return withDefaultValue(defaultValue);
         }
@@ -138,6 +138,6 @@ public class Synthesizer {
     public record Dependency(Synthesizer synthesizer, int minY, int maxY, int xzScale) {}
 
     public interface Function {
-        double compute(SynthesizerContext ctx);
+        float compute(SynthesizerContext ctx);
     }
 }

@@ -24,15 +24,15 @@ import net.minecraft.world.level.levelgen.synth.NormalNoise;
 
 import java.util.Optional;
 
-public class SurfaceBlobFeature extends Feature<SurfaceBlobFeature.SurfaceBlobConfiguration> {
-    public SurfaceBlobFeature(Codec<SurfaceBlobConfiguration> codec) { super(codec); }
+public class SurfaceBlobFeature extends Feature<SurfaceBlobFeature.Configuration> {
+    public SurfaceBlobFeature(Codec<Configuration> codec) { super(codec); }
 
     @Override
-    public boolean place(FeaturePlaceContext<SurfaceBlobConfiguration> context) {
+    public boolean place(FeaturePlaceContext<Configuration> context) {
         BlockPos origin = context.origin();
         WorldGenLevel level = context.level();
         RandomSource random = context.random();
-        SurfaceBlobConfiguration config = context.config();
+        Configuration config = context.config();
 
         WorldgenRandom worldgenrandom = new WorldgenRandom(new LegacyRandomSource(level.getSeed()));
         NormalNoise noise = NormalNoise.create(worldgenrandom, -3, 1.0F);
@@ -116,25 +116,25 @@ public class SurfaceBlobFeature extends Feature<SurfaceBlobFeature.SurfaceBlobCo
         return placedBlock;
     }
 
-    public record SurfaceBlobConfiguration(Optional<Holder<PlacedFeature>> foliageFeature,
-                                           BlockStateProvider surfaceStateProvider, BlockStateProvider underStateProvider,
-                                           IntProvider radius,
-                                           FloatProvider soilDepthMultiplier) implements FeatureConfiguration {
-        public static final Codec<SurfaceBlobConfiguration> CODEC = RecordCodecBuilder.create(
+    public record Configuration(Optional<Holder<PlacedFeature>> foliageFeature,
+                                BlockStateProvider surfaceStateProvider, BlockStateProvider underStateProvider,
+                                IntProvider radius,
+                                FloatProvider soilDepthMultiplier) implements FeatureConfiguration {
+        public static final Codec<Configuration> CODEC = RecordCodecBuilder.create(
                 obj -> obj.group(
                                 PlacedFeature.CODEC.lenientOptionalFieldOf("feature")
-                                        .forGetter(SurfaceBlobConfiguration::foliageFeature),
+                                        .forGetter(Configuration::foliageFeature),
                                 BlockStateProvider.CODEC.fieldOf("surface_state_provider")
-                                        .forGetter(SurfaceBlobConfiguration::surfaceStateProvider),
+                                        .forGetter(Configuration::surfaceStateProvider),
                                 BlockStateProvider.CODEC.fieldOf("under_state_provider")
-                                        .forGetter(SurfaceBlobConfiguration::underStateProvider),
+                                        .forGetter(Configuration::underStateProvider),
                                 // default of 4
                                 IntProvider.POSITIVE_CODEC.fieldOf("radius")
-                                        .orElse(ConstantInt.of(4)).forGetter(SurfaceBlobConfiguration::radius),
+                                        .orElse(ConstantInt.of(4)).forGetter(Configuration::radius),
                                 // default of 3.0
                                 FloatProvider.codec(0, 1000000.0F).fieldOf("soil_depth_multiplier")
-                                        .orElse(ConstantFloat.of(3.0F)).forGetter(SurfaceBlobConfiguration::soilDepthMultiplier)
-                        ).apply(obj, SurfaceBlobConfiguration::new)
+                                        .orElse(ConstantFloat.of(3.0F)).forGetter(Configuration::soilDepthMultiplier)
+                        ).apply(obj, Configuration::new)
         );
     }
 }

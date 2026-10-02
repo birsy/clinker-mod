@@ -8,13 +8,13 @@ import java.util.Arrays;
 // provides parameters for a Synthesizer function
 public final class SynthesizerContext {
     final DependencyRetriever[] dependencyRetrievers;
-    final double[] dependencyValues;
+    final float[] dependencyValues;
     final NoiseSampler[] noises;
     int x, y, z;
 
     public SynthesizerContext(DependencyRetriever[] dependencyRetrievers, NoiseSampler[] noises) {
         this.dependencyRetrievers = dependencyRetrievers;
-        this.dependencyValues = new double[dependencyRetrievers.length];
+        this.dependencyValues = new float[dependencyRetrievers.length];
         this.noises = noises;
     }
 
@@ -22,12 +22,12 @@ public final class SynthesizerContext {
     public int y() { return y; }
     public int z() { return z; }
 
-    public double dependentValue(int i) { return dependencyValues[i]; }
+    public float dependentValue(int i) { return dependencyValues[i]; }
     public NoiseSampler noise(int i) { return noises[i]; }
 
     // todo: work out a way for independent sampling to also use this
     // slow path, try not to use this
-    public double retrieveFromDependency(int i, int x, int y, int z) {
+    public float retrieveFromDependency(int i, int x, int y, int z) {
         return dependencyRetrievers[i].retrieve(x, y, z);
     }
 }

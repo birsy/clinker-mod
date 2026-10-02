@@ -1,0 +1,17 @@
+{
+  "type": "clinker:ash_pile",
+  "config": {
+    "radius": {
+      "type": "minecraft:uniform",
+      "max_inclusive": 8,
+      "min_inclusive": 2
+    },
+    "height": {
+      "type": "minecraft:clamped_normal",
+      "mean": 4,
+      "deviation": 2,
+      "max_inclusive": 12,
+      "min_inclusive": 2
+    }
+  }
+}

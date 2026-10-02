@@ -11,12 +11,12 @@ public class InterpolatingField {
     public final int paddingBlocks, paddingCells;
     public final int xzCellScale, xzCellSize, xzCellCount, xzCellMask;
     public final int yCellScale, yCellSize, yCellCount, yCellMask;
-    final double invXZCellSize, invYCellSize;
+    final float invXZCellSize, invYCellSize;
     final int sliceCellCount;
     final BitSet filledLayers, fillMask;
     final int chunkHeight;
 
-    protected double[] field;
+    protected float[] field;
 
     public InterpolatingField(int xzCellScale, int yCellScale, int chunkHeight, int paddingBlocks) {
         this.maxY = chunkHeight - 1;
@@ -24,7 +24,7 @@ public class InterpolatingField {
         this.xzCellScale = xzCellScale;
         this.xzCellSize = 1 << xzCellScale;
         this.xzCellMask = this.xzCellSize - 1;
-        this.invXZCellSize = 1.0 / this.xzCellSize;
+        this.invXZCellSize = 1.0F / this.xzCellSize;
 
         this.paddingCells = Math.ceilDiv(paddingBlocks, this.xzCellSize);
         this.paddingBlocks = paddingCells << xzCellScale;
@@ -36,17 +36,17 @@ public class InterpolatingField {
         this.yCellScale = yCellScale;
         this.yCellSize = 1 << yCellScale;
         this.yCellMask = this.yCellSize - 1;
-        this.invYCellSize = 1.0 / this.yCellSize;
+        this.invYCellSize = 1.0F / this.yCellSize;
         this.yCellCount = (chunkHeight >> yCellScale) + 1;
 
-        this.field = new double[this.sliceCellCount * this.yCellCount];
+        this.field = new float[this.sliceCellCount * this.yCellCount];
         this.filledLayers = new BitSet(this.yCellCount);
         this.fillMask = new BitSet(this.yCellCount);
     }
 
-    public double[] array() { return field; }
+    public float[] array() { return field; }
 
-    public double retrieve(int x, int y, int z) {
+    public float retrieve(int x, int y, int z) {
         int paddedX = x + paddingBlocks,
             paddedZ = z + paddingBlocks;
         int cellX = paddedX >> xzCellScale,
@@ -55,16 +55,18 @@ public class InterpolatingField {
         int localX = paddedX & xzCellMask,
             localY = y & yCellMask,
             localZ = paddedZ & xzCellMask;
-        double interpX = localX * invXZCellSize,
-               interpY = localY * invYCellSize,
-               interpZ = localZ * invXZCellSize;
+        float facX = localX * invXZCellSize,
+              facZ = localY * invYCellSize,
+              facY = localZ * invXZCellSize;
         int nextX = cellX + 1, nextY = cellY + 1, nextZ = cellZ + 1;
-        return Mth.lerp3(interpX, interpZ, interpY,
-                field[cellX + cellZ * xzCellCount + cellY * sliceCellCount], field[nextX + cellZ * xzCellCount + cellY * sliceCellCount],
-                field[cellX + nextZ * xzCellCount + cellY * sliceCellCount], field[nextX + nextZ * xzCellCount + cellY * sliceCellCount],
-                field[cellX + cellZ * xzCellCount + nextY * sliceCellCount], field[nextX + cellZ * xzCellCount + nextY * sliceCellCount],
-                field[cellX + nextZ * xzCellCount + nextY * sliceCellCount], field[nextX + nextZ * xzCellCount + nextY * sliceCellCount]
-        );
+
+        float x0 = Mth.lerp(facX, field[cellX + cellZ * xzCellCount + cellY * sliceCellCount], field[nextX + cellZ * xzCellCount + cellY * sliceCellCount]),
+              x1 = Mth.lerp(facX, field[cellX + nextZ * xzCellCount + cellY * sliceCellCount], field[nextX + nextZ * xzCellCount + cellY * sliceCellCount]),
+              x2 = Mth.lerp(facX, field[cellX + cellZ * xzCellCount + nextY * sliceCellCount], field[nextX + cellZ * xzCellCount + nextY * sliceCellCount]),
+              x3 = Mth.lerp(facX, field[cellX + nextZ * xzCellCount + nextY * sliceCellCount], field[nextX + nextZ * xzCellCount + nextY * sliceCellCount]);
+        float z0 = Mth.lerp(facZ, x0, x1),
+              z1 = Mth.lerp(facZ, x2, x3);
+        return Mth.lerp(facY, z0, z1);
     }
 
     public void fill(int fromY, int toY, InterpolatingFieldFiller filler) {

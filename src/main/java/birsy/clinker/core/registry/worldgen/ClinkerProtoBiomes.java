@@ -20,6 +20,9 @@ public class ClinkerProtoBiomes {
 
     public static final Supplier<ProtoBiome> ASH_STEPPE =
             PROTO_BIOMES.register("ash_steppe", () -> new ProtoBiome(ClinkerBiomes.ASH_STEPPE));
+    public static final Supplier<ProtoBiome> ASH_DUNES =
+            PROTO_BIOMES.register("ash_dunes", () -> new ProtoBiome(ClinkerBiomes.ASH_DUNES));
+
     public static final Supplier<ProtoBiome> HEATH =
             PROTO_BIOMES.register("heath", () -> new ProtoBiome(ClinkerBiomes.HEATH));
     public static final Supplier<ProtoBiome> HEATH_THICKET =

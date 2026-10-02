@@ -1,9 +1,7 @@
 package birsy.clinker.common.world.level.gen.content.feature;
 
-import birsy.clinker.core.Clinker;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
@@ -11,8 +9,6 @@ import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.VerticalAnchor;
-import net.minecraft.world.level.levelgen.WorldGenerationContext;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
@@ -20,16 +16,16 @@ import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfigur
 import java.util.ArrayList;
 import java.util.List;
 
-public class FluidCrackFeature extends Feature<FluidCrackFeature.FluidCrackConfiguration> {
+public class FluidCrackFeature extends Feature<FluidCrackFeature.Configuration> {
     private static final Direction[] NEIGHBOR_OFFSETS = {
             Direction.DOWN, Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST
     };
-    public FluidCrackFeature(Codec<FluidCrackConfiguration> codec) {
+    public FluidCrackFeature(Codec<Configuration> codec) {
         super(codec);
     }
 
     @Override
-    public boolean place(FeaturePlaceContext<FluidCrackConfiguration> context) {
+    public boolean place(FeaturePlaceContext<Configuration> context) {
         WorldGenLevel level = context.level();
         RandomSource random = context.random();
         BlockPos origin = context.origin();
@@ -101,14 +97,14 @@ public class FluidCrackFeature extends Feature<FluidCrackFeature.FluidCrackConfi
         return true;
     }
 
-    public record FluidCrackConfiguration(BlockState state, IntProvider minSearchDistance, IntProvider maxSearchDistance)
+    public record Configuration(BlockState state, IntProvider minSearchDistance, IntProvider maxSearchDistance)
             implements FeatureConfiguration {
-        public static final Codec<FluidCrackConfiguration> CODEC = RecordCodecBuilder.create(
+        public static final Codec<Configuration> CODEC = RecordCodecBuilder.create(
                 codec -> codec.group(
                                 BlockState.CODEC.fieldOf("state").forGetter(config -> config.state),
                                 IntProvider.CODEC.fieldOf("minimum_search_distance").forGetter(config -> config.minSearchDistance),
                                 IntProvider.CODEC.fieldOf("maximum_search_distance").forGetter(config -> config.maxSearchDistance)
-                        ).apply(codec, FluidCrackConfiguration::new)
+                        ).apply(codec, Configuration::new)
         );
     }
 }

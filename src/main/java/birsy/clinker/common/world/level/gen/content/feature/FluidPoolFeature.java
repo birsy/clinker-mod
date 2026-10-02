@@ -21,17 +21,17 @@ import net.minecraft.world.level.levelgen.synth.NormalNoise;
 
 import java.util.*;
 
-public class FluidPoolFeature extends Feature<FluidPoolFeature.PoolConfiguration> {
-    public FluidPoolFeature(Codec<PoolConfiguration> codec) {
+public class FluidPoolFeature extends Feature<FluidPoolFeature.Configuration> {
+    public FluidPoolFeature(Codec<Configuration> codec) {
         super(codec);
     }
 
     @Override
-    public boolean place(FeaturePlaceContext<PoolConfiguration> context) {
+    public boolean place(FeaturePlaceContext<Configuration> context) {
         WorldGenLevel level = context.level();
         RandomSource random = context.random();
         BlockPos origin = context.origin();
-        PoolConfiguration config = context.config();
+        Configuration config = context.config();
 
         WorldgenRandom worldgenrandom = new WorldgenRandom(new LegacyRandomSource(level.getSeed()));
         NormalNoise noise = NormalNoise.create(worldgenrandom, -4, 1.0);
@@ -154,16 +154,16 @@ public class FluidPoolFeature extends Feature<FluidPoolFeature.PoolConfiguration
         return !positionsToPlace.isEmpty();
     }
 
-    public record PoolConfiguration(BlockStateProvider stateProvider,
-                                    IntProvider radius) implements FeatureConfiguration {
-        public static final Codec<PoolConfiguration> CODEC = RecordCodecBuilder.create(
+    public record Configuration(BlockStateProvider stateProvider,
+                                IntProvider radius) implements FeatureConfiguration {
+        public static final Codec<Configuration> CODEC = RecordCodecBuilder.create(
                 obj -> obj.group(
                         BlockStateProvider.CODEC.fieldOf("state_provider")
-                                .forGetter(PoolConfiguration::stateProvider),
+                                .forGetter(Configuration::stateProvider),
                         // default of 4
                         IntProvider.POSITIVE_CODEC.fieldOf("radius")
-                                .orElse(ConstantInt.of(4)).forGetter(PoolConfiguration::radius)
-                ).apply(obj, PoolConfiguration::new)
+                                .orElse(ConstantInt.of(4)).forGetter(Configuration::radius)
+                ).apply(obj, Configuration::new)
         );
     }
 }

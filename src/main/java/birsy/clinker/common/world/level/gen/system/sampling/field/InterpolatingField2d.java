@@ -1,31 +1,29 @@
 package birsy.clinker.common.world.level.gen.system.sampling.field;
 
-import birsy.clinker.common.world.level.gen.system.sampling.synthesizer.Synthesizer;
-import birsy.clinker.common.world.level.gen.system.sampling.noise.NoiseSampler;
 import net.minecraft.util.Mth;
 
 public class InterpolatingField2d extends InterpolatingField {
     boolean filled = false;
     public InterpolatingField2d(int xzCellScale, int paddingBlocks) {
         super(xzCellScale, 0, 1, paddingBlocks);
-        this.field = new double[this.sliceCellCount];
+        this.field = new float[this.sliceCellCount];
     }
 
     @Override
-    public double retrieve(int x, int y, int z) {
+    public float retrieve(int x, int y, int z) {
         int paddedX = x + paddingBlocks,
             paddedZ = z + paddingBlocks;
         int cellX = paddedX >> xzCellScale,
             cellZ = paddedZ >> xzCellScale;
         int localX = paddedX & xzCellMask,
             localZ = paddedZ & xzCellMask;
-        double interpX = localX * invXZCellSize,
-               interpZ = localZ * invXZCellSize;
+        float facX = localX * invXZCellSize,
+              facZ = localZ * invXZCellSize;
         int nextX = cellX + 1, nextZ = cellZ + 1;
-        return Mth.lerp2(interpX, interpZ,
-                field[cellX + cellZ * xzCellCount], field[nextX + cellZ * xzCellCount],
-                field[cellX + nextZ * xzCellCount], field[nextX + nextZ * xzCellCount]
-        );
+
+        float x0 = Mth.lerp(facX, field[cellX + cellZ * xzCellCount], field[nextX + cellZ * xzCellCount]),
+              x1 = Mth.lerp(facX, field[cellX + nextZ * xzCellCount], field[nextX + nextZ * xzCellCount]);
+        return Mth.lerp(facZ, x0, x1);
     }
 
     @Override

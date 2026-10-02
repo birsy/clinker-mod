@@ -10,6 +10,7 @@ import birsy.clinker.common.world.level.gen.system.fluid.FluidFieldFiller;
 import birsy.clinker.common.world.level.gen.system.fluid.FluidLevel;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesSurfaceDecoration;
 import birsy.clinker.common.world.level.gen.system.sampling.noise.FNLNoiseProvider;
+import birsy.clinker.common.world.level.gen.system.sampling.noise.NoiseProvider;
 import birsy.clinker.common.world.level.gen.system.sampling.noise.NoiseSampler;
 import birsy.clinker.common.world.level.gen.system.sampling.synthesizer.DependencyRetriever;
 import birsy.clinker.common.world.level.gen.system.sampling.synthesizer.Synthesizer;
@@ -86,15 +87,10 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
     protected SynthesizerCache synthesizerCacheForChunk(ChunkAccess chunk, RandomState randomState) {
         ChunkPos chunkPos = chunk.getPos();
         int minX = chunkPos.getMinBlockX(),
-                minY = chunk.getMinBuildHeight(),
-                minZ = chunkPos.getMinBlockZ();
+            minY = chunk.getMinBuildHeight(),
+            minZ = chunkPos.getMinBlockZ();
         int chunkHeight = chunk.getHeight();
-        return cacheForChunk.computeIfAbsent(chunkPos,
-                key -> new SynthesizerCache(
-                    minX, minY, minZ, chunkHeight,
-                    randomState.getOrCreateRandomFactory(Clinker.resource("clinkernoisegen"))
-                )
-        );
+        return cacheForChunk.computeIfAbsent(chunkPos, key -> new SynthesizerCache(minX, minY, minZ, chunkHeight, randomState));
     }
 
     protected void removeSynthesizerCacheForChunk(ChunkAccess chunk) {
@@ -210,7 +206,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                         ctx -> {
                             int x = ctx.x(), z = ctx.z();
                             int y = surface.maxY + seaFloorScanSize, pY = y;
-                            double value = ctx.retrieveFromDependency(0, x, y, z), pValue = value;
+                            float value = ctx.retrieveFromDependency(0, x, y, z), pValue = value;
                             for (; y >= surface.minY; y -= seaFloorScanSize) {
                                 value = ctx.retrieveFromDependency(0, x, y, z);
                                 if (value <= 0) return Mth.lerp(Mth.clamp(value / (value - pValue), 0, 1), y, pY);
@@ -239,21 +235,21 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
         Synthesizer caveEntranceMask = Synthesizer.builder()
                 .withDependencies(seaFloorHeight, OthershoreCaveSynthesizers.ENTRANCE_MASK)
-                .withRange(surface.minY - 30, surface.maxY, 100.0)
+                .withRange(surface.minY - 30, surface.maxY, 100.0F)
                 .build(InterpolatingFieldResolution.VERY_COARSE,
                     ctx -> {
-                        double surfaceDistance = (ctx.dependentValue(0) - 30) - ctx.y();
+                        float surfaceDistance = (ctx.dependentValue(0) - 30) - ctx.y();
                         return MathUtils.smoothMax(ctx.dependentValue(1), surfaceDistance, 3);
                     });
 
         // and combine that with the cave synthesizer to create the Final Density Synthesizer:tm:
         Synthesizer finalDensitySynthesizer = Synthesizer.builder()
                 .withDependencies(surface, caveEntranceMask, OthershoreCaveSynthesizers.CAVES)
-                .withRange(Integer.MIN_VALUE, surface.maxY + 30, 100.0)
+                .withRange(Integer.MIN_VALUE, surface.maxY + 30, 100.0F)
                 .build(InterpolatingFieldResolution.FINE,
                         (ctx) -> {
-                            double maskedCaves = MathUtils.smoothMin(ctx.dependentValue(1), ctx.dependentValue(2), 4.0);
-                            return MathUtils.smoothMax(ctx.dependentValue(0), maskedCaves, 4.0);
+                            float maskedCaves = MathUtils.smoothMin(ctx.dependentValue(1), ctx.dependentValue(2), 4.0F);
+                            return MathUtils.smoothMax(ctx.dependentValue(0), maskedCaves, 4.0F);
                         }
                 );
 

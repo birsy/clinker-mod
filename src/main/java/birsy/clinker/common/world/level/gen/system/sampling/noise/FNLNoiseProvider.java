@@ -12,14 +12,18 @@ public class FNLNoiseProvider {
         );
     }
 
-    public static NoiseProvider.MemoizedNoiseProvider create(String name) {
+    public static NoiseProvider.MemoizedNoiseProvider create(String name, float frequency) {
         return create(name, () -> {
             FastNoiseLite fnl = new FastNoiseLite();
             fnl.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2S);
             fnl.SetFractalType(FastNoiseLite.FractalType.None);
-            fnl.SetFrequency(1.0F);
+            fnl.SetFrequency(frequency);
             return fnl;
         });
+    }
+
+    public static NoiseProvider.MemoizedNoiseProvider create(String name) {
+        return create(name, 1.0F);
     }
 
     private record FNLNoiseSampler(FastNoiseLite noise) implements NoiseSampler {
@@ -28,7 +32,7 @@ public class FNLNoiseProvider {
             noise.SetSeed(noiseRandom.nextInt());
         }
 
-        @Override public double sample(double x, double y, double z) { return noise.GetNoise(x, y, z); }
-        @Override public double sample(double x, double z) { return noise.GetNoise(x, z); }
+        @Override public float sample(double x, double y, double z) { return noise.GetNoise(x, y, z); }
+        @Override public float sample(double x, double z) { return noise.GetNoise(x, z); }
     }
 }

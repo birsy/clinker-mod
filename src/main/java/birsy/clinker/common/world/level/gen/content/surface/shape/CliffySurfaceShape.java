@@ -10,9 +10,17 @@ import net.minecraft.util.Mth;
 
 public abstract class CliffySurfaceShape extends SurfaceShape {
     final int expectedBorderHeight;
+    final int minimumBiomeDistance, maximumBiomeDistance;
+
     public CliffySurfaceShape(int baseHeight, int minSurfaceY, int maxSurfaceY, int expectedBorderHeight) {
+        this(baseHeight, minSurfaceY, maxSurfaceY, expectedBorderHeight, 0, 28);
+    }
+
+    public CliffySurfaceShape(int baseHeight, int minSurfaceY, int maxSurfaceY, int expectedBorderHeight, int minimumBiomeDistance, int maximumBiomeDistance) {
         super(baseHeight, minSurfaceY, maxSurfaceY);
         this.expectedBorderHeight = expectedBorderHeight;
+        this.minimumBiomeDistance = minimumBiomeDistance;
+        this.maximumBiomeDistance = maximumBiomeDistance;
     }
 
     protected abstract Synthesizer createSurfaceSynthesizer(Synthesizer biomeSdfSynthesizer);
@@ -22,9 +30,10 @@ public abstract class CliffySurfaceShape extends SurfaceShape {
                 .withDependencies(biomeSdfSynthesizer, UtilitySynthesizers.ROCKY_CLIFF_Y)
                 .build(InterpolatingFieldResolution.FINE_Y,
                         ctx -> {
-                            double seaLevelFactor = this.baseHeight > expectedBorderHeight ?
-                                    Mth.clampedMap(ctx.dependentValue(1), this.baseHeight, expectedBorderHeight, 0, 1) : 0;
-                            return ctx.dependentValue(0) - seaLevelFactor * 28;
+                            float seaLevelFactor = this.baseHeight > expectedBorderHeight ?
+                                    Mth.clampedMap(ctx.dependentValue(1), this.baseHeight, expectedBorderHeight, minimumBiomeDistance, maximumBiomeDistance) :
+                                    minimumBiomeDistance;
+                            return ctx.dependentValue(0) - seaLevelFactor;
                         }
                 );
     }
@@ -37,8 +46,8 @@ public abstract class CliffySurfaceShape extends SurfaceShape {
                     .withDependencies(cliffSynthesizer, createSurfaceSynthesizer(biomeSdfSynthesizer))
                     .build(InterpolatingFieldResolution.FINE,
                             ctx -> {
-                                double surfaceDist = ctx.dependentValue(1);
-                                double cliffDist = ctx.dependentValue(0);
+                                float surfaceDist = ctx.dependentValue(1);
+                                float cliffDist = ctx.dependentValue(0);
                                 return Math.max(surfaceDist, cliffDist);
                             }
                     );
@@ -46,8 +55,8 @@ public abstract class CliffySurfaceShape extends SurfaceShape {
             return Synthesizer.builder().withDependencies(cliffSynthesizer)
                     .build(InterpolatingFieldResolution.FINE,
                             ctx -> {
-                                double surfaceDist = ctx.y() - baseHeight;
-                                double cliffDist = ctx.dependentValue(0);
+                                float surfaceDist = ctx.y() - baseHeight;
+                                float cliffDist = ctx.dependentValue(0);
                                 return Math.max(surfaceDist, cliffDist);
                             }
                     );

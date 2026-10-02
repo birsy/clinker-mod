@@ -1,8 +1,10 @@
 package birsy.clinker.core.registry.worldgen;
 
 import birsy.clinker.common.world.level.gen.OthershoreGenerationConstants;
+import birsy.clinker.common.world.level.gen.content.surface.decoration.AshDunesSurfaceDecorator;
 import birsy.clinker.common.world.level.gen.content.surface.decoration.BrineSwampSurfaceDecorator;
 import birsy.clinker.common.world.level.gen.content.surface.decoration.HeathSurfaceDecorator;
+import birsy.clinker.common.world.level.gen.content.surface.shape.AshDunesSurfaceShape;
 import birsy.clinker.common.world.level.gen.content.surface.shape.CrackleSurfaceShape;
 import birsy.clinker.common.world.level.gen.content.surface.shape.HeathSurfaceShape;
 import birsy.clinker.common.world.level.gen.system.biome.BiomeGenerationInfo;
@@ -41,6 +43,12 @@ public class ClinkerBiomeGenerationInfo {
                                     OthershoreGenerationConstants.UPPER_SHELF_HEIGHT,
                                     OthershoreGenerationConstants.LOWER_SHELF_HEIGHT
                             )
+            );
+    public static final DeferredHolder<BiomeGenerationInfo, BiomeGenerationInfo> ASH_DUNES =
+            register(ClinkerBiomes.ASH_DUNES,
+                    BiomeGenerationInfo.builder()
+                            .surfaceShape(new AshDunesSurfaceShape(OthershoreGenerationConstants.UPPER_SHELF_HEIGHT, OthershoreGenerationConstants.LOWER_SHELF_HEIGHT))
+                            .decorator(new AshDunesSurfaceDecorator())
             );
     public static final DeferredHolder<BiomeGenerationInfo, BiomeGenerationInfo> HEATH =
             register(ClinkerBiomes.HEATH,

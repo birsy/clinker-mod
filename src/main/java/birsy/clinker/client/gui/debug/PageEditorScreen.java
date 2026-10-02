@@ -13,7 +13,7 @@ public class PageEditorScreen extends Screen {
     public PageEditorScreen() {
         super(Component.literal("page editor"));
         INSTANCE = this;
-        if (!LOADED) ImGuiMCEvents.INSTANCE.preRenderImGuiEvents(() -> INSTANCE.renderImgui());
+        //if (!LOADED) ImGuiMCEvents.INSTANCE.preRenderImGuiEvents(() -> INSTANCE.renderImgui());
     }
 
     @Override

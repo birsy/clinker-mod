@@ -1,5 +1,6 @@
 package birsy.clinker.common.world.level.gen.system.sampling.noise;
 
+import birsy.clinker.core.util.HashUtils;
 import birsy.clinker.core.util.noise.FastNoiseLite;
 import net.minecraft.util.RandomSource;
 
@@ -13,46 +14,24 @@ public class WhiteNoiseProvider {
         return create(name, 1.0);
     }
 
-    private record WhiteNoiseSampler(double scale, long seed) implements NoiseSampler {
-        private static final long PRIME = 0xd6e8feb86659fd93L;
+    private record WhiteNoiseSampler(long seed, double scale) implements NoiseSampler {
 
         WhiteNoiseSampler(double scale, RandomSource noiseRandom) {
-            this(scale, noiseRandom.nextLong());
+            this(noiseRandom.nextLong(), scale);
         }
 
         @Override
-        public double sample(double x, double y, double z) {
-            long ix = (long) Math.floor(x * scale),
-                 iy = (long) Math.floor(y * scale),
-                 iz = (long) Math.floor(z * scale);
-
-            long hash = seed ^ PRIME;
-            hash = (hash ^ ix) * PRIME;
-            hash = (hash ^ iy) * PRIME;
-            hash = (hash ^ iz) * PRIME;
-
-            hash ^= hash >>> 33;
-            hash *= 0xff51afd7ed558ccdL;
-            hash ^= hash >>> 33;
-
-            double zeroToOne = (double) (hash & 0x001fffffffffffffL) / 9007199254740991.0;
-            return zeroToOne * 2.0 - 1.0;
+        public float sample(double x, double y, double z) {
+            int cellX = (int) Math.floor(x * scale),
+                cellY = (int) Math.floor(y * scale),
+                cellZ = (int) Math.floor(z * scale);
+            return HashUtils.hash3d(seed, cellX, cellY, cellZ);
         }
         @Override
-        public double sample(double x, double z) {
-            long ix = (long) Math.floor(x * scale),
-                 iz = (long) Math.floor(z * scale);
-
-            long hash = seed ^ PRIME;
-            hash = (hash ^ ix) * PRIME;
-            hash = (hash ^ iz) * PRIME;
-
-            hash ^= hash >>> 33;
-            hash *= 0xff51afd7ed558ccdL;
-            hash ^= hash >>> 33;
-
-            double zeroToOne = (double) (hash & 0x001fffffffffffffL) / 9007199254740991.0;
-            return zeroToOne * 2.0 - 1.0;
+        public float sample(double x, double z) {
+            int cellX = (int) Math.floor(x * scale),
+                cellZ = (int) Math.floor(z * scale);
+            return HashUtils.hash2d(seed, cellX, cellZ);
         }
     }
 }

@@ -2,11 +2,14 @@ package birsy.clinker.common.world.level.gen;
 
 import birsy.clinker.common.world.level.gen.content.biome.placement.MutateOperation;
 import birsy.clinker.common.world.level.gen.content.biome.placement.BiomeLayerOperations;
+import birsy.clinker.common.world.level.gen.content.biome.placement.ReplaceOperation;
 import birsy.clinker.common.world.level.gen.system.biome.BiomeGenerationInfo;
 import birsy.clinker.common.world.level.gen.system.biome.placement.BiomeCache2d;
 import birsy.clinker.common.world.level.gen.system.biome.placement.BiomeList;
 import birsy.clinker.common.world.level.gen.system.biome.placement.resolver.LayeredBiomeResolver;
 import birsy.clinker.common.world.level.gen.system.biome.placement.resolver.ProtoBiome;
+import birsy.clinker.common.world.level.gen.system.sampling.noise.FNLNoiseProvider;
+import birsy.clinker.common.world.level.gen.system.sampling.noise.NoiseProvider;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerRegistries;
 import birsy.clinker.core.registry.worldgen.ClinkerBiomes;
@@ -69,6 +72,93 @@ public class OthershoreBiomeSource extends BiomeSource {
     }
 
     public static LayeredBiomeResolver createSurfaceBiomeResolver(Function<ResourceLocation, PositionalRandomFactory> randomState) {
+        if (true) {
+            float scale = 1.5F;
+            PositionalRandomFactory noiseRandom = randomState.apply(NoiseProvider.NOISE_GEN_SEED);
+            return LayeredBiomeResolver.builder(7)
+                    // shape layer
+                    .layer(
+                            ReplaceOperation.builder()
+                                    .noise(noiseRandom, FNLNoiseProvider.create("shelf", scale/2000F))
+                                    .replaceAll().between(-0.4F, 0.0F).with(LOWER_SHELF)
+                                    .replaceAll().with(UPPER_SHELF)
+                                    .build(),
+                            ReplaceOperation.builder()
+                                    .noise(noiseRandom, FNLNoiseProvider.create("shelf", scale/6000F))
+                                    .replaceAll().between(-0.1F, 0.1F).with(LOWER_SHELF)
+                                    .build(),
+                            ReplaceOperation.builder()
+                                    .noise(noiseRandom, FNLNoiseProvider.create("ocean", scale/3000F))
+                                    .replaceAll().below(-0.5F).with(SEA)
+                                    .build(),
+                            ReplaceOperation.builder()
+                                    .noise(noiseRandom, FNLNoiseProvider.create("plateau", scale/1000F))
+                                    .replace(UPPER_SHELF).above(0.8F).with(UPPER_SHELF_PLATEAU)
+                                    .replace(UPPER_SHELF).below(-0.8F).with(UPPER_SHELF_PLATEAU)
+                                    .build()
+                    )
+                    .layer(
+                            new BiomeLayerOperations.CreateBorders(
+                                    Set.of(UPPER_SHELF_PLATEAU.get()),
+                                    Set.of(LOWER_SHELF.get(), SEA.get()),
+                                    UPPER_SHELF.get()
+                            )
+                    )
+                    .zoom()
+                    .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1),
+                            new BiomeLayerOperations.CreateBorders(
+                                    Set.of(UPPER_SHELF_PLATEAU.get()),
+                                    Set.of(LOWER_SHELF.get(), SEA.get()),
+                                    UPPER_SHELF.get()
+                            ))
+                    .zoom()
+                    // most of the actual biomes
+                    .layer(
+                            new BiomeLayerOperations.CreateBorders(
+                                    Set.of(UPPER_SHELF.get()),
+                                    Set.of(LOWER_SHELF.get()),
+                                    SHELF_BORDER.get()
+                            ),
+                            new BiomeLayerOperations.CreateBorders(
+                                    Set.of(UPPER_SHELF.get(), LOWER_SHELF.get(), SHELF_BORDER.get()),
+                                    Set.of(SEA.get()),
+                                    BEACH.get()
+                            ),
+                            ReplaceOperation.builder()
+                                    .noise(noiseRandom, FNLNoiseProvider.create("crackle", scale/1000F))
+                                    .replace(SHELF_BORDER).above(0.5F).with(SHELF_BORDER_CRACKLE)
+                                    .build(),
+
+                            ReplaceOperation.builder()
+                                    .replace(UPPER_SHELF).with(ASH_DUNES)
+                                    .build(),
+                            ReplaceOperation.builder()
+                                    .noise(noiseRandom, FNLNoiseProvider.create("ash_steppe", scale/1000F))
+                                    .replace(ASH_DUNES).above(0.0F).with(ASH_STEPPE)
+                                    .build(),
+                            ReplaceOperation.builder()
+                                    .noise(noiseRandom, FNLNoiseProvider.create("heath", scale/1000F))
+                                    .replace(ASH_DUNES, ASH_STEPPE).above(0.3F).with(HEATH)
+                                    .replace(LOWER_SHELF, SHELF_BORDER).above(0.3F).with(HEATH_THICKET)
+                                    .build(),
+
+                            ReplaceOperation.builder()
+                                    .noise(noiseRandom, FNLNoiseProvider.create("swamp", scale/1000F))
+                                    .replace(SEA, BEACH).above(0.2F).with(BRINE_SWAMP)
+                                    .build()
+                    )
+                    .zoom()
+                    .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1))
+                    .layer(new BiomeLayerOperations.Smooth())
+                    .zoom()
+                    .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1))
+                    .zoom()
+                    .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1))
+                    .layer(new BiomeLayerOperations.Smooth())
+                    .build(randomState);
+        }
+
+
         LayeredBiomeResolver.Builder builder = LayeredBiomeResolver.builder(8);
         BiomeLayerOperations.MutateBuilder baseMutationBuilder = new BiomeLayerOperations.MutateBuilder(UNINITIALIZED.get());
         for (int i = 0; i < 4; i++) {
@@ -96,16 +186,13 @@ public class OthershoreBiomeSource extends BiomeSource {
                                 Set.of(BASE_SECTIONS[2].get(), BASE_SECTIONS[3].get()),
                                 LOWER_SHELF.get()
                         ),
-                        new BiomeLayerOperations.Replace(
-                                Arrays.stream(BASE_SECTIONS)
-                                        .map(Supplier::get)
-                                        .collect(Collectors.toUnmodifiableSet()),
-                                UPPER_SHELF.get()
-                        )
+                        ReplaceOperation.builder()
+                                .replace(BASE_SECTIONS).with(UPPER_SHELF)
+                                .build()
                 )
                 .layer(new BiomeLayerOperations.Expand(LOWER_SHELF.get(), HEATH_THICKET.get()),
-                        new BiomeLayerOperations.Expand(SEA.get()),
-                        new BiomeLayerOperations.Expand(ISLAND.get()))
+                       new BiomeLayerOperations.Expand(SEA.get()),
+                       new BiomeLayerOperations.Expand(ISLAND.get()))
                 .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1),
                         new BiomeLayerOperations.MutateBuilder(ISLAND.get())
                                 .entry(SEA.get(), 1)

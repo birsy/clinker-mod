@@ -23,19 +23,19 @@ public class CrackleSurfaceShape extends CliffySurfaceShape {
                 .withNoises(FNLNoiseProvider.create("gapradius"))
                 .withDependencies(biomeSdfSynthesizer, UtilitySynthesizers.HEIGHT_OFFSET, UtilitySynthesizers.VORONOI_EDGE_DISTANCE_24, UtilitySynthesizers.ROCKY_CLIFF_Y)
                 .build(InterpolatingFieldResolution.FINE, ctx -> {
-                    double offset = ctx.dependentValue(1);
-                    double distanceFromBottom = ctx.y() - bottomHeight + offset;
-                    double distanceFromTop = ctx.y() - topHeight - offset;
+                    float offset = ctx.dependentValue(1);
+                    float distanceFromBottom = ctx.y() - bottomHeight + offset;
+                    float distanceFromTop = ctx.y() - topHeight - offset;
 
-                    double rockyY = ctx.dependentValue(3);
-                    double gapRadiusOffset = ctx.noise(0).sample(ctx.x() / 24.0, rockyY / 16.0, ctx.z() / 24.0) * 2.0;
+                    float rockyY = ctx.dependentValue(3);
+                    float gapRadiusOffset = ctx.noise(0).sample(ctx.x() / 24.0, rockyY / 16.0, ctx.z() / 24.0) * 2.0F;
 
-                    double crackleGapRadius = Mth.clampedMap(ctx.dependentValue(0), -8, 0, 3, 20);
+                    float crackleGapRadius = Mth.clampedMap(ctx.dependentValue(0), -8, 0, 3, 20);
                     crackleGapRadius += gapRadiusOffset;
-                    double crackle = -ctx.dependentValue(2) + crackleGapRadius;
+                    float crackle = -ctx.dependentValue(2) + crackleGapRadius;
 
-                    double crackleRock = Math.max(distanceFromTop, crackle);
-                    return MathUtils.smoothMin(distanceFromBottom, crackleRock, 2.0);
+                    float crackleRock = Math.max(distanceFromTop, crackle);
+                    return MathUtils.smoothMin(distanceFromBottom, crackleRock, 2.0F);
                 });
     }
 }

@@ -583,12 +583,24 @@ public class MathUtils {
         sine, square, triangle, sawtooth;
     }
 
+    public static float smoothMin(float a, float b, float k) {
+        k *= 1.0F / (1.0F - Mth.sqrt(0.5F));
+        float h = Math.max(k - Math.abs(a-b), 0.0F) / k;
+        float b2 = 13.0F / 4.0F - 4.0F * Mth.sqrt(0.5F);
+        float b3 = 3.0F / 4.0F - 1.0F * Mth.sqrt(0.5F);
+        return Math.min(a, b) - k * h * h * (h * b3 * (h - 4.0F) + b2);
+    }
+
+    public static float smoothMax(float a, float b, float k) {
+        return -smoothMin(-a, -b, k);
+    }
+
     public static double smoothMin(double a, double b, double k) {
         k *= 1.0 / (1.0 - Math.sqrt(0.5));
         double h = Math.max(k - Math.abs(a-b), 0.0) / k;
         double b2 = 13.0 / 4.0 - 4.0 * Math.sqrt(0.5);
         double b3 = 3.0 / 4.0 - 1.0 * Math.sqrt(0.5);
-        return min(a, b) - k * h * h * (h * b3 * (h - 4.0) + b2);
+        return Math.min(a, b) - k * h * h * (h * b3 * (h - 4.0) + b2);
     }
 
     public static double smoothMax( double a, double b, double k ) {

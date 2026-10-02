@@ -47,4 +47,9 @@ public class InstancedGreaseLightRenderer extends InstancedLightRenderer<GreaseL
     protected @Nullable RenderType getRenderType(List<? extends LightRenderHandle<GreaseLightData>> lights) {
         return VeilRenderType.get(RENDER_TYPE);
     }
+
+    @Override
+    protected @Nullable RenderType getInscatteringRenderType(List<? extends LightRenderHandle<GreaseLightData>> lights) {
+        return null;
+    }
 }
