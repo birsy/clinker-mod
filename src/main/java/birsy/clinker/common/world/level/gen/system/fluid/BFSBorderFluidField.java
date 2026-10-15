@@ -4,6 +4,8 @@ import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingF
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureContext;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.Util;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.RandomState;
@@ -39,10 +41,11 @@ public class BFSBorderFluidField extends CellularFluidField {
 
     public BFSBorderFluidField(
             RandomState randomState,
-            ChunkAccess chunk,
+            LevelHeightAccessor level,
+            ChunkPos chunkPos,
             FluidFieldFiller baseFluidFieldFiller,
             int cellWidth, int cellHeight, int paddingCells) {
-        super(randomState, chunk, baseFluidFieldFiller, cellWidth, cellHeight, paddingCells);
+        super(randomState, level, chunkPos, baseFluidFieldFiller, cellWidth, cellHeight, paddingCells);
         this.borderDistances = new int[this.fluidStates.length];
         Arrays.fill(this.borderDistances, INITIAL_MAX_DISTANCE);
     }

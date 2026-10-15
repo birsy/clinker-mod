@@ -14,7 +14,7 @@ public class FlatWithCliffsSurfaceShape extends CliffySurfaceShape {
         return Synthesizer.builder()
                 .withRange(minSurfaceY, maxSurfaceY, 100)
                 .withDependencies(UtilitySynthesizers.HEIGHT_OFFSET)
-                .build(InterpolatingFieldResolution.FINE_Y,
+                .build(InterpolatingFieldResolution.VERY_COARSE_X_FINE_Y,
                         ctx -> { return ctx.y() - baseHeight + ctx.dependentValue(0); }
                 );
     }

@@ -3,6 +3,7 @@ package birsy.clinker.common.world.level.gen.system.biome;
 import birsy.clinker.common.world.level.gen.OthershoreGenerationConstants;
 import birsy.clinker.common.world.level.gen.content.surface.decoration.NoOpSurfaceDecorator;
 import birsy.clinker.common.world.level.gen.content.surface.shape.FlatWithCliffsSurfaceShape;
+import birsy.clinker.common.world.level.gen.content.surface.shape.OffsetScaleSurfaceShape;
 import birsy.clinker.common.world.level.gen.system.surface.decoration.SurfaceDecorator;
 import birsy.clinker.common.world.level.gen.system.surface.shape.SurfaceShape;
 import net.minecraft.core.Holder;
@@ -59,11 +60,12 @@ public record BiomeGenerationInfo(ResourceKey<Biome> biomeKey,
             return this;
         }
         public Builder placeholderSurfaceShape(int height, int expectedNeighborHeight) {
-            return this.surfaceShape(new FlatWithCliffsSurfaceShape(height, expectedNeighborHeight));
+            return this.surfaceShape(new OffsetScaleSurfaceShape(height, expectedNeighborHeight, 16.0F, 1.5F));
         }
         public Builder placeholderSurfaceShape(int height) {
-            return this.surfaceShape(new FlatWithCliffsSurfaceShape(height, OthershoreGenerationConstants.SEA_HEIGHT));
+            return this.placeholderSurfaceShape(height, OthershoreGenerationConstants.SEA_HEIGHT);
         }
+
         public Builder decorator(SurfaceDecorator decorator) {
             this.decorator = decorator;
             return this;

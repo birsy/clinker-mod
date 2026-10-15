@@ -48,11 +48,10 @@ public class SurfaceShapeSystem {
 
     private record BoundaryInfo(int closestQX, int closestQZ, boolean insideBiome) {}
 
-    public Synthesizer createMasterSurfaceSynthesizer(ChunkAccess chunk, BiomeCache2d surfaceBiomes) {
-        ChunkPos chunkPos = chunk.getPos();
+    public Synthesizer createMasterSurfaceSynthesizer(ChunkPos chunkPos, BiomeCache2d surfaceBiomes) {
         BiomeCache2d biomesSurfacesInChunk = surfaceBiomes.subsection(
-                QuartPos.fromBlock(chunkPos.getMinBlockX()) - 3, QuartPos.fromBlock(chunkPos.getMinBlockZ()) - 3,
-                QuartPos.fromBlock(chunkPos.getMaxBlockX()) + 3, QuartPos.fromBlock(chunkPos.getMaxBlockZ()) + 3
+                QuartPos.fromBlock(chunkPos.getMinBlockX()) - 4, QuartPos.fromBlock(chunkPos.getMinBlockZ()) - 4,
+                QuartPos.fromBlock(chunkPos.getMaxBlockX()) + 4, QuartPos.fromBlock(chunkPos.getMaxBlockZ()) + 4
         );
 
         List<Holder<Biome>> allBiomes = List.copyOf(surfaceBiomes.containedBiomes());
@@ -76,7 +75,7 @@ public class SurfaceShapeSystem {
         return Synthesizer.builder()
                 .withRange(minimumRange, maximumRange, 100)
                 .withDependencies(dependencies)
-                .build(InterpolatingFieldResolution.FINE,
+                .build(InterpolatingFieldResolution.COARSE_X_FINE_Y,
                         ctx -> {
                             float dist = 100;
                             for (int i = 0; i < dependencies.length; i++) {

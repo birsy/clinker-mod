@@ -32,15 +32,16 @@ public class BrineSwampSurfaceDecorator extends SurfaceDecorator {
     }
 
     @Override
-    public @Nullable BlockState getFillBlock(BlockPos pos, NoiseSampler[] samplers) {
-        if (pos.getY() < calcHeight) return this.calc;
-        return null;
-    }
-
-    @Override
     public void declareDependencies(Consumer<NoiseProvider> consumer) {
         consumer.accept(FNLNoiseProvider.create("noiseA"));
         consumer.accept(FNLNoiseProvider.create("noiseB"));
+    }
+
+    @Override
+    public @Nullable BlockState getFillBlock(BlockPos pos, NoiseSampler[] samplers) {
+        float noise = samplers[0].sample(pos.getX() / 100.0F, pos.getY() / 10.0F, pos.getZ() / 100.0F);
+        if (pos.getY() < calcHeight + noise * 16.0F) return this.calc;
+        return null;
     }
 
     @Override

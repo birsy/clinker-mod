@@ -1,11 +1,9 @@
 package birsy.clinker.common.world.level.gen.content.surface.shape;
 
-import birsy.clinker.common.world.level.gen.OthershoreGenerationConstants;
 import birsy.clinker.common.world.level.gen.content.synthesizers.UtilitySynthesizers;
 import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingFieldResolution;
 import birsy.clinker.common.world.level.gen.system.sampling.synthesizer.Synthesizer;
 import birsy.clinker.common.world.level.gen.system.surface.shape.SurfaceShape;
-import birsy.clinker.core.util.MathUtils;
 import net.minecraft.util.Mth;
 
 public abstract class CliffySurfaceShape extends SurfaceShape {
@@ -28,7 +26,7 @@ public abstract class CliffySurfaceShape extends SurfaceShape {
     protected Synthesizer createCliffSynthesizer(Synthesizer biomeSdfSynthesizer) {
         return Synthesizer.builder()
                 .withDependencies(biomeSdfSynthesizer, UtilitySynthesizers.ROCKY_CLIFF_Y)
-                .build(InterpolatingFieldResolution.FINE_Y,
+                .build(InterpolatingFieldResolution.VERY_COARSE_X_FINE_Y,
                         ctx -> {
                             float seaLevelFactor = this.baseHeight > expectedBorderHeight ?
                                     Mth.clampedMap(ctx.dependentValue(1), this.baseHeight, expectedBorderHeight, minimumBiomeDistance, maximumBiomeDistance) :
@@ -44,7 +42,7 @@ public abstract class CliffySurfaceShape extends SurfaceShape {
         if (surfaceContainedInChunk) {
             return Synthesizer.builder()
                     .withDependencies(cliffSynthesizer, createSurfaceSynthesizer(biomeSdfSynthesizer))
-                    .build(InterpolatingFieldResolution.FINE,
+                    .build(InterpolatingFieldResolution.COARSE_X_FINE_Y,
                             ctx -> {
                                 float surfaceDist = ctx.dependentValue(1);
                                 float cliffDist = ctx.dependentValue(0);
@@ -53,7 +51,7 @@ public abstract class CliffySurfaceShape extends SurfaceShape {
                     );
         } else {
             return Synthesizer.builder().withDependencies(cliffSynthesizer)
-                    .build(InterpolatingFieldResolution.FINE,
+                    .build(InterpolatingFieldResolution.COARSE_X_FINE_Y,
                             ctx -> {
                                 float surfaceDist = ctx.y() - baseHeight;
                                 float cliffDist = ctx.dependentValue(0);

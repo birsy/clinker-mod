@@ -1,0 +1,14 @@
+{
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 45678,
+    "separation": 3,
+    "spacing": 12
+  },
+  "structures": [
+    {
+      "structure": "clinker:town_ruins",
+      "weight": 1
+    }
+  ]
+}

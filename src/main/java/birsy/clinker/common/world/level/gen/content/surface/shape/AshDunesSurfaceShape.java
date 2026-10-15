@@ -17,8 +17,8 @@ public class AshDunesSurfaceShape extends CliffySurfaceShape {
         return Synthesizer.builder()
                 .withRange(minSurfaceY, maxSurfaceY, 100)
                 .withNoises(FNLNoiseProvider.create("cliffs"))
-                .withDependencies(UtilitySynthesizers.BASIC_NOISE_2D[4], UtilitySynthesizers.ROCKY_CLIFF_Y)
-                .build(InterpolatingFieldResolution.FINE_Y, this::surface);
+                .withDependencies(UtilitySynthesizers.BASIC_NOISE_2D[4], UtilitySynthesizers.ROCKY_CLIFF_Y, biomeSdfSynthesizer)
+                .build(InterpolatingFieldResolution.VERY_COARSE_X_FINE_Y, this::surface);
     }
 
     float surface(SynthesizerContext ctx) {
@@ -29,6 +29,12 @@ public class AshDunesSurfaceShape extends CliffySurfaceShape {
         float heightmap = Mth.clampedMap(
                 ctx.noise(0).sample(ctx.x() / 200.0, ctx.z() / 200.0) * 200F,
                 0.0F, 5F, baseHeight, baseHeight + 10
+        );
+
+        // lerp towards our base height near the edges...
+        heightmap = Math.min(
+                heightmap,
+                Mth.clampedMap(ctx.dependentValue(2), -24.0F, 0F, heightmap, baseHeight)
         );
 
         float rockyY = Mth.lerp((duneNoise * 0.5F + 0.5F) * 0.7F, y, ctx.dependentValue(1));

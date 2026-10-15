@@ -15,7 +15,7 @@ public class OthershoreCaveSynthesizers {
 
     public static final Synthesizer SPELEOTHEMS = Synthesizer.builder()
             .withNoises(FNLNoiseProvider.create("speleothem"))
-            .build(InterpolatingFieldResolution.COARSE_Y, (ctx) -> {
+            .build(InterpolatingFieldResolution.COARSE_X_VERY_COARSE_Y, (ctx) -> {
                 float frequency = 1 / 12.0F;
                 float value = ctx.noise(0).sample(ctx.x() * frequency, ctx.y() * frequency * 0.08, ctx.z() * frequency) / frequency;
                 value += 8;

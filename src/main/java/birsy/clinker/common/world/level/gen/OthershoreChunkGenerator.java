@@ -10,7 +10,6 @@ import birsy.clinker.common.world.level.gen.system.fluid.FluidFieldFiller;
 import birsy.clinker.common.world.level.gen.system.fluid.FluidLevel;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesSurfaceDecoration;
 import birsy.clinker.common.world.level.gen.system.sampling.noise.FNLNoiseProvider;
-import birsy.clinker.common.world.level.gen.system.sampling.noise.NoiseProvider;
 import birsy.clinker.common.world.level.gen.system.sampling.noise.NoiseSampler;
 import birsy.clinker.common.world.level.gen.system.sampling.synthesizer.DependencyRetriever;
 import birsy.clinker.common.world.level.gen.system.sampling.synthesizer.Synthesizer;
@@ -27,6 +26,8 @@ import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.worldgen.ClinkerWorldFeatureCapabilities;
 import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.core.util.profiling.RunningAverageTracker;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.Util;
@@ -53,8 +54,7 @@ import net.minecraft.world.level.levelgen.blending.Blender;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutionException;
 
 public class OthershoreChunkGenerator extends ChunkGenerator {
     public static final RunningAverageTracker TIME_TRACKER = new RunningAverageTracker();
@@ -68,7 +68,8 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
     private static final ResourceLocation BEDROCK_RANDOM = Clinker.resource("bedrock");
     private static final BlockState BRIMSTONE = ClinkerBlocks.BRIMSTONE.get().defaultBlockState();
 
-    final ConcurrentMap<ChunkPos, SynthesizerCache> cacheForChunk = new ConcurrentHashMap<>();
+    private final Cache<Long, SynthesizerCache> synthesizerCaches = CacheBuilder.newBuilder().maximumSize(32).build();
+    private final Cache<Long, NoiseFields> finalFieldsCache = CacheBuilder.newBuilder().maximumSize(32).build();
 
     final BiomeList biomeList;
     final SurfaceDecorationSystem surfaceDecorationSystem;
@@ -84,17 +85,24 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         biomeSource.initFromChunkGenerator(this);
     }
 
-    protected SynthesizerCache synthesizerCacheForChunk(ChunkAccess chunk, RandomState randomState) {
-        ChunkPos chunkPos = chunk.getPos();
-        int minX = chunkPos.getMinBlockX(),
-            minY = chunk.getMinBuildHeight(),
-            minZ = chunkPos.getMinBlockZ();
-        int chunkHeight = chunk.getHeight();
-        return cacheForChunk.computeIfAbsent(chunkPos, key -> new SynthesizerCache(minX, minY, minZ, chunkHeight, randomState));
+    // cache access
+    private SynthesizerCache synthesizerCacheForChunk(LevelHeightAccessor level, RandomState randomState, ChunkPos pos) {
+        int minX = pos.getMinBlockX(),
+            minY = level.getMinBuildHeight(),
+            minZ = pos.getMinBlockZ();
+        int chunkHeight = level.getHeight();
+        try {
+            return synthesizerCaches.get(pos.toLong(), () -> new SynthesizerCache(minX, minY, minZ, chunkHeight, randomState));
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e.getCause());
+        }
     }
-
-    protected void removeSynthesizerCacheForChunk(ChunkAccess chunk) {
-        this.cacheForChunk.remove(chunk.getPos());
+    private NoiseFields noiseFieldsForChunk(LevelHeightAccessor level, RandomState randomState, ChunkPos pos) {
+        try {
+            return finalFieldsCache.get(pos.toLong(), () -> computeNoiseFields(level, randomState, pos));
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e.getCause());
+        }
     }
 
     @Override
@@ -105,11 +113,6 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
     @Override
     protected MapCodec<? extends ChunkGenerator> codec() {
         return CODEC;
-    }
-
-    @Override
-    public int getSpawnHeight(LevelHeightAccessor level) {
-        return 64;
     }
 
     @Override
@@ -176,16 +179,25 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         );
     }
 
-    private ChunkAccess doNoiseFillTask(Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunk) {
-        long startTime = System.nanoTime();
+    private record NoiseFields(InterpolatingField density, FluidField fluid) {
+        BlockState stateAt(int localX, int localY, int localZ, int globalX, int globalY, int globalZ) {
+            double noise = density.retrieve(localX, localY, localZ);
+            double borderDistance = fluid.getBorderDistance(localX, localY, localZ);
+            noise = MathUtils.smoothMin(noise, borderDistance, 2);
 
-        ChunkPos chunkPos = chunk.getPos();
+            if (noise <= 0) return BRIMSTONE;
+            BlockState fluidState = fluid.getFluidState(globalX, globalY, globalZ);
+            return fluidState != null ? fluidState : Blocks.AIR.defaultBlockState();
+        }
+    }
+
+    private NoiseFields computeNoiseFields(LevelHeightAccessor level, RandomState randomState, ChunkPos chunkPos) {
         int minX = chunkPos.getMinBlockX(),
-            minY = chunk.getMinBuildHeight(),
+            minY = level.getMinBuildHeight(),
             minZ = chunkPos.getMinBlockZ();
-        int chunkHeight = chunk.getHeight();
+        int chunkHeight = level.getHeight();
 
-        SynthesizerCache synthesizerCache = synthesizerCacheForChunk(chunk, randomState);
+        SynthesizerCache synthesizerCache = synthesizerCacheForChunk(level, randomState, chunkPos);
 
         int fluidCellWidth = 4, fluidCellHeight = 8;
 
@@ -196,8 +208,8 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                 QuartPos.fromBlock(minZ) - biomeMapPadding,
                 QuartPos.fromBlock(minX + 16) + biomeMapPadding,
                 QuartPos.fromBlock(minZ + 16) + biomeMapPadding
-                );
-        Synthesizer surface = surfaceShapeSystem.createMasterSurfaceSynthesizer(chunk, biomeMap);
+        );
+        Synthesizer surface = surfaceShapeSystem.createMasterSurfaceSynthesizer(chunkPos, biomeMap);
 
         int seaFloorScanSize = Math.max(fluidCellWidth, surface.resolution.yScale());
         Synthesizer seaFloorHeight = Synthesizer.builder()
@@ -230,17 +242,17 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                 return new FluidLevel(-40, Blocks.WATER.defaultBlockState());
             return FluidLevel.EMPTY;
         };
-        FluidField fluidField = new BFSBorderFluidField(randomState, chunk, filler, fluidCellWidth, fluidCellHeight, 1);
+        FluidField fluidField = new BFSBorderFluidField(randomState, level, chunkPos, filler, fluidCellWidth, fluidCellHeight, 1);
         fluidField.fill(new InterpolatingField2d(0, fluidCellWidth));
 
         Synthesizer caveEntranceMask = Synthesizer.builder()
                 .withDependencies(seaFloorHeight, OthershoreCaveSynthesizers.ENTRANCE_MASK)
                 .withRange(surface.minY - 30, surface.maxY, 100.0F)
                 .build(InterpolatingFieldResolution.VERY_COARSE,
-                    ctx -> {
-                        float surfaceDistance = (ctx.dependentValue(0) - 30) - ctx.y();
-                        return MathUtils.smoothMax(ctx.dependentValue(1), surfaceDistance, 3);
-                    });
+                        ctx -> {
+                            float surfaceDistance = (ctx.dependentValue(0) - 30) - ctx.y();
+                            return MathUtils.smoothMax(ctx.dependentValue(1), surfaceDistance, 3);
+                        });
 
         // and combine that with the cave synthesizer to create the Final Density Synthesizer:tm:
         Synthesizer finalDensitySynthesizer = Synthesizer.builder()
@@ -254,11 +266,19 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                 );
 
         InterpolatingField finalDensityField = synthesizerCache.sampleThisChunk(finalDensitySynthesizer, 0, minY, chunkHeight);
-        this.fillFromFields(finalDensityField, fluidField, chunk);
+
+        return new NoiseFields(finalDensityField, fluidField);
+    }
+
+    private ChunkAccess doNoiseFillTask(Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunk) {
+        long startTime = System.nanoTime();
+
+        NoiseFields noiseFields = noiseFieldsForChunk(chunk, randomState, chunk.getPos());
+        this.fillFromFields(noiseFields.density(), noiseFields.fluid, chunk);
 
         // terrible profiling
         TIME_TRACKER.recordTime(System.nanoTime() - startTime);
-        if (randomState.random.at(minX, minY, minZ).nextInt(100) == 0)
+        if (randomState.random.at(chunk.getPos().x, 0, chunk.getPos().z).nextInt(100) == 0)
             Clinker.LOGGER.info("avg. noise gen time: {} ms", TIME_TRACKER.getAverage() / 1_000_000.0);
 
         return chunk;
@@ -357,8 +377,6 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         PositionalRandomFactory randomFactory = randomState.getOrCreateRandomFactory(BEDROCK_RANDOM);
         createBarrierrockLayer(chunk, randomFactory, pos, minX, minY, minZ);
         createBedrockLayer(chunk, randomFactory, pos, minX, minY, minZ);
-
-        removeSynthesizerCacheForChunk(chunk);
     }
 
     private void createBedrockLayer(ChunkAccess chunk, PositionalRandomFactory random,
@@ -425,16 +443,38 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
     }
 
     @Override
-    public NoiseColumn getBaseColumn(int x, int z, LevelHeightAccessor height, RandomState random) {
-        BlockState[] column = new BlockState[height.getHeight()];
-        for (int yi = 0; yi < height.getHeight(); yi++) {
-            int y = yi + height.getMinBuildHeight();
-            column[yi] = y < 64 ? ClinkerBlocks.BRIMSTONE.get().defaultBlockState() : Blocks.AIR.defaultBlockState();
+    public NoiseColumn getBaseColumn(int x, int z, LevelHeightAccessor level, RandomState random) {
+        ChunkPos chunkPos = new ChunkPos(new BlockPos(x, 0, z));
+        NoiseFields fields = noiseFieldsForChunk(level, random, chunkPos);
+        int lX = x - chunkPos.getMinBlockX(), lZ = z - chunkPos.getMinBlockZ();
+        BlockState[] column = new BlockState[level.getHeight()];
+        for (int lY = 0; lY < level.getHeight(); lY++) {
+            int y = lY + level.getMinBuildHeight();
+            column[lY] = fields.stateAt(lX, lY, lZ, x, y, z);
+//            try {
+//                column[lY] = fields.stateAt(lX, lY, lZ, x, y, z);
+//            } catch (Exception e) {
+//                throw new RuntimeException(e.getMessage()
+//                        + "   ||   ATTEMPTED SAMPLE AT: "
+//                        + lX + ", " + lY + ", " + lZ + " | " + x + ", " + y + ", " + z
+//                        + "   ||   FIELD SIZE: "
+//                        + fields.density().xzCellCount + ", " + fields.density().xzCellScale + " | "
+//                        + fields.density().yCellCount + ", " + fields.density().yCellScale
+//                );
+//            }
+
         }
-        return new NoiseColumn(
-                height.getMinBuildHeight(),
-                column
-        );
+        return new NoiseColumn(level.getMinBuildHeight(), column);
+    }
+
+    @Override
+    public int getBaseHeight(int x, int z, Heightmap.Types type, LevelHeightAccessor level, RandomState random) {
+        NoiseColumn column = this.getBaseColumn(x, z, level, random);
+        for (int y = level.getMaxBuildHeight() - 1; y >= level.getMinBuildHeight(); y--) {
+            BlockState block = column.getBlock(y);
+            if (type.isOpaque().test(block)) return y;
+        }
+        return level.getMinBuildHeight();
     }
 
     @Override
@@ -453,11 +493,6 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
     @Override
     public void spawnOriginalMobs(WorldGenRegion level) {}
-
-    @Override
-    public int getBaseHeight(int x, int z, Heightmap.Types type, LevelHeightAccessor level, RandomState random) {
-        return 64;
-    }
 
     @Override
     public int getMinY() {

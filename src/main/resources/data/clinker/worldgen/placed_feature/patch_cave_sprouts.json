@@ -12,8 +12,12 @@
       "type": "minecraft:height_range",
       "height": {
         "type": "minecraft:uniform",
-        "min_inclusive": { "above_bottom": 0 },
-        "max_inclusive": { "below_top": 0 }
+        "min_inclusive": {
+          "above_bottom": 0
+        },
+        "max_inclusive": {
+          "below_top": 0
+        }
       }
     },
     {
@@ -28,11 +32,13 @@
         "type": "minecraft:all_of",
         "predicates": [
           {
-            "type": "minecraft:has_sturdy_face",
-            "offset": [0, -1, 0],
-            "direction": "up"
+            "type": "minecraft:matching_blocks",
+            "offset": [ 0, -1, 0 ],
+            "blocks": "clinker:brimstone"
           },
-          { "type": "minecraft:replaceable" }
+          {
+            "type": "minecraft:replaceable"
+          }
         ]
       }
     },

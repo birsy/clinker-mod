@@ -70,6 +70,8 @@ public class Clinker {
         ClinkerWorldFeatureCapabilities.WORLD_FEATURE_CAPABILITIES.register(modEventBus);
         ClinkerWorldFeatures.Types.WORLD_FEATURE_TYPES.register(modEventBus);
         ClinkerWorldFeatures.Spawns.WORLD_FEATURE_SPAWNS.register(modEventBus);
+        ClinkerStructures.Types.STRUCTURE_TYPES.register(modEventBus);
+        ClinkerStructures.Pieces.STRUCTURE_PIECES.register(modEventBus);
 
         ClinkerDataAttachments.ATTACHMENT_TYPES.register(modEventBus);
         ClinkerCreativeModeTabs.TABS.register(modEventBus);

@@ -32,6 +32,7 @@ public class ClinkerDatagenHandler {
         ClinkerBlockTagProvider blockTags = new ClinkerBlockTagProvider(output, lookupProvider, existingFileHelper);
         event.addProvider(blockTags);
         event.addProvider(new ClinkerItemTagProvider(output, lookupProvider, blockTags.contentsGetter(), existingFileHelper));
+        event.addProvider(new ClinkerBiomeTagProvider(output, lookupProvider, existingFileHelper));
         event.addProvider(new ClinkerEntityTagProvider(output, lookupProvider, existingFileHelper));
         event.addProvider(new ClinkerDamageTypeTagProvider(output, lookupProvider, existingFileHelper));
         event.addProvider(new ClinkerOrdnanceModifierTagProvider(output, lookupProvider, existingFileHelper));

@@ -47,6 +47,7 @@ public abstract class EntityMixin {
 
     @Inject(method = "walkingStepSound", at = @At("TAIL"))
     private void clinker$stepEffects(BlockPos pos, BlockState state, CallbackInfo ci) {
+        if (!state.is(ClinkerTags.Blocks.FOOTPRINTABLE)) return;
         Vec3 facing = this.getLookAngle();
         double mult = this.getBbWidth() * 0.3 * (clinker$leftFootStepping ? -1 : 1);
         double particleX = this.getX() + -facing.z * mult,

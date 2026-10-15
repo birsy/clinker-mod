@@ -10,6 +10,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SupportType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.Feature;
@@ -29,16 +30,50 @@ public class AshPileFeature extends Feature<AshPileFeature.Configuration> {
         RandomSource random = featureContext.random();
 
         int height = featureContext.config().height().sample(random);
-        int radius = featureContext.config().radius.sample(random) * 2;
+        int radius = featureContext.config().radius.sample(random);
         int placementRadius = radius + 2;
 
         NormalNoise noise = NormalNoise.create(random, -3, 1.0, 0.25);
 
         BlockPos.MutableBlockPos cursor = origin.mutable();
+        int[][] surfaceY = new int[placementRadius * 2 + 1][placementRadius * 2 + 1];
         for (int x = -placementRadius; x <= placementRadius; x++) {
+            int xi = x + placementRadius;
             cursor.setX(x + origin.getX());
             for (int z = -placementRadius; z <= placementRadius; z++) {
+                int zi = z + placementRadius;
                 cursor.setZ(z + origin.getZ());
+                cursor.setY(origin.getY());
+
+                boolean underground = level.getBlockState(cursor).isSolid();
+                int offsetDirection = underground ? 1 : -1;
+
+                boolean found = false;
+                for (int y = 0; y < 3; y++) {
+                    cursor.move(0, offsetDirection, 0);
+                    if (level.getBlockState(cursor).isSolid() != underground) {
+                        surfaceY[xi][zi] = origin.getY() + y * offsetDirection + (underground ? 1 : 0);
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found) surfaceY[xi][zi] = Integer.MIN_VALUE;
+            }
+        }
+
+        int[][] neighborhood = {
+                {-1, 0}, {1, 0}, {0, -1}, {0, 1}
+        };
+        for (int x = -placementRadius; x <= placementRadius; x++) {
+            int xi = x + placementRadius;
+            cursor.setX(x + origin.getX());
+            for (int z = -placementRadius; z <= placementRadius; z++) {
+                int zi = z + placementRadius;
+                cursor.setZ(z + origin.getZ());
+
+                int y = surfaceY[xi][zi];
+                if (y > level.getMaxBuildHeight() || y < level.getMinBuildHeight()) continue;
 
                 double distance = Mth.length(x, z);
                 distance += (Math.abs(noise.getValue(cursor.getX(), 0, cursor.getZ())) * 2.0 - 1.0) * 2.0;
@@ -46,8 +81,22 @@ public class AshPileFeature extends Feature<AshPileFeature.Configuration> {
 
                 if (distance > 1) continue;
                 distance = 1.0 - distance;
-                cursor.setY(origin.getY());
-                placeAshLayer(level, cursor, (int) Math.round(distance * height));
+
+                int ashLayers = (int) Math.round(distance * height);
+
+                int averageOffset = 0;
+                for (int[] offsets : neighborhood) {
+                    int offsetXi = Math.clamp(xi + offsets[0], 0, placementRadius * 2),
+                        offsetZi = Math.clamp(zi + offsets[1], 0, placementRadius * 2);
+                    int neighborY = surfaceY[offsetXi][offsetZi];
+                    averageOffset += neighborY - y;
+                }
+                averageOffset = Math.clamp(averageOffset, -2, 2) * 2;
+                int offsetAshLayers = ashLayers + averageOffset;
+                if (ashLayers > 0) offsetAshLayers = Math.max(1, offsetAshLayers);
+
+                cursor.setY(y);
+                placeAshLayer(level, cursor, offsetAshLayers);
             }
         }
 

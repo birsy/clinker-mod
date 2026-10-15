@@ -13,6 +13,13 @@ import static birsy.clinker.common.world.level.gen.content.surface.decoration.Su
 import java.util.function.Consumer;
 
 public class HeathSurfaceDecorator extends SurfaceDecorator {
+    final int basinHeightMin, basinHeightMax;
+
+    public HeathSurfaceDecorator(int basinHeightMin, int basinHeightMax) {
+        this.basinHeightMin = basinHeightMin;
+        this.basinHeightMax = basinHeightMax;
+    }
+
     @Override
     public void declareDependencies(Consumer<NoiseProvider> consumer) {
         consumer.accept(FNLNoiseProvider.create("heathsurface"));
@@ -24,25 +31,45 @@ public class HeathSurfaceDecorator extends SurfaceDecorator {
 
         NoiseSampler sampler = ctx.getSampler(0);
 
+        boolean isAshBasin = ctx.surfaceY() <= Mth.clampedMap(
+                noiseWithDither(pos, ctx, sampler, 1 / 64.0, 23.0F, 0.1),
+                -1, 1, basinHeightMin, basinHeightMax
+        );
+
         if (ctx.maxUpwardsOffset() > 0 && ctx.maxDownwardsOffset() == 0) {
             int ashAmount = (int) Mth.map(
                     noiseWithDither(pos, ctx, sampler, 1.0 / 16.0, 0.0, 0.2),
-                    -1, 1, -1, 3
+                    -1, 1, -2, 3
             );
+            if (isAshBasin) ashAmount += 3;
             placeAshLayerAbove(pos, ctx, ashAmount);
         }
 
-        if (steepnessThreshold(pos, ctx, sampler, 1 / 24.0, 65.0F, 0, 1, 0, 2)) {
-            int peatDepth = (int) Math.round( Mth.clampedMap(
-                    noiseWithDither(pos, ctx, sampler, 1 / 16.0, 5.0F, 0.3),
-                    -0.3, 1, 0, 3
-            ));
-            if (placeColumn(pos, ctx, ClinkerBlocks.PEAT_MOSS.get().defaultBlockState(), peatDepth)) return;
 
-            int ashDepth = (int) Math.round(Mth.clampedMap(
-                    noiseWithDither(pos, ctx, sampler, 1 / 16.0, 10.0F, 0.3),
-                    0, 1, 0, 3)) - peatDepth;
-            if (placeColumn(pos, ctx, ClinkerBlocks.PACKED_ASH.get().defaultBlockState(), ashDepth)) return;
+        if (isAshBasin) {
+            if (steepnessThreshold(pos, ctx, sampler, 1 / 24.0, 65.0F, -0.5, 1, 1, 3)) {
+                int ashDepth = (int) Math.round( Mth.clampedMap(
+                        noiseWithDither(pos, ctx, sampler, 1 / 16.0, 5.0F, 0.3),
+                        -0.5, 1, 0, 3
+                ));
+                if (placeColumn(pos, ctx, ClinkerBlocks.ASH.get().defaultBlockState(), ashDepth)) return;
+                if (placeColumn(pos, ctx, ClinkerBlocks.PACKED_ASH.get().defaultBlockState(), 3 - ashDepth)) return;
+            }
+        } else {
+            if (steepnessThreshold(pos, ctx, sampler, 1 / 24.0, 65.0F, 0, 1, 0, 2)) {
+                int peatDepth = (int) Math.round( Mth.clampedMap(
+                        noiseWithDither(pos, ctx, sampler, 1 / 16.0, 5.0F, 0.3),
+                        -0.3, 1, 0, 3
+                ));
+                if (placeColumn(pos, ctx, ClinkerBlocks.PEAT_MOSS.get().defaultBlockState(), peatDepth)) return;
+
+                int ashDepth = (int) Math.round(Mth.clampedMap(
+                        noiseWithDither(pos, ctx, sampler, 1 / 16.0, 10.0F, 0.3),
+                        0, 1, 0, 3)) - peatDepth;
+                if (placeColumn(pos, ctx, ClinkerBlocks.PACKED_ASH.get().defaultBlockState(), ashDepth)) return;
+            }
         }
+
+
     }
 }

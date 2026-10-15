@@ -203,8 +203,49 @@ public class BiomeLayerOperations {
         @Override
         public int apply(int blockX, int blockZ, int currentId, int[] neighborhood, RandomSource random) {
             if (isExpanding[currentId]) return currentId;
-            for (int i : ProtoBiomeNeighborhood.NEIGHBOR_INDICES)
+            for (int i : ProtoBiomeNeighborhood.POSITIVE_NEIGHBORS)
                 if (isExpanding[neighborhood[i]]) return neighborhood[i];
+            return currentId;
+        }
+    }
+
+    // sort of the opposite of Expand.
+    // turns a biome into its most frequent neighbor (that isn't itself)
+    public record Erode(boolean[] isEroding) implements BiomeLayerOperation {
+        private static final ThreadLocal<int[]> threadedCounts =
+                ThreadLocal.withInitial(() -> new int[ClinkerRegistries.PROTO_BIOME_REGISTRY.size()]);
+        private static final ThreadLocal<int[]> threadedDirtyIds =
+                ThreadLocal.withInitial(() -> new int[9]);
+
+        public Erode(ProtoBiome... biomes) {
+            this(Util.make(() -> {
+                boolean[] shouldErode = new boolean[ClinkerRegistries.PROTO_BIOME_REGISTRY.size()];
+                for (ProtoBiome b : biomes) shouldErode[b.id] = true;
+                return shouldErode;
+            }));
+        }
+        @Override
+        public int apply(int blockX, int blockZ, int currentId, int[] neighborhood, RandomSource random) {
+            if (isEroding[currentId]) {
+                int[] counts = threadedCounts.get();
+                int[] dirty = threadedDirtyIds.get();
+                int dirtyCount = 0, highestCount = 0, winner = currentId;
+
+                for (int i : ProtoBiomeNeighborhood.DIRECT_NEIGHBOR_INDICES) {
+                    int id = neighborhood[i];
+                    if (isEroding[id]) continue;
+
+                    if (counts[id] == 0) dirty[dirtyCount++] = id;
+                    int countForId = ++counts[id];
+                    if (countForId > highestCount) {
+                        highestCount = countForId;
+                        winner = id;
+                    }
+                }
+                for (int i = 0; i < dirtyCount; i++) counts[dirty[i]] = 0;
+                return winner;
+            }
+
             return currentId;
         }
     }

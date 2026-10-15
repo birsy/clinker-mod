@@ -54,7 +54,15 @@ public class ClinkerBiomeGenerationInfo {
             register(ClinkerBiomes.HEATH,
                     BiomeGenerationInfo.builder()
                             .surfaceShape(new HeathSurfaceShape(OthershoreGenerationConstants.UPPER_SHELF_HEIGHT - 10, OthershoreGenerationConstants.LOWER_SHELF_HEIGHT))
-                            .decorator(new HeathSurfaceDecorator())
+                            .decorator(new HeathSurfaceDecorator(
+                                    OthershoreGenerationConstants.UPPER_SHELF_HEIGHT - 10 - 5,
+                                    OthershoreGenerationConstants.UPPER_SHELF_HEIGHT - 10))
+            );
+    public static final DeferredHolder<BiomeGenerationInfo, BiomeGenerationInfo> HEATH_THICKET =
+            register(ClinkerBiomes.HEATH_THICKET,
+                    BiomeGenerationInfo.builder()
+                            .surfaceShape(new HeathSurfaceShape(OthershoreGenerationConstants.LOWER_SHELF_HEIGHT, OthershoreGenerationConstants.SEA_HEIGHT))
+                            .decorator(new HeathSurfaceDecorator(OthershoreGenerationConstants.LOWER_SHELF_HEIGHT - 5, OthershoreGenerationConstants.LOWER_SHELF_HEIGHT))
             );
 
     public static final DeferredHolder<BiomeGenerationInfo, BiomeGenerationInfo> LOWER_SHELF =
@@ -76,12 +84,7 @@ public class ClinkerBiomeGenerationInfo {
                                     OthershoreGenerationConstants.UPPER_SHELF_HEIGHT
                             ))
             );
-    public static final DeferredHolder<BiomeGenerationInfo, BiomeGenerationInfo> HEATH_THICKET =
-            register(ClinkerBiomes.HEATH_THICKET,
-                    BiomeGenerationInfo.builder()
-                            .surfaceShape(new HeathSurfaceShape(OthershoreGenerationConstants.LOWER_SHELF_HEIGHT, OthershoreGenerationConstants.SEA_HEIGHT))
-                            .decorator(new HeathSurfaceDecorator())
-            );
+
 
 
     public static final DeferredHolder<BiomeGenerationInfo, BiomeGenerationInfo> BEACH =

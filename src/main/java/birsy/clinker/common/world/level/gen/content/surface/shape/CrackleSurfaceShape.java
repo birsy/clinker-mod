@@ -20,9 +20,9 @@ public class CrackleSurfaceShape extends CliffySurfaceShape {
     protected Synthesizer createSurfaceSynthesizer(Synthesizer biomeSdfSynthesizer) {
         return Synthesizer.builder()
                 .withRange(minSurfaceY, maxSurfaceY, 100)
-                .withNoises(FNLNoiseProvider.create("gapradius"))
+                .withNoises(FNLNoiseProvider.create("gap_radius"))
                 .withDependencies(biomeSdfSynthesizer, UtilitySynthesizers.HEIGHT_OFFSET, UtilitySynthesizers.VORONOI_EDGE_DISTANCE_24, UtilitySynthesizers.ROCKY_CLIFF_Y)
-                .build(InterpolatingFieldResolution.FINE, ctx -> {
+                .build(InterpolatingFieldResolution.COARSE_X_FINE_Y, ctx -> {
                     float offset = ctx.dependentValue(1);
                     float distanceFromBottom = ctx.y() - bottomHeight + offset;
                     float distanceFromTop = ctx.y() - topHeight - offset;

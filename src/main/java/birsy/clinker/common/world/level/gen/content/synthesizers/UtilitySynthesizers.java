@@ -3,13 +3,14 @@ package birsy.clinker.common.world.level.gen.content.synthesizers;
 import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingFieldResolution;
 import birsy.clinker.common.world.level.gen.system.sampling.noise.FNLNoiseProvider;
 import birsy.clinker.common.world.level.gen.system.sampling.noise.VoronoiNoiseProvider;
+import birsy.clinker.common.world.level.gen.system.sampling.noise.WhiteNoiseProvider;
 import birsy.clinker.common.world.level.gen.system.sampling.synthesizer.Synthesizer;
 import birsy.clinker.core.util.noise.FastNoiseLite;
 
 public class UtilitySynthesizers {
     public static final Synthesizer ROCKY_CLIFF_Y = Synthesizer.builder()
             .withNoises(VoronoiNoiseProvider.create("rocky_cliff", 0.5F, 3))
-            .build(InterpolatingFieldResolution.FINE_Y,
+            .build(InterpolatingFieldResolution.VERY_COARSE_X_FINE_Y,
                     ctx -> {
                         double x = ctx.x() / 32.0, z = ctx.z() / 32.0;
                         return ctx.noise(0).sampleSet(x, ctx.y() / 12.0, z)[1] * 12.0F;
@@ -22,6 +23,38 @@ public class UtilitySynthesizers {
                     ctx -> {
                         double freq = 32.0;
                         return ctx.noise(0).sample(ctx.x() / freq, ctx.z() / freq);
+                    }
+            );
+
+    public static final Synthesizer SURFACE_OFFSET = Synthesizer.builder()
+            .withNoises(FNLNoiseProvider.create("surface_offset_0"), FNLNoiseProvider.create("surface_offset_1"), WhiteNoiseProvider.create("surface_offset_2"))
+            .build(InterpolatingFieldResolution.COARSE_X_FINE_Y,
+                    ctx -> {
+                        float noise = 0, total = 0;
+
+                        double freq = 48.0;
+                        float scale = 10F;
+                        noise += ctx.noise(0).sample(ctx.x() / freq, ctx.y() / (freq * 1.5F), ctx.z() / freq) * scale;
+                        total += scale;
+
+                        freq = 12.0;
+                        scale = 8F;
+                        noise += ctx.noise(1).sample(ctx.x() / freq, ctx.y() / (freq * 1.5F), ctx.z() / freq) * scale;
+                        total += scale;
+
+                        scale = 5F;
+                        noise += ctx.noise(2).sample(ctx.x(), ctx.z()) * scale;
+                        total += scale;
+
+                        return noise / total;
+                    }
+            );
+    public static final Synthesizer SURFACE_OFFSET_SCALE = Synthesizer.builder()
+            .withNoises(FNLNoiseProvider.create("surface_offset_scale"))
+            .build(InterpolatingFieldResolution.COARSE_2D,
+                    ctx -> {
+                        double freq = 64.0;
+                        return ctx.noise(0).sample(ctx.x() / freq, ctx.z() / freq) * 0.5F + 0.5F;
                     }
             );
 

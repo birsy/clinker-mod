@@ -8,12 +8,13 @@ public record InterpolatingFieldResolution(int xzScale, int yScale, boolean twoD
     public static final InterpolatingFieldResolution COARSE_2D = new InterpolatingFieldResolution(2);
     public static final InterpolatingFieldResolution VERY_COARSE_2D = new InterpolatingFieldResolution(4);
 
-    public static final InterpolatingFieldResolution FINE = new InterpolatingFieldResolution( 2, 1);
+    public static final InterpolatingFieldResolution FINE = new InterpolatingFieldResolution( 1, 1);
     public static final InterpolatingFieldResolution COARSE = new InterpolatingFieldResolution( 2, 2);
     public static final InterpolatingFieldResolution VERY_COARSE = new InterpolatingFieldResolution( 4, 4);
 
-    public static final InterpolatingFieldResolution FINE_Y = new InterpolatingFieldResolution( 4, 1);
-    public static final InterpolatingFieldResolution COARSE_Y = new InterpolatingFieldResolution( 2, 4);
+    public static final InterpolatingFieldResolution COARSE_X_FINE_Y = new InterpolatingFieldResolution( 2, 1);
+    public static final InterpolatingFieldResolution COARSE_X_VERY_COARSE_Y = new InterpolatingFieldResolution( 2, 4);
+    public static final InterpolatingFieldResolution VERY_COARSE_X_FINE_Y = new InterpolatingFieldResolution( 4, 1);
 
     public InterpolatingFieldResolution {
         // 4 = log2 of 16, the xz chunk size.

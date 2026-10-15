@@ -1,7 +1,18 @@
 {
   "variants": {
-    "": {
-      "model": "clinker:block/polished_brimstone"
-    }
+    "": [
+      {
+        "model": "clinker:block/polished_brimstone"
+      },
+      {
+        "model": "clinker:block/polished_brimstone_1"
+      },
+      {
+        "model": "clinker:block/polished_brimstone_2"
+      },
+      {
+        "model": "clinker:block/polished_brimstone_3"
+      }
+    ]
   }
 }

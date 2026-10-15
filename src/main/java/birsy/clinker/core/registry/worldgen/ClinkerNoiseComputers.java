@@ -56,7 +56,7 @@ public class ClinkerNoiseComputers {
 ////    public static final Supplier<NoiseComputer> CLIFF_STRATIFIED_Y = NOISE_COMPUTERS.register(
 ////            "cliff_stratified_y",
 ////            () -> new NoiseComputer(
-////                    NoiseFieldType.FINE_Y,
+////                    NoiseFieldType.VERY_COARSE_X_FINE_Y,
 ////                    (dependencies, registry) -> {
 ////                        dependencies.addDependency(STRATIFIED_Y_COARSE);
 ////                        dependencies.addDependency(STRATIFIED_Y_FINE);
@@ -202,7 +202,7 @@ public class ClinkerNoiseComputers {
 //    // caves
 //    public static final Supplier<Synthesizer> SPELEOTHEMS = NOISE_COMPUTERS.register("speleothems",
 //            () -> new Synthesizer(
-//                    InterpolatingFieldResolution.COARSE_Y,
+//                    InterpolatingFieldResolution.COARSE_X_VERY_COARSE_Y,
 //                    (dependencies, registry) -> {
 //                        registry.registerNoise("speleothem");
 //                    },

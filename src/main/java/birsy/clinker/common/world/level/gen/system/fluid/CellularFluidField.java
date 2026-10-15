@@ -2,6 +2,8 @@ package birsy.clinker.common.world.level.gen.system.fluid;
 
 import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingField;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -47,7 +49,8 @@ public class CellularFluidField implements FluidField {
 
     public CellularFluidField(
             RandomState randomState,
-            ChunkAccess chunk,
+            LevelHeightAccessor level,
+            ChunkPos chunkPos,
             FluidFieldFiller baseFluidFieldFiller,
             int cellWidth, int cellHeight,
             int paddingCells) {
@@ -60,13 +63,13 @@ public class CellularFluidField implements FluidField {
         this.halfCellHeight = cellHeight / 2;
         this.paddingCells = paddingCells;
 
-        this.minX = chunk.getPos().getMinBlockX();
-        this.minY = chunk.getMinBuildHeight();
-        this.minZ = chunk.getPos().getMinBlockZ();
+        this.minX = chunkPos.getMinBlockX();
+        this.minY = level.getMinBuildHeight();
+        this.minZ = chunkPos.getMinBlockZ();
         this.paddingBlocksXZ = this.paddingCells * this.cellWidth;
         this.paddingBlocksY = this.paddingCells * this.cellHeight;
         this.blockCountXZ = 16 + this.paddingBlocksXZ * 2;
-        this.blockCountY = chunk.getHeight() + this.paddingBlocksY * 2;
+        this.blockCountY = level.getHeight() + this.paddingBlocksY * 2;
         this.blockLayerSize = this.blockCountXZ * this.blockCountXZ;
         this.fluidStates = new BlockState[this.blockLayerSize * this.blockCountY];
         Arrays.fill(this.fluidStates, Blocks.AIR.defaultBlockState());
@@ -75,7 +78,7 @@ public class CellularFluidField implements FluidField {
         this.minCellY = Math.floorDiv(this.minY, this.cellHeight);
         this.minCellZ = Math.floorDiv(this.minZ, this.cellWidth);
         this.cellCountXZ = (16 / this.cellWidth) + this.paddingCells * 2;
-        this.cellCountY = (chunk.getHeight() / this.cellHeight) + this.paddingCells * 2;
+        this.cellCountY = (level.getHeight() / this.cellHeight) + this.paddingCells * 2;
         this.cellLayerSize = this.cellCountXZ * this.cellCountXZ;
         this.cells = new FluidCell[this.cellLayerSize * this.cellCountY];
     }

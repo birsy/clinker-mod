@@ -226,20 +226,32 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
 
         // polished brimstone
         {
-            ResourceLocation polishedBrimstoneTop = this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_brimstone_top");
             ResourceLocation polishedBrimstoneSide = this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_brimstone_side");
             ResourceLocation polishedBrimstoneBottom = this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_brimstone_bottom");
-
             ResourceLocation polishedBrimstoneSlab = this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_brimstone_slab");
-            ResourceLocation polishedBrimstoneStairs = polishedBrimstoneTop;
 
-            this.simpleBlockWithItem(POLISHED_BRIMSTONE.get(), this.models().cubeBottomTop("polished_brimstone", polishedBrimstoneSide, polishedBrimstoneBottom, polishedBrimstoneTop));
+            this.simpleBlockWithVariation(
+                    POLISHED_BRIMSTONE.get(),
+                    i -> {
+                        String suffix = i == 0 ? "" : "_" + i;
+                        return this.models().cubeBottomTop("polished_brimstone" + suffix,
+                                polishedBrimstoneSide,
+                                polishedBrimstoneBottom,
+                                this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_brimstone_top" + suffix)
+                        );
+                    }, 4
+            );
+            this.simpleBlockItem(POLISHED_BRIMSTONE.get(),
+                    this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_brimstone")));
 
             this.models().cubeColumn("polished_brimstone_double_slab", polishedBrimstoneSlab, polishedBrimstoneBottom);
             this.slabBlock((SlabBlock) POLISHED_BRIMSTONE_SLAB.get(), this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_brimstone_double_slab"), polishedBrimstoneSlab, polishedBrimstoneBottom, polishedBrimstoneBottom);
             this.simpleBlockItem(POLISHED_BRIMSTONE_SLAB.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_brimstone_slab")));
 
-            this.stairsBlock((StairBlock) POLISHED_BRIMSTONE_STAIRS.get(), polishedBrimstoneStairs);
+            this.stairsBlockWithVariation(POLISHED_BRIMSTONE_STAIRS.get(),
+                    (i) -> this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_brimstone_top" + (i == 0 ? "" : "_" + i)),
+                    4
+            );
             this.simpleBlockItem(POLISHED_BRIMSTONE_STAIRS.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/polished_brimstone_stairs")));
 
             this.wallExtended(POLISHED_BRIMSTONE_WALL.get(),

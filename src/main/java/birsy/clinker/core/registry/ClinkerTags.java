@@ -9,6 +9,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 
 public class ClinkerTags {
@@ -34,6 +35,10 @@ public class ClinkerTags {
         public static final TagKey<EntityType<?>> GNOMADS = TagKey.create(Registries.ENTITY_TYPE, Clinker.resource("gnomads"));
         public static final TagKey<EntityType<?>> BIRTHABLE_HOMUNCULOIDS = TagKey.create(Registries.ENTITY_TYPE, Clinker.resource("birthable_homunculoids"));
         public static final TagKey<EntityType<?>> THORN_IMMUNE = TagKey.create(Registries.ENTITY_TYPE, Clinker.resource("thorn_immune"));
+    }
+
+    public static class Biomes {
+        public static final TagKey<Biome> HAS_TOWN_RUINS = TagKey.create(Registries.BIOME, Clinker.resource("has_structure/town_ruins"));
     }
 
     public static final class DamageTypes {

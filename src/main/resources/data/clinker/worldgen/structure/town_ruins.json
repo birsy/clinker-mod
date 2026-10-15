@@ -1,0 +1,6 @@
+{
+  "type": "clinker:town_ruins",
+  "biomes": "#clinker:has_structure/town_ruins",
+  "step": "surface_structures",
+  "spawn_overrides": {}
+}

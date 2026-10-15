@@ -79,81 +79,82 @@ public class OthershoreBiomeSource extends BiomeSource {
                     // shape layer
                     .layer(
                             ReplaceOperation.builder()
-                                    .noise(noiseRandom, FNLNoiseProvider.create("shelf", scale/2000F))
-                                    .replaceAll().between(-0.4F, 0.0F).with(LOWER_SHELF)
+                                    .noise(noiseRandom, FNLNoiseProvider.create("shelf_large", scale/12000F, 2))
+                                    .replaceAll().between(-0.05F, 0.05F).with(SEA)
+                                    .replaceAll().between(-0.06F, 0.06F).with(LOWER_SHELF)
                                     .replaceAll().with(UPPER_SHELF)
                                     .build(),
                             ReplaceOperation.builder()
-                                    .noise(noiseRandom, FNLNoiseProvider.create("shelf", scale/6000F))
-                                    .replaceAll().between(-0.1F, 0.1F).with(LOWER_SHELF)
-                                    .build(),
-                            ReplaceOperation.builder()
-                                    .noise(noiseRandom, FNLNoiseProvider.create("ocean", scale/3000F))
+                                    .noise(noiseRandom, FNLNoiseProvider.create("ocean", scale/3000F, 2))
                                     .replaceAll().below(-0.5F).with(SEA)
                                     .build(),
+                            ReplaceOperation.builder()
+                                    .noise(noiseRandom, FNLNoiseProvider.create("shelf", scale/2000F, 2))
+                                    .replace(UPPER_SHELF).between(-0.2F, 0.1F).with(LOWER_SHELF)
+                                    .build()
+                    )
+                    .layer(new BiomeLayerOperations.Erode(SEA.get()))
+                    .layer(new BiomeLayerOperations.Erode(SEA.get()))
+                    .zoom()
+                    .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1))
+                    .zoom()
+                    .layer(new BiomeLayerOperations.Smooth(),
                             ReplaceOperation.builder()
                                     .noise(noiseRandom, FNLNoiseProvider.create("plateau", scale/1000F))
                                     .replace(UPPER_SHELF).above(0.8F).with(UPPER_SHELF_PLATEAU)
                                     .replace(UPPER_SHELF).below(-0.8F).with(UPPER_SHELF_PLATEAU)
                                     .build()
                     )
-                    .layer(
-                            new BiomeLayerOperations.CreateBorders(
-                                    Set.of(UPPER_SHELF_PLATEAU.get()),
-                                    Set.of(LOWER_SHELF.get(), SEA.get()),
-                                    UPPER_SHELF.get()
-                            )
-                    )
-                    .zoom()
-                    .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1),
-                            new BiomeLayerOperations.CreateBorders(
-                                    Set.of(UPPER_SHELF_PLATEAU.get()),
-                                    Set.of(LOWER_SHELF.get(), SEA.get()),
-                                    UPPER_SHELF.get()
-                            ))
-                    .zoom()
                     // most of the actual biomes
                     .layer(
+                            new BiomeLayerOperations.CreateBorders(
+                                    Set.of(UPPER_SHELF_PLATEAU.get()),
+                                    Set.of(LOWER_SHELF.get(), SEA.get()),
+                                    UPPER_SHELF.get()
+                            ),
                             new BiomeLayerOperations.CreateBorders(
                                     Set.of(UPPER_SHELF.get()),
                                     Set.of(LOWER_SHELF.get()),
                                     SHELF_BORDER.get()
                             ),
-                            new BiomeLayerOperations.CreateBorders(
-                                    Set.of(UPPER_SHELF.get(), LOWER_SHELF.get(), SHELF_BORDER.get()),
-                                    Set.of(SEA.get()),
-                                    BEACH.get()
-                            ),
                             ReplaceOperation.builder()
                                     .noise(noiseRandom, FNLNoiseProvider.create("crackle", scale/1000F))
                                     .replace(SHELF_BORDER).above(0.5F).with(SHELF_BORDER_CRACKLE)
                                     .build(),
-
                             ReplaceOperation.builder()
                                     .replace(UPPER_SHELF).with(ASH_DUNES)
                                     .build(),
                             ReplaceOperation.builder()
-                                    .noise(noiseRandom, FNLNoiseProvider.create("ash_steppe", scale/1000F))
-                                    .replace(ASH_DUNES).above(0.0F).with(ASH_STEPPE)
+                                    .noise(noiseRandom, FNLNoiseProvider.create("ash_steppe", scale/3000F, 2))
+                                    .replace(ASH_DUNES).above(0.2F).with(ASH_STEPPE)
                                     .build(),
                             ReplaceOperation.builder()
-                                    .noise(noiseRandom, FNLNoiseProvider.create("heath", scale/1000F))
+                                    .noise(noiseRandom, FNLNoiseProvider.create("heath", scale/3000F, 2))
                                     .replace(ASH_DUNES, ASH_STEPPE).above(0.3F).with(HEATH)
-                                    .replace(LOWER_SHELF, SHELF_BORDER).above(0.3F).with(HEATH_THICKET)
+                                    .replace(LOWER_SHELF, SHELF_BORDER).above(0.4F).with(HEATH_THICKET)
                                     .build(),
-
                             ReplaceOperation.builder()
-                                    .noise(noiseRandom, FNLNoiseProvider.create("swamp", scale/1000F))
-                                    .replace(SEA, BEACH).above(0.2F).with(BRINE_SWAMP)
+                                    .noise(noiseRandom, FNLNoiseProvider.create("swamp", scale/1000F, 3))
+                                    .replace(SEA, BEACH).above(0.3F).with(BRINE_SWAMP)
                                     .build()
                     )
                     .zoom()
+                    .layer(new BiomeLayerOperations.Expand(SHELF_BORDER.get(), SHELF_BORDER_CRACKLE.get()))
                     .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1))
                     .layer(new BiomeLayerOperations.Smooth())
+                    .layer(
+                            new BiomeLayerOperations.Erode(SHELF_BORDER.get(), SHELF_BORDER_CRACKLE.get()),
+                            new BiomeLayerOperations.CreateBorders(
+                                    Set.of(UPPER_SHELF.get(), LOWER_SHELF.get(), SHELF_BORDER.get(), ASH_DUNES.get(), ASH_STEPPE.get(), HEATH.get(), HEATH_THICKET.get()),
+                                    Set.of(SEA.get()),
+                                    BEACH.get()
+                            ))
                     .zoom()
                     .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1))
                     .zoom()
                     .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1))
+                    .layer(new BiomeLayerOperations.Smooth())
+                    // final smooth op, to remove any weird microbiomes
                     .layer(new BiomeLayerOperations.Smooth())
                     .build(randomState);
         }

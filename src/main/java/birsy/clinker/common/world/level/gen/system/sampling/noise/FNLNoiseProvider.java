@@ -26,6 +26,17 @@ public class FNLNoiseProvider {
         return create(name, 1.0F);
     }
 
+    public static NoiseProvider.MemoizedNoiseProvider create(String name, float frequency, int octaves) {
+        return create(name, () -> {
+            FastNoiseLite fnl = new FastNoiseLite();
+            fnl.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2S);
+            fnl.SetFractalType(FastNoiseLite.FractalType.FBm);
+            fnl.SetFrequency(frequency);
+            fnl.SetFractalOctaves(octaves);
+            return fnl;
+        });
+    }
+
     private record FNLNoiseSampler(FastNoiseLite noise) implements NoiseSampler {
         FNLNoiseSampler(RandomSource noiseRandom, Supplier<FastNoiseLite> provider) {
             this(provider.get());

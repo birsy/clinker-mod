@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.core.QuartPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.levelgen.PositionalRandomFactory;
 import org.lwjgl.glfw.GLFW;
@@ -22,6 +23,7 @@ import java.util.concurrent.Future;
 
 public class BiomeLayerDebugViewScreen extends Screen {
     public static final int MAP_SIZE = 256, HALF_MAP_SIZE = MAP_SIZE / 2;
+    private static final ResourceLocation DITHER_LOCATION = ResourceLocation.withDefaultNamespace("textures/effect/dither.png");
 
     private LayeredBiomeResolver resolver;
 
@@ -79,6 +81,32 @@ public class BiomeLayerDebugViewScreen extends Screen {
             gfx.blit(textureLocation, offsetX, offsetY, -dragDeltaX, -dragDeltaY, MAP_SIZE, MAP_SIZE, MAP_SIZE, MAP_SIZE);
         }
 
+        for (int i = 1; i < 8; i++) {
+            int pow = i / 2;
+            int distance = (int) Math.pow(10, pow);
+            if (i % 2 == 0) {
+                distance *= 5;
+            }
+
+            int rad = (distance / blocksPerPixel) / 2;
+
+            int alpha = (int) Mth.clampedMap(rad, 5.0F, 0.0F, 200, 0);
+            if (alpha == 0) continue;
+            int distanceMetricColor = ((i % 2 == 0) ? 0xFFFF00 : 0x00FFFF) | (alpha << 24);
+
+            gfx.fill(mouseX - rad, mouseY - rad, mouseX + rad, mouseY - rad + 1, 0, distanceMetricColor);
+            gfx.fill(mouseX + rad - 1, mouseY - rad, mouseX + rad, mouseY + rad, 0, distanceMetricColor);
+            gfx.fill(mouseX + rad, mouseY + rad - 1, mouseX - rad, mouseY + rad, 0, distanceMetricColor);
+            gfx.fill(mouseX - rad, mouseY + rad, mouseX - rad + 1, mouseY - rad, 0, distanceMetricColor);
+
+            int textY = (i % 2 == 0) ? mouseY - rad - font.lineHeight : mouseY + rad;
+            String text = distance + " blocks";
+            gfx.drawString(font, text, mouseX - rad - font.width(text), textY, distanceMetricColor);
+
+            //gfx.fill(mouseX - rad, mouseY - rad, mouseX + rad, mouseY + rad, 10000,  0x33FF0000);
+        }
+
+
         gfx.drawCenteredString(font, "epic biomes preview", this.width/2, offsetY - (font.lineHeight + 2) * 2, 0xFFFFFF);
         gfx.drawString(font, "press L to change layers. press R to regenerate.", offsetX, offsetY - (font.lineHeight + 2), 0xFFFFFF);
 
@@ -103,6 +131,15 @@ public class BiomeLayerDebugViewScreen extends Screen {
                 mouseX + 10, mouseY + 20,
                 0xFFFFFF
         );
+
+        int ditherSpriteSize = 4;
+        int ditherSize = 256 / ditherSpriteSize;
+        float ditherPosX = (float) (centerX / blocksPerPixel - dragDeltaX) / ditherSpriteSize,
+                ditherPosZ = (float) (centerZ / blocksPerPixel - dragDeltaY) / ditherSpriteSize;
+        gfx.innerBlit(DITHER_LOCATION,
+                offsetX, offsetX + MAP_SIZE, offsetY, offsetY + MAP_SIZE, 10000,
+                ditherPosX, ditherPosX + ditherSize, ditherPosZ, ditherPosZ + ditherSize,
+                1F, 1F, 1F, 0.15F);
     }
 
     private void rebuildMap() {

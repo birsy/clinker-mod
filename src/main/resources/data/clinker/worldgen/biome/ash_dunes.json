@@ -26,7 +26,7 @@
       "probability": 0.01
     },
     "ambient_sound": "clinker:ambient.ash_plains.loop",
-    "sky_color": 4209726,
+    "sky_color": 4209761,
     "fog_color": 6447200,
     "water_color": 6578522,
     "water_fog_color": 723467
@@ -50,6 +50,7 @@
     ],
     [],
     [
+      "clinker:patch_cave_sprouts_surface",
       "clinker:blue_rose"
     ],
     []
