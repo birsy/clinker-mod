@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/cube_bottom_top",
-  "textures": {
-    "bottom": "clinker:block/calc",
-    "side": "clinker:block/saltmoss_side",
-    "top": "clinker:block/saltmoss"
-  }
-}

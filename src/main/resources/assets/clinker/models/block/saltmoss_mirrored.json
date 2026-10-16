@@ -1,0 +1,35 @@
+{
+  "render_type": "cutout",
+  "parent": "block/block",
+  "textures": {
+    "particle": "clinker:block/saltmoss_side",
+    "bottom": "clinker:block/calc",
+    "top": "clinker:block/saltmoss",
+    "side": "clinker:block/saltmoss_side_underlay",
+    "overlay": "clinker:block/saltmoss_side_overlay"
+  },
+  "elements": [
+    {
+      "from": [ 0, 0, 0 ],
+      "to": [ 16, 16, 16 ],
+      "faces": {
+        "down":  { "uv": [ 16, 0, 0, 16 ], "texture": "#bottom", "cullface": "down" },
+        "up":    { "uv": [ 16, 0, 0, 16 ], "texture": "#top",    "cullface": "up", "tintindex": 0 },
+        "north": { "uv": [ 16, 0, 0, 16 ], "texture": "#side",   "cullface": "north" },
+        "south": { "uv": [ 16, 0, 0, 16 ], "texture": "#side",   "cullface": "south" },
+        "west":  { "uv": [ 16, 0, 0, 16 ], "texture": "#side",   "cullface": "west" },
+        "east":  { "uv": [ 16, 0, 0, 16 ], "texture": "#side",   "cullface": "east" }
+      }
+    },
+    {
+      "from": [ 0, 0, 0 ],
+      "to": [ 16, 16, 16 ],
+      "faces": {
+        "north": { "uv": [ 16, 0, 0, 16 ], "texture": "#overlay", "tintindex": 0, "cullface": "north" },
+        "south": { "uv": [ 16, 0, 0, 16 ], "texture": "#overlay", "tintindex": 0, "cullface": "south" },
+        "west":  { "uv": [ 16, 0, 0, 16 ], "texture": "#overlay", "tintindex": 0, "cullface": "west" },
+        "east":  { "uv": [ 16, 0, 0, 16 ], "texture": "#overlay", "tintindex": 0, "cullface": "east" }
+      }
+    }
+  ]
+}

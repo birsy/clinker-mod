@@ -21,6 +21,12 @@ public class ClinkerBlockAndItemColors {
                 ClinkerBlocks.SHEET_MOSS.get(),
                 ClinkerBlocks.LONG_SHEET_MOSS.get()
         );
+        event.register(RandomizedTintHandler.INSTANCE,
+                ClinkerBlocks.SALTMOSS.get(),
+                ClinkerBlocks.SALTMOSS_SPROUTS.get(),
+                ClinkerBlocks.PEAT_MOSS.get(),
+                ClinkerBlocks.PEAT_MOSS_BUDS.get()
+        );
     }
 
     @SubscribeEvent

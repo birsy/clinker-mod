@@ -11,8 +11,8 @@
             "shade": false,
             "rotation": { "origin": [ 8, 8, 8 ], "axis": "y", "angle": 45.0, "rescale": true },
             "faces": {
-                "north": { "texture": "#cross", "uv": [ 0, 0, 16, 16 ] },
-                "south": { "texture": "#cross", "uv": [ 0, 0, 16, 16 ] }
+                "north": { "texture": "#cross", "uv": [ 0, 0, 16, 16 ], "tintindex": 0 },
+                "south": { "texture": "#cross", "uv": [ 0, 0, 16, 16 ], "tintindex": 0 }
             }
         },
         {
@@ -21,8 +21,8 @@
             "shade": false,
             "rotation": { "origin": [ 8, 8, 8 ], "axis": "y", "angle": 45.0, "rescale": true },
             "faces": {
-                "north": { "texture": "#cross", "uv": [ 0, 0, 16, 16 ] },
-                "south": { "texture": "#cross", "uv": [ 0, 0, 16, 16 ] }
+                "north": { "texture": "#cross", "uv": [ 0, 0, 16, 16 ], "tintindex": 0 },
+                "south": { "texture": "#cross", "uv": [ 0, 0, 16, 16 ], "tintindex": 0 }
             }
         },
         {
@@ -31,8 +31,8 @@
             "shade": false,
             "rotation": { "origin": [ 8, 8, 8 ], "axis": "y", "angle": 45.0, "rescale": true },
             "faces": {
-                "west": { "texture": "#cross", "uv": [ 0, 0, 16, 16 ] },
-                "east": { "texture": "#cross", "uv": [ 0, 0, 16, 16 ] }
+                "west": { "texture": "#cross", "uv": [ 0, 0, 16, 16 ], "tintindex": 0 },
+                "east": { "texture": "#cross", "uv": [ 0, 0, 16, 16 ], "tintindex": 0 }
             }
         },
         {
@@ -41,8 +41,8 @@
             "shade": false,
             "rotation": { "origin": [ 8, 8, 8 ], "axis": "y", "angle": 45.0, "rescale": true },
             "faces": {
-                "west": { "texture": "#cross", "uv": [ 0, 0, 16, 16 ] },
-                "east": { "texture": "#cross", "uv": [ 0, 0, 16, 16 ] }
+                "west": { "texture": "#cross", "uv": [ 0, 0, 16, 16 ], "tintindex": 0 },
+                "east": { "texture": "#cross", "uv": [ 0, 0, 16, 16 ], "tintindex": 0 }
             }
         }
     ]

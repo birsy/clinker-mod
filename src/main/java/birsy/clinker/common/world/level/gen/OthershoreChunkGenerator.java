@@ -413,7 +413,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             pos.setX(minX + x);
             for (int z = 0; z < 16; z++) {
                 pos.setZ(minZ + z);
-                double noiseValue = Math.abs(barrierRockSampler.sample(x / 16.0, z / 16.0));
+                double noiseValue = Math.abs(barrierRockSampler.sample((x + minX) / 16.0, (z + minZ) / 16.0));
                 for (int y = -3; y <= 3; y++) {
                     pos.setY(y);
                     double mixFactor = 1.0 - (Math.abs(y) / 4.0);
@@ -451,18 +451,6 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         for (int lY = 0; lY < level.getHeight(); lY++) {
             int y = lY + level.getMinBuildHeight();
             column[lY] = fields.stateAt(lX, lY, lZ, x, y, z);
-//            try {
-//                column[lY] = fields.stateAt(lX, lY, lZ, x, y, z);
-//            } catch (Exception e) {
-//                throw new RuntimeException(e.getMessage()
-//                        + "   ||   ATTEMPTED SAMPLE AT: "
-//                        + lX + ", " + lY + ", " + lZ + " | " + x + ", " + y + ", " + z
-//                        + "   ||   FIELD SIZE: "
-//                        + fields.density().xzCellCount + ", " + fields.density().xzCellScale + " | "
-//                        + fields.density().yCellCount + ", " + fields.density().yCellScale
-//                );
-//            }
-
         }
         return new NoiseColumn(level.getMinBuildHeight(), column);
     }

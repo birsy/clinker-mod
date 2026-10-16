@@ -58,7 +58,7 @@ public class AshPileFeature extends Feature<AshPileFeature.Configuration> {
                     }
                 }
 
-                if (!found) surfaceY[xi][zi] = Integer.MIN_VALUE;
+                if (!found) surfaceY[xi][zi] = underground ? Integer.MIN_VALUE : Integer.MAX_VALUE;
             }
         }
 

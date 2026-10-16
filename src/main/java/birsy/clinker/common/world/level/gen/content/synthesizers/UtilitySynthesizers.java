@@ -68,8 +68,8 @@ public class UtilitySynthesizers {
                     }
             );
 
-    public static final Synthesizer[] BASIC_NOISE_2D = basicNoiseArray(3.0F, 6, true);
-    public static final Synthesizer[] BASIC_NOISE_3D = basicNoiseArray(3.0F, 6, false);
+    public static final Synthesizer[] BASIC_NOISE_2D = basicNoiseArray(3.0F, 8, true);
+    public static final Synthesizer[] BASIC_NOISE_3D = basicNoiseArray(3.0F, 8, false);
 
     private static Synthesizer basicNoise(float frequency, boolean twoDimensional) {
         InterpolatingFieldResolution[] potentialResolutions = twoDimensional ?

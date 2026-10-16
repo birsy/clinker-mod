@@ -560,18 +560,19 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
 
         // salt moss
         {
-            ResourceLocation saltmoss = this.modLoc(ModelProvider.BLOCK_FOLDER + "/saltmoss");
-            ResourceLocation saltmossSide = this.modLoc(ModelProvider.BLOCK_FOLDER + "/saltmoss_side");
-            ResourceLocation calc = this.modLoc(ModelProvider.BLOCK_FOLDER + "/calc");
-            String name = name(SALTMOSS.get());
-
-            this.simpleBlockWithVariationAndTransformation(
-                    SALTMOSS.get(),
-                    (i) -> this.models().cubeBottomTop(name, saltmossSide, calc, saltmoss),
-                    (i) -> this.cubeBottomTopMirrored(name + "_mirrored", saltmossSide, calc, saltmoss),
-                    1, false, true
+            ModelFile.ExistingModelFile saltmossModel = this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/saltmoss")),
+                                        saltmossMirroredModel = this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/saltmoss_mirrored"));
+            this.getVariantBuilder(SALTMOSS.get()).partialState().addModels(
+                    ConfiguredModel.builder().modelFile(saltmossModel).buildLast(),
+                    ConfiguredModel.builder().modelFile(saltmossMirroredModel).buildLast(),
+                    ConfiguredModel.builder().modelFile(saltmossModel).rotationY(90).buildLast(),
+                    ConfiguredModel.builder().modelFile(saltmossMirroredModel).rotationY(90).buildLast(),
+                    ConfiguredModel.builder().modelFile(saltmossModel).rotationY(180).buildLast(),
+                    ConfiguredModel.builder().modelFile(saltmossMirroredModel).rotationY(180).buildLast(),
+                    ConfiguredModel.builder().modelFile(saltmossModel).rotationY(270).buildLast(),
+                    ConfiguredModel.builder().modelFile(saltmossMirroredModel).rotationY(270).buildLast()
             );
-            this.simpleBlockItem(SALTMOSS.get(), this.models().getExistingFile(saltmoss));
+            this.simpleBlockItem(SALTMOSS.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/saltmoss_item")));
         }
 
         // salt gravel
