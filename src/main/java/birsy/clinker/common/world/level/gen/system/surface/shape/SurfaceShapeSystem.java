@@ -72,8 +72,9 @@ public class SurfaceShapeSystem {
         }
 
         Synthesizer[] dependencies = biomeSynthesizers.toArray(new Synthesizer[0]);
-        return Synthesizer.builder()
-                .withRange(minimumRange, maximumRange, 100)
+        return Synthesizer.builder("master_surface")
+                .withDefaultValue(-100F, 100F, (minimumRange + maximumRange) / 2)
+                .withRange(minimumRange, maximumRange)
                 .withDependencies(dependencies)
                 .build(InterpolatingFieldResolution.COARSE_X_FINE_Y,
                         ctx -> {
@@ -89,7 +90,7 @@ public class SurfaceShapeSystem {
     private Synthesizer createBiomeSDFSynthesizer(Holder<Biome> biome, int biomeIndex, List<Holder<Biome>> allBiomes,
                                                   BiomeCache2d surfaceBiomes,
                                                   Long2ObjectMap<BoundaryInfo[]> boundaryCache) {
-        return Synthesizer.builder()
+        return Synthesizer.builder(biome.getRegisteredName() + "_sdf")
                 .withNoises(FNLNoiseProvider.create("biomeOffset"))
                 .build(InterpolatingFieldResolution.FINE_2D,
                         ctx -> {

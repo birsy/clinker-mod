@@ -2,6 +2,7 @@ package birsy.clinker.common.world.level.gen.system.fluid;
 
 import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingField;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureContext;
+import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingFieldSampler;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.Util;
 import net.minecraft.world.level.ChunkPos;
@@ -9,6 +10,7 @@ import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.RandomState;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
@@ -60,7 +62,7 @@ public class BFSBorderFluidField extends CellularFluidField {
     }
 
     @Override
-    public void fill(InterpolatingField waterfallPresence) {
+    public void fill(@Nullable InterpolatingField waterfallPresence) {
         super.fill(waterfallPresence);
         this.initializeFluidBordersByCell();
         this.addWaterfalls(waterfallPresence);
@@ -120,38 +122,44 @@ public class BFSBorderFluidField extends CellularFluidField {
 
     // cuts off the top of some of the border blocks, allowing waterfalls to form
     public void addWaterfalls(InterpolatingField waterfallPresence) {
-        for (int bY = 1; bY < this.blockCountY; bY++) {
-            int localBlockY = bY - this.paddingBlocksY;
-            for (int bZ = 0; bZ < this.blockCountXZ; bZ++) {
-                int localBlockZ = bZ - this.paddingBlocksXZ;
-                for (int bX = 0; bX < this.blockCountXZ; bX++) {
-                    int localBlockX = bX - this.paddingBlocksXZ;
+        if (waterfallPresence == null) return;
 
-                    long waterfallBlocks = Math.round(waterfallPresence.retrieve(localBlockX, localBlockY, localBlockZ));
+        int height = this.blockCountY - 2 * this.paddingBlocksY;
+        InterpolatingField blockGrid = new InterpolatingField(0, 0, height, this.paddingBlocksXZ);
+        assert waterfallPresence.paddingBlocks == this.paddingBlocksXZ;
+        InterpolatingFieldSampler sampler = InterpolatingFieldSampler.create(waterfallPresence, blockGrid);
+
+        for (int localY = 0; localY < height; localY++) {
+            int bY = localY + this.paddingBlocksY;
+            sampler.setSlice(localY);
+
+            for (int bZ = 0; bZ < this.blockCountXZ; bZ++) {
+                for (int bX = 0; bX < this.blockCountXZ; bX++) {
+                    long waterfallBlocks = Math.round(sampler.sample());
+                    sampler.advanceX();
+
                     if (waterfallBlocks == 0) continue;
 
                     int blockIndex = index(bX, bY, bZ, this.blockCountXZ, this.blockCountY);
 
                     // the current block must be not be a border
-                    int distance = this.borderDistances[blockIndex];
-                    if (distance == 0) continue;
+                    if (this.borderDistances[blockIndex] == 0) continue;
 
                     // "smear" the air downwards into the below blocks
-                    for (int i = 0; i < waterfallBlocks; i++) {
+                    for (int i = 1; i <= waterfallBlocks; i++) {
                         int belowY = bY - i;
                         if (belowY < 0) break;
-
-                        int belowBlockIndex = index(bX, belowY, bZ, this.blockCountXZ, this.blockCountY);
-                        int belowDistance = this.borderDistances[belowBlockIndex];
-                        if (belowDistance == 0) {
+                        int belowIndex = index(bX, belowY, bZ, this.blockCountXZ, this.blockCountY);
+                        if (this.borderDistances[belowIndex] == 0) {
                             // smear into the border!
-                            this.borderDistances[belowBlockIndex] = INITIAL_MAX_DISTANCE;
+                            this.borderDistances[belowIndex] = INITIAL_MAX_DISTANCE;
                         } else {
                             // otherwise, stop.
                             break;
                         }
                     }
                 }
+                sampler.advanceZ();
             }
         }
     }

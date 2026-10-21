@@ -7,7 +7,7 @@ import birsy.clinker.common.world.level.gen.system.sampling.synthesizer.Synthesi
 import birsy.clinker.core.util.MathUtils;
 import net.minecraft.util.Mth;
 
-public class CrackleSurfaceShape extends CliffySurfaceShape {
+public class CrackleSurfaceShape extends CliffEdgeSurfaceShape {
     final int bottomHeight, topHeight;
 
     public CrackleSurfaceShape(int bottomHeight, int topHeight, int expectedBorderHeight) {
@@ -18,8 +18,7 @@ public class CrackleSurfaceShape extends CliffySurfaceShape {
 
     @Override
     protected Synthesizer createSurfaceSynthesizer(Synthesizer biomeSdfSynthesizer) {
-        return Synthesizer.builder()
-                .withRange(minSurfaceY, maxSurfaceY, 100)
+        return initSurfaceSynthesizer("crackle_surface_shape")
                 .withNoises(FNLNoiseProvider.create("gap_radius"))
                 .withDependencies(biomeSdfSynthesizer, UtilitySynthesizers.HEIGHT_OFFSET, UtilitySynthesizers.VORONOI_EDGE_DISTANCE_24, UtilitySynthesizers.ROCKY_CLIFF_Y)
                 .build(InterpolatingFieldResolution.COARSE_X_FINE_Y, ctx -> {

@@ -2,8 +2,8 @@ package birsy.clinker.common.world.level.gen.system.sampling.synthesizer;
 
 import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingFieldResolution;
 import birsy.clinker.common.world.level.gen.system.sampling.noise.NoiseProvider;
-import birsy.clinker.common.world.level.gen.system.sampling.noise.NoiseSampler;
 import com.google.common.collect.ImmutableList;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -12,6 +12,8 @@ public class Synthesizer {
     public static final AtomicInteger NEXT_ID = new AtomicInteger(0);
 
     public final int id = NEXT_ID.getAndIncrement();
+    @Nullable
+    public final String profilerId;
     public final ImmutableList<Dependency> directDependencies;
     public final ImmutableList<Dependency> resolvedDependencies; // all required dependencies, recursively.
     public final ImmutableList<NoiseProvider> noises;
@@ -20,7 +22,8 @@ public class Synthesizer {
     public final Synthesizer.Function function;
 
     // required y, everything else is filled with defaultValue
-    public final float defaultValue;
+    public final float upperSliceDefaultValue, lowerSliceDefaultValue;
+    public final int defaultValueSliceY;
     public final int minY, maxY;
 
     private Synthesizer(InterpolatingFieldResolution resolution,
@@ -28,16 +31,22 @@ public class Synthesizer {
                         ImmutableList<Dependency> directDependencies,
                         ImmutableList<Dependency> resolvedDependencies,
                         ImmutableList<NoiseProvider> noises,
-                        float defaultValue, int minY, int maxY) {
+                        float lowerSliceDefaultValue, float upperSliceDefaultValue, int defaultValueSliceY,
+                        int minY, int maxY,
+                        @Nullable String profilerId) {
         this.directDependencies = directDependencies;
         this.resolvedDependencies = resolvedDependencies;
         this.noises = noises;
         this.resolution = resolution;
         this.function = function;
-        this.defaultValue = defaultValue;
 
+        this.lowerSliceDefaultValue = lowerSliceDefaultValue;
+        this.upperSliceDefaultValue = upperSliceDefaultValue;
+        this.defaultValueSliceY = defaultValueSliceY;
         this.minY = minY;
         this.maxY = maxY;
+
+        this.profilerId = profilerId;
     }
 
     @Override
@@ -52,26 +61,41 @@ public class Synthesizer {
         return id;
     }
 
-    public static Builder builder() {
-        return new Builder();
+//    public static Builder builder() {
+//        return builder(null);
+//    }
+
+    public static Builder builder(@Nullable String profilingId) {
+        return new Builder(profilingId);
     }
 
     public static class Builder {
+        final String profilerId;
         List<Synthesizer> dependencies = new ArrayList<>();
         List<NoiseProvider> requiredNoises = new ArrayList<>();
-        float defaultValue = 0;
-        int minY = Integer.MIN_VALUE, maxY = Integer.MAX_VALUE;
+        // reasonable default values for a surface biome...
+        float lowerSliceDefaultValue = -100F, upperSliceDefaultValue = 100F;
+        int defaultValueSliceY = Integer.MIN_VALUE, minY = Integer.MIN_VALUE, maxY = Integer.MAX_VALUE;
 
-        private Builder() {}
+        private Builder(String profilerId) {
+            this.profilerId = profilerId;
+        }
 
         public Builder withDefaultValue(float defaultValue) {
-            this.defaultValue = defaultValue;
+            return withDefaultValue(defaultValue, defaultValue, Integer.MIN_VALUE);
+        }
+
+        public Builder withDefaultValue(float lowerSliceDefaultValue, float upperSliceDefaultValue, int defaultValueSliceY) {
+            this.lowerSliceDefaultValue = lowerSliceDefaultValue;
+            this.upperSliceDefaultValue = upperSliceDefaultValue;
+            this.defaultValueSliceY = defaultValueSliceY;
             return this;
         }
 
-        public Builder withRange(int minY, int maxY, float defaultValue) {
-            this.minY = minY; this.maxY = maxY;
-            return withDefaultValue(defaultValue);
+        public Builder withRange(int minY, int maxY) {
+            this.minY = minY;
+            this.maxY = maxY;
+            return this;
         }
 
         public Builder withDependencies(Synthesizer... synthesizers) {
@@ -102,7 +126,9 @@ public class Synthesizer {
                     directDependencies.build(),
                     resolvedDependencies.build(),
                     ImmutableList.copyOf(requiredNoises),
-                    defaultValue, minY, maxY);
+                    lowerSliceDefaultValue, upperSliceDefaultValue, defaultValueSliceY,
+                    minY, maxY,
+                    profilerId);
         }
 
         private static Dependency collectDependencies(Synthesizer synthesizer,

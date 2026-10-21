@@ -6,6 +6,7 @@ import birsy.clinker.common.world.level.gen.content.surface.decoration.BrineSwam
 import birsy.clinker.common.world.level.gen.content.surface.decoration.HeathSurfaceDecorator;
 import birsy.clinker.common.world.level.gen.content.surface.shape.AshDunesSurfaceShape;
 import birsy.clinker.common.world.level.gen.content.surface.shape.CrackleSurfaceShape;
+import birsy.clinker.common.world.level.gen.content.surface.shape.FlatWithSmoothEdgeSurfaceShape;
 import birsy.clinker.common.world.level.gen.content.surface.shape.HeathSurfaceShape;
 import birsy.clinker.common.world.level.gen.system.biome.BiomeGenerationInfo;
 import birsy.clinker.core.Clinker;
@@ -90,18 +91,24 @@ public class ClinkerBiomeGenerationInfo {
     public static final DeferredHolder<BiomeGenerationInfo, BiomeGenerationInfo> BEACH =
             register(ClinkerBiomes.TEMPLATE_BEACH,
                     BiomeGenerationInfo.builder()
-                            .placeholderSurfaceShape(OthershoreGenerationConstants.SEA_HEIGHT + 5)
+                            .surfaceShape(new FlatWithSmoothEdgeSurfaceShape(
+                                    OthershoreGenerationConstants.SEA_HEIGHT + 3,
+                                    OthershoreGenerationConstants.SEA_HEIGHT - 4))
             );
     public static final DeferredHolder<BiomeGenerationInfo, BiomeGenerationInfo> BRINE_SWAMP =
             register(ClinkerBiomes.BRINE_SWAMP,
                     BiomeGenerationInfo.builder()
-                            .placeholderSurfaceShape(OthershoreGenerationConstants.SEA_HEIGHT)
+                            .surfaceShape(new FlatWithSmoothEdgeSurfaceShape(
+                                    OthershoreGenerationConstants.SEA_HEIGHT + 3,
+                                    OthershoreGenerationConstants.SEA_HEIGHT - 4))
                             .decorator(new BrineSwampSurfaceDecorator(OthershoreGenerationConstants.SEA_HEIGHT))
             );
     public static final DeferredHolder<BiomeGenerationInfo, BiomeGenerationInfo> SEA =
             register(ClinkerBiomes.TEMPLATE_SEA,
                     BiomeGenerationInfo.builder()
-                            .placeholderSurfaceShape(OthershoreGenerationConstants.SEA_HEIGHT - 8)
+                            .surfaceShape(new FlatWithSmoothEdgeSurfaceShape(
+                                    OthershoreGenerationConstants.SEA_HEIGHT - 4,
+                                    OthershoreGenerationConstants.SEA_HEIGHT - 4))
             );
     
     public static DeferredHolder<BiomeGenerationInfo, BiomeGenerationInfo> register(ResourceKey<Biome> biome, BiomeGenerationInfo.Builder builder) {

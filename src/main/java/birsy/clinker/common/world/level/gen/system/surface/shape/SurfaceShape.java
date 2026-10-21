@@ -12,4 +12,10 @@ public abstract class SurfaceShape {
     }
 
     protected abstract Synthesizer create(Synthesizer biomeSdfSynthesizer, boolean surfaceContainedInChunk);
+
+    protected Synthesizer.Builder initSurfaceSynthesizer(String name) {
+        return Synthesizer.builder(name)
+                .withDefaultValue(-100F, 100F, (minSurfaceY + maxSurfaceY) / 2)
+                .withRange(minSurfaceY, maxSurfaceY);
+    }
 }

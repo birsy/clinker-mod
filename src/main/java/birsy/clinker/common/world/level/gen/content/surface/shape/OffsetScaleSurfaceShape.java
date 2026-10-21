@@ -4,7 +4,7 @@ import birsy.clinker.common.world.level.gen.content.synthesizers.UtilitySynthesi
 import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingFieldResolution;
 import birsy.clinker.common.world.level.gen.system.sampling.synthesizer.Synthesizer;
 
-public class OffsetScaleSurfaceShape extends CliffySurfaceShape {
+public class OffsetScaleSurfaceShape extends CliffEdgeSurfaceShape {
     final float scale, scaleExponent;
 
     public OffsetScaleSurfaceShape(int baseHeight, int expectedBorderHeight,
@@ -16,8 +16,7 @@ public class OffsetScaleSurfaceShape extends CliffySurfaceShape {
 
     @Override
     protected Synthesizer createSurfaceSynthesizer(Synthesizer biomeSdfSynthesizer) {
-        return Synthesizer.builder()
-                .withRange(minSurfaceY, maxSurfaceY, 100)
+        return initSurfaceSynthesizer("offset_scale_surface_shape")
                 .withDependencies(UtilitySynthesizers.SURFACE_OFFSET, UtilitySynthesizers.SURFACE_OFFSET_SCALE)
                 .build(InterpolatingFieldResolution.VERY_COARSE_X_FINE_Y,
                         ctx -> {

@@ -7,15 +7,14 @@ import birsy.clinker.common.world.level.gen.system.sampling.synthesizer.Synthesi
 import birsy.clinker.common.world.level.gen.system.sampling.synthesizer.SynthesizerContext;
 import net.minecraft.util.Mth;
 
-public class AshDunesSurfaceShape extends CliffySurfaceShape {
+public class AshDunesSurfaceShape extends CliffEdgeSurfaceShape {
     public AshDunesSurfaceShape(int baseHeight, int expectedBorderHeight) {
         super(baseHeight, baseHeight - 10, baseHeight + 15, expectedBorderHeight);
     }
 
     @Override
     protected Synthesizer createSurfaceSynthesizer(Synthesizer biomeSdfSynthesizer) {
-        return Synthesizer.builder()
-                .withRange(minSurfaceY, maxSurfaceY, 100)
+        return initSurfaceSynthesizer("ash_dunes_surface_shape")
                 .withNoises(FNLNoiseProvider.create("cliffs"))
                 .withDependencies(UtilitySynthesizers.BASIC_NOISE_2D[4], UtilitySynthesizers.ROCKY_CLIFF_Y, biomeSdfSynthesizer)
                 .build(InterpolatingFieldResolution.VERY_COARSE_X_FINE_Y, this::surface);

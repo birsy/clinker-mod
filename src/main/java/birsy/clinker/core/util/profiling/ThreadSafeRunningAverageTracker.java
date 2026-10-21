@@ -2,7 +2,7 @@ package birsy.clinker.core.util.profiling;
 
 import java.util.concurrent.atomic.LongAdder;
 
-public class RunningAverageTracker {
+public class ThreadSafeRunningAverageTracker {
     private final LongAdder totalSum = new LongAdder();
     private final LongAdder totalCount = new LongAdder();
 

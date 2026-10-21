@@ -2,6 +2,8 @@ package birsy.clinker.common.world.level.gen.system.sampling.field;
 
 import net.minecraft.util.Mth;
 
+import java.util.Arrays;
+
 public class InterpolatingField2d extends InterpolatingField {
     boolean filled = false;
     public InterpolatingField2d(int xzCellScale, int paddingBlocks) {
@@ -27,8 +29,13 @@ public class InterpolatingField2d extends InterpolatingField {
     }
 
     @Override
-    public void fill(int fromY, int toY, InterpolatingFieldFiller filler) {
-        if (filled) return;
+    public void defaultValueFill(int slice, float belowSlice, float aboveSlice) {
+        Arrays.fill(field, slice < 0 ? belowSlice : aboveSlice);
+    }
+
+    @Override
+    public int fill(int fromY, int toY, InterpolatingFieldFiller filler) {
+        if (filled) return 0;
         filler.setSlice(0);
         int index = 0;
         for (int cellZ = 0; cellZ < xzCellCount; cellZ++) {
@@ -41,6 +48,7 @@ public class InterpolatingField2d extends InterpolatingField {
             filler.advanceZ();
         }
         filled = true;
+        return this.sliceCellCount;
     }
 
     public void visit(int minLocalY, int maxLocalY, InterpolatingField.Visitor visitor) {

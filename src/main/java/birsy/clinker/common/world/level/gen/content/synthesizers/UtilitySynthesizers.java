@@ -8,7 +8,7 @@ import birsy.clinker.common.world.level.gen.system.sampling.synthesizer.Synthesi
 import birsy.clinker.core.util.noise.FastNoiseLite;
 
 public class UtilitySynthesizers {
-    public static final Synthesizer ROCKY_CLIFF_Y = Synthesizer.builder()
+    public static final Synthesizer ROCKY_CLIFF_Y = Synthesizer.builder("rocky_cliff_y")
             .withNoises(VoronoiNoiseProvider.create("rocky_cliff", 0.5F, 3))
             .build(InterpolatingFieldResolution.VERY_COARSE_X_FINE_Y,
                     ctx -> {
@@ -17,7 +17,7 @@ public class UtilitySynthesizers {
                     }
             );
 
-    public static final Synthesizer HEIGHT_OFFSET = Synthesizer.builder()
+    public static final Synthesizer HEIGHT_OFFSET = Synthesizer.builder("height_offset")
             .withNoises(FNLNoiseProvider.create("offset"))
             .build(InterpolatingFieldResolution.COARSE_2D,
                     ctx -> {
@@ -26,7 +26,7 @@ public class UtilitySynthesizers {
                     }
             );
 
-    public static final Synthesizer SURFACE_OFFSET = Synthesizer.builder()
+    public static final Synthesizer SURFACE_OFFSET = Synthesizer.builder("surface_offset")
             .withNoises(FNLNoiseProvider.create("surface_offset_0"), FNLNoiseProvider.create("surface_offset_1"), WhiteNoiseProvider.create("surface_offset_2"))
             .build(InterpolatingFieldResolution.COARSE_X_FINE_Y,
                     ctx -> {
@@ -49,7 +49,7 @@ public class UtilitySynthesizers {
                         return noise / total;
                     }
             );
-    public static final Synthesizer SURFACE_OFFSET_SCALE = Synthesizer.builder()
+    public static final Synthesizer SURFACE_OFFSET_SCALE = Synthesizer.builder("surface_offset_scale")
             .withNoises(FNLNoiseProvider.create("surface_offset_scale"))
             .build(InterpolatingFieldResolution.COARSE_2D,
                     ctx -> {
@@ -58,7 +58,7 @@ public class UtilitySynthesizers {
                     }
             );
 
-    public static final Synthesizer VORONOI_EDGE_DISTANCE_24 = Synthesizer.builder()
+    public static final Synthesizer VORONOI_EDGE_DISTANCE_24 = Synthesizer.builder("voronoi_edge_distance_24")
             .withNoises(VoronoiNoiseProvider.create("crackle_24", 0.5F, 2))
             .build(InterpolatingFieldResolution.COARSE_2D,
                     ctx -> {
@@ -87,8 +87,9 @@ public class UtilitySynthesizers {
             }
         }
 
-        return Synthesizer.builder().withNoises(
-                FNLNoiseProvider.create("basic_noise_f" + frequency + (twoDimensional ? "_2d" : ""), () -> {
+        String name = "basic_noise_f" + frequency + (twoDimensional ? "_2d" : "");
+        return Synthesizer.builder(name).withNoises(
+                FNLNoiseProvider.create(name, () -> {
                     FastNoiseLite fnl = new FastNoiseLite();
                     fnl.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2S);
                     fnl.SetFractalType(FastNoiseLite.FractalType.None);

@@ -6,15 +6,14 @@ import birsy.clinker.common.world.level.gen.system.sampling.noise.FNLNoiseProvid
 import birsy.clinker.common.world.level.gen.system.sampling.synthesizer.Synthesizer;
 import net.minecraft.util.Mth;
 
-public class HeathSurfaceShape extends CliffySurfaceShape {
+public class HeathSurfaceShape extends CliffEdgeSurfaceShape {
     public HeathSurfaceShape(int baseHeight, int expectedBorderHeight) {
         super(baseHeight, baseHeight - 5, baseHeight + 16, expectedBorderHeight);
     }
 
     @Override
     protected Synthesizer createSurfaceSynthesizer(Synthesizer biomeSdfSynthesizer) {
-        return Synthesizer.builder()
-                .withRange(minSurfaceY, maxSurfaceY, 100)
+        return initSurfaceSynthesizer("heath_surface_shape")
                 .withNoises(FNLNoiseProvider.create("heathsurface"))
                 .withDependencies(UtilitySynthesizers.BASIC_NOISE_2D[4], UtilitySynthesizers.ROCKY_CLIFF_Y, biomeSdfSynthesizer)
                 .build(InterpolatingFieldResolution.VERY_COARSE_X_FINE_Y,

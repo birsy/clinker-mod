@@ -2,6 +2,7 @@ package birsy.clinker.common.world.level.gen.system.sampling.field;
 
 import net.minecraft.util.Mth;
 
+import java.util.Arrays;
 import java.util.BitSet;
 
 public class InterpolatingField {
@@ -69,9 +70,16 @@ public class InterpolatingField {
         return Mth.lerp(facY, z0, z1);
     }
 
-    public void fill(int fromY, int toY, InterpolatingFieldFiller filler) {
+    public void defaultValueFill(int slice, float belowSlice, float aboveSlice) {
+        int index = Math.clamp(slice >> yCellScale, 0, yCellCount - 1);
+        Arrays.fill(field, 0, index * sliceCellCount, belowSlice);
+        Arrays.fill(field, index * sliceCellCount, yCellCount * sliceCellCount, aboveSlice);
+    }
+
+    public int fill(int fromY, int toY, InterpolatingFieldFiller filler) {
         int start = Math.max(0, fromY >> yCellScale), end =  Math.min(yCellCount - 1, toY >> yCellScale) + 1;
-        if (start > end) return;
+        if (start > end) return 0;
+        int cellsFilled = 0;
         // find unfilled layers
         fillMask.clear();
         fillMask.set(start, end);
@@ -81,9 +89,11 @@ public class InterpolatingField {
             int endCellY = fillMask.nextClearBit(startCellY);
             if (endCellY == -1) endCellY = yCellCount;
             fillInternal(startCellY, endCellY - 1, filler);
+            cellsFilled += endCellY - startCellY;
         }
         // finally, set filled layers
         filledLayers.or(fillMask);
+        return cellsFilled * sliceCellCount;
     }
 
     void fillInternal(int startCellY, int endCellY, InterpolatingFieldFiller filler) {

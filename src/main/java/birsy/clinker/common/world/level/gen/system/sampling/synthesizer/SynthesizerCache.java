@@ -6,17 +6,24 @@ import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingF
 import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingFieldSampler;
 import birsy.clinker.common.world.level.gen.system.sampling.noise.NoiseProvider;
 import birsy.clinker.common.world.level.gen.system.sampling.noise.NoiseSampler;
+import birsy.clinker.core.Clinker;
+import birsy.clinker.core.util.profiling.ThreadSafeRunningAverageTracker;
 import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.levelgen.PositionalRandomFactory;
 import net.minecraft.world.level.levelgen.RandomState;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 // todo: find a better name for this
 public class SynthesizerCache {
+    public static final SynthesizerProfiler PROFILER = new SynthesizerProfiler();
+
     // holds fields, sorted by xz scale
     final Int2ObjectMap<InterpolatingField[]> fieldsBySynthesizerId = new Int2ObjectOpenHashMap<>();
     final int chunkHeight; // height of the current chunk, in blocks
@@ -34,8 +41,8 @@ public class SynthesizerCache {
     // computes the value of a synthesizer at a single point.
     // todo: maybe move this somewhere else. also, make the function lol
     public double samplePoint(Synthesizer synthesizer, int x, int y, int z) {
-        if (y < synthesizer.minY || y > synthesizer.maxY) return synthesizer.defaultValue;
-        return synthesizer.defaultValue;
+        if (y < synthesizer.minY || y > synthesizer.maxY) return synthesizer.upperSliceDefaultValue;
+        return synthesizer.upperSliceDefaultValue;
     }
 
     // computes the values of a synthesizer within this chunk
@@ -94,7 +101,11 @@ public class SynthesizerCache {
     // assumes all prior dependencies have been created.
     void fillNoiseField(Synthesizer synthesizer, InterpolatingField field, int desiredXZPadding, int desiredXZScale, int fromY, int toY, boolean fieldNeedsInitialization) {
         // initialize the field if it needs it
-        if (fieldNeedsInitialization) Arrays.fill(field.array(), synthesizer.defaultValue);
+        if (fieldNeedsInitialization) field.defaultValueFill(
+                synthesizer.defaultValueSliceY - chunkMinY,
+                synthesizer.lowerSliceDefaultValue,
+                synthesizer.upperSliceDefaultValue
+        );
 
         // return early if we're not in range
         if (toY <= fromY) return;
@@ -107,7 +118,11 @@ public class SynthesizerCache {
         for (int i = 0; i < dependencies.size(); i++) {
             // there has to be a better way of doing this.
             Synthesizer dependency = dependencies.get(i).synthesizer();
-            InterpolatingField dependencyField = getOrCreateField(dependency, desiredXZPadding, minXZScale, fromY, toY);
+            InterpolatingField dependencyField = getOrCreateField(
+                    dependency,
+                    desiredXZPadding, minXZScale,
+                    Math.max(fromY, dependency.minY), Math.min(toY, dependency.maxY)
+            );
             fieldRetrievers[i] = new DependencyRetriever.Field(chunkMinX, chunkMinY, chunkMinZ, dependencyField);
             interpolators[i] = InterpolatingFieldSampler.create(dependencyField, field);
         }
@@ -125,8 +140,10 @@ public class SynthesizerCache {
                 field, chunkMinX - field.paddingBlocks, chunkMinY, chunkMinZ - field.paddingBlocks,
                 interpolators, context, synthesizer.function
         );
-        // fill field...
-        field.fill(fromY - chunkMinY, toY - chunkMinY, filler);
+        // fill field and profile
+        long startTime = System.nanoTime();
+        int cellsFilled = field.fill(fromY - chunkMinY, toY - chunkMinY, filler);
+        PROFILER.addTime(synthesizer.profilerId, System.nanoTime() - startTime, cellsFilled);
     }
 
     // fills a field with data from a synthesizer.
@@ -199,6 +216,34 @@ public class SynthesizerCache {
             context.y = globalY;
             for (InterpolatingFieldSampler synthesizerField : interpolators)
                 synthesizerField.setSlice(cellY);
+        }
+    }
+
+    public static final class SynthesizerProfiler {
+        final ConcurrentMap<String, ThreadSafeRunningAverageTracker> totalTimeTrackers = new ConcurrentHashMap<>();
+        final ConcurrentMap<String, ThreadSafeRunningAverageTracker> timePerSliceTrackers = new ConcurrentHashMap<>();
+
+        private SynthesizerProfiler() {}
+
+        void addTime(@Nullable String profilerId, long ns, int cellsFilled) {
+            if (profilerId == null) return;
+            if (cellsFilled == 0) return;
+            long nsPerCell = ns / cellsFilled;
+            totalTimeTrackers.computeIfAbsent(profilerId, key -> new ThreadSafeRunningAverageTracker()).recordTime(ns);
+            timePerSliceTrackers.computeIfAbsent(profilerId, key -> new ThreadSafeRunningAverageTracker()).recordTime(nsPerCell);
+        }
+
+        public void log() {
+            List<String> keys = totalTimeTrackers.keySet().stream()
+                    .sorted(Comparator.comparingDouble(key -> totalTimeTrackers.get(key).getAverage()).reversed())
+                    .toList();
+            Clinker.LOGGER.info("SYNTHESIZER PROFILING RESULTS:");
+            for (String id : keys) {
+                double avgMs = totalTimeTrackers.get(id).getAverage() / 1_000_000.0;
+                double avgPerCellNs = timePerSliceTrackers.get(id).getAverage();
+                Clinker.LOGGER.info("{}: avg = {} ms, avg per cell = {} ns", id, avgMs, avgPerCellNs);
+            }
+            Clinker.LOGGER.info("-------------------------------");
         }
     }
 }

@@ -9,6 +9,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.PositionalRandomFactory;
 import net.minecraft.world.level.levelgen.RandomState;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
@@ -98,7 +99,7 @@ public class CellularFluidField implements FluidField {
     }
 
     @Override
-    public void fill(InterpolatingField waterfallPresence) {
+    public void fill(@Nullable InterpolatingField waterfallPresence) {
         this.initializeCells();
         this.computeNeighborHomogeneity();
         this.computeFluidStates();
@@ -127,9 +128,9 @@ public class CellularFluidField implements FluidField {
     // accelerates some computations by telling if a cell has all required neighbors, etc.
     protected void computeNeighborHomogeneity() {
         for (int cY = 1; cY < this.cellCountY - 1; cY++) {
-            for (int cZ = 1; cZ < this.cellCountXZ - 1; cZ++) {
+            for (int cZ = 0; cZ < this.cellCountXZ; cZ++) {
                 NEXT_CELL:
-                for (int cX = 1; cX < this.cellCountXZ - 1; cX++) {
+                for (int cX = 0; cX < this.cellCountXZ; cX++) {
                     int cellIndex = index(cX, cY, cZ, this.cellCountXZ, this.cellCountY);
                     FluidCell cell = this.cells[cellIndex];
                     switch (cell.cellType) {
@@ -163,8 +164,14 @@ public class CellularFluidField implements FluidField {
                             }
                             break;
                         case SURFACE:
-                            continue;
-                            // still haven't quite worked out surface homogeneity...
+                            for (int[] neighborOffset : NEIGHBOR_OFFSETS) {
+                                int nX = cX + neighborOffset[0], nY = cY + neighborOffset[1], nZ = cZ + neighborOffset[2];
+                                if (outOfRange(nX, nY, nZ, cellCountXZ, cellCountY)) continue;
+                                int neighborIndex = index(nX, nY, nZ, this.cellCountXZ, this.cellCountY);
+                                if (!cells[neighborIndex].fluidLevel.equals(cell.fluidLevel)) {
+                                    continue NEXT_CELL;
+                                }
+                            }
                     }
                     // if it passes all tests, it's homogenous.
                     cell.homogenousWithNeighbors = true;
@@ -185,8 +192,9 @@ public class CellularFluidField implements FluidField {
                         blockStartY = cY * this.cellHeight,
                         blockStartZ = cZ * this.cellWidth;
 
-                    if (cell.cellType == CellType.EMPTY && cell.homogenousWithNeighbors) continue;
-                    if (cell.cellType == CellType.FULL && cell.homogenousWithNeighbors) {
+                    if (cell.cellType == CellType.EMPTY && cell.homogenousWithNeighbors)
+                        continue;
+                    if (cell.homogenousWithNeighbors) {
                         int blockEndY = Math.min(blockStartY + this.cellHeight, this.blockCountY);
                         int localSurfaceHeight = Math.min(
                                 cell.fluidHeight() - this.minY + this.paddingBlocksY,

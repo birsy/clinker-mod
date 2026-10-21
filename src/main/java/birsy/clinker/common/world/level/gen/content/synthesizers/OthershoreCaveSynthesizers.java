@@ -7,13 +7,15 @@ import birsy.clinker.core.util.MathUtils;
 import net.minecraft.util.Mth;
 
 public class OthershoreCaveSynthesizers {
-    public static final Synthesizer ENTRANCE_MASK = Synthesizer.builder()
+    public static final int AQUIFER_START_HEIGHT = 0;
+
+    public static final Synthesizer ENTRANCE_MASK = Synthesizer.builder("cave_entrance_mask")
             .withNoises(FNLNoiseProvider.create("cave_entrance"))
             .build(InterpolatingFieldResolution.COARSE_2D, (ctx) ->
                     Mth.map(ctx.noise(0).sample(ctx.x() / 128.0, ctx.z() / 128.0), 0.55F, 0.8F, 0.0F, 1.0F)
             );
 
-    public static final Synthesizer SPELEOTHEMS = Synthesizer.builder()
+    public static final Synthesizer SPELEOTHEMS = Synthesizer.builder("cave_speleothem")
             .withNoises(FNLNoiseProvider.create("speleothem"))
             .build(InterpolatingFieldResolution.COARSE_X_VERY_COARSE_Y, (ctx) -> {
                 float frequency = 1 / 12.0F;
@@ -22,11 +24,12 @@ public class OthershoreCaveSynthesizers {
                 return value;
             });
 
-    public static final Synthesizer NOODLES = Synthesizer.builder()
+    public static final Synthesizer NOODLES = Synthesizer.builder("cave_noodles")
             .withNoises(FNLNoiseProvider.create("cave_noodle_a"), FNLNoiseProvider.create("cave_noodle_b"),
                        FNLNoiseProvider.create("cave_noodle_c"), FNLNoiseProvider.create("cave_noodle_d"))
             .withDependencies(SPELEOTHEMS)
-            .withRange(0, Integer.MAX_VALUE, -100)
+            .withRange(AQUIFER_START_HEIGHT, Integer.MAX_VALUE)
+            .withDefaultValue(-100)
             .build(InterpolatingFieldResolution.COARSE, (ctx) -> {
                 float frequency = 1.0F / 150.0F;
                 float sX = ctx.x() * frequency, sZ = ctx.z() * frequency, sY0 = ctx.y() * frequency, sY1 = sY0 * 2;
@@ -47,23 +50,23 @@ public class OthershoreCaveSynthesizers {
                 float speleothem = ctx.dependentValue(0);
                 speleothem = MathUtils.smoothMin(speleothem, 0, 3);
 
-                return MathUtils.smoothMin(noodleCaves + speleothem * 5, ctx.y(), 5);
+                return MathUtils.smoothMin(noodleCaves + speleothem * 5, ctx.y() - AQUIFER_START_HEIGHT, 5);
             });
 
-    public static final Synthesizer AQUIFER_CEILING_HEIGHT = Synthesizer.builder()
+    public static final Synthesizer AQUIFER_CEILING_HEIGHT = Synthesizer.builder("cave_aquifer_ceiling_height")
             .withNoises(FNLNoiseProvider.create("aquifer_ceiling_height"))
             .build(InterpolatingFieldResolution.COARSE_2D, (ctx) ->
                     Mth.clampedMap(
                             ctx.noise(0).sample(ctx.x() / 64.0F, ctx.z() / 64.0F),
-                            -1, 1, -15, 3
+                            -1, 1, AQUIFER_START_HEIGHT - 15, AQUIFER_START_HEIGHT + 3
                     )
             );
-    public static final Synthesizer AQUIFER_ISLANDS = Synthesizer.builder()
+    public static final Synthesizer AQUIFER_ISLANDS = Synthesizer.builder("cave_aquifer_islands")
             .withNoises(FNLNoiseProvider.create("aquifer_islands"))
             .build(InterpolatingFieldResolution.COARSE_2D, (ctx) ->
                     ctx.noise(0).sample( ctx.x() / 128.0F, ctx.z() / 128.0F)
             );
-    public static final Synthesizer AQUIFER_WALLS = Synthesizer.builder()
+    public static final Synthesizer AQUIFER_WALLS = Synthesizer.builder("cave_aquifer_walls")
             .withNoises(FNLNoiseProvider.create("aquifer_wall"), FNLNoiseProvider.create("aquifer_wall_holes"), FNLNoiseProvider.create("aquifer_wall_holes_small"))
             .build(InterpolatingFieldResolution.COARSE, (ctx) -> {
                 float frequency = 1.0F / 190.0F;
@@ -80,9 +83,10 @@ public class OthershoreCaveSynthesizers {
 
                 return Math.max(aquiferWall, aquiferWallHoles);
             });
-    public static final Synthesizer AQUIFER = Synthesizer.builder()
+    public static final Synthesizer AQUIFER = Synthesizer.builder("cave_aquifer_combined")
             .withDependencies(AQUIFER_CEILING_HEIGHT, AQUIFER_ISLANDS, AQUIFER_WALLS, SPELEOTHEMS)
-            .withRange(-Integer.MAX_VALUE, 0, -100)
+            .withRange(Integer.MIN_VALUE, AQUIFER_START_HEIGHT)
+            .withDefaultValue(-100)
             .build(InterpolatingFieldResolution.COARSE, (ctx) -> {
                 float seaLevel = -40;
                 float ceilingHeight = ctx.dependentValue(0);
@@ -106,7 +110,7 @@ public class OthershoreCaveSynthesizers {
                 return density + ceilingSpeleothems * 7 + floorSpeleothems * 5;
             });
 
-    public static final Synthesizer CAVES = Synthesizer.builder()
+    public static final Synthesizer CAVES = Synthesizer.builder("cave_combined")
             .withDependencies(NOODLES, AQUIFER)
             .withDefaultValue(-100)
             .build(InterpolatingFieldResolution.COARSE, (ctx) -> {

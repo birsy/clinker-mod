@@ -25,7 +25,7 @@ import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.worldgen.ClinkerWorldFeatureCapabilities;
 import birsy.clinker.core.util.MathUtils;
-import birsy.clinker.core.util.profiling.RunningAverageTracker;
+import birsy.clinker.core.util.profiling.ThreadSafeRunningAverageTracker;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.mojang.serialization.MapCodec;
@@ -57,7 +57,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class OthershoreChunkGenerator extends ChunkGenerator {
-    public static final RunningAverageTracker TIME_TRACKER = new RunningAverageTracker();
+    public static final ThreadSafeRunningAverageTracker TIME_TRACKER = new ThreadSafeRunningAverageTracker();
 
     public static final MapCodec<OthershoreChunkGenerator> CODEC = RecordCodecBuilder.mapCodec(
             obj -> obj.group(RegistryOps.retrieveGetter(Registries.BIOME),
@@ -212,7 +212,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         Synthesizer surface = surfaceShapeSystem.createMasterSurfaceSynthesizer(chunkPos, biomeMap);
 
         int seaFloorScanSize = Math.max(fluidCellWidth, surface.resolution.yScale());
-        Synthesizer seaFloorHeight = Synthesizer.builder()
+        Synthesizer seaFloorHeight = Synthesizer.builder("sea_floor_height")
                 .withDependencies(surface)
                 .build(InterpolatingFieldResolution.COARSE_2D,
                         ctx -> {
@@ -243,21 +243,24 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             return FluidLevel.EMPTY;
         };
         FluidField fluidField = new BFSBorderFluidField(randomState, level, chunkPos, filler, fluidCellWidth, fluidCellHeight, 1);
-        fluidField.fill(new InterpolatingField2d(0, fluidCellWidth));
+        fluidField.fill(null);
 
-        Synthesizer caveEntranceMask = Synthesizer.builder()
+        int medianSurfaceY = (surface.minY + surface.maxY) / 2;
+        Synthesizer caveEntranceMask = Synthesizer.builder("cave_entrances")
                 .withDependencies(seaFloorHeight, OthershoreCaveSynthesizers.ENTRANCE_MASK)
-                .withRange(surface.minY - 30, surface.maxY, 100.0F)
-                .build(InterpolatingFieldResolution.VERY_COARSE,
+                .withRange(surface.minY - 20, surface.maxY)
+                .withDefaultValue(100F)
+                .build(InterpolatingFieldResolution.COARSE,
                         ctx -> {
-                            float surfaceDistance = (ctx.dependentValue(0) - 30) - ctx.y();
+                            float surfaceDistance = (ctx.dependentValue(0) - 20) - ctx.y();
                             return MathUtils.smoothMax(ctx.dependentValue(1), surfaceDistance, 3);
                         });
 
         // and combine that with the cave synthesizer to create the Final Density Synthesizer:tm:
-        Synthesizer finalDensitySynthesizer = Synthesizer.builder()
+        Synthesizer finalDensitySynthesizer = Synthesizer.builder("final_density")
                 .withDependencies(surface, caveEntranceMask, OthershoreCaveSynthesizers.CAVES)
-                .withRange(Integer.MIN_VALUE, surface.maxY + 30, 100.0F)
+                .withRange(Integer.MIN_VALUE, surface.maxY + 30)
+                .withDefaultValue(-100F, 100F, medianSurfaceY)
                 .build(InterpolatingFieldResolution.FINE,
                         (ctx) -> {
                             float maskedCaves = MathUtils.smoothMin(ctx.dependentValue(1), ctx.dependentValue(2), 4.0F);
@@ -278,8 +281,10 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
         // terrible profiling
         TIME_TRACKER.recordTime(System.nanoTime() - startTime);
-        if (randomState.random.at(chunk.getPos().x, 0, chunk.getPos().z).nextInt(100) == 0)
-            Clinker.LOGGER.info("avg. noise gen time: {} ms", TIME_TRACKER.getAverage() / 1_000_000.0);
+//        if (randomState.random.at(chunk.getPos().x, 0, chunk.getPos().z).nextInt(100) == 0) {
+//            Clinker.LOGGER.info("avg. total noise gen time: {} ms", TIME_TRACKER.getAverage() / 1_000_000.0);
+//            SynthesizerCache.PROFILER.log();
+//        }
 
         return chunk;
     }

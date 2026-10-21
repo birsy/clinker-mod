@@ -24,8 +24,8 @@ public class ClinkerBlockAndItemColors {
         event.register(RandomizedTintHandler.INSTANCE,
                 ClinkerBlocks.SALTMOSS.get(),
                 ClinkerBlocks.SALTMOSS_SPROUTS.get(),
-                ClinkerBlocks.PEAT_MOSS.get(),
-                ClinkerBlocks.PEAT_MOSS_BUDS.get()
+                ClinkerBlocks.TALL_SALTMOSS_SPROUTS.get(),
+                ClinkerBlocks.DRIED_SALTMOSS_SPROUTS.get()
         );
     }
 

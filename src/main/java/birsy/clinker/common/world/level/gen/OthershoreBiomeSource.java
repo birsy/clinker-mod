@@ -75,6 +75,7 @@ public class OthershoreBiomeSource extends BiomeSource {
         if (true) {
             float scale = 1.5F;
             PositionalRandomFactory noiseRandom = randomState.apply(NoiseProvider.NOISE_GEN_SEED);
+
             return LayeredBiomeResolver.builder(7)
                     // shape layer
                     .layer(
@@ -93,8 +94,6 @@ public class OthershoreBiomeSource extends BiomeSource {
                                     .replace(UPPER_SHELF).between(-0.2F, 0.1F).with(LOWER_SHELF)
                                     .build()
                     )
-                    .layer(new BiomeLayerOperations.Erode(SEA.get()))
-                    .layer(new BiomeLayerOperations.Erode(SEA.get()))
                     .zoom()
                     .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1))
                     .zoom()
