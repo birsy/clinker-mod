@@ -730,9 +730,9 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
             String tallSaltmossSproutsName = name(TALL_SALTMOSS_SPROUTS.get());
             this.simpleBlockWithVariationAndTransformation(
                     TALL_SALTMOSS_SPROUTS.get(),
-                    (i) -> this.cross(TALL_SALTMOSS_SPROUTS.get())
+                    (i) -> this.tintedCross(TALL_SALTMOSS_SPROUTS.get())
                             .renderType("cutout"),
-                    (i) -> this.crossMirrored(tallSaltmossSproutsName + "_mirrored",
+                    (i) -> this.tintedCrossMirrored(tallSaltmossSproutsName + "_mirrored",
                                     this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + tallSaltmossSproutsName))
                             .renderType("cutout"),
                     1, false, false
@@ -829,12 +829,25 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
                 this.flatBlockItem(CAVE_IVY.get(), this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + "cave_ivy_tip_1"));
             }
 
-
             this.simpleBlockItem(
                     CARAPACE_HUSK.get(),
                     this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + "carapace_husk"))
             );
 
+            this.simpleBlockWithVariationAndTransformation(
+                    PEAT_MOSS.get(),
+                    (i) -> this.models().withExistingParent(
+                            "peat_moss" + ((i == 0) ? "" : "_" + i),
+                            this.modLoc(ModelProvider.BLOCK_FOLDER + "/template_peat_moss")
+                    ).texture("end", this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + "peat_moss_top" + ((i == 0) ? "" : "_" + i)))
+                     .texture("side", this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + "peat_moss" + ((i == 0) ? "" : "_" + i))),
+                    (i) -> this.models().withExistingParent(
+                            "peat_moss" + ((i == 0) ? "" : "_" + i),
+                            this.modLoc(ModelProvider.BLOCK_FOLDER + "/template_peat_moss_mirrored")
+                    ).texture("end", this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + "peat_moss_top" + ((i == 0) ? "" : "_" + i)))
+                     .texture("side", this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + "peat_moss" + ((i == 0) ? "" : "_" + i))),
+                    2, false, true
+            );
             this.simpleBlockItem(
                     PEAT_MOSS.get(),
                     this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + "peat_moss"))
@@ -1335,12 +1348,30 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
         return this.models().cross(name(block), this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(block)));
     }
 
+    public ModelBuilder tintedCross(Block block) {
+        return this.tintedCross(name(block), this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(block)));
+    }
+    public ModelBuilder tintedCross(String name, ResourceLocation cross) {
+        return this.models().singleTexture(name,
+                this.mcLoc(ModelProvider.BLOCK_FOLDER + "/tinted_cross"),
+                "cross", cross);
+    }
+
     public ModelBuilder crossMirrored(Block block) {
         return this.crossMirrored(name(block), this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(block)));
     }
 
     public ModelBuilder crossMirrored(String name, ResourceLocation cross) {
         return this.models().singleTexture(name, this.modLoc(ModelProvider.BLOCK_FOLDER + "/cross_mirrored"), "cross", cross);
+    }
+
+    public ModelBuilder tintedCrossMirrored(Block block) {
+        return this.tintedCrossMirrored(name(block), this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + name(block)));
+    }
+    public ModelBuilder tintedCrossMirrored(String name, ResourceLocation cross) {
+        return this.models().singleTexture(name,
+                this.modLoc(ModelProvider.BLOCK_FOLDER + "/tinted_cross_mirrored"),
+                "cross", cross);
     }
 
     public ModelBuilder denseCross(Block block) {

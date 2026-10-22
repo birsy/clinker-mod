@@ -1,5 +1,5 @@
 {
-  "parent": "clinker:block/cross_mirrored",
+  "parent": "clinker:block/tinted_cross_mirrored",
   "render_type": "minecraft:cutout",
   "textures": {
     "cross": "clinker:block/tall_saltmoss_sprouts"

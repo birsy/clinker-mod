@@ -1,7 +1,0 @@
-{
-   "parent": "block/cube_column",
-   "textures": {
-       "end": "clinker:block/peat_moss_top",
-       "side": "clinker:block/peat_moss"
-   }
-}
