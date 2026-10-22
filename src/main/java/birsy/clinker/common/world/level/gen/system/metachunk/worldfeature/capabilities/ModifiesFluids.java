@@ -3,8 +3,13 @@ package birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capab
 import birsy.clinker.common.world.level.gen.system.fluid.FluidLevel;
 import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingField;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureContext;
+import birsy.clinker.common.world.level.gen.system.sampling.synthesizer.SynthesizerCache;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.levelgen.RandomState;
 
 public interface ModifiesFluids extends WorldFeatureCapability {
-    void prefillFluidNoiseFields(int chunkX, int chunkZ, WorldFeatureContext worldContext);
-    FluidLevel modifyFluidLevel(int x, int y, int z, int minX, int minY, int minZ, FluidLevel currentFluidLevel);
+    FluidLevel modifyFluidLevel(int x, int y, int z,
+                                FluidLevel currentFluidLevel,
+                                WorldFeatureContext context);
 }

@@ -8,7 +8,6 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.levelgen.PositionalRandomFactory;
 import net.minecraft.world.level.levelgen.RandomState;
 
@@ -50,7 +49,7 @@ public class MetaChunkMap {
         return 16 << depth;
     }
 
-    MetaChunk getMetaChunk(LevelAccessor level, int depth, int blockX, int blockZ, WorldFeatureContext worldContext) {
+    MetaChunk getMetaChunk(int depth, int blockX, int blockZ, WorldFeatureContext worldContext) {
         int size = getMetaChunkSizeForDepth(depth);
         int metaChunkX = Math.floorDiv(blockX, size), metaChunkZ = Math.floorDiv(blockZ, size);
         long key = MetaChunk.asLong(metaChunkX, metaChunkZ);
@@ -67,7 +66,6 @@ public class MetaChunkMap {
                 for (int xOffset = -1; xOffset <= 1; xOffset++) {
                     for (int zOffset = -1; zOffset <= 1; zOffset++) {
                         MetaChunk parent = getMetaChunk(
-                                level,
                                 depth + 1,
                                 (Math.floorDiv(blockX, parentSize) + xOffset) * parentSize,
                                 (Math.floorDiv(blockZ, parentSize) + zOffset) * parentSize,
@@ -84,13 +82,13 @@ public class MetaChunkMap {
                     }
                 }
             }
-            generateWorldFeatures(level, depth, minX, minZ, maxX, maxZ, collector, worldContext);
+            generateWorldFeatures(depth, minX, minZ, maxX, maxZ, collector, worldContext);
 
             return new MetaChunk(worldFeaturesInChunk, size, depth, metaChunkX, metaChunkZ);
         });
     }
 
-    void generateWorldFeatures(LevelAccessor level, int depth, int minX, int minZ, int maxX, int maxZ, Consumer<WorldFeatureInstance<?>> collector, WorldFeatureContext worldContext) {
+    void generateWorldFeatures(int depth, int minX, int minZ, int maxX, int maxZ, Consumer<WorldFeatureInstance<?>> collector, WorldFeatureContext worldContext) {
         if (depth <= 0) return;
         RandomSource random = metaChunkRandom.at(minX, depth, minZ);
 
@@ -102,7 +100,7 @@ public class MetaChunkMap {
                 NEXT_FEATURE:
                 for (int i = 0; i < count; i++) {
                     Optional<? extends WorldFeatureType.WorldFeatureInstance<?>> maybeRealizedFeature =
-                            featureSpawn.featureType().realize(level, minX, minZ, maxX, maxZ, depth, random, worldContext);
+                            featureSpawn.featureType().realize(minX, minZ, maxX, maxZ, depth, random, worldContext);
                     if (maybeRealizedFeature.isEmpty()) continue;
 
                     WorldFeatureInstance<?> featureInstance = maybeRealizedFeature.get();
@@ -120,7 +118,7 @@ public class MetaChunkMap {
         }
     }
 
-    public WorldFeatureSet getWorldFeatures(LevelAccessor level, int blockX, int blockZ, WorldFeatureContext context) {
-        return getMetaChunk(level, 0, blockX, blockZ, context).compiledWorldFeatures.get();
+    public WorldFeatureSet getWorldFeatures(int blockX, int blockZ, WorldFeatureContext context) {
+        return getMetaChunk(0, blockX, blockZ, context).compiledWorldFeatures.get();
     }
 }
