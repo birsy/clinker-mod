@@ -2,6 +2,7 @@ package birsy.clinker.client.render.world;
 
 import birsy.clinker.client.render.ClinkerShaders;
 import birsy.clinker.core.Clinker;
+import birsy.clinker.core.registry.worldgen.ClinkerWorld;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
@@ -32,7 +33,8 @@ public class OthershoreFogLayerRenderer {
 
     @SubscribeEvent
     static void renderLevel(RenderLevelStageEvent event) {
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) {
+        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS &&
+            Minecraft.getInstance().level != null && Minecraft.getInstance().level.dimension() == ClinkerWorld.OTHERSHORE) {
             RenderSystem.depthMask(false);
             RenderSystem.enableDepthTest();
             RenderSystem.enableBlend();
