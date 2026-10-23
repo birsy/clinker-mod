@@ -11,6 +11,7 @@ public final class SynthesizerContext {
     final float[] dependencyValues;
     final NoiseSampler[] noises;
     int x, y, z;
+    float oldValue;
 
     public SynthesizerContext(DependencyRetriever[] dependencyRetrievers, NoiseSampler[] noises) {
         this.dependencyRetrievers = dependencyRetrievers;
@@ -22,11 +23,11 @@ public final class SynthesizerContext {
     public int y() { return y; }
     public int z() { return z; }
 
+    public float oldValue() { return oldValue; }
+
     public float dependentValue(int i) { return dependencyValues[i]; }
     public NoiseSampler noise(int i) { return noises[i]; }
 
-    // todo: work out a way for independent sampling to also use this
-    // slow path, try not to use this
     public float retrieveFromDependency(int i, int x, int y, int z) {
         return dependencyRetrievers[i].retrieve(x, y, z);
     }

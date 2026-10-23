@@ -1,7 +1,11 @@
 package birsy.clinker.common.world.level.gen.system.surface.shape;
 
+import birsy.clinker.common.world.level.gen.content.synthesizers.UtilitySynthesizers;
 import birsy.clinker.common.world.level.gen.system.biome.BiomeGenerationInfo;
 import birsy.clinker.common.world.level.gen.system.biome.placement.BiomeCache2d;
+import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureContext;
+import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureSet;
+import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesSurfaceSynthesizer;
 import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingFieldResolution;
 import birsy.clinker.common.world.level.gen.system.sampling.noise.FNLNoiseProvider;
 import birsy.clinker.common.world.level.gen.system.sampling.synthesizer.Synthesizer;
@@ -48,7 +52,9 @@ public class SurfaceShapeSystem {
 
     private record BoundaryInfo(int closestQX, int closestQZ, boolean insideBiome) {}
 
-    public Synthesizer createMasterSurfaceSynthesizer(ChunkPos chunkPos, BiomeCache2d surfaceBiomes) {
+    public Synthesizer createMasterSurfaceSynthesizer(ChunkPos chunkPos, BiomeCache2d surfaceBiomes, WorldFeatureSet worldFeatures, WorldFeatureContext worldFeatureContext) {
+        if (true) return BiomeGenerationInfo.DEFAULT.shaper().create(UtilitySynthesizers.BASIC_NOISE_2D[7], true);
+
         BiomeCache2d biomesSurfacesInChunk = surfaceBiomes.subsection(
                 QuartPos.fromBlock(chunkPos.getMinBlockX()) - 4, QuartPos.fromBlock(chunkPos.getMinBlockZ()) - 4,
                 QuartPos.fromBlock(chunkPos.getMaxBlockX()) + 4, QuartPos.fromBlock(chunkPos.getMaxBlockZ()) + 4
@@ -71,11 +77,17 @@ public class SurfaceShapeSystem {
             maximumRange = Math.max(maximumRange, surfaceShape.maxSurfaceY);
         }
 
+        int finalMinimumRange = minimumRange, finalMaximumRange = maximumRange;
         Synthesizer[] dependencies = biomeSynthesizers.toArray(new Synthesizer[0]);
         return Synthesizer.builder("master_surface")
                 .withDefaultValue(-100F, 100F, (minimumRange + maximumRange) / 2)
                 .withRange(minimumRange, maximumRange)
                 .withDependencies(dependencies)
+                .withPasses(
+                        worldFeatures.byCapability(ModifiesSurfaceSynthesizer.class).stream()
+                                .map(modifier -> modifier.surfaceSynthesizerPass(finalMinimumRange, finalMaximumRange, worldFeatureContext))
+                                .toArray(Synthesizer.PassBuilder[]::new)
+                )
                 .build(InterpolatingFieldResolution.COARSE_X_FINE_Y,
                         ctx -> {
                             float dist = 100;
@@ -96,6 +108,12 @@ public class SurfaceShapeSystem {
                         ctx -> {
                             int x = ctx.x(), z = ctx.z();
                             int startQX = QuartPos.fromBlock(x), startQZ = QuartPos.fromBlock(z);
+                            if (surfaceBiomes.retrieve(startQX, startQZ) == allBiomes.get(biomeIndex)) {
+                                return 0;
+                            } else if (true) {
+                                return 32;
+                            }
+
                             long key = ((long) startQX << 32) | (startQZ & 0xFFFFFFFFL);
 
                             BoundaryInfo[] boundaries = boundaryCache.get(key);

@@ -1,17 +1,19 @@
 package birsy.clinker.common.world.level.gen.system.fluid;
 
+import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureContext;
+import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesFluids;
 import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingField;
+import birsy.clinker.common.world.level.gen.system.sampling.synthesizer.DependencyRetriever;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.PositionalRandomFactory;
 import net.minecraft.world.level.levelgen.RandomState;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.List;
 
 // state map with cells, but nothing to compute borders
 // not really needed but i'm trying out a couple different strategies for
@@ -99,13 +101,13 @@ public class CellularFluidField implements FluidField {
     }
 
     @Override
-    public void fill(@Nullable InterpolatingField waterfallPresence) {
-        this.initializeCells();
+    public void fill(InterpolatingField waterfallPresence, DependencyRetriever seaFloorHeightRetriever, List<ModifiesFluids> fluidModifyingWorldFeatures, WorldFeatureContext worldFeatureContext) {
+        this.initializeCells(seaFloorHeightRetriever, fluidModifyingWorldFeatures, worldFeatureContext);
         this.computeNeighborHomogeneity();
         this.computeFluidStates();
     }
 
-    protected void initializeCells() {
+    protected void initializeCells(DependencyRetriever seaFloorHeightRetriever, List<ModifiesFluids> fluidModifyingWorldFeatures, WorldFeatureContext worldFeatureContext) {
         for (int cY = 0; cY < this.cellCountY; cY++) {
             int globalCellY = cY + this.minCellY - this.paddingCells;
             for (int cZ = 0; cZ < this.cellCountXZ; cZ++) {
@@ -118,6 +120,13 @@ public class CellularFluidField implements FluidField {
                            centerY = globalCellY * this.cellHeight + cellRandom.triangle(this.halfCellWidth, this.halfCellWidth),
                            centerZ = globalCellZ * this.cellWidth +  cellRandom.triangle(this.halfCellWidth, this.halfCellWidth);
                     FluidLevel fluidLevel = this.fluidFieldFiller.compute((int)centerX, (int)centerY, (int)centerZ);
+                    for (ModifiesFluids fluidModifyingWorldFeature : fluidModifyingWorldFeatures) {
+                        fluidLevel = fluidModifyingWorldFeature.modifyFluidLevel(
+                                centerX, centerY, centerZ,
+                                fluidLevel, worldFeatureContext,
+                                seaFloorHeightRetriever
+                        );
+                    }
                     this.cells[index(cX, cY, cZ, this.cellCountXZ, this.cellCountY)] =
                             new FluidCell(centerX, centerY, centerZ, fluidLevel, this.cellHeight);
                 }

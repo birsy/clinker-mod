@@ -12,13 +12,12 @@ public final class ClinkerWorldFeatureCapabilities {
 
     public static final Supplier<Class<ModifiesBiome>> MODIFIES_BIOME = WORLD_FEATURE_CAPABILITIES.register("modifies_biome", () -> ModifiesBiome.class);
 
-    public static final Supplier<Class<ModifiesHeightmap>> MODIFIES_HEIGHTMAP = WORLD_FEATURE_CAPABILITIES.register("modifies_heightmap", () -> ModifiesHeightmap.class);
-    public static final Supplier<Class<ModifiesSurfaceNoiseField>> MODIFIES_SURFACE_DENSITY = WORLD_FEATURE_CAPABILITIES.register("modifies_surface_density", () -> ModifiesSurfaceNoiseField.class);
-    public static final Supplier<Class<ModifiesCaveNoiseField>> MODIFIES_CAVE_DENSITY = WORLD_FEATURE_CAPABILITIES.register("modifies_cave_density", () -> ModifiesCaveNoiseField.class);
-    public static final Supplier<Class<ModifiesFinalNoiseField>> MODIFIES_FINAL_DENSITY = WORLD_FEATURE_CAPABILITIES.register("modifies_final_density", () -> ModifiesFinalNoiseField.class);
+    public static final Supplier<Class<ModifiesSurfaceSynthesizer>> MODIFIES_SURFACE_DENSITY = WORLD_FEATURE_CAPABILITIES.register("modifies_surface_density", () -> ModifiesSurfaceSynthesizer.class);
+    public static final Supplier<Class<ModifiesCaveSynthesizer>> MODIFIES_CAVE_DENSITY = WORLD_FEATURE_CAPABILITIES.register("modifies_cave_density", () -> ModifiesCaveSynthesizer.class);
+    public static final Supplier<Class<ModifiesFinalSynthesizer>> MODIFIES_FINAL_DENSITY = WORLD_FEATURE_CAPABILITIES.register("modifies_final_density", () -> ModifiesFinalSynthesizer.class);
 
     public static final Supplier<Class<ModifiesFluids>> MODIFIES_FLUIDS = WORLD_FEATURE_CAPABILITIES.register("modifies_fluids", () -> ModifiesFluids.class);
-    public static final Supplier<Class<ModifiesWaterfallPresence>> MODIFIES_WATERFALL_PRESENCE = WORLD_FEATURE_CAPABILITIES.register("modifies_waterfall_presence", () -> ModifiesWaterfallPresence.class);
+    public static final Supplier<Class<ModifiesWaterfallSynthesizer>> MODIFIES_WATERFALL_PRESENCE = WORLD_FEATURE_CAPABILITIES.register("modifies_waterfall_presence", () -> ModifiesWaterfallSynthesizer.class);
 
     public static final Supplier<Class<ModifiesSurfaceDecoration>> MODIFIES_SURFACE_DECORATION = WORLD_FEATURE_CAPABILITIES.register("modifies_surface_decoration", () -> ModifiesSurfaceDecoration.class);
 }

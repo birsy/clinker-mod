@@ -14,7 +14,6 @@ public class InterpolatingField {
     public final int yCellScale, yCellSize, yCellCount, yCellMask;
     final float invXZCellSize, invYCellSize;
     final int sliceCellCount;
-    final BitSet filledLayers, fillMask;
     final int chunkHeight;
 
     protected float[] field;
@@ -41,8 +40,6 @@ public class InterpolatingField {
         this.yCellCount = (chunkHeight >> yCellScale) + 1;
 
         this.field = new float[this.sliceCellCount * this.yCellCount];
-        this.filledLayers = new BitSet(this.yCellCount);
-        this.fillMask = new BitSet(this.yCellCount);
     }
 
     public float[] array() { return field; }
@@ -77,26 +74,9 @@ public class InterpolatingField {
     }
 
     public int fill(int fromY, int toY, InterpolatingFieldFiller filler) {
-        int start = Math.max(0, fromY >> yCellScale), end =  Math.min(yCellCount - 1, toY >> yCellScale) + 1;
-        if (start > end) return 0;
-        int cellsFilled = 0;
-        // find unfilled layers
-        fillMask.clear();
-        fillMask.set(start, end);
-        fillMask.andNot(filledLayers);
-        // fill them
-        for (int startCellY = fillMask.nextSetBit(0); startCellY >= 0; startCellY = fillMask.nextSetBit(startCellY + 1)) {
-            int endCellY = fillMask.nextClearBit(startCellY);
-            if (endCellY == -1) endCellY = yCellCount;
-            fillInternal(startCellY, endCellY - 1, filler);
-            cellsFilled += endCellY - startCellY;
-        }
-        // finally, set filled layers
-        filledLayers.or(fillMask);
-        return cellsFilled * sliceCellCount;
-    }
+        int startCellY = Math.max(0, fromY >> yCellScale), endCellY = Math.min(yCellCount - 1, toY >> yCellScale);
+        if (startCellY > endCellY) return 0;
 
-    void fillInternal(int startCellY, int endCellY, InterpolatingFieldFiller filler) {
         filler.setSlice(startCellY);
         int index = startCellY * sliceCellCount;
         for (int cellY = startCellY; cellY <= endCellY; cellY++) {
@@ -105,13 +85,16 @@ public class InterpolatingField {
                 int z = (cellZ << xzCellScale) - paddingBlocks;
                 for (int cellX = 0; cellX < xzCellCount; cellX++) {
                     int x = (cellX << xzCellScale) - paddingBlocks;
-                    field[index++] = filler.compute(x, y, z);
+                    field[index] = filler.compute(field[index], x, y, z);
+                    index++;
                     filler.advanceX();
                 }
                 filler.advanceZ();
             }
             filler.advanceY();
         }
+
+        return (endCellY - startCellY) * sliceCellCount;
     }
 
     public void visit(InterpolatingField.Visitor visitor) { this.visit(0, maxY, visitor); }

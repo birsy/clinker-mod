@@ -12,6 +12,7 @@ public class UtilitySynthesizers {
             .withNoises(VoronoiNoiseProvider.create("rocky_cliff", 0.5F, 3))
             .build(InterpolatingFieldResolution.VERY_COARSE_X_FINE_Y,
                     ctx -> {
+                if (true) return ctx.y();
                         double x = ctx.x() / 32.0, z = ctx.z() / 32.0;
                         return ctx.noise(0).sampleSet(x, ctx.y() / 12.0, z)[1] * 12.0F;
                     }

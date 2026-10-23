@@ -4,6 +4,7 @@ import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldF
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesFluids;
 import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingField;
 import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingFieldSampler;
+import birsy.clinker.common.world.level.gen.system.sampling.synthesizer.DependencyRetriever;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.Util;
 import net.minecraft.world.level.ChunkPos;
@@ -59,14 +60,14 @@ public class BFSBorderFluidField extends CellularFluidField {
         int bY = localY + this.paddingBlocksY;
         int bZ = localZ + this.paddingBlocksXZ;
         int blockIndex = index(bX, bY, bZ, this.blockCountXZ, this.blockCountY);
-        return (this.borderDistances[blockIndex] / (double) ADJACENT_COST) - 2;
+        return (this.borderDistances[blockIndex] / (double) ADJACENT_COST) - 1;
     }
 
     @Override
     public void fill(@Nullable InterpolatingField waterfallPresence,
-                     List<ModifiesFluids> fluidModifyingWorldFeatures,
+                     DependencyRetriever seaFloorHeightRetriever, List<ModifiesFluids> fluidModifyingWorldFeatures,
                      WorldFeatureContext worldFeatureContext) {
-        super.fill(waterfallPresence, fluidModifyingWorldFeatures, worldFeatureContext);
+        super.fill(waterfallPresence, seaFloorHeightRetriever, fluidModifyingWorldFeatures, worldFeatureContext);
         this.initializeFluidBordersByCell();
         this.addWaterfalls(waterfallPresence);
         this.computeBorderDistances();

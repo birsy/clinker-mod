@@ -5,7 +5,6 @@ import net.minecraft.util.Mth;
 import java.util.Arrays;
 
 public class InterpolatingField2d extends InterpolatingField {
-    boolean filled = false;
     public InterpolatingField2d(int xzCellScale, int paddingBlocks) {
         super(xzCellScale, 0, 1, paddingBlocks);
         this.field = new float[this.sliceCellCount];
@@ -35,19 +34,18 @@ public class InterpolatingField2d extends InterpolatingField {
 
     @Override
     public int fill(int fromY, int toY, InterpolatingFieldFiller filler) {
-        if (filled) return 0;
         filler.setSlice(0);
         int index = 0;
         for (int cellZ = 0; cellZ < xzCellCount; cellZ++) {
             int z = (cellZ << xzCellScale) - paddingBlocks;
             for (int cellX = 0; cellX < xzCellCount; cellX++) {
                 int x = (cellX << xzCellScale) - paddingBlocks;
-                field[index++] = filler.compute(x, 0, z);
+                field[index] = filler.compute(field[index], x, 0, z);
+                index++;
                 filler.advanceX();
             }
             filler.advanceZ();
         }
-        filled = true;
         return this.sliceCellCount;
     }
 

@@ -2,8 +2,7 @@ package birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capab
 
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureContext;
 import birsy.clinker.common.world.level.gen.system.sampling.synthesizer.Synthesizer;
-import net.minecraft.world.level.ChunkPos;
 
-public interface ModifiesWaterfallPresence extends WorldFeatureCapability {
-    Synthesizer wrapWaterfallPresenceSynthesizer(Synthesizer synthesizer, WorldFeatureContext worldContext);
+public interface ModifiesSurfaceSynthesizer extends WorldFeatureCapability {
+    Synthesizer.PassBuilder surfaceSynthesizerPass(int minY, int maxY, WorldFeatureContext worldContext);
 }
