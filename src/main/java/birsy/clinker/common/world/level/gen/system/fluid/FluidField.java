@@ -1,5 +1,6 @@
 package birsy.clinker.common.world.level.gen.system.fluid;
 
+import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesWaterfallPresence;
 import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingField;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -7,7 +8,7 @@ import net.minecraft.world.level.block.state.BlockState;
 public interface FluidField {
     BlockState AIR = Blocks.AIR.defaultBlockState();
 
-    void fill(InterpolatingField waterfallPresence);
+    void fill(InterpolatingField waterfallPresence, List<ModifiesFluids> fluidModifyingWorldFeatures, List<ModifiesWaterfallPresence> waterfallModifyingWorldFeatures);
     double getBorderDistance(int localX, int localY, int localZ);
     BlockState getFluidState(int x, int y, int z);
 }

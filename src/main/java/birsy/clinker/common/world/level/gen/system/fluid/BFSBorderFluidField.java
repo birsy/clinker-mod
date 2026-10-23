@@ -1,18 +1,19 @@
 package birsy.clinker.common.world.level.gen.system.fluid;
 
-import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingField;
 import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.WorldFeatureContext;
+import birsy.clinker.common.world.level.gen.system.metachunk.worldfeature.capabilities.ModifiesFluids;
+import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingField;
 import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingFieldSampler;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.Util;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.RandomState;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class BFSBorderFluidField extends CellularFluidField {
     static final int INITIAL_MAX_DISTANCE = 1000;
@@ -62,8 +63,10 @@ public class BFSBorderFluidField extends CellularFluidField {
     }
 
     @Override
-    public void fill(@Nullable InterpolatingField waterfallPresence) {
-        super.fill(waterfallPresence);
+    public void fill(@Nullable InterpolatingField waterfallPresence,
+                     List<ModifiesFluids> fluidModifyingWorldFeatures,
+                     WorldFeatureContext worldFeatureContext) {
+        super.fill(waterfallPresence, fluidModifyingWorldFeatures, worldFeatureContext);
         this.initializeFluidBordersByCell();
         this.addWaterfalls(waterfallPresence);
         this.computeBorderDistances();

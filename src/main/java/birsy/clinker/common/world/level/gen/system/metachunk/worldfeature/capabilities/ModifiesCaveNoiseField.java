@@ -5,5 +5,5 @@ import birsy.clinker.common.world.level.gen.system.sampling.synthesizer.Synthesi
 import net.minecraft.world.level.ChunkPos;
 
 public interface ModifiesCaveNoiseField extends WorldFeatureCapability {
-    Synthesizer wrapCaveSynthesizer(Synthesizer synthesizer, WorldFeatureContext worldContext);
+    NoiseFieldModifier modifierForCaveSynthesizer(Synthesizer synthesizer, WorldFeatureContext worldContext);
 }

@@ -209,20 +209,23 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                 QuartPos.fromBlock(minX + 16) + biomeMapPadding,
                 QuartPos.fromBlock(minZ + 16) + biomeMapPadding
         );
-        Synthesizer baseSurface = surfaceShapeSystem.createMasterSurfaceSynthesizer(chunkPos, biomeMap);
-        for (ModifiesSurfaceNoiseField modifiesSurfaceNoiseField : worldFeatures.byCapability(ModifiesSurfaceNoiseField.class))
-            baseSurface = modifiesSurfaceNoiseField.wrapSurfaceSynthesizer(baseSurface, worldFeatureContext);
-        Synthesizer surface = baseSurface;
+        Synthesizer baseSurfaceSynth = surfaceShapeSystem.createMasterSurfaceSynthesizer(chunkPos, biomeMap);
+        // world feature surface modification
+        List<NoiseFieldModifier> surfaceFieldModifiers = worldFeatures.byCapability(ModifiesSurfaceNoiseField.class)
+                .stream()
+                .map(modifier -> modifier.modifierForSurfaceSynthesizer(baseSurfaceSynth, worldFeatureContext))
+                .toList();
+        Synthesizer surfaceSynth = NoiseFieldModifier.merged(baseSurfaceSynth, surfaceFieldModifiers);
 
-        int seaFloorScanSize = Math.max(fluidCellWidth, surface.resolution.yScale());
+        int seaFloorScanSize = Math.max(fluidCellWidth, surfaceSynth.resolution.yScale());
         Synthesizer seaFloorHeight = Synthesizer.builder("sea_floor_height")
-                .withDependencies(surface)
+                .withDependencies(surfaceSynth)
                 .build(InterpolatingFieldResolution.COARSE_2D,
                         ctx -> {
                             int x = ctx.x(), z = ctx.z();
-                            int y = surface.maxY + seaFloorScanSize, pY = y;
+                            int y = surfaceSynth.maxY + seaFloorScanSize, pY = y;
                             float value = ctx.retrieveFromDependency(0, x, y, z), pValue = value;
-                            for (; y >= surface.minY; y -= seaFloorScanSize) {
+                            for (; y >= surfaceSynth.minY; y -= seaFloorScanSize) {
                                 value = ctx.retrieveFromDependency(0, x, y, z);
                                 if (value <= 0) return Mth.lerp(Mth.clamp(value / (value - pValue), 0, 1), y, pY);
                                 pValue = value;
@@ -234,6 +237,8 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         DependencyRetriever seaFloorHeightRetriever = new DependencyRetriever.Field(minX, minY, minZ,
                 synthesizerCache.sampleThisChunk(seaFloorHeight, fluidCellWidth * 2, minY, chunkHeight)
         );
+
+        // fluid field
         FluidFieldFiller filler = (x, y, z) -> {
             Holder<Biome> surfaceBiome = biomeMap.retrieve(QuartPos.fromBlock(x), QuartPos.fromBlock(z));
             BiomeGenerationInfo genInfo = BiomeGenerationInfo.fromBiome(surfaceBiome);
@@ -246,12 +251,15 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             return FluidLevel.EMPTY;
         };
         FluidField fluidField = new BFSBorderFluidField(randomState, level, chunkPos, filler, fluidCellWidth, fluidCellHeight, 1);
-        fluidField.fill(null);
+        fluidField.fill(null,
+                worldFeatures.byCapability(ModifiesFluids.class),
+                worldFeatureContext
+        );
 
-        int medianSurfaceY = (surface.minY + surface.maxY) / 2;
+        int medianSurfaceY = (surfaceSynth.minY + surfaceSynth.maxY) / 2;
         Synthesizer caveEntranceMask = Synthesizer.builder("cave_entrances")
                 .withDependencies(seaFloorHeight, OthershoreCaveSynthesizers.ENTRANCE_MASK)
-                .withRange(surface.minY - 20, surface.maxY)
+                .withRange(surfaceSynth.minY - 20, surfaceSynth.maxY)
                 .withDefaultValue(100F)
                 .build(InterpolatingFieldResolution.COARSE,
                         ctx -> {
@@ -259,14 +267,18 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                             return MathUtils.smoothMax(ctx.dependentValue(1), surfaceDistance, 3);
                         });
 
-        Synthesizer caveSynthesizer = OthershoreCaveSynthesizers.CAVES;
-        for (ModifiesCaveNoiseField modifiesCaveNoiseField : worldFeatures.byCapability(ModifiesCaveNoiseField.class))
-            caveSynthesizer = modifiesCaveNoiseField.wrapCaveSynthesizer(caveSynthesizer, worldFeatureContext);
+        Synthesizer baseCaveSynth = OthershoreCaveSynthesizers.CAVES;
+        // world feature cave modification
+        List<NoiseFieldModifier> caveFieldModifiers = worldFeatures.byCapability(ModifiesCaveNoiseField.class)
+                .stream()
+                .map(modifier -> modifier.modifierForCaveSynthesizer(baseCaveSynth, worldFeatureContext))
+                .toList();
+        Synthesizer caveSynth = NoiseFieldModifier.merged(baseCaveSynth, caveFieldModifiers);
 
         // and combine that with the cave synthesizer to create the Final Density Synthesizer:tm:
-        Synthesizer finalDensitySynthesizer = Synthesizer.builder("final_density")
-                .withDependencies(surface, caveEntranceMask, caveSynthesizer)
-                .withRange(Integer.MIN_VALUE, surface.maxY + 30)
+        Synthesizer baseFinalSynth = Synthesizer.builder("final_density")
+                .withDependencies(surfaceSynth, caveEntranceMask, caveSynth)
+                .withRange(Integer.MIN_VALUE, surfaceSynth.maxY + 30)
                 .withDefaultValue(-100F, 100F, medianSurfaceY)
                 .build(InterpolatingFieldResolution.FINE,
                         (ctx) -> {
@@ -274,10 +286,14 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                             return MathUtils.smoothMax(ctx.dependentValue(0), maskedCaves, 4.0F);
                         }
                 );
-        for (ModifiesFinalNoiseField modifiesFinalNoiseField : worldFeatures.byCapability(ModifiesFinalNoiseField.class))
-            caveSynthesizer = modifiesFinalNoiseField.wrapFinalSynthesizer(caveSynthesizer, worldFeatureContext);
+        // world feature final modification
+        List<NoiseFieldModifier> finalFieldModifiers = worldFeatures.byCapability(ModifiesFinalNoiseField.class)
+                .stream()
+                .map(modifier -> modifier.modifierForFinalSynthesizer(baseFinalSynth, worldFeatureContext))
+                .toList();
+        Synthesizer finalSynth = NoiseFieldModifier.merged(baseFinalSynth, finalFieldModifiers);
 
-        InterpolatingField finalDensityField = synthesizerCache.sampleThisChunk(finalDensitySynthesizer, 0, minY, chunkHeight);
+        InterpolatingField finalDensityField = synthesizerCache.sampleThisChunk(finalSynth, 0, minY, chunkHeight);
 
         return new NoiseFields(finalDensityField, fluidField);
     }
