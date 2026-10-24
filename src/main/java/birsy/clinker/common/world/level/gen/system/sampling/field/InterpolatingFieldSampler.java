@@ -1,5 +1,6 @@
 package birsy.clinker.common.world.level.gen.system.sampling.field;
 
+import birsy.clinker.core.Clinker;
 import net.minecraft.util.Mth;
 
 // trying to speed up sequential interpolation by fetching cell data in advance
@@ -96,7 +97,8 @@ public interface InterpolatingFieldSampler {
 
         public MismatchedResolutionSampler(InterpolatingField sourceField, InterpolatingField destinationField) {
             // the math here only really works out when the scales are correct. So, make sure that's always true.
-            assert sourceField.xzCellSize >= destinationField.xzCellSize && sourceField.yCellSize >= destinationField.yCellSize;
+            if (sourceField.xzCellSize < destinationField.xzCellSize)
+                throw new IllegalArgumentException("attempted to interpolate from a fine grid into a coarse grid!");
 
             this.srcField = sourceField;
             this.srcArray = sourceField.array();

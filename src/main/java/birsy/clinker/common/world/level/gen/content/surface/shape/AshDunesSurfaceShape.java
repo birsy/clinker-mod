@@ -17,7 +17,7 @@ public class AshDunesSurfaceShape extends CliffEdgeSurfaceShape {
         return initSurfaceSynthesizer("ash_dunes_surface_shape")
                 .withNoises(FNLNoiseProvider.create("cliffs"))
                 .withDependencies(UtilitySynthesizers.BASIC_NOISE_2D[4], UtilitySynthesizers.ROCKY_CLIFF_Y, biomeSdfSynthesizer)
-                .build(InterpolatingFieldResolution.VERY_COARSE_X_FINE_Y, this::surface);
+                .build(InterpolatingFieldResolution.COARSE_X_FINE_Y, this::surface);
     }
 
     float surface(SynthesizerContext ctx) {

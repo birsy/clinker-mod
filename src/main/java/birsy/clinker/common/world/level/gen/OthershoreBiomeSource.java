@@ -72,6 +72,10 @@ public class OthershoreBiomeSource extends BiomeSource {
     }
 
     public static LayeredBiomeResolver createSurfaceBiomeResolver(Function<ResourceLocation, PositionalRandomFactory> randomState) {
+//        if (true)
+//            return LayeredBiomeResolver.builder(7)
+//                    .layer(ReplaceOperation.builder().replaceAll().with(LOWER_SHELF).build())
+//                    .build(randomState);
         if (true) {
             float scale = 1.5F;
             PositionalRandomFactory noiseRandom = randomState.apply(NoiseProvider.NOISE_GEN_SEED);

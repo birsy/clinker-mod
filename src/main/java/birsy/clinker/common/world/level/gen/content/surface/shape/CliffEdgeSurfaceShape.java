@@ -26,7 +26,7 @@ public abstract class CliffEdgeSurfaceShape extends SurfaceShape {
     protected Synthesizer createCliffSynthesizer(Synthesizer biomeSdfSynthesizer) {
         return Synthesizer.builder("cliffs_surface_shape")
                 .withDependencies(biomeSdfSynthesizer, UtilitySynthesizers.ROCKY_CLIFF_Y)
-                .build(InterpolatingFieldResolution.VERY_COARSE_X_FINE_Y,
+                .build(InterpolatingFieldResolution.COARSE_X_FINE_Y,
                         ctx -> {
                             float seaLevelFactor = this.baseHeight > expectedBorderHeight ?
                                     Mth.clampedMap(ctx.dependentValue(1), this.baseHeight, expectedBorderHeight, minimumBiomeDistance, maximumBiomeDistance) :

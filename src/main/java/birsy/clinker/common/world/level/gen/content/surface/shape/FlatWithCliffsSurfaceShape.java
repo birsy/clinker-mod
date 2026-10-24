@@ -13,7 +13,7 @@ public class FlatWithCliffsSurfaceShape extends CliffEdgeSurfaceShape {
     protected Synthesizer createSurfaceSynthesizer(Synthesizer biomeSdfSynthesizer) {
         return initSurfaceSynthesizer("flat_surface_shape")
                 .withDependencies(UtilitySynthesizers.HEIGHT_OFFSET)
-                .build(InterpolatingFieldResolution.VERY_COARSE_X_FINE_Y,
+                .build(InterpolatingFieldResolution.COARSE_X_FINE_Y,
                         ctx -> { return ctx.y() - baseHeight + ctx.dependentValue(0); }
                 );
     }

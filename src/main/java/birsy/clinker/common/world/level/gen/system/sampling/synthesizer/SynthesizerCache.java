@@ -131,7 +131,12 @@ public class SynthesizerCache {
                 assert dependencyField != null;
 
                 fieldRetrievers[i] = new DependencyRetriever.Field(chunkMinX, chunkMinY, chunkMinZ, dependencyField);
-                interpolators[i] = InterpolatingFieldSampler.create(dependencyField, field);
+                try {
+                    interpolators[i] = InterpolatingFieldSampler.create(dependencyField, field);
+                } catch (Exception e) {
+                    Clinker.LOGGER.info("{} {}", dependencySynthesizer.debugName, synthesizer.debugName);
+                    throw e;
+                }
             }
 
             SynthesizerContext context = new SynthesizerContext(fieldRetrievers, noises);

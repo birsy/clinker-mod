@@ -192,7 +192,6 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         int minX = chunkPos.getMinBlockX(),
             minY = level.getMinBuildHeight(),
             minZ = chunkPos.getMinBlockZ();
-        int chunkHeight = level.getHeight();
 
         SynthesizerCache synthesizerCache = synthesizerCacheForChunk(level, randomState, chunkPos);
         WorldFeatureContext worldFeatureContext = new WorldFeatureContext(this.getBiomeSource(), this.biomeList, synthesizerCache, level, chunkPos, randomState);
@@ -287,7 +286,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                         (ctx) -> MathUtils.smoothMax(ctx.dependentValue(0), ctx.dependentValue(1), 4.0F)
                 );
 
-        InterpolatingField finalDensityField = synthesizerCache.sampleThisChunk(surfaceSynth, 0);
+        InterpolatingField finalDensityField = synthesizerCache.sampleThisChunk(finalSynth, fluidCellWidth * 2);
 
         return new NoiseFields(finalDensityField, fluidField);
     }

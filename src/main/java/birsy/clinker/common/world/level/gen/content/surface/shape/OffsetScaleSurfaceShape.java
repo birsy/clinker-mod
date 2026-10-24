@@ -18,7 +18,7 @@ public class OffsetScaleSurfaceShape extends CliffEdgeSurfaceShape {
     protected Synthesizer createSurfaceSynthesizer(Synthesizer biomeSdfSynthesizer) {
         return initSurfaceSynthesizer("offset_scale_surface_shape")
                 .withDependencies(UtilitySynthesizers.SURFACE_OFFSET, UtilitySynthesizers.SURFACE_OFFSET_SCALE)
-                .build(InterpolatingFieldResolution.VERY_COARSE_X_FINE_Y,
+                .build(InterpolatingFieldResolution.COARSE_X_FINE_Y,
                         ctx -> {
                             int offsetY = ctx.y() - baseHeight;
                             float offset = ctx.dependentValue(0) * scale;

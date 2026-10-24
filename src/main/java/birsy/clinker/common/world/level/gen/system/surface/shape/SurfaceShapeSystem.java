@@ -53,8 +53,6 @@ public class SurfaceShapeSystem {
     private record BoundaryInfo(int closestQX, int closestQZ, boolean insideBiome) {}
 
     public Synthesizer createMasterSurfaceSynthesizer(ChunkPos chunkPos, BiomeCache2d surfaceBiomes, WorldFeatureSet worldFeatures, WorldFeatureContext worldFeatureContext) {
-        if (true) return BiomeGenerationInfo.DEFAULT.shaper().create(UtilitySynthesizers.BASIC_NOISE_2D[7], true);
-
         BiomeCache2d biomesSurfacesInChunk = surfaceBiomes.subsection(
                 QuartPos.fromBlock(chunkPos.getMinBlockX()) - 4, QuartPos.fromBlock(chunkPos.getMinBlockZ()) - 4,
                 QuartPos.fromBlock(chunkPos.getMaxBlockX()) + 4, QuartPos.fromBlock(chunkPos.getMaxBlockZ()) + 4
@@ -104,15 +102,10 @@ public class SurfaceShapeSystem {
                                                   Long2ObjectMap<BoundaryInfo[]> boundaryCache) {
         return Synthesizer.builder(biome.getRegisteredName() + "_sdf")
                 .withNoises(FNLNoiseProvider.create("biomeOffset"))
-                .build(InterpolatingFieldResolution.FINE_2D,
+                .build(InterpolatingFieldResolution.COARSE_2D,
                         ctx -> {
                             int x = ctx.x(), z = ctx.z();
                             int startQX = QuartPos.fromBlock(x), startQZ = QuartPos.fromBlock(z);
-                            if (surfaceBiomes.retrieve(startQX, startQZ) == allBiomes.get(biomeIndex)) {
-                                return 0;
-                            } else if (true) {
-                                return 32;
-                            }
 
                             long key = ((long) startQX << 32) | (startQZ & 0xFFFFFFFFL);
 

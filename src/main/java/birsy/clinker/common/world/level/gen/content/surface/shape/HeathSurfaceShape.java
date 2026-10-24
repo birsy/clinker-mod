@@ -16,7 +16,7 @@ public class HeathSurfaceShape extends CliffEdgeSurfaceShape {
         return initSurfaceSynthesizer("heath_surface_shape")
                 .withNoises(FNLNoiseProvider.create("heathsurface"))
                 .withDependencies(UtilitySynthesizers.BASIC_NOISE_2D[4], UtilitySynthesizers.ROCKY_CLIFF_Y, biomeSdfSynthesizer)
-                .build(InterpolatingFieldResolution.VERY_COARSE_X_FINE_Y,
+                .build(InterpolatingFieldResolution.COARSE_X_FINE_Y,
                         ctx -> {
                             float heightmapNoise = ctx.noise(0).sample(ctx.x() / 200.0, ctx.z() / 200.0);
                             heightmapNoise += ctx.dependentValue(0) * 0.25F;

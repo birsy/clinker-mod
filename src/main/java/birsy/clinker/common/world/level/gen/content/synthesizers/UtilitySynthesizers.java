@@ -12,7 +12,6 @@ public class UtilitySynthesizers {
             .withNoises(VoronoiNoiseProvider.create("rocky_cliff", 0.5F, 3))
             .build(InterpolatingFieldResolution.VERY_COARSE_X_FINE_Y,
                     ctx -> {
-                if (true) return ctx.y();
                         double x = ctx.x() / 32.0, z = ctx.z() / 32.0;
                         return ctx.noise(0).sampleSet(x, ctx.y() / 12.0, z)[1] * 12.0F;
                     }
@@ -38,13 +37,9 @@ public class UtilitySynthesizers {
                         noise += ctx.noise(0).sample(ctx.x() / freq, ctx.y() / (freq * 1.5F), ctx.z() / freq) * scale;
                         total += scale;
 
-                        freq = 12.0;
-                        scale = 8F;
+                        freq = 24.0;
+                        scale = 6F;
                         noise += ctx.noise(1).sample(ctx.x() / freq, ctx.y() / (freq * 1.5F), ctx.z() / freq) * scale;
-                        total += scale;
-
-                        scale = 5F;
-                        noise += ctx.noise(2).sample(ctx.x(), ctx.z()) * scale;
                         total += scale;
 
                         return noise / total;

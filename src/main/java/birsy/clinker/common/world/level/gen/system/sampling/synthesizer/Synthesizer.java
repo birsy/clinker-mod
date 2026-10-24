@@ -211,10 +211,12 @@ public class Synthesizer {
                 // because resolutions always go from coarse -> fine down the dependency tree,
                 // padding is ALWAYS guaranteed to be maintained, no matter what. each cell
                 // will always encapsulate its dependents.
-                assert dependency.resolution.xzScale() >= synthResolution.xzScale() :
-                        "dependencies must have xz resolution greater than or equal to their dependent! \n" +
-                        "currently: DEPENDENT " + (debugName != null ? debugName + " " : "") + "= " + synthResolution.xzScale() + "\n" +
-                        "           DEPENDENCY " + (dependency.debugName != null ? dependency.debugName + " " : "") + "= " + dependency.resolution.xzScale();
+                if (dependency.resolution.xzScale() < synthResolution.xzScale())
+                    throw new IllegalArgumentException(
+                         "dependencies must have xz resolution greater than or equal to their dependent! \n" +
+                         "currently: DEPENDENT " + (debugName != null ? debugName + " " : "") + "= " + synthResolution.xzScale() + "\n" +
+                         "           DEPENDENCY " + (dependency.debugName != null ? dependency.debugName + " " : "") + "= " + dependency.resolution.xzScale()
+                    );
 
                 int dependencyMinY = Math.max(minY, dependency.minY), dependencyMaxY = Math.min(maxY, dependency.maxY);
                 directDependencies.add(new Dependency(dependency, dependencyMinY, dependencyMaxY));
