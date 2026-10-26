@@ -212,20 +212,33 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         Synthesizer surfaceSynth = surfaceShapeSystem.createMasterSurfaceSynthesizer(chunkPos, biomeMap, worldFeatures, worldFeatureContext);
 
         int seaFloorScanSize = Math.max(fluidCellWidth, surfaceSynth.resolution.yScale());
+        int[] neighborhoodOffset = {0,0,  0,-1,  0,1,  -1,0,  1,0};
+        for (int i = 0; i < neighborhoodOffset.length; i++) neighborhoodOffset[i] *= 4;
         Synthesizer seaFloorHeight = Synthesizer.builder("sea_floor_height")
                 .withDependencies(surfaceSynth)
                 .build(InterpolatingFieldResolution.COARSE_2D,
                         ctx -> {
                             int x = ctx.x(), z = ctx.z();
-                            int y = surfaceSynth.maxY + seaFloorScanSize, pY = y;
-                            float value = ctx.retrieveFromDependency(0, x, y, z), pValue = value;
-                            for (; y >= surfaceSynth.minY; y -= seaFloorScanSize) {
-                                value = ctx.retrieveFromDependency(0, x, y, z);
-                                if (value <= 0) return Mth.lerp(Mth.clamp(value / (value - pValue), 0, 1), y, pY);
-                                pValue = value;
-                                pY = y;
+                            float resultHeight = surfaceSynth.maxY + seaFloorScanSize;
+                            NEXT_OFFSET:
+                            for (int i = 0; i < neighborhoodOffset.length; i+=2) {
+                                int offsetX = x + neighborhoodOffset[i * 2],
+                                    offsetZ = z + neighborhoodOffset[i * 2 + 1];
+                                int y = (int) Math.ceil(resultHeight), pY = y;
+                                float dist = ctx.retrieveFromDependency(0, offsetX, y, offsetZ), pDist = dist;
+                                for (; y >= surfaceSynth.minY; y -= seaFloorScanSize) {
+                                    dist = ctx.retrieveFromDependency(0, offsetX, y, offsetZ);
+                                    if (dist <= 0) {
+                                        float potentialResultHeight = Mth.lerp(Mth.clamp(dist / (dist - pDist), 0, 1), y, pY);
+                                        if (potentialResultHeight < resultHeight) resultHeight = potentialResultHeight;
+                                        continue NEXT_OFFSET;
+                                    }
+                                    pY = y;
+                                    pDist = dist;
+                                }
+                                resultHeight = surfaceSynth.minY;
                             }
-                            return y;
+                            return resultHeight;
                         }
                 );
         DependencyRetriever seaFloorHeightRetriever = new DependencyRetriever.Field(minX, minY, minZ,

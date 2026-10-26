@@ -19,10 +19,23 @@ public interface DependencyRetriever {
     }
 
     // wrapper for an interpolating field
-    record Field(int minX, int minY, int minZ, InterpolatingField field) implements DependencyRetriever {
+    record Field(int minX, int minY, int minZ,
+                 int pMinXZ, int pMinY, int pMaxXZ, int pMaxY,
+                 InterpolatingField field) implements DependencyRetriever {
+        public Field(int minX, int minY, int minZ, InterpolatingField field) {
+            this(minX, minY, minZ,
+                 -field.paddingBlocks, 0,
+                 16 + field.paddingBlocks, field.yCellCount << field.yCellScale,
+                 field
+            );
+        }
         @Override
         public float retrieve(int x, int y, int z) {
-            return field.retrieve(x - minX, y - minY, z - minZ);
+            return field.retrieve(
+                    Math.clamp(x - minX, pMinXZ, pMaxXZ),
+                    Math.clamp(y - minY, pMinY, pMaxY),
+                    Math.clamp(z - minZ, pMinXZ, pMaxXZ)
+            );
         }
     }
 }
