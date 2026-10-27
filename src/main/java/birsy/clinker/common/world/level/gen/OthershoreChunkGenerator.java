@@ -213,7 +213,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
 
         int seaFloorScanSize = Math.max(fluidCellWidth, surfaceSynth.resolution.yScale());
         int[] neighborhoodOffset = {0,0,  0,-1,  0,1,  -1,0,  1,0};
-        for (int i = 0; i < neighborhoodOffset.length; i++) neighborhoodOffset[i] *= 4;
+        for (int i = 0; i < neighborhoodOffset.length; i++) neighborhoodOffset[i] *= 3;
         Synthesizer seaFloorHeight = Synthesizer.builder("sea_floor_height")
                 .withDependencies(surfaceSynth)
                 .build(InterpolatingFieldResolution.COARSE_2D,
@@ -267,7 +267,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
         Synthesizer caveEntranceMaskSynth = Synthesizer.builder("cave_entrances")
                 .withDependencies(seaFloorHeight, OthershoreCaveSynthesizers.ENTRANCE_MASK)
                 .withRange(surfaceSynth.minY - 20, surfaceSynth.maxY)
-                .withDefaultValue(100F)
+                .withDefaultValue(100F, -100F, medianSurfaceY)
                 .build(InterpolatingFieldResolution.COARSE,
                         ctx -> {
                             float surfaceDistance = (ctx.dependentValue(0) - 20) - ctx.y();
