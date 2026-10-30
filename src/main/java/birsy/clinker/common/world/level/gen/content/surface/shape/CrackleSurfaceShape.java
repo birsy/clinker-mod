@@ -7,7 +7,7 @@ import birsy.clinker.common.world.level.gen.system.sampling.synthesizer.Synthesi
 import birsy.clinker.core.util.MathUtils;
 import net.minecraft.util.Mth;
 
-public class CrackleSurfaceShape extends CliffEdgeSurfaceShape {
+public class CrackleSurfaceShape extends CliffAndOverhangEdgeSurfaceShape {
     final int bottomHeight, topHeight;
 
     public CrackleSurfaceShape(int bottomHeight, int topHeight, int expectedBorderHeight) {

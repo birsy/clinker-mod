@@ -219,25 +219,34 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                 .build(InterpolatingFieldResolution.COARSE_2D,
                         ctx -> {
                             int x = ctx.x(), z = ctx.z();
-                            float resultHeight = surfaceSynth.maxY + seaFloorScanSize;
+                            float resultHeight = surfaceSynth.maxY;
+
                             NEXT_OFFSET:
-                            for (int i = 0; i < neighborhoodOffset.length; i+=2) {
-                                int offsetX = x + neighborhoodOffset[i * 2],
-                                    offsetZ = z + neighborhoodOffset[i * 2 + 1];
-                                int y = (int) Math.ceil(resultHeight), pY = y;
+                            for (int i = 0; i < neighborhoodOffset.length; i += 2) {
+                                int offsetX = x + neighborhoodOffset[i + 0],
+                                    offsetZ = z + neighborhoodOffset[i + 1];
+                                int y = surfaceSynth.minY, pY = y;
                                 float dist = ctx.retrieveFromDependency(0, offsetX, y, offsetZ), pDist = dist;
-                                for (; y >= surfaceSynth.minY; y -= seaFloorScanSize) {
+
+                                if (dist > 0) {
+                                    resultHeight = Math.min(resultHeight, y);
+                                    continue NEXT_OFFSET;
+                                }
+
+                                for (; y <= resultHeight; y += seaFloorScanSize) {
                                     dist = ctx.retrieveFromDependency(0, offsetX, y, offsetZ);
-                                    if (dist <= 0) {
-                                        float potentialResultHeight = Mth.lerp(Mth.clamp(dist / (dist - pDist), 0, 1), y, pY);
-                                        if (potentialResultHeight < resultHeight) resultHeight = potentialResultHeight;
+                                    if (dist > 0) {
+                                        float potentialResultHeight = Mth.lerp(
+                                                Math.clamp(dist / (dist - pDist), 0, 1), y, pY
+                                        );
+                                        resultHeight = Math.min(resultHeight, potentialResultHeight);
                                         continue NEXT_OFFSET;
                                     }
                                     pY = y;
                                     pDist = dist;
                                 }
-                                resultHeight = surfaceSynth.minY;
                             }
+
                             return resultHeight;
                         }
                 );
@@ -271,7 +280,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                 .build(InterpolatingFieldResolution.COARSE,
                         ctx -> {
                             float surfaceDistance = (ctx.dependentValue(0) - 20) - ctx.y();
-                            return MathUtils.smoothMax(ctx.dependentValue(1), surfaceDistance, 3);
+                            return MathUtils.smoothMax(ctx.dependentValue(1), surfaceDistance, 6);
                         });
 
         Synthesizer caveSynth = Synthesizer.builder("caves")
@@ -299,7 +308,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
                         (ctx) -> MathUtils.smoothMax(ctx.dependentValue(0), ctx.dependentValue(1), 4.0F)
                 );
 
-        InterpolatingField finalDensityField = synthesizerCache.sampleThisChunk(finalSynth, fluidCellWidth * 2);
+        InterpolatingField finalDensityField = synthesizerCache.sampleThisChunk(finalSynth, 0);
 
         return new NoiseFields(finalDensityField, fluidField);
     }

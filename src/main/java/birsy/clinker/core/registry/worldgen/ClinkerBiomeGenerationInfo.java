@@ -4,10 +4,7 @@ import birsy.clinker.common.world.level.gen.OthershoreGenerationConstants;
 import birsy.clinker.common.world.level.gen.content.surface.decoration.AshDunesSurfaceDecorator;
 import birsy.clinker.common.world.level.gen.content.surface.decoration.BrineSwampSurfaceDecorator;
 import birsy.clinker.common.world.level.gen.content.surface.decoration.HeathSurfaceDecorator;
-import birsy.clinker.common.world.level.gen.content.surface.shape.AshDunesSurfaceShape;
-import birsy.clinker.common.world.level.gen.content.surface.shape.CrackleSurfaceShape;
-import birsy.clinker.common.world.level.gen.content.surface.shape.FlatWithSmoothEdgeSurfaceShape;
-import birsy.clinker.common.world.level.gen.content.surface.shape.HeathSurfaceShape;
+import birsy.clinker.common.world.level.gen.content.surface.shape.*;
 import birsy.clinker.common.world.level.gen.system.biome.BiomeGenerationInfo;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerRegistries;
@@ -23,18 +20,20 @@ public class ClinkerBiomeGenerationInfo {
     public static final DeferredHolder<BiomeGenerationInfo, BiomeGenerationInfo> UPPER_SHELF_PLATEAU =
             register(ClinkerBiomes.TEMPLATE_UPPER_SHELF_PLATEAU,
                     BiomeGenerationInfo.builder()
-                            .placeholderSurfaceShape(
-                                    OthershoreGenerationConstants.UPPER_SHELF_HEIGHT + 40,
-                                    OthershoreGenerationConstants.UPPER_SHELF_HEIGHT
+                            .surfaceShape(
+                                    new FlatWithCliffsSurfaceShape(
+                                            OthershoreGenerationConstants.UPPER_SHELF_HEIGHT + 40,
+                                            OthershoreGenerationConstants.UPPER_SHELF_HEIGHT, 28,
+                                            OthershoreGenerationConstants.SEA_HEIGHT, 5
+                                    )
                             )
             );
 
     public static final DeferredHolder<BiomeGenerationInfo, BiomeGenerationInfo> UPPER_SHELF =
             register(ClinkerBiomes.TEMPLATE_UPPER_SHELF,
                     BiomeGenerationInfo.builder()
-                            .placeholderSurfaceShape(
-                                    OthershoreGenerationConstants.UPPER_SHELF_HEIGHT,
-                                    OthershoreGenerationConstants.LOWER_SHELF_HEIGHT
+                            .surfaceShape(
+                                    new FlatWithCliffsSurfaceShape(OthershoreGenerationConstants.UPPER_SHELF_HEIGHT, OthershoreGenerationConstants.UPPER_SHELF_HEIGHT - 20)
                             )
             );
     public static final DeferredHolder<BiomeGenerationInfo, BiomeGenerationInfo> ASH_STEPPE =

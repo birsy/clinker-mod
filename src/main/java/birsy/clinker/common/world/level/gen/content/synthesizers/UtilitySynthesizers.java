@@ -6,6 +6,7 @@ import birsy.clinker.common.world.level.gen.system.sampling.noise.VoronoiNoisePr
 import birsy.clinker.common.world.level.gen.system.sampling.noise.WhiteNoiseProvider;
 import birsy.clinker.common.world.level.gen.system.sampling.synthesizer.Synthesizer;
 import birsy.clinker.core.util.noise.FastNoiseLite;
+import net.minecraft.util.Mth;
 
 public class UtilitySynthesizers {
     public static final Synthesizer ROCKY_CLIFF_Y = Synthesizer.builder("rocky_cliff_y")
@@ -14,6 +15,18 @@ public class UtilitySynthesizers {
                     ctx -> {
                         double x = ctx.x() / 32.0, z = ctx.z() / 32.0;
                         return ctx.noise(0).sampleSet(x, ctx.y() / 12.0, z)[1] * 12.0F;
+                    }
+            );
+    public static final Synthesizer ROCKY_CLIFF_PILLAR = Synthesizer.builder("rocky_cliff_pillar")
+            .withNoises(FNLNoiseProvider.create("rocky_cliff_pillar"))
+            .build(InterpolatingFieldResolution.COARSE_2D,
+                    ctx -> {
+                        float freq = 24.0F;
+                        return Mth.clampedMap(
+                                ctx.noise(0).sample(ctx.x() / freq, ctx.z() / freq),
+                                0.25F, 0.8F,
+                                0, 1
+                        );
                     }
             );
 

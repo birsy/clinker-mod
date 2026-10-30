@@ -63,7 +63,7 @@ public class UndergroundLakeWorldFeature extends WorldFeature implements Modifie
 
         Holder<Biome> biome = worldContext.biomeSource().getSurfaceBiome(centerX, centerZ);
         BiomeGenerationInfo generationInfo = BiomeGenerationInfo.fromBiome(biome);
-        int biomeHeight = generationInfo.shaper().baseHeight - 10;
+        int biomeHeight = generationInfo.shaper().baseHeight - 20;
 
         int radius = randomSource.nextInt(10, 30) + randomSource.nextInt(10, 30);
         int waterLevel = randomSource.nextInt(4, biomeHeight);
@@ -83,7 +83,7 @@ public class UndergroundLakeWorldFeature extends WorldFeature implements Modifie
             return currentFluidLevel;
 
         double surfaceY = seaFloorHeightRetriever.retrieve((int) x, 0, (int) z);
-        if (y > surfaceY - 10)
+        if (y > surfaceY - 20)
             return currentFluidLevel;
 
         double horizontalDistance = Mth.length(x - centerX, z - centerZ);

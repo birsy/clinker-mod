@@ -6,7 +6,7 @@ import birsy.clinker.common.world.level.gen.system.sampling.noise.FNLNoiseProvid
 import birsy.clinker.common.world.level.gen.system.sampling.synthesizer.Synthesizer;
 import net.minecraft.util.Mth;
 
-public class HeathSurfaceShape extends CliffEdgeSurfaceShape {
+public class HeathSurfaceShape extends CliffAndOverhangEdgeSurfaceShape {
     public HeathSurfaceShape(int baseHeight, int expectedBorderHeight) {
         super(baseHeight, baseHeight - 5, baseHeight + 16, expectedBorderHeight);
     }

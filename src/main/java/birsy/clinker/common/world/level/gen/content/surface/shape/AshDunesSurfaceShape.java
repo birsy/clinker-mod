@@ -7,7 +7,7 @@ import birsy.clinker.common.world.level.gen.system.sampling.synthesizer.Synthesi
 import birsy.clinker.common.world.level.gen.system.sampling.synthesizer.SynthesizerContext;
 import net.minecraft.util.Mth;
 
-public class AshDunesSurfaceShape extends CliffEdgeSurfaceShape {
+public class AshDunesSurfaceShape extends CliffAndOverhangEdgeSurfaceShape {
     public AshDunesSurfaceShape(int baseHeight, int expectedBorderHeight) {
         super(baseHeight, baseHeight - 10, baseHeight + 15, expectedBorderHeight);
     }

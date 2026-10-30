@@ -182,10 +182,10 @@ public class BiomeLayerOperations {
         @Override
         public int apply(int blockX, int blockZ, int currentId, int[] neighborhood, RandomSource random) {
             if (biomeA.test(currentId)) {
-                for (int i : ProtoBiomeNeighborhood.POSITIVE_DIRECT_NEIGHBORS)
+                for (int i : ProtoBiomeNeighborhood.POSITIVE_NEIGHBORS)
                     if (biomeB.test(neighborhood[i])) return borderBiomeId;
             } else if (biomeB.test(currentId)) {
-                for (int i : ProtoBiomeNeighborhood.POSITIVE_DIRECT_NEIGHBORS)
+                for (int i : ProtoBiomeNeighborhood.POSITIVE_NEIGHBORS)
                     if (biomeA.test(neighborhood[i])) return borderBiomeId;
             }
             return currentId;

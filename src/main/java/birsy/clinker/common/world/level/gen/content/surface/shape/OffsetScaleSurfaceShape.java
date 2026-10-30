@@ -4,7 +4,7 @@ import birsy.clinker.common.world.level.gen.content.synthesizers.UtilitySynthesi
 import birsy.clinker.common.world.level.gen.system.sampling.field.InterpolatingFieldResolution;
 import birsy.clinker.common.world.level.gen.system.sampling.synthesizer.Synthesizer;
 
-public class OffsetScaleSurfaceShape extends CliffEdgeSurfaceShape {
+public class OffsetScaleSurfaceShape extends CliffAndOverhangEdgeSurfaceShape {
     final float scale, scaleExponent;
 
     public OffsetScaleSurfaceShape(int baseHeight, int expectedBorderHeight,
