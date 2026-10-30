@@ -12,11 +12,11 @@ import net.minecraft.world.level.material.Fluids;
 
 public class SurfaceDecorationHelpers {
     public static boolean requireFloor(SurfaceDecorationContext ctx) {
-        return ctx.surfaceDirection() == Direction.DOWN;
+        return ctx.surfaceDirection() != Direction.DOWN;
     }
 
     public static boolean requireCeiling(SurfaceDecorationContext ctx) {
-        return ctx.surfaceDirection() == Direction.UP;
+        return ctx.surfaceDirection() != Direction.UP;
     }
 
     public static boolean requireSky(SurfaceDecorationContext ctx) {

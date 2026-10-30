@@ -101,18 +101,6 @@ public class OthershoreBiomeSource extends BiomeSource {
                 .zoom()
                 .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(0.5))
                 .layer(new BiomeLayerOperations.Smooth())
-                .layer(
-                        new BiomeLayerOperations.CreateBorders(
-                                Set.of(UPPER_SHELF.get(), UPPER_SHELF_PLATEAU.get()),
-                                Set.of(SEA.get()),
-                                UNINITIALIZED.get()
-                        ),
-                        ReplaceOperation.builder()
-                                .noise(noiseRandom, FNLNoiseProvider.create("beachiness", scale/500F, 2))
-                                .replace(UNINITIALIZED).above(0.0F).with(LOWER_SHELF)
-                                .replace(UNINITIALIZED).with(SEA)
-                                .build()
-                )
                 .zoom()
                 // most of the actual biomes
                 .layer(
@@ -139,7 +127,7 @@ public class OthershoreBiomeSource extends BiomeSource {
                                 .build(),
                         ReplaceOperation.builder()
                                 .noise(noiseRandom, FNLNoiseProvider.create("swamp", scale/1000F, 3))
-                                .replace(SEA, BEACH).above(0.3F).with(BRINE_SWAMP)
+                                .replace(SEA).above(0.3F).with(BRINE_SWAMP)
                                 .build()
                 )
                 .zoom()
@@ -151,9 +139,14 @@ public class OthershoreBiomeSource extends BiomeSource {
                         new BiomeLayerOperations.CreateBorders(
                                 Set.of(UPPER_SHELF.get(), UPPER_SHELF_PLATEAU.get(),
                                        LOWER_SHELF.get(), SHELF_BORDER.get(), ASH_DUNES.get(), ASH_STEPPE.get(), HEATH.get(), HEATH_THICKET.get()),
-                                Set.of(SEA.get()),
+                                Set.of(SEA.get(), BRINE_SWAMP.get()),
                                 BEACH.get()
-                        ))
+                        ),
+                        ReplaceOperation.builder()
+                                .noise(noiseRandom, FNLNoiseProvider.create("beachiness", scale/500F))
+                                .replace(BEACH).above(0.0F).with(LOWER_SHELF)
+                                .build()
+                )
                 .zoom()
                 .layer(new BiomeLayerOperations.RandomizeIntoNeighbor(1))
                 .zoom()

@@ -8,7 +8,6 @@ import birsy.clinker.common.world.level.gen.system.surface.shape.SurfaceShape;
 import net.minecraft.util.Mth;
 
 public abstract class CliffAndOverhangEdgeSurfaceShape extends SurfaceShape {
-    final int upperSurfaceBound, lowerSurfaceBound;
     final int cliffBaseHeight, cliffOutset;
     final int overhangBaseHeight, overhangOutset;
     final int overhangDepth;
@@ -28,12 +27,10 @@ public abstract class CliffAndOverhangEdgeSurfaceShape extends SurfaceShape {
     *                | overhang outset
     *                |_______________
     */
-    protected CliffAndOverhangEdgeSurfaceShape(int surfaceHeight, int upperSurfaceBound, int lowerSurfaceBound,
+    protected CliffAndOverhangEdgeSurfaceShape(int surfaceHeight, int lowerSurfaceBound, int upperSurfaceBound,
                                                int cliffBaseHeight, int cliffOutset,
                                                int overhangBaseHeight, int overhangOutset) {
-        super(surfaceHeight, upperSurfaceBound, lowerSurfaceBound);
-        this.upperSurfaceBound = upperSurfaceBound;
-        this.lowerSurfaceBound = lowerSurfaceBound;
+        super(surfaceHeight, lowerSurfaceBound, upperSurfaceBound);
         this.cliffBaseHeight = cliffBaseHeight;
         this.cliffOutset = cliffOutset;
         this.overhangBaseHeight = overhangBaseHeight;
@@ -42,8 +39,8 @@ public abstract class CliffAndOverhangEdgeSurfaceShape extends SurfaceShape {
         this.overhangDepth = cliffOutset - overhangOutset;
     }
 
-    protected CliffAndOverhangEdgeSurfaceShape(int surfaceHeight, int upperSurfaceBound, int lowerSurfaceBound, int cliffBaseHeight) {
-        this(surfaceHeight, upperSurfaceBound, lowerSurfaceBound,
+    protected CliffAndOverhangEdgeSurfaceShape(int surfaceHeight, int lowerSurfaceBound, int upperSurfaceBound, int cliffBaseHeight) {
+        this(surfaceHeight, lowerSurfaceBound, upperSurfaceBound,
                 cliffBaseHeight, 28,
                 OthershoreGenerationConstants.SEA_HEIGHT, 28 - 20);
     }
@@ -64,7 +61,7 @@ public abstract class CliffAndOverhangEdgeSurfaceShape extends SurfaceShape {
                                     Mth.clampedMap(y, cliffBaseHeight, overhangBaseHeight, 1, 0);
                             extent = isOverhang ?
                                     Mth.lerp(extent, 0, cliffOutset) :
-                                    Mth.lerp(extent * extent, overhangOutset + pillars, cliffOutset);
+                                    Mth.lerp(extent * extent * extent, overhangOutset + pillars, cliffOutset);
                             return ctx.dependentValue(0) - extent;
                         }
                 );

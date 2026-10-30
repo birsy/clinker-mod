@@ -6,6 +6,7 @@ public abstract class SurfaceShape {
     public final int baseHeight, minSurfaceY, maxSurfaceY;
 
     protected SurfaceShape(int baseHeight, int minSurfaceY, int maxSurfaceY) {
+        if (minSurfaceY > maxSurfaceY) throw new IllegalArgumentException("minSurfaceY must be greater than or equal to maxSurfaceY!");
         this.baseHeight = baseHeight;
         this.minSurfaceY = minSurfaceY;
         this.maxSurfaceY = maxSurfaceY;

@@ -4,9 +4,11 @@ import birsy.clinker.common.world.level.gen.OthershoreGenerationConstants;
 import birsy.clinker.common.world.level.gen.content.surface.decoration.AshDunesSurfaceDecorator;
 import birsy.clinker.common.world.level.gen.content.surface.decoration.BrineSwampSurfaceDecorator;
 import birsy.clinker.common.world.level.gen.content.surface.decoration.HeathSurfaceDecorator;
+import birsy.clinker.common.world.level.gen.content.surface.decoration.SimpleLayerSurfaceDecorator;
 import birsy.clinker.common.world.level.gen.content.surface.shape.*;
 import birsy.clinker.common.world.level.gen.system.biome.BiomeGenerationInfo;
 import birsy.clinker.core.Clinker;
+import birsy.clinker.core.registry.ClinkerBlocks;
 import birsy.clinker.core.registry.ClinkerRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.biome.Biome;
@@ -92,7 +94,14 @@ public class ClinkerBiomeGenerationInfo {
                     BiomeGenerationInfo.builder()
                             .surfaceShape(new FlatWithSmoothEdgeSurfaceShape(
                                     OthershoreGenerationConstants.SEA_HEIGHT + 3,
-                                    OthershoreGenerationConstants.SEA_HEIGHT - 4))
+                                    OthershoreGenerationConstants.SEA_HEIGHT - 4
+                            ))
+                            .decorator(new SimpleLayerSurfaceDecorator(
+                                    OthershoreGenerationConstants.SEA_HEIGHT + 3,
+                                    OthershoreGenerationConstants.SEA_HEIGHT + 4,
+                                    () -> ClinkerBlocks.SALT_GRAVEL.get().defaultBlockState(),
+                                    () -> ClinkerBlocks.BRIMSTONE.get().defaultBlockState()
+                            ))
             );
     public static final DeferredHolder<BiomeGenerationInfo, BiomeGenerationInfo> BRINE_SWAMP =
             register(ClinkerBiomes.BRINE_SWAMP,
@@ -107,7 +116,14 @@ public class ClinkerBiomeGenerationInfo {
                     BiomeGenerationInfo.builder()
                             .surfaceShape(new FlatWithSmoothEdgeSurfaceShape(
                                     OthershoreGenerationConstants.SEA_HEIGHT - 4,
-                                    OthershoreGenerationConstants.SEA_HEIGHT - 4))
+                                    OthershoreGenerationConstants.SEA_HEIGHT - 4
+                            ))
+                            .decorator(new SimpleLayerSurfaceDecorator(
+                                    OthershoreGenerationConstants.SEA_HEIGHT + 3,
+                                    OthershoreGenerationConstants.SEA_HEIGHT + 4,
+                                    () -> ClinkerBlocks.SALT_GRAVEL.get().defaultBlockState(),
+                                    () -> ClinkerBlocks.BRIMSTONE.get().defaultBlockState()
+                            ))
             );
     
     public static DeferredHolder<BiomeGenerationInfo, BiomeGenerationInfo> register(ResourceKey<Biome> biome, BiomeGenerationInfo.Builder builder) {

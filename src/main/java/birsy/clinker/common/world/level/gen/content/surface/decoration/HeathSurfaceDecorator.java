@@ -27,7 +27,7 @@ public class HeathSurfaceDecorator extends SurfaceDecorator {
 
     @Override
     public void decorateSurface(BlockPos.MutableBlockPos pos, SurfaceDecorationContext ctx) {
-        if (!requireFloor(ctx)) return;
+        if (requireFloor(ctx)) return;
 
         NoiseSampler sampler = ctx.getSampler(0);
 

@@ -1,26 +1,40 @@
 {
-  "feature": "clinker:sheet_moss",
+  "feature": "clinker:patch_cave_sprouts",
   "placement": [
     {
       "type": "minecraft:count",
-      "count": 20
+      "count": 5
     },
     {
       "type": "minecraft:in_square"
     },
     {
       "type": "minecraft:heightmap",
-      "heightmap": "MOTION_BLOCKING_NO_LEAVES"
+      "heightmap": "OCEAN_FLOOR_WG"
     },
     {
       "type": "minecraft:random_offset",
       "xz_spread": 0,
       "y_spread": {
-        "type": "minecraft:clamped_normal",
-        "min_inclusive": -15,
-        "max_inclusive": 15,
-        "mean": 0,
-        "deviation": 6
+        "type": "minecraft:uniform",
+        "min_inclusive": -16,
+        "max_inclusive": -5
+      }
+    },
+    {
+      "type": "minecraft:environment_scan",
+      "direction_of_search": "up",
+      "max_steps": 16,
+      "target_condition": {
+        "type": "minecraft:has_sturdy_face",
+        "offset": [0, 1, 0],
+        "direction": "down"
+      },
+      "allowed_search_condition": {
+        "type": "minecraft:not",
+        "predicate": {
+          "type": "minecraft:solid"
+        }
       }
     },
     {

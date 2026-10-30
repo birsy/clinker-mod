@@ -7,13 +7,13 @@ import birsy.clinker.common.world.level.gen.system.sampling.synthesizer.Synthesi
 
 public class FlatWithCliffsSurfaceShape extends CliffAndOverhangEdgeSurfaceShape {
     public FlatWithCliffsSurfaceShape(int baseHeight, int expectedBorderHeight) {
-        super(baseHeight, baseHeight + 1, baseHeight - 1, expectedBorderHeight);
+        super(baseHeight, baseHeight - 1, baseHeight + 1, expectedBorderHeight);
     }
 
     public FlatWithCliffsSurfaceShape(int surfaceHeight,
                                       int cliffBaseHeight, int cliffOutset,
                                       int overhangBaseHeight, int overhangOutset) {
-        super(surfaceHeight, surfaceHeight + 1, surfaceHeight - 1,
+        super(surfaceHeight, surfaceHeight - 1, surfaceHeight + 1,
                 cliffBaseHeight, cliffOutset, overhangBaseHeight, overhangOutset);
     }
 

@@ -44,7 +44,9 @@
     [],
     [],
     [],
-    [],
+    [
+      "clinker:sheet_moss_surface"
+    ],
     []
   ]
 }
