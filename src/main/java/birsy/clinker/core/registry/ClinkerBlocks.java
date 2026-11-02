@@ -9,6 +9,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.ColorRGBA;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.component.SuspiciousStewEffects;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -424,6 +425,11 @@ public class ClinkerBlocks
     public static final DeferredBlock<CorpseLilyPetalBlock> CORPSE_LILY_PETAL = createBlock("corpse_lily_petal",
             () -> new CorpseLilyPetalBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.PUMPKIN).strength(0.75F).mapColor(MapColor.COLOR_RED).sound(SoundType.WART_BLOCK)));
 
+    public static final DeferredBlock<GourdBlock> GOURD = createBlock("gourd",
+            () -> new GourdBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.PUMPKIN).mapColor(MapColor.WOOL).sound(SoundType.WART_BLOCK)));
+    public static final DeferredBlock<CarvedGourdBlock> CARVED_GOURD = createBlock("carved_gourd",
+            () -> new CarvedGourdBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CARVED_PUMPKIN).mapColor(MapColor.WOOL).sound(SoundType.WART_BLOCK)));
+
     public static final DeferredBlock<MothBallBlock> MOTH_BALL = createBlock("moth_ball",
             () -> new MothBallBlock(BlockBehaviour.Properties.of()
                     .noOcclusion()
@@ -560,13 +566,19 @@ public class ClinkerBlocks
         fire.setFlammable(PEAT_MOSS_BUDS.get(), 300, 400);
     }
 
-    public static <T extends Block> DeferredBlock<T> createBlock(String name, final Supplier<T> supplier) {
+    public static <T extends Block> DeferredBlock<T> createBlock(String name, Supplier<T> supplier) {
         DeferredBlock<T> block = BLOCKS.register(name, supplier);
         ClinkerBlocks.BLOCK_ITEMS.registerSimpleBlockItem(name, block);
         return block;
     }
 
-    public static <T extends Block> DeferredBlock<T> createBlockNoItem(String name, final Supplier<T> supplier) {
+    public static <T extends Block, I extends BlockItem> DeferredBlock<T> createBlockAndItem(String name, Supplier<T> blockSupplier, Supplier<I> itemSupplier) {
+        DeferredBlock<T> block = BLOCKS.register(name, blockSupplier);
+        ClinkerBlocks.BLOCK_ITEMS.register(name, itemSupplier);
+        return block;
+    }
+
+    public static <T extends Block> DeferredBlock<T> createBlockNoItem(String name, Supplier<T> supplier) {
         return BLOCKS.register(name, supplier);
     }
 }

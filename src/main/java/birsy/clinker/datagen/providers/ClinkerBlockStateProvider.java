@@ -1107,6 +1107,24 @@ public class ClinkerBlockStateProvider extends BlockStateProvider {
             this.flatBlockItem(CORPSE_LILY_PETAL.get(), this.modLoc(ModelProvider.ITEM_FOLDER + "/" + petalName));
         }
 
+        // gourd
+        {
+            String gourd = name(GOURD.get());
+            this.simpleBlockWithItem(GOURD.get(), this.models().cubeColumn(
+                    gourd,
+                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + gourd + "_side"),
+                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + gourd + "_end")
+            ));
+            String carvedGourd = name(CARVED_GOURD.get());
+            this.horizontalBlock(CARVED_GOURD.get(), this.models().orientable(
+                    carvedGourd,
+                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + gourd + "_side"),
+                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + carvedGourd + "_side"),
+                    this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + gourd + "_end")
+            ));
+            this.simpleBlockItem(CARVED_GOURD.get(), this.models().getExistingFile(this.modLoc(ModelProvider.BLOCK_FOLDER + "/" + carvedGourd)));
+        }
+
         // moth ball
         {
             String mothBallName = name(MOTH_BALL.get());

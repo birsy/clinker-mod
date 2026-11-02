@@ -56,12 +56,12 @@ public class BrineSwampSurfaceDecorator extends SurfaceDecorator {
         boolean placedSand = false;
         int offset = 0;
 
-        if (pos.getY() < seaLevel + 5 + noise5 * 3) {
-            if (pos.getY() == seaLevel - 1 && waterloggingNoise > 0 && ctx.maxUpwardsOffset() <= 0) {
+        if (pos.getY() < seaLevel + 6 + noise5 * 3) {
+            if (pos.getY() == seaLevel && waterloggingNoise > 0 && ctx.maxUpwardsOffset() <= 0) {
                 ctx.place(pos, saltGravel);
                 placedSand = true;
                 offset++;
-            } else if (pos.getY() == seaLevel - 2 && waterloggingNoise > 0.5 && ctx.maxUpwardsOffset() <= 0) {
+            } else if (pos.getY() == seaLevel - 1 && waterloggingNoise > 0.5 && ctx.maxUpwardsOffset() <= 0) {
                 ctx.place(pos, Blocks.WATER.defaultBlockState());
                 pos.move(ctx.surfaceDirection());
                 ctx.place(pos, saltGravel);
@@ -73,8 +73,8 @@ public class BrineSwampSurfaceDecorator extends SurfaceDecorator {
 
                 if (!isBorder) {
                     double grassNoise = waterloggingNoise + dither * 0.05;
-                    boolean placeGrass = grassNoise < 0.9 && pos.getY() >= seaLevel + 1;
-                    if (pos.getY() == seaLevel + 1) placeGrass &= ctx.maxDownwardsOffset() == 0;
+                    boolean placeGrass = grassNoise < 0.9 && pos.getY() >= seaLevel + 2;
+                    if (pos.getY() == seaLevel + 2) placeGrass &= ctx.maxDownwardsOffset() == 0;
 
                     if (placeGrass) {
                         ctx.place(pos, saltMoss);

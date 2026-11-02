@@ -1,8 +1,0 @@
-{
-    "parent": "block/orientable",
-    "textures": {
-        "top": "clinker:block/gourd_top",
-        "front": "clinker:block/carved_gourd",
-        "side": "clinker:block/gourd"
-    }
-}

@@ -99,7 +99,8 @@ public class ClinkerBlockTagProvider extends BlockTagsProvider {
                 ClinkerBlocks.PEAT_MOSS.get(),
                 ClinkerBlocks.SPOTREED.get(),
                 ClinkerBlocks.TANGLED_SPOTREED.get(),
-                ClinkerBlocks.HERBAL_AMALGAM_BLOCK.get()
+                ClinkerBlocks.HERBAL_AMALGAM_BLOCK.get(),
+                ClinkerBlocks.GOURD.get(), ClinkerBlocks.CARVED_GOURD.get()
         );
 
         IntrinsicTagAppender<Block> usesAxe = this.tag(BlockTags.MINEABLE_WITH_AXE).replace(false);
@@ -107,7 +108,8 @@ public class ClinkerBlockTagProvider extends BlockTagsProvider {
                 ClinkerBlocks.SPOTREED.get(),
                 ClinkerBlocks.TANGLED_SPOTREED.get(),
                 ClinkerBlocks.TAPROOT_BURL.get(),
-                ClinkerBlocks.TAPROOTS.get()
+                ClinkerBlocks.TAPROOTS.get(),
+                ClinkerBlocks.GOURD.get(), ClinkerBlocks.CARVED_GOURD.get()
         );
 
         for (DeferredHolder<Block, ? extends Block> block : ClinkerBlocks.BLOCKS.getEntries()) {

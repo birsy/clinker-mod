@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "clinker:block/gourd_end",
+    "side": "clinker:block/gourd_side"
+  }
+}

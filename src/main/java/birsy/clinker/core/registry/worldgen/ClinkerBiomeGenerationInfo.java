@@ -106,8 +106,8 @@ public class ClinkerBiomeGenerationInfo {
     public static final DeferredHolder<BiomeGenerationInfo, BiomeGenerationInfo> BRINE_SWAMP =
             register(ClinkerBiomes.BRINE_SWAMP,
                     BiomeGenerationInfo.builder()
-                            .surfaceShape(new FlatWithSmoothEdgeSurfaceShape(
-                                    OthershoreGenerationConstants.SEA_HEIGHT + 3,
+                            .surfaceShape(new BrineBeachSurfaceShape(
+                                    OthershoreGenerationConstants.SEA_HEIGHT + 1,
                                     OthershoreGenerationConstants.SEA_HEIGHT - 4))
                             .decorator(new BrineSwampSurfaceDecorator(OthershoreGenerationConstants.SEA_HEIGHT))
             );
