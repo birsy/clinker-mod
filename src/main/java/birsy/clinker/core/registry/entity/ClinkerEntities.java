@@ -96,6 +96,11 @@ public class ClinkerEntities {
                     .sized(1.0F, 1.0F)
                     .build(Clinker.resource("leggy").toString()));
 
+    public static final Supplier<EntityType<SegmentedEntity>> SEGMENTED = ENTITY_TYPES.register("segmented", () ->
+            EntityType.Builder.of(SegmentedEntity::new, MobCategory.CREATURE)
+                    .sized(1.0F, 1.0F)
+                    .build(Clinker.resource("leggy").toString()));
+
     public static final Supplier<EntityType<GnomadMogulEntity>> GNOMAD_MOGUL = ENTITY_TYPES.register("gnomad_mogul", () ->
             EntityType.Builder.of(GnomadMogulEntity::new, MobCategory.MONSTER)
                     .sized(2.25f, 3.5f)
@@ -116,6 +121,7 @@ public class ClinkerEntities {
 
         event.put(AI_TEST.get(), Zombie.createAttributes().build());
         event.put(GIANT_LEGGY_CRITTER.get(), Zombie.createAttributes().build());
+        event.put(SEGMENTED.get(), Zombie.createAttributes().build());
 
         event.put(SLAB_CRAB.get(), SlabCrabEntity.createAttributes().build());
 
@@ -141,6 +147,7 @@ public class ClinkerEntities {
 
         event.registerEntityRenderer(AI_TEST.get(), DebugEntityRenderer::new);
         event.registerEntityRenderer(GIANT_LEGGY_CRITTER.get(), LeggyRenderer::new);
+        event.registerEntityRenderer(SEGMENTED.get(), DebugSegmentedEntityRenderer::new);
 
         event.registerEntityRenderer(SLAB_CRAB.get(), SlabCrabRenderer::new);
 

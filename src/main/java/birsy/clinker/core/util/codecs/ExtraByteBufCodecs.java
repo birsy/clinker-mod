@@ -8,6 +8,7 @@ import foundry.veil.api.client.color.Colorc;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
@@ -135,6 +136,32 @@ public class ExtraByteBufCodecs {
 
     public static final StreamCodec<ByteBuf, Colorc> COLOR = StreamCodec.of((buf, col) -> buf.writeInt(col.argb()), (buf) -> new Color(buf.readInt(), true));
 
+    public static final StreamCodec<ByteBuf, short[]> SHORT_ARRAY = StreamCodec.of(
+            (buf, array) -> {
+                ByteBufCodecs.VAR_INT.encode(buf, array.length);
+                for (short s : array) buf.writeShort(s);
+            },
+            buf -> {
+                int length = ByteBufCodecs.VAR_INT.decode(buf);
+                short[] array = new short[length];
+                for (int i = 0; i < length; i++) array[i] = buf.readShort();
+                return array;
+            }
+    );
+
+    public static final StreamCodec<ByteBuf, float[]> FLOAT_ARRAY = StreamCodec.of(
+            (buf, array) -> {
+                ByteBufCodecs.VAR_INT.encode(buf, array.length);
+                for (float num : array) buf.writeFloat(num);
+            },
+            buf -> {
+                int length = ByteBufCodecs.VAR_INT.decode(buf);
+                float[] array = new float[length];
+                for (int i = 0; i < length; i++) array[i] = buf.readFloat();
+                return array;
+            }
+    );
+
     public static <T> StreamCodec<ByteBuf, T[]> array(StreamCodec<ByteBuf, T> codec) {
         return new StreamCodec<>() {
             public T[] decode(ByteBuf buffer) {
@@ -143,11 +170,12 @@ public class ExtraByteBufCodecs {
                 for (int i = 0; i < count; i++) array[i] = codec.decode(buffer);
                 return array;
             }
-
             public void encode(ByteBuf buffer, T[] array) {
                 buffer.writeInt(array.length);
                 for (int i = 0; i < array.length; i++) codec.encode(buffer, array[i]);
             }
         };
     }
+
+
 }

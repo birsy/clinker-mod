@@ -27,6 +27,10 @@ public class ClinkerPacketRegistry {
                 ClientboundMobLocomotionSyncPacket.STREAM_CODEC,
                 ClientboundMobLocomotionSyncPacket::handle);
 
+        registrar.playToClient(ClientboundSegmentedEntityPositionPacket.TYPE,
+                ClientboundSegmentedEntityPositionPacket.STREAM_CODEC,
+                ClientboundSegmentedEntityPositionPacket::handle);
+
         registrar.playToClient(ClientboundOrdnanceExplosionPacket.TYPE,
                 ClientboundOrdnanceExplosionPacket.STREAM_CODEC,
                 ClientboundOrdnanceExplosionPacket::handle);

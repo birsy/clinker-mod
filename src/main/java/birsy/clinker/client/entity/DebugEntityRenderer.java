@@ -40,7 +40,6 @@ public class DebugEntityRenderer extends EntityRenderer<Entity> {
 
         pPoseStack.popPose();
 
-
         if (pEntity instanceof GiantLeggyCritterEntity leggy) {
             pPoseStack.pushPose();
             // eliminate partial tick stuffs
