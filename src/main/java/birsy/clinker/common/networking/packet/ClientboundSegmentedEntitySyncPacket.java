@@ -43,7 +43,7 @@ public record ClientboundSegmentedEntitySyncPacket(int entityId, byte[] data) im
             context.enqueueWork(() -> {
                 Entity entity = context.player().level().getEntity(packet.entityId());
                 if (entity instanceof SegmentedEntity segmentedEntity) {
-                    segmentedEntity.updateFromFullSyncPacket(buffer);
+                    segmentedEntity.updateFromSyncPacket(buffer);
                 }
             });
         }
