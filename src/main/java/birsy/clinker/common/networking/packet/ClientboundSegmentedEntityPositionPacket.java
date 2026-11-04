@@ -15,13 +15,10 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record ClientboundSegmentedEntityPositionPacket(int entityId, double startX, double startY, double startZ, short[] offsets) implements CustomPacketPayload {
+public record ClientboundSegmentedEntityPositionPacket(int entityId, short[] offsets) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<ClientboundSegmentedEntityPositionPacket> TYPE = new CustomPacketPayload.Type<>(Clinker.resource("client/segmented_entity_position"));
     public static final StreamCodec<ByteBuf, ClientboundSegmentedEntityPositionPacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.INT, ClientboundSegmentedEntityPositionPacket::entityId,
-            ByteBufCodecs.DOUBLE, ClientboundSegmentedEntityPositionPacket::startX,
-            ByteBufCodecs.DOUBLE, ClientboundSegmentedEntityPositionPacket::startY,
-            ByteBufCodecs.DOUBLE, ClientboundSegmentedEntityPositionPacket::startZ,
             ExtraByteBufCodecs.SHORT_ARRAY, ClientboundSegmentedEntityPositionPacket::offsets,
             ClientboundSegmentedEntityPositionPacket::new
     );
@@ -38,13 +35,12 @@ public record ClientboundSegmentedEntityPositionPacket(int entityId, double star
     @OnlyIn(Dist.CLIENT)
     public static class ClientHandler {
         public static void handle(ClientboundSegmentedEntityPositionPacket packet, final IPayloadContext context) {
-            ClientLevel level = Minecraft.getInstance().level;
-            if (level == null) return;
-
-            Entity entity = level.getEntity(packet.entityId());
-            if (entity instanceof SegmentedEntity segmentedEntity) {
-                segmentedEntity.updateFromPositionPacket(packet.startX, packet.startY, packet.startZ, packet.offsets());
-            }
+            context.enqueueWork(() -> {
+                Entity entity = context.player().level().getEntity(packet.entityId());
+                if (entity instanceof SegmentedEntity segmentedEntity) {
+                    segmentedEntity.updateFromPositionPacket(packet.offsets());
+                }
+            });
         }
     }
 }

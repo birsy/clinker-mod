@@ -1,6 +1,9 @@
 package birsy.clinker.common.entity;
 
+import birsy.clinker.common.networking.packet.ClientboundSegmentedEntitySyncPacket;
 import birsy.clinker.common.networking.packet.ClientboundSegmentedEntityPositionPacket;
+import io.netty.buffer.Unpooled;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -10,6 +13,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.AABB;
@@ -29,9 +33,10 @@ public class SegmentedEntity extends PathfinderMob implements IEntityWithComplex
     final SegmentPartEntity[] parts;
 
     // networking stuff
-    private static final int POS_UPDATE_INTERVAL = 2; // todo
+    private static final int FULL_SYNC_INTERVAL = 40; // todo
     private static final double POS_SCALE = 4096.0;
     private final short[] positionBuffer;
+    private final double[] estimatedClientPositionBuffer;
 
     @Nullable Segment lastHurtSegment;
 
@@ -43,7 +48,8 @@ public class SegmentedEntity extends PathfinderMob implements IEntityWithComplex
         this.segments = new ArrayList<>(maxSegmentCount);
         this.parts = new SegmentPartEntity[maxSegmentCount];
 
-        this.positionBuffer = new short[(maxSegmentCount - 1) * 3];
+        this.positionBuffer = new short[maxSegmentCount * 3];
+        this.estimatedClientPositionBuffer = new double[maxSegmentCount * 3];
         this.noPhysics = true;
 
         // allocate all hitboxes in advance!
@@ -72,7 +78,7 @@ public class SegmentedEntity extends PathfinderMob implements IEntityWithComplex
         segment.initialize();
         return segment;
     }
-    protected void tickSegments() {
+    protected void tickSegmentsServer() {
         for (Segment segment : this.segments) segment.tick();
 
         // FaBRIK rope constraint solver
@@ -108,41 +114,90 @@ public class SegmentedEntity extends PathfinderMob implements IEntityWithComplex
             segment.move();
         }
     }
+    protected void tickSegmentsClient() {
+        for (Segment segment : this.segments) {
+            segment.tick();
+            segment.move();
+        }
+    }
 
+    // packet handling
     private final void sendPositionPackets() {
-        Segment head = this.segments.getFirst();
-        double lastX = head.x, lastY = head.y, lastZ = head.z;
-        for (int i = 0; i < this.segments.size() - 1; i++) {
-            Segment segment = this.segments.get(i + 1);
-            double x = Math.round((segment.x - lastX) * POS_SCALE),
-                   y = Math.round((segment.y - lastY) * POS_SCALE),
-                   z = Math.round((segment.z - lastZ) * POS_SCALE);
+        for (int i = 0; i < this.segments.size(); i++) {
+            Segment segment = this.segments.get(i);
+            double dX = Math.round((segment.x - estimatedClientPositionBuffer[i * 3 + 0]) * POS_SCALE),
+                   dY = Math.round((segment.y - estimatedClientPositionBuffer[i * 3 + 1]) * POS_SCALE),
+                   dZ = Math.round((segment.z - estimatedClientPositionBuffer[i * 3 + 2]) * POS_SCALE);
 
-            positionBuffer[i * 3 + 0] = (short) x;
-            positionBuffer[i * 3 + 1] = (short) y;
-            positionBuffer[i * 3 + 2] = (short) z;
+            if (dX >= Short.MAX_VALUE || dX <= Short.MIN_VALUE ||
+                dY >= Short.MAX_VALUE || dY <= Short.MIN_VALUE ||
+                dZ >= Short.MAX_VALUE || dZ <= Short.MIN_VALUE) {
+                sendFullSyncPackets();
+                return;
+            }
 
-            // recreate client reconstruction so its more accurate
-            lastX += x / POS_SCALE; lastY += y / POS_SCALE; lastZ += z / POS_SCALE;
+            positionBuffer[i * 3 + 0] = (short) dX;
+            positionBuffer[i * 3 + 1] = (short) dY;
+            positionBuffer[i * 3 + 2] = (short) dZ;
+
+            // recreate client reconstruction so it stays more accurate
+            estimatedClientPositionBuffer[i * 3 + 0] += dX / POS_SCALE;
+            estimatedClientPositionBuffer[i * 3 + 1] += dY / POS_SCALE;
+            estimatedClientPositionBuffer[i * 3 + 2] += dZ / POS_SCALE;
         }
         PacketDistributor.sendToPlayersTrackingEntity(this,
-                new ClientboundSegmentedEntityPositionPacket(this.getId(), head.x, head.y, head.z, this.positionBuffer)
+                new ClientboundSegmentedEntityPositionPacket(this.getId(), this.positionBuffer)
         );
     }
-    public final void updateFromPositionPacket(double startX, double startY, double startZ, short[] offsets) {
-        Segment segment = this.segments.getFirst();
-        double x = startX, y = startY, z = startZ;
-        segment.x = x; segment.y = y; segment.z = z;
-        for (int i = 0; i < this.segments.size() - 1; i++) {
-            segment = this.segments.get(i + 1);
-            x = x + offsets[i * 3 + 0] / POS_SCALE;
-            y = y + offsets[i * 3 + 1] / POS_SCALE;
-            z = z + offsets[i * 3 + 2] / POS_SCALE;
-            segment.x = x; segment.y = y; segment.z = z;
+    public final void updateFromPositionPacket(short[] offsets) {
+        for (int i = 0; i < this.segments.size(); i++) {
+            double dX = offsets[i * 3 + 0] / POS_SCALE,
+                   dY = offsets[i * 3 + 1] / POS_SCALE,
+                   dZ = offsets[i * 3 + 2] / POS_SCALE;
+            Segment segment = this.segments.get(i);
+            segment.x += dX; segment.dX = 0;
+            segment.y += dY; segment.dY = 0;
+            segment.z += dZ; segment.dZ = 0;
+        }
+    }
+
+    private final void sendFullSyncPackets() {
+        RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.buffer(), registryAccess());
+        writeSegmentSyncDataToBuffer(buf);
+
+        byte[] data = new byte[buf.readableBytes()];
+        buf.readBytes(data);
+        PacketDistributor.sendToPlayersTrackingEntity(this, new ClientboundSegmentedEntitySyncPacket(getId(), data));
+        for (int i = 0; i < segments.size(); i++) {
+            Segment segment = segments.get(i);
+            segment.dataDirtyExceptPosition = false;
+            // reset client reconstruction to real values
+            estimatedClientPositionBuffer[i * 3 + 0] = segment.x;
+            estimatedClientPositionBuffer[i * 3 + 1] = segment.y;
+            estimatedClientPositionBuffer[i * 3 + 2] = segment.z;
+        }
+    }
+    public final void updateFromFullSyncPacket(RegistryFriendlyByteBuf buf) {
+        int newSegmentCount = buf.readInt(), existingSegmentCount = this.segments.size();
+        for (int i = 0; i < existingSegmentCount; i++) {
+            Segment segment = this.segments.get(i);
+            segment.readFromBuffer(buf);
+        }
+        if (newSegmentCount <= existingSegmentCount) return;
+        for (int i = existingSegmentCount; i < newSegmentCount; i++) {
+            Segment segment = this.createSegment(i);
+            segment.readFromBuffer(buf);
+            this.addSegment(segment);
         }
     }
 
     // data
+    public void writeSegmentSyncDataToBuffer(RegistryFriendlyByteBuf buf) {
+        buf.writeInt(this.segments.size());
+        for (int i = 0; i < this.segments.size(); i++)
+            this.segments.get(i).writeToBuffer(buf);
+    }
+
     @Override
     public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
@@ -165,9 +220,7 @@ public class SegmentedEntity extends PathfinderMob implements IEntityWithComplex
 
     @Override
     public void writeSpawnData(RegistryFriendlyByteBuf buf) {
-        buf.writeInt(this.segments.size());
-        for (int i = 0; i < this.segments.size(); i++)
-            this.segments.get(i).writeToBuffer(buf);
+        writeSegmentSyncDataToBuffer(buf);
     }
     @Override
     public void readSpawnData(RegistryFriendlyByteBuf buf) {
@@ -183,16 +236,36 @@ public class SegmentedEntity extends PathfinderMob implements IEntityWithComplex
     public void tick() {
         super.tick();
 
-        //physics is run both client and server side for smoother gaming
-        this.tickSegments();
-
         if (!this.level().isClientSide()) {
+            this.tickSegmentsServer();
+
             // physics is handled entirely by the segments,
             // so just set our position to our head.
             Segment headSegment = segments.getFirst();
             this.setPos(headSegment.x, headSegment.y, headSegment.z);
-            //if ((this.tickCount + this.getId()) % POS_UPDATE_INTERVAL == 0)
-            this.sendPositionPackets();
+
+            // sync to clients
+            if ((this.tickCount + this.getId()) % FULL_SYNC_INTERVAL == 0)
+                this.sendFullSyncPackets();
+            else this.sendPositionPackets();
+        } else {
+            this.tickSegmentsClient();
+
+            List<Player> potentiallyCollidingPlayers = level().getEntitiesOfClass(Player.class, this.getBoundingBox(), EntitySelector.pushableBy(this));
+            for (Segment s : segments) {
+                AABB box = s.part.getBoundingBox();
+                for (Player player : potentiallyCollidingPlayers) {
+                    if (!player.getBoundingBox().intersects(box)) continue;
+                    if (player.noPhysics) continue;
+                    double dx = player.getX() - s.x,
+                           dz = player.getZ() - s.z;
+                    double d = Mth.absMax(dx, dz);
+                    if (d < 0.01) continue;
+                    d = Math.sqrt(d);
+                    double scale = Math.min(1.0 / d, 1.0) * 0.05 / d;
+                    player.push(dx * scale, 0, dz * scale);
+                }
+            }
         }
     }
 
@@ -248,8 +321,8 @@ public class SegmentedEntity extends PathfinderMob implements IEntityWithComplex
         final SegmentedEntity parent;
         final SegmentPartEntity part;
         float length;
-        double x, y, z, // pos
-               pX, pY, pZ; // previous pos
+        double x, y, z; // pos
+        double pX, pY, pZ; // previous pos
         double dX, dY, dZ; // delta pos
         boolean onGround = false;
 

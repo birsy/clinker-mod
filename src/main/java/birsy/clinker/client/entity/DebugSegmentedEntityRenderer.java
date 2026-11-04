@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
@@ -28,25 +29,25 @@ public class DebugSegmentedEntityRenderer extends EntityRenderer<SegmentedEntity
     }
 
     @Override
-    public void render(SegmentedEntity pEntity, float pEntityYaw, float pPartialTick, PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight) {
-        super.render(pEntity, pEntityYaw, pPartialTick, pPoseStack, pBuffer, pPackedLight);
-        pPoseStack.pushPose();
+    public void render(SegmentedEntity entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
+        super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
+        poseStack.pushPose();
         //pPoseStack.mulPose(Axis.YN.rotationDegrees(180 + pEntity.getViewYRot(pPartialTick)));
         //pPoseStack.mulPose(Axis.XN.rotationDegrees(pEntity.getViewXRot(pPartialTick)));
-        pPoseStack.scale(pEntity.getBbWidth(), pEntity.getBbHeight(), pEntity.getBbWidth());
+        poseStack.scale(entity.getBbWidth(), entity.getBbHeight(), entity.getBbWidth());
         //pPoseStack.translate(-0.5F, 0, -0.5F);
 
-        for (SegmentedEntity.Segment segment : pEntity.segments) {
-            pPoseStack.pushPose();
-            double x = segment.getX(pPartialTick) - pEntity.getX(),
-                   y = segment.getY(pPartialTick) - pEntity.getY(),
-                   z = segment.getZ(pPartialTick) - pEntity.getZ();
-            pPoseStack.translate((float) x - 0.5F, (float) y, (float) z - 0.5F);
-            this.dispatcher.renderSingleBlock(Blocks.DISPENSER.defaultBlockState(), pPoseStack, pBuffer, pPackedLight, OverlayTexture.NO_OVERLAY);
-            pPoseStack.popPose();
+        for (SegmentedEntity.Segment segment : entity.segments) {
+            poseStack.pushPose();
+            double x = segment.getX(partialTicks) - Mth.lerp(partialTicks, entity.xOld, entity.getX()),
+                   y = segment.getY(partialTicks) - Mth.lerp(partialTicks, entity.yOld, entity.getY()),
+                   z = segment.getZ(partialTicks) - Mth.lerp(partialTicks, entity.zOld, entity.getZ());
+            poseStack.translate((float) x - 0.5F, (float) y, (float) z - 0.5F);
+            this.dispatcher.renderSingleBlock(Blocks.DISPENSER.defaultBlockState(), poseStack, buffer, packedLight, OverlayTexture.NO_OVERLAY);
+            poseStack.popPose();
         }
 
-        pPoseStack.popPose();
+        poseStack.popPose();
     }
 
     @Override
