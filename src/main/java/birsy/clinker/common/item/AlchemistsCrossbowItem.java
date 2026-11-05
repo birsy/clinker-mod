@@ -1,5 +1,6 @@
 package birsy.clinker.common.item;
 
+import birsy.clinker.common.entity.projectile.ShotItemEntity;
 import birsy.clinker.common.item.components.CrossbowState;
 import birsy.clinker.common.item.components.LoadedItemStack;
 import birsy.clinker.core.registry.ClinkerDataComponents;
@@ -17,11 +18,13 @@ import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.Snowball;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.TntBlock;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -196,13 +199,11 @@ public class AlchemistsCrossbowItem extends ProjectileWeaponItem {
 
     @Override
     protected Projectile createProjectile(Level level, LivingEntity shooter, ItemStack weapon, ItemStack ammo, boolean isCrit) {
-        if (ammo.getItem() instanceof ArrowItem arrowItem) {
+        if (ammo.getItem() instanceof ArrowItem arrowItem)
             return arrowItem.createArrow(level, ammo, shooter, weapon);
-        }
-        if (ammo.getItem() instanceof ProjectileItem projectileItem) {
+        if (ammo.getItem() instanceof ProjectileItem projectileItem)
             return projectileItem.asProjectile(level, shooter.getEyePosition(), ammo, Direction.UP);
-        }
-        return new Snowball(level, shooter);
+        return ShotItemEntity.shoot(level, shooter, ammo);
     }
 
     @Override

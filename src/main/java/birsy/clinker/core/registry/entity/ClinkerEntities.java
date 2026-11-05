@@ -9,10 +9,7 @@ import birsy.clinker.client.entity.leggy.LeggyRenderer;
 import birsy.clinker.client.entity.slabcrab.SlabCrabRenderer;
 import birsy.clinker.common.entity.*;
 import birsy.clinker.common.entity.lungwyrm.LungWyrmEntity;
-import birsy.clinker.common.entity.projectile.FlechetteEntity;
-import birsy.clinker.common.entity.projectile.OrdnanceEntity;
-import birsy.clinker.common.entity.projectile.RerollFlaskEntity;
-import birsy.clinker.common.entity.projectile.WarhookEntity;
+import birsy.clinker.common.entity.projectile.*;
 import birsy.clinker.common.entity.gnomad.mogul.GnomadMogulEntity;
 import birsy.clinker.common.entity.gnomad.GnomadRuntEntity;
 import birsy.clinker.common.entity.gnomad.GnomadEntity;
@@ -43,17 +40,18 @@ public class ClinkerEntities {
             EntityType.Builder.of(OrdnanceEntity::new, MobCategory.MISC)
                     .sized(0.5F, 0.5F)
                     .build(Clinker.resource("ordnance").toString()));
-
     public static final Supplier<EntityType<FlechetteEntity>> FLECHETTE = ENTITY_TYPES.register("flechette", () ->
             EntityType.Builder.of(FlechetteEntity::new, MobCategory.MISC)
                     .sized(0.2F, 0.2F)
                     .build(Clinker.resource("flechette").toString()));
-
     public static final Supplier<EntityType<WarhookEntity>> WARHOOK = ENTITY_TYPES.register("warhook", () ->
             EntityType.Builder.of(WarhookEntity::new, MobCategory.MISC)
                     .sized(0.5F, 0.5F)
                     .build(Clinker.resource("warhook").toString()));
-
+    public static final Supplier<EntityType<ShotItemEntity>> SHOT_ITEM = ENTITY_TYPES.register("shot_item", () ->
+            EntityType.Builder.of(ShotItemEntity::new, MobCategory.MISC)
+                    .sized(0.5F, 0.5F)
+                    .build(Clinker.resource("shot_item").toString()));
     public static final Supplier<EntityType<RerollFlaskEntity>> REROLL_FLASK = ENTITY_TYPES.register("transmogrifying_flask", () ->
             EntityType.Builder.of(RerollFlaskEntity::new, MobCategory.MISC)
                     .sized(0.25F, 0.25F)
