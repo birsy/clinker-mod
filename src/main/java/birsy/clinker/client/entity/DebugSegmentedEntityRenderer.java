@@ -2,6 +2,7 @@ package birsy.clinker.client.entity;
 
 import birsy.clinker.common.entity.SegmentedEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import foundry.veil.api.client.util.DebugRenderHelper;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -47,12 +48,22 @@ public class DebugSegmentedEntityRenderer extends EntityRenderer<SegmentedEntity
                 DebugRenderHelper.renderSphere(poseStack, buffer.getBuffer(RenderType.lines()), 8, 0.5F, 0, 0, 0, 0, 0, 1F, 1F);
                 poseStack.popPose();
             }
-
         }
 
         Quaternionf rot = new Quaternionf(), delta = new Quaternionf();
         Vector3d pos = new Vector3d(), dir = new Vector3d(), prevDir = new Vector3d(0, 0, -1);
         BlockPos.MutableBlockPos blockPos = new BlockPos.MutableBlockPos();
+
+        boolean dying = entity.deathTime > 0;
+        float deathRotation = 0F;
+        if (dying) {
+            deathRotation = ((float)entity.deathTime + partialTicks - 1.0F) / 20.0F * 1.6F;
+            deathRotation = Mth.sqrt(deathRotation);
+            if (deathRotation > 1.0F) deathRotation = 1.0F;
+            deathRotation *= 90.0F;
+        }
+
+        int overlay = OverlayTexture.pack(0F, entity.hurtTime > 0 || entity.deathTime > 0);
 
         for (int i = 0; i < n; i++) {
             SegmentedEntity.Joint joint = joints.get(i);
@@ -74,12 +85,16 @@ public class DebugSegmentedEntityRenderer extends EntityRenderer<SegmentedEntity
 
             int light = LevelRenderer.getLightColor(entity.level(), blockPos.set(pos.x(), pos.y() + 1F / 2, pos.z()));
 
+            float width = joint.radius * 2, height = joint.height, length = joint.length;
+
             poseStack.pushPose();
-            poseStack.translate(pos.x() - eX, pos.y() - eY + 1F / 2, pos.z() - eZ);
+            poseStack.translate(pos.x() - eX, pos.y() - eY + height / 2, pos.z() - eZ);
             poseStack.mulPose(rot);
-            poseStack.scale(i == 0 ? 1.2F : 1F, i == 0 ? 1.2F : 1F, i == 0 ? 1.2F : 1F);
+            if (dying) poseStack.mulPose(Axis.ZP.rotationDegrees(deathRotation));
+
+            poseStack.scale(width, height, length);
             poseStack.translate(-0.5, -0.5, -0.5);
-            dispatcher.renderSingleBlock(Blocks.DISPENSER.defaultBlockState(), poseStack, buffer, light, OverlayTexture.NO_OVERLAY);
+            dispatcher.renderSingleBlock(Blocks.DISPENSER.defaultBlockState(), poseStack, buffer, light, overlay);
             poseStack.popPose();
         }
     }

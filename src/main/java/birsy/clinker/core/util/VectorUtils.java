@@ -41,6 +41,28 @@ public class VectorUtils {
         return projection;
     }
 
+    public static Vector3f approachSphere(Vector3f start, Vector3f end, float angleAmount, Vector3f dest) {
+        float dot = start.dot(end);
+        dot = Mth.clamp(dot, -1.0f, 1.0f);
+        float totalAngle = Math.acos(dot);
+        float actualStepAngle = Math.min(angleAmount, totalAngle);
+
+        if (totalAngle < 1e-6f) {
+            return dest.set(end);
+        } else if (totalAngle > Mth.PI - 1e-3f) {
+            // pick a perpendicular axis
+            Vector3f axis = Math.abs(start.x) < 0.9f ? new Vector3f(1, 0, 0) : new Vector3f(0, 1, 0);
+            axis.cross(start).normalize();
+            return dest.set(start).rotateAxis(actualStepAngle, axis.x, axis.y, axis.z);
+        }
+
+        float sinTotal = Math.sin(totalAngle);
+        float w1 = Math.sin(totalAngle - actualStepAngle) / sinTotal;
+        float w2 = Math.sin(actualStepAngle) / sinTotal;
+
+        return dest.set(start).mul(w1).add(end.x * w2, end.y * w2, end.z * w2);
+    }
+
     public static Vec3 reflect(Vec3 normal, Vec3 vec) {
         double x = normal.x();
         double y = normal.y();

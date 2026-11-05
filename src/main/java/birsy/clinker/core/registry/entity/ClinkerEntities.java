@@ -8,6 +8,7 @@ import birsy.clinker.client.entity.item.LeadArmorRenderer;
 import birsy.clinker.client.entity.leggy.LeggyRenderer;
 import birsy.clinker.client.entity.slabcrab.SlabCrabRenderer;
 import birsy.clinker.common.entity.*;
+import birsy.clinker.common.entity.lungwyrm.LungWyrmEntity;
 import birsy.clinker.common.entity.projectile.FlechetteEntity;
 import birsy.clinker.common.entity.projectile.OrdnanceEntity;
 import birsy.clinker.common.entity.projectile.RerollFlaskEntity;
@@ -96,10 +97,10 @@ public class ClinkerEntities {
                     .sized(1.0F, 1.0F)
                     .build(Clinker.resource("leggy").toString()));
 
-    public static final Supplier<EntityType<SegmentedEntity>> SEGMENTED = ENTITY_TYPES.register("segmented", () ->
-            EntityType.Builder.of(SegmentedEntity::new, MobCategory.CREATURE)
+    public static final Supplier<EntityType<LungWyrmEntity>> LUNGWYRM = ENTITY_TYPES.register("lungwyrm", () ->
+            EntityType.Builder.of(LungWyrmEntity::new, MobCategory.MONSTER)
                     .sized(1.0F, 1.0F)
-                    .build(Clinker.resource("leggy").toString()));
+                    .build(Clinker.resource("lungwyrm").toString()));
 
     public static final Supplier<EntityType<GnomadMogulEntity>> GNOMAD_MOGUL = ENTITY_TYPES.register("gnomad_mogul", () ->
             EntityType.Builder.of(GnomadMogulEntity::new, MobCategory.MONSTER)
@@ -121,7 +122,7 @@ public class ClinkerEntities {
 
         event.put(AI_TEST.get(), Zombie.createAttributes().build());
         event.put(GIANT_LEGGY_CRITTER.get(), Zombie.createAttributes().build());
-        event.put(SEGMENTED.get(), Zombie.createAttributes().build());
+        event.put(LUNGWYRM.get(), Zombie.createAttributes().build());
 
         event.put(SLAB_CRAB.get(), SlabCrabEntity.createAttributes().build());
 
@@ -147,7 +148,7 @@ public class ClinkerEntities {
 
         event.registerEntityRenderer(AI_TEST.get(), DebugEntityRenderer::new);
         event.registerEntityRenderer(GIANT_LEGGY_CRITTER.get(), LeggyRenderer::new);
-        event.registerEntityRenderer(SEGMENTED.get(), DebugSegmentedEntityRenderer::new);
+        event.registerEntityRenderer(LUNGWYRM.get(), DebugSegmentedEntityRenderer::new);
 
         event.registerEntityRenderer(SLAB_CRAB.get(), SlabCrabRenderer::new);
 

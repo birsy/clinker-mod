@@ -1,6 +1,8 @@
 package birsy.clinker.common.entity;
 
+import birsy.clinker.common.entity.module.ModularPathfindingMob;
 import birsy.clinker.common.networking.packet.ClientboundSegmentedEntitySyncPacket;
+import birsy.clinker.core.Clinker;
 import io.netty.buffer.Unpooled;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -9,13 +11,11 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
-import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -28,19 +28,19 @@ import org.joml.Vector3d;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SegmentedEntity extends PathfinderMob implements IEntityWithComplexSpawn {
+public abstract class SegmentedEntity<E extends SegmentedEntity<E, J>, J extends SegmentedEntity.Joint<E, J>> extends ModularPathfindingMob<E> implements IEntityWithComplexSpawn {
     private static final int FULL_SYNC_INTERVAL = 2;
 
-    final int maxJointCount;
-    public final List<Joint> joints;
-    final SegmentPartEntity[] parts;
+    protected final int maxJointCount;
+    protected final SegmentPartEntity[] parts;
+    public final List<J> joints;
 
-    @Nullable SegmentedEntity.Joint lastHurtSegment;
+    protected @Nullable J lastHurtSegment;
 
-    public SegmentedEntity(EntityType<SegmentedEntity> entityType, Level level) { //, int maxJointCount) {
+    public SegmentedEntity(EntityType<? extends SegmentedEntity<E, J>> entityType, Level level, int maxJointCount) {
         super(entityType, level);
 
-        this.maxJointCount = 24;
+        this.maxJointCount = maxJointCount;
         this.joints = new ArrayList<>(maxJointCount);
         this.parts = new SegmentPartEntity[maxJointCount];
 
@@ -63,17 +63,16 @@ public class SegmentedEntity extends PathfinderMob implements IEntityWithComplex
     }
 
     // segment stuff
-    protected Joint createSegment(int index) {
-        return new Joint(this, this.parts[index], index);
+    protected abstract J createJoint(int index, int length);
+    protected J addJoint(J joint) {
+        joints.add(joint);
+        parts[joints.size() - 1] = joint.part;
+        joint.initialize();
+        return joint;
     }
-    protected Joint addSegment(Joint segment) {
-        joints.add(segment);
-        parts[joints.size() - 1] = segment.part;
-        segment.initialize();
-        return segment;
-    }
+
     protected void tickSegmentsServer() {
-        for (Joint segment : this.joints) segment.tick();
+        for (J joint : this.joints) joint.tick();
 
         // FaBRIK rope constraint solver
         // need to work out some way of updating velocity...
@@ -83,16 +82,15 @@ public class SegmentedEntity extends PathfinderMob implements IEntityWithComplex
                 int index = forwards ? i : joints.size()  - 2 - i;
                 Joint a = this.joints.get(index),
                       b = this.joints.get(index + 1);
-                // length of the leading segment
-                double segmentLength = a.length;
+                double jointLength = b.length;
 
                 double sX = (a.x + a.dX) - (b.x + b.dX),
                        sY = (a.y + a.dY) - (b.y + b.dY),
                        sZ = (a.z + a.dZ) - (b.z + b.dZ);
                 double offset = Mth.length(sX, sY, sZ);
                 if (offset < 0.0001) {
-                    sX = 0; sY = 0; sZ = segmentLength;
-                    offset = segmentLength;
+                    sX = 0; sY = 0; sZ = jointLength;
+                    offset = jointLength;
                 }
 
                 double error = offset - a.length;
@@ -104,17 +102,18 @@ public class SegmentedEntity extends PathfinderMob implements IEntityWithComplex
         }
 
         for (Joint joint : joints) {
-            joint.move();
+            joint.applyMovement();
         }
     }
     protected void tickSegmentsClient() {
         for (Joint joint : this.joints) {
             joint.tick();
-            joint.move();
+            joint.applyMovement();
         }
     }
 
-    private final void sendSyncPackets() {
+    // networking
+    private void sendSyncPackets() {
         RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.buffer(), registryAccess());
         writeJointDataToBuffer(buf);
 
@@ -131,7 +130,7 @@ public class SegmentedEntity extends PathfinderMob implements IEntityWithComplex
                headZ = buf.readDouble();
 
         for (int i = 0; i < curJointCount; i++) {
-            Joint joint = this.joints.get(i);
+            J joint = this.joints.get(i);
             joint.x = headX + buf.readFloat();
             joint.y = headY + buf.readFloat();
             joint.z = headZ + buf.readFloat();
@@ -139,12 +138,12 @@ public class SegmentedEntity extends PathfinderMob implements IEntityWithComplex
         }
         if (newJointCount <= curJointCount) return;
         for (int i = curJointCount; i < newJointCount; i++) {
-            Joint joint = this.createSegment(i);
+            J joint = this.createJoint(i, newJointCount);
             joint.x = headX + buf.readFloat();
             joint.y = headY + buf.readFloat();
             joint.z = headZ + buf.readFloat();
             joint.readFromBuffer(buf);
-            this.addSegment(joint);
+            this.addJoint(joint);
         }
     }
 
@@ -168,26 +167,6 @@ public class SegmentedEntity extends PathfinderMob implements IEntityWithComplex
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
-        ListTag segmentsTag = new ListTag(this.joints.size());
-        for (int i = 0; i < this.joints.size(); i++)
-            segmentsTag.add(this.joints.get(i).serialize(new CompoundTag()));
-        tag.put("segments", segmentsTag);
-    }
-
-    @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        ListTag segmentsTag = tag.getList("segments", Tag.TAG_COMPOUND);
-        for (int i = 0; i < segmentsTag.size(); i++) {
-            Joint segment = this.createSegment(i);
-            segment.deserialize(segmentsTag.getCompound(i));
-            this.addSegment(segment);
-        }
-    }
-
-    @Override
     public void writeSpawnData(RegistryFriendlyByteBuf buf) {
         writeJointDataToBuffer(buf);
     }
@@ -195,18 +174,59 @@ public class SegmentedEntity extends PathfinderMob implements IEntityWithComplex
     public void readSpawnData(RegistryFriendlyByteBuf buf) {
         int segmentCount = buf.readInt();
         double headX = buf.readDouble(),
-               headY = buf.readDouble(),
-               headZ = buf.readDouble();
+                headY = buf.readDouble(),
+                headZ = buf.readDouble();
         for (int i = 0; i < segmentCount; i++) {
-            Joint segment = this.createSegment(i);
+            J segment = this.createJoint(i, segmentCount);
             segment.x = headX + buf.readFloat();
             segment.y = headY + buf.readFloat();
             segment.z = headZ + buf.readFloat();
             segment.readFromBuffer(buf);
-            this.addSegment(segment);
+            this.addJoint(segment);
         }
     }
 
+    @Override
+    public void addAdditionalSaveData(CompoundTag tag) {
+        super.addAdditionalSaveData(tag);
+        ListTag segmentsTag = new ListTag(this.joints.size());
+        for (int i = 0; i < this.joints.size(); i++)
+            segmentsTag.add(this.joints.get(i).serialize(new CompoundTag()));
+        tag.put("segments", segmentsTag);
+    }
+    @Override
+    public void readAdditionalSaveData(CompoundTag tag) {
+        super.readAdditionalSaveData(tag);
+        ListTag segmentsTag = tag.getList("segments", Tag.TAG_COMPOUND);
+        for (int i = 0; i < segmentsTag.size(); i++) {
+            J segment = this.createJoint(i, segmentsTag.size());
+            segment.deserialize(segmentsTag.getCompound(i));
+            this.addJoint(segment);
+        }
+    }
+
+    @Override
+    public void moveTo(double x, double y, double z, float yRot, float xRot) {
+        double startX = this.getX(),
+               startY = this.getY(),
+               startZ = this.getZ();
+        super.moveTo(x, y, z, yRot, xRot);
+        if (this.joints != null)
+            for (J joint : joints) {
+                double relativeX = joint.x - startX,
+                       relativeY = joint.y - startY,
+                       relativeZ = joint.z - startZ;
+                joint.x = relativeX + x;
+                joint.y = relativeY + y;
+                joint.z = relativeZ + z;
+            }
+    }
+
+    @Override public Vec3 getDeltaMovement() { return Vec3.ZERO; }
+    @Override public void setDeltaMovement(Vec3 movement) {} // no-op
+    @Override protected void pushEntities() {}
+
+    // behavior
     @Override
     public void tick() {
         super.tick();
@@ -244,35 +264,25 @@ public class SegmentedEntity extends PathfinderMob implements IEntityWithComplex
     }
 
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType reason, @Nullable SpawnGroupData data) {
-        data = super.finalizeSpawn(level, difficulty, reason, data);
-        int count = level.getRandom().nextInt(maxJointCount / 2, maxJointCount);
-        for (int i = 0; i < count; i++) {
-            Joint joint = createSegment(i);
-            joint.x = this.getX() + Math.sin(i * 0.75) * 1;
-            joint.y = this.getY();
-            joint.z = this.getZ() - i;
-            this.addSegment(joint);
-        }
-        return data;
-    }
-
-    @Override
     protected AABB makeBoundingBox() {
-        if (joints == null || joints.isEmpty()) return super.makeBoundingBox();
-        Joint joint = this.joints.getFirst();
+        if (joints == null || joints.isEmpty())
+            return super.makeBoundingBox();
+
+        J joint = this.joints.getFirst();
         double minX = joint.x, minY = joint.y, minZ = joint.z;
         double maxX = joint.x, maxY = joint.y, maxZ = joint.z;
         for (int i = 1; i < joints.size(); i++) {
             joint = joints.get(i);
-            minX = Math.min(minX, joint.x); minY = Math.min(minY, joint.y); minZ = Math.min(minZ, joint.z);
-            maxX = Math.max(maxX, joint.x); maxY = Math.max(maxY, joint.y); maxZ = Math.max(maxZ, joint.z);
+            float rad = joint.length + joint.radius, h = joint.height;
+            minX = Math.min(minX, joint.x - rad); minY = Math.min(minY, joint.y + 0); minZ = Math.min(minZ, joint.z - rad);
+            maxX = Math.max(maxX, joint.x + rad); maxY = Math.max(maxY, joint.y + h); maxZ = Math.max(maxZ, joint.z + rad);
         }
-        return new AABB(minX - 1, minY - 0.5, minZ - 1, maxX + 1, maxY + 1.5, maxZ + 1);
+        return new AABB(minX, minY, minZ, maxX, maxY, maxZ);
     }
 
-    public boolean hurt(DamageSource source, float amount, Joint segment) {
+    public boolean hurt(DamageSource source, float amount, J segment) {
         lastHurtSegment = segment;
+        Clinker.LOGGER.info(source.type());
         return super.hurt(source, amount);
     }
 
@@ -287,31 +297,32 @@ public class SegmentedEntity extends PathfinderMob implements IEntityWithComplex
     @Override public PartEntity<?>[] getParts() { return parts; }
 
     // the actual data and behavior for a segment
-    public static class Joint {
-        final float radius, height;
-        final SegmentedEntity parent;
-        final SegmentPartEntity part;
-        final int index;
-        float length;
-        double x, y, z; // pos
-        double pX, pY, pZ; // previous pos
-        double dX, dY, dZ; // delta pos
-        boolean onGround = false;
-        Vector3d segmentPos = new Vector3d();
+    public static class Joint<E extends SegmentedEntity<E, J>, J extends SegmentedEntity.Joint<E, J>> {
+        public final float radius, height, length;
+        public final E parent;
+        public final SegmentPartEntity part;
+        public final int index;
+        public double x;
+        public double y;
+        public double z; // pos
+        protected double pX, pY, pZ; // previous pos
+        public double dX, dY, dZ; // delta pos
+        protected boolean onGround = false;
+        protected Vector3d segmentPos = new Vector3d();
 
-        protected Joint(SegmentedEntity parent, SegmentPartEntity part, int index) {
+        protected Joint(E parent, SegmentPartEntity part, int index, float width, float height, float length) {
             this.parent = parent;
             this.part = part;
             this.index = index;
 
-            this.radius = 0.5F;
-            this.height = 1F;
-            this.length = 1F;
+            this.radius = width * 0.5F;
+            this.height = height;
+            this.length = length;
         }
 
         public void initialize() {
             this.part.joint = this;
-            this.part.setSize(length, length);
+            this.part.setSize(length, height);
             this.part.active = true;
         }
 
@@ -319,14 +330,13 @@ public class SegmentedEntity extends PathfinderMob implements IEntityWithComplex
             if (Double.isNaN(x) || Double.isNaN(y) || Double.isNaN(z)) {
                 x = parent.getX(); y = parent.getY(); z = parent.getZ();
             }
-            pX = x; pY = y; pZ = z;
-            float friction = dY == 0 ? 0.8F : 0.95F;
 
+            pX = x; pY = y; pZ = z;
+            float friction = onGround ? 0.8F : 0.95F;
             dX *= friction; dY *= 0.98F; dZ *= friction;
-            dY -= (float) parent.getGravity();
         }
 
-        public void move() {
+        public void applyMovement() {
             // collide with blocks
             Vec3 finalDelta = collide(new Vec3(dX, dY, dZ));
             x += finalDelta.x(); y += finalDelta.y(); z += finalDelta.z();
@@ -414,13 +424,13 @@ public class SegmentedEntity extends PathfinderMob implements IEntityWithComplex
         }
 
         @Nullable
-        public SegmentedEntity.Joint prev() {
+        public J prev() {
             if (index <= 0) return null;
             return this.parent.joints.get(index - 1);
         }
 
         @Nullable
-        public SegmentedEntity.Joint next() {
+        public J next() {
             if (index >= this.parent.joints.size() - 1) return null;
             return this.parent.joints.get(index + 1);
         }
@@ -462,7 +472,6 @@ public class SegmentedEntity extends PathfinderMob implements IEntityWithComplex
             this.x = tag.getDouble("x");
             this.y = tag.getDouble("y");
             this.z = tag.getDouble("z");
-            this.length = tag.getFloat("length");
         }
 
         // position is automatically synced!
@@ -479,7 +488,7 @@ public class SegmentedEntity extends PathfinderMob implements IEntityWithComplex
     }
 
     // just the hitbox for a given segment
-    protected static class SegmentPartEntity extends PartEntity<SegmentedEntity> {
+    protected static class SegmentPartEntity extends PartEntity<SegmentedEntity<?,?>> {
         @Nullable SegmentedEntity.Joint joint;
         EntityDimensions size;
         boolean active = false;

@@ -100,7 +100,7 @@ public class MathUtils {
         double angleIncrement = Math.PI * 2 * goldenRatio;
 
         for (int i = 0; i < points; i++) {
-            double t = (float) i / points;
+            double t = (double) i / points;
             double inclination = Math.acos(1 - 2 * t);
             double azimuth = angleIncrement * i;
 
@@ -108,6 +108,24 @@ public class MathUtils {
             double y = Math.sin(inclination) * Math.sin(azimuth);
             double z = Math.cos(inclination);
             directions[i] = new Vector3d(x, y, z);
+        }
+        return directions;
+    }
+
+    public static Vector3f[] generateSpherePointsF(int points) {
+        Vector3f[] directions = new Vector3f[points];
+        float goldenRatio = (1 + Mth.sqrt(5)) / 2;
+        float angleIncrement = Mth.PI * 2 * goldenRatio;
+
+        for (int i = 0; i < points; i++) {
+            float t = (float) i / points;
+            float inclination = (float) Math.acos(1 - 2 * t);
+            float azimuth = angleIncrement * i;
+
+            float x = Mth.sin(inclination) * Mth.cos(azimuth);
+            float y = Mth.sin(inclination) * Mth.sin(azimuth);
+            float z = Mth.cos(inclination);
+            directions[i] = new Vector3f(x, y, z);
         }
         return directions;
     }
@@ -144,7 +162,7 @@ public class MathUtils {
 
             double min = min(absClosestXDist, absClosestYDist, absClosestZDist);
 
-            //move it to that face.
+            // move it to that face.
             if (min == absClosestXDist) {
                 return new Vec3(point.x - closestXDist, point.y, point.z);
             } else if (min == absClosestYDist) {
@@ -172,7 +190,7 @@ public class MathUtils {
 
             double min = min(absClosestXDist, absClosestYDist, absClosestZDist);
 
-            //move it to that face.
+            // move it to that face.
             if (min == absClosestXDist) {
                 return new Vector3d(point.x - closestXDist, point.y, point.z);
             } else if (min == absClosestYDist) {
