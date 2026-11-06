@@ -190,8 +190,8 @@ public class AlchemistsCrossbowRenderer implements IClientItemExtensions {
             if (!loadedItemStack.isEmpty()) {
                 poseStack.pushPose();
 
-                poseStack.translate(.079F, .23F, 0);
-                poseStack.mulPose(Axis.YP.rotationDegrees(-45F - 90F - 10F));
+                poseStack.translate(.079F * direction, .23F, 0);
+                poseStack.mulPose(Axis.YP.rotationDegrees(-45F + -90F + -10F * direction));
                 poseStack.mulPose(Axis.XP.rotationDegrees(90F));
                 poseStack.scale(0.6F, 0.6F, 0.6F);
                 BakedModel ammoModel = Minecraft.getInstance().getItemRenderer()
@@ -254,14 +254,14 @@ public class AlchemistsCrossbowRenderer implements IClientItemExtensions {
 
                 float verticalOffset = handReturning ? Mth.sin(handAnimationTime * Mth.PI) * 0.1F : 0;
                 float horizontalOffset = 1.0F - handAnimationTime;
-                poseStack.translate(direction * -0.5F, 0.2F + verticalOffset, 0.3F - horizontalOffset * 0.25F);
+                poseStack.translate(-0.5F * direction, 0.2F + verticalOffset, 0.3F - horizontalOffset * 0.25F);
 
                 poseStack.mulPose(Axis.ZP.rotationDegrees(180));
-                poseStack.mulPose(Axis.YP.rotationDegrees(80));
-                poseStack.mulPose(Axis.XP.rotationDegrees(-90));
+                poseStack.mulPose(Axis.YP.rotationDegrees(90 - 10 * direction));
+                poseStack.mulPose(Axis.XP.rotationDegrees(-90 * direction));
 
-                poseStack.mulPose(Axis.YP.rotationDegrees(70));
-                poseStack.mulPose(Axis.ZP.rotationDegrees(-10));
+                poseStack.mulPose(Axis.YP.rotationDegrees(90 - 20 * direction));
+                poseStack.mulPose(Axis.ZP.rotationDegrees(-10 * direction));
 
                 // approximate arm pivot
                 poseStack.scale(0.7F, 0.7F, 0.7F);
@@ -273,7 +273,7 @@ public class AlchemistsCrossbowRenderer implements IClientItemExtensions {
 
                 // render hand
                 if (!oppositeHandItem.isEmpty()) {
-                    poseStack.translate(0.5F, 0.7F, 0);
+                    poseStack.translate(0.5F * direction, 0.7F, 0);
                     poseStack.scale(0.8F, 0.8F, 0.8F);
                     BakedModel oppositeHandItemModel = Minecraft.getInstance().getItemRenderer()
                             .getModel(oppositeHandItem, player.level(), player, 0);
@@ -285,46 +285,6 @@ public class AlchemistsCrossbowRenderer implements IClientItemExtensions {
                 }
 
                 poseStack.popPose();
-
-//                float verticalOffset = handReturning ? Mth.sin(handAnimationTime * Mth.PI) * 0.1F : 0;
-//                RenderSystem.setShaderTexture(0, localPlayer.getSkin().texture());
-//                PlayerRenderer playerRenderer = (PlayerRenderer) Minecraft.getInstance().getEntityRenderDispatcher().<AbstractClientPlayer>getRenderer(localPlayer);
-//                poseStack.pushPose();
-//                poseStack.translate(direction * 0.1F, -0.8 + verticalOffset, 0.7);
-//                poseStack.translate(handAnimationTime * 0.16F * direction, 0, handAnimationTime * -0.4F);
-//                poseStack.mulPose(Axis.YP.rotationDegrees(30 * direction));
-//                poseStack.mulPose(Axis.XP.rotationDegrees(40));
-//                poseStack.mulPose(Axis.ZP.rotationDegrees(90 * direction));
-//
-//                poseStack.translate(0, -3 / 16.0F, -3 / 16.0F);
-//
-//                if (arm != HumanoidArm.RIGHT) {
-//                    playerRenderer.renderRightHand(poseStack, event.getMultiBufferSource(), event.getPackedLight(), localPlayer);
-//                } else {
-//                    playerRenderer.renderLeftHand(poseStack, event.getMultiBufferSource(), event.getPackedLight(), localPlayer);
-//                }
-//
-//                poseStack.pushPose();
-//
-//                poseStack.translate(0.2 * direction, 0.7, 0);
-//                poseStack.mulPose(Axis.ZP.rotationDegrees(-90 * direction));
-//                poseStack.mulPose(Axis.XP.rotationDegrees(-20));
-//                poseStack.mulPose(Axis.YP.rotationDegrees(20 * direction));
-//                poseStack.translate(0.0, 0.1, -0.05);
-//                poseStack.scale(0.8F,0.8F,0.8F);
-//                if (!oppositeHandItem.isEmpty()) {
-//                    BakedModel oppositeHandItemModel = Minecraft.getInstance().getItemRenderer()
-//                            .getModel(oppositeHandItem, player.level(), player, 0);
-//                    Minecraft.getInstance().getItemRenderer()
-//                            .render(oppositeHandItem,
-//                                    arm != HumanoidArm.LEFT ? ItemDisplayContext.FIRST_PERSON_LEFT_HAND : ItemDisplayContext.FIRST_PERSON_RIGHT_HAND,
-//                                    arm != HumanoidArm.LEFT, poseStack,
-//                                    event.getMultiBufferSource(), event.getPackedLight(), OverlayTexture.NO_OVERLAY, oppositeHandItemModel);
-//                }
-//
-//                poseStack.popPose();
-//
-//                poseStack.popPose();
             }
             poseStack.popPose();
 
