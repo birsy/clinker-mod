@@ -39,11 +39,11 @@ public class OrdnanceItem extends Item implements ProjectileItem {
         super(pProperties);
     }
 
-    private static OrdnanceModifierSet getOrdnanceModifiers(ItemStack stack) {
+    public static OrdnanceModifierSet getOrdnanceModifiers(ItemStack stack) {
         return stack.getOrDefault(ClinkerDataComponents.ORDNANCE_MODIFIERS, OrdnanceModifierSet.NONE);
     }
 
-    private static long ticksSinceOpening(ItemStack stack, Level level) {
+    public static long ticksSinceOpening(ItemStack stack, Level level) {
         if (stack.has(ClinkerDataComponents.FUSE_TIMER))
             return stack.get(ClinkerDataComponents.FUSE_TIMER).ticksSinceOpening(level);
         return 0;
@@ -117,8 +117,7 @@ public class OrdnanceItem extends Item implements ProjectileItem {
         );
 
         if (!pLevel.isClientSide) {
-            OrdnanceEntity ordnance = OrdnanceEntity.toss(pLevel, pEntityLiving);
-            ordnance.setModifiers(set);
+            OrdnanceEntity ordnance = OrdnanceEntity.toss(pLevel, pEntityLiving, stack);
             ordnance.setFuseTime((int) ticksSinceOpening(stack, pLevel));
             pLevel.addFreshEntity(ordnance);
         }
@@ -189,10 +188,8 @@ public class OrdnanceItem extends Item implements ProjectileItem {
 
     @Override
     public Projectile asProjectile(Level level, Position pos, ItemStack stack, Direction direction) {
-        OrdnanceModifierSet modifiers = getOrdnanceModifiers(stack);
-        OrdnanceEntity ordnance = OrdnanceEntity.create(level, pos.x(), pos.y(), pos.z());
-        ordnance.setModifiers(modifiers);
-        ordnance.setFuseTime((int) ticksSinceOpening(stack, level));
+        OrdnanceEntity ordnance = OrdnanceEntity.create(level, stack);
+        ordnance.setPos(pos.x(), pos.y(), pos.z());
         return ordnance;
     }
 

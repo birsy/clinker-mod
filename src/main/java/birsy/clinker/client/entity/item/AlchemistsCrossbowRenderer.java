@@ -5,21 +5,26 @@ import birsy.clinker.common.item.components.CrossbowState;
 import birsy.clinker.common.item.components.LoadedItemStack;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
+import com.google.common.base.MoreObjects;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
@@ -31,16 +36,26 @@ import org.joml.Quaternionf;
 
 import javax.annotation.Nullable;
 
-import static birsy.clinker.common.item.AlchemistsCrossbowItem.getCrossbowState;
+import static birsy.clinker.common.item.AlchemistsCrossbowItem.*;
 
 @EventBusSubscriber(modid = Clinker.MOD_ID, value = Dist.CLIENT)
 public class AlchemistsCrossbowRenderer implements IClientItemExtensions {
+    private static final float[] RANDOM_FLOATS = Util.make(() -> {
+        RandomSource random = RandomSource.create(80085);
+        float[] array = new float[64];
+        for (int i = 0; i < array.length; i++)
+            array[i] = random.nextFloat() * 2.0F - 1.0F;
+        return array;
+    });
+
     @Override
-    public HumanoidModel.@org.jetbrains.annotations.Nullable ArmPose getArmPose(LivingEntity entity, InteractionHand hand, ItemStack crossbow) {
+    public HumanoidModel.ArmPose getArmPose(LivingEntity entity, InteractionHand hand, ItemStack crossbow) {
         CrossbowState crossbowState = getCrossbowState(crossbow);
         switch (crossbowState) {
             case FIRING, LOADED -> {
-                if (!entity.swinging) return HumanoidModel.ArmPose.CROSSBOW_HOLD;
+                boolean isThisMe = entity == Minecraft.getInstance().player;
+                if (!isThisMe || !Minecraft.getInstance().options.getCameraType().isFirstPerson())
+                    return HumanoidModel.ArmPose.CROSSBOW_HOLD;
             }
             case LOADING -> {
                 //return HumanoidModel.ArmPose.CROSSBOW_CHARGE;
@@ -59,6 +74,7 @@ public class AlchemistsCrossbowRenderer implements IClientItemExtensions {
             }
             case FIRING -> {
                 LoadedItemStack loadedItemStack = AlchemistsCrossbowItem.getLoadedItems(stack);
+                if (loadedItemStack.lastCount() <= 0) return 0.0F;
                 return (float)loadedItemStack.stack().getCount() / loadedItemStack.lastCount();
             }
             case LOADED -> { return 1.0F; }
@@ -69,175 +85,255 @@ public class AlchemistsCrossbowRenderer implements IClientItemExtensions {
     @SubscribeEvent
     public static void renderHand(RenderHandEvent event) {
         if (!(Minecraft.getInstance().cameraEntity instanceof LivingEntity)) return;
+        ItemInHandRenderer itemInHandRenderer = Minecraft.getInstance().getEntityRenderDispatcher().getItemInHandRenderer();
 
         LivingEntity player = (LivingEntity) Minecraft.getInstance().cameraEntity;
         LocalPlayer localPlayer = Minecraft.getInstance().player;
-        ItemStack crossbow = event.getItemStack();
-        boolean hasRepeater = AlchemistsCrossbowItem.hasRepeater(crossbow);
+        InteractionHand hand = event.getHand(),
+                oppositeHand = hand == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND;
+        HumanoidArm arm = event.getHand() == InteractionHand.MAIN_HAND ? player.getMainArm() : player.getMainArm().getOpposite();
 
-        InteractionHand oppositeHand = event.getHand() == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND;
+        ItemStack mainHandItem = event.getItemStack();
         ItemStack oppositeHandItem = player.getItemInHand(oppositeHand);
-        if (crossbow.getItem() instanceof AlchemistsCrossbowItem) {
-            CrossbowState crossbowState = getCrossbowState(crossbow);
-            if (crossbowState == CrossbowState.STANDBY) return;
-            HumanoidArm arm = event.getHand() == InteractionHand.MAIN_HAND ? player.getMainArm() : player.getMainArm().getOpposite();
-            float direction = arm == HumanoidArm.LEFT ? -1 : 1;
-            PoseStack poseStack = new PoseStack();
-            float partialTicks = event.getPartialTick();
 
-            poseStack.mulPose(Axis.YN.rotationDegrees(Minecraft.getInstance().gameRenderer.getMainCamera().getYRot()));
-            poseStack.mulPose(Axis.XP.rotationDegrees(Minecraft.getInstance().gameRenderer.getMainCamera().getXRot()));
+        PoseStack poseStack = event.getPoseStack();
+        float partialTicks = event.getPartialTick(),
+              swingProgress = event.getSwingProgress(),
+              equipProgress = event.getEquipProgress();
+
+        if (mainHandItem.getItem() instanceof AlchemistsCrossbowItem) {
+            ItemStack crossbow = mainHandItem;
+            boolean hasRepeater = AlchemistsCrossbowItem.hasRepeater(crossbow);
+
+            CrossbowState crossbowState = getCrossbowState(crossbow);
+            LoadedItemStack loadedItemStack = AlchemistsCrossbowItem.getLoadedItems(crossbow);
+
+            if (crossbowState == CrossbowState.STANDBY) return;
+
+            boolean leftHanded = arm == HumanoidArm.LEFT;
+            float direction = leftHanded ? -1 : 1;
 
             poseStack.pushPose();
-            // view bobbing
-            if (localPlayer != null) {
-                float playerStep = localPlayer.walkDist - localPlayer.walkDistO;
-                float stepSize = -(localPlayer.walkDist + playerStep * partialTicks);
-                float viewBob = Mth.lerp(partialTicks, localPlayer.oBob, localPlayer.bob);
 
-                Quaternionf bobXRotation = Axis.XP.rotationDegrees(Math.abs(Mth.cos(stepSize * (float) Math.PI - 0.2f) * viewBob) * 5f);
-                poseStack.mulPose(bobXRotation.conjugate());
-                Quaternionf bobZRotation = Axis.ZP.rotationDegrees(Mth.sin(stepSize * (float) Math.PI) * viewBob * 3f);
-                poseStack.mulPose(bobZRotation.conjugate());
-                poseStack.translate(-Mth.sin(stepSize * (float) Math.PI) * viewBob * 0.5f, -Math.abs(Mth.cos(stepSize * (float) Math.PI) * viewBob), 0f);
+            if (player.isUsingItem()) equipProgress = 0.0F;
 
-                float f2 = Mth.lerp(event.getPartialTick(), localPlayer.xBobO, localPlayer.xBob);
-                float f3 = Mth.lerp(event.getPartialTick(), localPlayer.yBobO, localPlayer.yBob);
-                poseStack.mulPose(Axis.XN.rotationDegrees((localPlayer.getViewXRot(partialTicks) - f2) * 0.1F));
-                poseStack.mulPose(Axis.YP.rotationDegrees((localPlayer.getViewYRot(partialTicks) - f3) * 0.1F));
+            // loading animation stuff
+            boolean loading = crossbowState == CrossbowState.LOADING && !(isFull(crossbow) || oppositeHandItem.isEmpty());
+
+            float useTime = (player.getTicksUsingItem() + partialTicks);
+            float itemLoadProgress = useTime / AlchemistsCrossbowItem.ITEM_LOAD_TIME;
+            float pullBackFactor = Math.clamp(itemLoadProgress, 0, 1);
+            float handAnimationTime = pullBackFactor, stretchAmount = pullBackFactor;
+            boolean handReturning = false;
+            if (hasRepeater && itemLoadProgress >= 1.0F) {
+                float returnTime = 0.2F;
+                pullBackFactor = itemLoadProgress % 1.0F;
+                handReturning = pullBackFactor < returnTime;
+                handAnimationTime = handReturning ?
+                        Mth.clampedMap(pullBackFactor, 0F, returnTime, 1F, 0F) :
+                        Mth.clampedMap(pullBackFactor, returnTime, 1F, 0F, 1F);
+                stretchAmount = pullBackFactor < (returnTime * 0.2F) ?
+                        Mth.clampedMap(pullBackFactor, 0F, returnTime * 0.2F, 1F, 0F) :
+                        Mth.clampedMap(pullBackFactor, returnTime * 0.2F, 1F, 0F, 1F);
             }
-            float equipProgress = event.getEquipProgress();
-            if (player.isUsingItem()) {
-                equipProgress = 0;
-            }
-            poseStack.translate(0, - equipProgress, 0);
+            handAnimationTime = MathUtils.ease(handAnimationTime, MathUtils.EasingType.easeInSine);
 
-            // render hands while loading
-            if (localPlayer != null && crossbowState == CrossbowState.LOADING) {
-                int offset = 4;
-                float animTime = ((localPlayer.getTicksUsingItem() - offset + partialTicks) / AlchemistsCrossbowItem.ITEM_LOAD_TIME) % 1.0F;
-                float pullBackFactor = animTime;
-                if (!hasRepeater) {
-                    pullBackFactor = Math.clamp((localPlayer.getTicksUsingItem() + partialTicks) / (AlchemistsCrossbowItem.ITEM_LOAD_TIME), 0, 1);
-                } else {
-                    float returnTime = 0.8F;
-                    if (animTime < returnTime) {
-                        pullBackFactor = MathUtils.mapRange(0F, returnTime, 0F, 1F, pullBackFactor);
-                    } else {
-                        pullBackFactor = MathUtils.mapRange(returnTime, 1F, 1F, 0F, pullBackFactor);
-                        pullBackFactor = MathUtils.ease(pullBackFactor, MathUtils.EasingType.easeInBack);
-                    }
-                    if (localPlayer.getTicksUsingItem() < offset) {
-                        pullBackFactor = 0;
-                    }
+            if (loading) {
+                itemInHandRenderer.applyItemArmTransform(poseStack, arm, equipProgress);
+                poseStack.translate(direction * -0.4785682F, -0.094387F, 0.05731531F);
+
+                poseStack.mulPose(Axis.XP.rotationDegrees(-11.935F));
+                poseStack.mulPose(Axis.YP.rotationDegrees(direction * 65.3F));
+                poseStack.mulPose(Axis.ZP.rotationDegrees(direction * -9.785F));
+
+                // item wobble
+                if (pullBackFactor > 0.1F) {
+                    float wobble = Mth.sin(itemLoadProgress * 20.0F) * 1F;
+                    poseStack.translate(0.0F, wobble * (pullBackFactor - 0.1F) * 0.004F, 0.0F);
                 }
 
-                RenderSystem.setShaderTexture(0, localPlayer.getSkin().texture());
-                PlayerRenderer playerrenderer = (PlayerRenderer) Minecraft.getInstance().getEntityRenderDispatcher().<AbstractClientPlayer>getRenderer(localPlayer);
+                poseStack.mulPose(Axis.YN.rotationDegrees(direction * 45.0F));
                 poseStack.pushPose();
-                poseStack.translate(direction * 0.1F, -0.8, 0.7);
-                poseStack.translate(pullBackFactor * 0.16F * direction, 0, pullBackFactor * -0.4F);
-                poseStack.mulPose(Axis.YP.rotationDegrees(30 * direction));
-                poseStack.mulPose(Axis.XP.rotationDegrees(40));
-                poseStack.mulPose(Axis.ZP.rotationDegrees(90 * direction));
-
-                LoadedItemStack ammo = AlchemistsCrossbowItem.getLoadedItems(crossbow);
-                float ammoOffset = -Math.min(3, 3) / 16.0F;
-                poseStack.translate(0, ammoOffset, ammoOffset);
-
-                if (arm != HumanoidArm.RIGHT) {
-                    playerrenderer.renderRightHand(poseStack, event.getMultiBufferSource(), event.getPackedLight(), localPlayer);
-                } else {
-                    playerrenderer.renderLeftHand(poseStack, event.getMultiBufferSource(), event.getPackedLight(), localPlayer);
-                }
-
-                poseStack.pushPose();
-
-                poseStack.translate(0.2 * direction, 0.7, 0);
-                poseStack.mulPose(Axis.ZP.rotationDegrees(-90 * direction));
-                poseStack.mulPose(Axis.XP.rotationDegrees(-20));
-                poseStack.mulPose(Axis.YP.rotationDegrees(20 * direction));
-                poseStack.translate(0.0, 0.1, -0.05);
-                poseStack.scale(0.8F,0.8F,0.8F);
-                BakedModel bakedmodel = Minecraft.getInstance().getItemRenderer()
-                        .getModel(player.getItemInHand(oppositeHand), player.level(), player, player.getId());
-                Minecraft.getInstance().getItemRenderer()
-                        .render(crossbow,
-                                arm != HumanoidArm.LEFT ? ItemDisplayContext.FIRST_PERSON_LEFT_HAND : ItemDisplayContext.FIRST_PERSON_RIGHT_HAND,
-                                arm != HumanoidArm.LEFT, poseStack,
-                                event.getMultiBufferSource(), event.getPackedLight(), OverlayTexture.NO_OVERLAY, bakedmodel);
-
-                poseStack.popPose();
-
-                poseStack.popPose();
-            }
-
-
-
-            if (crossbowState == CrossbowState.LOADING) { //crossbowState == CrossbowState.LOADING
-                poseStack.translate(direction * -0.25F, -0.55, 1.2);
-                poseStack.mulPose(Axis.XP.rotationDegrees(80));
-                poseStack.mulPose(Axis.ZP.rotationDegrees(45 + direction * 25));
-
+                poseStack.scale(1.0F, 1.0F, 1.0F + stretchAmount * 0.2F);
             } else {
-                poseStack.translate(0, -0.55, 1);
-                poseStack.mulPose(Axis.XP.rotationDegrees(80));
-                poseStack.mulPose(Axis.ZP.rotationDegrees(45));
+                boolean noAmmo = loadedItemStack.isEmpty();
+                float recoil = crossbowState == CrossbowState.FIRING ?
+                        Mth.sin((useTime % TICKS_BETWEEN_SHOTS) * Mth.HALF_PI) : 0;
+                float xOffset = -0.4F * Mth.sin(Mth.sqrt(swingProgress) * Mth.PI),
+                      yOffset =  0.2F * Mth.sin(Mth.sqrt(swingProgress) * Mth.TWO_PI),
+                      zOffset = -0.2F * Mth.sin(swingProgress * Mth.PI) + (noAmmo ? 0 : recoil * 0.02F);
+                poseStack.translate(direction * xOffset, yOffset, zOffset);
+                itemInHandRenderer.applyItemArmTransform(poseStack, arm, equipProgress);
+                itemInHandRenderer.applyItemArmAttackTransform(poseStack, arm, swingProgress);
+                if ((crossbowState == CrossbowState.LOADED || crossbowState == CrossbowState.FIRING) && swingProgress < 0.001F) {
+                    poseStack.translate(direction * -0.641864F, 0.0F, 0.0F);
+                    poseStack.mulPose(Axis.YP.rotationDegrees(direction * 10.0F));
+                    poseStack.mulPose(Axis.ZP.rotationDegrees(direction * (noAmmo ? recoil * 1F : 0F)));
+                }
+                poseStack.pushPose();
             }
 
-
-            BakedModel bakedmodel = Minecraft.getInstance().getItemRenderer()
-                    .getModel(crossbow, player.level(), player, player.getId());
+            BakedModel crossbowModel = Minecraft.getInstance().getItemRenderer()
+                    .getModel(crossbow, player.level(), player, 0);
             Minecraft.getInstance().getItemRenderer()
-                    .render(crossbow, ItemDisplayContext.FIXED, arm == HumanoidArm.LEFT, poseStack,
-                            event.getMultiBufferSource(), event.getPackedLight(), OverlayTexture.NO_OVERLAY, bakedmodel);
-            // render ingredients loaded into the crossbow
-            LoadedItemStack loadedItemStack = AlchemistsCrossbowItem.getLoadedItems(crossbow);
+                    .render(crossbow,
+                            leftHanded ? ItemDisplayContext.FIRST_PERSON_LEFT_HAND : ItemDisplayContext.FIRST_PERSON_RIGHT_HAND,
+                            leftHanded,
+                            poseStack,
+                            event.getMultiBufferSource(),
+                            event.getPackedLight(),
+                            OverlayTexture.NO_OVERLAY,
+                            crossbowModel
+                    );
+
+            // draw the loaded items, too
             if (!loadedItemStack.isEmpty()) {
-                poseStack.scale(0.8F, 0.8F, 0.8F);
-                poseStack.mulPose(Axis.ZP.rotationDegrees(-90));
+                poseStack.pushPose();
+
+                poseStack.translate(.079F, .23F, 0);
+                poseStack.mulPose(Axis.YP.rotationDegrees(-45F - 90F - 10F));
+                poseStack.mulPose(Axis.XP.rotationDegrees(90F));
+                poseStack.scale(0.6F, 0.6F, 0.6F);
                 BakedModel ammoModel = Minecraft.getInstance().getItemRenderer()
-                        .getModel(loadedItemStack.stack(), player.level(), player, player.getId());
+                        .getModel(loadedItemStack.stack(), player.level(), player, 0);
                 float j = 1;
+                float itemOffset = -0.03F;
                 for (int i = 0; i < Math.min(loadedItemStack.stack().getCount(), 3); i++) {
                     poseStack.pushPose();
-                    poseStack.translate(0, 0,  -(i + 1) / 16.0F);
-                    j *= -1;
+
+                    poseStack.translate(0, 0,  i * itemOffset);
                     poseStack.mulPose(Axis.ZP.rotationDegrees(j * 5));
+                    j *= -1;
                     Minecraft.getInstance().getItemRenderer()
-                            .render(loadedItemStack.stack(), ItemDisplayContext.FIXED, arm == HumanoidArm.LEFT, poseStack,
-                                    event.getMultiBufferSource(), event.getPackedLight(), OverlayTexture.NO_OVERLAY, ammoModel);
+                            .render(loadedItemStack.stack(),
+                                    ItemDisplayContext.FIXED,
+                                    leftHanded,
+                                    poseStack,
+                                    event.getMultiBufferSource(),
+                                    event.getPackedLight(),
+                                    OverlayTexture.NO_OVERLAY, ammoModel
+                            );
+
                     poseStack.popPose();
                 }
                 if (loadedItemStack.stack().getCount() > 3) {
                     for (int i = 3; i < Math.min(loadedItemStack.stack().getCount(), 12); i++) {
                         poseStack.pushPose();
+                        float randomA = RANDOM_FLOATS[(i * 4 + 0) % RANDOM_FLOATS.length],
+                              randomB = RANDOM_FLOATS[(i * 4 + 1) % RANDOM_FLOATS.length],
+                              randomC = RANDOM_FLOATS[(i * 4 + 2) % RANDOM_FLOATS.length],
+                              randomD = RANDOM_FLOATS[(i * 4 + 3) % RANDOM_FLOATS.length];
+                        float xOffset = randomA * 0.07F, zOffset = randomB * 0.07F;
+                        float verticalOffset = (randomC * 0.5F + 0.5F) * 3 * itemOffset;
+                        float rotation = randomD * 3.5F;
+                        poseStack.translate(xOffset, zOffset, verticalOffset);
+                        poseStack.mulPose(Axis.ZP.rotationDegrees(rotation));
 
-                        float terribleRandomA = Mth.frac(((i-3) / 8.0F) * Mth.PI * 2048.0F);
-                        float terribleRandomB = Mth.frac(((i-3) / 8.0F) * Mth.PI * 2048.0F * 2);
-                        float terribleRandomC = Mth.frac(((i-3) / 8.0F) * Mth.PI * 2048.0F * 3);
-
-                        float diagonalOffset = Mth.lerp(terribleRandomA, -0.07F, 0.07F);
-                        float verticalOffset = Mth.lerp(terribleRandomB, -(1.0F / 16.0F), -(3.0F / 16.0F));
-                        poseStack.translate(diagonalOffset, diagonalOffset, verticalOffset);
-                        poseStack.mulPose(Axis.ZP.rotationDegrees(terribleRandomC * 7));
                         Minecraft.getInstance().getItemRenderer()
-                                .render(loadedItemStack.stack(), ItemDisplayContext.FIXED, arm == HumanoidArm.LEFT, poseStack,
-                                        event.getMultiBufferSource(), event.getPackedLight(), OverlayTexture.NO_OVERLAY, ammoModel);
+                                .render(loadedItemStack.stack(),
+                                        ItemDisplayContext.FIXED,
+                                        leftHanded,
+                                        poseStack,
+                                        event.getMultiBufferSource(),
+                                        event.getPackedLight(),
+                                        OverlayTexture.NO_OVERLAY,
+                                        ammoModel
+                                );
+
                         poseStack.popPose();
                     }
                 }
+                poseStack.popPose();
             }
-            poseStack.pushPose();
+            poseStack.popPose();
 
+            // render hands while loading
+            if (loading && localPlayer != null) {
+                poseStack.pushPose();
+                PlayerRenderer playerRenderer = (PlayerRenderer) Minecraft.getInstance().getEntityRenderDispatcher().<AbstractClientPlayer>getRenderer(localPlayer);
+
+                float verticalOffset = handReturning ? Mth.sin(handAnimationTime * Mth.PI) * 0.1F : 0;
+                float horizontalOffset = 1.0F - handAnimationTime;
+                poseStack.translate(direction * -0.5F, 0.2F + verticalOffset, 0.3F - horizontalOffset * 0.25F);
+
+                poseStack.mulPose(Axis.ZP.rotationDegrees(180));
+                poseStack.mulPose(Axis.YP.rotationDegrees(80));
+                poseStack.mulPose(Axis.XP.rotationDegrees(-90));
+
+                poseStack.mulPose(Axis.YP.rotationDegrees(70));
+                poseStack.mulPose(Axis.ZP.rotationDegrees(-10));
+
+                // approximate arm pivot
+                poseStack.scale(0.7F, 0.7F, 0.7F);
+                poseStack.translate(-direction * (6F / 16F), 0, 0F);
+
+                if (arm == HumanoidArm.RIGHT)
+                     playerRenderer.renderLeftHand(poseStack, event.getMultiBufferSource(), event.getPackedLight(), localPlayer);
+                else playerRenderer.renderRightHand(poseStack, event.getMultiBufferSource(), event.getPackedLight(), localPlayer);
+
+                // render hand
+                if (!oppositeHandItem.isEmpty()) {
+                    poseStack.translate(0.5F, 0.7F, 0);
+                    poseStack.scale(0.8F, 0.8F, 0.8F);
+                    BakedModel oppositeHandItemModel = Minecraft.getInstance().getItemRenderer()
+                            .getModel(oppositeHandItem, player.level(), player, 0);
+                    Minecraft.getInstance().getItemRenderer()
+                            .render(oppositeHandItem,
+                                    arm != HumanoidArm.LEFT ? ItemDisplayContext.THIRD_PERSON_LEFT_HAND : ItemDisplayContext.THIRD_PERSON_RIGHT_HAND,
+                                    arm != HumanoidArm.LEFT, poseStack,
+                                    event.getMultiBufferSource(), event.getPackedLight(), OverlayTexture.NO_OVERLAY, oppositeHandItemModel);
+                }
+
+                poseStack.popPose();
+
+//                float verticalOffset = handReturning ? Mth.sin(handAnimationTime * Mth.PI) * 0.1F : 0;
+//                RenderSystem.setShaderTexture(0, localPlayer.getSkin().texture());
+//                PlayerRenderer playerRenderer = (PlayerRenderer) Minecraft.getInstance().getEntityRenderDispatcher().<AbstractClientPlayer>getRenderer(localPlayer);
+//                poseStack.pushPose();
+//                poseStack.translate(direction * 0.1F, -0.8 + verticalOffset, 0.7);
+//                poseStack.translate(handAnimationTime * 0.16F * direction, 0, handAnimationTime * -0.4F);
+//                poseStack.mulPose(Axis.YP.rotationDegrees(30 * direction));
+//                poseStack.mulPose(Axis.XP.rotationDegrees(40));
+//                poseStack.mulPose(Axis.ZP.rotationDegrees(90 * direction));
+//
+//                poseStack.translate(0, -3 / 16.0F, -3 / 16.0F);
+//
+//                if (arm != HumanoidArm.RIGHT) {
+//                    playerRenderer.renderRightHand(poseStack, event.getMultiBufferSource(), event.getPackedLight(), localPlayer);
+//                } else {
+//                    playerRenderer.renderLeftHand(poseStack, event.getMultiBufferSource(), event.getPackedLight(), localPlayer);
+//                }
+//
+//                poseStack.pushPose();
+//
+//                poseStack.translate(0.2 * direction, 0.7, 0);
+//                poseStack.mulPose(Axis.ZP.rotationDegrees(-90 * direction));
+//                poseStack.mulPose(Axis.XP.rotationDegrees(-20));
+//                poseStack.mulPose(Axis.YP.rotationDegrees(20 * direction));
+//                poseStack.translate(0.0, 0.1, -0.05);
+//                poseStack.scale(0.8F,0.8F,0.8F);
+//                if (!oppositeHandItem.isEmpty()) {
+//                    BakedModel oppositeHandItemModel = Minecraft.getInstance().getItemRenderer()
+//                            .getModel(oppositeHandItem, player.level(), player, 0);
+//                    Minecraft.getInstance().getItemRenderer()
+//                            .render(oppositeHandItem,
+//                                    arm != HumanoidArm.LEFT ? ItemDisplayContext.FIRST_PERSON_LEFT_HAND : ItemDisplayContext.FIRST_PERSON_RIGHT_HAND,
+//                                    arm != HumanoidArm.LEFT, poseStack,
+//                                    event.getMultiBufferSource(), event.getPackedLight(), OverlayTexture.NO_OVERLAY, oppositeHandItemModel);
+//                }
+//
+//                poseStack.popPose();
+//
+//                poseStack.popPose();
+            }
+            poseStack.popPose();
 
             event.setCanceled(true);
             return;
         }
 
-        crossbow = oppositeHandItem;
-        if (crossbow.getItem() instanceof AlchemistsCrossbowItem) {
-            CrossbowState crossbowState = getCrossbowState(crossbow);
+        if (oppositeHandItem.getItem() instanceof AlchemistsCrossbowItem) {
+            CrossbowState crossbowState = getCrossbowState(oppositeHandItem);
             if (crossbowState == CrossbowState.LOADING || crossbowState == CrossbowState.LOADED || crossbowState == CrossbowState.FIRING) {
                 event.setCanceled(true);
             }

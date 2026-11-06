@@ -65,8 +65,8 @@ public class ClinkerDataComponents {
                     .networkSynchronized(CrossbowState.STREAM_CODEC)
                     .persistent(CrossbowState.CODEC)
     );
-    public static final Supplier<DataComponentType<Integer>> TICK_DELAY = DATA_COMPONENT_TYPES.registerComponentType(
-            "tick_delay",
-            builder -> builder.networkSynchronized(ByteBufCodecs.INT)
-    );
+//    public static final Supplier<DataComponentType<Integer>> TICK_DELAY = DATA_COMPONENT_TYPES.registerComponentType(
+//            "tick_delay",
+//            builder -> builder.networkSynchronized(ByteBufCodecs.INT)
+//    );
 }

@@ -75,7 +75,6 @@ public class ClinkerItems
             new AlchemistsCrossbowItem(new Item.Properties()
                     .stacksTo(1).durability(384)
                     .component(ClinkerDataComponents.LOADED_ITEM_STACK.get(), LoadedItemStack.EMPTY)
-                    .component(ClinkerDataComponents.TICK_DELAY.get(), 0)
             )
     );
     public static final DeferredItem<Item> CROSSBOW_REPEATER_ATTACHMENT = ITEMS.registerSimpleItem("crossbow_repeater_attachment",

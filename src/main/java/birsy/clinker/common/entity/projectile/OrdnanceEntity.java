@@ -2,6 +2,7 @@ package birsy.clinker.common.entity.projectile;
 
 import birsy.clinker.client.particle.OrdnanceTrailParticle;
 import birsy.clinker.client.sound.OrdnanceFuseSoundInstance;
+import birsy.clinker.common.item.OrdnanceItem;
 import birsy.clinker.common.item.components.FuseTimer;
 import birsy.clinker.common.ordnance.OrdnanceGradient;
 import birsy.clinker.common.ordnance.OrdnanceHelper;
@@ -87,35 +88,31 @@ public class OrdnanceEntity extends Projectile implements IEntityWithComplexSpaw
     public OrdnanceEntity(EntityType<? extends Projectile> entityType, Level level) {
         super(entityType, level);
     }
-    public static OrdnanceEntity create(Level pLevel, double x, double y, double z) {
+    public static OrdnanceEntity create(Level pLevel, ItemStack item) {
         OrdnanceEntity entity = new OrdnanceEntity(ClinkerEntities.ORDNANCE.get(), pLevel);
-        entity.setPos(x, y, z);
-        pLevel.addFreshEntity(entity);
+        entity.setModifiers(OrdnanceItem.getOrdnanceModifiers(item));
+        entity.setFuseTime((int) OrdnanceItem.ticksSinceOpening(item, pLevel));
         return entity;
     }
-    public static OrdnanceEntity toss(Level pLevel, LivingEntity thrower) {
-        OrdnanceEntity entity = new OrdnanceEntity(ClinkerEntities.ORDNANCE.get(), pLevel);
+    public static OrdnanceEntity toss(Level pLevel, LivingEntity thrower, ItemStack item) {
+        OrdnanceEntity entity = OrdnanceEntity.create(pLevel, item);
+        entity.setPos(thrower.getEyePosition().add(thrower.getLookAngle().scale(thrower.getBbWidth() * 0.5 + entity.getBbWidth() * 0.6)));
         entity.setOwner(thrower);
         entity.shootFromRotation(thrower, thrower.getXRot(), thrower.getYRot(), 0.0F, 1.5F, 0.0F);
-        entity.setPos(thrower.getEyePosition().add(entity.getDeltaMovement().normalize()));
         return entity;
     }
-    public static OrdnanceEntity fireAtPosition(Level pLevel, Vec3 currentPosition, Vec3 targetPosition, int timeInTicks) {
-        OrdnanceEntity entity = OrdnanceEntity.create(pLevel, currentPosition.x, currentPosition.y, currentPosition.z);
-        double timeSquared = timeInTicks * timeInTicks;
-        Vec3 delta = targetPosition.subtract(currentPosition);
-        Vec3 acceleration = new Vec3(0, -0.024, 0);
 
-        double velocityX = (delta.x - (0.5 * acceleration.x * timeSquared)) / (double) timeInTicks;
-        double velocityY = (delta.y - (0.5 * acceleration.y * timeSquared)) / (double) timeInTicks;
-        double velocityZ = (delta.z - (0.5 * acceleration.z * timeSquared)) / (double) timeInTicks;
-        entity.setDeltaMovement(velocityX, velocityY, velocityZ);
-
-        return entity;
-    }
     @Override
     public void shoot(double x, double y, double z, float velocity, float inaccuracy) {
         super.shoot(x, y, z, velocity * 0.6F, inaccuracy);
+    }
+
+    public void aimAtPosition(double targetX, double targetY, double targetZ, int timeInTicks) {
+        double timeSquared = timeInTicks * timeInTicks;
+        double velocityX = ((targetX - getX())) / timeInTicks;
+        double velocityZ = ((targetZ - getZ())) / timeInTicks;
+        double velocityY = ((targetY - getY()) - (0.5 * -getGravity() * timeSquared)) / timeInTicks;
+        this.setDeltaMovement(velocityX, velocityY, velocityZ);
     }
 
     // networking & serialization

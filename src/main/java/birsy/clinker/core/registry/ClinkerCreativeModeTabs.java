@@ -10,9 +10,11 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.util.Unit;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -246,6 +248,8 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(LADLE.get());
         pOutput.accept(ORDNANCE.get());
         pOutput.accept(ALCHEMISTS_CROSSBOW.get());
+        pOutput.accept(withComponent(ALCHEMISTS_CROSSBOW.get(), ClinkerDataComponents.REPEATER.get(), Unit.INSTANCE));
+        
         pOutput.accept(CROSSBOW_REPEATER_ATTACHMENT.get());
         pOutput.accept(MOGUL_WARHOOK.get());
         pOutput.accept(FISTFUL_OF_MAGGOTS.get());
@@ -257,26 +261,26 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(SLAB_CRAB_SPAWN_EGG);
 
         // testing ordnance stuff
-        pOutput.accept(withComponent(ORDNANCE.toStack(), ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.of(new ExplosiveModifier(0), new FuseTimeModifier( 0))));
-        pOutput.accept(withComponent(ORDNANCE.toStack(), ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.of(new ExplosiveModifier(1), new FuseTimeModifier( 0))));
-        pOutput.accept(withComponent(ORDNANCE.toStack(), ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.of(new ExplosiveModifier(2), new FuseTimeModifier( 0))));
-        pOutput.accept(withComponent(ORDNANCE.toStack(), ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.of(new ExplosiveModifier(3), new FuseTimeModifier( 0))));
-        pOutput.accept(withComponent(ORDNANCE.toStack(), ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.of(new FlechettesModifier(), new FuseTimeModifier( 0))));
+        pOutput.accept(withComponent(ORDNANCE, ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.of(new ExplosiveModifier(0), new FuseTimeModifier( 0))));
+        pOutput.accept(withComponent(ORDNANCE, ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.of(new ExplosiveModifier(1), new FuseTimeModifier( 0))));
+        pOutput.accept(withComponent(ORDNANCE, ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.of(new ExplosiveModifier(2), new FuseTimeModifier( 0))));
+        pOutput.accept(withComponent(ORDNANCE, ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.of(new ExplosiveModifier(3), new FuseTimeModifier( 0))));
+        pOutput.accept(withComponent(ORDNANCE, ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.of(new FlechettesModifier(), new FuseTimeModifier( 0))));
 
-        pOutput.accept(withComponent(ORDNANCE.toStack(), ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.of(new FuseTimeModifier(-2))));
-        pOutput.accept(withComponent(ORDNANCE.toStack(), ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.of(new FuseTimeModifier(-1))));
-        pOutput.accept(withComponent(ORDNANCE.toStack(), ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.of(new FuseTimeModifier( 0))));
-        pOutput.accept(withComponent(ORDNANCE.toStack(), ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.of(new FuseTimeModifier( 1))));
-        pOutput.accept(withComponent(ORDNANCE.toStack(), ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.of(new FuseTimeModifier( 2))));
+        pOutput.accept(withComponent(ORDNANCE, ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.of(new FuseTimeModifier(-2))));
+        pOutput.accept(withComponent(ORDNANCE, ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.of(new FuseTimeModifier(-1))));
+        pOutput.accept(withComponent(ORDNANCE, ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.of(new FuseTimeModifier( 0))));
+        pOutput.accept(withComponent(ORDNANCE, ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.of(new FuseTimeModifier( 1))));
+        pOutput.accept(withComponent(ORDNANCE, ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.of(new FuseTimeModifier( 2))));
 
-        pOutput.accept(withComponent(ORDNANCE.toStack(), ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.of(new BouncyModifier(0x8cd782))));
-        pOutput.accept(withComponent(ORDNANCE.toStack(), ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.of(new StickyModifier(0xffc029))));
+        pOutput.accept(withComponent(ORDNANCE, ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.of(new BouncyModifier(0x8cd782))));
+        pOutput.accept(withComponent(ORDNANCE, ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.of(new StickyModifier(0xffc029))));
 
-        pOutput.accept(withComponent(ORDNANCE.toStack(), ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.of(new PhosphorusModifier())));
-        pOutput.accept(withComponent(ORDNANCE.toStack(), ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.of(new ElectrifiedModifier())));
-        pOutput.accept(withComponent(ORDNANCE.toStack(), ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.of(new ThornedModifier())));
-        pOutput.accept(withComponent(ORDNANCE.toStack(), ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.of(new UnstableModifier())));
-        pOutput.accept(withComponent(ORDNANCE.toStack(), ClinkerDataComponents.ORDNANCE_MODIFIERS.get(),
+        pOutput.accept(withComponent(ORDNANCE, ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.of(new PhosphorusModifier())));
+        pOutput.accept(withComponent(ORDNANCE, ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.of(new ElectrifiedModifier())));
+        pOutput.accept(withComponent(ORDNANCE, ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.of(new ThornedModifier())));
+        pOutput.accept(withComponent(ORDNANCE, ClinkerDataComponents.ORDNANCE_MODIFIERS.get(), OrdnanceModifierSet.of(new UnstableModifier())));
+        pOutput.accept(withComponent(ORDNANCE, ClinkerDataComponents.ORDNANCE_MODIFIERS.get(),
                 OrdnanceModifierSet.of(
                         new ClusterModifier(
                                 OrdnanceModifierSet.of(new ExplosiveModifier(-1), new FuseTimeModifier( -1))
@@ -286,6 +290,10 @@ public class ClinkerCreativeModeTabs {
 
     }
 
+    private static <T> ItemStack withComponent(ItemLike item, DataComponentType<? super T> type, T data) {
+        return withComponent(item.asItem().getDefaultInstance(), type, data);
+    }
+    
     private static <T> ItemStack withComponent(ItemStack stack, DataComponentType<? super T> type, T data) {
         stack.set(type, data);
         return stack;

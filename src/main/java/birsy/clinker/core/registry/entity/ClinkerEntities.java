@@ -136,7 +136,7 @@ public class ClinkerEntities {
 
         event.registerEntityRenderer(WARHOOK.get(), WarhookRenderer::new);
         event.registerEntityRenderer(REROLL_FLASK.get(), ThrownItemRenderer::new);
-
+        event.registerEntityRenderer(SHOT_ITEM.get(), ShotItemRenderer::new);
         event.registerEntityRenderer(RED_LIGHTNING_BOLT.get(), RedLightningBoltRenderer::new);
 
         event.registerEntityRenderer(FALLING_LAYER.get(), FallingBlockRenderer::new);
