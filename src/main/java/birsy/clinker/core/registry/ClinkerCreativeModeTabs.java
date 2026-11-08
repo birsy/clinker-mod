@@ -1,5 +1,6 @@
 package birsy.clinker.core.registry;
 
+import birsy.clinker.common.item.components.CrossbowAttachment;
 import birsy.clinker.common.ordnance.modifiers.*;
 import birsy.clinker.common.page.Page;
 import birsy.clinker.common.item.components.PageContents;
@@ -248,7 +249,7 @@ public class ClinkerCreativeModeTabs {
         pOutput.accept(LADLE.get());
         pOutput.accept(ORDNANCE.get());
         pOutput.accept(ALCHEMISTS_CROSSBOW.get());
-        pOutput.accept(withComponent(ALCHEMISTS_CROSSBOW.get(), ClinkerDataComponents.REPEATER.get(), Unit.INSTANCE));
+        pOutput.accept(withComponent(ALCHEMISTS_CROSSBOW.get(), ClinkerDataComponents.CROSSBOW_ATTACHMENT.get(), CrossbowAttachment.REPEATER));
         
         pOutput.accept(CROSSBOW_REPEATER_ATTACHMENT.get());
         pOutput.accept(MOGUL_WARHOOK.get());

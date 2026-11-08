@@ -1,8 +1,10 @@
 package birsy.clinker.datagen.providers;
 
+import birsy.clinker.common.item.components.CrossbowAttachment;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.ClinkerItems;
 import birsy.clinker.core.registry.ClinkerTags;
+import birsy.clinker.datagen.custom.AlchemistsCrossbowAttachmentRecipeBuilder;
 import birsy.clinker.datagen.custom.MortarAndPestleRecipeBuilder;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
@@ -115,6 +117,14 @@ public class ClinkerRecipesProvider extends RecipeProvider {
                 .ingredients(
                         Ingredient.of(ClinkerItems.SULFUR.get()),
                         Ingredient.of(ClinkerItems.SALTPETRE.get())
+                )
+        );
+
+        // crossbow attachments
+        recipe("repeater", output,
+                new AlchemistsCrossbowAttachmentRecipeBuilder(
+                        Ingredient.of(CROSSBOW_REPEATER_ATTACHMENT.get()),
+                        CrossbowAttachment.REPEATER
                 )
         );
     }

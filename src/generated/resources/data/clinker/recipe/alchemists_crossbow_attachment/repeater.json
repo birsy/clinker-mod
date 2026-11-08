@@ -1,0 +1,8 @@
+{
+  "type": "clinker:alchemists_crossbow_attachment",
+  "attachment_item": {
+    "item": "clinker:crossbow_repeater_attachment"
+  },
+  "attachment_type": "repeater",
+  "category": "equipment"
+}

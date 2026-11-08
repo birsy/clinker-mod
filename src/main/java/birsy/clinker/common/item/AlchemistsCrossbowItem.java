@@ -1,6 +1,7 @@
 package birsy.clinker.common.item;
 
 import birsy.clinker.common.entity.projectile.ShotItemEntity;
+import birsy.clinker.common.item.components.CrossbowAttachment;
 import birsy.clinker.common.item.components.CrossbowState;
 import birsy.clinker.common.item.components.LoadedItemStack;
 import birsy.clinker.core.registry.ClinkerDataComponents;
@@ -21,7 +22,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
@@ -43,14 +43,20 @@ public class AlchemistsCrossbowItem extends ProjectileWeaponItem {
     public static LoadedItemStack getLoadedItems(ItemStack stack) {
         return stack.getOrDefault(ClinkerDataComponents.LOADED_ITEM_STACK.get(), LoadedItemStack.EMPTY);
     }
-    public static boolean hasRepeater(ItemStack stack) {
-        return stack.has(ClinkerDataComponents.REPEATER.get());
+    public static boolean hasAttachment(ItemStack stack) {
+        return stack.has(ClinkerDataComponents.CROSSBOW_ATTACHMENT.get());
+    }
+    public static CrossbowAttachment getAttachment(ItemStack stack) {
+        return stack.get(ClinkerDataComponents.CROSSBOW_ATTACHMENT.get());
+    }
+    public static boolean hasRepeaterAttachment(ItemStack stack) {
+        return getAttachment(stack) == CrossbowAttachment.REPEATER;
     }
     public static CrossbowState getCrossbowState(ItemStack stack) {
         return stack.getOrDefault(ClinkerDataComponents.CROSSBOW_STATE.get(), CrossbowState.STANDBY);
     }
     public static int capacity(ItemStack crossbow, ItemStack ammo) {
-        return hasRepeater(crossbow) ? Math.max(1, Math.ceilDiv(ammo.getMaxStackSize(), 4)) : 1;
+        return hasRepeaterAttachment(crossbow) ? Math.max(1, Math.ceilDiv(ammo.getMaxStackSize(), 4)) : 1;
     }
     public static boolean isFull(ItemStack crossbow) {
         ItemStack ammo = getLoadedItems(crossbow).stack();
@@ -72,9 +78,11 @@ public class AlchemistsCrossbowItem extends ProjectileWeaponItem {
             tooltipComponents.add(Component.translatable("item.clinker.alchemists_crossbow.primed").withStyle(ChatFormatting.YELLOW));
             tooltipComponents.add(Component.literal("   ").append(Component.translatable("container.shulkerBox.itemCount", loadedItems.getHoverName(), loadedItems.getCount()).withStyle(ChatFormatting.GRAY)));
         }
-        if (hasRepeater(stack))
-            tooltipComponents.add(Component.translatable("item.clinker.alchemists_crossbow.repeater").withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC));
 
+        CrossbowAttachment attachment = getAttachment(stack);
+        if (attachment != null) {
+            tooltipComponents.add(Component.translatable("item.clinker.alchemists_crossbow_attachment." + attachment.getSerializedName()).withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC));
+        }
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
     }
 
@@ -90,7 +98,7 @@ public class AlchemistsCrossbowItem extends ProjectileWeaponItem {
 
     @Override
     public int getDefaultProjectileRange() {
-        return 8;
+        return 32;
     }
 
     @Override
@@ -140,7 +148,7 @@ public class AlchemistsCrossbowItem extends ProjectileWeaponItem {
         if (level instanceof ServerLevel serverlevel) {
             ItemStack ammo = getLoadedItems(crossbow).stack();
             if (!ammo.isEmpty()) {
-                if (!hasRepeater(crossbow) || ammo.getCount() == 1) {
+                if (!hasRepeaterAttachment(crossbow) || ammo.getCount() == 1) {
                     this.fire(serverlevel, shooter, hand, crossbow, ammo, target);
                     crossbow.set(ClinkerDataComponents.CROSSBOW_STATE.get(), CrossbowState.STANDBY);
                 } else {
@@ -196,8 +204,11 @@ public class AlchemistsCrossbowItem extends ProjectileWeaponItem {
             projectile = ShotItemEntity.create(level, shooter, ammo);
             level.addFreshEntity(projectile);
         }
-        Vec3 lookVector = shooter.getLookAngle();
-        projectile.setPos(shooter.getEyePosition().add(lookVector.scale((shooter.getBbWidth() + projectile.getBbWidth()) * 0.5)));
+        Vec3 lookVector = shooter.calculateViewVector(0, shooter.getYRot());
+        projectile.setPos(shooter.getEyePosition()
+                .add(lookVector.scale((shooter.getBbWidth() + projectile.getBbWidth()) * 0.5))
+                .add(0, shooter.getEyeHeight() * -0.1F, 0)
+        );
         projectile.setOwner(shooter);
         return projectile;
     }

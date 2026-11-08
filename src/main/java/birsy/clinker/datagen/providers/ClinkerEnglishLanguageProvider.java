@@ -78,8 +78,12 @@ public class ClinkerEnglishLanguageProvider extends LanguageProvider {
         this.addItem(ClinkerItems.ALCHEMISTS_CROSSBOW, "Alchemist's Crossbow");
         this.add("item.clinker.alchemists_crossbow.no_ammo", "Hold ammunition in opposite hand to load.");
         this.add("item.clinker.alchemists_crossbow.primed", "Primed");
-        this.add("item.clinker.alchemists_crossbow.repeater", "Repeater Attachment");
-        this.add("item.clinker.crossbow_repeater_attachment.instructions", "Attachment for an Alchemist's Crossbow.");
+
+        this.add("item.clinker.alchemists_crossbow_attachment.repeater", "Repeater Attachment");
+        this.add("item.clinker.alchemists_crossbow_attachment.spray", "Spray Attachment");
+        this.add("item.clinker.alchemists_crossbow_attachment.long_range", "Long-range Attachment");
+
+        this.add("item.clinker.alchemists_crossbow_attachment.instructions", "Attachment for an Alchemist's Crossbow.");
 
         this.addItem(ClinkerItems.MUSIC_DISC_CODA, "Music Disc");
         this.add("jukebox_song.clinker.coda", "Squire - CODA");

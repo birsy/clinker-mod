@@ -1,5 +1,6 @@
 package birsy.clinker.core.registry;
 
+import birsy.clinker.common.alchemy.recipe.AlchemistsCrossbowAttachmentRecipe;
 import birsy.clinker.common.alchemy.recipe.MortarAndPestleRecipe;
 import birsy.clinker.core.Clinker;
 import net.minecraft.core.registries.Registries;
@@ -26,6 +27,8 @@ public class ClinkerRecipes {
         public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS =
                 DeferredRegister.create(Registries.RECIPE_SERIALIZER, Clinker.MOD_ID);
 
+        public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<AlchemistsCrossbowAttachmentRecipe>> ALCHEMISTS_CROSSBOW_ATTACHMENT =
+                RECIPE_SERIALIZERS.register("alchemists_crossbow_attachment", AlchemistsCrossbowAttachmentRecipe.Serializer::new);
         public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<MortarAndPestleRecipe>> MORTAR_AND_PESTLE =
                 RECIPE_SERIALIZERS.register("mortar_and_pestle", MortarAndPestleRecipe.Serializer::new);
     }

@@ -15,7 +15,7 @@ public final class AnimationUtilsMixin {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;getTicksUsingItem()I"))
     private static int clinker$animateCrossbowChargeUseItem(LivingEntity livingEntity) {
         ItemStack currentItem = livingEntity.getUseItem();
-        if (currentItem.getItem() instanceof AlchemistsCrossbowItem && AlchemistsCrossbowItem.hasRepeater(currentItem)) {
+        if (currentItem.getItem() instanceof AlchemistsCrossbowItem && AlchemistsCrossbowItem.hasRepeaterAttachment(currentItem)) {
             return livingEntity.getTicksUsingItem() % AlchemistsCrossbowItem.ITEM_LOAD_TIME;
         }
         return livingEntity.getTicksUsingItem();

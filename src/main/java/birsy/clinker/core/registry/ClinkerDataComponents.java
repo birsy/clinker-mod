@@ -52,21 +52,16 @@ public class ClinkerDataComponents {
                     .networkSynchronized(LoadedItemStack.STREAM_CODEC)
                     .persistent(LoadedItemStack.CODEC)
     );
-    public static final Supplier<DataComponentType<Unit>> REPEATER = DATA_COMPONENT_TYPES.registerComponentType(
-            "repeater",
-            builder -> builder
-                    .networkSynchronized(StreamCodec.unit(Unit.INSTANCE))
-                    .persistent(Unit.CODEC)
-                    .cacheEncoding()
-    );
     public static final Supplier<DataComponentType<CrossbowState>> CROSSBOW_STATE = DATA_COMPONENT_TYPES.registerComponentType(
             "crossbow_state",
             builder -> builder
                     .networkSynchronized(CrossbowState.STREAM_CODEC)
                     .persistent(CrossbowState.CODEC)
     );
-//    public static final Supplier<DataComponentType<Integer>> TICK_DELAY = DATA_COMPONENT_TYPES.registerComponentType(
-//            "tick_delay",
-//            builder -> builder.networkSynchronized(ByteBufCodecs.INT)
-//    );
+    public static final Supplier<DataComponentType<CrossbowAttachment>> CROSSBOW_ATTACHMENT = DATA_COMPONENT_TYPES.registerComponentType(
+            "crossbow_attachment",
+            builder -> builder
+                    .networkSynchronized(CrossbowAttachment.STREAM_CODEC)
+                    .persistent(CrossbowAttachment.CODEC)
+    );
 }

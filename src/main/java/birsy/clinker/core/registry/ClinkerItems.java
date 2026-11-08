@@ -81,7 +81,7 @@ public class ClinkerItems
             new Item.Properties()
                     .component(DataComponents.RARITY, Rarity.RARE)
                     .component(DataComponents.LORE, new ItemLore(
-                            List.of(Component.translatable("item.clinker.crossbow_repeater_attachment.instructions").withStyle(
+                            List.of(Component.translatable("item.clinker.alchemists_crossbow_attachment.instructions").withStyle(
                                             Style.EMPTY.withColor(ChatFormatting.DARK_GRAY)
                                                        .withFont(ClinkerFonts.SERIF)))
                     ))
