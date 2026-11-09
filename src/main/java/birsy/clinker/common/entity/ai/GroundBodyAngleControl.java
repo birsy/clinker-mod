@@ -7,18 +7,21 @@ import net.minecraft.world.entity.ai.control.BodyRotationControl;
 import java.util.function.Supplier;
 
 public class GroundBodyAngleControl extends BodyRotationControl {
-    protected final GroundLocomotionEntity me;
     public final LookTargetController lookTargetController;
+    protected final GroundLocomotionEntity me;
+    protected final Supplier<Float> defaultYaw, defaultTurnSpeed;
     float currentBodyAngle;
 
     public GroundBodyAngleControl(GroundLocomotionEntity pMob, Supplier<Float> defaultYaw, Supplier<Float> defaultTurnSpeed) {
         super(pMob);
         this.me = pMob;
-        this.lookTargetController = new LookTargetController(pMob, () -> 0F, defaultYaw, defaultTurnSpeed);
+        this.lookTargetController = new LookTargetController(pMob);
+        this.defaultYaw = defaultYaw;
+        this.defaultTurnSpeed = defaultTurnSpeed;
     }
 
     public void tick() {
-        this.lookTargetController.tick();
+        this.lookTargetController.tick(0, defaultYaw.get(), defaultTurnSpeed.get());
         float desiredYAngle = this.lookTargetController.getDesiredYaw();
         float lerpFactor = this.lookTargetController.getRotationSpeed();
         currentBodyAngle = Mth.rotLerp(lerpFactor, currentBodyAngle, desiredYAngle);

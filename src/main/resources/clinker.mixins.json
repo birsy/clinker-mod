@@ -33,6 +33,7 @@
     "common.PlayerMixin",
     "common.RandomizableContainerBlockEntityMixin",
     "common.RandomStateMixin",
+    "common.RangedAttributeMixin",
     "common.ServerLevelMixin"
   ],
   "injectors": {

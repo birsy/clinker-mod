@@ -78,11 +78,7 @@ public class GroundLocomotionEntity<E extends GroundLocomotionEntity<E>> extends
 
     @Override public GroundLookAngleControl getLookControl() { return (GroundLookAngleControl) super.getLookControl(); }
     protected GroundLookAngleControl createLookControl() {
-        return new GroundLookAngleControl(this,
-                () -> 0F, 80,
-                this::getSyncedBodyRotation, 60,
-                () -> 0.5F
-        );
+        return new GroundLookAngleControl(this, 80, 60, 0.5F);
     }
 
     @Override

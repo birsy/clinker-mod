@@ -95,7 +95,7 @@ public class MothParticle extends Particle {
                         landedDirection.getStepX(),
                         landedDirection.getStepY(),
                         landedDirection.getStepZ()
-                ).mul(2.0F);
+                ).mul(4.0F);
             }
         } else {
             this.landFactor = Mth.lerp(0.1F, landFactor, 0F);
@@ -177,8 +177,9 @@ public class MothParticle extends Particle {
             lightDir.normalize();
         if (lightDir.x() != 0 || lightDir.z != 0)
             lightDir.cross(0, 1 * (this.seed % 2 == 0 ? -1 : 1), 0);
-        lightDir.mul(Mth.map(currentLightLevel, 10, 15, 0, 3));
-        if (currentLightLevel <= 0) lightDir.mul(0);
+        float strength = Mth.map(currentLightLevel, 8, 15, 0, 4);
+        strength = Math.max(0, strength);
+        lightDir.mul(strength);
     }
 
     // flee from nearby entities

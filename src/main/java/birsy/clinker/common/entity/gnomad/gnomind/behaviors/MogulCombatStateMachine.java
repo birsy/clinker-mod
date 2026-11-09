@@ -34,22 +34,20 @@ public class MogulCombatStateMachine extends StateMachineBehavior<GnomadMogulEnt
     }
 
     private static class StrafeState implements StateMachineBehavior.State<GnomadMogulEntity> {
-        final LookTargetController.LookTargetHandle headLookTarget, bodyLookTarget;
+        //final LookTargetController.LookTargetHandle headLookTarget, bodyLookTarget;
 
         protected StrafeState(GnomadMogulEntity entity) {
-            this.headLookTarget = entity.getLookControl().lookTargetController
-                    .createHandle(0.5F, 1);
-            this.bodyLookTarget = entity.getBodyRotationControl().lookTargetController
-                    .createHandle(0.05F, 1);
+            //this.headLookTarget = entity.getLookControl().lookTargetController.createHandle(0.5F, 1);
+            //this.bodyLookTarget = entity.getBodyRotationControl().lookTargetController.createHandle(0.05F, 1);
 
             Optional<Entity> nearestEntity = EntityRetrievalUtil.getNearestEntity(entity, 10);
             if (nearestEntity.isPresent()) {
-                this.headLookTarget.setWeight(1.0F);
-                this.headLookTarget.face(nearestEntity.get());
+                //this.headLookTarget.setWeight(1.0F);
+                //this.headLookTarget.face(nearestEntity.get());
             } else {
-                this.headLookTarget.setWeight(0.0F);
+                //this.headLookTarget.setWeight(0.0F);
             }
-            this.bodyLookTarget.face(0, entity.getYHeadRot());
+            //this.bodyLookTarget.face(0, entity.getYHeadRot());
         }
 
         @Override
@@ -59,14 +57,14 @@ public class MogulCombatStateMachine extends StateMachineBehavior<GnomadMogulEnt
             // face the mob
             Optional<Entity> nearestEntity = EntityRetrievalUtil.getNearestEntity(entity, 16);
             if (nearestEntity.isPresent()) {
-                this.headLookTarget.setWeight(1.0F);
-                this.headLookTarget.face(nearestEntity.get());
+                //this.headLookTarget.setWeight(1.0F);
+                //this.headLookTarget.face(nearestEntity.get());
                 if (Mth.lengthSquared(entity.getX() - nearestEntity.get().getX(), entity.getZ() - nearestEntity.get().getZ()) > 8*8)
                     forwardsMovement = 3;
             } else {
-                this.headLookTarget.setWeight(0.0F);
+                //this.headLookTarget.setWeight(0.0F);
             }
-            this.bodyLookTarget.face(0, entity.getYHeadRot());
+            //this.bodyLookTarget.face(0, entity.getYHeadRot());
 
 
             entity.getMoveControl().strafe(forwardsMovement, (float) Math.sin(entity.tickCount / 50.0F) * 5);
@@ -77,21 +75,21 @@ public class MogulCombatStateMachine extends StateMachineBehavior<GnomadMogulEnt
 
         @Override
         public void onExit(StateMachine<GnomadMogulEntity> stateMachine, GnomadMogulEntity entity) {
-            this.headLookTarget.remove(); this.bodyLookTarget.remove();
+            //this.headLookTarget.remove(); this.bodyLookTarget.remove();
             entity.getMoveControl().strafe(0, 0);
         }
     }
     private static class DoALittleTwirlState implements StateMachineBehavior.State<GnomadMogulEntity> {
-        final LookTargetController.LookTargetHandle headLookTarget, bodyLookTarget;
+        //final LookTargetController.LookTargetHandle headLookTarget, bodyLookTarget;
         float angle, progress = 0;
 
         protected DoALittleTwirlState(GnomadMogulEntity entity) {
-            this.headLookTarget = entity.getLookControl().lookTargetController.createHandle(0.5F, 99);
-            this.bodyLookTarget = entity.getBodyRotationControl().lookTargetController.createHandle(0.1F, 99);
+            //this.headLookTarget = entity.getLookControl().lookTargetController.createHandle(0.5F, 99);
+            //this.bodyLookTarget = entity.getBodyRotationControl().lookTargetController.createHandle(0.1F, 99);
 
             angle = entity.getYHeadRot();
-            headLookTarget.face(Mth.cos(progress * Mth.DEG_TO_RAD * 5) * 45, angle);
-            bodyLookTarget.face(0, angle);
+            //headLookTarget.face(Mth.cos(progress * Mth.DEG_TO_RAD * 5) * 45, angle);
+            //bodyLookTarget.face(0, angle);
 
             entity.setFloating(true);
             entity.addDeltaMovement(new Vec3(0, 0.6, 0));
@@ -113,7 +111,7 @@ public class MogulCombatStateMachine extends StateMachineBehavior<GnomadMogulEnt
 
         @Override
         public void onExit(StateMachine<GnomadMogulEntity> stateMachine, GnomadMogulEntity entity) {
-            headLookTarget.remove(); bodyLookTarget.remove();
+            //headLookTarget.remove(); bodyLookTarget.remove();
             entity.getMoveControl().strafe(0, 0);
         }
     }

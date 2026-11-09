@@ -31,7 +31,7 @@ import org.joml.Vector3f;
 public class ShotItemEntity extends ThrowableItemProjectile {
     private static final EntityDataAccessor<Vector3f> DATA_AXIS =
             SynchedEntityData.defineId(ShotItemEntity.class, EntityDataSerializers.VECTOR3);
-    private static final byte HIT_EVENT = 0, HIT_MOTHBALL_EVENT = 1;
+    private static final byte HIT_EVENT = 1, HIT_MOTHBALL_EVENT = 2;
     float rot, pRot;
 
     public ShotItemEntity(EntityType<? extends ShotItemEntity> entityType, Level level) {
@@ -97,6 +97,7 @@ public class ShotItemEntity extends ThrowableItemProjectile {
         if (this.getItem().is(ClinkerBlocks.MOTH_BALL.asItem())) {
             event = HIT_MOTHBALL_EVENT;
             this.setItem(ItemStack.EMPTY);
+            this.playSound(SoundEvents.ARMADILLO_BRUSH);
         }
         this.level().broadcastEntityEvent(this, event);
         convertToItemEntity();
@@ -163,12 +164,11 @@ public class ShotItemEntity extends ThrowableItemProjectile {
 
     public void convertToItemEntity() {
         if (this.level().isClientSide()) return;
-        if (!this.getItem().isEmpty()) {
-            ItemEntity itemEntity = new ItemEntity(
-                    this.level(), this.getX(), this.getY(), this.getZ(), this.getItem()
-            );
-            this.level().addFreshEntity(itemEntity);
-        }
+        if (this.getItem().isEmpty()) return;
+        ItemEntity itemEntity = new ItemEntity(
+                this.level(), this.getX(), this.getY(), this.getZ(), this.getItem()
+        );
+        this.level().addFreshEntity(itemEntity);
         this.playSound(SoundEvents.ITEM_FRAME_REMOVE_ITEM);
         this.remove(RemovalReason.DISCARDED);
     }

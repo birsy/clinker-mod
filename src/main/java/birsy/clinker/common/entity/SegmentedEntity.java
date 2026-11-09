@@ -1,9 +1,12 @@
 package birsy.clinker.common.entity;
 
+import birsy.clinker.common.entity.ai.DummyBodyAngleControl;
 import birsy.clinker.common.entity.module.ModularPathfindingMob;
 import birsy.clinker.common.networking.packet.ClientboundSegmentedEntitySyncPacket;
 import birsy.clinker.core.Clinker;
 import io.netty.buffer.Unpooled;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -14,6 +17,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.control.BodyRotationControl;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -24,6 +28,7 @@ import net.neoforged.neoforge.entity.PartEntity;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,6 +65,11 @@ public abstract class SegmentedEntity<E extends SegmentedEntity<E, J>, J extends
         super.setId(id);
         for (int i = 0; i < this.parts.length; i++)
             this.parts[i].setId(id + i + 1);
+    }
+
+    @Override
+    protected BodyRotationControl createBodyControl() {
+        return new DummyBodyAngleControl(this);
     }
 
     // segment stuff
@@ -237,13 +247,20 @@ public abstract class SegmentedEntity<E extends SegmentedEntity<E, J>, J extends
             // physics is handled entirely by the segments,
             // so just set our position to our head.
             Joint headSegment = joints.getFirst();
-            this.setPos(headSegment.x, headSegment.y, headSegment.z);
+            Vector3d segmentPos = new Vector3d();
+            headSegment.getSegmentPosAndDirection(segmentPos, null, 1F);
+            this.setPos(segmentPos.x, segmentPos.y, segmentPos.z);
 
             // sync to clients
             if ((this.tickCount + this.getId()) % FULL_SYNC_INTERVAL == 0)
                 this.sendSyncPackets();
         } else {
             this.tickSegmentsClient();
+
+            Joint headSegment = joints.getFirst();
+            Vector3d segmentPos = new Vector3d();
+            headSegment.getSegmentPosAndDirection(segmentPos, null, 1F);
+            this.setPos(segmentPos.x, segmentPos.y + headSegment.height * 0.5F, segmentPos.z);
 
             List<Player> potentiallyCollidingPlayers = level().getEntitiesOfClass(Player.class, this.getBoundingBox(), EntitySelector.pushableBy(this));
             for (Joint joint : joints) {
@@ -268,12 +285,11 @@ public abstract class SegmentedEntity<E extends SegmentedEntity<E, J>, J extends
         if (joints == null || joints.isEmpty())
             return super.makeBoundingBox();
 
-        J joint = this.joints.getFirst();
-        double minX = joint.x, minY = joint.y, minZ = joint.z;
-        double maxX = joint.x, maxY = joint.y, maxZ = joint.z;
-        for (int i = 1; i < joints.size(); i++) {
-            joint = joints.get(i);
-            float rad = joint.length + joint.radius, h = joint.height;
+        double minX = this.getX(), minY = this.getY(), minZ = this.getZ();
+        double maxX = this.getX(), maxY = this.getY(), maxZ = this.getZ();
+        for (int i = 0; i < joints.size(); i++) {
+            J joint = joints.get(i);
+            float rad = joint.length * 0.5F + joint.radius, h = joint.length * 0.5F + joint.height;
             minX = Math.min(minX, joint.x - rad); minY = Math.min(minY, joint.y + 0); minZ = Math.min(minZ, joint.z - rad);
             maxX = Math.max(maxX, joint.x + rad); maxY = Math.max(maxY, joint.y + h); maxZ = Math.max(maxZ, joint.z + rad);
         }
@@ -286,9 +302,37 @@ public abstract class SegmentedEntity<E extends SegmentedEntity<E, J>, J extends
         return super.hurt(source, amount);
     }
 
+    public void spawnParticles(ParticleOptions particleOptions, float particlesPerVolume) {
+        for (int i = 0; i < joints.size(); i++) {
+            J joint = joints.get(i);
+            float width = joint.part.getBbWidth(), height = joint.part.getBbHeight();
+            float volume = width * width * height;
+            int particles = Math.round(volume * particlesPerVolume);
+
+            Vector3d segmentPos = joint.segmentPos;
+            double minX = segmentPos.x - width * .5,
+                   minZ = segmentPos.z - width * .5,
+                   minY = segmentPos.y;
+            for (int j = 0; j < particles; j++) {
+                level().addParticle(
+                        particleOptions, false,
+                        minX + random.nextFloat() * width,
+                        minY + random.nextFloat() * width,
+                        minZ + random.nextFloat() * width,
+                        0,0,0
+                );
+            }
+        }
+    }
+
     @Override
     public void knockback(double strength, double x, double z) {
         super.knockback(strength, x, z);
+    }
+
+    @Override
+    public void makePoofParticles() {
+        this.spawnParticles(ParticleTypes.POOF, 0.5F);
     }
 
     @Override public boolean isPickable() { return false; }
@@ -543,10 +587,10 @@ public abstract class SegmentedEntity<E extends SegmentedEntity<E, J>, J extends
     }
 
     static final double COMPRESSION_SCALE = 4096.0;
-    static short writeCompressed(double num) {
+    protected static short writeCompressed(double num) {
         return (short) Math.round(num * COMPRESSION_SCALE);
     }
-    static double readCompressed(short num) {
+    protected static double readCompressed(short num) {
         return num / COMPRESSION_SCALE;
     }
 }

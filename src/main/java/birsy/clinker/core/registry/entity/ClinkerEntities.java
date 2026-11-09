@@ -120,13 +120,14 @@ public class ClinkerEntities {
 
         event.put(AI_TEST.get(), Zombie.createAttributes().build());
         event.put(GIANT_LEGGY_CRITTER.get(), Zombie.createAttributes().build());
-        event.put(LUNGWYRM.get(), Zombie.createAttributes().build());
 
         event.put(SLAB_CRAB.get(), SlabCrabEntity.createAttributes().build());
 
         event.put(GNOMAD_MOGUL.get(), GnomadMogulEntity.createAttributes().build());
         event.put(GNOMAD.get(), Zombie.createAttributes().build());
         event.put(GNOMAD_RUNT.get(), GnomadRuntEntity.createAttributes().build());
+
+        event.put(LUNGWYRM.get(), LungWyrmEntity.createAttributes().build());
     }
 
     @SubscribeEvent

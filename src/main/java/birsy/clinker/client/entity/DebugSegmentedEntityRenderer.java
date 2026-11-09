@@ -1,6 +1,7 @@
 package birsy.clinker.client.entity;
 
 import birsy.clinker.common.entity.SegmentedEntity;
+import birsy.clinker.common.entity.lungwyrm.LungWyrmEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import foundry.veil.api.client.util.DebugRenderHelper;
@@ -14,6 +15,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.block.Blocks;
 import org.joml.Quaternionf;
 import org.joml.Vector3d;
@@ -44,8 +46,8 @@ public class DebugSegmentedEntityRenderer extends EntityRenderer<SegmentedEntity
             for (SegmentedEntity.Joint joint : joints) {
                 double x = joint.getX(partialTicks), y = joint.getY(partialTicks), z = joint.getZ(partialTicks);
                 poseStack.pushPose();
-                poseStack.translate(x - eX, y - eY + 1F / 2, z - eZ);
-                DebugRenderHelper.renderSphere(poseStack, buffer.getBuffer(RenderType.lines()), 8, 0.5F, 0, 0, 0, 0, 0, 1F, 1F);
+                poseStack.translate(x - eX, y - eY + joint.height / 2, z - eZ);
+                DebugRenderHelper.renderSphere(poseStack, buffer.getBuffer(RenderType.lines()), 8, joint.length * 0.5F, 0, 0, 0, 0, 0, 1F, 0.25F);
                 poseStack.popPose();
             }
         }
@@ -69,7 +71,15 @@ public class DebugSegmentedEntityRenderer extends EntityRenderer<SegmentedEntity
             SegmentedEntity.Joint joint = joints.get(i);
             joint.getSegmentPosAndDirection(pos, dir, partialTicks);
 
-            if (i == 0)
+            if (i == 0) {
+                float yRot = Mth.rotLerp(partialTicks, entity.yHeadRotO, entity.yHeadRot);
+                float xRot = Mth.lerp(partialTicks, entity.xRotO, entity.getXRot());
+                rot.rotationYXZ(
+                        (180F -yRot) * Mth.DEG_TO_RAD,
+                        -xRot * Mth.DEG_TO_RAD,
+                        0
+                );
+            } else if (i == 1)
                 rot.rotationYXZ(
                         (float) Math.atan2(-dir.x, -dir.z),
                         (float) Math.asin(Mth.clamp(dir.y, -1f, 1f)),
@@ -86,10 +96,17 @@ public class DebugSegmentedEntityRenderer extends EntityRenderer<SegmentedEntity
             int light = LevelRenderer.getLightColor(entity.level(), blockPos.set(pos.x(), pos.y() + 1F / 2, pos.z()));
 
             float width = joint.radius * 2, height = joint.height, length = joint.length;
+            if (joint instanceof LungWyrmEntity.LungWyrmJoint lungWyrmJoint) {
+                float inflationMult = 1 + lungWyrmJoint.getInflation(partialTicks) * 0.5F;
+                width *= inflationMult;
+                height *= inflationMult;
+            }
 
             poseStack.pushPose();
-            poseStack.translate(pos.x() - eX, pos.y() - eY + height / 2, pos.z() - eZ);
+            if (i == 0) poseStack.translate(joint.getX(partialTicks) - eX, joint.getY(partialTicks) - eY + height / 2, joint.getZ(partialTicks) - eZ);
+            else poseStack.translate(pos.x() - eX, pos.y() - eY + height / 2, pos.z() - eZ);
             poseStack.mulPose(rot);
+            if (i == 0) poseStack.translate(0F, 0F, -0.5F * length);
             if (dying) poseStack.mulPose(Axis.ZP.rotationDegrees(deathRotation));
 
             poseStack.scale(width, height, length);

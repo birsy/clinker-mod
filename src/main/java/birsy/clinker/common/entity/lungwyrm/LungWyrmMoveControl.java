@@ -1,7 +1,9 @@
 package birsy.clinker.common.entity.lungwyrm;
 
+import birsy.clinker.core.Clinker;
 import birsy.clinker.core.util.MathUtils;
 import birsy.clinker.core.util.VectorUtils;
+import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.control.MoveControl;
@@ -19,7 +21,8 @@ public class LungWyrmMoveControl extends MoveControl {
     final Quaternionf orientation = new Quaternionf();
     final Vector3f desiredMovementDirection = new Vector3f(0, 0, 1),
              targetMovementDirection = new Vector3f(0, 0, 1),
-             movementDirection = new Vector3f(0, 0, 1);
+             movementDirection = new Vector3f(0, 0, 1),
+             jointDirection = new Vector3f();
 
     public LungWyrmMoveControl(LungWyrmEntity mob) {
         super(mob);
@@ -28,8 +31,17 @@ public class LungWyrmMoveControl extends MoveControl {
 
     @Override
     public void tick() {
+        if (this.operation == Operation.MOVE_TO) {
+            tickHeading();
+            tickSegmentThrust();
+        } else {
+            this.speedModifier = Mth.approach((float) this.speedModifier, 0, 0.01F);
+        }
+        tickSegmentBuoyancy();
+    }
+
+    void tickHeading() {
         float targetDistance = 16F;
-        // work out movement direction
         if (this.operation == Operation.MOVE_TO) {
             desiredMovementDirection.set(
                     this.wantedX - wyrm.getX(),
@@ -38,10 +50,11 @@ public class LungWyrmMoveControl extends MoveControl {
             );
             targetDistance = desiredMovementDirection.length();
         }
-        if (desiredMovementDirection.lengthSquared() < 0.00001) {
+        if (targetDistance < 2) {
             this.operation = Operation.WAIT;
             return;
         }
+
         desiredMovementDirection.normalize();
 
         float searchDistance = Math.min(targetDistance, 16.0F);
@@ -54,8 +67,8 @@ public class LungWyrmMoveControl extends MoveControl {
             BlockHitResult raycastResult = wyrm.level().clip(new ClipContext(
                     wyrm.position(),
                     new Vec3(wyrm.getX() + targetMovementDirection.x() * searchDistance,
-                             wyrm.getY() + targetMovementDirection.y() * searchDistance,
-                             wyrm.getZ() + targetMovementDirection.z() * searchDistance),
+                            wyrm.getY() + targetMovementDirection.y() * searchDistance,
+                            wyrm.getZ() + targetMovementDirection.z() * searchDistance),
                     ClipContext.Block.COLLIDER,
                     ClipContext.Fluid.ANY,
                     CollisionContext.empty()
@@ -63,29 +76,42 @@ public class LungWyrmMoveControl extends MoveControl {
             if (raycastResult.getType() != HitResult.Type.BLOCK) break;
         }
 
-        VectorUtils.approachSphere(movementDirection, targetMovementDirection, 1, movementDirection);
+        VectorUtils.approachSphere(movementDirection, targetMovementDirection, 0.5F, movementDirection);
 
+        wyrm.getLookControl().setLookAt(
+                wyrm.getX() + movementDirection.x,
+                wyrm.getEyeY() + movementDirection.y,
+                wyrm.getZ() + movementDirection.z
+        );
+    }
+
+    void tickSegmentThrust() {
         // move each segment
-        float desiredSpeed = (float) this.speedModifier, acceleration = 0.2F;
+        jointDirection.set(movementDirection);
+        float desiredSpeed = (float) this.speedModifier, acceleration = 0.05F, brake = 0.01F;
         for (LungWyrmEntity.LungWyrmJoint joint : wyrm.joints) {
-            float desiredVelocityX = movementDirection.x * desiredSpeed,
-                  desiredVelocityY = movementDirection.y * desiredSpeed,
-                  desiredVelocityZ = movementDirection.z * desiredSpeed;
-            joint.dX = Mth.approach((float) joint.dX, desiredVelocityX, acceleration);
-            joint.dY = Mth.approach((float) joint.dY, desiredVelocityY, acceleration);
-            joint.dZ = Mth.approach((float) joint.dZ, desiredVelocityZ, acceleration);
+            // only correct along the segment movement direction so that it actually takes knockback
+            double along = joint.dX * jointDirection.x + joint.dY * jointDirection.y + joint.dZ * jointDirection.z;
+
+            double step = along < desiredSpeed ? acceleration : brake,
+                    correction = Mth.clamp(desiredSpeed - along, -step, step);
+
+            joint.dX += jointDirection.x * correction;
+            joint.dY += jointDirection.y * correction;
+            joint.dZ += jointDirection.z * correction;
 
             LungWyrmEntity.LungWyrmJoint next = joint.next();
             if (next != null) {
-                double offsetX = joint.x - next.x, offsetY = joint.y - next.y, offsetZ = joint.z - next.z;
-                if (offsetX != 0 || offsetY != 0 || offsetZ != 0) {
-                    movementDirection.set(
-                            joint.x - next.x,
-                            joint.y - next.y,
-                            joint.z - next.z
-                    ).normalize();
-                }
+                double offsetX = joint.x - next.x,
+                        offsetY = joint.y - next.y,
+                        offsetZ = joint.z - next.z;
+                if (offsetX != 0 || offsetY != 0 || offsetZ != 0)
+                    jointDirection.set((float) offsetX, (float) offsetY, (float) offsetZ).normalize();
             }
         }
+    }
+
+    void tickSegmentBuoyancy() {
+        // todo...
     }
 }

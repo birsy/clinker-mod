@@ -1,6 +1,8 @@
 package birsy.clinker.common.entity.lungwyrm;
 
 import birsy.clinker.common.entity.SegmentedEntity;
+import birsy.clinker.common.entity.ai.UnclampedLookAngleControl;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
@@ -10,12 +12,15 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.SpawnGroupData;
-import net.minecraft.world.entity.ai.control.MoveControl;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.tslat.smartbrainlib.util.EntityRetrievalUtil;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
@@ -24,6 +29,13 @@ public class LungWyrmEntity extends SegmentedEntity<LungWyrmEntity, LungWyrmEnti
     public LungWyrmEntity(EntityType<? extends SegmentedEntity<LungWyrmEntity, LungWyrmJoint>> entityType, Level level) {
         super(entityType, level, 32);
         this.moveControl = new LungWyrmMoveControl(this);
+        this.lookControl = new UnclampedLookAngleControl(this, 80F, 0.1F);
+    }
+
+    public static AttributeSupplier.Builder createAttributes() {
+        return Monster.createMonsterAttributes()
+                .add(Attributes.MAX_HEALTH, 200.0D)
+                .add(Attributes.KNOCKBACK_RESISTANCE, -5.0D);
     }
 
     @Override
@@ -47,7 +59,7 @@ public class LungWyrmEntity extends SegmentedEntity<LungWyrmEntity, LungWyrmEnti
             joint.z = pos.z();
             this.addJoint(joint);
 
-            offset.set(0, 0, 0.5)
+            offset.set(0, 0, -0.5)
                   .add(Math.sin(i * 0.5) * fac, Math.cos(i * 0.5) * fac, 0)
                   .normalize(length);
             pos.add(offset);
@@ -59,7 +71,7 @@ public class LungWyrmEntity extends SegmentedEntity<LungWyrmEntity, LungWyrmEnti
         Player player = EntityRetrievalUtil.getNearestPlayer(this, 200F);
         if (player == null) return;
         if (!player.getItemInHand(InteractionHand.MAIN_HAND).is(Items.CARROT_ON_A_STICK)) return;
-        this.moveControl.setWantedPosition(player.getX(), player.getY(), player.getZ(), 0.1F);
+        this.moveControl.setWantedPosition(player.getX(), player.getY(), player.getZ(), 0.2F);
     }
 
     @Override
@@ -81,20 +93,53 @@ public class LungWyrmEntity extends SegmentedEntity<LungWyrmEntity, LungWyrmEnti
         super.playSound(sound, volume * 5.0F, pitch);
     }
 
-    @Override
-    public LungWyrmMoveControl getMoveControl() {
-        return (LungWyrmMoveControl) super.getMoveControl();
-    }
+    @Override public LungWyrmMoveControl getMoveControl() { return (LungWyrmMoveControl) super.getMoveControl(); }
+    @Override public UnclampedLookAngleControl getLookControl() { return (UnclampedLookAngleControl) super.getLookControl(); }
 
     public static class LungWyrmJoint extends Joint<LungWyrmEntity, LungWyrmEntity.LungWyrmJoint> {
+        float health = 1F, inflation, pInflation;
+        double groundY;
+
         protected LungWyrmJoint(LungWyrmEntity parent, SegmentPartEntity part, int index, float scale) {
             super(parent, part, index, 4F * scale, 4F * scale, 4F);
         }
 
         @Override
         public void tick() {
+            this.pInflation = inflation;
             super.tick();
-
+            // periodically refresh ground height!
+            if ((this.parent.tickCount + this.parent.getId() + this.index) % 5 == 0)
+                refreshGroundHeight();
         }
+
+        @Override
+        public boolean hurt(DamageSource source, float amount) {
+            boolean actuallyHurt = super.hurt(source, amount);
+            if (actuallyHurt) {
+                this.health = Math.max(health - amount, 0F);
+                LungWyrmJoint prev = this.prev();
+                if (prev != null) prev.health = Math.max(prev.health - amount, 0F);
+            }
+            return actuallyHurt;
+        }
+
+        @Override
+        public void writeToBuffer(RegistryFriendlyByteBuf buf) {
+            super.writeToBuffer(buf);
+            buf.writeShort(writeCompressed(Math.min(inflation, health)));
+        }
+        @Override
+        public void readFromBuffer(RegistryFriendlyByteBuf buf) {
+            super.readFromBuffer(buf);
+            this.inflation = (float) readCompressed(buf.readShort());
+        }
+
+        void refreshGroundHeight() {
+            this.groundY = parent.level().getHeight(Heightmap.Types.MOTION_BLOCKING, Mth.floor(x), Mth.floor(z));
+        }
+
+        public void setInflation(float inflation) { this.inflation = inflation; }
+        public float getInflation(float partialTick) { return Mth.lerp(partialTick, pInflation, inflation); }
     }
 }

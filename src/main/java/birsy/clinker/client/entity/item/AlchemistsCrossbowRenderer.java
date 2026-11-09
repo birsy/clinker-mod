@@ -21,6 +21,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.entity.Interaction;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -66,9 +67,14 @@ public class AlchemistsCrossbowRenderer implements IClientItemExtensions {
 
         switch (crossbowState) {
             case LOADING -> {
-                return hasRepeaterAttachment(stack) ?
-                        (entity.getTicksUsingItem() / (float) AlchemistsCrossbowItem.ITEM_LOAD_TIME) % 1 :
-                        Math.clamp(entity.getTicksUsingItem() / (float) AlchemistsCrossbowItem.ITEM_LOAD_TIME, 0, 1);
+                if (hasRepeaterAttachment(stack)) {
+                    InteractionHand hand = ItemStack.matches(entity.getItemInHand(InteractionHand.MAIN_HAND), stack) ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND,
+                            oppositeHand = hand == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND;
+                    ItemStack oppositeHandStack = entity.getItemInHand(oppositeHand);
+                    if (oppositeHandStack.isEmpty() || isFull(stack)) return 1.0F;
+                    return (entity.getTicksUsingItem() / (float) AlchemistsCrossbowItem.ITEM_LOAD_TIME) % 1;
+                }
+                return Math.clamp(entity.getTicksUsingItem() / (float) AlchemistsCrossbowItem.ITEM_LOAD_TIME, 0, 1);
             }
             case FIRING -> {
                 LoadedItemStack loadedItemStack = AlchemistsCrossbowItem.getLoadedItems(stack);

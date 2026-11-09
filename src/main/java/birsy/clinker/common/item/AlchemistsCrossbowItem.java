@@ -206,6 +206,7 @@ public class AlchemistsCrossbowItem extends ProjectileWeaponItem {
         Vec3 lookVector = shooter.calculateViewVector(0, shooter.getYRot());
         projectile.setPos(shooter.getEyePosition()
                 .add(lookVector.scale((shooter.getBbWidth() + projectile.getBbWidth()) * 0.5))
+                .add(0, projectile.getBbHeight() * -0.5, 0)
         );
         projectile.setOwner(shooter);
         return projectile;
