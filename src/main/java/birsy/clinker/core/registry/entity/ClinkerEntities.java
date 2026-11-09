@@ -50,7 +50,7 @@ public class ClinkerEntities {
                     .build(Clinker.resource("warhook").toString()));
     public static final Supplier<EntityType<ShotItemEntity>> SHOT_ITEM = ENTITY_TYPES.register("shot_item", () ->
             EntityType.Builder.of(ShotItemEntity::new, MobCategory.MISC)
-                    .sized(0.5F, 0.5F)
+                    .sized(0.5F, 0.5F).clientTrackingRange(4).updateInterval(10)
                     .build(Clinker.resource("shot_item").toString()));
     public static final Supplier<EntityType<RerollFlaskEntity>> REROLL_FLASK = ENTITY_TYPES.register("transmogrifying_flask", () ->
             EntityType.Builder.of(RerollFlaskEntity::new, MobCategory.MISC)

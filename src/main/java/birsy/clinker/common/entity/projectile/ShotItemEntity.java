@@ -1,7 +1,12 @@
 package birsy.clinker.common.entity.projectile;
 
+import birsy.clinker.core.registry.ClinkerBlocks;
+import birsy.clinker.core.registry.ClinkerParticles;
 import birsy.clinker.core.registry.entity.ClinkerEntities;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -9,10 +14,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Equipable;
@@ -29,7 +31,8 @@ import org.joml.Vector3f;
 public class ShotItemEntity extends ThrowableItemProjectile {
     private static final EntityDataAccessor<Vector3f> DATA_AXIS =
             SynchedEntityData.defineId(ShotItemEntity.class, EntityDataSerializers.VECTOR3);
-    float rot = 0F, pRot = 0F;
+    private static final byte HIT_EVENT = 0, HIT_MOTHBALL_EVENT = 1;
+    float rot, pRot;
 
     public ShotItemEntity(EntityType<? extends ShotItemEntity> entityType, Level level) {
         super(entityType, level);
@@ -82,12 +85,20 @@ public class ShotItemEntity extends ThrowableItemProjectile {
                 float alignment = this.getAxis().dot((float) axis.x() * speed, (float) axis.y() * speed, (float) axis.z()) * speed;
                 this.rot -= alignment;
             }
+        } else {
+            if (this.getItem().isEmpty()) this.discard();
         }
     }
 
     @Override
     protected void onHit(HitResult result) {
         super.onHit(result);
+        byte event = HIT_EVENT;
+        if (this.getItem().is(ClinkerBlocks.MOTH_BALL.asItem())) {
+            event = HIT_MOTHBALL_EVENT;
+            this.setItem(ItemStack.EMPTY);
+        }
+        this.level().broadcastEntityEvent(this, event);
         convertToItemEntity();
     }
 
@@ -117,7 +128,7 @@ public class ShotItemEntity extends ThrowableItemProjectile {
                 EquipmentSlot slot = equipable.getEquipmentSlot();
                 if (mob.getItemBySlot(slot).isEmpty()) {
                     mob.equipItemIfPossible(stack);
-                    this.discard();
+                    this.setItem(ItemStack.EMPTY);
                 }
             }
         }
@@ -125,9 +136,33 @@ public class ShotItemEntity extends ThrowableItemProjectile {
         result.getEntity().hurt(source, (float) damage);
     }
 
+    @Override
+    public void handleEntityEvent(byte id) {
+        if (id == HIT_MOTHBALL_EVENT) {
+            ParticleOptions options = new BlockParticleOption(ParticleTypes.BLOCK, ClinkerBlocks.MOTH_BALL.get().defaultBlockState());
+            for (int i = 0; i < 8; i++) {
+                this.level().addParticle(options,
+                        this.getX(), this.getY() + this.getBbHeight() * 0.5F, this.getZ(),
+                        0, 0, 0
+                );
+            }
+            int mothCount = random.nextIntBetweenInclusive(32, 48);
+            for (int i = 0; i < mothCount; i++) {
+                double velX = this.random.nextGaussian(),
+                       velY = this.random.nextGaussian(),
+                       velZ = this.random.nextGaussian();
+                double mult = Mth.lerp(this.random.nextDouble(), 0.3F, 0.6F) / Mth.length(velX, velY, velZ);
+                this.level().addAlwaysVisibleParticle(
+                        ClinkerParticles.MOTH.get(),
+                        this.getX(), this.getY() + this.getBbHeight() * 0.5F, this.getZ(),
+                        velX * mult, velY * mult, velZ * mult
+                );
+            }
+        }
+    }
+
     public void convertToItemEntity() {
         if (this.level().isClientSide()) return;
-        if (this.isRemoved() || this.getRemovalReason() != null) return;
         if (!this.getItem().isEmpty()) {
             ItemEntity itemEntity = new ItemEntity(
                     this.level(), this.getX(), this.getY(), this.getZ(), this.getItem()

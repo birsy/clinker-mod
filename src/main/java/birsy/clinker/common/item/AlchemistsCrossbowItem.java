@@ -202,12 +202,10 @@ public class AlchemistsCrossbowItem extends ProjectileWeaponItem {
             projectile = projectileItem.asProjectile(level, shooter.getEyePosition(), ammo, Direction.getNearest(lookVector.x(), lookVector.y(), lookVector.z()));
         } else {
             projectile = ShotItemEntity.create(level, shooter, ammo);
-            level.addFreshEntity(projectile);
         }
         Vec3 lookVector = shooter.calculateViewVector(0, shooter.getYRot());
         projectile.setPos(shooter.getEyePosition()
                 .add(lookVector.scale((shooter.getBbWidth() + projectile.getBbWidth()) * 0.5))
-                .add(0, shooter.getEyeHeight() * -0.1F, 0)
         );
         projectile.setOwner(shooter);
         return projectile;

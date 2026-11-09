@@ -25,17 +25,20 @@ public class ShotItemRenderer extends EntityRenderer<ShotItemEntity> {
 
     @Override
     public void render(ShotItemEntity entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
-        if (this.entityRenderDispatcher.camera.getEntity().getEyePosition(partialTicks).distanceToSqr(entity.getEyePosition(partialTicks)) >= (0.5 * 0.5)) {
+        double dist = this.entityRenderDispatcher.camera.getPosition()
+                .distanceTo(entity.getPosition(partialTicks).add(0, entity.getBbHeight() * 0.5, 0));
+        if (entity.tickCount >= 2 || dist >= 0.5) {
             poseStack.pushPose();
             Vector3f axis = entity.getAxis();
             Quaternionf rotation = new Quaternionf()
                     .rotationTo(0, 0, -1, axis.x, axis.y, axis.z)
                     .rotateZ(entity.getRoll(partialTicks));
 
-            poseStack.translate(0, 4 / 16F, 0);
+            poseStack.translate(0, entity.getBbHeight() * 0.5F, 0);
             poseStack.mulPose(rotation);
             poseStack.mulPose(Axis.XN.rotationDegrees(10F));
-            poseStack.scale(0.8F, 0.8F, 0.8F);
+            float scale = 0.8F * Mth.clampedMap((float) dist, 0.5F, 1F, 0, 1);
+            poseStack.scale(scale, scale, scale);
             this.itemRenderer
                     .renderStatic(
                             entity.getItem(),
