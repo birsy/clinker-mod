@@ -22,6 +22,7 @@
   "mixins": [
     "common.BeaconBlockEntityMixin",
     "common.BlockBehavior$PropertiesAccessor",
+    "common.BlockCollisionsMixin",
     "common.ChunkPyramidMixin",
     "common.ChunkStatusTasksMixin",
     "common.ComposterBlockMixin",

@@ -32,7 +32,6 @@ public class GroundNavigationControl extends MultiFluidSmoothGroundNavigation {
             }
 
         }
-
         doStuckDetection(safeSurfacePos);
     }
     

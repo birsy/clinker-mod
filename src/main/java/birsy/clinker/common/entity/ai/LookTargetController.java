@@ -27,11 +27,12 @@ public class LookTargetController {
         target.speed = speed;
         target.fadeSpeed = fadeSpeed;
 
-        double dX = x - entity.getX();
-        double dY = y - entity.getEyeY();
-        double dZ = z - entity.getZ();
-        target.pitch = (float) (-Mth.atan2(dY, Math.sqrt(dX * dX + dZ * dZ)) * Mth.RAD_TO_DEG);
+        double dX = x - entity.getX(),
+               dY = y - entity.getEyeY(),
+               dZ = z - entity.getZ();
+        target.pitch = (float) -Math.asin(Math.clamp(dY / Mth.length(dX, dY, dZ), -1, 1)) * Mth.RAD_TO_DEG;
         target.yaw = (float) (Mth.atan2(dZ, dX) * Mth.RAD_TO_DEG) - 90f;
+         target.pitch += 0;
     }
 
     public void lookAt(int priority, Entity target, float speed, float fadeSpeed) {
@@ -43,7 +44,7 @@ public class LookTargetController {
               nextYaw = baseYaw,
               nextSpeed = baseSpeed;
 
-        for (Iterator<LookTarget> it = targets.values().iterator(); it.hasNext(); ) {
+        for (Iterator<LookTarget> it = targets.values().iterator(); it.hasNext();) {
             LookTarget lookTarget = it.next();
             lookTarget.fade = Mth.approach(lookTarget.fade, lookTarget.requested ? 1f : 0f, lookTarget.fadeSpeed);
 
@@ -53,14 +54,14 @@ public class LookTargetController {
             }
             lookTarget.requested = false;
 
-            nextSpeed = Mth.lerp(lookTarget.fade, nextSpeed, lookTarget.speed);
             nextPitch = Mth.rotLerp(lookTarget.fade, nextPitch, lookTarget.pitch);
             nextYaw = Mth.rotLerp(lookTarget.fade, nextYaw, lookTarget.yaw);
+            nextSpeed = Mth.lerp(lookTarget.fade, nextSpeed, lookTarget.speed);
         }
 
-        this.rotationSpeed = nextSpeed;
         this.pitch = nextPitch;
         this.yaw = nextYaw;
+        this.rotationSpeed = nextSpeed;
     }
 
     private static final class LookTarget {

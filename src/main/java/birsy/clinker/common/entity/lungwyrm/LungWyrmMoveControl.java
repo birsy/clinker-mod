@@ -71,7 +71,7 @@ public class LungWyrmMoveControl extends MoveControl {
                             wyrm.getZ() + targetMovementDirection.z() * searchDistance),
                     ClipContext.Block.COLLIDER,
                     ClipContext.Fluid.ANY,
-                    CollisionContext.empty()
+                    CollisionContext.of(wyrm)
             ));
             if (raycastResult.getType() != HitResult.Type.BLOCK) break;
         }

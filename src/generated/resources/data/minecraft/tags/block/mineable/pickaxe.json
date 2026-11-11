@@ -1,8 +1,5 @@
 {
   "values": [
-    "clinker:saltmoss",
-    "clinker:amber_block",
-    "clinker:sodium_lantern",
     "clinker:brimstone",
     "clinker:brimstone_slab",
     "clinker:brimstone_stairs",
@@ -71,6 +68,9 @@
     "clinker:small_shale_bricks_slab",
     "clinker:small_shale_bricks_stairs",
     "clinker:small_shale_bricks_fence",
-    "clinker:lead_ore"
+    "clinker:lead_ore",
+    "clinker:saltmoss",
+    "clinker:amber_block",
+    "clinker:sodium_lantern"
   ]
 }

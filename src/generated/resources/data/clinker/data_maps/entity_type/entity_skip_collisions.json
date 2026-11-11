@@ -1,0 +1,6 @@
+{
+  "values": {
+    "clinker:gnomad_mogul": "#clinker:skip_collisions_mogul",
+    "clinker:lungwyrm": "#clinker:skip_collisions_lungwyrm"
+  }
+}

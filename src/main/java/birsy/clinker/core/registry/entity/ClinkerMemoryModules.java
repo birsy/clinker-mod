@@ -22,6 +22,9 @@ import java.util.function.Supplier;
 public class ClinkerMemoryModules {
     public static final DeferredRegister<MemoryModuleType<?>> MEMORY_MODULE_TYPES = DeferredRegister.create(BuiltInRegistries.MEMORY_MODULE_TYPE, Clinker.MOD_ID);
 
+    public static final Supplier<MemoryModuleType<Unit>> PATH_OBSTRUCTED =
+            MEMORY_MODULE_TYPES.register("path_obstructed", () -> new MemoryModuleType<>(Optional.empty()));
+
     public static final Supplier<MemoryModuleType<GlobalPos>> COVER_POSITION =
             MEMORY_MODULE_TYPES.register("cover_position", () -> new MemoryModuleType<>(Optional.empty()));
     public static final Supplier<MemoryModuleType<GlobalPos>> NEAREST_SUPPLY_DEPOT =

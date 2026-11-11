@@ -31,15 +31,14 @@ public class ClinkerBlockTagProvider extends BlockTagsProvider {
             if (entry.get() instanceof WallBlock wall) wallTag.add(wall);
         }
 
-        IntrinsicTagAppender<Block> dirt = this.tag(BlockTags.DIRT).replace(false);
-        dirt.add(
+        this.tag(BlockTags.DIRT).replace(false).add(
                 ClinkerBlocks.PACKED_ASH.get(),
                 ClinkerBlocks.PEAT_MOSS.get(),
-                ClinkerBlocks.HERBAL_AMALGAM_BLOCK.get()
+                ClinkerBlocks.HERBAL_AMALGAM_BLOCK.get(),
+                ClinkerBlocks.SALTPETRE_LEACHED_DIRT.get()
         );
 
-        IntrinsicTagAppender<Block> othershoreSoil = this.tag(ClinkerTags.Blocks.OTHERSHORE_SOIL).replace(false);
-        othershoreSoil.add(
+        this.tag(ClinkerTags.Blocks.OTHERSHORE_SOIL).replace(false).add(
                 ClinkerBlocks.ASH.get(),
                 ClinkerBlocks.ASH_LAYER.get(),
                 ClinkerBlocks.PACKED_ASH.get(),
@@ -53,73 +52,59 @@ public class ClinkerBlockTagProvider extends BlockTagsProvider {
                 ClinkerBlocks.HERBAL_AMALGAM_BLOCK.get()
         );
 
-        IntrinsicTagAppender<Block> footprintables = this.tag(ClinkerTags.Blocks.FOOTPRINTABLE).replace(false)
-                .add(ClinkerBlocks.ASH.get(), ClinkerBlocks.ASH_LAYER.get());
+        this.tag(ClinkerTags.Blocks.FOOTPRINTABLE).replace(false).add(
+                ClinkerBlocks.ASH.get(),
+                ClinkerBlocks.ASH_LAYER.get()
+        );
 
-        IntrinsicTagAppender<Block> climbables = this.tag(BlockTags.CLIMBABLE).replace(false);
-        climbables.add(ClinkerBlocks.THORNY_STEM.get(), ClinkerBlocks.CAVE_IVY.get());
+        this.tag(ClinkerTags.Blocks.SKIP_COLLISIONS_LUNGWYRM).replace(false).add(
+                ClinkerBlocks.SPOTREED.get()
+        ).addTag(BlockTags.LEAVES);
+        this.tag(ClinkerTags.Blocks.SKIP_COLLISIONS_MOGUL).replace(false).add(
+                ClinkerBlocks.SPOTREED.get()
+        ).addTag(BlockTags.LEAVES);
 
-        IntrinsicTagAppender<Block> brambleFlowers = this.tag(ClinkerTags.Blocks.BRAMBLE_FLOWERS).replace(false);
-        brambleFlowers.add(
+        this.tag(ClinkerTags.Blocks.MOGUL_DESTRUCTIBLE).replace(false).add(
+                ClinkerBlocks.SPOTREED.get(),
+                ClinkerBlocks.MOTH_BALL.get(),
+                Blocks.COBWEB
+        ).addTags(
+                BlockTags.LEAVES,
+                ClinkerTags.Blocks.BRAMBLES,
+                ClinkerTags.Blocks.BRAMBLE_FLOWERS
+        );
+
+        this.tag(BlockTags.CLIMBABLE).replace(false).add(
+                ClinkerBlocks.THORNY_STEM.get(),
+                ClinkerBlocks.CAVE_IVY.get()
+        );
+
+        this.tag(ClinkerTags.Blocks.BRAMBLE_FLOWERS).replace(false).add(
                 ClinkerBlocks.BRAMBLE_BLOSSOM.get(),
                 ClinkerBlocks.WITHERING_BRAMBLE_BLOSSOM.get(),
                 ClinkerBlocks.CORPSE_LILY_BUD.get(),
                 ClinkerBlocks.CORPSE_LILY_BULB.get()
         );
 
-        IntrinsicTagAppender<Block> brambles = this.tag(ClinkerTags.Blocks.BRAMBLES).replace(false);
-        brambles.add(
+        this.tag(ClinkerTags.Blocks.BRAMBLES).add(
                 ClinkerBlocks.THORNY_STEM.get(),
                 ClinkerBlocks.SALTY_STEM.get()
         );
 
-        IntrinsicTagAppender<Block> usesSword = this.tag(BlockTags.SWORD_EFFICIENT).replace(false);
-        usesSword.add(
-                ClinkerBlocks.THORNY_STEM.get(),
-                ClinkerBlocks.BRAMBLE_BLOSSOM.get(),
-                ClinkerBlocks.WITHERING_BRAMBLE_BLOSSOM.get()
-        );
-
+        // tool stuff
         IntrinsicTagAppender<Block> usesPickaxe = this.tag(BlockTags.MINEABLE_WITH_PICKAXE).replace(false);
-        usesPickaxe.add(
-                ClinkerBlocks.SALTMOSS.get(),
-                ClinkerBlocks.AMBER_BLOCK.get(),
-                ClinkerBlocks.SODIUM_LANTERN.get()
-        );
-
         IntrinsicTagAppender<Block> usesShovel = this.tag(BlockTags.MINEABLE_WITH_SHOVEL).replace(false);
-        usesShovel.add(
-                ClinkerBlocks.SALT_GRAVEL.get(),
-                ClinkerBlocks.SALTPETRE_LEACHED_DIRT.get(),
-                ClinkerBlocks.PEAT_MOSS.get()
-        );
-
-        IntrinsicTagAppender<Block> usesHoe = this.tag(BlockTags.MINEABLE_WITH_HOE).replace(false);
-        usesHoe.add(
-                ClinkerBlocks.PEAT_MOSS.get(),
-                ClinkerBlocks.SPOTREED.get(),
-                ClinkerBlocks.TANGLED_SPOTREED.get(),
-                ClinkerBlocks.HERBAL_AMALGAM_BLOCK.get(),
-                ClinkerBlocks.GOURD.get(), ClinkerBlocks.CARVED_GOURD.get()
-        );
-
         IntrinsicTagAppender<Block> usesAxe = this.tag(BlockTags.MINEABLE_WITH_AXE).replace(false);
-        usesAxe.add(
-                ClinkerBlocks.SPOTREED.get(),
-                ClinkerBlocks.TANGLED_SPOTREED.get(),
-                ClinkerBlocks.TAPROOT_BURL.get(),
-                ClinkerBlocks.TAPROOTS.get(),
-                ClinkerBlocks.GOURD.get(), ClinkerBlocks.CARVED_GOURD.get()
-        );
-
+        IntrinsicTagAppender<Block> usesHoe = this.tag(BlockTags.MINEABLE_WITH_HOE).replace(false);
+        IntrinsicTagAppender<Block> usesSword = this.tag(BlockTags.SWORD_EFFICIENT).replace(false);
         for (DeferredHolder<Block, ? extends Block> block : ClinkerBlocks.BLOCKS.getEntries()) {
             String name = block.getRegisteredName().toLowerCase();
             if (name.contains("brimstone") ||
-                name.contains("calc") ||
-                name.contains("calamine") ||
-                name.contains("capstone") ||
-                name.contains("shale") ||
-                name.contains("_ore")) {
+                    name.contains("calc") ||
+                    name.contains("calamine") ||
+                    name.contains("capstone") ||
+                    name.contains("shale") ||
+                    name.contains("_ore")) {
                 usesPickaxe.add(block.get());
             }
             if (name.contains("ash")) {
@@ -130,10 +115,41 @@ public class ClinkerBlockTagProvider extends BlockTagsProvider {
             }
         }
 
+        usesPickaxe.add(
+                ClinkerBlocks.SALTMOSS.get(),
+                ClinkerBlocks.AMBER_BLOCK.get(),
+                ClinkerBlocks.SODIUM_LANTERN.get()
+        );
+
+        usesShovel.add(
+                ClinkerBlocks.SALT_GRAVEL.get(),
+                ClinkerBlocks.SALTPETRE_LEACHED_DIRT.get(),
+                ClinkerBlocks.PEAT_MOSS.get()
+        );
+
+        usesAxe.add(
+                ClinkerBlocks.SPOTREED.get(),
+                ClinkerBlocks.TANGLED_SPOTREED.get(),
+                ClinkerBlocks.TAPROOT_BURL.get(),
+                ClinkerBlocks.TAPROOTS.get(),
+                ClinkerBlocks.GOURD.get(), ClinkerBlocks.CARVED_GOURD.get()
+        );
+
+        usesHoe.add(
+                ClinkerBlocks.PEAT_MOSS.get(),
+                ClinkerBlocks.SPOTREED.get(),
+                ClinkerBlocks.TANGLED_SPOTREED.get(),
+                ClinkerBlocks.HERBAL_AMALGAM_BLOCK.get(),
+                ClinkerBlocks.GOURD.get(), ClinkerBlocks.CARVED_GOURD.get()
+        );
+
+        usesSword.add(
+                ClinkerBlocks.THORNY_STEM.get(),
+                ClinkerBlocks.BRAMBLE_BLOSSOM.get(),
+                ClinkerBlocks.WITHERING_BRAMBLE_BLOSSOM.get()
+        );
+
         IntrinsicTagAppender<Block> needsDiamondTool = this.tag(BlockTags.NEEDS_DIAMOND_TOOL).replace(false);
         needsDiamondTool.add(ClinkerBlocks.BARRIERROCK.get());
-
-        IntrinsicTagAppender<Block> isDirt = this.tag(BlockTags.DIRT).replace(false);
-        isDirt.add(ClinkerBlocks.SALTPETRE_LEACHED_DIRT.get());
     }
 }

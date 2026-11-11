@@ -49,6 +49,6 @@ public class GroundLookAngleControl extends LookControl {
 
     public void setLookAt(double x, double y, double z, float deltaYaw, float deltaPitch) {
         super.setLookAt(x, y, z, deltaYaw, deltaPitch);
-        this.lookTargetController.lookAt(0, x, y, z, 0.1F, 0.2F);
+        this.lookTargetController.lookAt(-9999, x, y, z, 0.1F, 0.2F);
     }
 }

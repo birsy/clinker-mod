@@ -1,11 +1,5 @@
 {
   "values": [
-    "clinker:spotreed",
-    "clinker:tangled_spotreed",
-    "clinker:taproot_burl",
-    "clinker:taproots",
-    "clinker:gourd",
-    "clinker:carved_gourd",
     "clinker:dismal_aspen_heart",
     "clinker:dismal_aspen_log",
     "clinker:bundled_dismal_aspen_logs",
@@ -17,6 +11,12 @@
     "clinker:dismal_aspen_fence",
     "clinker:dismal_aspen_fence_gate",
     "clinker:dismal_aspen_pressure_plate",
-    "clinker:dismal_aspen_button"
+    "clinker:dismal_aspen_button",
+    "clinker:spotreed",
+    "clinker:tangled_spotreed",
+    "clinker:taproot_burl",
+    "clinker:taproots",
+    "clinker:gourd",
+    "clinker:carved_gourd"
   ]
 }

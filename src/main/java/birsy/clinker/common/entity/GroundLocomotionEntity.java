@@ -22,6 +22,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -189,10 +190,7 @@ public class GroundLocomotionEntity<E extends GroundLocomotionEntity<E>> extends
         float maxSpeed = 0.8F;
         Player target = EntityRetrievalUtil.getNearestEntity(this, 40.0F, (entity -> entity instanceof Player));
 
-        if (target == null) {
-            this.moveTowardsPosition(this.getX(), this.getY(), this.getZ(), maxSpeed, 1.0);
-            return;
-        }
+        if (target == null) return;
 
         // approach player
         if (target.getMainHandItem().is(Items.CARROT_ON_A_STICK)) {
@@ -230,14 +228,23 @@ public class GroundLocomotionEntity<E extends GroundLocomotionEntity<E>> extends
             float sideToSideAmount = Mth.clamp(Mth.sin(this.tickCount * 0.008F) * 10, -1, 1) * 1.5F;
 
             this.getMoveControl().strafe(forwardbackwardAmount, sideToSideAmount);
-        } else {
-            this.moveTowardsPosition(this.getX(), this.getY(), this.getZ(), maxSpeed, 1.0);
         }
     }
     private void moveTowardsPosition(double x, double y, double z, double maxSpeed, double completionRadius) {
         this.lookAt(EntityAnchorArgument.Anchor.EYES, new Vec3(x, y, z));
         this.lookControl.setLookAt(x, y, z);
         if (this.position().distanceToSqr(x, y, z) > completionRadius*completionRadius) {
+            // make sure we're not already on the way.
+            Path currentPath = this.getNavigation().getPath();
+            if (currentPath != null) {
+                Node target = currentPath.getEndNode();
+                if (target != null) {
+                    double dist = Mth.length(target.x - x, target.y - y, target.z - z);
+                    if (dist < 3) return;
+                }
+            }
+            if (this.getNavigation().isStuck()) return;
+
             Path path = this.getNavigation().createPath(new BlockPos((int) x, (int) y, (int) z), 0);
             if (path != null) this.getNavigation().moveTo(path, maxSpeed);
         }

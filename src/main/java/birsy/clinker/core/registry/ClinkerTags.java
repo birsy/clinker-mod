@@ -19,6 +19,10 @@ public class ClinkerTags {
         public static final TagKey<Block> OTHERSHORE_SOIL = BlockTags.create(Clinker.resource("othershore_soil"));
         public static final TagKey<Block> BRAMBLES = BlockTags.create(Clinker.resource("brambles"));
         public static final TagKey<Block> FOOTPRINTABLE = BlockTags.create(Clinker.resource("footprintable"));
+        public static final TagKey<Block> MOGUL_DESTRUCTIBLE = BlockTags.create(Clinker.resource("mogul_destructible"));
+
+        public static final TagKey<Block> SKIP_COLLISIONS_LUNGWYRM = BlockTags.create(Clinker.resource("skip_collisions_lungwyrm"));
+        public static final TagKey<Block> SKIP_COLLISIONS_MOGUL = BlockTags.create(Clinker.resource("skip_collisions_mogul"));
     }
 
     public static final class Items {

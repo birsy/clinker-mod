@@ -1,5 +1,6 @@
 package birsy.clinker.core.registry.entity;
 
+import birsy.clinker.common.entity.ai.sensor.PathObstructionSensor;
 import birsy.clinker.common.entity.gnomad.gnomind.sensors.LastKnownEnemyPositionSensor;
 import birsy.clinker.common.entity.gnomad.gnomind.sensors.NearbyCoverSensor;
 import birsy.clinker.common.entity.gnomad.gnomind.sensors.NearestSupplyDepotSensor;
@@ -22,4 +23,6 @@ public class ClinkerSensors {
             SENSOR_TYPES.register("nearby_cover", () -> new SensorType<>(NearbyCoverSensor::new));
     public static final Supplier<SensorType<LastKnownEnemyPositionSensor<?>>> LAST_KNOWN_ENEMY_POSITIONS =
             SENSOR_TYPES.register("last_known_enemy_positions", () -> new SensorType<>(LastKnownEnemyPositionSensor::new));
+    public static final Supplier<SensorType<PathObstructionSensor<?>>> PATH_OBSTRUCTION =
+            SENSOR_TYPES.register("path_obstruction", () -> new SensorType<>(PathObstructionSensor::new));
 }

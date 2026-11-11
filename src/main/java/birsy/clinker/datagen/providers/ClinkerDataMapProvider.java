@@ -1,7 +1,11 @@
 package birsy.clinker.datagen.providers;
 
 import birsy.clinker.core.registry.ClinkerDataMaps;
+import birsy.clinker.core.registry.ClinkerTags;
+import birsy.clinker.core.registry.entity.ClinkerEntities;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Items;
@@ -10,6 +14,7 @@ import net.neoforged.neoforge.common.data.DataMapProvider;
 
 import java.util.concurrent.CompletableFuture;
 
+@SuppressWarnings("deprecation")
 public class ClinkerDataMapProvider extends DataMapProvider {
     public ClinkerDataMapProvider(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookupProvider) {
         super(packOutput, lookupProvider);
@@ -110,5 +115,9 @@ public class ClinkerDataMapProvider extends DataMapProvider {
 
         builder(ClinkerDataMaps.ENTITY_CONDUCTIVITY)
                 .add(EntityType.IRON_GOLEM.builtInRegistryHolder(), 3F, false);
+
+        builder(ClinkerDataMaps.ENTITY_SKIP_COLLISIONS)
+                .add(ClinkerEntities.LUNGWYRM.get().builtInRegistryHolder(), BuiltInRegistries.BLOCK.getOrCreateTag(ClinkerTags.Blocks.SKIP_COLLISIONS_LUNGWYRM), false)
+                .add(ClinkerEntities.GNOMAD_MOGUL.get().builtInRegistryHolder(), BuiltInRegistries.BLOCK.getOrCreateTag(ClinkerTags.Blocks.SKIP_COLLISIONS_MOGUL), false);
     }
 }

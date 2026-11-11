@@ -2,15 +2,26 @@ package birsy.clinker.common.entity.gnomad.mogul;
 
 import birsy.clinker.client.entity.gnomad.mogul.GnomadMogulAnimator;
 import birsy.clinker.client.entity.gnomad.mogul.GnomadMogulSkeleton;
+import birsy.clinker.common.entity.ai.behaviors.InvalidateLookAtTarget;
+import birsy.clinker.common.entity.ai.behaviors.LocomotorLookAtTarget;
+import birsy.clinker.common.entity.ai.sensor.PathObstructionSensor;
 import birsy.clinker.common.entity.gnomad.BaseGnomadEntity;
+import birsy.clinker.common.entity.gnomad.gnomind.behaviors.MogulDestroyPathObstructions;
+import birsy.clinker.common.entity.gnomad.gnomind.behaviors.ReportKnownEnemyLocations;
 import birsy.clinker.common.entity.gnomad.gnomind.behaviors.StayNearSquadCenter;
 import birsy.clinker.common.entity.gnomad.gnomind.behaviors.sets.RelaxWithSquadBehaviorSet;
 import birsy.clinker.common.entity.gnomad.gnomind.behaviors.sets.SharedGnomadBehaviorSets;
+import birsy.clinker.common.entity.gnomad.gnomind.sensors.LastKnownEnemyPositionSensor;
+import birsy.clinker.common.entity.gnomad.gnomind.sensors.NearestSupplyDepotSensor;
+import birsy.clinker.common.entity.gnomad.gnomind.sensors.SquadSensor;
 import birsy.clinker.common.entity.module.modules.SquadMember;
 import birsy.clinker.common.entity.system.squad.Squad;
 import birsy.clinker.common.entity.system.squad.SquadSystem;
+import birsy.clinker.core.registry.ClinkerBlocks;
+import birsy.clinker.core.registry.ClinkerTags;
 import foundry.veil.api.client.necromancer.SkeletonParent;
 import foundry.veil.api.client.necromancer.animation.Animator;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -38,11 +49,18 @@ import net.tslat.smartbrainlib.api.core.behaviour.FirstApplicableBehaviour;
 import net.tslat.smartbrainlib.api.core.behaviour.OneRandomBehaviour;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.misc.Idle;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.misc.Panic;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.move.MoveToWalkTarget;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.path.SetRandomWalkTarget;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.target.SetAttackTarget;
+import net.tslat.smartbrainlib.api.core.sensor.ExtendedSensor;
+import net.tslat.smartbrainlib.api.core.sensor.vanilla.HurtBySensor;
+import net.tslat.smartbrainlib.api.core.sensor.vanilla.NearbyLivingEntitySensor;
+import net.tslat.smartbrainlib.api.core.sensor.vanilla.NearbyPlayersSensor;
 import net.tslat.smartbrainlib.util.EntityRetrievalUtil;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -54,7 +72,7 @@ public class GnomadMogulEntity extends BaseGnomadEntity<GnomadMogulEntity> imple
     private static final EntityDataAccessor<Integer> DATA_ROBE_COLOR = SynchedEntityData.defineId(GnomadMogulEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> DATA_FLOATING = SynchedEntityData.defineId(GnomadMogulEntity.class, EntityDataSerializers.BOOLEAN);
 
-    private final MogulAttackHandler attackHandler;
+    public final MogulAttackHandler attackHandler;
 
     private boolean canStartFloating = true;
     private int ticksFloating = 0;
@@ -96,7 +114,7 @@ public class GnomadMogulEntity extends BaseGnomadEntity<GnomadMogulEntity> imple
     @Override
     public void handleEntityEvent(byte pId) {
         super.handleEntityEvent(pId);
-        if (this.level().isClientSide()) this.attackHandler.handleAnimationEvent(pId, this.animator);
+        this.attackHandler.handleAnimationEvent(pId, this.animator);
     }
 
     // data
@@ -213,6 +231,29 @@ public class GnomadMogulEntity extends BaseGnomadEntity<GnomadMogulEntity> imple
         return this.isFloating() ? super.getDefaultGravity() * 0.07 : super.getDefaultGravity();
     }
 
+    @Override
+    public List<? extends ExtendedSensor<GnomadMogulEntity>> getSensors() {
+        List<ExtendedSensor<GnomadMogulEntity>> sensors = new ArrayList<>(super.getSensors());
+        sensors.add(
+                new PathObstructionSensor<GnomadMogulEntity>()
+                    .validObstructions((mob, state) -> state.is(ClinkerTags.Blocks.MOGUL_DESTRUCTIBLE))
+        );
+        return sensors;
+    }
+
+    @Override
+    public BrainActivityGroup<GnomadMogulEntity> getCoreTasks() {
+        return BrainActivityGroup.coreTasks(
+                new MogulDestroyPathObstructions(),
+                new SetAttackTarget<>(false)
+                        .targetFinder(mob -> EntityRetrievalUtil.getNearestPlayer(mob, 32.0F)),
+                new ReportKnownEnemyLocations<>()
+                        .cooldownFor((entity) -> 20),
+                new InvalidateLookAtTarget<>(),
+                new LocomotorLookAtTarget<>(),
+                new MoveToWalkTarget<>()
+        );
+    }
 
     @Override
     public BrainActivityGroup<GnomadMogulEntity> getIdleTasks() {
