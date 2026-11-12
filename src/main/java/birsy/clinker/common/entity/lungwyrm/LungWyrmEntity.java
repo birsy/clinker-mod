@@ -1,7 +1,10 @@
 package birsy.clinker.common.entity.lungwyrm;
 
+import birsy.clinker.client.render.world.cloud.OthershoreCloudRenderer;
+import birsy.clinker.client.render.world.cloud.UpperLayerCloudRenderer;
 import birsy.clinker.common.entity.SegmentedEntity;
 import birsy.clinker.common.entity.ai.UnclampedLookAngleControl;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -18,9 +21,12 @@ import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
 import net.tslat.smartbrainlib.util.EntityRetrievalUtil;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
@@ -30,6 +36,7 @@ public class LungWyrmEntity extends SegmentedEntity<LungWyrmEntity, LungWyrmEnti
         super(entityType, level, 32);
         this.moveControl = new LungWyrmMoveControl(this);
         this.lookControl = new UnclampedLookAngleControl(this, 80F, 0.1F);
+        this.setPersistenceRequired();
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -97,8 +104,9 @@ public class LungWyrmEntity extends SegmentedEntity<LungWyrmEntity, LungWyrmEnti
     @Override public UnclampedLookAngleControl getLookControl() { return (UnclampedLookAngleControl) super.getLookControl(); }
 
     public static class LungWyrmJoint extends Joint<LungWyrmEntity, LungWyrmEntity.LungWyrmJoint> {
-        float health = 1F, inflation, pInflation;
-        double groundY;
+        public boolean disabled, inflated;
+        double groundY = Double.NEGATIVE_INFINITY, ceilingY = Double.POSITIVE_INFINITY;
+        float inflationAmount, pInflationAmount;
 
         protected LungWyrmJoint(LungWyrmEntity parent, SegmentPartEntity part, int index, float scale) {
             super(parent, part, index, 4F * scale, 4F * scale, 4F);
@@ -106,8 +114,10 @@ public class LungWyrmEntity extends SegmentedEntity<LungWyrmEntity, LungWyrmEnti
 
         @Override
         public void tick() {
-            this.pInflation = inflation;
+            pInflationAmount = inflationAmount;
             super.tick();
+            inflationAmount = Mth.lerp(0.1F, inflationAmount, disabled ? -0.6F : (inflated ? 0.25F : 0));
+
             // periodically refresh ground height!
             if ((this.parent.tickCount + this.parent.getId() + this.index) % 5 == 0)
                 refreshGroundHeight();
@@ -117,29 +127,63 @@ public class LungWyrmEntity extends SegmentedEntity<LungWyrmEntity, LungWyrmEnti
         public boolean hurt(DamageSource source, float amount) {
             boolean actuallyHurt = super.hurt(source, amount);
             if (actuallyHurt) {
-                this.health = Math.max(health - amount, 0F);
-                LungWyrmJoint prev = this.prev();
-                if (prev != null) prev.health = Math.max(prev.health - amount, 0F);
+                this.disabled = true;
+//                LungWyrmJoint prev = this.prev();
+//                if (prev != null) prev.disabled = true;
             }
             return actuallyHurt;
         }
 
         @Override
+        public CompoundTag serialize(CompoundTag tag) {
+            super.serialize(tag);
+            tag.putBoolean("disabled", this.disabled);
+            return tag;
+        }
+
+        @Override
+        public void deserialize(CompoundTag tag) {
+            super.deserialize(tag);
+            this.disabled = tag.getBoolean("disabled");
+        }
+
+        @Override
         public void writeToBuffer(RegistryFriendlyByteBuf buf) {
             super.writeToBuffer(buf);
-            buf.writeShort(writeCompressed(Math.min(inflation, health)));
+            buf.writeBoolean(inflated);
+            buf.writeBoolean(disabled);
         }
         @Override
         public void readFromBuffer(RegistryFriendlyByteBuf buf) {
             super.readFromBuffer(buf);
-            this.inflation = (float) readCompressed(buf.readShort());
+            inflated = buf.readBoolean();
+            disabled = buf.readBoolean();
         }
 
         void refreshGroundHeight() {
             this.groundY = parent.level().getHeight(Heightmap.Types.MOTION_BLOCKING, Mth.floor(x), Mth.floor(z));
+            this.ceilingY = UpperLayerCloudRenderer.UPPER_CLOUD_HEIGHT;
+            if (this.y < this.groundY) {
+                Vec3 pos = new Vec3(this.x, this.y, this.z);
+                this.groundY = parent.level().clip(
+                        new ClipContext(
+                                pos, pos.subtract(0, 48, 0),
+                                ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY,
+                                CollisionContext.of(this.parent)
+                        )
+                ).getLocation().y;
+                this.ceilingY = parent.level().clip(
+                        new ClipContext(
+                                pos, pos.add(0, 48, 0),
+                                ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY,
+                                CollisionContext.of(this.parent)
+                        )
+                ).getLocation().y;
+            }
         }
 
-        public void setInflation(float inflation) { this.inflation = inflation; }
-        public float getInflation(float partialTick) { return Mth.lerp(partialTick, pInflation, inflation); }
+        public float getInflationAmount(float partialTick) {
+            return Mth.lerp(partialTick, pInflationAmount, inflationAmount);
+        }
     }
 }

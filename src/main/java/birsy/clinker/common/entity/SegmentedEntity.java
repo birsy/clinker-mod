@@ -86,7 +86,7 @@ public abstract class SegmentedEntity<E extends SegmentedEntity<E, J>, J extends
 
         // FaBRIK rope constraint solver
         // need to work out some way of updating velocity...
-        for (int iteration = 0; iteration < 6; iteration++) {
+        for (int iteration = 0; iteration < 8; iteration++) {
             boolean forwards = iteration % 2 == 0;
             for (int i = 0; i < joints.size() - 1; i++) {
                 int index = forwards ? i : joints.size()  - 2 - i;
@@ -108,6 +108,30 @@ public abstract class SegmentedEntity<E extends SegmentedEntity<E, J>, J extends
 
                 a.dX -= sX * k; a.dY -= sY * k; a.dZ -= sZ * k;
                 b.dX += sX * k; b.dY += sY * k; b.dZ += sZ * k;
+            }
+
+            // self collision
+            if (iteration % 4 != 0) continue;
+            for (int i = 0; i < joints.size(); i++) {
+                Joint a = this.joints.get(i);
+                for (int j = i; j < joints.size(); j++) {
+                    if (i == j) continue;
+                    Joint b = this.joints.get(j);
+                    double sX = (a.x + a.dX) - (b.x + b.dX),
+                           sY = (a.y + a.dY) - (b.y + b.dY),
+                           sZ = (a.z + a.dZ) - (b.z + b.dZ);
+                    double dist = Mth.length(sX, sY, sZ);
+                    double minDist = a.radius + b.radius;
+                    if (dist > minDist) continue;
+                    if (dist < 0.0001) {
+                        sX = 0; sY = 0; sZ = 1;
+                    }
+
+                    double error = minDist - dist;
+                    double k = (error / dist) * 0.5;
+                    a.dX += sX * k; a.dY += sY * k; a.dZ += sZ * k;
+                    b.dX -= sX * k; b.dY -= sY * k; b.dZ -= sZ * k;
+                }
             }
         }
 
@@ -346,10 +370,8 @@ public abstract class SegmentedEntity<E extends SegmentedEntity<E, J>, J extends
         public final E parent;
         public final SegmentPartEntity part;
         public final int index;
-        public double x;
-        public double y;
-        public double z; // pos
-        protected double pX, pY, pZ; // previous pos
+        public double x, y, z; // pos
+        public double pX, pY, pZ; // previous pos
         public double dX, dY, dZ; // delta pos
         protected boolean onGround = false;
         protected Vector3d segmentPos = new Vector3d();

@@ -17,6 +17,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
 import org.joml.Vector3d;
 
@@ -79,13 +80,9 @@ public class DebugSegmentedEntityRenderer extends EntityRenderer<SegmentedEntity
                         -xRot * Mth.DEG_TO_RAD,
                         0
                 );
-            } else if (i == 1)
-                rot.rotationYXZ(
-                        (float) Math.atan2(-dir.x, -dir.z),
-                        (float) Math.asin(Mth.clamp(dir.y, -1f, 1f)),
-                        0
-                );
-            else
+                Vec3 lookVec = entity.calculateViewVector(xRot, yRot);
+                dir.set(lookVec.x(), lookVec.y(), lookVec.z());
+            } else
                 rot.premul(delta.rotationTo(
                         (float) prevDir.x, (float) prevDir.y, (float) prevDir.z,
                         (float) dir.x, (float) dir.y, (float) dir.z
@@ -93,24 +90,27 @@ public class DebugSegmentedEntityRenderer extends EntityRenderer<SegmentedEntity
 
             prevDir.set(dir);
 
-            int light = LevelRenderer.getLightColor(entity.level(), blockPos.set(pos.x(), pos.y() + 1F / 2, pos.z()));
+            int light = LevelRenderer.getLightColor(entity.level(), blockPos.set(pos.x(), pos.y(), pos.z()));
 
             float width = joint.radius * 2, height = joint.height, length = joint.length;
-            if (joint instanceof LungWyrmEntity.LungWyrmJoint lungWyrmJoint) {
-                float inflationMult = 1 + lungWyrmJoint.getInflation(partialTicks) * 0.5F;
-                width *= inflationMult;
-                height *= inflationMult;
-            }
+            float heightOffset = 0.5F * height;
+            float inflation = 1.0F;
+            if (joint instanceof LungWyrmEntity.LungWyrmJoint lungWyrmJoint)
+                inflation += lungWyrmJoint.getInflationAmount(partialTicks);
 
             poseStack.pushPose();
-            if (i == 0) poseStack.translate(joint.getX(partialTicks) - eX, joint.getY(partialTicks) - eY + height / 2, joint.getZ(partialTicks) - eZ);
-            else poseStack.translate(pos.x() - eX, pos.y() - eY + height / 2, pos.z() - eZ);
+            if (i == 0) poseStack.translate(joint.getX(partialTicks) - eX, joint.getY(partialTicks) - eY + heightOffset, joint.getZ(partialTicks) - eZ);
+            else poseStack.translate(pos.x() - eX, pos.y() - eY + heightOffset, pos.z() - eZ);
             poseStack.mulPose(rot);
             if (i == 0) poseStack.translate(0F, 0F, -0.5F * length);
             if (dying) poseStack.mulPose(Axis.ZP.rotationDegrees(deathRotation));
+            //poseStack.translate(0, -heightOffset, 0);
 
+            poseStack.scale(inflation, inflation, 1);
             poseStack.scale(width, height, length);
+
             poseStack.translate(-0.5, -0.5, -0.5);
+
             dispatcher.renderSingleBlock(Blocks.DISPENSER.defaultBlockState(), poseStack, buffer, light, overlay);
             poseStack.popPose();
         }
