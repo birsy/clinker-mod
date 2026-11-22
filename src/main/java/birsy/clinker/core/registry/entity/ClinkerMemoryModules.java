@@ -1,5 +1,6 @@
 package birsy.clinker.core.registry.entity;
 
+import birsy.clinker.common.entity.ai.memories.EnemyTracker;
 import birsy.clinker.common.entity.gnomad.gnomind.memories.LastKnownEntityPositionsTracker;
 import birsy.clinker.common.entity.module.modules.SuppliesHolder;
 import birsy.clinker.common.entity.projectile.OrdnanceEntity;
@@ -30,7 +31,7 @@ public class ClinkerMemoryModules {
     public static final Supplier<MemoryModuleType<GlobalPos>> NEAREST_SUPPLY_DEPOT =
             MEMORY_MODULE_TYPES.register("nearest_supply_depot", () -> new MemoryModuleType<>(Optional.empty()));
 
-    public static final Supplier<MemoryModuleType<SuppliesHolder>> DELIVERY_TARGET =
+    public static final Supplier<MemoryModuleType<SuppliesHolder<?>>> DELIVERY_TARGET =
             MEMORY_MODULE_TYPES.register("delivery_target", () -> new MemoryModuleType<>(Optional.empty()));
     public static final Supplier<MemoryModuleType<GlobalPos>> RELAXATION_POSITION =
             MEMORY_MODULE_TYPES.register("relaxation_position", () -> new MemoryModuleType<>(Optional.empty()));
@@ -52,6 +53,9 @@ public class ClinkerMemoryModules {
             MEMORY_MODULE_TYPES.register("grab_target", () -> new MemoryModuleType<>(Optional.empty()));
     public static final Supplier<MemoryModuleType<PositionTracker>> THROW_TARGET =
             MEMORY_MODULE_TYPES.register("throw_target", () -> new MemoryModuleType<>(Optional.empty()));
+
+    public static final Supplier<MemoryModuleType<EnemyTracker>> TRACKED_ENEMIES =
+            MEMORY_MODULE_TYPES.register("tracked_enemies", () -> new MemoryModuleType<>(Optional.empty()));
 
     public static final Supplier<MemoryModuleType<Unit>> ATTACK_WINDUP = MEMORY_MODULE_TYPES.register("attack_windup", () -> new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE))));
 }

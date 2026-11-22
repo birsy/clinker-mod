@@ -63,7 +63,7 @@ public class MothParticle extends Particle {
         this.pHeading.set(heading);
 
         // this is kind of expensive, so only do it periodically.
-        if (this.age % 5 == 0) updateNearestEntityDir();
+        if ((this.age + this.seed) % 10 == 0) updateNearestEntityDir();
 
         if (this.landed) {
             this.xd = 0; this.yd = 0; this.zd = 0;
@@ -75,7 +75,7 @@ public class MothParticle extends Particle {
             boolean detached = this.random.nextInt(60) == 0;
             if (!detached && nearestEntityDir.lengthSquared() > 0.001)
                 detached = true;
-            if (!detached && this.age % 3 == 0) {
+            if (!detached && (this.age + this.seed) % 3 == 0) {
                 // check that we're still attached
                 double skinWidth = 0.05, epsilon = 0.01;
                 Direction attachmentDirection = landedDirection.getOpposite();
@@ -176,7 +176,7 @@ public class MothParticle extends Particle {
         if (lightDir.lengthSquared() > 0.001)
             lightDir.normalize();
         if (lightDir.x() != 0 || lightDir.z != 0)
-            lightDir.cross(0, 1 * (this.seed % 2 == 0 ? -1 : 1), 0);
+            lightDir.cross(0, (this.seed % 2 == 0) ? -1 : 1, 0);
         float strength = Mth.map(currentLightLevel, 8, 15, 0, 4);
         strength = Math.max(0, strength);
         lightDir.mul(strength);

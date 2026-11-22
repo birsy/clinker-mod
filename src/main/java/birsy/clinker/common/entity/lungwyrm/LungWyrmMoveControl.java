@@ -42,8 +42,14 @@ public class LungWyrmMoveControl extends MoveControl {
         this.wyrm = mob;
     }
 
+    public void clearWanted() {
+        this.operation = Operation.WAIT;
+    }
+
     @Override
     public void tick() {
+        if (wyrm.joints.isEmpty()) return;
+
         double totalLength = 0;
         for (LungWyrmEntity.LungWyrmJoint joint : this.wyrm.joints) totalLength += joint.length;
         if (path == null || pathLength != totalLength) initPath(totalLength);
@@ -152,7 +158,7 @@ public class LungWyrmMoveControl extends MoveControl {
                 desiredY = joint.groundY < joint.ceilingY ? joint.groundY * 0.5 + joint.ceilingY * 0.5 : desiredY;
             }
 
-            desiredY -= droop[i] * 6;
+            desiredY -= droop[i] * 2;
 
             double acceleration = (desiredY - joint.y) * 0.05;
             acceleration = Math.clamp(acceleration, -gravity, gravity);

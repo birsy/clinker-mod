@@ -32,9 +32,6 @@ public class SmoothFlyingNavigation extends FlyingPathNavigation implements Exte
         return super.getPath();
     }
 
-    /**
-     * Patch {@link Path#getEntityPosAtNode} to use a properly rounding check
-     */
     @Override
     protected PathFinder createPathFinder(int maxVisitedNodes) {
         this.nodeEvaluator = new WalkNodeEvaluator();

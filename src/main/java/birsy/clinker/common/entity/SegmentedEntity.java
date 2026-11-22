@@ -4,6 +4,7 @@ import birsy.clinker.common.entity.ai.DummyBodyAngleControl;
 import birsy.clinker.common.entity.module.ModularPathfindingMob;
 import birsy.clinker.common.networking.packet.ClientboundSegmentedEntitySyncPacket;
 import birsy.clinker.core.Clinker;
+import birsy.clinker.core.util.CompressionUtils;
 import io.netty.buffer.Unpooled;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -27,6 +28,8 @@ import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.neoforged.neoforge.entity.PartEntity;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Quaterniond;
+import org.joml.Quaternionf;
 import org.joml.Vector3d;
 import org.joml.Vector3f;
 
@@ -53,10 +56,8 @@ public abstract class SegmentedEntity<E extends SegmentedEntity<E, J>, J extends
         this.blocksBuilding = false;
 
         // allocate all hitboxes in advance!
-        SegmentPartEntity[] segmentPartEntities = this.parts;
-        for (int i = 0; i < segmentPartEntities.length; i++) {
-            segmentPartEntities[i] = new SegmentPartEntity(this);
-        }
+        for (int i = 0; i < this.parts.length; i++)
+            this.parts[i] = new SegmentPartEntity(this);
         this.setId(ENTITY_COUNTER.getAndAdd(this.parts.length + 1) + 1);
     }
 
@@ -158,7 +159,7 @@ public abstract class SegmentedEntity<E extends SegmentedEntity<E, J>, J extends
     public final void updateFromSyncPacket(RegistryFriendlyByteBuf buf) {
         int newJointCount = buf.readInt(),
             curJointCount = this.joints.size();
-
+        if (newJointCount == 0) return;
         double headX = buf.readDouble(),
                headY = buf.readDouble(),
                headZ = buf.readDouble();
@@ -184,6 +185,7 @@ public abstract class SegmentedEntity<E extends SegmentedEntity<E, J>, J extends
     // data
     public void writeJointDataToBuffer(RegistryFriendlyByteBuf buf) {
         buf.writeInt(this.joints.size());
+        if (this.joints.isEmpty()) return;
 
         Joint head = this.joints.getFirst();
         double headX = head.x, headY = head.y, headZ = head.z;
@@ -207,9 +209,12 @@ public abstract class SegmentedEntity<E extends SegmentedEntity<E, J>, J extends
     @Override
     public void readSpawnData(RegistryFriendlyByteBuf buf) {
         int segmentCount = buf.readInt();
+        if (segmentCount <= 0) return;
+
+        this.joints.clear();
         double headX = buf.readDouble(),
-                headY = buf.readDouble(),
-                headZ = buf.readDouble();
+               headY = buf.readDouble(),
+               headZ = buf.readDouble();
         for (int i = 0; i < segmentCount; i++) {
             J segment = this.createJoint(i, segmentCount);
             segment.x = headX + buf.readFloat();
@@ -263,6 +268,13 @@ public abstract class SegmentedEntity<E extends SegmentedEntity<E, J>, J extends
     // behavior
     @Override
     public void tick() {
+        // having no joints breaks everything so dont ever have that
+        if (this.joints.isEmpty()) {
+            Clinker.LOGGER.warn("segmented entity has no joints! discarding");
+            discard();
+            return;
+        }
+
         super.tick();
 
         if (!this.level().isClientSide()) {
@@ -323,7 +335,7 @@ public abstract class SegmentedEntity<E extends SegmentedEntity<E, J>, J extends
     public boolean hurt(DamageSource source, float amount, J segment) {
         lastHurtSegment = segment;
         Clinker.LOGGER.info(source.type());
-        return super.hurt(source, amount);
+        return this.hurt(source, amount);
     }
 
     public void spawnParticles(ParticleOptions particleOptions, float particlesPerVolume) {
@@ -347,6 +359,12 @@ public abstract class SegmentedEntity<E extends SegmentedEntity<E, J>, J extends
                 );
             }
         }
+    }
+
+    @Override
+    public boolean shouldBeSaved() {
+        if (this.joints.isEmpty()) return false;
+        return super.shouldBeSaved();
     }
 
     @Override
@@ -523,6 +541,13 @@ public abstract class SegmentedEntity<E extends SegmentedEntity<E, J>, J extends
             }
         }
 
+        public void getSegmentTransform(@Nullable Vector3d pos, Vector3d dir, Quaterniond rot, float partialTick) {
+            this.getSegmentPosAndDirection(pos, dir, partialTick);
+            double yaw = Math.atan2(dir.x, -dir.z);
+            double pitch = Math.asin(Math.clamp(-dir.y, -1, 1));
+            rot.rotationYXZ(-yaw, -pitch, 0);
+        }
+
         public double getX(float partialTick) { return Mth.lerp(partialTick, pX, x); }
         public double getY(float partialTick) { return Mth.lerp(partialTick, pY, y); }
         public double getZ(float partialTick) { return Mth.lerp(partialTick, pZ, z); }
@@ -542,14 +567,14 @@ public abstract class SegmentedEntity<E extends SegmentedEntity<E, J>, J extends
 
         // position is automatically synced!
         public void writeToBuffer(RegistryFriendlyByteBuf buf) {
-            buf.writeShort(writeCompressed(dX));
-            buf.writeShort(writeCompressed(dY));
-            buf.writeShort(writeCompressed(dZ));
+            buf.writeShort(CompressionUtils.writeCompressed(dX, CompressionUtils.COMPRESSION_SCALE_MAX_2));
+            buf.writeShort(CompressionUtils.writeCompressed(dY, CompressionUtils.COMPRESSION_SCALE_MAX_2));
+            buf.writeShort(CompressionUtils.writeCompressed(dZ, CompressionUtils.COMPRESSION_SCALE_MAX_2));
         }
         public void readFromBuffer(RegistryFriendlyByteBuf buf) {
-            dX = readCompressed(buf.readShort());
-            dY = readCompressed(buf.readShort());
-            dZ = readCompressed(buf.readShort());
+            dX = CompressionUtils.readCompressed(buf.readShort(), CompressionUtils.COMPRESSION_SCALE_MAX_2);
+            dY = CompressionUtils.readCompressed(buf.readShort(), CompressionUtils.COMPRESSION_SCALE_MAX_2);
+            dZ = CompressionUtils.readCompressed(buf.readShort(), CompressionUtils.COMPRESSION_SCALE_MAX_2);
         }
     }
 
@@ -608,11 +633,5 @@ public abstract class SegmentedEntity<E extends SegmentedEntity<E, J>, J extends
         @Override protected void addAdditionalSaveData(CompoundTag tag) {}
     }
 
-    static final double COMPRESSION_SCALE = 4096.0;
-    protected static short writeCompressed(double num) {
-        return (short) Math.round(num * COMPRESSION_SCALE);
-    }
-    protected static double readCompressed(short num) {
-        return num / COMPRESSION_SCALE;
-    }
+
 }

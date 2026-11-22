@@ -5,6 +5,7 @@ import birsy.clinker.common.entity.gnomad.gnomind.sensors.LastKnownEnemyPosition
 import birsy.clinker.common.entity.gnomad.gnomind.sensors.NearbyCoverSensor;
 import birsy.clinker.common.entity.gnomad.gnomind.sensors.NearestSupplyDepotSensor;
 import birsy.clinker.common.entity.gnomad.gnomind.sensors.SquadSensor;
+import birsy.clinker.common.entity.lungwyrm.sensors.LungWyrmTargetsSensor;
 import birsy.clinker.core.Clinker;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.ai.sensing.SensorType;
@@ -25,4 +26,6 @@ public class ClinkerSensors {
             SENSOR_TYPES.register("last_known_enemy_positions", () -> new SensorType<>(LastKnownEnemyPositionSensor::new));
     public static final Supplier<SensorType<PathObstructionSensor<?>>> PATH_OBSTRUCTION =
             SENSOR_TYPES.register("path_obstruction", () -> new SensorType<>(PathObstructionSensor::new));
+    public static final Supplier<SensorType<LungWyrmTargetsSensor>> ENEMIES_NEAR_HOME =
+            SENSOR_TYPES.register("enemies_near_home", () -> new SensorType<>(LungWyrmTargetsSensor::new));
 }

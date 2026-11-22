@@ -69,7 +69,7 @@ public class DebugSegmentedEntityRenderer extends EntityRenderer<SegmentedEntity
         int overlay = OverlayTexture.pack(0F, entity.hurtTime > 0 || entity.deathTime > 0);
 
         for (int i = 0; i < n; i++) {
-            SegmentedEntity.Joint joint = joints.get(i);
+            SegmentedEntity.Joint<?,?> joint = joints.get(i);
             joint.getSegmentPosAndDirection(pos, dir, partialTicks);
 
             if (i == 0) {

@@ -298,6 +298,12 @@ public class GnomadMogulAnimator extends Animator<GnomadMogulEntity, GnomadMogul
             skeleton.MogulHead.rotateDeg(headPitch * 0.5F, X);
 
             skeleton.MogulBackHelmetFlap.rotateDeg(-headPitch, X);
+
+            if (entity.isLeftHanded()) {
+                skeleton.MogulRightArm.rotateDeg(-15 * mixFactor, X);
+            } else {
+                skeleton.MogulLeftArm.rotateDeg(-15 * mixFactor, X);
+            }
         }
     }
 

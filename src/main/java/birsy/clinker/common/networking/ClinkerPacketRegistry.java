@@ -31,6 +31,11 @@ public class ClinkerPacketRegistry {
                 ClientboundSegmentedEntitySyncPacket.STREAM_CODEC,
                 ClientboundSegmentedEntitySyncPacket::handle);
 
+        registrar.playToClient(ClientboundLungwyrmAirborneHitPacket.TYPE,
+                ClientboundLungwyrmAirborneHitPacket.STREAM_CODEC,
+                ClientboundLungwyrmAirborneHitPacket::handle);
+
+
         registrar.playToClient(ClientboundOrdnanceExplosionPacket.TYPE,
                 ClientboundOrdnanceExplosionPacket.STREAM_CODEC,
                 ClientboundOrdnanceExplosionPacket::handle);

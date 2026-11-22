@@ -99,6 +99,10 @@ public class ClinkerEntities {
             EntityType.Builder.of(LungWyrmEntity::new, MobCategory.MONSTER)
                     .sized(1.0F, 1.0F)
                     .build(Clinker.resource("lungwyrm").toString()));
+    public static final Supplier<EntityType<LungWyrmChargeEntity>> LUNGWYRM_CHARGE = ENTITY_TYPES.register("lungwyrm_charge", () ->
+            EntityType.Builder.of(LungWyrmChargeEntity::new, MobCategory.MISC)
+                    .sized(0.75F, 0.75F)
+                    .build(Clinker.resource("lungwyrm_charge").toString()));
 
     public static final Supplier<EntityType<GnomadMogulEntity>> GNOMAD_MOGUL = ENTITY_TYPES.register("gnomad_mogul", () ->
             EntityType.Builder.of(GnomadMogulEntity::new, MobCategory.MONSTER)
@@ -147,7 +151,9 @@ public class ClinkerEntities {
 
         event.registerEntityRenderer(AI_TEST.get(), DebugEntityRenderer::new);
         event.registerEntityRenderer(GIANT_LEGGY_CRITTER.get(), LeggyRenderer::new);
+
         event.registerEntityRenderer(LUNGWYRM.get(), DebugSegmentedEntityRenderer::new);
+        event.registerEntityRenderer(LUNGWYRM_CHARGE.get(), context -> new ThrownItemRenderer<>(context, 2.0F, true));
 
         event.registerEntityRenderer(SLAB_CRAB.get(), SlabCrabRenderer::new);
 
