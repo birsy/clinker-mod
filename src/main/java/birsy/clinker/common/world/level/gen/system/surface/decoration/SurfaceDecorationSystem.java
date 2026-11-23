@@ -49,6 +49,8 @@ public class SurfaceDecorationSystem {
         NoiseSampler biomeOffsetSampler = FNLNoiseProvider.create("biomeOffset").fromRandom(randomFactory.fromHashOf("biomeOffset"));
 
         Map<SurfaceDecorator, NoiseSampler[]> decoratorToSamplers = new HashMap<>(4);
+
+        fillChunk(decoratorToSamplers, randomFactory, level, chunk);
         for (int z = 0; z < 16; z++) {
             int cZ = z + 1,
                 wZ = z + minZ;
@@ -76,7 +78,7 @@ public class SurfaceDecorationSystem {
         int minBuildHeight = chunk.getMinBuildHeight();
         ChunkPos chunkPos = chunk.getPos();
         int minBlockX = chunkPos.getMinBlockX() - 1,
-                minBlockZ = chunkPos.getMinBlockZ() - 1;
+            minBlockZ = chunkPos.getMinBlockZ() - 1;
 
         ChunkAccess[][] neighboringChunks = new ChunkAccess[3][3];
         neighboringChunks[1][1] = chunk;
@@ -95,10 +97,11 @@ public class SurfaceDecorationSystem {
                     neighboringChunks[chunkOffsetX][chunkOffsetZ] = targetChunk;
                 }
 
-                int startY = level.getHeight(Heightmap.Types.OCEAN_FLOOR_WG, worldX, worldZ);
+                int startY = level.getHeight(Heightmap.Types.OCEAN_FLOOR, worldX, worldZ);
                 spans[localX][localZ] = buildSpansForColumn(targetChunk, worldX, worldZ, startY, minBuildHeight);
             }
         }
+
         return spans;
     }
     List<BlockSpan> buildSpansForColumn(ChunkAccess chunk, int worldX, int worldZ, int startY, int minBuildHeight) {
@@ -110,7 +113,7 @@ public class SurfaceDecorationSystem {
         BlockState airState = Blocks.AIR.defaultBlockState();
 
         int sx = SectionPos.sectionRelative(worldX),
-                sz = SectionPos.sectionRelative(worldZ);
+            sz = SectionPos.sectionRelative(worldZ);
 
         int y = startY;
         while (y >= minBuildHeight) {
@@ -173,8 +176,6 @@ public class SurfaceDecorationSystem {
             BlockSpan previousSpan = column.get(i - 1);
             BlockSpan span = column.get(i);
             BlockSpan nextSpan = column.get(i + 1);
-
-            fillSpan(pos, x, z, qX, qZ, biomeOffsetY, span, decoratorToSamplers, randomFactory, level, chunk);
             decorateSpan(pos, x, z, qX, qZ, i == 1,
                     previousSpan, span, nextSpan, adjacentColumns,
                     decoratorToSamplers, randomFactory, level, context
@@ -182,50 +183,36 @@ public class SurfaceDecorationSystem {
         }
     }
 
-    void fillSpan(BlockPos.MutableBlockPos pos, int x, int z, int qX, int qZ, double biomeOffsetY, BlockSpan span,
-                  Map<SurfaceDecorator, NoiseSampler[]> decoratorToSamplers, PositionalRandomFactory randomFactory, WorldGenLevel level, ChunkAccess chunk) {
-        // first, we fill it with the fill block!
-        if (span.solid()) {
-            int y = span.bottomY();
-            pos.set(x, y, z);
+    void fillChunk(Map<SurfaceDecorator, NoiseSampler[]> decoratorToSamplers, PositionalRandomFactory randomFactory, WorldGenLevel level, ChunkAccess chunk) {
+        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+        int minSection = chunk.getMinSection(), maxSection = chunk.getMaxSection();
+        int minX = chunk.getPos().getMinBlockX(), minZ = chunk.getPos().getMinBlockZ();
+        for (int sectionIndex = minSection; sectionIndex < maxSection; sectionIndex++) {
+            LevelChunkSection section = chunk.getSection(sectionIndex - minSection);
+            if (section.hasOnlyAir()) continue;
+            int sectionY = SectionPos.sectionToBlockCoord(sectionIndex);
 
-            BlockState state;
-
-            int sX = SectionPos.sectionRelative(x), sY = SectionPos.sectionRelative(y), sZ = SectionPos.sectionRelative(z);
-            int sectionIndex = chunk.getSectionIndex(y);
-            LevelChunkSection section = chunk.getSection(sectionIndex);
-
-            int qY = QuartPos.fromBlock((int) Math.round(y + biomeOffsetY));
-            Holder<Biome> biome = level.getNoiseBiome(qX, qY, qZ);
-            SurfaceDecorator decorator = BiomeGenerationInfo.fromBiome(biome).decorator();
-
-            // loop through the spans blocks
-            for (; y < span.topY() + 1; y++) {
+            for (int sY = 0; sY < SectionPos.SECTION_SIZE; sY++) {
+                int y = sectionY + sY;
                 pos.setY(y);
+                int qY = QuartPos.fromBlock(y);
+                for (int sZ = 0; sZ < SectionPos.SECTION_SIZE; sZ++) {
+                    int z = minZ + sZ;
+                    pos.setZ(z);
 
-                // recompute decorator if needed
-                int nextQY = QuartPos.fromBlock((int) Math.round(y + biomeOffsetY));
-                if (nextQY != qY) {
-                    qY = nextQY;
-                    Holder<Biome> nextBiome = level.getNoiseBiome(qX, qY, qZ);
-                    if (nextBiome != biome) {
-                        biome = nextBiome;
-                        decorator = BiomeGenerationInfo.fromBiome(biome).decorator();
+                    for (int sX = 0; sX < SectionPos.SECTION_SIZE; sX++) {
+                        int x = minX + sX;
+                        pos.setX(x);
+
+                        Holder<Biome> biome = section.getNoiseBiome(sX & 3, sY & 3, sZ & 3);
+                        SurfaceDecorator decorator = BiomeGenerationInfo.fromBiome(biome).decorator();
+
+                        if (!section.getBlockState(sX, sY, sZ).isSolid()) continue;
+                        BlockState state = decorator.getFillBlock(pos, decoratorToSamplers.computeIfAbsent(decorator, key -> fillNoiseSamplers(randomFactory, key)));
+                        if (state == null) continue;
+                        section.setBlockState(sX, sY, sZ, state);
                     }
                 }
-
-                state = decorator.getFillBlock(pos, decoratorToSamplers.computeIfAbsent(decorator, key -> fillNoiseSamplers(randomFactory, key)));
-                if (state == null) continue; // null = default filler block
-
-                // recompute section pos if needed
-                int nextSectionIndex = chunk.getSectionIndex(y);
-                if (nextSectionIndex != sectionIndex) {
-                    sectionIndex = nextSectionIndex;
-                    section = chunk.getSection(sectionIndex);
-                    sY = 0;
-                }
-                section.setBlockState(sX, sY, sZ, state);
-                sY++;
             }
         }
     }
@@ -279,5 +266,19 @@ public class SurfaceDecorationSystem {
             samplers[j] = provider.fromRandom(randomFactory.fromHashOf(provider.name()));
         }
         return samplers;
+    }
+
+    record BlockSpan(BlockState bottomState, int bottomY, BlockState topState, int topY, boolean solid) {
+        public int height() { return topY - bottomY + 1; }
+
+        public static int spanIndexAtY(List<BlockSpan> column, int y) {
+            for (int i = 0; i < column.size(); i++) {
+                if (column.get(i).bottomY <= y) return i;
+            }
+            return column.size() - 1;
+        }
+        public static BlockSpan spanAtY(List<BlockSpan> column, int y) {
+            return column.get(spanIndexAtY(column, y));
+        }
     }
 }

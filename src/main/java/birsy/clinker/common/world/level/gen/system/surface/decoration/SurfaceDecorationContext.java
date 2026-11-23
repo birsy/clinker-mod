@@ -21,7 +21,6 @@ public final class SurfaceDecorationContext {
     int surfaceY;
     NoiseSampler[] samplers;
 
-
     public SurfaceDecorationContext(WorldGenLevel level, ChunkAccess chunk, RandomSource random) {
         this.level = level;
         this.chunk = chunk;

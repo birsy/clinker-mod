@@ -7,6 +7,7 @@ import birsy.clinker.common.world.level.gen.system.surface.decoration.SurfaceDec
 import birsy.clinker.common.world.level.gen.system.surface.decoration.SurfaceDecorator;
 import birsy.clinker.core.registry.ClinkerBlocks;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.state.BlockState;
 

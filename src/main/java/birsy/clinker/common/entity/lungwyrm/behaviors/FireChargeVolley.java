@@ -56,42 +56,44 @@ public class FireChargeVolley extends ExtendedBehaviour<LungWyrmEntity> {
         super.tick(entity);
         ticksRunning++;
 
-        // shoot off two charges
-        if (ticksRunning % 5 == 0) {
-            List<LivingEntity> targets = BrainUtils.getMemory(entity, ClinkerMemoryModules.TRACKED_ENEMIES.get()).enemies();
+        for (int i = 0; i <= 1; i++) {
+            if ((ticksRunning + i * 2) % 5 == 0) {
+                LungWyrmEntity.LungWyrmJoint joint = entity.joints.get(currentIndex);
 
-            Quaterniond rot = new Quaterniond();
-            Vector3d pos = new Vector3d(), dir = new Vector3d();
-            LungWyrmEntity.LungWyrmJoint joint = entity.joints.get(currentIndex);
-            joint.getSegmentTransform(pos, dir, rot, 1.0F);
+                Quaterniond rot = new Quaterniond();
+                Vector3d pos = new Vector3d(), dir = new Vector3d();
+                joint.getSegmentTransform(pos, dir, rot, 1.0F);
 
-            Vector3d chargeDirection = new Vector3d();
-            int direction = -1;
-            for (int i = 0; i <= 1; i++) {
-                chargeDirection.set(direction * 0.8, 0.1, 0);
-                rot.transform(chargeDirection);
+                dir.set(i == 0 ? -1 : 1, 0.1, 0).normalize();
+                rot.transform(dir);
+                fire(entity, pos, dir);
 
-                LivingEntity target = targets.get(entity.getRandom().nextInt(0, targets.size()));
-                BlockPos targetPos = target.getOnPos().offset(
-                        (int) entity.getRandom().triangle(0, 32), 0,
-                        (int) entity.getRandom().triangle(0, 32)
-                );
-
-                LungWyrmChargeEntity charge = LungWyrmChargeEntity.create(entity.level());
-                charge.setPos(pos.x(), pos.y(), pos.z());
-                charge.setDeltaMovement(chargeDirection.x(), chargeDirection.y(), chargeDirection.z());
-                charge.setTargetPos(targetPos);
-                entity.level().addFreshEntity(charge);
-                direction *= -1;
+                if (i == 1) {
+                    chargesRemaining--;
+                    currentIndex++;
+                }
             }
-
-            entity.level().playSound(null, pos.x, pos.y, pos.z, SoundEvents.FIREWORK_ROCKET_LAUNCH, SoundSource.HOSTILE, 300F,
-                    Mth.lerp(entity.getRandom().nextFloat(), 0.5F, 0.7F)
-            );
-
-            chargesRemaining--;
-            currentIndex++;
         }
+    }
+
+    void fire(LungWyrmEntity entity, Vector3d pos, Vector3d dir) {
+        List<LivingEntity> targets = BrainUtils.getMemory(entity, ClinkerMemoryModules.TRACKED_ENEMIES.get()).enemies();
+        LivingEntity target = targets.get(entity.getRandom().nextInt(0, targets.size()));
+        BlockPos targetPos = target.getOnPos().offset(
+                (int) entity.getRandom().triangle(0, 24), -10,
+                (int) entity.getRandom().triangle(0, 24)
+        );
+
+        LungWyrmChargeEntity charge = LungWyrmChargeEntity.create(entity.level());
+        charge.setPos(pos.x(), pos.y(), pos.z());
+        charge.setDeltaMovement(dir.x(), dir.y(), dir.z());
+        charge.setTargetPos(targetPos);
+        charge.setOwner(entity);
+        entity.level().addFreshEntity(charge);
+
+        entity.level().playSound(null, pos.x, pos.y, pos.z, SoundEvents.FIREWORK_ROCKET_LAUNCH, SoundSource.HOSTILE, 300F,
+                Mth.lerp(entity.getRandom().nextFloat(), 0.5F, 0.7F)
+        );
     }
 
     @Override

@@ -167,12 +167,12 @@ public class LungWyrmEntity extends SegmentedEntity<LungWyrmEntity, LungWyrmEnti
     @Override
     public BrainActivityGroup<? extends LungWyrmEntity> getIdleTasks() {
         return BrainActivityGroup.idleTasks(
+                new FireChargeVolley()
+                        .cooldownForBetween(80, 200),
                 new FirstApplicableBehaviour<>(
                         new CircleNest(),
                         new SetRandomFloatTarget()
-                ),
-                new FireChargeVolley()
-                        .cooldownForBetween(80, 200)
+                )
         );
     }
 
