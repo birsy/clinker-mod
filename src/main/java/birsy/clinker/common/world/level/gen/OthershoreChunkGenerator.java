@@ -95,11 +95,17 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             throw new RuntimeException(e.getCause());
         }
     }
-    private NoiseFields noiseFieldsForChunk(LevelHeightAccessor level, RandomState randomState, ChunkPos pos) {
-        try {
-            return finalFieldsCache.get(pos.toLong(), () -> computeNoiseFields(level, randomState, pos));
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e.getCause());
+    private NoiseFields noiseFieldsForChunk(LevelHeightAccessor level, RandomState randomState, ChunkPos pos, boolean cacheResult) {
+        if (cacheResult) {
+            try {
+                return finalFieldsCache.get(pos.toLong(), () -> computeNoiseFields(level, randomState, pos));
+            } catch (ExecutionException e) {
+                throw new RuntimeException(e.getCause());
+            }
+        } else {
+            NoiseFields result = finalFieldsCache.getIfPresent(pos.toLong());
+            if (result == null) result = computeNoiseFields(level, randomState, pos);
+            return result;
         }
     }
 
@@ -314,35 +320,23 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
     }
 
     private ChunkAccess doNoiseFillTask(Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunk) {
-        long startTime = System.nanoTime();
+        NoiseFields noiseFields = noiseFieldsForChunk(chunk, randomState, chunk.getPos(), false);
+        InterpolatingField field = noiseFields.density();
+        FluidField fluidField = noiseFields.fluid();
 
-        NoiseFields noiseFields = noiseFieldsForChunk(chunk, randomState, chunk.getPos());
-        this.fillFromFields(noiseFields.density(), noiseFields.fluid, chunk);
-
-        // terrible profiling
-//        TIME_TRACKER.recordTime(System.nanoTime() - startTime);
-//        if (randomState.random.at(chunk.getPos().x, 0, chunk.getPos().z).nextInt(100) == 0) {
-//            Clinker.LOGGER.info("avg. total noise gen time: {} ms", TIME_TRACKER.getAverage() / 1_000_000.0);
-//            SynthesizerCache.PROFILER.log();
-//        }
-
-        return chunk;
-    }
-
-    private void fillFromFields(InterpolatingField field, FluidField fluidField, ChunkAccess chunk) {
         ChunkPos chunkPos = chunk.getPos();
         int minX = chunkPos.getMinBlockX(),
-            minY = chunk.getMinBuildHeight(),
-            minZ = chunkPos.getMinBlockZ();
+                minY = chunk.getMinBuildHeight(),
+                minZ = chunkPos.getMinBlockZ();
         int chunkHeight = chunk.getHeight();
 
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         boolean[] filledWorldSurfaceHeight = new boolean[16 * 16],
-                  filledOceanFloorHeight = new boolean[16 * 16];
+                filledOceanFloorHeight = new boolean[16 * 16];
         Arrays.fill(filledWorldSurfaceHeight, false);
         Arrays.fill(filledOceanFloorHeight, false);
         Heightmap worldSurfaceHeightmap = chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.WORLD_SURFACE_WG),
-                  oceanFloorHeightmap = chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.OCEAN_FLOOR_WG);
+                oceanFloorHeightmap = chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.OCEAN_FLOOR_WG);
 
         // create a placeholder noise field just for proper cell size, etc.
         InterpolatingFieldSampler sampler = InterpolatingFieldSampler.create(field, new InterpolatingField(0, 0, chunkHeight, 0));
@@ -401,6 +395,8 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
             globalY--;
             sectionY--;
         }
+
+        return chunk;
     }
 
     @Override
@@ -493,7 +489,7 @@ public class OthershoreChunkGenerator extends ChunkGenerator {
     @Override
     public NoiseColumn getBaseColumn(int x, int z, LevelHeightAccessor level, RandomState random) {
         ChunkPos chunkPos = new ChunkPos(new BlockPos(x, 0, z));
-        NoiseFields fields = noiseFieldsForChunk(level, random, chunkPos);
+        NoiseFields fields = noiseFieldsForChunk(level, random, chunkPos, true);
         int lX = x - chunkPos.getMinBlockX(), lZ = z - chunkPos.getMinBlockZ();
         BlockState[] column = new BlockState[level.getHeight()];
         for (int lY = 0; lY < level.getHeight(); lY++) {
