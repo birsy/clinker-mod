@@ -428,7 +428,16 @@ public abstract class SegmentedEntity<E extends SegmentedEntity<E, J>, J extends
             dX = finalDelta.x(); dY = finalDelta.y(); dZ = finalDelta.z();
 
             this.part.setOldPosAndRot();
-            getSegmentPosAndDirection(segmentPos, null, 1.0F);
+            if (this.index == 0) {
+                Vec3 lookVector = this.parent.calculateViewVector(this.parent.getXRot(), this.parent.yHeadRot);
+                segmentPos.set(x, y, z).add(
+                        lookVector.x() * this.length * 0.5,
+                        lookVector.y() * this.length * 0.5,
+                        lookVector.z() * this.length * 0.5
+                );
+            } else {
+                getSegmentPosAndDirection(segmentPos, null, 1.0F);
+            }
             this.part.setPos(segmentPos.x(), segmentPos.y(), segmentPos.z());
         }
 

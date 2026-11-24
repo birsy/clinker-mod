@@ -14,7 +14,7 @@ public class EnemyTracker {
     }
 
     public boolean isValid(LivingEntity entity) {
-        return SensoryUtils.isEntityAttackableIgnoringLineOfSight(tracker, entity);
+        return !entity.is(tracker) && SensoryUtils.isEntityAttackableIgnoringLineOfSight(tracker, entity);
     }
 
     public void filter(long currentTime, long maximumTime) {

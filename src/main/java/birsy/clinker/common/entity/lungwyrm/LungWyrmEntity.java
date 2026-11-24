@@ -6,7 +6,7 @@ import birsy.clinker.common.entity.ai.ClinkerBrainUtils;
 import birsy.clinker.common.entity.ai.SmoothFlyingNavigation;
 import birsy.clinker.common.entity.ai.UnclampedLookAngleControl;
 import birsy.clinker.common.entity.lungwyrm.behaviors.CircleNest;
-import birsy.clinker.common.entity.lungwyrm.behaviors.FireChargeVolley;
+import birsy.clinker.common.entity.lungwyrm.behaviors.SwoopAndFireChargeVolley;
 import birsy.clinker.common.entity.lungwyrm.behaviors.FloatDirectlyTowardsWalkTarget;
 import birsy.clinker.common.entity.lungwyrm.behaviors.SetRandomFloatTarget;
 import birsy.clinker.common.entity.lungwyrm.sensors.LungWyrmTargetsSensor;
@@ -17,6 +17,9 @@ import net.minecraft.core.GlobalPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
@@ -58,6 +61,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LungWyrmEntity extends SegmentedEntity<LungWyrmEntity, LungWyrmEntity.LungWyrmJoint> implements Enemy, SmartBrainOwner<LungWyrmEntity> {
+    private static final EntityDataAccessor<Float> DATA_TARGET_HEAD_ROLL = SynchedEntityData.defineId(LungWyrmEntity.class, EntityDataSerializers.FLOAT);
+    private Quaternionf baseRotation = new Quaternionf(), pBaseRotation = new Quaternionf();
+    private Quaternionf scratch = new Quaternionf();
     float grounding = 0.0F;
 
     // initialization
@@ -65,7 +71,7 @@ public class LungWyrmEntity extends SegmentedEntity<LungWyrmEntity, LungWyrmEnti
     public LungWyrmEntity(EntityType<? extends SegmentedEntity<LungWyrmEntity, LungWyrmJoint>> entityType, Level level) {
         super(entityType, level, 32);
         this.moveControl = new LungWyrmMoveControl(this);
-        this.lookControl = new UnclampedLookAngleControl(this, 80F, 0.05F);
+        this.lookControl = new LungWyrmLookControl(this, 0.05F);
         this.setPersistenceRequired();
     }
 
@@ -74,6 +80,12 @@ public class LungWyrmEntity extends SegmentedEntity<LungWyrmEntity, LungWyrmEnti
                 .add(Attributes.MAX_HEALTH, 200.0)
                 .add(Attributes.KNOCKBACK_RESISTANCE, -5.0)
                 .add(Attributes.FOLLOW_RANGE, 230.0);
+    }
+
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_TARGET_HEAD_ROLL, 0.0F);
     }
 
     @Override
@@ -136,8 +148,8 @@ public class LungWyrmEntity extends SegmentedEntity<LungWyrmEntity, LungWyrmEnti
         return (LungWyrmMoveControl) super.getMoveControl();
     }
     @Override
-    public UnclampedLookAngleControl getLookControl() {
-        return (UnclampedLookAngleControl) super.getLookControl();
+    public LungWyrmLookControl getLookControl() {
+        return (LungWyrmLookControl) super.getLookControl();
     }
     @Override
     protected PathNavigation createNavigation(Level level) {
@@ -167,8 +179,8 @@ public class LungWyrmEntity extends SegmentedEntity<LungWyrmEntity, LungWyrmEnti
     @Override
     public BrainActivityGroup<? extends LungWyrmEntity> getIdleTasks() {
         return BrainActivityGroup.idleTasks(
-                new FireChargeVolley()
-                        .cooldownForBetween(80, 200),
+                new SwoopAndFireChargeVolley()
+                        .cooldownForBetween(100, 400),
                 new FirstApplicableBehaviour<>(
                         new CircleNest(),
                         new SetRandomFloatTarget()
@@ -180,7 +192,51 @@ public class LungWyrmEntity extends SegmentedEntity<LungWyrmEntity, LungWyrmEnti
     protected void customServerAiStep() {
         if (this.joints.isEmpty()) return;
         tickBrain(this);
+
+//        Vector3d direction = new Vector3d(), nextDirection = new Vector3d();
+//        this.joints.get(1).getSegmentPosAndDirection(null, direction, 1F);
+//        this.joints.get(2).getSegmentPosAndDirection(null, nextDirection, 1F);
+//        nextDirection.sub(direction);
+//        direction.sub(nextDirection).normalize();
+//        this.getLookControl().lookTargetController.lookAt(
+//                Integer.MIN_VALUE,
+//                this.getX() + direction.x(), this.getEyeY() + direction.y(), this.getZ() + direction.z(),
+//                1F, 1F
+//        );
+
         super.customServerAiStep();
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+
+        // update head rotation
+        if (this.level().isClientSide()) {
+            this.pBaseRotation.set(this.baseRotation);
+            Vector3f forward = baseRotation.transformUnit(new Vector3f(0, 0, -1));
+            Vector3d nextForward = new Vector3d();
+            this.joints.getFirst().getSegmentPosAndDirection(null, nextForward, 1F);
+            Quaternionf delta = new Quaternionf().rotationTo(
+                    forward.x, forward.y, forward.z,
+                    (float) nextForward.x, (float) nextForward.y, (float) nextForward.z
+            );
+            baseRotation.premul(delta);
+
+            this.baseRotation.transformUnit(forward.set(0, 0, -1));
+            Vector3f up = baseRotation.transformUnit(new Vector3f(0, 1, 0));
+            Vector3f targetUp = new Vector3f(0, 1, 0).fma(-forward.y, forward);
+            float upLength = targetUp.length();
+            if (upLength > 0.001) {
+                targetUp.div(upLength);
+                float angle = (float) Math.atan2(forward.dot(up.cross(targetUp, new Vector3f())), up.dot(targetUp));
+                float weight = Mth.clamp((upLength - 0.1f) / 0.4f, 0f, 1f);
+                float step = angle * 0.1F * weight;
+                delta.rotationAxis(step, forward.x, forward.y, forward.z);
+                baseRotation.premul(delta);
+            }
+            baseRotation.normalize();
+        }
     }
 
     private void updateDebugMovement() {
@@ -211,6 +267,12 @@ public class LungWyrmEntity extends SegmentedEntity<LungWyrmEntity, LungWyrmEnti
     @Override
     public void playSound(SoundEvent sound, float volume, float pitch) {
         super.playSound(sound, volume * 5.0F, pitch);
+    }
+
+    public float getTargetHeadRoll() { return this.entityData.get(DATA_TARGET_HEAD_ROLL); }
+    public void setTargetHeadRoll(float roll) { this.entityData.set(DATA_TARGET_HEAD_ROLL, Mth.wrapDegrees(roll)); }
+    public Quaternionf getBaseRotation(float partialTicks, Quaternionf out) {
+        return pBaseRotation.slerp(baseRotation, partialTicks, out);
     }
 
     public void sendAirborneHitEffectPacket(LungWyrmJoint joint, DamageSource arrowSource) {
@@ -244,6 +306,7 @@ public class LungWyrmEntity extends SegmentedEntity<LungWyrmEntity, LungWyrmEnti
         public boolean disabled, inflated;
         public double groundY = Double.NEGATIVE_INFINITY, ceilingY = Double.POSITIVE_INFINITY;
         float inflationAmount, pInflationAmount;
+        float roll, pRoll, targetRoll;
 
         final Vector3d segDir = new Vector3d(), hitPos = new Vector3d(), hitDir = new Vector3d();
         final Quaterniond segRot = new Quaterniond();
@@ -255,6 +318,7 @@ public class LungWyrmEntity extends SegmentedEntity<LungWyrmEntity, LungWyrmEnti
 
         @Override
         public void tick() {
+            pRoll = roll;
             pInflationAmount = inflationAmount;
             super.tick();
             inflationAmount = Mth.lerp(0.1F, inflationAmount, disabled ? -0.25F : (inflated ? 0.25F : 0));
@@ -276,6 +340,11 @@ public class LungWyrmEntity extends SegmentedEntity<LungWyrmEntity, LungWyrmEnti
                     );
                 }
             }
+
+            LungWyrmJoint prev = prev();
+            float nextRoll = prev == null ? parent.getTargetHeadRoll() : prev.roll;
+            targetRoll = Mth.clamp(Mth.approachDegrees(targetRoll, nextRoll, 0.5F), nextRoll - 5, nextRoll + 5);
+            roll = Mth.rotLerp( 0.2F, roll, targetRoll);
         }
 
         @Override
@@ -338,6 +407,19 @@ public class LungWyrmEntity extends SegmentedEntity<LungWyrmEntity, LungWyrmEnti
 
         public float getInflationAmount(float partialTick) {
             return Mth.lerp(partialTick, pInflationAmount, inflationAmount);
+        }
+
+        public float getRoll(float partialTick) {
+            return Mth.rotLerp(partialTick, pRoll, roll);
+        }
+
+        @Override
+        public void getSegmentTransform(@Nullable Vector3d pos, Vector3d dir, Quaterniond rot, float partialTick) {
+            this.getSegmentPosAndDirection(pos, dir, partialTick);
+            double yaw = Math.atan2(dir.x, -dir.z);
+            double pitch = Math.asin(Math.clamp(-dir.y, -1, 1));
+            double roll = getRoll(partialTick);
+            rot.rotationYXZ(-yaw, -pitch, roll);
         }
     }
 }

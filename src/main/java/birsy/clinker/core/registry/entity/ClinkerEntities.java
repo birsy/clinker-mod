@@ -6,6 +6,7 @@ import birsy.clinker.client.entity.gnomad.mogul.GnomadMogulRenderer;
 import birsy.clinker.client.entity.gnomad.runt.GnomadRuntRenderer;
 import birsy.clinker.client.entity.item.LeadArmorRenderer;
 import birsy.clinker.client.entity.leggy.LeggyRenderer;
+import birsy.clinker.client.entity.lungwyrm.LungWyrmRenderer;
 import birsy.clinker.client.entity.slabcrab.SlabCrabRenderer;
 import birsy.clinker.common.entity.*;
 import birsy.clinker.common.entity.lungwyrm.LungWyrmEntity;
@@ -152,7 +153,7 @@ public class ClinkerEntities {
         event.registerEntityRenderer(AI_TEST.get(), DebugEntityRenderer::new);
         event.registerEntityRenderer(GIANT_LEGGY_CRITTER.get(), LeggyRenderer::new);
 
-        event.registerEntityRenderer(LUNGWYRM.get(), DebugSegmentedEntityRenderer::new);
+        event.registerEntityRenderer(LUNGWYRM.get(), LungWyrmRenderer::new);
         event.registerEntityRenderer(LUNGWYRM_CHARGE.get(), context -> new ThrownItemRenderer<>(context, 2.0F, true));
 
         event.registerEntityRenderer(SLAB_CRAB.get(), SlabCrabRenderer::new);

@@ -1,5 +1,6 @@
 package birsy.clinker.common.entity.projectile;
 
+import birsy.clinker.common.entity.lungwyrm.LungWyrmEntity;
 import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.entity.ClinkerEntities;
 import net.minecraft.core.BlockPos;
@@ -69,7 +70,7 @@ public class LungWyrmChargeEntity extends Projectile implements ItemSupplier {
             desiredVelocity = desiredVelocity.normalize().scale(2);
 
             Vec3 velocity = this.getDeltaMovement();
-            float acceleration = 0.03F;
+            float acceleration = Mth.clampedMap(this.tickCount, 30, 50, 0, 0.1F);
             this.setDeltaMovement(
                     Mth.approach((float) velocity.x(), (float) desiredVelocity.x(), acceleration),
                     Mth.approach((float) velocity.y(), (float) desiredVelocity.y(), acceleration),
@@ -90,7 +91,9 @@ public class LungWyrmChargeEntity extends Projectile implements ItemSupplier {
 
     @Override
     protected void onHit(HitResult result) {
-        if (result instanceof EntityHitResult entityHitResult && entityHitResult.getEntity() == this.getOwner()) {
+        if (result instanceof EntityHitResult entityHitResult &&
+                this.getOwner() instanceof LungWyrmEntity &&
+                entityHitResult.getEntity().is(this.getOwner())) {
             return;
         }
         super.onHit(result);

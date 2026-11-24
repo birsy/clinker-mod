@@ -23,7 +23,7 @@ import org.joml.Vector3d;
 
 import java.util.List;
 
-public class DebugSegmentedEntityRenderer extends EntityRenderer<SegmentedEntity> {
+public class DebugSegmentedEntityRenderer extends EntityRenderer<SegmentedEntity<?,?>> {
     private final BlockRenderDispatcher dispatcher;
     public DebugSegmentedEntityRenderer(EntityRendererProvider.Context pContext) {
         super(pContext);
@@ -35,7 +35,7 @@ public class DebugSegmentedEntityRenderer extends EntityRenderer<SegmentedEntity
     @Override
     public void render(SegmentedEntity entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
         super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
-        List<SegmentedEntity.Joint> joints = entity.joints;
+        List<SegmentedEntity.Joint<?,?>> joints = entity.joints;
         int n = joints.size();
         if (n == 0) return;
 
@@ -44,7 +44,7 @@ public class DebugSegmentedEntityRenderer extends EntityRenderer<SegmentedEntity
                eZ = Mth.lerp(partialTicks, entity.zOld, entity.getZ());
 
         if (entityRenderDispatcher.shouldRenderHitBoxes()) {
-            for (SegmentedEntity.Joint joint : joints) {
+            for (SegmentedEntity.Joint<?,?> joint : joints) {
                 double x = joint.getX(partialTicks), y = joint.getY(partialTicks), z = joint.getZ(partialTicks);
                 poseStack.pushPose();
                 poseStack.translate(x - eX, y - eY + joint.height / 2, z - eZ);
@@ -95,8 +95,6 @@ public class DebugSegmentedEntityRenderer extends EntityRenderer<SegmentedEntity
             float width = joint.radius * 2, height = joint.height, length = joint.length;
             float heightOffset = 0.5F * height;
             float inflation = 1.0F;
-            if (joint instanceof LungWyrmEntity.LungWyrmJoint lungWyrmJoint)
-                inflation += lungWyrmJoint.getInflationAmount(partialTicks);
 
             poseStack.pushPose();
             if (i == 0) poseStack.translate(joint.getX(partialTicks) - eX, joint.getY(partialTicks) - eY + heightOffset, joint.getZ(partialTicks) - eZ);
@@ -104,7 +102,6 @@ public class DebugSegmentedEntityRenderer extends EntityRenderer<SegmentedEntity
             poseStack.mulPose(rot);
             if (i == 0) poseStack.translate(0F, 0F, -0.5F * length);
             if (dying) poseStack.mulPose(Axis.ZP.rotationDegrees(deathRotation));
-            //poseStack.translate(0, -heightOffset, 0);
 
             poseStack.scale(inflation, inflation, 1);
             poseStack.scale(width, height, length);

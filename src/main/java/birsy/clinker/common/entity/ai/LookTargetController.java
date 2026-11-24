@@ -32,14 +32,13 @@ public class LookTargetController {
                dZ = z - entity.getZ();
         target.pitch = (float) -Math.asin(Math.clamp(dY / Mth.length(dX, dY, dZ), -1, 1)) * Mth.RAD_TO_DEG;
         target.yaw = (float) (Mth.atan2(dZ, dX) * Mth.RAD_TO_DEG) - 90f;
-         target.pitch += 0;
     }
 
     public void lookAt(int priority, Entity target, float speed, float fadeSpeed) {
         lookAt(priority, target.getX(), target.getEyeY(), target.getZ(), speed, fadeSpeed);
     }
 
-    protected void tick(float basePitch, float baseYaw, float baseSpeed) {
+    public void tick(float basePitch, float baseYaw, float baseSpeed) {
         float nextPitch = basePitch,
               nextYaw = baseYaw,
               nextSpeed = baseSpeed;

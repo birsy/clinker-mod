@@ -6,8 +6,8 @@ import net.minecraft.world.entity.ai.control.LookControl;
 
 public class UnclampedLookAngleControl extends LookControl {
     public final LookTargetController lookTargetController;
-    final float pitchLimits, baseSpeed;
-    float currentHeadYaw, currentHeadPitch;
+    protected final float pitchLimits, baseSpeed;
+    protected float currentHeadYaw, currentHeadPitch;
 
     public UnclampedLookAngleControl(ModularPathfindingMob<?> mob, float pitchLimits, float baseSpeed) {
         super(mob);

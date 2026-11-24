@@ -100,7 +100,7 @@ public class LungWyrmMoveControl extends MoveControl {
             if (raycastResult.getType() != HitResult.Type.BLOCK) break;
         }
 
-        VectorUtils.approachSphere(movementDirection, targetMovementDirection, 0.5F, movementDirection);
+        VectorUtils.approachSphere(movementDirection, targetMovementDirection, 0.1F, movementDirection);
 
         wyrm.getLookControl().setLookAt(
                 wyrm.getX() + movementDirection.x,
@@ -111,10 +111,10 @@ public class LungWyrmMoveControl extends MoveControl {
 
     void tickSegmentThrust() {
         // move each segment
-        jointDirection.set(movementDirection).mul(1, 0, 1);
+        jointDirection.set(movementDirection).mul(1, 0, 1).normalize();
         float desiredSpeed = (float) (wyrm.getAttributeValue(Attributes.MOVEMENT_SPEED) * this.speedModifier),
               acceleration = 0.05F,
-              brake = 0.01F;
+              brake = 0.05F;
         for (LungWyrmEntity.LungWyrmJoint joint : wyrm.joints) {
             // only correct along the segment movement direction so that it actually takes knockback
             double along = joint.dX * jointDirection.x + joint.dZ * jointDirection.z;
@@ -124,13 +124,16 @@ public class LungWyrmMoveControl extends MoveControl {
 
             joint.dX += jointDirection.x * correction;
             joint.dZ += jointDirection.z * correction;
+//            joint.dX = Mth.approach((float) joint.dX, jointDirection.x() * desiredSpeed, acceleration);
+//            joint.dZ = Mth.approach((float) joint.dZ, jointDirection.z() * desiredSpeed, acceleration);
 
             LungWyrmEntity.LungWyrmJoint next = joint.next();
             if (next != null) {
-                double offsetX = joint.x - next.x,
-                       offsetZ = joint.z - next.z;
+                double offsetX = joint.x - (next.x - next.dX),
+                       offsetY = joint.y - (next.y - next.dY),
+                       offsetZ = joint.z - (next.z - next.dZ);
                 if (offsetX != 0 || offsetZ != 0)
-                    jointDirection.set((float) offsetX, 0, (float) offsetZ).normalize();
+                    jointDirection.set((float) offsetX, (float) offsetY, (float) offsetZ).mul(1, 0, 1).normalize();
             }
         }
     }

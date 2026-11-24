@@ -2,16 +2,20 @@ package birsy.clinker.common.entity.lungwyrm.sensors;
 
 import birsy.clinker.common.entity.ai.memories.EnemyTracker;
 import birsy.clinker.common.entity.lungwyrm.LungWyrmEntity;
+import birsy.clinker.core.Clinker;
 import birsy.clinker.core.registry.entity.ClinkerMemoryModules;
 import birsy.clinker.core.registry.entity.ClinkerSensors;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.GlobalPos;
+import net.minecraft.network.protocol.game.DebugEntityNameGenerator;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.sensing.SensorType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.entity.BeaconBlockEntity;
 import net.tslat.smartbrainlib.api.core.sensor.ExtendedSensor;
 import net.tslat.smartbrainlib.util.BrainUtils;
 import net.tslat.smartbrainlib.util.EntityRetrievalUtil;
@@ -50,8 +54,12 @@ public class LungWyrmTargetsSensor extends ExtendedSensor<LungWyrmEntity> {
         // attack whoever gets near our nest
         GlobalPos nestPos = BrainUtils.getMemory(entity, MemoryModuleType.HOME);
         if (nestPos != null && level.dimension() == nestPos.dimension()) {
-            List<LivingEntity> entitiesNearNest = EntityRetrievalUtil.getEntities(level, nestPos.pos().getCenter(), 50, LivingEntity.class);
-            for (LivingEntity livingEntity : entitiesNearNest) enemyTracker.track(livingEntity, currentTime);
+            List<LivingEntity> entitiesNearNest = EntityRetrievalUtil.getEntities(level, nestPos.pos().getCenter(), 100, LivingEntity.class);
+            for (LivingEntity livingEntity : entitiesNearNest) {
+                enemyTracker.track(livingEntity, currentTime);
+                if (enemyTracker.isValid(livingEntity))
+                    Clinker.LOGGER.info(DebugEntityNameGenerator.getEntityName(livingEntity));
+            }
         }
 
         if (enemyTracker.isEmpty()) BrainUtils.clearMemory(entity, ClinkerMemoryModules.TRACKED_ENEMIES.get());
