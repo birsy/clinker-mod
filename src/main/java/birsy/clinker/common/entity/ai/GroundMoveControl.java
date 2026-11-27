@@ -2,20 +2,22 @@ package birsy.clinker.common.entity.ai;
 
 import birsy.clinker.common.entity.GroundLocomotionEntity;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.MoveControl;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
+import java.util.List;
+
 public class GroundMoveControl extends MoveControl {
     private final Vector3f locomotionVector = new Vector3f();
+    private final GroundLocomotionEntity<?> entity;
 
-    public GroundMoveControl(GroundLocomotionEntity entity) {
+    public GroundMoveControl(GroundLocomotionEntity<?> entity) {
         super(entity);
-    }
-
-    public GroundLocomotionEntity mob() {
-        return (GroundLocomotionEntity) this.mob;
+        this.entity = entity;
     }
 
     public boolean isStrafing() {
@@ -24,15 +26,28 @@ public class GroundMoveControl extends MoveControl {
 
     @Override
     public void tick() {
-        GroundLocomotionEntity me = mob();
-
-        float baseSpeed = (float) (this.getSpeedModifier() * me.getAttributeValue(Attributes.MOVEMENT_SPEED) * me.speedModifier);
+        float baseSpeed = (float) (this.getSpeedModifier() *
+                entity.getAttributeValue(Attributes.MOVEMENT_SPEED) *
+                entity.speedModifier);
 
         this.locomotionVector.zero();
-        me.setLocomotionVector(0, 0, 0);
+        entity.setLocomotionVector(0, 0, 0);
         switch (operation) {
-            case MOVE_TO -> moveTo(me, baseSpeed);
-            case STRAFE  -> strafe(me, baseSpeed);
+            case MOVE_TO -> moveTo(baseSpeed);
+            case STRAFE  -> strafe(baseSpeed);
+        }
+
+        // test if we should try to jump
+        if (operation != Operation.WAIT && entity.horizontalCollision && entity.onGround()) {
+            Vec3 desiredPos = new Vec3(wantedX, wantedY, wantedZ);
+            Vec3 locomotion = new Vec3(locomotionVector);
+            Vec3 stepUpMovement = Entity.collideBoundingBox(entity, locomotion,
+                    entity.getBoundingBox().move(0, entity.maxUpStep(), 0), entity.level(), List.of());
+            // todo: figure out a better way to estimate jump height
+            Vec3 jumpMovement = Entity.collideBoundingBox(entity, locomotion,
+                    entity.getBoundingBox().move(0, 1.1, 0), entity.level(), List.of());
+            if (jumpMovement.distanceToSqr(desiredPos) < stepUpMovement.distanceToSqr(desiredPos))
+                entity.getJumpControl().jump();
         }
 
         if (operation != Operation.STRAFE) {
@@ -40,49 +55,32 @@ public class GroundMoveControl extends MoveControl {
             strafeRight = 0;
         }
 
-        applyDesiredVelocity(me);
+        float acceleration = 0.1F;
+        entity.setLocomotionVector(
+                Mth.approach(entity.previousLocomotionVector.x, locomotionVector.x, acceleration), 0,
+                Mth.approach(entity.previousLocomotionVector.z, locomotionVector.z, acceleration)
+        );
     }
+    
+    private void moveTo(float speed) {
+        double deltaX = wantedX - entity.getX(), deltaY = wantedY - entity.getY(),
+               deltaZ = wantedZ - entity.getZ();
 
-
-    private void moveTo(GroundLocomotionEntity me, float speed) {
-        double deltaX = wantedX - me.getX(),
-               deltaY = wantedY - me.getY(),
-               deltaZ = wantedZ - me.getZ();
-
-        double lateralDistance = Math.max(Math.abs(deltaX), Math.abs(deltaZ)); // boxy distance because entity colliders are AABBs not capsules/cylinders
-
-        if (lateralDistance <= me.getBbWidth() * 0.5F) {
+        double lateralDistance = Math.max(Math.abs(deltaX), Math.abs(deltaZ));
+        if (lateralDistance <= entity.getBbWidth() * 0.5F) {
             operation = Operation.WAIT;
             return;
         }
 
         locomotionVector.set(deltaX, 0, deltaZ);
         locomotionVector.normalize().mul((float) Math.min(speed, Mth.length(deltaX, 0, deltaZ)));
-        if (shouldJump(me, deltaY, lateralDistance)) me.getJumpControl().jump();
     }
 
-    private boolean shouldJump(GroundLocomotionEntity me, double deltaY, double lateralDistance) {
-        if (deltaY <= me.maxUpStep()) return false; // we can already step up to the target point
-        if (!me.horizontalCollision) return false;
-        return lateralDistance <= (me.getBbWidth() * 0.5 + 0.6); // we're close enough to the target point for a jump to make it
-    }
-
-    private void strafe(GroundLocomotionEntity me, float speed) {
-        Vector3fc forward = me.getBodyFacingDirection(1.0F);
+    private void strafe(float speed) {
+        Vector3fc forward = entity.getBodyFacingDirection(1.0F);
         locomotionVector.set(
-                (-forward.z() * strafeRight + forward.x() * strafeForwards) * speed,
-                0,
+                (-forward.z() * strafeRight + forward.x() * strafeForwards) * speed, 0,
                 (forward.x() * strafeRight + forward.z() * strafeForwards) * speed
-        );
-        if (me.horizontalCollision) me.getJumpControl().jump();
-    }
-
-    private void applyDesiredVelocity(GroundLocomotionEntity me) {
-        float acceleration = operation == Operation.WAIT ? 0.1F : 0.1F;
-        me.setLocomotionVector(
-                Mth.approach(me.previousLocomotionVector.x, locomotionVector.x, acceleration),
-                0,
-                Mth.approach(me.previousLocomotionVector.z, locomotionVector.z, acceleration)
         );
     }
 }

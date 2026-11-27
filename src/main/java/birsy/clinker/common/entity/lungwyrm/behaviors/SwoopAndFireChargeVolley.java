@@ -91,7 +91,7 @@ public class SwoopAndFireChargeVolley extends ExtendedBehaviour<LungWyrmEntity> 
         stoppedSwooping = false;
 
         chargesRemaining = Mth.clamp(entity.getRandom().nextInt(4, 8) * targetSize, 4, 24);
-        currentIndex = entity.getRandom().nextInt(1, (int) Math.min(entity.joints.size() * 0.3, entity.joints.size() - this.chargesRemaining));
+        currentIndex = entity.getRandom().nextInt(1, (int) (entity.joints.size() * 0.3));
     }
 
     @Override

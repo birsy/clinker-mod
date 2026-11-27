@@ -118,7 +118,8 @@ public class GroundLocomotionEntity<E extends GroundLocomotionEntity<E>> extends
     protected void customServerAiStep() {
         if (SharedConstants.IS_RUNNING_IN_IDE) this.debugMove();
         this.setYya(locomotionVector.y);
-        if (this.locomotionVector.x != 0 || this.locomotionVector.y != 0 || this.locomotionVector.z != 0) this.setSpeed(0.5F);
+        if (this.locomotionVector.x != 0 || this.locomotionVector.y != 0 || this.locomotionVector.z != 0)
+            this.setSpeed(0.5F);
         if (this.locomotionVector.x != 0 || this.locomotionVector.z != 0) {
             float inverseAngle = -this.getYRot();
             float sinA = Mth.sin(inverseAngle * Mth.DEG_TO_RAD), cosA = Mth.cos(inverseAngle *  Mth.DEG_TO_RAD);
